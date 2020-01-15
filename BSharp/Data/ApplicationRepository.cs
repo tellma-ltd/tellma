@@ -326,45 +326,43 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    if (await reader.ReadAsync())
-                    {
-                        int i = 0;
+                    int i = 0;
 
-                        // The user Info
-                        userInfo = new UserInfo
-                        {
-                            UserId = reader.Int32(i++),
-                            Name = reader.String(i++),
-                            Name2 = reader.String(i++),
-                            Name3 = reader.String(i++),
-                            ExternalId = reader.String(i++),
-                            Email = reader.String(i++),
-                            PermissionsVersion = reader.Guid(i++)?.ToString(),
-                            UserSettingsVersion = reader.Guid(i++)?.ToString(),
-                        };
-
-                        // The tenant Info
-                        tenantInfo = new TenantInfo
-                        {
-                            ShortCompanyName = reader.String(i++),
-                            ShortCompanyName2 = reader.String(i++),
-                            ShortCompanyName3 = reader.String(i++),
-                            DefinitionsVersion = reader.Guid(i++)?.ToString(),
-                            SettingsVersion = reader.Guid(i++)?.ToString(),
-                            PrimaryLanguageId = reader.String(i++),
-                            PrimaryLanguageSymbol = reader.String(i++),
-                            SecondaryLanguageId = reader.String(i++),
-                            SecondaryLanguageSymbol = reader.String(i++),
-                            TernaryLanguageId = reader.String(i++),
-                            TernaryLanguageSymbol = reader.String(i++)
-                        };
-                    }
-                    else
+                    // The user Info
+                    userInfo = new UserInfo
                     {
-                        throw new InvalidOperationException($"[dal].[OnConnect] did not return any data, InitialCatalog: {InitialCatalog()}, ExternalUserId: {externalUserId}, UserEmail: {userEmail}");
-                    }
+                        UserId = reader.Int32(i++),
+                        Name = reader.String(i++),
+                        Name2 = reader.String(i++),
+                        Name3 = reader.String(i++),
+                        ExternalId = reader.String(i++),
+                        Email = reader.String(i++),
+                        PermissionsVersion = reader.Guid(i++)?.ToString(),
+                        UserSettingsVersion = reader.Guid(i++)?.ToString(),
+                    };
+
+                    // The tenant Info
+                    tenantInfo = new TenantInfo
+                    {
+                        ShortCompanyName = reader.String(i++),
+                        ShortCompanyName2 = reader.String(i++),
+                        ShortCompanyName3 = reader.String(i++),
+                        DefinitionsVersion = reader.Guid(i++)?.ToString(),
+                        SettingsVersion = reader.Guid(i++)?.ToString(),
+                        PrimaryLanguageId = reader.String(i++),
+                        PrimaryLanguageSymbol = reader.String(i++),
+                        SecondaryLanguageId = reader.String(i++),
+                        SecondaryLanguageSymbol = reader.String(i++),
+                        TernaryLanguageId = reader.String(i++),
+                        TernaryLanguageSymbol = reader.String(i++)
+                    };
+                }
+                else
+                {
+                    throw new InvalidOperationException($"[dal].[OnConnect] did not return any data, InitialCatalog: {InitialCatalog()}, ExternalUserId: {externalUserId}, UserEmail: {userEmail}");
                 }
             }
 
@@ -376,37 +374,34 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalId", externalId);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalId", externalId);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task Users__SetEmailByUserId(int userId, string externalEmail)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalEmail", externalEmail);
+            using var cmd = conn.CreateCommand();
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalEmail", externalEmail);
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view)
@@ -424,19 +419,17 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
+                    int i = 0;
+                    result.Add(new AbstractPermission
                     {
-                        int i = 0;
-                        result.Add(new AbstractPermission
-                        {
-                            View = reader.GetString(i++),
-                            Action = reader.GetString(i++),
-                            Criteria = reader.String(i++),
-                            Mask = reader.String(i++)
-                        });
-                    }
+                        View = reader.GetString(i++),
+                        Action = reader.GetString(i++),
+                        Criteria = reader.String(i++),
+                        Mask = reader.String(i++)
+                    });
                 }
             }
 
@@ -458,19 +451,17 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_ViewPrefix__Permissions)}]";
 
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
+                    int i = 0;
+                    result.Add(new AbstractPermission
                     {
-                        int i = 0;
-                        result.Add(new AbstractPermission
-                        {
-                            View = reader.GetString(i++),
-                            Action = reader.GetString(i++),
-                            Criteria = reader.String(i++),
-                            Mask = reader.String(i++)
-                        });
-                    }
+                        View = reader.GetString(i++),
+                        Action = reader.GetString(i++),
+                        Criteria = reader.String(i++),
+                        Mask = reader.String(i++)
+                    });
                 }
             }
 
@@ -545,71 +536,69 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
                 // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                // Load the version
+                if (await reader.ReadAsync())
                 {
-                    // Load the version
-                    if (await reader.ReadAsync())
+                    isMultiResonsibilityCenter = reader.GetBoolean(0);
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new Exception($"IsMultiResonsibilityCenter was not returned from SP {nameof(Settings__Load)}");
+                }
+
+                // Next load settings
+                await reader.NextResultAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var props = typeof(Settings).GetMappedProperties();
+                    foreach (var prop in props)
                     {
-                        isMultiResonsibilityCenter = reader.GetBoolean(0);
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(settings, propValue);
                     }
-                    else
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new Exception($"Settings was not returned from SP {nameof(Settings__Load)}");
+                }
+
+                // Next load functional currency
+                await reader.NextResultAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    settings.FunctionalCurrency = new Currency();
+                    var props = typeof(Currency).GetMappedProperties();
+                    foreach (var prop in props)
                     {
-                        // Programmer mistake
-                        throw new Exception($"IsMultiResonsibilityCenter was not returned from SP {nameof(Settings__Load)}");
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(settings.FunctionalCurrency, propValue);
                     }
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
+                }
 
-                    // Next load settings
-                    await reader.NextResultAsync();
+                // Next load the mapping
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    string resourceClassificationPath = reader.GetString(0);
+                    int entityClassificationId = reader.GetInt32(1);
 
-                    if (await reader.ReadAsync())
-                    {
-                        var props = typeof(Settings).GetMappedProperties();
-                        foreach (var prop in props)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
-
-                            prop.SetValue(settings, propValue);
-                        }
-                    }
-                    else
-                    {
-                        // Programmer mistake
-                        throw new Exception($"Settings was not returned from SP {nameof(Settings__Load)}");
-                    }
-
-                    // Next load functional currency
-                    await reader.NextResultAsync();
-
-                    if (await reader.ReadAsync())
-                    {
-                        settings.FunctionalCurrency = new Currency();
-                        var props = typeof(Currency).GetMappedProperties();
-                        foreach (var prop in props)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
-
-                            prop.SetValue(settings.FunctionalCurrency, propValue);
-                        }
-                    }
-                    else
-                    {
-                        // Programmer mistake
-                        throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
-                    }
-
-                    // Next load the mapping
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        string resourceClassificationPath = reader.GetString(0);
-                        int entityClassificationId = reader.GetInt32(1);
-
-                        mappings.Add((resourceClassificationPath, entityClassificationId));
-                    }
+                    mappings.Add((resourceClassificationPath, entityClassificationId));
                 }
             }
 
@@ -629,32 +618,30 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
                 // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                // Load the version
+                if (await reader.ReadAsync())
                 {
-                    // Load the version
-                    if (await reader.ReadAsync())
-                    {
-                        version = reader.GetGuid(0);
-                    }
-                    else
-                    {
-                        version = Guid.Empty;
-                    }
+                    version = reader.GetGuid(0);
+                }
+                else
+                {
+                    version = Guid.Empty;
+                }
 
-                    // Load the permissions
-                    await reader.NextResultAsync();
+                // Load the permissions
+                await reader.NextResultAsync();
 
-                    while (await reader.ReadAsync())
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    permissions.Add(new AbstractPermission
                     {
-                        int i = 0;
-                        permissions.Add(new AbstractPermission
-                        {
-                            View = reader.String(i++),
-                            Action = reader.String(i++),
-                            Criteria = reader.String(i++),
-                            Mask = reader.String(i++)
-                        });
-                    }
+                        View = reader.String(i++),
+                        Action = reader.String(i++),
+                        Criteria = reader.String(i++),
+                        Mask = reader.String(i++)
+                    });
                 }
             }
 
@@ -676,74 +663,72 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Definitions__Load)}]";
 
                 // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                // Load the version
+                if (await reader.ReadAsync())
                 {
-                    // Load the version
-                    if (await reader.ReadAsync())
+                    version = reader.GetGuid(0);
+                }
+                else
+                {
+                    version = Guid.Empty;
+                }
+
+                // Next load lookup definitions
+                await reader.NextResultAsync();
+
+                var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new LookupDefinition();
+                    foreach (var prop in lookupDefinitionProps)
                     {
-                        version = reader.GetGuid(0);
-                    }
-                    else
-                    {
-                        version = Guid.Empty;
-                    }
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
 
-                    // Next load lookup definitions
-                    await reader.NextResultAsync();
-
-                    var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
-                    while (await reader.ReadAsync())
-                    {
-                        var entity = new LookupDefinition();
-                        foreach (var prop in lookupDefinitionProps)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
-
-                            prop.SetValue(entity, propValue);
-                        }
-
-                        lookupDefinitions.Add(entity);
+                        prop.SetValue(entity, propValue);
                     }
 
-                    // Next load agent definitions
-                    await reader.NextResultAsync();
+                    lookupDefinitions.Add(entity);
+                }
 
-                    var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
-                    while (await reader.ReadAsync())
+                // Next load agent definitions
+                await reader.NextResultAsync();
+
+                var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new AgentDefinition();
+                    foreach (var prop in agentDefinitionProps)
                     {
-                        var entity = new AgentDefinition();
-                        foreach (var prop in agentDefinitionProps)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
 
-                            prop.SetValue(entity, propValue);
-                        }
-
-                        agentDefinitions.Add(entity);
+                        prop.SetValue(entity, propValue);
                     }
 
-                    // Next load resource definitions
-                    await reader.NextResultAsync();
+                    agentDefinitions.Add(entity);
+                }
 
-                    var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
-                    while (await reader.ReadAsync())
+                // Next load resource definitions
+                await reader.NextResultAsync();
+
+                var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ResourceDefinition();
+                    foreach (var prop in resourceDefinitionProps)
                     {
-                        var entity = new ResourceDefinition();
-                        foreach (var prop in resourceDefinitionProps)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
 
-                            prop.SetValue(entity, propValue);
-                        }
-
-                        resourceDefinitions.Add(entity);
+                        prop.SetValue(entity, propValue);
                     }
+
+                    resourceDefinitions.Add(entity);
                 }
             }
 
@@ -775,26 +760,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(MeasurementUnit)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(MeasurementUnit)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> MeasurementUnits__Save(List<MeasurementUnitForSave> entities, bool returnIds)
@@ -819,17 +802,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -851,81 +832,75 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task MeasurementUnits__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task MeasurementUnits__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -953,27 +928,25 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(string definitionId, List<AgentForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[AgentList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[AgentList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Agents__Save(string definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
@@ -1010,17 +983,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Execute
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -1042,83 +1013,77 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Agents__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Agents__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Agents__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Agents__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Agents__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Agents__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion
@@ -1128,19 +1093,17 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Users__SaveSettings(string key, string value)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("Key", key);
-                cmd.Parameters.Add("Value", value);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("Key", key);
+            cmd.Parameters.Add("Value", value);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SaveSettings)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SaveSettings)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public Query<User> Users__AsQuery(List<UserForSave> entities)
@@ -1169,34 +1132,32 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             });
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[UserList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[UserList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
-                var rolesTvp = new SqlParameter("@Roles", rolesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+            var rolesTvp = new SqlParameter("@Roles", rolesTable)
+            {
+                TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(rolesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(rolesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Users_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Users_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Users__Save(List<UserForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
@@ -1246,17 +1207,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Users__Save)}]";
 
                 // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
+                    int i = 0;
+                    result.Add(new IndexedId
                     {
-                        int i = 0;
-                        result.Add(new IndexedId
-                        {
-                            Index = reader.GetInt32(i++),
-                            Id = reader.GetInt32(i++)
-                        });
-                    }
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
                 }
             }
 
@@ -1273,26 +1232,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Users_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Users_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<IEnumerable<string>> Users__Delete(IEnumerable<int> ids)
@@ -1320,12 +1277,10 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 try
                 {
                     // Execute
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
-                        {
-                            deletedEmails.Add(reader.GetString(0));
-                        }
+                        deletedEmails.Add(reader.GetString(0));
                     }
                 }
                 catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
@@ -1340,26 +1295,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Users__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
 
@@ -1431,17 +1384,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Execute
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -1471,123 +1422,115 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             });
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Role)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Role)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                DataTable membersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Members);
-                var membersTvp = new SqlParameter("@Members", membersTable)
-                {
-                    TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            DataTable membersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Members);
+            var membersTvp = new SqlParameter("@Members", membersTable)
+            {
+                TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                DataTable permissionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Permissions);
-                var permissionsTvp = new SqlParameter("@Permissions", permissionsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Permission)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            DataTable permissionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Permissions);
+            var permissionsTvp = new SqlParameter("@Permissions", permissionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(Permission)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(membersTvp);
-                cmd.Parameters.Add(permissionsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(membersTvp);
+            cmd.Parameters.Add(permissionsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Roles_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Roles_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Roles__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Roles__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Roles__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> Roles_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Roles_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Roles_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Roles__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Roles__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Roles__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion
@@ -1615,26 +1558,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Save(List<ResourceClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(ResourceClassification)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(ResourceClassification)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> ResourceClassifications__Save(List<ResourceClassificationForSave> entities, bool returnIds)
@@ -1659,17 +1600,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -1691,137 +1630,127 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task ResourceClassifications__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task ResourceClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__DeleteWithDescendants)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task ResourceClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__DeleteWithDescendants)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -1832,43 +1761,39 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Blobs__Delete(IEnumerable<string> blobNames)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new { Id = id }));
+            var namesTvp = new SqlParameter("@BlobNames", namesTable)
             {
-                // Parameters
-                DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new { Id = id }));
-                var namesTvp = new SqlParameter("@BlobNames", namesTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(namesTvp);
+            cmd.Parameters.Add(namesTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Blobs__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Blobs__Delete)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task Blobs__Save(string name, byte[] blob)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("@Name", name);
-                cmd.Parameters.Add("@Blob", blob);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("@Name", name);
+            cmd.Parameters.Add("@Blob", blob);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Blobs__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Blobs__Save)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<byte[]> Blobs__Get(string name)
@@ -1886,12 +1811,10 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
 
                 // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    if (await reader.ReadAsync())
-                    {
-                        result = (byte[])reader[0];
-                    }
+                    result = (byte[])reader[0];
                 }
             }
 
@@ -1910,34 +1833,32 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Arguments
+            var mappedProps = typeof(SettingsForSave).GetMappedProperties();
+
+            var sqlBuilder = new System.Text.StringBuilder();
+            sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
+
+            foreach (var prop in mappedProps)
             {
-                // Arguments
-                var mappedProps = typeof(SettingsForSave).GetMappedProperties();
+                var propName = prop.Name;
+                var key = $"@{propName}";
+                var value = prop.GetValue(settingsForSave);
 
-                var sqlBuilder = new System.Text.StringBuilder();
-                sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
-
-                foreach (var prop in mappedProps)
-                {
-                    var propName = prop.Name;
-                    var key = $"@{propName}";
-                    var value = prop.GetValue(settingsForSave);
-
-                    cmd.Parameters.Add(key, value);
-                    sqlBuilder.AppendLine($"{propName} = {key},");
-                }
-
-                sqlBuilder.AppendLine($"ModifiedAt = SYSDATETIMEOFFSET(),");
-                sqlBuilder.AppendLine($"ModifiedById = CONVERT(INT, SESSION_CONTEXT(N'UserId')),");
-                sqlBuilder.AppendLine($"SettingsVersion = NEWID()");
-
-                // Command
-                cmd.CommandText = sqlBuilder.ToString();
-
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
+                cmd.Parameters.Add(key, value);
+                sqlBuilder.AppendLine($"{propName} = {key},");
             }
+
+            sqlBuilder.AppendLine($"ModifiedAt = SYSDATETIMEOFFSET(),");
+            sqlBuilder.AppendLine($"ModifiedById = CONVERT(INT, SESSION_CONTEXT(N'UserId')),");
+            sqlBuilder.AppendLine($"SettingsVersion = NEWID()");
+
+            // Command
+            cmd.CommandText = sqlBuilder.ToString();
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion
@@ -1968,27 +1889,25 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(string definitionId, List<LookupForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Lookup)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Lookup)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Lookups__Save(string definitionId, List<LookupForSave> entities, bool returnIds)
@@ -2014,17 +1933,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -2046,82 +1963,76 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Lookups__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Lookups__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Lookups__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Lookups__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Lookups__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Lookups__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -2150,26 +2061,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Save(List<CurrencyForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Currency)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Currency)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Currencies_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Currencies_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Currencies__Save(List<CurrencyForSave> entities)
@@ -2177,102 +2086,94 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Currency)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Currency)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(entitiesTvp);
 
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Currencies__Save)}]";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Currencies__Save)}]";
 
-                await cmd.ExecuteNonQueryAsync();
-            }
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task Currencies__Activate(List<string> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Currencies__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Currencies__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Delete(List<string> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedStringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedStringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Currencies_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Currencies_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Currencies__Delete(IEnumerable<string> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Currencies__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Currencies__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -2304,27 +2205,25 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Resource)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Resource)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Resources__Save(string definitionId, List<ResourceForSave> entities, bool returnIds)
@@ -2350,17 +2249,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -2382,82 +2279,76 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Resources__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Resources__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Resources__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Resources__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Resources__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Resources__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -2486,26 +2377,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Save(List<AccountClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds)
@@ -2530,17 +2419,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -2562,137 +2449,127 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task AccountClassifications__Deprecate(List<int> ids, bool isDeprecated)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsDeprecated", isDeprecated);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsDeprecated", isDeprecated);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Deprecate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Deprecate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task AccountClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__DeleteWithDescendants)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AccountClassifications__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__DeleteWithDescendants)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -2703,26 +2580,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task AccountTypes__Activate(List<string> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AccountTypes__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountTypes__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion
@@ -2751,39 +2626,35 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Accounts__Preprocess(List<AccountForSave> entities)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                TypeName = $"[dbo].[{nameof(Account)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Accounts__Preprocess)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            var props = typeof(AccountForSave).GetMappedProperties();
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var entity = entities[index];
+                foreach (var prop in props)
                 {
-                    TypeName = $"[dbo].[{nameof(Account)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
 
-                cmd.Parameters.Add(entitiesTvp);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Accounts__Preprocess)}]";
-
-                // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    var props = typeof(AccountForSave).GetMappedProperties();
-                    while (await reader.ReadAsync())
-                    {
-                        var index = reader.GetInt32(0);
-                        var entity = entities[index];
-                        foreach (var prop in props)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
-
-                            prop.SetValue(entity, propValue);
-                        }
-                    }
+                    prop.SetValue(entity, propValue);
                 }
             }
         }
@@ -2791,26 +2662,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Accounts_Validate__Save(List<AccountForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Account)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Account)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Accounts_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Accounts_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Accounts__Save(List<AccountForSave> entities, bool returnIds)
@@ -2835,17 +2704,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -2867,83 +2734,77 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Accounts__Deprecate(List<int> ids, bool isDeprecated)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            var isDeprecatedParam = new SqlParameter("@IsDeprecated", isDeprecated);
+
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                var isDeprecatedParam = new SqlParameter("@IsDeprecated", isDeprecated);
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsDeprecated", isDeprecated);
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsDeprecated", isDeprecated);
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Accounts__Deprecate)}]";
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Accounts__Deprecate)}]";
-
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> Accounts_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Accounts_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Accounts_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Accounts__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Accounts__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Accounts__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -2972,26 +2833,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Save(List<CurrencyForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Currency)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Currency)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task LookupDefinitions__Save(List<CurrencyForSave> entities)
@@ -2999,102 +2858,94 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Currency)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(Currency)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(entitiesTvp);
 
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Save)}]";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Save)}]";
 
-                await cmd.ExecuteNonQueryAsync();
-            }
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task LookupDefinitions__UpdateState(List<string> ids, string state)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@State", state);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__UpdateState)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__UpdateState)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Delete(List<string> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedStringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedStringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task LookupDefinitions__Delete(IEnumerable<string> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -3123,26 +2974,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__Save(List<ResponsibilityCenterForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(ResponsibilityCenter)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(ResponsibilityCenter)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> ResponsibilityCenters__Save(List<ResponsibilityCenterForSave> entities, bool returnIds)
@@ -3167,17 +3016,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -3199,137 +3046,127 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task ResponsibilityCenters__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task ResponsibilityCenters__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__DeleteWithDescendants)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task ResponsibilityCenters__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__DeleteWithDescendants)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -3358,26 +3195,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__Save(List<EntryClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(EntryClassification)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[{nameof(EntryClassification)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Save)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Save)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> EntryClassifications__Save(List<EntryClassificationForSave> entities, bool returnIds)
@@ -3402,17 +3237,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -3434,137 +3267,127 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task EntryClassifications__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Activate)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Activate)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task EntryClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
         public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__DeleteWithDescendants)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task EntryClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__DeleteWithDescendants)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(EntryClassifications__DeleteWithDescendants)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -3592,59 +3415,55 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+
+            var docsTvp = new SqlParameter("@Documents", docsTable)
             {
-                // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+                TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                var docsTvp = new SqlParameter("@Documents", docsTable)
+            var linesTvp = new SqlParameter("@Lines", linesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Line)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            var entriesTvp = new SqlParameter("@Entries", entriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Entry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(linesTvp);
+            cmd.Parameters.Add(entriesTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            var props = typeof(EntryForSave).GetMappedProperties();
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(2);
+                var lineIndex = reader.GetInt32(1);
+                var documentIndex = reader.GetInt32(0);
+
+                var entry = documents[documentIndex].Lines[lineIndex].Entries[index];
+
+                foreach (var prop in props)
                 {
-                    TypeName = $"[dbo].[{nameof(Document)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
 
-                var linesTvp = new SqlParameter("@Lines", linesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Line)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                var entriesTvp = new SqlParameter("@Entries", entriesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Entry)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(docsTvp);
-                cmd.Parameters.Add(linesTvp);
-                cmd.Parameters.Add(entriesTvp);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
-
-                // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    var props = typeof(EntryForSave).GetMappedProperties();
-                    while (await reader.ReadAsync())
-                    {
-                        var index = reader.GetInt32(2);
-                        var lineIndex = reader.GetInt32(1);
-                        var documentIndex = reader.GetInt32(0);
-
-                        var entry = documents[documentIndex].Lines[lineIndex].Entries[index];
-
-                        foreach (var prop in props)
-                        {
-                            // get property value
-                            var propValue = reader[prop.Name];
-                            propValue = propValue == DBNull.Value ? null : propValue;
-
-                            prop.SetValue(entry, propValue);
-                        }
-                    }
+                    prop.SetValue(entry, propValue);
                 }
             }
         }
@@ -3652,42 +3471,40 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> documents, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+
+            var docsTvp = new SqlParameter("@Documents", docsTable)
             {
-                // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+                TypeName = $"[dbo].[{nameof(Document)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                var docsTvp = new SqlParameter("@Documents", docsTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Document)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            var linesTvp = new SqlParameter("@Lines", linesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Line)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                var linesTvp = new SqlParameter("@Lines", linesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Line)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            var entriesTvp = new SqlParameter("@Entries", entriesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Entry)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                var entriesTvp = new SqlParameter("@Entries", entriesTable)
-                {
-                    TypeName = $"[dbo].[{nameof(Entry)}List]",
-                    SqlDbType = SqlDbType.Structured
-                };
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(docsTvp);
+            cmd.Parameters.Add(linesTvp);
+            cmd.Parameters.Add(entriesTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(docsTvp);
-                cmd.Parameters.Add(linesTvp);
-                cmd.Parameters.Add(entriesTvp);
-                cmd.Parameters.Add("@Top", top);
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Save)}]";
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Save)}]";
-
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> documents, bool returnIds)
@@ -3731,17 +3548,15 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Execute
                 if (returnIds)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        result.Add(new IndexedId
                         {
-                            int i = 0;
-                            result.Add(new IndexedId
-                            {
-                                Index = reader.GetInt32(i++),
-                                Id = reader.GetInt32(i++)
-                            });
-                        }
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
                 else
@@ -3763,29 +3578,27 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? agentId, int? roleId, short toState, int top)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@AgentId", agentId);
-                cmd.Parameters.Add("@RoleId", roleId);
-                cmd.Parameters.Add("@ToState", toState);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@AgentId", agentId);
+            cmd.Parameters.Add("@RoleId", roleId);
+            cmd.Parameters.Add("@ToState", toState);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Lines_Validate__Sign)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Lines_Validate__Sign)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task<IEnumerable<int>> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, int? roleId, DateTimeOffset? signedAt)
@@ -3816,12 +3629,10 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Lines__Sign)}]";
 
                 // Execute                    
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        result.Add(reader.GetInt32(0));
-                    }
+                    result.Add(reader.GetInt32(0));
                 }
             }
 
@@ -3831,51 +3642,47 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents_Validate__Assign)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents_Validate__Assign)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@AssigneeId", assigneeId);
-                cmd.Parameters.Add("@Comment", comment);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@AssigneeId", assigneeId);
+            cmd.Parameters.Add("@Comment", comment);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents__Assign)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Assign)}]";
 
-                // Execute                    
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute                    
+            await cmd.ExecuteNonQueryAsync();
         }
 
         // TODO: deal with the SPs below
@@ -3884,31 +3691,29 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             // TODO
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add(idsTvp);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
 
-                // Execute
-                try
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-                {
-                    throw new ForeignKeyViolationException();
-                }
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
             }
         }
 
@@ -3916,53 +3721,49 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             // TODO
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IndexedIdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@Top", top);
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Delete)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Delete)}]";
 
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
         }
 
         public async Task Documents_Close(List<int> ids, bool isActive)
         {
             // TODO
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents_Close)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents_Close)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
 
@@ -3970,26 +3771,24 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             // TODO
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-                var idsTvp = new SqlParameter("@Ids", idsTable)
-                {
-                    TypeName = $"[dbo].[IdList]",
-                    SqlDbType = SqlDbType.Structured
-                };
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.Add("@IsActive", isActive);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents_Open)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents_Open)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion

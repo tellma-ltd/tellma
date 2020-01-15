@@ -212,9 +212,6 @@
     <value>تاريخ البدأ</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>رقم السجل الضريبي</value>
-  </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم التعريف الضريبي</value>
   </data>
   <data name="Agent_Title" xml:space="preserve">

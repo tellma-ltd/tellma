@@ -173,24 +173,22 @@ namespace BSharp.Data
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    if (await reader.ReadAsync())
-                    {
-                        int i = 0;
+                    int i = 0;
 
-                        // The user Info
-                        result = new AdminUserInfo
-                        {
-                            UserId = reader.Int32(i++),
-                            ExternalId = reader.String(i++),
-                            Email = reader.String(i++),
-                        };
-                    }
-                    else
+                    // The user Info
+                    result = new AdminUserInfo
                     {
-                        throw new InvalidOperationException($"[dal].[OnConnect] did not return any data from Admin Database, ExternalUserId: {externalUserId}, UserEmail: {userEmail}");
-                    }
+                        UserId = reader.Int32(i++),
+                        ExternalId = reader.String(i++),
+                        Email = reader.String(i++),
+                    };
+                }
+                else
+                {
+                    throw new InvalidOperationException($"[dal].[OnConnect] did not return any data from Admin Database, ExternalUserId: {externalUserId}, UserEmail: {userEmail}");
                 }
             }
 
@@ -212,21 +210,19 @@ namespace BSharp.Data
                 cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
 
                 // Execute and Load
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    if (await reader.ReadAsync())
-                    {
-                        int i = 0;
+                    int i = 0;
 
-                        // The user Info
-                        result = new DatabaseConnectionInfo
-                        {
-                            ServerName = reader.String(i++),
-                            DatabaseName = reader.String(i++),
-                            UserName = reader.String(i++),
-                            PasswordKey = reader.String(i++),
-                        };
-                    }
+                    // The user Info
+                    result = new DatabaseConnectionInfo
+                    {
+                        ServerName = reader.String(i++),
+                        DatabaseName = reader.String(i++),
+                        UserName = reader.String(i++),
+                        PasswordKey = reader.String(i++),
+                    };
                 }
             }
 
@@ -245,12 +241,10 @@ namespace BSharp.Data
                 cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
 
                 // Execute and Load
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        result.Add(reader.GetInt32(0));
-                    }
+                    result.Add(reader.GetInt32(0));
                 }
             }
 
@@ -264,55 +258,49 @@ namespace BSharp.Data
         public async Task GlobalUsers__SetExternalIdByUserId(int userId, string externalId)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalId", externalId);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalId", externalId);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByUserId)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByUserId)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task GlobalUsers__SetEmailByUserId(int userId, string externalEmail)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalEmail", externalEmail);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalEmail", externalEmail);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetEmailByUserId)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetEmailByUserId)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task GlobalUsers__SetExternalIdByEmail(string email, string externalId)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("Email", email);
-                cmd.Parameters.Add("ExternalId", externalId);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("Email", email);
+            cmd.Parameters.Add("ExternalId", externalId);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByEmail)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByEmail)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task<IEnumerable<string>> GlobalUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
@@ -349,12 +337,10 @@ namespace BSharp.Data
                 // Execute and load
                 if (returnEmailsForCreation)
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
-                        {
-                            result.Add(reader.String(0));
-                        }
+                        result.Add(reader.String(0));
                     }
                 }
                 else
@@ -377,56 +363,50 @@ namespace BSharp.Data
             // 3 - Gives that user universal permissions (if not already)
 
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("Email", email);
-                cmd.Parameters.Add("FullName", fullName);
-                cmd.Parameters.Add("Password", password);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("Email", email);
+            cmd.Parameters.Add("FullName", fullName);
+            cmd.Parameters.Add("Password", password);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;              
-                cmd.CommandText = $"[dal].[{nameof(AdminUsers__CreateAdmin)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__CreateAdmin)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task AdminUsers__SetEmailByUserId(int userId, string externalEmail)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalEmail", externalEmail);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalEmail", externalEmail);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetEmailByUserId)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetEmailByUserId)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task AdminUsers__SetExternalIdByUserId(int userId, string externalId)
         {
             var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                cmd.Parameters.Add("UserId", userId);
-                cmd.Parameters.Add("ExternalId", externalId);
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalId", externalId);
 
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetExternalIdByUserId)}]";
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetExternalIdByUserId)}]";
 
-                // Execute
-                await cmd.ExecuteNonQueryAsync();
-            }
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion

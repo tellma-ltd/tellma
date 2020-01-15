@@ -214,9 +214,6 @@
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
   </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
-  </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>标题</value>
   </data>
