@@ -40,11 +40,10 @@
                         </b-date-picker>
 
                         <!-- Date Time -->
-                        <ng-container *ngSwitchCase="'datetime'">
-                            <div class="text-danger font-weight-bold" *ngSwitchDefault>
-                                TODO: datetime control
-                            </div>
-                        </ng-container>
+                        <b-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="arguments[p.key]"
+                            [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()">
+                        </b-date-picker>
 
                         <!-- Choice -->
                         <b-selector *ngSwitchCase="'choice'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
@@ -109,8 +108,9 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </b-resources-picker>
 
-                            <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'" [(ngModel)]="arguments[p.key]"
-                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </b-responsibility-centers-picker>
 
                             <b-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="arguments[p.key]"
