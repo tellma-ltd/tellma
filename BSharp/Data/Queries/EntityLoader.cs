@@ -80,7 +80,7 @@ namespace BSharp.Data.Queries
 
                         if (!string.IsNullOrWhiteSpace(function))
                         {
-                            result = $"{function}({result})";
+                            result = $"{result}|{function}";
                         }
 
                         if (!string.IsNullOrWhiteSpace(aggregation))

@@ -78,7 +78,7 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
-                clone._filterConditions = clone._filterConditions ?? new List<FilterExpression>();
+                clone._filterConditions ??= new List<FilterExpression>();
                 clone._filterConditions.Add(condition);
             }
 
@@ -102,7 +102,7 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userToday = args.UserToday;
             var localizer = args.Localizer;
 
             // ------------------------ Validation Step
@@ -199,7 +199,7 @@ namespace BSharp.Data.Queries
             // Prepare the statement from the internal query
             var ps = new SqlStatementParameters();
             var rawSources = QueryTools.RawSources(sources, ps);
-            SqlStatement statement = query.PrepareStatement(rawSources, ps, userId, userTimeZone);
+            SqlStatement statement = query.PrepareStatement(rawSources, ps, userId, userToday);
 
             // load the entities and return them
             var result = await EntityLoader.LoadAggregateStatement(

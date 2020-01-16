@@ -29,36 +29,26 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
-        /// Takes a string in the form of "month(A/B/C)" and returns the path ["A", "B"], the property "C"
+        /// Takes a string in the form of "A/B/C|month" and returns the path ["A", "B"], the property "C"
         /// and the function "month" (as long as it is one of the functions in <see cref="Functions"/>
         /// trimming all the strings  along the way
         /// </summary>
-        /// <param name="atom"></param>
-        /// <returns></returns>
-        public static (string Function, string[] Path, string Property) ExtractFunctionPathAndProperty(string atom)
+        public static (string[] Path, string Property, string Function) ExtractFunctionPathAndProperty(string atom)
         {
-            atom = atom.Trim();
+            var pieces = atom.Split('|');
 
-            // Extract the function (day, month etc...) if any
-            string[] functionKeywords = Functions.All;
-            string function = functionKeywords.FirstOrDefault(fn =>
-                atom.ToLower().StartsWith(fn) &&
-                atom.Substring(fn.Length).Trim().StartsWith("("));
-            if (function != null)
+            // Get the function
+            string function = null;
+            if (pieces.Length > 1)
             {
-                atom = atom.Substring(function.Length);
-                atom = atom.TrimStart();
-                atom = atom.Substring(1); // to remove the bracket
-
-                if (atom.EndsWith(")"))
-                {
-                    atom = atom.Remove(atom.Length - 1).Trim();
-                }
+                function = string.Join("|", pieces.Skip(1)).Trim();
             }
 
-            var (path, property) = ExtractPathAndProperty(atom);
+            // Get the path and property
+            string pathAndProp = pieces[0].Trim();
+            var (path, property) = ExtractPathAndProperty(pathAndProp);
 
-            return (function, path, property);
+            return (path, property, function);
         }
 
         private static readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _cacheGetMappedProperties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
@@ -176,7 +166,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Turns a filter expression into an SQL WHERE clause (without the WHERE keyword), adds all required parameters into the <see cref="SqlStatementParameters"/>
         /// </summary>
-        public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTree joinTree, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTree joinTree, int userId, DateTime? userToday)
         {
             if (e == null)
             {
@@ -263,7 +253,7 @@ namespace BSharp.Data.Queries
                             break;
 
                         case "me":
-                            value = currentUserId;
+                            value = userId;
                             break;
 
                         // Relative DateTime values
@@ -271,56 +261,56 @@ namespace BSharp.Data.Queries
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfYear(currentUserTimeZone);
+                            value = StartOfYear(userToday);
                             break;
 
                         case "endofyear":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfYear(currentUserTimeZone).AddYears(1);
+                            value = StartOfYear(userToday).AddYears(1);
                             break;
 
                         case "startofquarter":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfQuarter(currentUserTimeZone);
+                            value = StartOfQuarter(userToday);
                             break;
 
                         case "endofquarter":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfQuarter(currentUserTimeZone).AddMonths(3);
+                            value = StartOfQuarter(userToday).AddMonths(3);
                             break;
 
                         case "startofmonth":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfMonth(currentUserTimeZone);
+                            value = StartOfMonth(userToday);
                             break;
 
                         case "endofmonth":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = StartOfMonth(currentUserTimeZone).AddMonths(1);
+                            value = StartOfMonth(userToday).AddMonths(1);
                             break;
 
                         case "today":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = Today(currentUserTimeZone);
+                            value = Today(userToday);
                             break;
 
                         case "endofday":
                             EnsureNullFunction(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
-                            value = Today(currentUserTimeZone).AddDays(1);
+                            value = Today(userToday).AddDays(1);
                             break;
 
                         case "now":
@@ -345,13 +335,14 @@ namespace BSharp.Data.Queries
 
                             try
                             {
-                                value = valueString.ChangeType(expectedValueType, currentUserTimeZone);
+                                value = ParseFilterValue(valueString, expectedValueType);
                             }
                             catch (ArgumentException)
                             {
                                 // Developer mistake
                                 throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
                             }
+
                             break;
                     }
 
@@ -364,22 +355,29 @@ namespace BSharp.Data.Queries
                     switch (atom.Op?.ToLower() ?? "")
                     {
                         case Ops.gt:
+                        case Ops.gtSign:
                             return $"{propSQL} > {paramSymbol}";
 
                         case Ops.ge:
+                        case Ops.geSign:
                             return $"{propSQL} >= {paramSymbol}";
 
                         case Ops.lt:
+                        case Ops.ltSign:
                             return $"{propSQL} < {paramSymbol}";
 
                         case Ops.le:
+                        case Ops.leSign:
                             return $"{propSQL} <= {paramSymbol}";
 
                         case Ops.eq:
+                        case Ops.eqSign:
                             string eqSql = isNull ? "IS" : "=";
                             return $"{propSQL} {eqSql} {paramSymbol}";
 
                         case Ops.ne:
+                        case Ops.neSign:
+                        case Ops.neSign2:
                             string neSql = isNull ? "IS NOT" : "<>";
                             return $"{propSQL} {neSql} {paramSymbol}";
 
@@ -441,27 +439,63 @@ namespace BSharp.Data.Queries
             return FilterToSqlInner(e);
         }
 
-        private static DateTime Today(TimeZoneInfo zone)
+        /// <summary>
+        /// The default Convert.ChangeType cannot handle converting types to
+        /// nullable types also it cannot handle DateTimeOffset
+        /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
+        /// </summary>
+        public static object ParseFilterValue(this string stringValue, Type targetType)
         {
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zone).Date;
+            if (stringValue is null)
+            {
+                return null;
+            }
+
+            if (targetType is null)
+            {
+                throw new ArgumentNullException(nameof(targetType));
+            }
+
+            targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+            try
+            {
+                if (targetType == typeof(DateTimeOffset))
+                {
+                    // Convert.ChangeType throws an error for DateTimeOffset
+                    // So must take care of this manually
+                    return DateTimeOffset.Parse(stringValue);
+                }
+
+                // Everything else can be handled by Convert.ChangeType
+                return Convert.ChangeType(stringValue, targetType);
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Failed to convert '{stringValue}' to type: {targetType.Name}");
+            }
         }
 
-        private static DateTime StartOfMonth(TimeZoneInfo zone)
+        private static DateTime Today(DateTime? userToday)
         {
-            var today = Today(zone);
+            return userToday ?? DateTime.Today;
+        }
+
+        private static DateTime StartOfMonth(DateTime? userToday)
+        {
+            var today = Today(userToday);
             return new DateTime(today.Year, today.Month, 1);
         }
 
-        private static DateTime StartOfQuarter(TimeZoneInfo zone)
+        private static DateTime StartOfQuarter(DateTime? userToday)
         {
-            var today = Today(zone);
+            var today = Today(userToday);
             int quarter = (today.Month - 1) / 3 + 1;
             return new DateTime(today.Year, (quarter - 1) * 3 + 1, 1);
         }
 
-        private static DateTime StartOfYear(TimeZoneInfo zone)
+        private static DateTime StartOfYear(DateTime? userToday)
         {
-            var today = Today(zone);
+            var today = Today(userToday);
             return new DateTime(today.Year, 1, 1);
         }
 
@@ -474,8 +508,12 @@ namespace BSharp.Data.Queries
 
             if (!string.IsNullOrWhiteSpace(function))
             {
-                // So far all functions are date parts, in the future more could be added
-                result = $"DATEPART({function}, {result})";
+                // So far all functions are date parts and have no parameters, in the future this may change
+                var lowerCaseFunction = function.ToLower();
+                var sqlFunction = Functions.All.FirstOrDefault(fn => lowerCaseFunction.Equals(fn)) ??
+                    throw new InvalidOperationException($"Unrecognized function '{function}'");
+
+                result = $"DATEPART({sqlFunction}, {result})";
             }
 
             // Apply the aggregation if any
@@ -509,7 +547,7 @@ namespace BSharp.Data.Queries
             if (propType != typeof(HierarchyId))
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} since it is not of type HierarchyId");
+                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type HierarchyId");
             }
         }
 
@@ -518,7 +556,7 @@ namespace BSharp.Data.Queries
             if (propType != typeof(string))
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} since it is not of type String");
+                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} because it is not of type String");
             }
         }
 

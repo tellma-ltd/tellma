@@ -15,7 +15,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FilterTools, pathFunctionsArray } from '~/app/data/filter-expression';
+import { FilterTools, pathFunctions } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 
@@ -714,7 +714,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get pathFunctions(): string[] {
-    return pathFunctionsArray;
+    return pathFunctions;
   }
 
   public isDate(path: string, model: ReportDefinitionForSave): boolean {

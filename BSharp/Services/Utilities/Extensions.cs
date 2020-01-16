@@ -269,20 +269,16 @@ namespace BSharp.Services.Utilities
         /// nullable types also it cannot handle DateTimeOffset
         /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="conversion"></param>
-        /// <param name="sourceTimeZone"></param>
-        /// <returns></returns>
         public static object ChangeType(this object obj, Type conversion, TimeZoneInfo sourceTimeZone = null)
         {
+            if (obj is null)
+            {
+                return null;
+            }
+
             var t = conversion;
             if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (obj == null)
-                {
-                    return null;
-                }
-
                 t = Nullable.GetUnderlyingType(t);
             }
 
@@ -317,7 +313,6 @@ namespace BSharp.Services.Utilities
             {
                 throw new InvalidOperationException($"Failed to convert value: '{obj?.ToString()}' to type: {t.Name}");
             }
-
         }
 
         /// <summary>

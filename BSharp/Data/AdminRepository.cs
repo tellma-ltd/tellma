@@ -119,9 +119,9 @@ namespace BSharp.Data
                 var sources = GetSources();
                 var userInfo = await GetAdminUserInfoAsync();
                 var userId = userInfo.UserId ?? 0;
-                var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
+                var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, sources, userId, userTimeZone, _localizer);
+                return new QueryArguments(conn, sources, userId, userToday, _localizer);
             }
 
             return Factory;
@@ -131,23 +131,14 @@ namespace BSharp.Data
         {
             return (t) =>
             {
-                switch (t.Name)
+                return t.Name switch
                 {
-                    case nameof(AdminUser):
-                        return new SqlSource("[dbo].[GlobalUsers]");
-
-                    case nameof(SqlDatabase):
-                        return new SqlSource("[dbo].[SqlDatabases]");
-
-                    case nameof(SqlServer):
-                        return new SqlSource("[dbo].[SqlServers]");
-
-                    case nameof(GlobalUserMembership):
-                        return new SqlSource("[dbo].[GlobalUserMemberships]");
-
-                    default:
-                        throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries");
-                }
+                    nameof(AdminUser) => new SqlSource("[dbo].[GlobalUsers]"),
+                    nameof(SqlDatabase) => new SqlSource("[dbo].[SqlDatabases]"),
+                    nameof(SqlServer) => new SqlSource("[dbo].[SqlServers]"),
+                    nameof(GlobalUserMembership) => new SqlSource("[dbo].[GlobalUserMemberships]"),
+                    _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries"),
+                };
             };
         }
 

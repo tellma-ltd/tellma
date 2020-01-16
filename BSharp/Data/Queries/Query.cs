@@ -122,7 +122,7 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
-                clone._filterConditions = clone._filterConditions ?? new List<FilterExpression>();
+                clone._filterConditions ??= new List<FilterExpression>();
                 clone._filterConditions.Add(condition);
             }
 
@@ -253,7 +253,7 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userToday = args.UserToday;
             var localizer = args.Localizer;
 
             SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
@@ -294,7 +294,7 @@ namespace BSharp.Data.Queries
             var rawSources = QueryTools.RawSources(sources, ps);
 
             // Load the statement
-            var sql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
+            var sql = flatQuery.PrepareStatement(rawSources, ps, userId, userToday).Sql;
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -309,39 +309,38 @@ namespace BSharp.Data.Queries
             }
 
             // Execute the SqlStatement
-            using (var cmd = conn.CreateCommand())
-            {
-                // Prepare the SQL command
-                cmd.CommandText = sql;
-                foreach (var parameter in ps)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
+            using var cmd = conn.CreateCommand();
 
-                // It is alawys closed, but we add this code anyways for robustness
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            // Prepare the SQL command
+            cmd.CommandText = sql;
+            foreach (var parameter in ps)
+            {
+                cmd.Parameters.Add(parameter);
+            }
+
+            // It is alawys closed, but we add this code anyways for robustness
+            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            if (ownsConnection)
+            {
+                conn.Open();
+            }
+
+            try
+            {
+                // Execute the query and return the result
+                int count = (int)await cmd.ExecuteScalarAsync();
+                return count;
+            }
+            finally
+            {
+                // Otherwise we might get an error
+                cmd.Parameters.Clear();
+
+                // This block is never entered, but we put anyways for robustness
                 if (ownsConnection)
                 {
-                    conn.Open();
-                }
-
-                try
-                {
-                    // Execute the query and return the result
-                    int count = (int)await cmd.ExecuteScalarAsync();
-                    return count;
-                }
-                finally
-                {
-                    // Otherwise we might get an error
-                    cmd.Parameters.Clear();
-
-                    // This block is never entered, but we put anyways for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
         }
@@ -355,10 +354,10 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
-            _orderby = _orderby ?? (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
+            _orderby ??= (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
                 throw new InvalidOperationException($"Query<{typeof(T).Name}> was executed without an orderby clause"));
 
             // Prepare all the query parameters
@@ -486,7 +485,7 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            expandExp = expandExp ?? ExpandExpression.RootSingleton;
+            expandExp ??= ExpandExpression.RootSingleton;
             {
                 var expandTree = PathTree.Build(typeof(T), expandExp.Select(e => e.Path));
                 foreach (var expandAtom in expandExp)
@@ -506,7 +505,7 @@ namespace BSharp.Data.Queries
                             var flatQuery = segments[previousFullPath];
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
                             {
-                                flatQuery.Expand = flatQuery.Expand ?? new ExpandExpression();
+                                flatQuery.Expand ??= new ExpandExpression();
                                 flatQuery.Expand.Add(new ExpandAtom { Path = subPath.SkipLast(1).ToArray() });
                             }
                         }
@@ -519,7 +518,7 @@ namespace BSharp.Data.Queries
                         if (subPath.Count > 0)
                         {
                             var flatQuery = segments[previousFullPath];
-                            flatQuery.Expand = flatQuery.Expand ?? new ExpandExpression();
+                            flatQuery.Expand ??= new ExpandExpression();
                             flatQuery.Expand.Add(new ExpandAtom
                             {
                                 Path = subPath.ToArray(),
@@ -627,7 +626,7 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
             if (_select != null || _expand != null)
@@ -718,54 +717,53 @@ UNION
 {sql}";
             }
 
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+
+            // Prepare the SQL command
+            cmd.CommandText = sql;
+            foreach (var parameter in ps)
             {
-                // Prepare the SQL command
-                cmd.CommandText = sql;
-                foreach (var parameter in ps)
+                cmd.Parameters.Add(parameter);
+            }
+
+            // This block is never entered, but we add it anyways for robustness sake
+            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            if (ownsConnection)
+            {
+                conn.Open();
+            }
+
+            try
+            {
+                var result = new List<IndexedId<TKey>>();
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    cmd.Parameters.Add(parameter);
+                    // Loop over the result from the database
+                    while (await reader.ReadAsync())
+                    {
+                        var dbId = reader["Id"];
+                        var dbIndex = reader.GetInt32(1);
+
+                        result.Add(new IndexedId<TKey>
+                        {
+                            Id = (TKey)dbId,
+                            Index = dbIndex
+                        });
+                    }
                 }
 
-                // This block is never entered, but we add it anyways for robustness sake
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+                return result;
+            }
+            finally
+            {
+                // Otherwise we might get an error
+                cmd.Parameters.Clear();
+
+                // This block is never entered but we add it here for robustness
                 if (ownsConnection)
                 {
-                    conn.Open();
-                }
-
-                try
-                {
-                    var result = new List<IndexedId<TKey>>();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        // Loop over the result from the database
-                        while (await reader.ReadAsync())
-                        {
-                            var dbId = reader["Id"];
-                            var dbIndex = reader.GetInt32(1);
-
-                            result.Add(new IndexedId<TKey>
-                            {
-                                Id = (TKey)dbId,
-                                Index = dbIndex
-                            });
-                        }
-                    }
-
-                    return result;
-                }
-                finally
-                {
-                    // Otherwise we might get an error
-                    cmd.Parameters.Clear();
-
-                    // This block is never entered but we add it here for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
         }
@@ -939,7 +937,7 @@ UNION
                         yield return (fullPath, subPath, currentTree.Type);
 
                         // Add the count to the offset and then zero the count
-                        offset = offset + count;
+                        offset += count;
                         count = 0;
                     }
                 }

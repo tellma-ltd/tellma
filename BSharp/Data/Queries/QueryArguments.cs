@@ -9,12 +9,12 @@ namespace BSharp.Data.Queries
     /// </summary>
     public class QueryArguments
     {
-        public QueryArguments(SqlConnection conn, Func<Type, SqlSource> sources, int userId, TimeZoneInfo userTimeZone, IStringLocalizer localizer)
+        public QueryArguments(SqlConnection conn, Func<Type, SqlSource> sources, int userId, DateTime? userToday, IStringLocalizer localizer)
         {
             Connection = conn ?? throw new ArgumentNullException(nameof(conn));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
             UserId = userId;
-            UserTimeZone = userTimeZone ?? throw new ArgumentNullException(nameof(userTimeZone));
+            UserToday = userToday;
             Localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
         }
 
@@ -24,7 +24,7 @@ namespace BSharp.Data.Queries
 
         public int UserId { get; }
 
-        public TimeZoneInfo UserTimeZone { get; }
+        public DateTime? UserToday { get; }
 
         public IStringLocalizer Localizer { get; set; }
     }

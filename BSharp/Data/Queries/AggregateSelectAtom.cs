@@ -54,7 +54,7 @@ namespace BSharp.Data.Queries
             // item comes in the general formats:
             // - "Customer/Name asc"
             // - "sum(Amount) desc"
-            // - "sum(day(Customer/DateOfBirth)) desc
+            // - "sum(Customer/DateOfBirth|month) desc
 
             if (string.IsNullOrWhiteSpace(atom))
             {
@@ -95,7 +95,7 @@ namespace BSharp.Data.Queries
             }
 
             // Extrat path, property and function
-            var (function, path, property) = QueryTools.ExtractFunctionPathAndProperty(atom);
+            var (path, property, function) = QueryTools.ExtractFunctionPathAndProperty(atom);
 
             // Return the result
             return new AggregateSelectAtom

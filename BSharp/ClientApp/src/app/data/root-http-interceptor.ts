@@ -96,6 +96,9 @@ export class RootHttpInterceptor implements HttpInterceptor {
       const headers: { [key: string]: string } = {};
       const params: { [key: string]: string } = {};
 
+      // Today
+      headers['X-Today'] = new Date().toISOString().split('T')[0];
+
       // tenant ID
       if (!!tenantId) {
         // This piece of logic does not really belong to the root module and is

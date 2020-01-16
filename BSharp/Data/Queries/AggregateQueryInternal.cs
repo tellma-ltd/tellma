@@ -37,8 +37,8 @@ namespace BSharp.Data.Queries
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
             SqlStatementParameters ps,
-            int currentUserId,
-            TimeZoneInfo currentUserTimeZone)
+            int userId,
+            DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
             var joinTree = PrepareJoin();
@@ -50,7 +50,7 @@ namespace BSharp.Data.Queries
             var groupbySql = selectClause.ToGroupBySql();
 
             // (3) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
 
             // (4) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -130,9 +130,9 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
-            string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, currentUserId, currentUserTimeZone) ?? "";
+            string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday) ?? "";
 
             // Add the "WHERE" keyword
             if (!string.IsNullOrEmpty(whereSql))

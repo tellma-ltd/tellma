@@ -195,47 +195,18 @@ namespace BSharp.Controllers
                 {
                     var defaultName = propDetails.ModelAttributes.PropertyAttributes
                         .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
-
-                    DisplayMetadata displayMetadata;
-
-                    switch (propDetails.Key.Name)
+                    var displayMetadata = propDetails.Key.Name switch
                     {
                         // All dynamically labelled properties
-                        case nameof(Agent.TaxIdentificationNumber):
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.TaxIdentificationNumberVisibility, defaultName);
-                            break;
-
-                        case nameof(Agent.StartDate):
-                            displayMetadata = LocalizeAgentProperty(
-                                e => e.StartDateVisibility, e => e.StartDateLabel, e => e.StartDateLabel2, e => e.StartDateLabel3, defaultName);
-                            break;
-
-                        case nameof(Agent.JobId):
-                      //  case nameof(Agent.Job): TODO
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.JobVisibility, defaultName);
-                            break;
-
-                        case nameof(Agent.BasicSalary):
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.BasicSalaryVisibility, defaultName);
-                            break;
-
-                        case nameof(Agent.TransportationAllowance):
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.TransportationAllowanceVisibility, defaultName);
-                            break;
-
-                        case nameof(Agent.OvertimeRate):
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.OvertimeRateVisibility, defaultName);
-                            break;
-
-                        case nameof(Agent.BankAccountNumber):
-                            displayMetadata = LocalizeAgentSpecificProperty(e => e.BankAccountNumberVisibility, defaultName);
-                            break;
-
-                        default:
-                            displayMetadata = null;
-                            break;
-                    }
-
+                        nameof(Agent.TaxIdentificationNumber) => LocalizeAgentSpecificProperty(e => e.TaxIdentificationNumberVisibility, defaultName),
+                        nameof(Agent.StartDate) => LocalizeAgentProperty(e => e.StartDateVisibility, e => e.StartDateLabel, e => e.StartDateLabel2, e => e.StartDateLabel3, defaultName),
+                        nameof(Agent.JobId) => LocalizeAgentSpecificProperty(e => e.JobVisibility, defaultName),//  case nameof(Agent.Job): TODO
+                        nameof(Agent.BasicSalary) => LocalizeAgentSpecificProperty(e => e.BasicSalaryVisibility, defaultName),
+                        nameof(Agent.TransportationAllowance) => LocalizeAgentSpecificProperty(e => e.TransportationAllowanceVisibility, defaultName),
+                        nameof(Agent.OvertimeRate) => LocalizeAgentSpecificProperty(e => e.OvertimeRateVisibility, defaultName),
+                        nameof(Agent.BankAccountNumber) => LocalizeAgentSpecificProperty(e => e.BankAccountNumberVisibility, defaultName),
+                        _ => null,
+                    };
                     propDetails.DisplayMetadata = displayMetadata;
                 }
             }
@@ -262,28 +233,14 @@ namespace BSharp.Controllers
                                 throw new InvalidOperationException("TenantInfo is not set");
                             }
 
-                            string result;
-
-                            switch (lang)
+                            var result = lang switch
                             {
-                                case Language.Primary:
-                                    result = _localizer[name] + PrimaryPostfix(info);
-                                    break;
-
-                                case Language.Secondary:
-                                    result = string.IsNullOrWhiteSpace(info.SecondaryLanguageId) ?
-                                    Constants.HIDDEN_FIELD : _localizer[name] + SecondaryPostfix(info);
-                                    break;
-
-                                case Language.Ternary:
-                                    result = string.IsNullOrWhiteSpace(info.TernaryLanguageId) ?
-                                    Constants.HIDDEN_FIELD : _localizer[name] + TernaryPostfix(info);
-                                    break;
-
-                                default:
-                                    result = _localizer[name];
-                                    break;
+                                Language.Primary => _localizer[name] + PrimaryPostfix(info),
+                                Language.Secondary => string.IsNullOrWhiteSpace(info.SecondaryLanguageId) ? Constants.HIDDEN_FIELD : _localizer[name] + SecondaryPostfix(info),
+                                Language.Ternary => string.IsNullOrWhiteSpace(info.TernaryLanguageId) ? Constants.HIDDEN_FIELD : _localizer[name] + TernaryPostfix(info),
+                                _ => _localizer[name],
                             };
+                            ;
 
                             return result;
                         }

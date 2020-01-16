@@ -88,8 +88,8 @@ namespace BSharp.Data.Queries
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
             SqlStatementParameters ps,
-            int currentUserId,
-            TimeZoneInfo currentUserTimeZone)
+            int userId,
+            DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
             var joinTree = PrepareJoin();
@@ -100,10 +100,10 @@ namespace BSharp.Data.Queries
             var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
-            string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
+            string principalQuerySql = PreparePrincipalQuery(sources, ps, userId, userToday);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
 
             // (5) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -139,10 +139,10 @@ namespace BSharp.Data.Queries
             Func<Type, string> sources,
             JoinTree joins,
             SqlStatementParameters ps,
-            int currentUserId,
-            TimeZoneInfo currentUserTimeZone)
+            int userId,
+            DateTime? userToday)
         {
-            return PrepareWhere(sources, joins, ps, currentUserId, currentUserTimeZone);
+            return PrepareWhere(sources, joins, ps, userId, userToday);
         }
 
         /// <summary>
@@ -165,8 +165,8 @@ namespace BSharp.Data.Queries
             SqlStatementParameters ps,
             bool isAncestorExpand,
             ArraySegment<string> pathToCollectionProperty,
-            int currentUserId,
-            TimeZoneInfo currentUserTimeZone)
+            int userId,
+            DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
             JoinTree joinTree = PrepareJoin(pathToCollectionProperty);
@@ -177,10 +177,10 @@ namespace BSharp.Data.Queries
             var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
-            string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
+            string principalQuerySql = PreparePrincipalQuery(sources, ps, userId, userToday);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
 
             // (5) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -240,7 +240,7 @@ namespace BSharp.Data.Queries
             HashSet<JoinTree> selectedJoins = new HashSet<JoinTree>();
 
             // For every expanded entity that has not been tainted by a select argument, we add all its properties to the list of selects
-            Expand = Expand ?? ExpandExpression.Empty;
+            Expand ??= ExpandExpression.Empty;
             foreach (var expand in Expand.Union(ExpandExpression.RootSingleton))
             {
                 string[] path = expand.Path;
@@ -417,13 +417,13 @@ namespace BSharp.Data.Queries
         /// If this query has a principal query, this method returns the SQL of the principal query in the form of an
         /// INNER JOIN to restrict the result to those entities that are related to the principal query
         /// </summary>
-        private string PreparePrincipalQuery(Func<Type, string> sources, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        private string PreparePrincipalQuery(Func<Type, string> sources, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
             string principalQuerySql = "";
             if (PrincipalQuery != null)
             {
                 // Get the inner sql and append 4 spaces before each line for aesthetics
-                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, IsAncestorExpand, PathToCollectionPropertyInPrincipal, currentUserId, currentUserTimeZone);
+                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, IsAncestorExpand, PathToCollectionPropertyInPrincipal, userId, userToday);
                 innerSql = QueryTools.IndentLines(innerSql);
 
                 if (IsAncestorExpand)
@@ -446,7 +446,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
             // WHERE is cached 
             if (_cachedWhere == null)
@@ -457,7 +457,7 @@ namespace BSharp.Data.Queries
 
                 if (Filter != null)
                 {
-                    whereFilter = QueryTools.FilterToSql(Filter, sources, ps, joinTree, currentUserId, currentUserTimeZone);
+                    whereFilter = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday);
                 }
 
                 if (Ids != null && Ids.Count() >= 1)

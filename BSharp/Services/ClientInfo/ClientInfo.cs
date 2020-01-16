@@ -9,8 +9,8 @@ namespace BSharp.Services.ClientInfo
     public class ClientInfo
     {
         /// <summary>
-        /// The time zone of the calling client
+        /// The current date at the client's time zone
         /// </summary>
-        public TimeZoneInfo TimeZone { get; set; }
+        public DateTime? Today { get; set; }
     }
 }

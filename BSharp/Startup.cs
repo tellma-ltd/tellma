@@ -247,12 +247,14 @@ namespace BSharp
                         builder.WithOrigins(webClientUri)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .WithExposedHeaders("x-image-id")
-                        .WithExposedHeaders("x-settings-version")
-                        .WithExposedHeaders("x-permissions-version")
-                        .WithExposedHeaders("x-definitions-version")
-                        .WithExposedHeaders("x-user-settings-version")
-                        .WithExposedHeaders("x-global-settings-version");
+                        .WithExposedHeaders(
+                            "x-image-id",
+                            "x-settings-version",
+                            "x-permissions-version",
+                            "x-definitions-version",
+                            "x-user-settings-version",
+                            "x-global-settings-version"
+                        );
                     });
                 }
 

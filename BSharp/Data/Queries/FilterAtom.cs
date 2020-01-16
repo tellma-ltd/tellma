@@ -55,7 +55,7 @@ namespace BSharp.Data.Queries
             else
             {
                 // (A) Parse the member access path (e.g. "Address/Street")
-                var (function, path, property) = QueryTools.ExtractFunctionPathAndProperty(pieces[0]);
+                var (path, property, function) = QueryTools.ExtractFunctionPathAndProperty(pieces[0]);
 
                 // (B) Parse the value (e.g. "'Huntington Rd.'")
                 var value = string.Join(" ", pieces.Skip(2));

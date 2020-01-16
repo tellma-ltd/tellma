@@ -197,9 +197,9 @@ namespace BSharp.Data
                 var sources = GetSources(tenantInfo, _localizer);
                 var userInfo = await GetUserInfoAsync();
                 var userId = userInfo.UserId ?? 0;
-                var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
+                var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, sources, userId, userTimeZone, _localizer);
+                return new QueryArguments(conn, sources, userId, userToday, _localizer);
             }
 
             return Factory;

@@ -397,7 +397,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // Normalized the path
       const path = dim.Path.split('/').map((e: string) => e.trim()).join('/');
       const fn = dim.Function;
-      const key = !!dim.Function ? `${dim.Function}(${path})` : path;
+      const key = !!dim.Function ? `${path}|${dim.Function}` : path;
 
       // Get the PropDescriptor describing the target property of the path
       let propDesc: PropDescriptor;
@@ -560,7 +560,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         });
       } else if (!!dimensionDef.Function) {
         // For properties with a function, apply that function on the path
-        addAtom(`${dimensionDef.Function}(${stringPath})`, orderDir);
+        addAtom(`${stringPath}|${dimensionDef.Function}`, orderDir);
       } else {
 
         // For non-nav properties and non date properties, simply add the path as is
@@ -707,7 +707,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (!!currentDimension.fn) {
-          fnPath = `${currentDimension.fn}(${fnPath})`;
+          fnPath = `${fnPath}|${currentDimension.fn}`;
         }
 
         // (2) Calculate the filter atom and add it

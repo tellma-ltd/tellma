@@ -72,8 +72,6 @@ namespace BSharp.Data.Queries
                     "(", ")",
                 });
 
-        private static readonly IEnumerable<string> _trimmedSymbols = _symbols.Select(e => e.Trim());
-
         /// <summary>
         /// Lexical Analysis: Turns the filter expression into a stream of recognized tokens
         /// </summary>
@@ -223,56 +221,9 @@ namespace BSharp.Data.Queries
                         break;
                 }
             }
-
-            string atomAcc = null; // When this is not null, we are inside an atom with a function applied 
-            FnAtomStage stage = FnAtomStage.None; //
             
-            foreach (var t in tokens)
+            foreach (var token in tokens)
             {
-                // The tokenizer will take a functioned atom that looks like this "day(Date) eq 1" and erroneously 
-                // split it into the following tokens ["day", "(", "Date", ")", "eq 1"] because of the parenthesis
-                // The logic below uses a state machine to put such atoms back together
-                var token = t;
-                if (stage == FnAtomStage.None)
-                {
-                    var loweredAndTrimmed = token?.ToLower()?.Trim();
-                    if (Functions.AllHash.Contains(loweredAndTrimmed))
-                    {
-                        stage = FnAtomStage.Function;
-                        atomAcc = loweredAndTrimmed;
-                        continue;
-                    }
-                } 
-                else if (stage == FnAtomStage.Function && token == "(")
-                {
-                    stage = FnAtomStage.LeftParen;
-                    atomAcc = $"{atomAcc}(";
-                    continue;
-                }
-                else if (stage == FnAtomStage.LeftParen && _trimmedSymbols.All(s => s != token))
-                {
-                    stage = FnAtomStage.Path;
-                    atomAcc = $"{atomAcc}{token}";
-                    continue;
-                }
-                else if (stage == FnAtomStage.Path && token == ")")
-                {
-                    stage = FnAtomStage.RightParen;
-                    atomAcc = $"{atomAcc})";
-                    continue;
-                }
-                else if (stage == FnAtomStage.RightParen && _trimmedSymbols.All(s => s != token))
-                {
-                    token = $"{atomAcc} {token}";
-
-                    stage = FnAtomStage.None;
-                    atomAcc = null;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Incorrectly formatted filter parameter at '{atomAcc}'");
-                }
-
                 // Shunting-yard implementation
                 if (token == "not")
                 {
@@ -352,11 +303,6 @@ namespace BSharp.Data.Queries
                     // It's a simple atom, add it the output
                     AddToOutput(token);
                 }
-            }
-
-            if (atomAcc != null)
-            {
-                throw new InvalidOperationException($"Incorrectly formatted filter parameter at '{atomAcc}'");
             }
 
             // Anything left in the operators queue, add it to the output
@@ -439,7 +385,5 @@ namespace BSharp.Data.Queries
         /// https://bit.ly/2Kp2Yvl
         /// </summary>
         private enum Associativity { Left, Right }
-
-        private enum FnAtomStage { None, Function, LeftParen, Path, RightParen };
     }
 }
