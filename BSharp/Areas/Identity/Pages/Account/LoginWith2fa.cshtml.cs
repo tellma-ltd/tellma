@@ -70,7 +70,7 @@ namespace BSharp.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            returnUrl = returnUrl ?? _config.WebClientUri ?? Url.Content("~/");
+            returnUrl ??= _config.WebClientUri ?? Url.Content("~/");
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)

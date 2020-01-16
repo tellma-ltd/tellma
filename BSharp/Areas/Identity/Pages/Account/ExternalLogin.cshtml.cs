@@ -56,7 +56,7 @@ namespace BSharp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            returnUrl = returnUrl ?? _config.WebClientUri ?? Url.Content("~/");
+            returnUrl ??= _config.WebClientUri ?? Url.Content("~/");
             if (remoteError != null)
             {
                 ErrorMessage = _localizer["Error_ErrorFromExternalProvider0", remoteError];

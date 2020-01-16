@@ -65,7 +65,7 @@ namespace BSharp.Data
         /// this method makes it possible to conncet to a custom connection string instead, 
         /// this is useful when connecting to multiple tenants at the same time to do aggregate reporting for example
         /// </summary>
-        public async Task InitConnectionAsync(string connectionString)
+        public async Task InitConnectionAsync(string connectionString, bool setLastActive)
         {
             if (_conn != null)
             {
@@ -81,7 +81,7 @@ namespace BSharp.Data
             var culture = CultureInfo.CurrentUICulture.Name;
             var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
-            (_userInfo, _tenantInfo) = await OnConnect(externalUserId, externalEmail, culture, neutralCulture);
+            (_userInfo, _tenantInfo) = await OnConnect(externalUserId, externalEmail, culture, neutralCulture, setLastActive);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace BSharp.Data
             if (_conn == null)
             {
                 string connString = _shardResolver.GetConnectionString();
-                await InitConnectionAsync(connString);
+                await InitConnectionAsync(connString, setLastActive: true);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -308,7 +308,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
         #region Stored Procedures
 
-        private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
+        private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, bool setLastActive)
         {
             UserInfo userInfo = null;
             TenantInfo tenantInfo = null;
@@ -320,6 +320,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.Parameters.Add("@UserEmail", userEmail);
                 cmd.Parameters.Add("@Culture", culture);
                 cmd.Parameters.Add("@NeutralCulture", neutralCulture);
+                cmd.Parameters.Add("@SetLastActive", setLastActive);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;

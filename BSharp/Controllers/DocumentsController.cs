@@ -78,24 +78,22 @@ namespace BSharp.Controllers
                 // await CheckActionPermissions("IsActive", idsArray);
 
                 // Execute and return
-                using (var trx = ControllerUtilities.CreateTransaction())
+                using var trx = ControllerUtilities.CreateTransaction();
+                // TODO: Validate assign
+
+                await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
+
+                if (args.ReturnEntities ?? false)
                 {
-                    // TODO: Validate assign
+                    var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
 
-                    await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
-
-                    if (args.ReturnEntities ?? false)
-                    {
-                        var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
-
-                        trx.Complete();
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        trx.Complete();
-                        return Ok();
-                    }
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
                 }
             }
             , _logger);
@@ -115,31 +113,29 @@ namespace BSharp.Controllers
                 // await CheckActionPermissions("IsActive", idsArray);
 
                 // Execute and return
-                using (var trx = ControllerUtilities.CreateTransaction())
+                using var trx = ControllerUtilities.CreateTransaction();
+                // TODO: Validate sign
+
+                var documentIds = await _repo.Lines__Sign(
+                    ids,
+                    args.ToState,
+                    args.ReasonId,
+                    args.ReasonDetails,
+                    args.OnBehalfOfUserId,
+                    args.RoleId,
+                    args.SignedAt ?? DateTimeOffset.Now);
+
+                if (args.ReturnEntities ?? false)
                 {
-                    // TODO: Validate sign
+                    var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
 
-                    var documentIds = await _repo.Lines__Sign(
-                        ids, 
-                        args.ToState, 
-                        args.ReasonId, 
-                        args.ReasonDetails, 
-                        args.OnBehalfOfUserId, 
-                        args.RoleId, 
-                        args.SignedAt ?? DateTimeOffset.Now);
-
-                    if (args.ReturnEntities ?? false)
-                    {
-                        var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
-
-                        trx.Complete();
-                        return Ok(response);
-                    }
-                    else
-                    {
-                        trx.Complete();
-                        return Ok();
-                    }
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
                 }
             }
             , _logger);
@@ -172,18 +168,18 @@ namespace BSharp.Controllers
             entities.ForEach(doc =>
             {
                 // Document defaults
-                doc.MemoIsCommon = doc.MemoIsCommon ?? true;
-                doc.Lines = doc.Lines ?? new List<LineForSave>();
+                doc.MemoIsCommon ??= true;
+                doc.Lines ??= new List<LineForSave>();
 
                 doc.Lines.ForEach(line =>
                 {
                     // Line defaults
-                    line.Entries = line.Entries ?? new List<EntryForSave>();
+                    line.Entries ??= new List<EntryForSave>();
 
                     line.Entries.ForEach(entry =>
                     {
                         // Entry defaults
-                        entry.EntryNumber = entry.EntryNumber ?? 0;
+                        entry.EntryNumber ??= 0;
                     });
                 });
             });

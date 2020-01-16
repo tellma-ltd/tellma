@@ -2,7 +2,8 @@
 	@Culture NVARCHAR(50),
 	@NeutralCulture NVARCHAR(50),
 	@ExternalUserId NVARCHAR(255),
-	@UserEmail NVARCHAR(255)
+	@UserEmail NVARCHAR(255),
+	@SetLastActive BIT = 1
 AS
 BEGIN
     -- Set the global values of the session context
@@ -46,7 +47,8 @@ BEGIN
 	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
 
     -- Set LastAccess (Works only when @UserId IS NOT NULL)
-    UPDATE [dbo].[Users] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
+    IF (@SetLastActive = 1)
+        UPDATE [dbo].[Users] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
 
     -- Get settings
     SELECT 

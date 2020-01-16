@@ -70,21 +70,20 @@ namespace BSharp.Controllers
                 try
                 {
                     var connString = _shardResolver.GetConnectionString(databaseId);
-                    using (var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null))
+                    using var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null);
+
+                    await appRepo.InitConnectionAsync(connString, setLastActive: false);
+                    var userInfo = await appRepo.GetUserInfoAsync();
+                    if (userInfo.UserId != null)
                     {
-                        await appRepo.InitConnectionAsync(connString);
-                        var userInfo = await appRepo.GetUserInfoAsync();
-                        if (userInfo.UserId != null)
+                        var tenantInfo = await appRepo.GetTenantInfoAsync();
+                        result.Add(new UserCompany
                         {
-                            var tenantInfo = await appRepo.GetTenantInfoAsync();
-                            result.Add(new UserCompany
-                            {
-                                Id = databaseId,
-                                Name = tenantInfo.ShortCompanyName,
-                                Name2 = tenantInfo.ShortCompanyName2,
-                                Name3 = tenantInfo.ShortCompanyName3
-                            });
-                        }
+                            Id = databaseId,
+                            Name = tenantInfo.ShortCompanyName,
+                            Name2 = tenantInfo.ShortCompanyName2,
+                            Name3 = tenantInfo.ShortCompanyName3
+                        });
                     }
                 }
                 catch(Exception ex)

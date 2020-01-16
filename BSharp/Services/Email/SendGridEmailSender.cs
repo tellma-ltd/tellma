@@ -23,7 +23,7 @@ namespace BSharp.Services.Email
         public async Task SendEmailBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
         {
             string fromName = "BSharp ERP";
-            fromEmail = fromEmail ?? _config.DefaultFromEmail;
+            fromEmail ??= _config.DefaultFromEmail;
             string sendGridApiKey = _config.ApiKey;
 
             var client = new SendGridClient(sendGridApiKey);

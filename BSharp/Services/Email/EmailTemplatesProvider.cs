@@ -25,7 +25,7 @@ namespace BSharp.Services.Email
 
         public string MakeInvitationEmail(string nameOfRecipient, string nameOfInvitor, int validityInDays, string userId, string callbackUrl, CultureInfo culture = null)
         {
-            culture = culture ?? CultureInfo.CurrentUICulture;
+            culture ??= CultureInfo.CurrentUICulture;
             var localizer = _localizer.WithCulture(culture);
             string greeting = localizer["InvitationEmailGreeting0", nameOfRecipient];
             string appName = localizer["AppName"];
@@ -57,7 +57,7 @@ namespace BSharp.Services.Email
 
         public string MakeEmail(string mainContent, CultureInfo culture = null)
         {
-            culture = culture ?? CultureInfo.CurrentUICulture;
+            culture ??= CultureInfo.CurrentUICulture;
             var localizer = _localizer.WithCulture(culture);
 
             var appName = localizer["AppName"];

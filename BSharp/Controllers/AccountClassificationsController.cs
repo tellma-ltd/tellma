@@ -70,22 +70,20 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsDeprecated", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.AccountClassifications__Deprecate(ids, isDeprecated);
+
+            if (returnEntities)
             {
-                await _repo.AccountClassifications__Deprecate(ids, isDeprecated);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
 
