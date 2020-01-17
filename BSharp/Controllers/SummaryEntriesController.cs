@@ -66,7 +66,7 @@ namespace BSharp.Controllers
 
         protected override OrderByExpression DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(SummaryEntry.Id));
+            return OrderByExpression.Parse(nameof(SummaryEntry.Name));
         }
     }
 }
