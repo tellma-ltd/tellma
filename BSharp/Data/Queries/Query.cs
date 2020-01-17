@@ -34,6 +34,7 @@ namespace BSharp.Data.Queries
         private string _fromSql;
         private string _preSql;
         private SqlParameter[] _parameters;
+        private List<(string ParamName, object Value)> _additionalParameters;
 
         /// <summary>
         /// Creates a new instance of <see cref="Query"/>
@@ -63,6 +64,7 @@ namespace BSharp.Data.Queries
                 _fromSql = _fromSql,
                 _preSql = _preSql,
                 _parameters = _parameters?.ToArray(),
+                _additionalParameters = _additionalParameters?.ToList()
             };
 
             return clone;
@@ -241,6 +243,23 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
+        /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
+        /// must be supplied this method must be supplied through this method before loading any data
+        /// </summary>
+        public Query<T> AdditionalParameters(params (string ParamName, object Value)[] parameters)
+        {
+            var clone = Clone();
+            if (clone._additionalParameters == null)
+            {
+                clone._additionalParameters = new List<(string ParamName, object Value)>();
+            }
+
+            clone._additionalParameters.AddRange(parameters);           
+
+            return clone;
+        }
+
+        /// <summary>
         /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>
         /// </summary>
         public async Task<int> CountAsync()
@@ -286,11 +305,20 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Load the statement
-            var sql = flatQuery.PrepareStatement(rawSources, ps, userId, userToday).Sql;
+            var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -549,12 +577,21 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Prepare the SqlStatements
             List<SqlStatement> statements = segments.Values
-                .Select(q => q.PrepareStatement(rawSources, ps, userId, userTimeZone))
+                .Select(q => q.PrepareStatement(sources, ps, userId, userTimeZone))
                 .ToList(); // The order matters for the Entity loader
 
             // Load the entities
@@ -665,11 +702,20 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Use the internal query to create the SQL
-            var sourceSql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
+            var sourceSql = flatQuery.PrepareStatement(sources, ps, userId, userTimeZone).Sql;
 
             List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
             foreach (var criteriaIndex in criteriaIndexes)
@@ -688,8 +734,8 @@ namespace BSharp.Data.Queries
                 };
 
                 JoinTree joinTree = criteriaQuery.JoinSql();
-                string joinSql = joinTree.GetSql(rawSources, fromSql: $@"({sourceSql})");
-                string whereSql = criteriaQuery.WhereSql(rawSources, joinTree, ps, userId, userTimeZone);
+                string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
+                string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();

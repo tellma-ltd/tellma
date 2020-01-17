@@ -193,12 +193,11 @@ namespace BSharp.Data
             {
                 var conn = await GetConnectionAsync();
                 var tenantInfo = await GetTenantInfoAsync();
-                var sources = GetSources(tenantInfo, _localizer);
                 var userInfo = await GetUserInfoAsync();
                 var userId = userInfo.UserId ?? 0;
                 var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, sources, userId, userToday, _localizer);
+                return new QueryArguments(conn, Sources, userId, userToday, _localizer);
             }
 
             return Factory;
@@ -208,99 +207,102 @@ namespace BSharp.Data
         /// Returns a function that maps every <see cref="Entity"/> type in <see cref="ApplicationRepository"/> 
         /// to the default SQL query that retrieves it + some optional parameters
         /// </summary>
-        private static Func<Type, SqlSource> GetSources(TenantInfo info, IStringLocalizer localizer)
+        private static string Sources(Type t)
         {
-            return (t) =>
+
+            switch (t.Name)
             {
-                switch (t.Name)
-                {
-                    case nameof(Entities.Settings):
-                        return new SqlSource("[dbo].[Settings]");
+                case nameof(Entities.Settings):
+                    return "[dbo].[Settings]";
 
-                    case nameof(User):
-                        return new SqlSource("[map].[Users]()");
+                case nameof(User):
+                    return "[map].[Users]()";
 
-                    case nameof(Agent):
-                        return new SqlSource("[map].[Agents]()");
+                case nameof(Agent):
+                    return "[map].[Agents]()";
 
-                    case nameof(MeasurementUnit):
-                        return new SqlSource("[map].[MeasurementUnits]()");
+                case nameof(MeasurementUnit):
+                    return "[map].[MeasurementUnits]()";
 
-                    case nameof(Permission):
-                        return new SqlSource("[dbo].[Permissions]");
+                case nameof(Permission):
+                    return "[dbo].[Permissions]";
 
-                    case nameof(RoleMembership):
-                        return new SqlSource("[dbo].[RoleMemberships]");
+                case nameof(RoleMembership):
+                    return "[dbo].[RoleMemberships]";
 
-                    case nameof(Role):
-                        return new SqlSource("[dbo].[Roles]");
+                case nameof(Role):
+                    return "[dbo].[Roles]";
 
-                    case nameof(ResourceClassification):
-                        return new SqlSource("[map].[ResourceClassifications]()");
+                case nameof(ResourceClassification):
+                    return "[map].[ResourceClassifications]()";
 
-                    case nameof(Lookup):
-                        return new SqlSource("[map].[Lookups]()");
+                case nameof(Lookup):
+                    return "[map].[Lookups]()";
 
-                    case nameof(Currency):
-                        return new SqlSource("[map].[Currencies]()");
+                case nameof(Currency):
+                    return "[map].[Currencies]()";
 
-                    case nameof(Resource):
-                        return new SqlSource("[map].[Resources]()");
+                case nameof(Resource):
+                    return "[map].[Resources]()";
 
-                    case nameof(AccountClassification):
-                        return new SqlSource("[map].[AccountClassifications]()");
+                case nameof(AccountClassification):
+                    return "[map].[AccountClassifications]()";
 
-                    case nameof(AccountType):
-                        return new SqlSource("[map].[AccountTypes]()");
+                case nameof(AccountType):
+                    return "[map].[AccountTypes]()";
 
-                    case nameof(Account):
-                        return new SqlSource("[map].[Accounts]()");
+                case nameof(Account):
+                    return "[map].[Accounts]()";
 
-                    case nameof(LookupDefinition):
-                        return new SqlSource("[map].[LookupDefinitions]()");
+                case nameof(LookupDefinition):
+                    return "[map].[LookupDefinitions]()";
 
-                    case nameof(ResponsibilityCenter):
-                        return new SqlSource("[map].[ResponsibilityCenters]()");
+                case nameof(ResponsibilityCenter):
+                    return "[map].[ResponsibilityCenters]()";
 
-                    case nameof(EntryClassification):
-                        return new SqlSource("[map].[EntryClassifications]()");
+                case nameof(EntryClassification):
+                    return "[map].[EntryClassifications]()";
 
-                    case nameof(Document):
-                        return new SqlSource("[map].[Documents]()");
+                case nameof(Document):
+                    return "[map].[Documents]()";
 
-                    case nameof(Line):
-                        return new SqlSource("[map].[Lines]()");
+                case nameof(Line):
+                    return "[map].[Lines]()";
 
-                    case nameof(Entry):
-                        return new SqlSource("[map].[Entries]()");
+                case nameof(Entry):
+                    return "[map].[Entries]()";
 
-                    case nameof(DocumentSignature):
-                        return new SqlSource("[map].[DocumentSignatures]()");
+                case nameof(DocumentSignature):
+                    return "[map].[DocumentSignatures]()";
 
-                    case nameof(DocumentAssignment):
-                        return new SqlSource("[map].[DocumentAssignmentsHistory]()");
+                case nameof(DocumentAssignment):
+                    return "[map].[DocumentAssignmentsHistory]()";
 
-                    #region _Temp
+                // Parametered fact tables
+                case nameof(SummaryEntry):
+                    return "[map].[SummaryEntries](NULL, NULL, NULL, @FromDate, @ToDate, NULL, NULL, NULL)";
 
-                    case nameof(VoucherBooklet):
-                        return new SqlSource("[dbo].[VoucherBooklets]");
+                #region _Temp
 
-                    case nameof(IfrsAccountClassification):
-                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
+                case nameof(VoucherBooklet):
+                    return "[dbo].[VoucherBooklets]";
+
+                case nameof(IfrsAccountClassification):
+                    return @"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
 	(SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
     (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount],
     (SELECT [Id] FROM [dbo].[IfrsAccountClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
-FROM [dbo].[IfrsAccountClassifications] AS [Q])");
+FROM [dbo].[IfrsAccountClassifications] AS [Q])";
 
-                    case nameof(Location):
-                        return new SqlSource("[dbo].[Locations]");
+                case nameof(Location):
+                    return "[dbo].[Locations]";
 
-                        #endregion
+                    #endregion
 
-                }
+            }
 
-                throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries");
-            };
+            throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries");
+
         }
 
         #endregion

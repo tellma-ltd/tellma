@@ -577,30 +577,5 @@ namespace BSharp.Data.Queries
                 throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTimeOffset");
             }
         }
-
-        /// <summary>
-        /// Changes a function mapping a <see cref="Type"/> to <see cref="SqlSource"/> into a function mapping a <see cref="Type"/> to raw SQL strings.
-        /// The <see cref="SqlSource.Parameters"/> are automatically added to the <see cref="SqlStatementParameters"/> inside the function whenever a 
-        /// source is requested
-        /// </summary>
-        public static Func<Type, string> RawSources(Func<Type, SqlSource> sources, SqlStatementParameters ps)
-        {
-            // This hashset ensures that parameters to request a certain type are only added once
-            var aleadyRequested = new HashSet<Type>();
-            return (t) =>
-            {
-                var source = sources(t);
-                if (aleadyRequested.Add(t) && source.Parameters != null)
-                {
-                    foreach (var p in source.Parameters)
-                    {
-                        ps.AddParameter(p);
-                    }
-                }
-
-                // Return the raw SQL script
-                return source.SQL;
-            };
-        }
     }
 }

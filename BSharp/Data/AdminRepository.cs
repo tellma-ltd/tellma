@@ -127,16 +127,16 @@ namespace BSharp.Data
             return Factory;
         }
 
-        private static Func<Type, SqlSource> GetSources()
+        private static Func<Type, string> GetSources()
         {
             return (t) =>
             {
                 return t.Name switch
                 {
-                    nameof(AdminUser) => new SqlSource("[dbo].[GlobalUsers]"),
-                    nameof(SqlDatabase) => new SqlSource("[dbo].[SqlDatabases]"),
-                    nameof(SqlServer) => new SqlSource("[dbo].[SqlServers]"),
-                    nameof(GlobalUserMembership) => new SqlSource("[dbo].[GlobalUserMemberships]"),
+                    nameof(AdminUser) => "[dbo].[GlobalUsers]",
+                    nameof(SqlDatabase) => "[dbo].[SqlDatabases]",
+                    nameof(SqlServer) => "[dbo].[SqlServers]",
+                    nameof(GlobalUserMembership) => "[dbo].[GlobalUserMemberships]",
                     _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries"),
                 };
             };

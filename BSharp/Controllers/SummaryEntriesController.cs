@@ -6,6 +6,7 @@ using BSharp.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -46,27 +47,53 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            return _repo;
+            return new ParameteredRepository<SummaryEntry>(_repo,
+                ("@FromDate", GetDate("FromDate", true)),
+                ("@ToDate", GetDate("ToDate", true))
+            );
+        }
+
+        private DateTime? GetDate(string key, bool isRequired)
+        {
+            DateTime? date = null;
+            if (Request.Query.ContainsKey(key))
+            {
+                string dateString = Request.Query[key].FirstOrDefault();
+                try
+                {
+                    date = DateTime.Parse(dateString);
+                }
+                catch
+                {
+                    throw new BadRequestException($"Failed to convert {key}: '{dateString}' to a valid DateTime value");
+                }
+            }
+            else if (isRequired)
+            {
+                throw new BadRequestException($"The parameter {key} is required");
+            }
+
+            return date;
         }
 
         protected override Query<SummaryEntry> Search(Query<SummaryEntry> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            string search = args.Search;
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
+            //string search = args.Search;
+            //if (!string.IsNullOrWhiteSpace(search))
+            //{
+            //    search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(SummaryEntry.Name);
+            //    var name = nameof(SummaryEntry.Name);
 
-                query = query.Filter($"{name} {Ops.contains} '{search}'");
-            }
+            //    query = query.Filter($"{name} {Ops.contains} '{search}'");
+            //}
 
             return query;
         }
 
         protected override OrderByExpression DefaultOrderBy()
         {
-            return OrderByExpression.Parse(nameof(SummaryEntry.Name));
+            return OrderByExpression.Parse(nameof(SummaryEntry.AccountId));
         }
     }
 }

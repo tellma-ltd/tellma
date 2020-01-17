@@ -9,7 +9,7 @@ namespace BSharp.Data.Queries
     /// </summary>
     public class QueryArguments
     {
-        public QueryArguments(SqlConnection conn, Func<Type, SqlSource> sources, int userId, DateTime? userToday, IStringLocalizer localizer)
+        public QueryArguments(SqlConnection conn, Func<Type, string> sources, int userId, DateTime? userToday, IStringLocalizer localizer)
         {
             Connection = conn ?? throw new ArgumentNullException(nameof(conn));
             Sources = sources ?? throw new ArgumentNullException(nameof(sources));
@@ -20,7 +20,7 @@ namespace BSharp.Data.Queries
 
         public SqlConnection Connection { get; }
 
-        public Func<Type, SqlSource> Sources { get; }
+        public Func<Type, string> Sources { get; }
 
         public int UserId { get; }
 
