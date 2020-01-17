@@ -23,7 +23,7 @@ import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
-import { Aggregation, ReportDefinition, PathFunction } from './entities/report-definition';
+import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
@@ -425,7 +425,7 @@ export interface MeasureInfo {
 export interface DimensionInfo {
   key: string;
   path: string;
-  fn: PathFunction;
+  modifier: Modifier;
   propDesc: PropDescriptor;
 
   /**
@@ -442,7 +442,7 @@ export interface DimensionInfo {
 export class DimensionCell {
   type: 'dimension';
   path: string;
-  fn: PathFunction;
+  modifier: Modifier;
   value: any;
   valueId: any;
   propDesc: PropDescriptor;
@@ -465,7 +465,7 @@ export class ChartDimensionCell {
   constructor(
     public display: string,
     public path: string,
-    public fn: PathFunction,
+    public modifier: Modifier,
     public valueId: any,
     public propDesc: PropDescriptor,
     public entityDesc: EntityDescriptor,

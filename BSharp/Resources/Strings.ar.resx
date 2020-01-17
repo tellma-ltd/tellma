@@ -736,27 +736,6 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>نسيت كلمة المرور؟</value>
   </data>
-  <data name="Function_day" xml:space="preserve">
-    <value>يوم الشهر</value>
-  </data>
-  <data name="Function_dayofyear" xml:space="preserve">
-    <value>يوم السنة</value>
-  </data>
-  <data name="Function_month" xml:space="preserve">
-    <value>الشهر</value>
-  </data>
-  <data name="Function_quarter" xml:space="preserve">
-    <value>الربع</value>
-  </data>
-  <data name="Function_week" xml:space="preserve">
-    <value>الأسبوع</value>
-  </data>
-  <data name="Function_weekday" xml:space="preserve">
-    <value>يوم الأسبوع</value>
-  </data>
-  <data name="Function_year" xml:space="preserve">
-    <value>السنة</value>
-  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>توليد أكواد الاسترداد</value>
   </data>
@@ -942,6 +921,27 @@
   </data>
   <data name="ModifiedBy" xml:space="preserve">
     <value>آخر تعديل من قبل</value>
+  </data>
+  <data name="Modifier_day" xml:space="preserve">
+    <value>يوم الشهر</value>
+  </data>
+  <data name="Modifier_dayofyear" xml:space="preserve">
+    <value>يوم السنة</value>
+  </data>
+  <data name="Modifier_month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="Modifier_quarter" xml:space="preserve">
+    <value>الربع</value>
+  </data>
+  <data name="Modifier_week" xml:space="preserve">
+    <value>الأسبوع</value>
+  </data>
+  <data name="Modifier_weekday" xml:space="preserve">
+    <value>يوم الأسبوع</value>
+  </data>
+  <data name="Modifier_year" xml:space="preserve">
+    <value>السنة</value>
   </data>
   <data name="MU_BaseAmount" xml:space="preserve">
     <value>الكمية بالوحدة الأساسية</value>
@@ -1207,9 +1207,6 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>المصفاة</value>
   </data>
-  <data name="ReportDefinition_Function" xml:space="preserve">
-    <value>الدالة</value>
-  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>
@@ -1218,6 +1215,9 @@
   </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>القيم</value>
+  </data>
+  <data name="ReportDefinition_Modifier" xml:space="preserve">
+    <value>المغير</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>الترتيب</value>

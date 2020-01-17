@@ -22,9 +22,9 @@ namespace BSharp.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
-        /// An optional function applied to the path, must be one of the <see cref="Functions"/>
+        /// An optional modifier applied to the path, must be one of the <see cref="Modifiers"/>
         /// </summary>
-        public string Function { get; set; }
+        public string Modifier { get; set; }
 
         /// <summary>
         /// The binary operator of the atom, e.g. "eq" for equals or "gt" for greather than, the complete list of operators can be found in <see cref="Ops"/>
@@ -55,7 +55,7 @@ namespace BSharp.Data.Queries
             else
             {
                 // (A) Parse the member access path (e.g. "Address/Street")
-                var (path, property, function) = QueryTools.ExtractFunctionPathAndProperty(pieces[0]);
+                var (path, property, modifier) = QueryTools.ExtractPathPropertyAndModifier(pieces[0]);
 
                 // (B) Parse the value (e.g. "'Huntington Rd.'")
                 var value = string.Join(" ", pieces.Skip(2));
@@ -67,7 +67,7 @@ namespace BSharp.Data.Queries
                 {
                     Path = path,
                     Property = property,
-                    Function = function,
+                    Modifier = modifier,
                     Op = op,
                     Value = value
                 };

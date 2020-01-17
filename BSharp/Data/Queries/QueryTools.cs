@@ -30,25 +30,25 @@ namespace BSharp.Data.Queries
 
         /// <summary>
         /// Takes a string in the form of "A/B/C|month" and returns the path ["A", "B"], the property "C"
-        /// and the function "month" (as long as it is one of the functions in <see cref="Functions"/>
+        /// and the modifier "month" (as long as it is one of the modifiers in <see cref="Modifiers"/>
         /// trimming all the strings  along the way
         /// </summary>
-        public static (string[] Path, string Property, string Function) ExtractFunctionPathAndProperty(string atom)
+        public static (string[] Path, string Property, string Modifier) ExtractPathPropertyAndModifier(string atom)
         {
             var pieces = atom.Split('|');
 
-            // Get the function
-            string function = null;
+            // Get the modifier
+            string modifier = null;
             if (pieces.Length > 1)
             {
-                function = string.Join("|", pieces.Skip(1)).Trim();
+                modifier = string.Join("|", pieces.Skip(1)).Trim();
             }
 
             // Get the path and property
             string pathAndProp = pieces[0].Trim();
             var (path, property) = ExtractPathAndProperty(pathAndProp);
 
-            return (path, property, function);
+            return (path, property, modifier);
         }
 
         private static readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _cacheGetMappedProperties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
@@ -213,16 +213,16 @@ namespace BSharp.Data.Queries
 
                     // The type of the first operand
                     var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                    if (!string.IsNullOrWhiteSpace(atom.Function))
+                    if (!string.IsNullOrWhiteSpace(atom.Modifier))
                     {
-                        // So far all functions are only applicable for date properties
+                        // So far all modifiers are only applicable for date properties
                         if (propType != typeof(DateTime) && propType != typeof(DateTimeOffset))
                         {
                             // Developer mistake
-                            throw new InvalidOperationException($"The function {atom.Function} is not valid for property {propName} since it is not of type DateTime or DateTimeOffset");
+                            throw new InvalidOperationException($"The modifier {atom.Modifier} is not valid for property {propName} since it is not of type DateTime or DateTimeOffset");
                         }
 
-                        // So far all functions are date functions that return INT
+                        // So far all modifiers are date modifiers that return INT
                         propType = typeof(int);
                     }
 
@@ -349,7 +349,7 @@ namespace BSharp.Data.Queries
                     string paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
 
                     // (D) Prepare the SQL property
-                    string propSQL = AtomSql(symbol, atom.Property, null, atom.Function);
+                    string propSQL = AtomSql(symbol, atom.Property, null, atom.Modifier);
 
                     // (E) parse the operator (e.g. "eq")
                     switch (atom.Op?.ToLower() ?? "")
@@ -502,16 +502,16 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Creates a result column using a symbol, a property name and an aggregation like this Aggregation([Symbol].[PropertyName])
         /// </summary>
-        public static string AtomSql(string symbol, string propName, string aggregation, string function)
+        public static string AtomSql(string symbol, string propName, string aggregation, string modifier)
         {
             var result = $"[{symbol}].[{propName}]";
 
-            if (!string.IsNullOrWhiteSpace(function))
+            if (!string.IsNullOrWhiteSpace(modifier))
             {
-                // So far all functions are date parts and have no parameters, in the future this may change
-                var lowerCaseFunction = function.ToLower();
-                var sqlFunction = Functions.All.FirstOrDefault(fn => lowerCaseFunction.Equals(fn)) ??
-                    throw new InvalidOperationException($"Unrecognized function '{function}'");
+                // So far all modifiers are date parts and have no parameters, in the future this may change
+                var lowerCaseFunction = modifier.ToLower();
+                var sqlFunction = Modifiers.All.FirstOrDefault(fn => lowerCaseFunction.Equals(fn)) ??
+                    throw new InvalidOperationException($"Unrecognized modifier '{modifier}'");
 
                 result = $"DATEPART({sqlFunction}, {result})";
             }
@@ -536,9 +536,9 @@ namespace BSharp.Data.Queries
 
         private static void EnsureNullFunction(FilterAtom atom)
         {
-            if (!string.IsNullOrWhiteSpace(atom.Function))
+            if (!string.IsNullOrWhiteSpace(atom.Modifier))
             {
-                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with a date function such as '{atom.Function}'");
+                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with a date modifier such as '{atom.Modifier}'");
             }
         }
 

@@ -169,7 +169,6 @@ namespace BSharp.Data
         public Query<User> Users => Query<User>();
         public Query<Agent> Agents => Query<Agent>();
 
-
         /// <summary>
         /// Creates and returns a new <see cref="Queries.Query{T}"/>
         /// </summary>
@@ -300,7 +299,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 }
 
-                throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(ApplicationRepository)} queries");
+                throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries");
             };
         }
 

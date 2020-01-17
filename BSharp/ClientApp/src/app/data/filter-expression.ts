@@ -50,7 +50,7 @@ export class FilterAtom extends FilterExpressionBase {
     type: 'atom';
     path: string[];
     property: string;
-    function: string;
+    modifier: string;
     op: string;
     value: string;
 
@@ -78,7 +78,7 @@ export class FilterAtom extends FilterExpressionBase {
                 type: 'atom',
                 path,
                 property,
-                function: fn,
+                modifier: fn,
                 op,
                 value
             };
@@ -162,7 +162,7 @@ export class FilterTools {
             }
             case 'atom': {
                 const stringPath = exp.path.concat([exp.property]).join('/');
-                const functionedStringPath = !!exp.function ? `${stringPath}|${exp.function}` : stringPath;
+                const functionedStringPath = !!exp.modifier ? `${stringPath}|${exp.modifier}` : stringPath;
                 return `${functionedStringPath} ${exp.op} ${exp.value}`;
             }
         }
@@ -382,4 +382,4 @@ export class FilterTools {
 }
 
 const symbols = [' and ', ' or ', 'not', '(', ')'];
-export const pathFunctions = [ 'year', 'quarter', 'month', 'dayofyear', 'day', 'week', 'weekday' ];
+export const modifiers = [ 'year', 'quarter', 'month', 'dayofyear', 'day', 'week', 'weekday' ];

@@ -103,8 +103,8 @@ namespace BSharp.Data.Queries
         /// </summary>
         private SqlSelectGroupByClause PrepareSelect(JoinTree joinTree)
         {
-            var selects = new HashSet<(string Symbol, string PropName, string Aggregate, string Function)>(); // To ensure uniqueness
-            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, string Function)>();
+            var selects = new HashSet<(string Symbol, string PropName, string Aggregate, string Modifier)>(); // To ensure uniqueness
+            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, string Modifier)>();
 
             foreach (var select in Select)
             {
@@ -114,12 +114,12 @@ namespace BSharp.Data.Queries
                 var symbol = join.Symbol;
                 var propName = select.Property; // Can be null
                 var aggregation = select.Aggregation;
-                var function = select.Function;
+                var modifier = select.Modifier;
 
                 // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
-                if (selects.Add((symbol, propName, aggregation, function)))
+                if (selects.Add((symbol, propName, aggregation, modifier)))
                 {
-                    columns.Add((symbol, path, propName, aggregation, function));
+                    columns.Add((symbol, path, propName, aggregation, modifier));
                 }
             }
 
@@ -165,7 +165,7 @@ namespace BSharp.Data.Queries
                     throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
                 }
                 var symbol = join.Symbol;
-                string orderby = QueryTools.AtomSql(symbol, atom.Property, atom.Aggregation, atom.Function) + $" {atom.OrderDirection.ToUpper()}";
+                string orderby = QueryTools.AtomSql(symbol, atom.Property, atom.Aggregation, atom.Modifier) + $" {atom.OrderDirection.ToUpper()}";
                 orderbys.Add(orderby);
             }
 

@@ -15,7 +15,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FilterTools, pathFunctions } from '~/app/data/filter-expression';
+import { FilterTools, modifiers } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 
@@ -713,8 +713,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       areServerErrors(model.serverErrors.Description3);
   }
 
-  public get pathFunctions(): string[] {
-    return pathFunctions;
+  public get modifiers(): string[] {
+    return modifiers;
   }
 
   public isDate(path: string, model: ReportDefinitionForSave): boolean {
@@ -735,9 +735,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public onPathChanged(itemToEdit: ReportRowDefinition | ReportColumnDefinition, model: ReportDefinitionForSave) {
-    // This removes the function property if the field isn't of type date
+    // This removes the modifier if the field isn't of type date
     if (!this.isDate(itemToEdit.Path, model)) {
-      delete itemToEdit.Function;
+      delete itemToEdit.Modifier;
     }
   }
 }

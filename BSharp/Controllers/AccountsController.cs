@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class AccountsController : CrudControllerBase<AccountForSave, Account, int>
@@ -25,7 +24,7 @@ namespace BSharp.Controllers
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
-        private string View => $"{BASE_ADDRESS}";
+        private string View => BASE_ADDRESS;
 
         public AccountsController(
             ILogger<AccountsController> logger,

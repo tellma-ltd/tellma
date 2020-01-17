@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ReportView, functionPropDesc } from '../report-results/report-results.component';
+import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
 import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, TenantWorkspace } from '~/app/data/workspace.service';
 import {
   ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl, EntityDescriptor, metadata, getChoices
@@ -260,9 +260,9 @@ export class ReportComponent implements OnInit, OnDestroy {
             throw new Error(`Property '${atom.property}' does not exist on '${entityDesc.titlePlural()}'`);
           }
 
-          if (!!atom.function) {
-            // A modified function specified, the prop descriptor is hardcoded per function
-            propDesc = functionPropDesc(propDesc, atom.function, this.translate);
+          if (!!atom.modifier) {
+            // A modifier is specified, the prop descriptor is hardcoded per modifier
+            propDesc = modifiedPropDesc(propDesc, atom.modifier, this.translate);
           }
 
           paramsFromFilterPlaceholders[keyLower] = {

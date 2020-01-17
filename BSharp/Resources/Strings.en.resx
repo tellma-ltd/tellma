@@ -736,27 +736,6 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>Forgot your password?</value>
   </data>
-  <data name="Function_day" xml:space="preserve">
-    <value>Day of Month</value>
-  </data>
-  <data name="Function_dayofyear" xml:space="preserve">
-    <value>Day of Year</value>
-  </data>
-  <data name="Function_month" xml:space="preserve">
-    <value>Month</value>
-  </data>
-  <data name="Function_quarter" xml:space="preserve">
-    <value>Quarter</value>
-  </data>
-  <data name="Function_week" xml:space="preserve">
-    <value>Week</value>
-  </data>
-  <data name="Function_weekday" xml:space="preserve">
-    <value>Week Day</value>
-  </data>
-  <data name="Function_year" xml:space="preserve">
-    <value>Year</value>
-  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
   </data>
@@ -942,6 +921,27 @@
   </data>
   <data name="ModifiedBy" xml:space="preserve">
     <value>Modified By</value>
+  </data>
+  <data name="Modifier_day" xml:space="preserve">
+    <value>Day of Month</value>
+  </data>
+  <data name="Modifier_dayofyear" xml:space="preserve">
+    <value>Day of Year</value>
+  </data>
+  <data name="Modifier_month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Modifier_quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="Modifier_week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Modifier_weekday" xml:space="preserve">
+    <value>Week Day</value>
+  </data>
+  <data name="Modifier_year" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="MU_BaseAmount" xml:space="preserve">
     <value>Amount in base Unit</value>
@@ -1207,9 +1207,6 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
-  <data name="ReportDefinition_Function" xml:space="preserve">
-    <value>Function</value>
-  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
@@ -1218,6 +1215,9 @@
   </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>Measures</value>
+  </data>
+  <data name="ReportDefinition_Modifier" xml:space="preserve">
+    <value>Modifier</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>Order By</value>

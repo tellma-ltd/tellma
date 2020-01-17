@@ -2,10 +2,10 @@
 
 namespace BSharp.Data.Queries
 {
-    public static class Functions
+    public static class Modifiers
     {
         /// <summary>
-        /// All supported path functions
+        /// All supported path modifiers
         /// </summary>
         public static readonly string[] All = { year, quarter, month, dayofyear, day, week, weekday };
         // IMPORTANT: This is also in the files below, please keep in sync.
@@ -15,7 +15,7 @@ namespace BSharp.Data.Queries
         // report-definition.ts
 
         /// <summary>
-        /// All supported path functions in a hash table
+        /// All supported path modifiers in a hash table
         /// </summary>
         public static readonly HashSet<string> AllHash = new HashSet<string>(All);
 

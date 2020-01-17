@@ -178,7 +178,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
-                            Function = e.Function,
+                            Modifier = e.Modifier,
                             OrderDirection = e.OrderDirection
                         });
                     }
@@ -198,7 +198,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
-                            Function = e.Function,
+                            Modifier = e.Modifier,
                             OrderDirection = e.OrderDirection
                         });
                     }

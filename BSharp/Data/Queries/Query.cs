@@ -38,11 +38,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Creates a new instance of <see cref="Query"/>
         /// </summary>
-        /// <param name="conn">The connection to use when loading the results</param>
-        /// <param name="sources">Mapping from every type into SQL code that can be used to query that type</param>
-        /// <param name="localizer">For validation error messages</param>
-        /// <param name="userId">Used as context when preparing certain filter expressions</param>
-        /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
+        /// <param name="factory">Delegate that can asynchronously returns the <see cref="QueryArguments"/></param>
         public Query(QueryArgumentsFactory factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));

@@ -396,14 +396,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return dims.map(dim => {
       // Normalized the path
       const path = dim.Path.split('/').map((e: string) => e.trim()).join('/');
-      const fn = dim.Function;
-      const key = !!dim.Function ? `${path}|${dim.Function}` : path;
+      const modifier = dim.Modifier;
+      const key = !!dim.Modifier ? `${path}|${dim.Modifier}` : path;
 
       // Get the PropDescriptor describing the target property of the path
       let propDesc: PropDescriptor;
       let entityDesc: EntityDescriptor;
 
-      // Without a modifier function, the property descriptor comes from the metadata
+      // Without a modifier, the property descriptor comes from the metadata
       const collection = this.definition.Collection;
       const definitionId = this.definition.DefinitionId;
       const ws = this.workspace.current;
@@ -421,16 +421,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
       }
 
-      if (!!fn) {
-        // A modified function specified, the prop descriptor is hardcoded per function
-        propDesc = functionPropDesc(propDesc, fn, this.translate);
+      if (!!modifier) {
+        // A modifier is specified, the prop descriptor is hardcoded per modifier
+        propDesc = modifiedPropDesc(propDesc, modifier, this.translate);
       }
 
       // Create the dimension info
       const result: DimensionInfo = {
         key,
         path,
-        fn,
+        modifier,
         propDesc,
         autoExpand: dim.AutoExpand,
         label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
@@ -558,9 +558,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           const descSelectPath = `${stringPath}/${descSelect}`.trim();
           addAtom(descSelectPath, orderDir);
         });
-      } else if (!!dimensionDef.Function) {
-        // For properties with a function, apply that function on the path
-        addAtom(`${stringPath}|${dimensionDef.Function}`, orderDir);
+      } else if (!!dimensionDef.Modifier) {
+        // For properties with a modifier, apply that modifier on the path
+        addAtom(`${stringPath}|${dimensionDef.Modifier}`, orderDir);
       } else {
 
         // For non-nav properties and non date properties, simply add the path as is
@@ -686,7 +686,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     let currentDimension = dimension;
     while (!!currentDimension) {
       let path = currentDimension.path;
-      let fnPath = path;
+      let modifiedPath = path;
       let propDesc = currentDimension.propDesc;
 
       if (!!propDesc) {
@@ -706,18 +706,19 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
 
-        if (!!currentDimension.fn) {
-          fnPath = `${fnPath}|${currentDimension.fn}`;
+        // Add the modifier
+        if (!!currentDimension.modifier) {
+          modifiedPath = `${modifiedPath}|${currentDimension.modifier}`;
         }
 
         // (2) Calculate the filter atom and add it
         const valueId = currentDimension.valueId;
         if (!isSpecified(valueId)) {
-          atoms.push(`${fnPath} eq null`);
+          atoms.push(`${modifiedPath} eq null`);
         } else if (isText(propDesc)) {
-          atoms.push(`${fnPath} eq '${valueId.replace('\'', '\'\'')}'`);
+          atoms.push(`${modifiedPath} eq '${valueId.replace('\'', '\'\'')}'`);
         } else {
-          atoms.push(`${fnPath} eq ${valueId + ''}`);
+          atoms.push(`${modifiedPath} eq ${valueId + ''}`);
         }
       }
 
@@ -851,7 +852,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                   cell: {
                     type: 'dimension',
                     path: dimension.path,
-                    fn: dimension.fn,
+                    modifier: dimension.modifier,
                     value,
                     valueId,
                     propDesc: dimension.propDesc,
@@ -1336,7 +1337,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         try {
           const dim = s.uniqueDimensions[0];
           const path = dim.path;
-          const fn = dim.fn;
+          const modifier = dim.modifier;
           const { propDesc, entityDesc } = dim;
 
           s.single = s.result.map(g => {
@@ -1346,7 +1347,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                 displayValue(value, propDesc, this.translate);
 
             return {
-              name: new ChartDimensionCell(display, path, fn, valueId, propDesc, entityDesc),
+              name: new ChartDimensionCell(display, path, modifier, valueId, propDesc, entityDesc),
               value: g[measure.key]
             };
           });
@@ -1384,12 +1385,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else if (s.uniqueDimensions.length === 2) {
         const dim = s.uniqueDimensions[0];
         const path = dim.path;
-        const fn = dim.fn;
+        const modifier = dim.modifier;
         const { propDesc, entityDesc } = dim;
 
         const dim2 = s.uniqueDimensions[1];
         const path2 = dim2.path;
-        const fn2 = dim2.fn;
+        const modifier2 = dim2.modifier;
         const { propDesc: propDesc2, entityDesc: entityDesc2 } = dim2;
 
         const valueToChildCollectionMap: { [id: string]: { cell: ChartDimensionCell, value: number }[] } = {};
@@ -1410,7 +1411,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             const display = !isSpecified(valueId) ? this.translate.instant('Undefined') :
               !!entityDesc ? displayEntity(value, entityDesc) :
                 displayValue(value, propDesc, this.translate);
-            const dimensionCell = new ChartDimensionCell(display, path, fn, valueId, propDesc, entityDesc);
+            const dimensionCell = new ChartDimensionCell(display, path, modifier, valueId, propDesc, entityDesc);
 
             rootCollection.push(dimensionCell);
             childCollection = [];
@@ -1428,7 +1429,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               displayValue(value2, propDesc2, this.translate);
 
           childCollection.push({
-            cell: new ChartDimensionCell(display2, path2, fn2, valueId2, propDesc2, entityDesc2),
+            cell: new ChartDimensionCell(display2, path2, modifier2, valueId2, propDesc2, entityDesc2),
             value: g[measure.key]
           });
         }
@@ -1543,10 +1544,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 }
 
-export function functionPropDesc(propDesc: PropDescriptor, fn: string, trx: TranslateService) {
+export function modifiedPropDesc(propDesc: PropDescriptor, modifier: string, trx: TranslateService) {
   const oldLabel = propDesc.label;
-  const label = () => `${oldLabel()} (${trx.instant('Function_' + fn)})`;
-  switch (fn) {
+  const label = () => `${oldLabel()} (${trx.instant('Modifier_' + modifier)})`;
+  switch (modifier) {
     case 'dayofyear':
     case 'day':
     case 'week':

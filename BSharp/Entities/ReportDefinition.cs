@@ -243,13 +243,13 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         [ChoiceList(new object[] { 
-            Functions.year, 
-            Functions.quarter, 
-            Functions.month, 
-            Functions.dayofyear, 
-            Functions.day,
-            Functions.week,
-            Functions.weekday
+            Modifiers.year, 
+            Modifiers.quarter, 
+            Modifiers.month, 
+            Modifiers.dayofyear, 
+            Modifiers.day,
+            Modifiers.week,
+            Modifiers.weekday
         }, new string[] {
             "Function_year",
             "Function_quarter",
@@ -259,7 +259,7 @@ namespace BSharp.Entities
             "Function_week",
             "Function_weekday"
         })]
-        public string Function { get; set; }
+        public string Modifier { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

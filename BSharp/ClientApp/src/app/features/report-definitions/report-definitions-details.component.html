@@ -168,7 +168,7 @@
                                     <span class="flex-grow-1 text-truncate">
                                         <b-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></b-auto-label>&nbsp;<span
-                                            *ngIf="dim.Function">({{ ( 'Function_' + dim.Function) | translate }})</span>
+                                            *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
                                         (click)="onConfigureRow(i, model)" [title]="'Configure' | translate">
@@ -202,7 +202,7 @@
                                     <span class="flex-grow-1 text-truncate">
                                         <b-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></b-auto-label>&nbsp;<span
-                                            *ngIf="dim.Function">({{ ( 'Function_' + dim.Function) | translate }})</span>
+                                            *ngIf="dim.Modifier">({{ ( 'Modifier_' + dim.Modifier) | translate }})</span>
                                     </span>
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
                                         (click)="onConfigureColumn(i, model)" [title]="'Configure' | translate">
@@ -590,14 +590,14 @@
                 <span class="form-control b-studio-input" id="key" style="opacity: 0.5;">{{ itemToEdit['Key'] }}</span>
             </div>
 
-            <!-- Function -->
+            <!-- Modifier -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'dimension' && isDate(itemToEdit['Path'], modelRef)">
-                <label class="small" for="function">{{ 'ReportDefinition_Function' | translate }}</label>
-                <select class="form-control b-studio-input" id="function" [(ngModel)]="itemToEdit['Function']"
+                <label class="small" for="modifier">{{ 'ReportDefinition_Modifier' | translate }}</label>
+                <select class="form-control b-studio-input" id="modifier" [(ngModel)]="itemToEdit['Modifier']"
                     (ngModelChange)="itemToEditHasChanged = true">
                     <option value=""></option>
-                    <option *ngFor="let fn of pathFunctions" value="{{fn}}">
-                        {{ ('Function_' + fn) | translate }}</option>
+                    <option *ngFor="let modifier of modifiers" value="{{modifier}}">
+                        {{ ('Modifier_' + modifier) | translate }}</option>
                 </select>
             </div>
 

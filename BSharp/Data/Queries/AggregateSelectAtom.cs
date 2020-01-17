@@ -20,9 +20,9 @@ namespace BSharp.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
-        /// An optional function applied directly to the path
+        /// An optional modifier applied directly to the path
         /// </summary>
-        public string Function { get; set; }
+        public string Modifier { get; set; }
 
         /// <summary>
         /// An optional aggregation function applied on the <see cref="Property"/> if any,
@@ -94,15 +94,15 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Extrat path, property and function
-            var (path, property, function) = QueryTools.ExtractFunctionPathAndProperty(atom);
+            // Extrat path, property and modifier
+            var (path, property, modifier) = QueryTools.ExtractPathPropertyAndModifier(atom);
 
             // Return the result
             return new AggregateSelectAtom
             {
                 Path = path,
                 Property = property,
-                Function = function,
+                Modifier = modifier,
                 Aggregation = aggregation,
                 OrderDirection = orderDirection
             };
