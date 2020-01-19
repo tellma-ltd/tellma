@@ -350,7 +350,7 @@
                                 *ngFor="let param of getParameters(model); let i = index" cdkDrag>
                                 <div class="d-flex">
                                     <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
-                                        title="Built-In Parameter"></fa-icon>
+                                        title="{{ 'BuiltInParameter' | translate }}"></fa-icon>
                                     &nbsp;
                                     <span class="flex-grow-1 text-truncate">
                                         {{ '@' + param.Key }}
@@ -668,7 +668,7 @@
                 <label class="small" for="visibility">{{ 'ReportDefinition_Visibility' | translate }}</label>
                 <select class="form-control b-studio-input" id="visibility" [(ngModel)]="itemToEdit['Visibility']"
                     (ngModelChange)="itemToEditHasChanged = true">
-                    <option value="None">
+                    <option value="None" *ngIf="showNone(itemToEdit['Key'])">
                         {{ 'ReportDefinition_Visibility_None' | translate }}</option>
                     <option value="Optional" *ngIf="showOptional(itemToEdit['Key'])">
                         {{ 'ReportDefinition_Visibility_Optional' | translate }}</option>
@@ -682,7 +682,7 @@
                 <label class="small" for="value">{{ 'ReportDefinition_Value' | translate }}</label>
                 <input class="form-control b-studio-input" id="value" type="text" [(ngModel)]="itemToEdit['Value']"
                     (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
-                    autocomplete="off" [required]="getParameterDescriptor(itemToEdit['Key']).isRequired" />
+                    autocomplete="off" [required]="getParameterDescriptor(itemToEdit['Key'])?.isRequired" />
             </div>
         </div>
     </div>

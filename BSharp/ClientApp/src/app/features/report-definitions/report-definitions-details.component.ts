@@ -409,6 +409,12 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
+  public showNone(key: string): boolean {
+    // Visibility option 'None' is only available when the parameter is built-in
+    const desc = this.getParameterDescriptor(key);
+    return !!desc;
+  }
+
   public showOptional(key: string): boolean {
     // Visibility option 'Optional' is available when the parameter is either regular OR built-in but not required
     const desc = this.getParameterDescriptor(key);
