@@ -5,24 +5,6 @@
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
-	-- Null for non-smart accounts, Not null for smart accounts
-	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_Entries__ContractType] CHECK ( [ContractType] IN (
-										N'OnHand',
---										N'OnDemand', -- for all practical purposes, this is the same as OnHand
-										N'InTransit',
-										N'Receivable',--/PrepaidExpense
-										N'Deposit',
-										N'Loan',
-										N'AccruedIncome',
-										N'Equity',
-										N'AccruedExpense',
-										N'Payable',--/UnearnedRevenue
-										N'Retention',
-										N'Borrowing',
-										N'Revenue',
-										N'Expense'
-									)),
-	[IsCurrent]					BIT,
 	-- Agent Id is required in Entries only if we have Agent Definition in the account
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	-- Resource Id is Required in Entries only if we have resource classification in the account
@@ -33,9 +15,8 @@
 	
 	--[ResourceIdentifier]		NVARCHAR (10),
 	-- When resource is specified, and it has currency, it takes the resource currency. Otherwise, the user must specify it
-	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
-	-- Entry Classification is required only if the pair (ResourceClassification, EntryClassification) is enforced
-	[EntryClassificationId]		INT				CONSTRAINT [FK_Entries__EntryClassificationId] REFERENCES [dbo].[EntryClassifications] ([Id]),
+	-- Entry Type  is required only if NOT NULL
+	[EntryTypeId]		INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	-- Due Date is required only for certain resources, 
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
 
@@ -78,5 +59,5 @@ CREATE INDEX [IX_Entries__LineId] ON [dbo].[Entries]([LineId]);
 GO
 CREATE INDEX [IX_Entries__AccountId] ON [dbo].[Entries]([AccountId]);
 GO
-CREATE INDEX [IX_Entries__EntryClassificationId] ON [dbo].[Entries]([EntryClassificationId]);
+CREATE INDEX [IX_Entries__EntryTypeId] ON [dbo].[Entries]([EntryTypeId]);
 GO

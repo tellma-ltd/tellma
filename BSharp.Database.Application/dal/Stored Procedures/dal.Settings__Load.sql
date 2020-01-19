@@ -14,6 +14,4 @@ AS
 	JOIN [dbo].[Settings] AS [S] ON [C].[Id] = [S].[FunctionalCurrencyId]
 
 	-- Load the mappings
-	SELECT [RC].[Node].ToString() AS [ResourceClassificationPath], [M].[EntryClassificationId]
-	FROM [dbo].[ResourceClassificationsEntryClassifications] AS [M]
-	JOIN [dbo].[ResourceClassifications] AS [RC] ON [M].ResourceClassificationId = [RC].[Id]
+	SELECT N'TODO: change the code' AS [ResourceClassificationPath], 0 AS [EntryClassificationId]

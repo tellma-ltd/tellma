@@ -35,8 +35,7 @@ BEGIN -- Inserting
 		SELECT	RD.[Id] AS [ResourceDefinitionId], RC.[Id], RC.[ParentId], RC.[Node].ToString() As [Path],
 				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
 				RC.[Code], RC.[IsActive], RC.[IsLeaf]
-		FROM dbo.ResourceClassifications RC
-		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.[ResourceDefinitionId] = RD.Id
+		FROM dbo.[AccountTypes] RC
 		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_Resources] @R2Ids;
@@ -55,7 +54,7 @@ BEGIN -- Inserting
 
 
 --INSERT INTO @R1 ([Index],
---[IfrsResourceClassificationId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
+--[IfrsAccountTypeId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
 --	(11, N'general-goods',		N'Cotton',	NULL,	NULL,		@KgUnit);
 
 
@@ -85,11 +84,11 @@ END
 
 --BEGIN -- Updating
 --	INSERT INTO @R2 ([Index],
---		[Id], [UnitId], [IfrsResourceClassificationId], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [IfrsAccountTypeId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	)
 --	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
---		[Id], [UnitId], [ResourceClassificationId], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [AccountTypeId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	FROM [dbo].Resources
 --	WHERE [Name] IN (N'Toyota Camry 2018')
@@ -122,11 +121,11 @@ END
 
 --BEGIN -- Deleting
 --	INSERT INTO @R3 ([Index],
---		[Id], [UnitId], [IfrsResourceClassificationId], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [IfrsAccountTypeId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	)
 --	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
---		[Id], [UnitId], [ResourceClassificationId], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [AccountTypeId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	FROM [dbo].Resources
 --	WHERE [Name] LIKE N'Fake%';

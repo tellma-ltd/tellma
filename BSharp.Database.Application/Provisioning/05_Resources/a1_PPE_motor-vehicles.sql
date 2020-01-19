@@ -13,31 +13,31 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Definitions: Inserting'
+		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @ParentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'MotorVehicles');
+	DECLARE @ParentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'MotorVehicles');
 	 
-	DECLARE @MotorVehicleDescendants ResourceClassificationList;
+	DECLARE @MotorVehicleDescendants AccountTypeList;
 	INSERT INTO @MotorVehicleDescendants ([Index],
-		[Code],					[Name],			[ParentId],	[IsAssignable], [ResourceDefinitionId]) VALUES
-	(0, N'CarsExtension',		N'Cars',		@ParentId,	1,				N'motor-vehicles'),
-	(1, N'MinivansExtension',	N'Minivans',	@ParentId,	1,				N'motor-vehicles');
+		[Code],					[Name],			[ParentId],	[IsAssignable]) VALUES
+	(0, N'CarsExtension',		N'Cars',		@ParentId,	1),
+	(1, N'MinivansExtension',	N'Minivans',	@ParentId,	1);
 
-	EXEC [api].[ResourceClassifications__Save]
+	EXEC [api].[AccountTypes__Save]
 		@Entities = @MotorVehicleDescendants,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Classifications: Inserting'
+		Print 'Resource Classifications: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
 	DECLARE @MotorVehicles dbo.ResourceList;
 	INSERT INTO @MotorVehicles ([Index],
-				[ResourceClassificationId],				[Name],	[AvailableSince],	[Lookup1Id],									[Identifier], [CountUnitId],				[Count]) VALUES
+				[AccountTypeId],				[Name],	[AvailableSince],	[Lookup1Id],									[Identifier], [CountUnitId],				[Count]) VALUES
 	(0, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172',	dbo.fn_UnitName__Id(N'ea'), 1),--1
 	(1, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662',		dbo.fn_UnitName__Id(N'ea'), 1),--1
 	(2, dbo.fn_RCCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000',	dbo.fn_UnitName__Id(N'ea'), 1),
@@ -51,7 +51,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting PPE (motor-vehicles)'
+		Print 'Inserting PPE (motor-vehicles): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

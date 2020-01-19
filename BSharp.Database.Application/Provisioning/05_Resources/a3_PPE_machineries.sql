@@ -11,7 +11,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Definitions: Inserting'
+		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 END

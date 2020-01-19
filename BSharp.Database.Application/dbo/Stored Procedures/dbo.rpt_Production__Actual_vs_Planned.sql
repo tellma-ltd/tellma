@@ -6,10 +6,10 @@
 	@VolumeUnitId INT
 AS
 BEGIN
-	WITH FinishedGoodsResourceClassifications AS (
-		SELECT Id FROM dbo.[ResourceClassifications]
+	WITH FinishedGoodsAccountTypes AS (
+		SELECT Id FROM dbo.[AccountTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[ResourceClassifications] WHERE [Code] = N'FinishedGoods')
+			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Code] = N'FinishedGoods')
 		) = 1
 	),
 	UnitConversionRates([Id], [ConversionRate]) AS (
@@ -30,10 +30,10 @@ BEGIN
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
-		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-		WHERE J.[EntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
+		LEFT JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.Id
+		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND R.ResourceClassificationId IN (SELECT [Id] FROM FinishedGoodsResourceClassifications)
+		AND R.[AccountTypeId] IN (SELECT [Id] FROM FinishedGoodsAccountTypes)
 		GROUP BY J.[AgentId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (

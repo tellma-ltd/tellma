@@ -14,9 +14,8 @@
 	
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
-	[ContractType1]				NVARCHAR (50),
 	[AgentDefinitionId1]		NVARCHAR (50),
-	[ResourceClassificationId1]	INT,
+	[AccountTypeId1]	INT,
 	[IsCurrent1]				BIT,
 	[AgentId1]					INT,
 	[ResourceId1]				INT,
@@ -24,7 +23,7 @@
 	[AccountIdentifier1]		NVARCHAR (10),
 	[ResourceIdentifier1]		NVARCHAR (10),
 	[CurrencyId1]				NCHAR (3),
-	[EntryClassificationId1]	INT,
+	[EntryTypeId1]				INT,
 	[DueDate1]					DATE,
 	[MonetaryValue1]			DECIMAL (19,4),
 	[Count1]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
@@ -43,9 +42,8 @@
 
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[ContractType2]				NVARCHAR (50),
 	[AgentDefinitionId2]		NVARCHAR (50),
-	[ResourceClassificationId2]	INT,
+	[AccountTypeId2]	INT,
 	[IsCurrent2]				BIT,
 	[AgentId2]					INT,
 	[ResourceId2]				INT,
@@ -53,7 +51,7 @@
 	[AccountIdentifier2]		NVARCHAR (10),
 	[ResourceIdentifier2]		NVARCHAR (10),
 	[CurrencyId2]				NCHAR (3),
-	[EntryClassificationId2]	INT,
+	[EntryTypeId2]				INT,
 	[DueDate2]					DATE,
 	[MonetaryValue2]			DECIMAL (19,4),
 	[Count2]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
@@ -72,9 +70,8 @@
 
 	[Direction3]				SMALLINT,
 	[AccountId3]				INT,
-	[ContractType3]				NVARCHAR (50),
 	[AgentDefinitionId3]		NVARCHAR (50),
-	[ResourceClassificationId3]	INT,
+	[AccountTypeId3]	INT,
 	[IsCurrent3]				BIT,
 	[AgentId3]					INT,
 	[ResourceId3]				INT,
@@ -82,7 +79,7 @@
 	[AccountIdentifier3]		NVARCHAR (10),
 	[ResourceIdentifier3]		NVARCHAR (10),
 	[CurrencyId3]				NCHAR (3),
-	[EntryClassificationId3]	INT,
+	[EntryTypeId3]				INT,
 	[DueDate3]					DATE,
 	[MonetaryValue3]			DECIMAL (19,4),
 	[Count3]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit

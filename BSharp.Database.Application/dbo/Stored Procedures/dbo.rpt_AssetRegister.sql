@@ -3,8 +3,8 @@
 	@toDate Date = '01.01.2020'
 AS
 /*
-TODO: Rewrite using JournalSummary
-Since a resource is actually a "type" of foxid asset, then if we have 100 computers, they will appear in this
+TODO: Rewrite using SummaryEntries
+Since a resource is actually a "type" of fixed asset, then if we have 100 computers, they will appear in this
 report AS ONE LINE.
 If we want each computer to appear on a separate line, we need to replace Resource with Instance.
 */
@@ -13,7 +13,8 @@ BEGIN
 	FixedAssetAccounts AS (
 		SELECT Id
 		FROM Accounts
-		WHERE [AccountTypeId] IN (N'PPE')
+		--TODO: add the whole subtree
+		WHERE [AccountTypeId] = dbo.fn_RCCode__Id(N'PropertyPlantAndEquipment')
 	),
 	OpeningBalances AS (
 		SELECT
@@ -21,19 +22,19 @@ BEGIN
 			SUM(J.[Count] * J.[Direction]) AS [Count],
 			SUM(J.[Value] * J.[Direction]) AS [Value],
 			SUM(J.[Time] * J.[Direction]) AS [ServiceLife]
-		FROM [dbo].[fi_Journal](NULL, @fromDate) J
+		FROM [map].[DetailsEntries](NULL, @fromDate, NULL, NULL, NULL) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
 		GROUP BY J.ResourceId
 	),
 	Movements AS (
 		SELECT
-			J.ResourceId, J.[EntryClassificationId],
+			J.ResourceId, J.[EntryTypeId],
 			SUM(J.[Count] * J.[Direction]) AS [Count],
 			SUM(J.[Value] * J.[Direction]) AS [Value],
 			SUM(J.[Time] * J.[Direction]) AS [ServiceLife]
-		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
+		FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
-		GROUP BY J.ResourceId, J.[EntryClassificationId]
+		GROUP BY J.ResourceId, J.[EntryTypeId]
 	),
 	FixedAssetRegsiter AS (
 		SELECT 
@@ -58,4 +59,26 @@ BEGIN
 	FROM dbo.Resources R JOIN FixedAssetRegsiter FAR ON R.Id = FAR.ResourceId
 	JOIN [dbo].[MeasurementUnits] MU ON R.[TimeUnitId] = MU.Id;
 END;
-GO
+
+	--WITH JournalSummary
+	--AS (
+	--	SELECT
+	--		[AccountClassificationId],
+	--		[AccountId],
+	--		[ResourceId],
+	--		[Opening], [Debit], [Credit], [Closing]
+	--		OpeningCount, CountIn, CountOut, EndingCount
+	--	FROM [map].[SummaryEntries](
+	--		@fromDate,
+	--		@ToDate, 
+	--		NULL, -- @ResponsibilityCenterId
+	--		NULL, -- @AgentDefinitionId
+	--		N'PropertyPlantAndEquipment', -- @ResourceClassificationCode
+	--		NULL, -- @CountUnitId
+	--		NULL, --@MassUnitId
+	--		NULL -- @VolumneId
+	--	)
+	--	GROUP BY [AccountClassificationId], AccountId
+	--)
+	--SELECT AccountClassificationId, AccountId, ResourceId, [Opening], [Debit], [Credit], Closing
+	--FROM JournalSummary;

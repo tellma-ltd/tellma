@@ -166,7 +166,7 @@ EXEC [api].[MeasurementUnits__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'MeasurementUnits: Inserting'
+	Print 'MeasurementUnits: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

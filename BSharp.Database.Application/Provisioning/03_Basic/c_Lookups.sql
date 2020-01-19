@@ -35,7 +35,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Lookups: Inserting'
+		Print 'Lookups: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;						
 
@@ -66,7 +66,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Lookups: Inserting'
+		Print 'Lookups: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;						
 
@@ -139,7 +139,7 @@ END
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Lookups: Inserting'
+	Print 'Lookups: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;						
 

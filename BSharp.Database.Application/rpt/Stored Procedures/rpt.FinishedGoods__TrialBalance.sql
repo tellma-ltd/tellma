@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[FinishedGoods__TrialBalance]
-	--@OperatingSegmentId INT = NULL,
 	@FromDate Date = '01.01.2020',
 	@ToDate Date = '01.01.2020',
+	@ResponsibilityCenterId INT = NULL,
 	@CountUnitId INT,
 	@MassUnitId INT,
 	@VolumeUnitId INT
@@ -14,12 +14,11 @@ BEGIN
 			SUM(OpeningCount) AS OpeningCount, SUM(CountIn) AS CountIn, SUM(CountOut) AS CountOut, SUM(EndingCount) AS EndingCount,
 			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
 		FROM [map].[SummaryEntries](
-			--@OperatingSegmentId,
-			N'NonFinancialAsset',
-			N'storage-custodies',
-			N'FinishedGoods', 
 			@FromDate,
 			@ToDate,
+			@ResponsibilityCenterId,
+			N'storage-custodies',
+			N'FinishedGoods', 
 			@CountUnitId,
 			@MassUnitId,
 			@VolumeUnitId

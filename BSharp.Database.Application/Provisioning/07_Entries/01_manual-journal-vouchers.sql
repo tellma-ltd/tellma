@@ -52,14 +52,14 @@ BEGIN -- Inserting
 	(15,		4,				N'ManualLine')
 		;
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryClassificationId],	[ResourceId], [MonetaryValue],[Value]) VALUES
-	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
-	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	NULL,		100,			2350),
-	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					NULL,		NULL,			2351175),
-	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					NULL,		NULL,			2351175),
+				[AccountId],		[EntryTypeId],					[MonetaryValue],[Value]) VALUES
+	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 	200000,			4700000),--
+	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	100,			2350),
+	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					NULL,			2351175),
+	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					NULL,			2351175),
 		
-	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, NULL,		NULL,			1175000),
-	(5, 5, 1,1,-1,@SA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
+	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, NULL,			1175000),
+	(5, 5, 1,1,-1,@SA_CBEUSD,		@InternalCashTransferExtension,	50000,			1175000);
 
 	-- In a manual JV, we assume the following columns for dumb accounts:
 	-- Account, Debit, Credit, Memo
@@ -73,10 +73,11 @@ BEGIN -- Inserting
 	-- If Contract type = N'Receivable', Credit, and AgentDefinition = N'customers', Debit, show External Reference: Invoice #
 	-- Resource is always among the dynamic properties
 	-- ResourceDefinition specifies where or not to show (Count, Mass, Volume, Time, DueDate)
-	-- If ResourceClassificationEntryClassification is enforced, show Entry Classification
+	-- If ResourceClassificationEntryType is enforced, show Entry Classification
 	-- If AgentDefinition is not null, Show Agent
+
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[EntryClassificationId],[ResourceId], [Value], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
+				[AccountId],	[EntryTypeId],[ResourceId], [Value], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
 	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),--
 	(7, 7, 2,1,+1,@VATInput,	NULL, 						NULL,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
 	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),
@@ -98,7 +99,7 @@ BEGIN -- Inserting
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Capital Investment (M): Insert'
+		Print 'Capital Investment (M): Insert: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -127,17 +128,31 @@ BEGIN -- Inserting
 		@Comment = N'For your kind attention',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+	DECLARE @OnBehalfOfRoleId INT, @OnBehalfOfuserId INT;
+	IF @DB = N'101' -- Banan SD, USD, en
+	OR @DB = N'102' -- Banan ET, ETB, en
+	BEGIN
+		SELECT @OnBehalfOfRoleId = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller'
+		SELECT @OnBehalfOfuserId= [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@banan-it.com'
+	END
+	IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+		SELECT @OnBehalfOfRoleId = [Id] FROM dbo.Roles WHERE [Name] = N'Administrator'
+	IF @DB = N'104' -- Walia Steel, ETB, en/am
+	BEGIN
+		SELECT @OnBehalfOfRoleId = [Id] FROM dbo.Roles WHERE [Name] = N'Accountant'
+		SELECT @OnBehalfOfuserId= [Id] FROM dbo.Users WHERE [Email] = N'sarabirhanuk@gmail.com'
+	END
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 4, -- N'Reviewed',
-		@AgentId = @MohamadAkra,
-		@RoleId = @Accountant, -- we allow selecting the role manually,
+		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@RoleId = @OnBehalfOfRoleId, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Lines Signing'
+		Print 'Lines Signing: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -151,7 +166,7 @@ BEGIN -- Inserting
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Documents closing'
+		Print 'Documents closing: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -175,7 +190,7 @@ BEGIN
 		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
 	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
 	JOIN dbo.Accounts A ON JS.AccountId = A.Id
-	LEFT JOIN dbo.AccountClassifications AC ON JS.AccountClassificationId = AC.Id
+	LEFT JOIN dbo.[LegacyClassifications] AC ON JS.[LegacyClassificationId] = AC.Id
 	ORDER BY AC.[Code], A.[Code]
 
 	SELECT
@@ -185,7 +200,8 @@ BEGIN
 		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
 		FORMAT(SUM(J.[RelatedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
-	FROM [dbo].[fi_Journal]('2018.01.02','2019.01.01') J
+	FROM [map].[DetailsEntries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
+
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[AccountId] = @VATInput
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
@@ -208,8 +224,8 @@ END
 --	FROM dbo.Lines DL
 --	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
---	INSERT INTO @E12([Index], [Id], [LineId], [DocumentIndex], [LineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
---	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index],	[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value]
+--	INSERT INTO @E12([Index], [Id], [LineId], [DocumentIndex], [LineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryTypeId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
+--	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index],	[EntryNumber], [Direction], [AccountId], [IfrsEntryTypeId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value]
 --	FROM dbo.Entries DLE
 --	JOIN @L12 L12 ON L12.[Id] = DLE.[LineId];
 

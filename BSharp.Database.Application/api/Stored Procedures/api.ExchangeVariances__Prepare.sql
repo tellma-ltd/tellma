@@ -4,19 +4,19 @@
 @Rate FLOAT(53),
 @ExchangeVarianceAccount INT
 AS
--- TODO: required testing
+-- TODO: review Logic
 BEGIN
 	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[LineList], @Entries [dbo].EntryList;
-	DECLARE @SalariesAccrualsTaxable INT, @SalariesAccrualsNonTaxable INT, @EmployeesIncomeTaxPayable INT;
+	
 	WITH 
 	ExchangeVarianceAccounts AS 
 	(
-		SELECT [Id] FROM dbo.[AccountClassifications]
+		SELECT [Id] FROM dbo.[LegacyClassifications]
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],
 		[AccountId], -SUM([Direction] * E.[Value]) AS ValueBalance, SUM([Direction] * E.[MonetaryValue]) AS FXBalance
-		FROM dbo.fi_Journal(NULL, @DocumentDate) E
+		FROM [map].[DetailsEntries](NULL, @DocumentDate, NULL, NULL, NULL) E
 		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		GROUP BY [AccountId]

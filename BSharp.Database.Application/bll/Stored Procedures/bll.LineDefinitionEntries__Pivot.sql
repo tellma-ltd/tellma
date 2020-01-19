@@ -13,7 +13,6 @@ AS
 	UPDATE WL
 	SET
 		WL.[Direction1]			= LDE.[Direction],
-		WL.[ContractType1]		= LDE.ContractType,
 		WL.[AgentDefinitionId1]	= LDE.AgentDefinitionId
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.EntryNumber = 1
@@ -21,7 +20,6 @@ AS
 	UPDATE WL
 	SET
 		WL.[Direction2]			= LDE.[Direction],
-		WL.[ContractType2]		= LDE.ContractType,
 		WL.[AgentDefinitionId2]	= LDE.AgentDefinitionId
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.EntryNumber = 2
@@ -29,7 +27,6 @@ AS
 	UPDATE WL
 	SET
 		WL.[Direction3]			= LDE.[Direction],
-		WL.[ContractType3]		= LDE.ContractType,
 		WL.[AgentDefinitionId3]	= LDE.AgentDefinitionId
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.EntryNumber = 3

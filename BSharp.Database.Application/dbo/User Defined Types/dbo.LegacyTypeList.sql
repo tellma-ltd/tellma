@@ -1,0 +1,6 @@
+﻿CREATE TYPE [dbo].[LegacyTypeList] AS TABLE
+(
+	[Id]			NVARCHAR (50) NOT NULL PRIMARY KEY,
+	[Name]			NVARCHAR (50) NOT NULL,
+	[Description]	NVARCHAR (1024)
+)

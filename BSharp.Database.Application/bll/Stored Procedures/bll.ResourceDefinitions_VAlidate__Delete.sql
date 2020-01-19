@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[ResourceDefinitions_VAlidate__Delete]
+﻿CREATE PROCEDURE [bll].[ResourceDefinitions_Validate__Delete]
 	@Ids [dbo].[IndexedStringList] READONLY,
 	@Top INT = 10
 AS

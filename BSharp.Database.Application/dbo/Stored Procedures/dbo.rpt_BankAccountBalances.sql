@@ -9,7 +9,6 @@
 --			-- Measures
 --			SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
 --		FROM rpt.fi_JournalSummary (
---				N'BalancesWithBanks', -- @AccountTypeList
 --				@FromDate,
 --				@ToDate,
 --				NULL, -- @CountUnitId

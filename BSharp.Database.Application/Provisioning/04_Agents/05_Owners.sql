@@ -27,7 +27,7 @@ EXEC [api].[Agents__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Owners: Inserting'
+	Print 'Owners: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

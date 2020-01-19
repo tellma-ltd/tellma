@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 			[TitlePlural2],
 			[TitlePlural3],
 			[AgentDefinitionId],
-			[ResourceClassificationCode],
+			[AccountTypeCode],
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
@@ -37,7 +37,7 @@ SET NOCOUNT ON;
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
 			t.[AgentDefinitionId]			= s.[AgentDefinitionId],
-			t.[ResourceClassificationCode]	= s.[ResourceClassificationCode],
+			t.[AccountTypeCode]	= s.[AccountTypeCode],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 			[TitlePlural2],
 			[TitlePlural3],
 			[AgentDefinitionId],
-			[ResourceClassificationCode],
+			[AccountTypeCode],
 			[Script]
 		)
 		VALUES (
@@ -68,6 +68,6 @@ SET NOCOUNT ON;
 			s.[TitlePlural2],
 			s.[TitlePlural3],
 			s.[AgentDefinitionId],
-			s.[ResourceClassificationCode],
+			s.[AccountTypeCode],
 			s.[Script]
 		);

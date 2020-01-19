@@ -13,14 +13,14 @@ DECLARE @LineDefinitionEntries TABLE (
 	-- Account Group Properties
 	[AccountId]					INT, -- invisible, except in manual voucher
 
-	[ContractType]				NVARCHAR (50),		--CONSTRAINT [CK_LineDefinitionEntries__ContractType]
-	CHECK ([LineDefinitionId] = N'ManualLine' OR ContractType IS NOT NULL),
+	[AccountTypeId]				NVARCHAR (50),		--CONSTRAINT [CK_LineDefinitionEntries__ContractType]
+	CHECK ([LineDefinitionId] = N'ManualLine' OR [AccountTypeId] IS NOT NULL),
 
 	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a, 0:set from line def, 1: set from line 2: from entry
 	[AgentDefinitionId]			NVARCHAR (50),
 
 	[ResourceClassificationSource]	SMALLINT		NOT NULL DEFAULT 0, -- -1: n/a, 0:set from line def, 1: set from line 2: from entry
-	[ResourceClassificationCode]NVARCHAR (255)		DEFAULT N'Cash',
+	[ResourceClassificationCode]NVARCHAR (255)		,
 
 	[LiquiditySource]			SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a, 0:set from line def, 1: set from line 2: from entry
 	[IsCurrent]					BIT					DEFAULT 1,
@@ -82,7 +82,7 @@ INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural],		[AgentDefinitionId]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices',	N'suppliers');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[Direction],	[ContractType],		[AgentDefinitionId],[EntryClassificationSource],[RelatedAgentDefinitionSource], [RelatedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource], [DueDateSource]) VALUES
+([LineDefinitionId], [EntryNumber],[Direction],	[AccountTypeId],		[AgentDefinitionId],[EntryClassificationSource],[RelatedAgentDefinitionSource], [RelatedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource], [DueDateSource]) VALUES
 (N'PurchaseInvoice',	0,			-1,			N'Payable',			N'tax-agencies',		-1,						0,								N'suppliers',				-1,					0,			0,					2,						1,						1,								6,					6,						1),
 (N'PurchaseInvoice',	1,			+1,			N'AccruedExpense',	N'suppliers',			-1,						-1,								NULL,						1,					0,			0,					1,						1,						1,								-1,					-1,						-1),
 (N'PurchaseInvoice',	2,			-1,			N'Payable',			N'suppliers',			-1,						-1,								NULL,						1,					0,			0,					8,						1,						1,								-1,					-1,						1);
@@ -107,7 +107,7 @@ INSERT @LineDefinitions(
 (N'CashPayment',	N'Payment',			N'Payments')
 
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[Direction],	[ContractType],	[AgentDefinitionId],	[ResourceClassificationCode], [EntryClassificationSource],[RelatedAgentDefinitionSource], [RelatedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource], [DueDateSource]) VALUES
+([LineDefinitionId], [EntryNumber],[Direction],	[AccountTypeId],	[AgentDefinitionId],	[ResourceClassificationCode], [EntryClassificationSource],[RelatedAgentDefinitionSource], [RelatedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource], [DueDateSource]) VALUES
 (N'BankPayment',		0,			-1,			N'OnHand',		N'banks',				N'Cash',						2,							2,								NULL,						2,					4,				2,				2,						2,						-1,								2,					-1,						-1);
 
 INSERT INTO @LineDefinitionColumns
@@ -227,12 +227,12 @@ ON s.[LineDefinitionId] = t.[LineDefinitionId] AND s.[EntryNumber] = t.[EntryNum
 WHEN MATCHED THEN
 	UPDATE SET
 		t.[Direction]		= s.[Direction],
-		t.[ContractType]	= s.[ContractType]
+		t.[AccountTypeId]	= s.[AccountTypeId]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [ContractType])
-    VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[ContractType]);
+    INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [AccountTypeId])
+    VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[AccountTypeId]);
 	*/
 --
 

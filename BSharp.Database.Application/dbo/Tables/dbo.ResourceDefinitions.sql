@@ -11,7 +11,7 @@
 	--[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
 	--[NameRegEx]							NVARCHAR (255), -- Null means manually defined
 	-- Resource properties
-	-- [ResourceClassificationVisibility]	NVARCHAR (50) DEFAULT N'None' CHECK ([ResourceClassificationVisibility] IN (N'None', N'Optional', N'Required')),
+	-- [AccountTypeVisibility]	NVARCHAR (50) DEFAULT N'None' CHECK ([ResourceClassificationVisibility] IN (N'None', N'Optional', N'Required')),
 	[IdentifierLabel]					NVARCHAR (50),
 	[IdentifierLabel2]					NVARCHAR (50),
 	[IdentifierLabel3]					NVARCHAR (50),		

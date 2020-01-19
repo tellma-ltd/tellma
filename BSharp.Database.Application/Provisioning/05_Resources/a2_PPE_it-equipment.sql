@@ -22,41 +22,45 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Definitions: Inserting'
+		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'ComputerEquipment');
-	DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'CommunicationAndNetworkEquipment');
-	DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'NetworkInfrastructure');
+	--DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'ComputerEquipment');
+	--DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'CommunicationAndNetworkEquipment');
+	--DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'NetworkInfrastructure');
+
+	DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'OfficeEquipment');
+	DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'OfficeEquipment');
+	DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.AccountTypes WHERE Code = N'OfficeEquipment');
 	   
-	DECLARE @ITEquipmentDescendants dbo.ResourceClassificationList;
+	DECLARE @ITEquipmentDescendants dbo.AccountTypeList;
 	INSERT INTO @ITEquipmentDescendants ([Index],
-		[Code],					[Name],			[ParentId],			[IsAssignable], [ResourceDefinitionId]) VALUES
+		[Code],					[Name],			[ParentId],			[IsAssignable]) VALUES
 	--N'ComputerEquipment',						N'/1/1/6/'
-	(0, N'ComputersExtension',	N'Computers',	@ComputerEquipmentId,	1,				N'it-equipment'),
-	(1, N'ServersExtension',	N'Servers',		@ComputerEquipmentId,	1,				N'it-equipment'),
-	(2, N'DesktopsExtension',	N'Desktops',	@ComputerEquipmentId,	1,				N'it-equipment'),
-	(3, N'LaptopsExtension',	N'Laptops',		@ComputerEquipmentId,	1,				N'it-equipment'),
+	(0, N'ComputersExtension',	N'Computers',	@ComputerEquipmentId,	1),
+	(1, N'ServersExtension',	N'Servers',		@ComputerEquipmentId,	1),
+	(2, N'DesktopsExtension',	N'Desktops',	@ComputerEquipmentId,	1),
+	(3, N'LaptopsExtension',	N'Laptops',		@ComputerEquipmentId,	1),
 	--(N'CommunicationAndNetworkEquipment',		N'/1/1/7/'
-	(4, N'MobilesExtension',	N'Mobiles',		@CommunicationAndNetworkEquipmentId,	1,				N'it-equipment'),
-	(5, N'PrintersExtension',	N'Printers',	@CommunicationAndNetworkEquipmentId,	1,				N'it-equipment'),
+	(4, N'MobilesExtension',	N'Mobiles',		@CommunicationAndNetworkEquipmentId,	1),
+	(5, N'PrintersExtension',	N'Printers',	@CommunicationAndNetworkEquipmentId,	1),
 	--N'NetworkInfrastructure',					N'/1/1/8/'
-	(6, N'RoutersExtension',	N'Routers',		@NetworkInfrastructureId,	1,				N'it-equipment');
+	(6, N'RoutersExtension',	N'Routers',		@NetworkInfrastructureId,	1);
 	
-	EXEC [api].[ResourceClassifications__Save]
+	EXEC [api].[AccountTypes__Save]
 		@Entities = @ITEquipmentDescendants,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Classifications: Inserting'
+		Print 'Resource Classifications: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
 	DECLARE @ITEquipment dbo.ResourceList;
 	INSERT INTO @ITEquipment ([Index],
-		[ResourceClassificationId],							[Name],			[TimeUnitId],				[Identifier], [Lookup1Id],											[Lookup2Id]) VALUES
+		[AccountTypeId],							[Name],			[TimeUnitId],				[Identifier], [Lookup1Id],											[Lookup2Id]) VALUES
 	(0,dbo.fn_RCCode__Id(N'ServersExtension'),	N'Dell ML 200',	dbo.fn_UnitName__Id(N'Yr'),	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
 	(1,dbo.fn_RCCode__Id(N'PrintersExtension'),	N'HP Deskject',	dbo.fn_UnitName__Id(N'Yr'),	N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
 	(2,dbo.fn_RCCode__Id(N'RoutersExtension'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
@@ -68,7 +72,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting PPE (it-equipment)'
+		Print 'Inserting PPE (it-equipment): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

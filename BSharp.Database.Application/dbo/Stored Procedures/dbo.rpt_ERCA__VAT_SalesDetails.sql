@@ -8,9 +8,10 @@ BEGIN
 		J.ExternalReference AS RCPT_NUM, J.DocumentDate As RCPT_Date,  J.[Mass],
 		J.[RelatedAmount] As Price, N'' AS COM_CODE, N'' As COM_DETAIL, -- maybe use RC.IfrsResourceClassification instead
 		N'' As [Description]
-	FROM dbo.[fi_Journal](@fromDate, @toDate) J
+	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN dbo.Agents A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[ContractType] = N'CurrentValueAddedTaxPayables'
+	WHERE
+		J.[AccountTypeId] = dbo.fn_RCCode__Id( N'ValueAddedTaxPayables')
 	AND J.Direction = -1
 END
 GO;

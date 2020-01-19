@@ -100,13 +100,13 @@ SET NOCOUNT ON;
 
 	-- Not allowed to cause negative balance in conservative accounts
 	DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
-		(SELECT [Node] FROM dbo.ResourceClassifications WHERE Code = N'NonFinancialAssets');
+		(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'NonFinancialAssets');
 	WITH
 	ConservativeAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[ContractType] = N'OnHand'
-		AND A.ResourceClassificationId IN (
-			SELECT [Id] FROM dbo.ResourceClassifications
+		WHERE A.[LegacyType] = N'OnHand'
+		AND A.[AccountTypeId] IN (
+			SELECT [Id] FROM dbo.[AccountTypes]
 			WHERE [Node].IsDescendantOf(@NonFinancialResourceClassificationNode) = 1
 		)
 	),
@@ -132,9 +132,10 @@ SET NOCOUNT ON;
 			E.DueDate--,
 			--E.[AccountIdentifier],
 			--E.[ResourceIdentifier]
-		HAVING SUM(E.[Direction] * E.[Mass]) < 0
-		OR SUM(E.[Direction] * E.[Volume]) < 0
-		OR SUM(E.[Direction] * E.[Count]) < 0
+		HAVING
+			SUM(E.[Direction] * E.[Mass]) < 0
+		OR	SUM(E.[Direction] * E.[Volume]) < 0
+		OR	SUM(E.[Direction] * E.[Count]) < 0
 	),
 	ReviewedDocLines AS (
 		SELECT
@@ -147,7 +148,7 @@ SET NOCOUNT ON;
 			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
 			SUM(E.[Direction] * E.[Volume]) AS [Volume], 
 			SUM(E.[Direction] * E.[Count]) AS [Count]
-		FROM dbo.DocumentLineEntriesDetailsView E
+		FROM dbo.Entries E JOIN dbo.Lines L ON L.[Id] = E.[LineId] JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 		JOIN CurrentDocLines C ON E.AccountId = C.AccountId 
 		GROUP BY
 			E.AccountId,

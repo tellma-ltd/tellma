@@ -11,42 +11,42 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Definitions: Inserting'
+		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @FGVehiclesDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
+	DECLARE @FGVehiclesDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT)
 
 	INSERT INTO @FGVehiclesDescendantsTemp ([Index], -- N'vehicles'
-	[Code],						[Name],		[Node],			[ResourceDefinitionId]) VALUES
+	[Code],						[Name],		[Node]) VALUES
 --	N'FinishedGoods',					N'/1/11/5/'
-	(0,N'FGCarsExtension',		N'Cars',	N'/1/11/5/1/',	N'skds'),
-	(1,N'FGSedanExtension',		N'Sedan',	N'/1/11/5/1/1/',N'skds'),
-	(2,N'FG4xDriveExtension',	N'4xDrive',	N'/1/11/5/1/2/',N'skds'),
-	(3,N'FGSportsExtension',	N'Sports',	N'/1/11/5/1/3/',N'skds'),
-	(4,N'FGTrucksExtension',	N'Trucks',	N'/1/11/5/2/',	N'skds');
+	(0,N'FGCarsExtension',		N'Cars',	N'/1/11/5/1/'),
+	(1,N'FGSedanExtension',		N'Sedan',	N'/1/11/5/1/1/'),
+	(2,N'FG4xDriveExtension',	N'4xDrive',	N'/1/11/5/1/2/'),
+	(3,N'FGSportsExtension',	N'Sports',	N'/1/11/5/1/3/'),
+	(4,N'FGTrucksExtension',	N'Trucks',	N'/1/11/5/2/');
 
 	UPDATE @FGVehiclesDescendantsTemp SET IsAssignable = 0 WHERE [Index] = 0;
 
-	DECLARE @FGVehiclesDescendants ResourceClassificationList;
+	DECLARE @FGVehiclesDescendants AccountTypeList;
 
-	INSERT INTO @FGVehiclesDescendants ([Code], [Name], [ParentIndex], [IsAssignable], [Index], [ResourceDefinitionId])
-	SELECT [Code], [Name], (SELECT [Index] FROM @FGVehiclesDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index], [ResourceDefinitionId]
+	INSERT INTO @FGVehiclesDescendants ([Code], [Name], [ParentIndex], [IsAssignable], [Index])
+	SELECT [Code], [Name], (SELECT [Index] FROM @FGVehiclesDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
 	FROM @FGVehiclesDescendantsTemp RC
 
-	EXEC [api].[ResourceClassifications__Save]
+	EXEC [api].[AccountTypes__Save]
 	@Entities = @FGVehiclesDescendants,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'FG: Vehicles: Inserting'
+		Print 'FG: Vehicles: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;	
 
 	DECLARE @SKDs [dbo].ResourceList;
 	INSERT INTO @SKDs ([Index], 
-		[ResourceClassificationId],				[Identifier],	[Name],											[Lookup1Id]) VALUES
+		[AccountTypeId],				[Identifier],	[Name],											[Lookup1Id]) VALUES
 		-- N'Vehicles'
 	(0, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'101',			N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
 	(1, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'102',			N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),
@@ -59,7 +59,7 @@ BEGIN
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting SKDs'
+		Print 'Inserting SKDs: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

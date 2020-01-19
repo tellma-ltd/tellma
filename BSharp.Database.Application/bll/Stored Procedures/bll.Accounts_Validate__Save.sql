@@ -45,10 +45,10 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',
 		N'Error_TheAccountClassification0IsNotLeaf',
-		FE.AccountClassificationId
+		FE.[LegacyClassificationId]
 	FROM @Entities FE 
-	JOIN [dbo].[AccountClassifications] BE ON FE.AccountClassificationId = BE.Id
-	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
+	JOIN [dbo].[LegacyClassifications] BE ON FE.[LegacyClassificationId] = BE.Id
+	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[LegacyClassifications]);
 
 	-- If Agent Id is not null, then account and agent must have same agent definition
 	-- It is already added as FK constraint, but this will give a friendly error message
@@ -61,34 +61,24 @@ SET NOCOUNT ON;
 	FROM @Entities FE 
 	JOIN [dbo].[Agents] AG ON AG.[Id] = FE.[AgentId]
 	LEFT JOIN dbo.[AgentDefinitions] AD ON AD.[Id] = FE.[AgentDefinitionId]
-	WHERE (FE.IsSmart = 1)
+	WHERE (FE.[HasAgent] = 1)
 	--AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
 	AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
-
-	-- If resource classification/resource definition is "currencies" and currency is not null, then resource must be not null
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
-		N'Error_TheResourceIsRequired'
-	FROM @Entities FE 
-	JOIN [dbo].[ResourceClassifications] RC ON RC.[Id] = FE.[ResourceClassificationId]
-	WHERE (FE.IsSmart = 1)
-	AND (RC.ResourceDefinitionId = N'currencies' AND FE.CurrencyId IS NOT NULL AND FE.ResourceId IS NULL)
 
 	-- If Resource Id is not null, then Account and Resource must have same resource classification
 	-- It is already added as FK constraint, but this will give a friendly error message
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheResourceClassification0IsNotCompatibleWithResource1',
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceClassification],
+		N'Error_TheResourceType0IsNotCompatibleWithResource1',
+		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [ResourceType],
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
 	FROM @Entities FE 
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
-	LEFT JOIN dbo.[ResourceClassifications] RC ON RC.[Id]= FE.[ResourceClassificationId]
-	WHERE (FE.IsSmart = 1)
+	LEFT JOIN dbo.[AccountTypes] [AT] ON [AT].[Id]= FE.[AccountTypeId]
+	WHERE (FE.[HasResource] = 1)
 	--AND (FE.ResourceId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Resources
-	AND (FE.ResourceClassificationId IS NULL OR R.ResourceClassificationId <> FE.ResourceClassificationId)
+	AND (FE.[AccountTypeId] IS NULL OR R.[AccountTypeId] <> FE.[AccountTypeId])
 
 	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
 	-- It is already added as FK constraint, but this will give a friendly error message
@@ -103,7 +93,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
 	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
-	WHERE (FE.IsSmart = 1)
+	WHERE (FE.[HasResource] = 1)
 	--AND (FE.ResourceId IS NOT NULL AND FE.CurrencyId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Resources
 	AND (FE.[CurrencyId] <> R.[CurrencyId])
 
@@ -129,17 +119,17 @@ SET NOCOUNT ON;
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	WHERE L.[State] > 0
 	AND (
-		FE.IsSmart					<> A.[IsSmart]					OR
-		FE.[AccountTypeId]			<> A.[AccountTypeId]			OR
+		FE.HasAgent					<> A.[HasAgent]					OR
+		FE.HasResource				<> A.[HasResource]					OR
 		--FE.[ResponsibilityCenterId] <> A.[ResponsibilityCenterId]	OR
-		FE.[ContractType]			<> A.[ContractType]				OR
+		FE.[LegacyType]				<> A.[LegacyType]				OR
 		FE.[AgentDefinitionId]		<> A.[AgentDefinitionId]		OR
-		--FE.[ResourceClassificationId]<> A.[ResourceClassificationId] OR
+		FE.[AccountTypeId]			<> A.[AccountTypeId] OR
 		FE.[IsCurrent]				<> A.[IsCurrent]				--OR
 		--FE.[AgentId]				<> A.[AgentId]					OR
 		--FE.[ResourceId]				<> A.[ResourceId]				OR
 		--FE.[Identifier]				<> A.[Identifier]				OR
-		--FE.[EntryClassificationId]	<> A.[EntryClassificationId]
+		--FE.[EntryTypeId]	<> A.[EntryTypeId]
 	)
 
 	-- Setting the responsibility center for smart accounts to given one (whether it was null or null)
@@ -227,13 +217,13 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
-	JOIN dbo.ResourceClassifications ARC ON ARC.[Id] = A.ResourceClassificationId
+	JOIN dbo.[AccountTypes] ARC ON ARC.[Id] = A.[AccountTypeId]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
-	JOIN dbo.ResourceClassifications ERC ON ERC.[Id] = R.ResourceClassificationId
+	JOIN dbo.[AccountTypes] ERC ON ERC.[Id] = R.[AccountTypeId]
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
@@ -244,7 +234,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3HavingIncompatibleEntryClassification4',
+		N'Error_TheAccount0IsUsedIn12LineDefinition3HavingIncompatibleEntryType4',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
@@ -252,12 +242,12 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(EEC.[Name], EEC.[Name2], EEC.[Name3]) AS [Resource]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
-	JOIN dbo.EntryClassifications AEC ON AEC.[Id] = A.[EntryClassificationId]
+	JOIN dbo.[EntryTypes] AEC ON AEC.[Id] = A.[EntryTypeId]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.EntryClassifications EEC ON EEC.[Id] = E.[EntryClassificationId]
+	JOIN dbo.[EntryTypes] EEC ON EEC.[Id] = E.[EntryTypeId]
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0

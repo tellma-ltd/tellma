@@ -72,7 +72,7 @@ EXEC [api].[ResponsibilityCenters__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'ResponsibilityCenters: Inserting'
+	Print 'ResponsibilityCenters: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 IF @DebugResponsibilityCenters = 1

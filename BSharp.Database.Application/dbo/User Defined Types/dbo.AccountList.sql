@@ -1,35 +1,30 @@
 ﻿CREATE TYPE [dbo].[AccountList] AS TABLE ( 
 	[Index]							INT				PRIMARY KEY,
 	[Id]							INT				NOT NULL DEFAULT 0,
-	[Name]							NVARCHAR (255)	NOT NULL,
+	[ResponsibilityCenterId]		INT,
+	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[Code]							NVARCHAR (255),
-	[IsSmart]						BIT				NOT NULL DEFAULT 0,	
-	[AccountTypeId]					NVARCHAR (50)	NOT NULL,
-	[AccountClassificationId]		INT,
-	[CurrencyId]					NCHAR (3),
-	[ResponsibilityCenterId]		INT,
-	[ContractType]					NVARCHAR (50),--	REFERENCES dbo.[ContractTypes]([Id]),
-	[AgentDefinitionId]				NVARCHAR (50),
-	[ResourceClassificationId]		INT,
+	[Code]							NVARCHAR (50),
+	--[PartyReference]				NVARCHAR (50), -- how it is referred to by the other party
+	[AccountTypeId]					INT				NOT NULL,
 	[IsCurrent]						BIT,
--- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
--- must be an operating segment. 
--- NULL means two things:
---	a) If the type itself is null, then it is not defined
---	b) if the type itself is not null, then it is to be defined in entries.
+--
+	[LegacyClassificationId]		INT,
+	[LegacyType]					NVARCHAR (50),
+-- Major properties: NULL means it is not defined.
+	[AgentDefinitionId]				NVARCHAR (50),
+	[HasResource]					BIT				NOT NULL DEFAULT 0,
+	[HasAgent]						BIT				NOT NULL DEFAULT 0,
+	[IsRelated]						BIT				NOT NULL DEFAULT 0,
+	[HasReferenceAgent]				BIT				NOT NULL DEFAULT 0,	
+	[HasReferenceText]				BIT				NOT NULL DEFAULT 0,
+	[HasReferenceAmount]			BIT				NOT NULL DEFAULT 0, 
+	--[HasReferenceResource]		BIT				NOT NULL DEFAULT 0,
 	[AgentId]						INT,
 	[ResourceId]					INT,
+	[CurrencyId]					NCHAR (3)			NOT NULL,
 	[Identifier]					NVARCHAR (10),
---
-	[EntryClassificationId]			INT --,
-
-	-- I commented this since I need this table type to call [bll].[Account__Preprocess],
-	-- and when this check is violated it returns a cryptic error instead of a proper validation error
-
-	--CHECK (
-	--	([IsSmart] = 0) OR 
-	--	([ContractType] IS NOT NULL)
-	--)
+-- Entry Property
+	[EntryTypeId]					INT
 );

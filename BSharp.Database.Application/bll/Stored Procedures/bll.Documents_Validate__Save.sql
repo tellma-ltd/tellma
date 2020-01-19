@@ -18,7 +18,7 @@ SET NOCOUNT ON;
 
 	*/
 
-	-- (FE Check) If Resource = functional currency, the value must match the DECIMAL (19,4) amount
+	-- (FE Check) If CurrencyId = functional currency, the value must match the DECIMAL (19,4) amount
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT
 	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -28,7 +28,7 @@ SET NOCOUNT ON;
 	--	[Value]
 	--FROM @Entries E
 	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	--WHERE (E.[CurrencyId] = dbo.[fn_FunctionalCurrencyId]())
+	--WHERE (E.[CurrencyId] = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
 	--AND ([Value] <> [MonetaryValue] )
 
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period
@@ -50,49 +50,34 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] = 5); -- Closed
 
-	-- TODO: For the cases below, add the condition that Entry Classification is enforced
+	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
-	-- TODO: Missing Entry Classification for given Account Type
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT
-	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-	--	N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
-	--FROM @Entries E
-	--JOIN dbo.Accounts A ON E.AccountId = A.Id
-	--JOIN dbo.AccountTypes [AT] ON A.[AccountTypeId] = [AT].[Id]
-	--WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
+	-- Missing Entry Type for given Account Type
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + '].EntryTypeId',
+		N'Error_TheAccountType0RequiresAnEntryType',
+		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType
+	FROM @Entries E
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	WHERE (E.[EntryTypeId] IS NULL) AND [AT].EntryTypeParentCode IS NOT NULL;
 
-	-- Invalid Entry Classification for resource classification
-	WITH ParentNodes AS ( SELECT
-		RC.[Node] AS ResourceClassificationParentNode, EC.[Node] AS EntryClassificationParentNode
-		FROM ResourceClassificationsEntryClassifications RCEC
-		JOIN dbo.ResourceClassifications RC ON RC.Id = RCEC.ResourceClassificationId
-		JOIN dbo.EntryClassifications EC ON EC.Id = RCEC.EntryClassificationId
-	),
-	EntryNodes AS (SELECT
-		E.[DocumentIndex], E.[LineIndex], E.[Index], E.ResourceId, E.EntryClassificationId, 
-		RC.[Node] AS ResourceClassificationNode, RC.[Code] AS [ResourceClassificationCode],
-		EC.[Node] AS [EntryClassificationNode], EC.[Code] AS [EntryClassificationCode]
-		FROM @Entries E
-		JOIN dbo.Accounts A ON E.AccountId = A.Id
-		JOIN dbo.Resources R ON E.ResourceId = R.Id
-		JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-		LEFT JOIN dbo.EntryClassifications EC ON E.EntryClassificationId = EC.Id
-	)
+	-- Invalid Entry Type for Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryClassificationId',
-		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
-		E.[ResourceClassificationCode], E.[EntryClassificationCode]
-	FROM EntryNodes E
-	LEFT JOIN ParentNodes P
-	ON  E.ResourceClassificationNode.IsDescendantOf(P.ResourceClassificationParentNode) = 1
-	AND E.[EntryClassificationNode].IsDescendantOf(P.EntryClassificationParentNode) = 1
-	WHERE
-		(E.[EntryClassificationNode] IS NOT NULL AND P.EntryClassificationParentNode IS NULL)
-	OR  (E.ResourceClassificationNode IS NOT NULL AND P.ResourceClassificationParentNode IS NULL);
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
+		N'Error_IncompatibleAccountType0AndEntryType1',
+		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
+		ETE.[Code]
+	FROM @Entries E
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
+	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
+	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentCode] = ETA.[Code]
+	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])

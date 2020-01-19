@@ -1,11 +1,11 @@
-﻿CREATE FUNCTION  [rpt].[Account__Statement] (
--- SELECT * FROM [rpt].[Account__Statement](104, '01.01.2015', '01.01.2020')
-	@AccountId INT,
-	@AgentDefinitionId NVARCHAR (50),
-	@AgentId INT,
-	@ResourceId INT,
+﻿CREATE FUNCTION [rpt].[Account__Statement] (
+-- SELECT * FROM [rpt].[Account__Statement]('01.01.2015', '01.01.2020', 104, NULL, NULL)
 	@fromDate Date = '01.01.2000', 
-	@toDate Date = '01.01.2100'
+	@toDate Date = '01.01.2100',
+	@AccountId INT,
+	@ResponsibilityCenterId INT,
+	@AgentId INT,
+	@ResourceId INT
 ) RETURNS TABLE
 AS 
 RETURN
@@ -16,7 +16,7 @@ RETURN
 		[DocumentDefinitionId],
 		[SerialNumber],
 		[Direction],
-		[EntryClassificationId],
+		[EntryTypeId],
 		[ResourceId],
 		[MonetaryValue],
 		[CurrencyId],
@@ -32,11 +32,10 @@ RETURN
 		[Memo],
 		[ExternalReference],
 		[AdditionalReference]
-	FROM [dbo].[fi_Journal](@fromDate, @toDate)
-	WHERE [AccountId] = @AccountId
-	AND (@AgentId IS NULL OR AgentId = @AgentId)
-	AND (@ResourceId IS NULL OR [ResourceId] = @ResourceId)
-	
-	
-	;
+	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL)
+	WHERE
+		(@AccountId					IS NULL	OR [AccountId]				= @AccountId)
+	AND (@ResponsibilityCenterId	IS NULL	OR [ResponsibilityCenterId] = @ResponsibilityCenterId)
+	AND (@AgentId					IS NULL	OR [AgentId]				= @AgentId)
+	AND (@ResourceId				IS NULL	OR [ResourceId]				= @ResourceId)
 GO

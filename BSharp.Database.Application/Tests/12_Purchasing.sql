@@ -61,7 +61,7 @@ BEGIN -- Inserting
 
 	WITH GritwiLines AS (
 		SELECT
-			SortKey, LineId, [DefinitionId], EntryNumber, Account, [EntryClassificationId], [Resource], Direction, Quantity, [Unit], [Value]
+			SortKey, LineId, [DefinitionId], EntryNumber, Account, [EntryTypeId], [Resource], Direction, Quantity, [Unit], [Value]
 		FROM rpt.Documents(@D21Ids)
 		WHERE [DefinitionId] = N'GoodReceiptInWithInvoice'
 	)
@@ -73,12 +73,12 @@ BEGIN -- Inserting
 	) L2 ON L2.LineId = L1.LineId;
 
 	WITH CompactLines AS (
-		SELECT [AccountId], [EntryClassificationId], [ResourceId],
+		SELECT [AccountId], [EntryTypeId], [ResourceId],
 			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM [Entries]
-		GROUP BY [AccountId], [EntryClassificationId], [ResourceId]
+		GROUP BY [AccountId], [EntryTypeId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	MUM.[Name] AS [MassUnit], MUV.[Name] AS [VolumeUnit],
@@ -89,8 +89,8 @@ BEGIN -- Inserting
 	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
 	LEFT JOIN dbo.MeasurementUnits MUV ON R.VolumeUnitId = MUV.Id
-	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]
-	JOIN dbo.[EntryClassifications] IEC ON CL.[EntryClassificationId] = IEC.[Code]
+	JOIN dbo.[LegacyClassifications] A ON CL.[AccountId] = A.[Id]
+	JOIN dbo.[EntryTypes] IEC ON CL.[EntryTypeId] = IEC.[Code]
 	WHERE CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 

@@ -69,7 +69,7 @@ EXEC [api].Currencies__Save
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Currencies: Inserting'
+	Print 'Currencies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;						
 EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
@@ -94,14 +94,6 @@ EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurren
 --EXEC [api].Currencies__Delete
 --	@IndexedIds = @DeletedCurrencies,
 --	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_GBP INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'GBP' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_AED INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'AED' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_SAR INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'SAR' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_CNY INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'CNY' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
-DECLARE @R_SDG INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'SDG' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
 
 IF @DebugCurrencies = 1
 BEGIN

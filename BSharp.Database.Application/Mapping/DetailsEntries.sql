@@ -24,43 +24,65 @@ RETURN
 		WHERE UnitType = N'Volume'
 	)
 	SELECT
-		J.[Id],
-		J.[LineId],
-		J.[DocumentId],
-		J.[DocumentDate],
-		J.[SerialNumber],
-		J.[VoucherNumericReference],
-		J.[DocumentDefinitionId],
-		J.[LineDefinitionId],
-		J.[Direction],
-		J.[AccountId],
-		J.[ContractType],
-		J.[ResourceClassificationId],
-		J.[AgentDefinitionId],
-		J.[AgentId],
-		J.[EntryClassificationId],
-		J.[ResourceId],
-		--J.[ResourceIdentifier],
-		J.[DueDate],
-		J.[MonetaryValue],
-		J.[CurrencyId],
-		J.[Count] * ISNULL(CR.[Ratio], 0) AS [Count],
-		J.[Mass] * ISNULL(MR.[Ratio], 0) AS [Mass],
-		J.[Volume] * ISNULL(MR.[Ratio], 0) AS [Volume],
-		J.[Time],
-		J.[Value],
-		J.[Memo],
-		J.[ExternalReference],
-		J.[AdditionalReference],
-		J.[RelatedAgentId],
-		J.[RelatedAmount]
-	FROM dbo.fi_Journal(@fromDate, @toDate) J
-	LEFT JOIN dbo.Resources R ON J.ResourceId = R.Id
-	LEFT JOIN UnitRatios CR ON R.CountUnitId = CR.Id
-	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id
-	LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id
-		--WHERE
-		--J.[DocumentState] = 5 -- N'Closed'
-		--AND J.[DocumentState] = 4; -- N'Reviewed';
-	
-	;
+		E.[Id],
+		L.[Id] AS [LineId],
+		D.[Id] AS [DocumentId],
+		D.[DocumentDate],
+		D.[SerialNumber],
+		D.[VoucherNumericReference],
+		D.[DocumentLookup1Id],
+		D.[DocumentLookup2Id],
+		D.[DocumentLookup3Id],
+		D.[DocumentText1],
+		D.[DocumentText2],
+		D.[State] AS DocumentState,
+		D.[DefinitionId] AS [DocumentDefinitionId],
+		L.[DefinitionId] AS [LineDefinitionId],
+		L.[State] AS [LineState],
+		E.[ResponsibilityCenterId],
+		E.[EntryNumber],
+		E.[Direction],
+		E.[AccountId],
+		A.[LegacyType],
+		A.[IsCurrent],
+		A.[LegacyClassificationId],
+		A.[AccountTypeId],
+		A.[AgentDefinitionId],
+		--E.[AccountIdentifier]
+		E.[AgentId],
+		E.[EntryTypeId],
+		E.[ResourceId],
+		--E.[ResourceIdentifier],
+		E.[DueDate],
+		E.[MonetaryValue],
+		A.[CurrencyId],
+		E.[Count],
+		R.[CountUnitId],
+		E.[Count] * ISNULL(CR.[Ratio], 0) AS [NormalizedCount],
+		E.[Mass],
+		R.[MassUnitId],
+		E.[Mass] * ISNULL(MR.[Ratio], 0) AS [NormalizedMass],
+		E.[Volume],
+		R.[VolumeUnitId],
+		E.[Volume] * ISNULL(MR.[Ratio], 0) AS [NormalizedVolume],
+		E.[Time],
+		R.[TimeUnitId],
+		E.[Value],
+		L.[Memo],
+		E.[ExternalReference],
+		E.[AdditionalReference],
+		E.[RelatedAgentId],
+		E.[RelatedAmount]
+	FROM
+		[dbo].[Entries] E
+		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
+		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
+		JOIN dbo.Accounts A ON E.AccountId = A.Id
+		LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
+		LEFT JOIN UnitRatios CR ON R.CountUnitId = CR.Id
+		LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id
+		LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id
+
+	WHERE
+		(@fromDate IS NULL OR [DocumentDate] >= @fromDate)
+	AND (@toDate IS NULL OR [DocumentDate] < DATEADD(DAY, 1, @toDate));

@@ -11,6 +11,6 @@
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 	[AgentDefinitionId]					NVARCHAR (50),
-	[ResourceClassificationCode]		NVARCHAR (255),
+	[AccountTypeCode]		NVARCHAR (255),
 	[Script]							NVARCHAR (MAX) -- to store SQL code that populates the line
 );

@@ -6,13 +6,13 @@
 	--	RC.[ResourceDefinitionId],
 	--	RC.[IsAssignable],
 	--	RC.[IsActive],
-	--	(SELECT COUNT(*) FROM ResourceClassifications WHERE [ParentNode] = RC.[Node]) AS [ChildCount]
-	--FROM dbo.ResourceClassifications RC
+	--	(SELECT COUNT(*) FROM AccountTypes WHERE [ParentNode] = RC.[Node]) AS [ChildCount]
+	--FROM dbo.AccountTypes RC
 
 	DECLARE @EmployeeBenefits [dbo].ResourceList;
 
 	INSERT INTO @EmployeeBenefits (
-	[Index], [ResourceClassificationId],					[Name],					[TimeUnitId]) VALUES
+	[Index],			[AccountTypeId],					[Name],					[TimeUnitId]) VALUES
 	(0,	dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Basic',				dbo.fn_UnitName__Id(N'wmo')),
 	(1, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Transportation',		dbo.fn_UnitName__Id(N'wmo')),
 	(2, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Day Overtime',		dbo.fn_UnitName__Id(N'hr')),
@@ -32,7 +32,7 @@
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting employee benefits'
+		Print 'Inserting employee benefits: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 	DECLARE @R_DayOT INT, @R_NightOT INT, @R_RestOT INT, @R_HolidayOT INT

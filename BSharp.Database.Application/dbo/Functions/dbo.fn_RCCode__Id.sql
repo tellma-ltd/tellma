@@ -6,7 +6,7 @@ RETURNS INT
 AS
 BEGIN
 	RETURN (
-		SELECT [Id] FROM dbo.ResourceClassifications
+		SELECT [Id] FROM dbo.[AccountTypes]
 		WHERE [Code] = @Code
 	)
 END;

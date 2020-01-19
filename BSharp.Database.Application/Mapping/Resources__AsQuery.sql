@@ -15,7 +15,7 @@ RETURN (
 		[Name3],
 		[Identifier],
 		[Code],
-		[ResourceClassificationId],
+		[AccountTypeId],
 		[CountUnitId],
 		[CurrencyId],
 		[MonetaryValue],

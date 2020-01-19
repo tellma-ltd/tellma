@@ -20,7 +20,7 @@ RETURN
 			DL.[SortKey],
 			DL.[DefinitionId] AS LineDefinitionId,
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryClassificationId], 
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
 			R.[Name] AS [Resource],
 			CAST(DLE.[Value] AS DECIMAL (19,4)) AS [Value],
 			-- TODO: Add other unittypes
@@ -36,7 +36,7 @@ RETURN
 		LEFT JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
-		JOIN dbo.Currencies C ON DLE.[CurrencyId] = C.[Id]
+		JOIN dbo.Currencies C ON A.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
@@ -52,7 +52,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
-		[EntryNumber], [Account], [EntryClassificationId],[Resource],
+		[EntryNumber], [Account], [EntryTypeId],[Resource],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

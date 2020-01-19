@@ -35,7 +35,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Custodies: Inserting'
+		Print 'Custodies: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 	SELECT

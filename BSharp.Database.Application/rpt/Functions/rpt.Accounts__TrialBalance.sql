@@ -9,22 +9,21 @@ AS
 RETURN
 	WITH JournalSummary
 	AS (
-		SELECT [AccountClassificationId],
+		SELECT [LegacyClassificationId],
 			AccountId,
 			SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
 		FROM [map].[SummaryEntries](
-			--NULL, -- OperatingSegmentId
-			NULL, --@AccountTypeId
-			NULL, -- @AgentDefinitionId
-			NULL, -- @ResourceClassificationCode
 			@fromDate,
 			@ToDate, 
+			NULL, -- @ResponsibilityCenterId
+			NULL, -- @AgentDefinitionId
+			NULL, -- @AccountTypeCode
 			NULL, -- @CountUnitId
 			NULL, --@MassUnitId
 			NULL -- @VolumneId
 		)
-		GROUP BY [AccountClassificationId], AccountId
+		GROUP BY [LegacyClassificationId], AccountId
 	)
-	SELECT AccountClassificationId, AccountId, [Opening], [Debit], [Credit], Closing
+	SELECT [LegacyClassificationId], AccountId, [Opening], [Debit], [Credit], Closing
 	FROM JournalSummary;
 GO

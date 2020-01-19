@@ -12,12 +12,10 @@
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
-	[ContractType]						NVARCHAR (50)		CONSTRAINT [CK_LineDefinitionEntries__ContractType] REFERENCES dbo.[ContractTypes]([Id]),
-
 	[AgentDefinitionSource]				SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentDefinitionId]					NVARCHAR (50)		REFERENCES dbo.AgentDefinitions([Id]),
 
-	[ResourceClassificationCode]		NVARCHAR (255),
+	[AccountTypeCode]		NVARCHAR (255),
 
 	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
 	[AgentId]							INT					REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT

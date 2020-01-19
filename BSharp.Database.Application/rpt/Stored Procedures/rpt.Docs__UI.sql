@@ -18,8 +18,8 @@ WITH Docs AS (
 			L.[DefinitionId] AS LineDefinitionId,
 			L.[State] AS [LineState],
 			E.[Direction],
-			E.[EntryNumber], A.[Name] AS [Account], A.[IsSmart] AS S,
-			E.[CurrencyId], E.[MonetaryValue], E.[EntryClassificationId],
+			E.[EntryNumber], A.[Name] AS [Account], A.[HasAgent] AS [A?], A.[HasResource] AS [R?],
+			A.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
 		FROM dbo.Documents D
@@ -52,7 +52,7 @@ WITH Docs AS (
 	--	(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
 		Docs.[LineId], [LineDefinitionId],
 		[EntryNumber] AS [E/N], 
-		[Account], [S], [CurrencyId],
+		[Account], [A?], [R?], [CurrencyId],
 		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
 		EC.[Name] AS [EntryClassification],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
@@ -60,6 +60,6 @@ WITH Docs AS (
 		[LineState]
 	FROM Docs
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
-	LEFT JOIN dbo.EntryClassifications EC ON [EntryClassificationId] = EC.[Id]
+	LEFT JOIN dbo.[EntryTypes] EC ON [EntryTypeId] = EC.[Id]
 	ORDER BY Docs.[LineId];
 END;

@@ -1,7 +1,7 @@
 ﻿	DELETE FROM @ResourceDefinitions;
 	INSERT INTO @ResourceDefinitions (
 		[Id],					[TitlePlural],				[TitleSingular],	[IdentifierLabel]) VALUES
-	(N'general-fixed-assets',	N'General fixed assets',	N'Geneal fixed asset',	N'Used By');
+	(N'general-fixed-assets',	N'General fixed assets',	N'General fixed asset',	N'Used By');
 
 	EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
@@ -9,15 +9,13 @@
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Resource Definitions: Inserting'
+		Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;		
 
-	UPDATE dbo.ResourceClassifications SET ResourceDefinitionId = N'general-fixed-assets' WHERE [Id] = dbo.fn_RCCode__Id(N'FixturesAndFittings');
-
 	DECLARE @FixedAssets dbo.ResourceList;
 	INSERT INTO @FixedAssets ([Index],
-		[ResourceClassificationId],					[Name],			[TimeUnitId],				[Identifier]) VALUES
+		[AccountTypeId],					[Name],			[TimeUnitId],				[Identifier]) VALUES
 	(0, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
 	(1, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
 
@@ -28,7 +26,7 @@
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting PPE (fixed-assets)'
+		Print 'Inserting PPE (fixed-assets): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 	IF @DebugResources = 1 

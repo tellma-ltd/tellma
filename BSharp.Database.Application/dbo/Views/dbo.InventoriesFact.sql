@@ -19,7 +19,7 @@ RETURN
 		J.[Count],
 		J.[Mass],
 		J.[Volume],
-		J.[EntryClassificationId],
+		J.[EntryTypeId],
 		J.[VoucherNumericReference],
 		J.[Memo],
 		J.[RelatedAgentId],
@@ -32,5 +32,4 @@ RETURN
 		--R.[Lookup4Id]
 	FROM [map].[DetailsEntries](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
-	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-	WHERE J.[ContractType] = N'NonFinancialAsset' AND J.[ResourceClassificationId] = N'Inventories'
+	WHERE J.[AccountTypeId] = dbo.fn_RCCode__Id('TotalInventories')

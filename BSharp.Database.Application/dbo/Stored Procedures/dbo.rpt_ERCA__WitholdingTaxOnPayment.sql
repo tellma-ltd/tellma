@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_ERCA__WitholdingTaxOnPayment]
 	@fromDate Date = '01.01.2000', 
 	@toDate Date = '01.01.2100',
-	@AccountId INT -- WT Purcahse Accounr
+	@AccountId INT -- WT Purchase Account
 AS 
 BEGIN
 	SELECT
@@ -14,7 +14,7 @@ BEGIN
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],
 		J.[LineId] -- for navigation
-	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
+	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[AccountId] = @AccountId
 	AND J.Direction = -1;

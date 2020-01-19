@@ -7,15 +7,12 @@
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
-	[IsCurrent]					BIT,
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[ResponsibilityCenterId]	INT,
 	--[AccountIdentifier]			NVARCHAR (10),
 	--[ResourceIdentifier]		NVARCHAR (10),
-	[CurrencyId]				NCHAR (3),
-
-	[EntryClassificationId]		INT,
+	[EntryTypeId]				INT,
 	--[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE,
 	[MonetaryValue]				DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- Amount in foreign Currency 

@@ -15,20 +15,16 @@ END
 
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
-:r .\00_Common\b_ResourceClassifications.sql
-:r .\00_Common\c_EntryClassifications.sql
-:r .\00_Common\d_ResourceClassificationsEntryClassifications.sql
-:r .\00_Common\e_FunctionalCurrency.sql
-:r .\00_Common\f_Settings.sql
+:r .\00_Common\b_FunctionalCurrency.sql
+:r .\00_Common\c_Settings.sql
+:r .\00_Common\d_EntryTypes.sql
+:r .\00_Common\e_AccountTypes.sql
 
 :r .\01_Definitions\a_LookupDefinitions.sql
 :r .\01_Definitions\b_ResourceDefinitions.sql
 :r .\01_Definitions\c_AgentDefinitions.sql
-:r .\01_Definitions\d_ContractTypes.sql
 :r .\01_Definitions\e_LineDefinitions.sql
 :r .\01_Definitions\f_DocumentDefinitions.sql
-
-:r .\01_Definitions\g_AccountTypes.sql
 
 :r .\02_Security\a_Users.sql
 :r .\02_Security\b_RolesMemberships.sql
@@ -50,7 +46,6 @@ END
 :r .\04_Agents\09_Custodies.sql
 :r .\04_Agents\10_Employees.sql
 
-
 :r .\05_Resources\a1_PPE_motor-vehicles.sql
 :r .\05_Resources\a2_PPE_it-equipment.sql
 :r .\05_Resources\a3_PPE_machineries.sql
@@ -58,14 +53,15 @@ END
 :r .\05_Resources\b_Inventories_raw-materials.sql
 :r .\05_Resources\d1_FG_vehicles.sql
 :r .\05_Resources\d2_FG_steel-products.sql
-----:r .\05_Resources\e1_CCE_received-checks.sql
+--:r .\05_Resources\e1_CCE_received-checks.sql
 --:r .\05_Resources\h_PL_employee-benefits.sql
 
-:r .\06_Accounts\a_AccountClassifications.sql
-:r .\06_Accounts\b_BasicAccounts.sql
-:r .\06_Accounts\c_SmartAccounts.sql
+:r .\06_Accounts\a_LegacyTypes.sql
+:r .\06_Accounts\b_LegacyClassifications.sql
+:r .\06_Accounts\c_BasicAccounts.sql
+:r .\06_Accounts\d_SmartAccounts.sql
 
---:r .\07_Entries\01_manual-journal-vouchers.sql
+:r .\07_Entries\01_manual-journal-vouchers.sql
 
 
 RETURN;

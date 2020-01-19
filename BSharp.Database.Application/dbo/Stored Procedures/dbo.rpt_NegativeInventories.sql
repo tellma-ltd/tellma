@@ -11,8 +11,8 @@ AS
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
 			SUM([Value]) As [Value]
-	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [ContractType] = 'Inventorry'
+	FROM [map].[DetailsEntries](NULL, @AsOfDate, NULL, NULL, NULL)
+	WHERE [AccountTypeId] = dbo.fn_RCCode__Id('TotalInventories')
 	GROUP BY
 			[AccountId],
 			[AgentId],

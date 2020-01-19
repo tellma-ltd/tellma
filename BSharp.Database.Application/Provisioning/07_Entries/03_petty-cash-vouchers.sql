@@ -64,7 +64,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Petty Cash Vouchers: Insert'
+		Print 'Petty Cash Vouchers: Insert: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -119,7 +119,7 @@ BEGIN
 
 		IF @ValidationErrorsJson IS NOT NULL 
 		BEGIN
-			Print 'Inserting PPE Accounts'
+			Print 'Inserting PPE Accounts: ' + @ValidationErrorsJson
 			GOTO Err_Label;
 		END;
 		
@@ -128,8 +128,8 @@ BEGIN
 		AND [AccountTypeId] IN (SELECT [Id] FROM PPEAccountTypes);
 
 		INSERT INTO @CashPurchasesLineEntries([Index], 
-			[LineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [Time], [Value])
-		SELECT 0, DL.[Index], DL.DocumentIndex, LD.[EntryNumber], LD.[Direction], @A00, LD.[EntryClassificationId], 5, 150000
+			[LineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryTypeId], [Time], [Value])
+		SELECT 0, DL.[Index], DL.DocumentIndex, LD.[EntryNumber], LD.[Direction], @A00, LD.[EntryTypeId], 5, 150000
 		FROM @CashPurchasesLines DL
 		JOIN dbo.LineDefinitions LD ON DL.LineDefinitionId = LD.[Id]
 

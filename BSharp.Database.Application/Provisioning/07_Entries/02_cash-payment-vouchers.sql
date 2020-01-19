@@ -25,7 +25,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Capital Investment (M): Insert'
+		Print 'Capital Investment (M): Insert: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

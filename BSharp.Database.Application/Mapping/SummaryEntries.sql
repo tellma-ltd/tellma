@@ -1,29 +1,28 @@
 ﻿	CREATE FUNCTION [map].[SummaryEntries] (
 	--TODO: make the filtering of these parameters from NormalizedJournal
-	--@OperatingSegmentId INT,
-	@AccountTypeId NVARCHAR(50) = NULL,
-	@AgentDefinitionId NVARCHAR(50),
-	@ResourceClassificationCode NVARCHAR (255),
 	@FromDate Date = '01.01.2019',
 	@ToDate Date = '01.01.2020',
+	@ResponsibilityCenterId INT,
+	@AgentDefinitionId NVARCHAR(50),
+	@AccountTypeCode NVARCHAR (255),
 	@CountUnitId INT = NULL,
 	@MassUnitId INT = NULL,
 	@VolumeUnitId INT = NULL
 )
 RETURNS TABLE AS
 RETURN
-	WITH ResourceClassifications AS (
-		SELECT Id FROM dbo.[ResourceClassifications]
+	WITH AccountTypesSubtree AS (
+		SELECT Id FROM dbo.[AccountTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[ResourceClassifications] WHERE [Code] = @ResourceClassificationCode)
+			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Code] = @AccountTypeCode)
 		) = 1
 	),
 	ReportAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
-		WHERE (@AccountTypeId IS NULL OR [AccountTypeId]= @AccountTypeId)
-		AND (@AccountTypeId IS NULL OR [AccountTypeId]= @AccountTypeId)
+		WHERE
+			(@ResponsibilityCenterId IS NULL OR [ResponsibilityCenterId] = @ResponsibilityCenterId)
 		AND (@AgentDefinitionId IS NULL OR [AgentDefinitionId]= @AgentDefinitionId)
-		AND (@ResourceClassificationCode IS NULL OR [ResourceClassificationId] IN (SELECT [Id] FROM ResourceClassifications))
+		AND (@AccountTypeCode IS NULL OR [AccountTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
 	),
 	OpeningBalances AS (
 		SELECT
@@ -41,7 +40,7 @@ RETURN
 	),
 	Movements AS (
 		SELECT
-			[AccountId], [EntryClassificationId], [CurrencyId],
+			[AccountId], [EntryTypeId], [CurrencyId],
 			SUM(CASE WHEN [Direction] > 0 THEN [MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
 			SUM(CASE WHEN [Direction] < 0 THEN [MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
 
@@ -56,11 +55,11 @@ RETURN
 			SUM(CASE WHEN [Direction] < 0 THEN [Value] ELSE 0 END) AS [Credit]
 		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
-		GROUP BY AccountId, [EntryClassificationId], [CurrencyId]
+		GROUP BY AccountId, [EntryTypeId], [CurrencyId]
 	),
 	Register AS (
 		SELECT
-			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS AccountId, [EntryClassificationId],
+			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS AccountId, [EntryTypeId],
 			ISNULL(OpeningBalances.[Count],0) AS OpeningCount, ISNULL(OpeningBalances.[Mass],0) AS OpeningMass, ISNULL(OpeningBalances.[Volume],0) AS OpeningVolume ,ISNULL(OpeningBalances.[Opening],0) AS Opening,
 			ISNULL(Movements.[CountIn],0) AS CountIn, ISNULL(Movements.[CountOut],0) AS CountOut,
 			ISNULL(Movements.[MassIn],0) AS MassIn, ISNULL(Movements.[MassOut],0) AS MassOut,
@@ -74,10 +73,11 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.[EntryClassificationId], A.[AccountTypeId], A.[AccountClassificationId], A.[ResourceId], A.[AgentId],-- A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[AccountTypeId], A.[LegacyClassificationId], A.[ResourceId], A.[AgentId],-- A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]
 	FROM Register R
 	JOIN dbo.Accounts A ON R.[AccountId] = A.[Id]
+	WHERE A.[Id] IN (SELECT Id FROM ReportAccounts)
 ;

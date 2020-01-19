@@ -27,7 +27,7 @@ EXEC [api].[AgentDefinitions__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'AgentDefinitions: Inserting'
+	Print 'AgentDefinitions: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

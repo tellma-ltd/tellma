@@ -2,14 +2,13 @@
 -- So, if a resource has a defined currency, it propagates to the entries used. The same applies if it has an external reference.
 -- Similarly, if it has a defined monetary value, it propagates to the entries used
 CREATE TABLE [dbo].[Resources] (
--- Resource can be seen as the true leaf level of Resource Classifications.
+-- Resource can be seen as the true leaf level of "real" Account Types.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	--[OperatingSegmentId]			INT					CONSTRAINT [FK_Resources__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DefinitionId]					NVARCHAR (50)		NOT NULL,
-	-- Inspired by IFRS, with additions to simplify application logic, to cater for user custom classifications for reporting purposes
-	[ResourceClassificationId]		INT					NOT NULL,
-	CONSTRAINT [FK_Resources__ResourceClassificationId_DefinitionId] FOREIGN KEY ([ResourceClassificationId], [DefinitionId]) REFERENCES [dbo].[ResourceClassifications] ([Id], [ResourceDefinitionId]),
-	CONSTRAINT [CK_Resources__Id_ResourceClassificationId] UNIQUE ([Id], [ResourceClassificationId]),
+	-- TODO: to make sure we only use sensible account types, we add a field called
+	-- IsResourceClassification		BIT		DEFAULT 1, and add referential integrity.
+	[AccountTypeId]					INT					NOT NULL,
+	--CONSTRAINT [CK_Resources__Id_AccountTypeId] UNIQUE ([Id], [AccountTypeId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]							NVARCHAR (255),
@@ -23,6 +22,7 @@ CREATE TABLE [dbo].[Resources] (
 
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Count]							Decimal (19,4)		DEFAULT 1,
+	-- Currency Id is needed in case the resource has a monetary value like a check. 
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	CONSTRAINT [CK_Resources__Id_CurrencyId] UNIQUE ([Id], [CurrencyId]),
 	[MonetaryValue]					Decimal (19,4), -- if [MonetaryValue] is not null, this value is forced in Entries

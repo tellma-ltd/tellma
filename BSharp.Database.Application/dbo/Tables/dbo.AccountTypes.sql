@@ -1,39 +1,27 @@
-﻿CREATE TABLE [dbo].[AccountTypes]
-/*
-The objective is to allow generation of basic financial statements, to be used by management during the year.
-As for IFRS or Statutory, the mapping will be done by the auditor, at the account level.
-It must be made required. However, it is not hard coded.
-When the account is smart, the other dimensions need to comply with the account type
-For simplicity of migration and reconciliation and user experience, we use the same account types used in the legacy system.
-If no legacy system, we ask the user about the statement he prefers, and we use the appropriate account types.
-*/
-(
-	[Id]								NVARCHAR (50) CONSTRAINT [PK_AccountTypes] PRIMARY KEY,
-	[Name]								NVARCHAR (50) NOT NULL,
-	[Name2]								NVARCHAR (50),
-	[Name3]								NVARCHAR (50),
-	[Description]						NVARCHAR (1024),
-	[Description2]						NVARCHAR (1024),
-	[Description3]						NVARCHAR (1024),
-	--[ContractType]						NVARCHAR (50) CONSTRAINT [CK_AccountTypes__ContractType] CHECK ( [ContractType] IN (
-	--										N'OnHand',
-	--										N'OnDemand',
-	--										N'InTransit',
-	--										N'Receivable',--/PrepaidExpense
-	--										N'Deposit',
-	--										N'Loan',
-	--										N'AccruedIncome',
-	--										N'Equity',
-	--										N'AccruedExpense',
-	--										N'Payable',--/UnearnedRevenue
-	--										N'Retention',
-	--										N'Borrowing',
-	--										N'Revenue',
-	--										N'Expense'
-	--									)),
-	--[IsCurrent]							BIT,
-	--[AgentDefinitionList]				NVARCHAR (1024),
-	--[IsRelated]							BIT,
-	--[ResourceClassificationParentCode]	NVARCHAR (255),
-	--[EntryClassificationParentCode]		NVARCHAR (255)
+﻿CREATE TABLE [dbo].[AccountTypes] (
+	[Id]					INT					CONSTRAINT [PK_AccountTypes]  PRIMARY KEY NONCLUSTERED IDENTITY,
+	[ParentId]				INT					CONSTRAINT [FK_AccountTypes__ParentId] REFERENCES [dbo].[AccountTypes] ([Id]),
+	[Code]					NVARCHAR (255)		CONSTRAINT [IX_AccountTypes__Code] UNIQUE NONCLUSTERED,
+	[Name]					NVARCHAR (255)		NOT NULL,
+	[Name2]					NVARCHAR (255),
+	[Name3]					NVARCHAR (255),
+	[Description]			NVARCHAR (1024),
+	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_AccountTypes__Node] UNIQUE CLUSTERED,
+	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
+	[IsCurrent]				BIT,
+	[IsReal]				BIT					NOT NULL DEFAULT 0,
+	[IsResourceClassification]BIT				NOT NULL DEFAULT 0,
+	[IsPersonal]			BIT					NOT NULL DEFAULT 0,
+	[EntryTypeParentCode]	NVARCHAR (255),	
+	-- Additional properties, Is Active at the end
+	[IsActive]				BIT					NOT NULL DEFAULT 1,
+	[IsSystem]				BIT					NOT NULL DEFAULT 0,
+	-- Audit details
+	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	-- Pure SQL properties and computed properties
+	[ParentNode]			AS [Node].GetAncestor(1)
 );
+GO

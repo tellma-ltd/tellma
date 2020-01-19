@@ -49,7 +49,7 @@ BEGIN
 		--	WHEN (J.[AccountDefinitionId] = N'ShorttermPensionContributionAccruals')
 		--	THEN J.Direction * J.[Value] Else 0 
 		--	END) AS [Pension Contribution 11%]
-	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
+	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	GROUP BY A.TaxIdentificationNumber, A.[Name];
 END

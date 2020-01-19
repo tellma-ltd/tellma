@@ -27,7 +27,7 @@ WSI
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[ManagerId]				INT					CONSTRAINT [FK_ResponsibilityCenters__ManagerId] REFERENCES dbo.Agents([Id]),
-
+	--TODO: Replace IsActive with To Be Discontinued On
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.
 	[ParentId]				INT					CONSTRAINT [FK_ResponsibilityCenters__ParentId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),

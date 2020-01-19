@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_ERCA__VAT_PurchasesSummary]
 	@fromDate Date = '01.01.2015', 
-	@toDate Date = '01.01.2020',
-	@AccountId INT -- VAT Purchase Account
+	@toDate Date = '01.01.2020'
 AS 
 BEGIN
 	SELECT
@@ -11,9 +10,14 @@ BEGIN
 		SUM(J.[MonetaryValue]) AS VAT,
 		SUM(J.[RelatedAmount]) AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
-	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
+	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[AccountId] = @AccountId
+	WHERE
+		J.[AccountTypeId] = dbo.fn_RCCode__Id( N'ValueAddedTaxReceivables')
 	AND J.Direction = 1
-	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
+	GROUP BY
+		A.[Name],
+		A.TaxIdentificationNumber,
+		J.ExternalReference, J.[AdditionalReference],
+		J.DocumentDate;
 END;

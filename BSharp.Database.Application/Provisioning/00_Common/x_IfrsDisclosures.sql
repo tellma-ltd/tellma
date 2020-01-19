@@ -43,4 +43,4 @@ EXEC [api].[IfrsDisclosureDetails__Save]
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
 IF @ValidationErrorsJson IS NOT NULL
-	PRINT @ValidationErrorsJson -- TODO, must log into a file instead
+	PRINT N'IfrsDisclosureDetails Inserting: ' + @ValidationErrorsJson -- TODO, must log into a file instead

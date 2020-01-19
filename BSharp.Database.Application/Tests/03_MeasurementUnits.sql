@@ -20,7 +20,7 @@ BEGIN -- Inserting
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'MeasurementUnits: Inserting'
+		Print 'MeasurementUnits: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END
 END
@@ -57,7 +57,7 @@ EXEC [api].[MeasurementUnits__Save]
 
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Updating'
+	Print 'MeasurementUnits: Updating: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END
 
@@ -77,7 +77,7 @@ EXEC [api].[MeasurementUnits__Delete]
 
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Deleting'
+	Print 'MeasurementUnits: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END
 

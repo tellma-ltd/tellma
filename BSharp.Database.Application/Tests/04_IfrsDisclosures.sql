@@ -45,7 +45,7 @@ EXEC [api].[IfrsDisclosureDetails__Save]
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
 IF @DebugIfrsConcepts = 1
-	EXEC [rpt].[sp_Ifrs] @fromDate = '2018.07.01', @toDate = '2019.06.30';
+	EXEC [rpt].[Ifrs_110000] @fromDate = '2018.07.01', @toDate = '2019.06.30';
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

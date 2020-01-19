@@ -7,22 +7,24 @@ DECLARE @ProcessedEntities [dbo].[AccountList];
 INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
 -- If AgentId is set, then AgentDefinitionId is auto determined
-UPDATE [Q]
-SET [Q].[AgentDefinitionId] = [A].[DefinitionId]
-FROM @ProcessedEntities [Q] JOIN [dbo].[Agents] [A] ON [Q].[AgentId] = [A].[Id]
-WHERE [Q].[AgentId] IS NOT NULL;
+UPDATE A
+SET A.[AgentDefinitionId] = AG.[DefinitionId]
+FROM @ProcessedEntities A JOIN [dbo].[Agents] AG ON A.[AgentId] = AG.[Id]
+WHERE A.[AgentId] IS NOT NULL;
 
--- If ResourceId is set, then CurrencyId is auto determined
-UPDATE [Q]
-SET [Q].[CurrencyId] = COALESCE([Q].[CurrencyId], [R].[CurrencyId])
-FROM @ProcessedEntities [Q] JOIN [dbo].[Resources] [R] ON [Q].[ResourceId] = [R].[Id]
-WHERE [Q].[IsSmart] = 1
+-- If there is only ONE active responsibility center set the account to it
+IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE [IsActive] = 1) = 1
+UPDATE @ProcessedEntities
+SET [ResponsibilityCenterId] = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE [IsActive] = 1);
 
--- If ResourceId is set, then ResourceClassificationId is auto determined
-UPDATE [Q]
-SET [Q].[ResourceClassificationId] = [R].[ResourceClassificationId]
-FROM @ProcessedEntities [Q] JOIN [dbo].[Resources] [R] ON [Q].[ResourceId] = [R].[Id]
-WHERE [Q].[ResourceId] IS NOT NULL;
+-- From Account Type, determine IsCurrent and HasResource, etc...
+UPDATE A
+SET
+	A.[IsCurrent]	= COALESCE([AT].[IsCurrent], A.[IsCurrent]),
+	A.[HasResource] = (CASE WHEN [AT].IsReal = 0 THEN 0 ELSE A.[HasResource] END),
+	A.[HasAgent]	= (CASE WHEN [AT].[IsPersonal] = 0 THEN 0 ELSE A.[HasAgent] END),
+	A.[EntryTypeId] = (CASE WHEN [AT].[EntryTypeParentCode] IS NULL THEN NULL ELSE A.[EntryTypeId] END)
+FROM @ProcessedEntities A JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 
 -- Return the result
 SELECT * FROM @ProcessedEntities;

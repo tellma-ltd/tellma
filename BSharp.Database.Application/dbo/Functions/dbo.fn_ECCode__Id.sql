@@ -6,7 +6,7 @@ RETURNS INT
 AS
 BEGIN
 	RETURN (
-		SELECT [Id] FROM dbo.EntryClassifications
+		SELECT [Id] FROM dbo.[EntryTypes]
 		WHERE [Code] = @Code
 	)
 END;

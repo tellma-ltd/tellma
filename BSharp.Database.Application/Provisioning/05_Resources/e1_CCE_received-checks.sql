@@ -6,7 +6,7 @@ DECLARE @ReceivedChecks [dbo].ResourceList;
 
 -- Bydefining the monetary amount
 INSERT INTO @ReceivedChecks ([Index],
-		[ResourceTypeId],	[Name],							[CountUnitId],				MonetaryValue) VALUES
+		[AccountTypeId],	[Name],							[CountUnitId],				MonetaryValue) VALUES
 	(0,	N'CashAndCashEquivalents', N'Walia Steel Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 69000),
 	(1,	N'CashAndCashEquivalents', N'Best Plastic Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 15700),
 	(2,	N'CashAndCashEquivalents', N'Best Paint Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 6900);
@@ -17,7 +17,7 @@ INSERT INTO @ReceivedChecks ([Index],
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting received checks'
+		Print 'Inserting received checks: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
