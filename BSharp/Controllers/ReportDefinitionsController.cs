@@ -76,7 +76,7 @@ namespace BSharp.Controllers
                 return Ok();
             }
         }
-        
+
         protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args, Query<ReportDefinition> queryOverride)
         {
             // Prepare the query
@@ -154,12 +154,19 @@ namespace BSharp.Controllers
                         entity.Parameters.Add(new ReportParameterDefinition
                         {
                             Id = e.Id == 0 ? _id++ : e.Id,
-                            IsRequired = e.IsRequired,
                             Key = e.Key,
                             Label = e.Label,
                             Label2 = e.Label2,
                             Label3 = e.Label3,
-                            ReportDefinitionId = e.ReportDefinitionId
+                            //Control = e.Control,
+                            //Collection = e.Collection,
+                            //DefinitionId = e.DefinitionId,
+                            //Filter = e.Filter,
+                            //MinDecimalPlaces = e.MinDecimalPlaces,
+                            //MaxDecimalPlaces = e.MaxDecimalPlaces,
+                            Visibility = e.Visibility,
+                            ReportDefinitionId = e.ReportDefinitionId,
+                            Value = e.Value
                         });
                     }
                 }
@@ -386,7 +393,7 @@ namespace BSharp.Controllers
                 Chart = "Line",
                 DefaultsToChart = false,
                 Collection = "MeasurementUnit",
-                Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
+                Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name)",
                 Parameters = new List<ReportParameterDefinition>
                 {
                     new ReportParameterDefinition
@@ -395,7 +402,7 @@ namespace BSharp.Controllers
                         Label = "Name Contains",
                         Label2 = "الإسم يحتوي",
                         Label3 = "我的密",
-                        IsRequired = false
+                        Visibility = Visibility.Optional
                     },
                 },
                 Columns = new List<ReportColumnDefinition>
@@ -500,7 +507,7 @@ namespace BSharp.Controllers
                         Label = "Memo Contains",
                         Label2 = "الملاحظات تحتوي",
                         Label3 = "我的密",
-                        IsRequired = false
+                        Visibility = Visibility.Optional
                     }
                 },
                 Columns = new List<ReportColumnDefinition>

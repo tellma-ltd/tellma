@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
+import { Visibility } from '../dto/definitions-for-client';
 
 export type ReportOrderDirection = 'asc' | 'desc';
 export type ReportType = 'Summary' | 'Details';
@@ -64,7 +65,8 @@ export interface ReportParameterDefinitionForSave extends EntityForSave {
     Label?: string;
     Label2?: string;
     Label3?: string;
-    IsRequired?: boolean;
+    Visibility?: Visibility;
+    Value?: string;
 }
 
 // tslint:disable-next-line:no-empty-interface

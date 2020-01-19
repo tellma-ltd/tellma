@@ -38,7 +38,7 @@
                 <div class="form-group" [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
                     <label class="small" for="collection">{{ 'ReportDefinition_Collection' | translate }}</label>
                     <select class="form-control b-studio-input" id="collection" [(ngModel)]="model.Collection"
-                        #collection="ngModel" (ngModelChange)="onDefinitionChange(model)" required>
+                        #collection="ngModel" (ngModelChange)="onCollectionChange(model)" required>
                         <option value=""></option>
                         <option *ngFor="let collection of allCollections" value="{{collection.value}}">
                             {{ collection.name() }}</option>
@@ -349,10 +349,13 @@
                             <div class="b-studio-drop-row b-draggable"
                                 *ngFor="let param of getParameters(model); let i = index" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
+                                        title="Built-In Parameter"></fa-icon>
+                                    &nbsp;
                                     <span class="flex-grow-1 text-truncate">
-                                        <!-- {{ ws.getMultilingualValueImmediate(param, 'Label') || param.Key }} -->
-                                        {{ param.Key }}
+                                        {{ '@' + param.Key }}
                                     </span>
+
                                     <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
                                         (click)="onConfigureParameter(i, model)" [title]="'Configure' | translate">
                                         <fa-icon icon="cog"></fa-icon>
@@ -580,18 +583,20 @@
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature !== 'parameter'">
                 <label class="small" for="path">{{ 'ReportDefinition_Path' | translate }}</label>
                 <input class="form-control b-studio-input" id="path" type="text" [(ngModel)]="itemToEdit['Path']"
-                    (ngModelChange)="itemToEditHasChanged = true; onPathChanged(itemToEdit, modelRef);" [ngModelOptions]="{ updateOn: 'blur' }"
-                    autocomplete="off" />
+                    (ngModelChange)="itemToEditHasChanged = true; onPathChanged(itemToEdit, modelRef);"
+                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
             </div>
 
             <!-- Key -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
                 <label class="small" for="key">{{ 'ReportDefinition_Key' | translate }}</label>
-                <span class="form-control b-studio-input" id="key" style="opacity: 0.5;">{{ itemToEdit['Key'] }}</span>
+                <span class="form-control b-studio-input" id="key"
+                    style="opacity: 0.5;">{{ '@' + itemToEdit['Key'] }}</span>
             </div>
 
             <!-- Modifier -->
-            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'dimension' && isDate(itemToEdit['Path'], modelRef)">
+            <div class="form-group col-12 col-sm-6"
+                *ngIf="itemToEditNature === 'dimension' && isDate(itemToEdit['Path'], modelRef)">
                 <label class="small" for="modifier">{{ 'ReportDefinition_Modifier' | translate }}</label>
                 <select class="form-control b-studio-input" id="modifier" [(ngModel)]="itemToEdit['Modifier']"
                     (ngModelChange)="itemToEditHasChanged = true">
@@ -658,15 +663,26 @@
                 </div>
             </div>
 
-            <!-- IsRequired -->
+            <!-- Visibility -->
             <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
-                <label class="small">&zwnj;</label>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="isRequired"
-                        [(ngModel)]="itemToEdit['IsRequired']" (ngModelChange)="itemToEditHasChanged = true">
-                    <label class="custom-control-label"
-                        for="isRequired">{{ 'ReportDefinition_IsRequired' | translate }}</label>
-                </div>
+                <label class="small" for="visibility">{{ 'ReportDefinition_Visibility' | translate }}</label>
+                <select class="form-control b-studio-input" id="visibility" [(ngModel)]="itemToEdit['Visibility']"
+                    (ngModelChange)="itemToEditHasChanged = true">
+                    <option value="None">
+                        {{ 'ReportDefinition_Visibility_None' | translate }}</option>
+                    <option value="Optional" *ngIf="showOptional(itemToEdit['Key'])">
+                        {{ 'ReportDefinition_Visibility_Optional' | translate }}</option>
+                    <option value="Required">{{ 'ReportDefinition_Visibility_Required' | translate }}</option>
+                </select>
+            </div>
+
+            <!-- Value -->
+            <div class="form-group col-12 col-sm-6"
+                *ngIf="itemToEditNature === 'parameter' && itemToEdit['Visibility'] === 'None'">
+                <label class="small" for="value">{{ 'ReportDefinition_Value' | translate }}</label>
+                <input class="form-control b-studio-input" id="value" type="text" [(ngModel)]="itemToEdit['Value']"
+                    (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" [required]="getParameterDescriptor(itemToEdit['Key']).isRequired" />
             </div>
         </div>
     </div>

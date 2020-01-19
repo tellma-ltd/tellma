@@ -532,8 +532,19 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      get: (args: GetArguments) => {
+      get: (args: GetArguments, extras?: {[key: string]: any}) => {
         const paramsArray = this.stringifyGetArguments(args);
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
+
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
 
@@ -574,7 +585,7 @@ export class ApiService {
         return obs$;
       },
 
-      getAggregate: (args: GetAggregateArguments) => {
+      getAggregate: (args: GetAggregateArguments, extras?: {[key: string]: any}) => {
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -584,6 +595,16 @@ export class ApiService {
 
         if (!!args.filter) {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
         }
 
         const params: string = paramsArray.join('&');

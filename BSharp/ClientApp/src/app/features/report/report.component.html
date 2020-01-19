@@ -108,6 +108,11 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </b-resources-picker>
 
+                            <b-resource-classifications-picker *ngSwitchCase="'ResourceClassification'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-resource-classifications-picker>
+
                             <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">

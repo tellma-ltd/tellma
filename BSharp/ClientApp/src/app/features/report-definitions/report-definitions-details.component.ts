@@ -4,11 +4,13 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  ChoicePropDescriptor, getChoices, collections, metadata, entityDescriptorImpl, isNumeric, PropDescriptor
+  ChoicePropDescriptor, getChoices, collections, metadata, entityDescriptorImpl,
+  isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor
 } from '~/app/data/entities/base/metadata';
 import {
   ReportDefinitionForSave, metadata_ReportDefinition, ReportDefinition, ReportMeasureDefinition,
-  ReportColumnDefinition, ReportRowDefinition, ReportDimensionDefinition, ReportSelectDefinition, ReportParameterDefinition
+  ReportColumnDefinition, ReportRowDefinition, ReportDimensionDefinition, ReportSelectDefinition,
+  ReportParameterDefinition
 } from '~/app/data/entities/report-definition';
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -89,7 +91,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _currentModelModified = false;
 
   create = () => {
-    const result: ReportDefinitionForSave = { };
+    const result: ReportDefinitionForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Title = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -227,55 +229,80 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.onDefinitionChange(model);
   }
 
-  public onFilterChange(model: ReportDefinition) {
-    // Here we synchronize the parameter list with the filter placeholders
+  private entityDescriptor(model: ReportDefinition): EntityDescriptor {
+    return !!model.Collection ? metadata[model.Collection](this.ws, this.translate, model.DefinitionId) : null;
+  }
+
+  private synchronizeFilter(model: ReportDefinition) {
+    // Here we synchronize the parameter list with the filter placeholders and the built in parameter descriptors
     try {
-      if (!model.Filter) {
+      // (1) Get the parameters from the custom filter
+      const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(model.Filter));
+      const customParamsKeys = placeholderAtoms.map(atom => atom.value.substr(1));
+
+      // (2) Get the built-in parameter descriptors
+      const desc = this.entityDescriptor(model);
+      const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+
+      if (customParamsKeys.length === 0 && builtInParamsDescriptors.length === 0) {
+        // Optimization
         model.Parameters = [];
       } else {
-        // (1) parse the filter to get the list of placeholder atoms
-        const exp = FilterTools.parse(model.Filter);
-        const placeholderAtoms = FilterTools.placeholderAtoms(exp);
 
-        // (2) Use a tracker to accumulate all the placeholders in a case-insensitive fashion
-        const phTracker: { [key: string]: string } = {};
-        for (const atom of placeholderAtoms) {
-          const key = atom.value.substr(1);
+        // (3) Use a tracker to accumulate all the keys in a case-insensitive fashion
+        const paramTracker: { [key: string]: string } = {};
+        for (const key of customParamsKeys) {
           const keyLower = key.toLowerCase();
-          phTracker[keyLower] = key;
+          paramTracker[keyLower] = key;
+        }
+        for (const param of builtInParamsDescriptors) {
+          const key = param.key;
+          const keyLower = key.toLowerCase();
+          paramTracker[keyLower] = key;
         }
 
-        // (3) Remove parameters without a matching placeholder
-        const parameters = model.Parameters.filter(p => !!phTracker[p.Key.toLowerCase()]);
+        // (4) Remove parameters without a matching placeholder
+        const parameters = model.Parameters.filter(p => !!paramTracker[p.Key.toLowerCase()]);
 
-        // (4) Create a tracker for existing parameters
-        const paTracker: { [key: string]: ReportParameterDefinition } = {};
-        parameters.forEach(pa => paTracker[pa.Key.toLowerCase()] = pa);
+        // (5) Create a tracker for existing model parameters
+        const modelTracker: { [key: string]: ReportParameterDefinition } = {};
+        parameters.forEach(pa => modelTracker[pa.Key.toLowerCase()] = pa);
 
         // (5) Add new parameters for new placeholders
-        const placeholders = Object.keys(phTracker).map(k => phTracker[k]);
-        for (const placeholder of placeholders) {
-          const placeholderLower = placeholder.toLowerCase();
-          let parameterDef: ReportParameterDefinition = paTracker[placeholderLower];
+        const keys = Object.keys(paramTracker).map(k => paramTracker[k]);
+        for (const key of keys) {
+          const keyLower = key.toLowerCase();
+          let parameterDef: ReportParameterDefinition = modelTracker[keyLower];
+          const builtInMatch = builtInParamsDescriptors.find(e => e.key === key);
           if (!parameterDef) {
             parameterDef = {
               Id: 0,
-              Key: placeholder,
-              IsRequired: false,
+              Key: key,
+              Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' : 'Optional',
               ReportDefinitionId: model.Id,
             };
 
-            paTracker[placeholderLower] = parameterDef;
+            modelTracker[keyLower] = parameterDef;
             parameters.push(parameterDef);
           } else {
-            parameterDef.Key = placeholder;
+            parameterDef.Key = key;
           }
+
+          model.Parameters = parameters;
         }
-
-        model.Parameters = parameters;
       }
-    } catch { }
+    } catch { } // Errors will be reported by the report preview
+  }
 
+  public onCollectionChange(model: ReportDefinition) {
+
+    this.synchronizeFilter(model);
+    this.onDefinitionChange(model);
+  }
+
+  public onFilterChange(model: ReportDefinition) {
+
+    this.synchronizeFilter(model);
     this.onDefinitionChange(model);
   }
 
@@ -337,18 +364,72 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     model.Parameters = model.Parameters || [];
     return model.Parameters;
   }
+
+  // public getBuiltInParameters(model: ReportDefinition): ReportBuiltInParameterDefinition[] {
+  //   if (!model.Collection) {
+  //     return [];
+  //   }
+
+  //   // Check for consistency with the entity metadata
+  //   const entityDesc = metadata[model.Collection](this.ws, this.translate, model.DefinitionId);
+  //   if (!entityDesc.parameters || entityDesc.parameters.length === 0) {
+  //     // Optimization for a very common case
+  //     model.BuiltInParameters = [];
+  //   } else {
+  //     model.BuiltInParameters = model.BuiltInParameters || []; // TARGET
+
+  //     // Synchronize TARGET with SOURCE
+  //     const sourceKeys: { [key: string]: ParameterDescriptor } = {};
+  //     entityDesc.parameters.forEach(p => sourceKeys[p.key] = p); // SOURCE
+
+  //     // If missing from SOURCE, remove from TARGET
+  //     model.BuiltInParameters = model.BuiltInParameters.filter(p => !!sourceKeys[p.Key]);
+
+  //     // Synchronize the matching items
+  //     model.BuiltInParameters.forEach(p => {
+  //       delete sourceKeys[p.Key];
+  //     });
+
+  //     // If present in SOURCE but not in TARGET, add to TARGET
+  //     for (const p of Object.keys(sourceKeys).map(key => sourceKeys[key])) {
+  //       model.BuiltInParameters.push({
+  //         Key: p.key,
+  //         Visibility: p.isRequired ? 'Required' : null
+  //       });
+  //     }
+  //   }
+
+  //   return model.BuiltInParameters;
+  // }
+
+  public getParameterDescriptor(key: string, model?: ReportDefinition): ParameterDescriptor {
+    model = model || this.modelRef;
+    const entityDesc = metadata[model.Collection](this.ws, this.translate, model.DefinitionId);
+    const result = !!entityDesc.parameters ? entityDesc.parameters.find(e => e.key === key) : null;
+    return result;
+  }
+
+  public showOptional(key: string): boolean {
+    // Visibility option 'Optional' is available when the parameter is either regular OR built-in but not required
+    const desc = this.getParameterDescriptor(key);
+    return !desc || !desc.isRequired;
+  }
+
   public getColumns(model: ReportDefinition): ReportColumnDefinition[] {
     model.Columns = model.Columns || [];
     return model.Columns;
   }
+
   public getRows(model: ReportDefinition): ReportRowDefinition[] {
     model.Rows = model.Rows || [];
     return model.Rows;
   }
+
   public getMeasures(model: ReportDefinition): ReportMeasureDefinition[] {
     model.Measures = model.Measures || [];
     return model.Measures;
   }
+
   public getSelect(model: ReportDefinition): ReportSelectDefinition[] {
     model.Select = model.Select || [];
     return model.Select;

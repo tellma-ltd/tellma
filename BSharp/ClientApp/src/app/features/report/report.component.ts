@@ -11,7 +11,6 @@ import { isSpecified } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { ReportDefinition } from '~/app/data/entities/report-definition';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
@@ -47,6 +46,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   private refresh$ = new Subject<void>();
   private _currentFilter: string;
   private _currentDefinition: ReportDefinitionForClient;
+  private _currentEntityDescriptor: EntityDescriptor;
   private _currentParameters: ParameterInfo[] = [];
   private _parametersErrorMessage: string;
   private _views: { view: ReportView, label: string, icon: string }[] = [
@@ -217,23 +217,30 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._views;
   }
 
-  get parameters() {
-    if (!this.definition || !this.definition.Filter) {
+  get parameters(): ParameterInfo[] {
+    if (!this.definition) {
       this._currentParameters = [];
-    }
-
-    if (this.definition.Filter !== this._currentFilter ||
-      this._currentDefinition !== this.definition) {
+    } else if (
+      this.definition.Filter !== this._currentFilter ||
+      this.definition !== this._currentDefinition ||
+      this.entityDescriptor !== this._currentEntityDescriptor) {
 
       try {
         this._parametersErrorMessage = null;
         this._currentParameters = [];
         this._currentDefinition = this.definition;
         this._currentFilter = this.definition.Filter;
-        // (1) parse the filter to get the list of placeholder atoms
-        const exp = FilterTools.parse(this.definition.Filter);
-        const placeholderAtoms = FilterTools.placeholderAtoms(exp);
-        const paramsFromFilterPlaceholders: { [key: string]: ParameterInfo } = {};
+        this._currentEntityDescriptor = this.entityDescriptor;
+
+        //////// (1) Get the default parameters from filter and built in parameter descriptors
+        const defaultParams: { [key: string]: ParameterInfo } = {};
+
+        // get the placeholder atoms and the built in parameter descriptors
+        const placeholderAtoms = FilterTools.placeholderAtoms(FilterTools.parse(this.definition.Filter));
+        const desc = this.entityDescriptor;
+        const builtInParamsDescriptors = !!desc ? desc.parameters || [] : [];
+
+        // The filter placeholders
         for (const atom of placeholderAtoms) {
           const key = atom.value.substr(1);
           const keyLower = key.toLowerCase();
@@ -244,20 +251,28 @@ export class ReportComponent implements OnInit, OnDestroy {
             this.workspace.current,
             this.translate);
 
-          // Check if the filtered property is a foreign key of another nav,
-          // property, if so use the descriptor of that nav property instead
-          const immediatePropDesc = entityDesc.properties[atom.property];
-          if (!!immediatePropDesc && immediatePropDesc.control === 'navigation') {
-            throw new Error(`Cannot terminate a filter path with a navigation property like '${atom.property}'`);
+          // This block's purpose is to auto-calculate the property descriptor of this atom
+          let propDesc: PropDescriptor;
+          let propName = atom.property;
+          if (propName === 'Node' && !!entityDesc.properties.ParentId) {
+            propDesc = entityDesc.properties.ParentId;
+            propName = 'ParentId';
+          } else {
+            propDesc = entityDesc.properties[propName];
+            if (!!propDesc && propDesc.control === 'navigation') {
+              throw new Error(`Cannot terminate a filter path with a navigation property like '${propName}'`);
+            }
           }
 
-          let propDesc: PropDescriptor = Object.keys(entityDesc.properties)
+          // Check if the filtered property is a foreign key of another nav,
+          // property, if so use the descriptor of that nav property instead
+          propDesc = Object.keys(entityDesc.properties)
             .map(e => entityDesc.properties[e])
-            .find(e => e.control === 'navigation' && e.foreignKeyName === atom.property)
-            || immediatePropDesc; // Else rely on the descriptor of the prop itself
+            .find(e => e.control === 'navigation' && e.foreignKeyName === propName)
+            || propDesc; // Else rely on the descriptor of the prop itself
 
           if (!propDesc) {
-            throw new Error(`Property '${atom.property}' does not exist on '${entityDesc.titlePlural()}'`);
+            throw new Error(`Property '${propName}' does not exist on '${entityDesc.titlePlural()}'`);
           }
 
           if (!!atom.modifier) {
@@ -265,11 +280,25 @@ export class ReportComponent implements OnInit, OnDestroy {
             propDesc = modifiedPropDesc(propDesc, atom.modifier, this.translate);
           }
 
-          paramsFromFilterPlaceholders[keyLower] = {
+          defaultParams[keyLower] = {
             label: propDesc.label,
             key,
             desc: propDesc,
             isRequired: false
+          };
+        }
+
+        // The built-in params
+        for (const paramDesc of builtInParamsDescriptors) {
+          const key = paramDesc.key;
+          const keyLower = key.toLowerCase();
+          const propDesc = paramDesc.desc;
+
+          defaultParams[keyLower] = {
+            label: propDesc.label,
+            key,
+            desc: propDesc,
+            isRequired: paramDesc.isRequired
           };
         }
 
@@ -278,18 +307,24 @@ export class ReportComponent implements OnInit, OnDestroy {
         const params = this.definition.Parameters || [];
         for (const p of params) {
           const keyLower = p.Key.toLowerCase();
-          const paramInfo = paramsFromFilterPlaceholders[keyLower];
-          if (!!paramInfo) {
-            paramInfo.label = !!p.Label ? () => this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
-            paramInfo.isRequired = p.IsRequired;
-            this._currentParameters.push(paramInfo);
-            delete paramsFromFilterPlaceholders[keyLower];
+
+          if (p.Visibility === 'None') {
+            // This hides parameters that are explicitly hidden
+            delete defaultParams[keyLower];
+          } else {
+            const paramInfo = defaultParams[keyLower];
+            if (!!paramInfo) {
+              paramInfo.label = !!p.Label ? () => this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
+              paramInfo.isRequired = p.Visibility === 'Required';
+              this._currentParameters.push(paramInfo);
+              delete defaultParams[keyLower];
+            }
           }
         }
 
         // (3) Add the remaining parameters from filter that have no definitions
-        for (const key of Object.keys(paramsFromFilterPlaceholders)) {
-          this._currentParameters.push(paramsFromFilterPlaceholders[key]);
+        for (const key of Object.keys(defaultParams)) {
+          this._currentParameters.push(defaultParams[key]);
         }
 
       } catch (ex) {

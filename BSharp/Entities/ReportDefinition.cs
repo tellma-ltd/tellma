@@ -190,9 +190,31 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
-        [Display(Name = "ReportDefinition_IsRequired")]
+        [Display(Name = "ReportDefinition_Visibility")]
         [AlwaysAccessible]
-        public bool? IsRequired { get; set; }
+        [ChoiceList(new object[] { "None", "Optional", "Required" },
+            new string[] { "ReportDefinition_Visibility_None", "ReportDefinition_Visibility_Optional", "ReportDefinition_Visibility_Required" })]
+        public string Visibility { get; set; }
+        
+        //// TODO: This will come in handy once we upgrade the filter syntax
+        //public string Control { get; set; }
+        //// TODO
+        //public string Collection { get; set; }
+
+        //[Display(Name = "ReportDefinition_Definition")]
+        //public string DefinitionId { get; set; }
+
+        //[Display(Name = "ReportDefinition_Filter")]
+        //public string Filter { get; set; }
+
+        //// TODO
+        //public int MinDecimalPlaces { get; set; }
+        //// TODO
+        //public int MaxDecimalPlaces { get; set; }
+
+        [Display(Name = "ReportDefinition_Value")]
+        [AlwaysAccessible]
+        public string Value { get; set; }
     }
 
     public class ReportParameterDefinition : ReportParameterDefinitionForSave

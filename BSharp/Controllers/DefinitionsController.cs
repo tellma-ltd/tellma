@@ -219,7 +219,7 @@ namespace BSharp.Controllers
                                     Label = "Name Contains",
                                     Label2 = "الإسم يحتوي",
                                     Label3 = "我的密",
-                                    IsRequired = false
+                                    Visibility = Visibility.Optional
                                 },
                             },
                         Columns = new List<ReportDimensionDefinitionForClient>
@@ -315,7 +315,7 @@ namespace BSharp.Controllers
                                     Label = "Memo Contains",
                                     Label2 = "الملاحظات تحتوي",
                                     Label3 = "我的密",
-                                    IsRequired = false
+                                    Visibility = Visibility.Optional
                                 }
                             },
                         Columns = new List<ReportDimensionDefinitionForClient>

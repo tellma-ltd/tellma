@@ -736,6 +736,9 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>忘记密码了吗？</value>
   </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>从日期</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>生成恢复代码</value>
   </data>
@@ -1201,8 +1204,14 @@
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>默认到图表</value>
   </data>
+  <data name="ReportDefinition_Definition" xml:space="preserve">
+    <value>定义</value>
+  </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>定义</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>过滤</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>过滤</value>
@@ -1260,6 +1269,21 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>摘要</value>
+  </data>
+  <data name="ReportDefinition_Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="ReportDefinition_Visibility" xml:space="preserve">
+    <value>能见度</value>
+  </data>
+  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
+    <value>隐</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
+    <value>可见</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
+    <value>需要</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>
@@ -1582,6 +1606,12 @@
   <data name="StringLengthAttribute2" xml:space="preserve">
     <value>字段{0}必须至少{2}和在最大{1}个字符长。</value>
   </data>
+  <data name="SummaryEntries" xml:space="preserve">
+    <value>摘要条目</value>
+  </data>
+  <data name="SummaryEntry" xml:space="preserve">
+    <value>摘要入口</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>文化</value>
   </data>
@@ -1611,6 +1641,9 @@
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>标志</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>要日期（含）</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>总</value>

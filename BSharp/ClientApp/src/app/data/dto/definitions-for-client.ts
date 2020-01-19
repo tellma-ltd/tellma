@@ -54,7 +54,8 @@ export interface ReportParameterDefinitionForClient {
     Label?: string;
     Label2?: string;
     Label3?: string;
-    IsRequired: boolean;
+    Visibility?: Visibility;
+    Value?: string;
 }
 
 export interface ReportSelectDefinitionForClient {
@@ -93,7 +94,7 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     Bla: string;
 }
 
-export type Visibility = null | 'Optional' | 'Required';
+export type Visibility = 'None' | 'Optional' | 'Required';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 

@@ -736,6 +736,9 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>Forgot your password?</value>
   </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>From Date</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
   </data>
@@ -1201,8 +1204,14 @@
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>Defaults To Chart</value>
   </data>
+  <data name="ReportDefinition_Definition" xml:space="preserve">
+    <value>Definition</value>
+  </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>Definition</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>Filter</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
@@ -1260,6 +1269,21 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>Summary</value>
+  </data>
+  <data name="ReportDefinition_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="ReportDefinition_Visibility" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
+    <value>Required</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
@@ -1588,6 +1612,12 @@
   <data name="StringLengthAttribute2" xml:space="preserve">
     <value>The field {0} must be at least {2} and at max {1} characters long.</value>
   </data>
+  <data name="SummaryEntries" xml:space="preserve">
+    <value>Summary Entries</value>
+  </data>
+  <data name="SummaryEntry" xml:space="preserve">
+    <value>Summary Entry</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>Culture</value>
   </data>
@@ -1617,6 +1647,9 @@
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>Singular Name</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>To Date (Incl.)</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>

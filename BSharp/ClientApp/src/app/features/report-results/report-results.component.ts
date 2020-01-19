@@ -276,13 +276,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         return of(null);
       }
 
+      // EXTRAS
+      const extras = this.computeAdditionalParameters();
+
       obs$ = this.crud.get({
         top,
         skip,
         orderby,
         select,
         filter
-      }).pipe(
+      }, extras).pipe(
         tap((response: GetResponse) => {
           s = this.state;
           s.top = response.Top;
@@ -303,11 +306,14 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // TOP
       const top = this.definition.Top;
 
+      // EXTRAS
+      const extras = this.computeAdditionalParameters();
+
       obs$ = this.crud.getAggregate({
         top,
         select,
         filter
-      });
+      }, extras);
     }
 
     return obs$.pipe(
@@ -594,6 +600,21 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return select;
   }
 
+  private get completeArguments(): ReportArguments {
+    // Returns user selected arguments AND definition values
+    // User selected
+    const args = { ...this.arguments } as ReportArguments;
+
+    // Definition values override (the user should not be able to specify them anyways)
+    for (const p of this.definition.Parameters) {
+      if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
+        args[p.Key] = p.Value;
+      }
+    }
+
+    return args;
+  }
+
   private computeFilter(): string {
 
     let exp: FilterExpression = FilterTools.parse(this.definition.Filter);
@@ -602,14 +623,15 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const lowerCaseArgs: ReportArguments = {};
-    for (const arg of Object.keys(this.arguments)) {
-      lowerCaseArgs[arg.toLowerCase()] = this.arguments[arg];
+    const args = this.completeArguments;
+    for (const arg of Object.keys(args)) {
+      lowerCaseArgs[arg.toLowerCase()] = args[arg];
     }
 
     const lowerCaseDefs: { [key: string]: boolean } = {};
     if (this.definition.Parameters) {
       for (const paramDef of this.definition.Parameters.filter(p => !!p.Key)) {
-        lowerCaseDefs[paramDef.Key.toLowerCase()] = paramDef.IsRequired;
+        lowerCaseDefs[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
       }
     }
 
@@ -618,7 +640,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return FilterTools.stringify(exp);
   }
 
-  public applyArguments(
+  private applyArguments(
     exp: FilterExpression, lowerCaseArgs: ReportArguments,
     lowerCaseDefs: { [key: string]: boolean }): FilterExpression {
 
@@ -726,6 +748,21 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return atoms;
+  }
+
+  private computeAdditionalParameters(): { [key: string]: any } {
+    const builtInParams = this.entityDescriptor.parameters;
+    const additionalParams: { [key: string]: any } = {};
+    if (!!builtInParams) {
+      const args = this.completeArguments;
+      builtInParams.forEach(p => {
+        if (!!args[p.key]) {
+          additionalParams[p.key] = args[p.key];
+        }
+      });
+    }
+
+    return additionalParams;
   }
 
   // UI Bindings
@@ -1284,6 +1321,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       if (!!combinedFilter) {
         params.filter = combinedFilter;
+      }
+
+      // Add any additional parameters
+      const additionalParams = this.computeAdditionalParameters();
+      for (const key of Object.keys(additionalParams)) {
+        const value = additionalParams[key];
+        params[key] = value;
       }
 
       this.router.navigate(['app', tenantId + '', ...screenUrlSegments, params]);
