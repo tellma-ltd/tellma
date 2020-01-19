@@ -61,13 +61,11 @@ namespace BSharp.Controllers
                 // (3) If the user exists but new, set the External Id
                 if (userInfo.ExternalId == null)
                 {
-                    using (var trx = ControllerUtilities.CreateTransaction())
-                    {
-                        await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, externalId);
-                        await _adminRepo.GlobalUsers__SetExternalIdByUserId(userId, externalId);
+                    using var trx = ControllerUtilities.CreateTransaction();
+                    await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, externalId);
+                    await _adminRepo.GlobalUsers__SetExternalIdByUserId(userId, externalId);
 
-                        trx.Complete();
-                    }
+                    trx.Complete();
                 }
 
                 else if (userInfo.ExternalId != externalId)
@@ -83,13 +81,11 @@ namespace BSharp.Controllers
                 // (4) If the user's email address has changed at the identity server, update it locally
                 else if (userInfo.Email != externalEmail)
                 {
-                    using (var trx = ControllerUtilities.CreateTransaction())
-                    {
-                        await _adminRepo.AdminUsers__SetEmailByUserId(userId, externalEmail);
-                        await _adminRepo.GlobalUsers__SetEmailByUserId(userId, externalEmail);
+                    using var trx = ControllerUtilities.CreateTransaction();
+                    await _adminRepo.AdminUsers__SetEmailByUserId(userId, externalEmail);
+                    await _adminRepo.GlobalUsers__SetEmailByUserId(userId, externalEmail);
 
-                        trx.Complete();
-                    }
+                    trx.Complete();
                 }
 
 

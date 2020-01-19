@@ -42,39 +42,37 @@ namespace BSharp
         public static void InitDatabase(IServiceProvider provider)
         {
             // If missing, the default admin user is added here
-            using (var scope = provider.CreateScope())
+            using var scope = provider.CreateScope();
+            // (1) Retrieve the admin credentials from configurations
+            var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
+            string email = opt?.Admin?.Email ?? "admin@bsharp.online";
+            string fullName = opt?.Admin?.FullName ?? "Administrator";
+            string password = opt?.Admin?.Password ?? "Admin@123";
+
+            // (2) Create the user in the admin database
+            var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
+            adminRepo.AdminUsers__CreateAdmin(email, fullName, password).Wait();
+
+            // (3) Create the user in the embedded identity server (if enabled)
+            if (opt.EmbeddedIdentityServerEnabled)
             {
-                // (1) Retrieve the admin credentials from configurations
-                var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
-                string email = opt?.Admin?.Email ?? "admin@bsharp.online";
-                string fullName = opt?.Admin?.FullName ?? "Administrator";
-                string password = opt?.Admin?.Password ?? "Admin@123";
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EmbeddedIdentityServerUser>>();
+                var admin = userManager.FindByEmailAsync(email).GetAwaiter().GetResult();
 
-                // (2) Create the user in the admin database
-                var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                adminRepo.AdminUsers__CreateAdmin(email, fullName, password).Wait();
-
-                // (3) Create the user in the embedded identity server (if enabled)
-                if (opt.EmbeddedIdentityServerEnabled)
+                if (admin == null)
                 {
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EmbeddedIdentityServerUser>>();
-                    var admin = userManager.FindByEmailAsync(email).GetAwaiter().GetResult();
-
-                    if (admin == null)
+                    admin = new EmbeddedIdentityServerUser
                     {
-                        admin = new EmbeddedIdentityServerUser
-                        {
-                            UserName = email,
-                            Email = email,
-                            EmailConfirmed = true
-                        };
+                        UserName = email,
+                        Email = email,
+                        EmailConfirmed = true
+                    };
 
-                        var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
-                        if (!result.Succeeded)
-                        {
-                            string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                            throw new Exception($"Failed to create the administrator account. Message: {msg}");
-                        }
+                    var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
+                    if (!result.Succeeded)
+                    {
+                        string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                        throw new Exception($"Failed to create the administrator account. Message: {msg}");
                     }
                 }
             }

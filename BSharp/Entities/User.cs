@@ -39,6 +39,7 @@ namespace BSharp.Entities
 
         [Display(Name = "User_PreferredLanguage")]
         [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [Culture]
         public string PreferredLanguage { get; set; }
 
         [Display(Name = "User_Roles")]

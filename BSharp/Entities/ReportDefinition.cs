@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BSharp.Data.Queries;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -189,9 +190,31 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
-        [Display(Name = "ReportDefinition_IsRequired")]
+        [Display(Name = "ReportDefinition_Visibility")]
         [AlwaysAccessible]
-        public bool? IsRequired { get; set; }
+        [ChoiceList(new object[] { "None", "Optional", "Required" },
+            new string[] { "ReportDefinition_Visibility_None", "ReportDefinition_Visibility_Optional", "ReportDefinition_Visibility_Required" })]
+        public string Visibility { get; set; }
+        
+        //// TODO: This will come in handy once we upgrade the filter syntax
+        //public string Control { get; set; }
+        //// TODO
+        //public string Collection { get; set; }
+
+        //[Display(Name = "ReportDefinition_Definition")]
+        //public string DefinitionId { get; set; }
+
+        //[Display(Name = "ReportDefinition_Filter")]
+        //public string Filter { get; set; }
+
+        //// TODO
+        //public int MinDecimalPlaces { get; set; }
+        //// TODO
+        //public int MaxDecimalPlaces { get; set; }
+
+        [Display(Name = "ReportDefinition_Value")]
+        [AlwaysAccessible]
+        public string Value { get; set; }
     }
 
     public class ReportParameterDefinition : ReportParameterDefinitionForSave
@@ -237,6 +260,28 @@ namespace BSharp.Entities
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
+
+        [Display(Name = "ReportDefinition_Function")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        [ChoiceList(new object[] { 
+            Modifiers.year, 
+            Modifiers.quarter, 
+            Modifiers.month, 
+            Modifiers.dayofyear, 
+            Modifiers.day,
+            Modifiers.week,
+            Modifiers.weekday
+        }, new string[] {
+            "Function_year",
+            "Function_quarter",
+            "Function_month",
+            "Function_dayofyear",
+            "Function_day",
+            "Function_week",
+            "Function_weekday"
+        })]
+        public string Modifier { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

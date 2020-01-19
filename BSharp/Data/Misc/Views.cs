@@ -164,6 +164,12 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "summary-entries",
+                        Name = "SummaryEntries",
+                        Read = true,
+                        Actions = new ActionInfo[] {}
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

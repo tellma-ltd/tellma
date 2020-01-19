@@ -11,7 +11,7 @@ export class DatePickerLocalization extends NgbDatepickerI18n {
 
     getWeekdayShortName(weekday: number): string {
         // weekday: 1 = Monday
-        return this.translation.instant('ShortDay' + weekday);
+        return this.translation.instant('VeryShortDay' + weekday);
     }
 
     getMonthShortName(month: number): string {

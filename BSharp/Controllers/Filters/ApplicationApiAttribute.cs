@@ -40,19 +40,19 @@ namespace BSharp.Controllers
             private readonly ITenantInfoAccessor _tenantInfoAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
-            private readonly IDefinitionsCache _definitionsProvider;
-            private readonly ISettingsCache _settingsProvider;
+            private readonly IDefinitionsCache _definitionsCache;
+            private readonly ISettingsCache _settingsCache;
 
             public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
-                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsProvider, ISettingsCache settingsProvider)
+                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
                 _tenantInfoAccessor = tenantInfoAccessor;
                 _externalUserAccessor = externalUserAccessor;
                 _serviceProvider = serviceProvider;
-                _definitionsProvider = definitionsProvider;
-                _settingsProvider = settingsProvider;
+                _definitionsCache = definitionsCache;
+                _settingsCache = settingsCache;
             }
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
@@ -127,24 +127,24 @@ namespace BSharp.Controllers
                 // (6) Ensure the freshness of the definitions and settings caches
                 {
                     var databaseVersion = tenantInfo.DefinitionsVersion;
-                    var serverVersion = _definitionsProvider.GetDefinitionsIfCached(tenantId)?.Version;
+                    var serverVersion = _definitionsCache.GetDefinitionsIfCached(tenantId)?.Version;
 
                     if (serverVersion == null || serverVersion != databaseVersion)
                     {
                         // Update the cache
                         var definitions = await DefinitionsController.LoadDefinitionsForClient(_appRepo);
-                        _definitionsProvider.SetDefinitions(tenantId, definitions);
+                        _definitionsCache.SetDefinitions(tenantId, definitions);
                     }
                 }
                 {
                     var databaseVersion = tenantInfo.SettingsVersion;
-                    var serverVersion = _settingsProvider.GetSettingsIfCached(tenantId)?.Version;
+                    var serverVersion = _settingsCache.GetSettingsIfCached(tenantId)?.Version;
 
                     if (serverVersion == null || serverVersion != databaseVersion)
                     {
                         // Update the cache
                         var settings = await SettingsController.LoadSettingsForClient(_appRepo);
-                        _settingsProvider.SetSettings(tenantId, settings);
+                        _settingsCache.SetSettings(tenantId, settings);
                     }
                 }
 

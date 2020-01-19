@@ -159,8 +159,7 @@
                 {{ settings?.PrimaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId"
-                (click)="onSecondary();onCollapse()">
+                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
@@ -177,3 +176,75 @@
     <router-outlet></router-outlet>
   </main>
 </div>
+
+<!-- My Account Modal -->
+<ng-template #myAccountModal let-modal>
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'My0Account' | translate: { placeholder: companyName } }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body p-0 bg-white">
+    <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5" *ngIf="isMyUserLoaded">
+      <!-- Header Name -->
+      <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2">
+        <h2 class="font-weight-normal">{{ myEmail }}</h2>
+      </b-form-group>
+
+      <!-- Image -->
+      <div class="col-12 col-md-4 b-details-image-container">
+        <div class="border">
+          <b-image [src]="'users/' + ws.userSettings.UserId + '/image'" [imageId]="myImageId" [(ngModel)]="myUser.Image"
+            [isEdit]="true" [size]="70"></b-image>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
+        [serverErrors]="myUser?.serverErrors?.Name">
+        <b-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
+      </b-form-group>
+
+      <!-- Name2 -->
+      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
+        *ngIf="ws.settings.SecondaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name2">
+        <b-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
+      </b-form-group>
+
+      <!-- Name3 -->
+      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
+        *ngIf="ws.settings.TernaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name3">
+        <b-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
+      </b-form-group>
+    </div>
+    <b-error-message *ngIf="isMyUserLoaded && !!saveErrorMessage">
+      {{ saveErrorMessage }}
+    </b-error-message>
+    <b-error-message *ngIf="isMyUserError">
+      {{ errorMessage }}
+    </b-error-message>
+    <div *ngIf="isMyUserLoading" class="d-flex justify-content-center py-2">
+      <b-spinner [scale]="2">
+      </b-spinner>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="onSave(modal)" [disabled]="!canSave">
+      <fa-icon icon="save"></fa-icon>
+      &nbsp;{{ 'Save' | translate }}
+    </button>
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.close(false)" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>

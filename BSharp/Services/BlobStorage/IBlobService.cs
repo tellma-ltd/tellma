@@ -16,7 +16,7 @@ namespace BSharp.Services.BlobStorage
         Task SaveBlobsAsync(IEnumerable<(string blobName, byte[] content)> blobs);
 
         /// <summary>
-        /// Retrieves the has the given name
+        /// Retrieves the blob specified by the given name
         /// </summary>
         /// <param name="blobName">The name of the blob to load</param>
         Task<byte[]> LoadBlob(string blobName);

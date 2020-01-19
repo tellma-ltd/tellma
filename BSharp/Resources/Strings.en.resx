@@ -212,9 +212,6 @@
     <value>Start Date</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>Tax ID Number</value>
-  </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>Tax Identification Number</value>
   </data>
   <data name="Agent_Title" xml:space="preserve">
@@ -739,6 +736,9 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>Forgot your password?</value>
   </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>From Date</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
   </data>
@@ -924,6 +924,27 @@
   </data>
   <data name="ModifiedBy" xml:space="preserve">
     <value>Modified By</value>
+  </data>
+  <data name="Modifier_day" xml:space="preserve">
+    <value>Day of Month</value>
+  </data>
+  <data name="Modifier_dayofyear" xml:space="preserve">
+    <value>Day of Year</value>
+  </data>
+  <data name="Modifier_month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Modifier_quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="Modifier_week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Modifier_weekday" xml:space="preserve">
+    <value>Week Day</value>
+  </data>
+  <data name="Modifier_year" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="MU_BaseAmount" xml:space="preserve">
     <value>Amount in base Unit</value>
@@ -1183,8 +1204,14 @@
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>Defaults To Chart</value>
   </data>
+  <data name="ReportDefinition_Definition" xml:space="preserve">
+    <value>Definition</value>
+  </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>Definition</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>Filter</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
@@ -1197,6 +1224,9 @@
   </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>Measures</value>
+  </data>
+  <data name="ReportDefinition_Modifier" xml:space="preserve">
+    <value>Modifier</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>Order By</value>
@@ -1239,6 +1269,21 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>Summary</value>
+  </data>
+  <data name="ReportDefinition_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="ReportDefinition_Visibility" xml:space="preserve">
+    <value>Visibility</value>
+  </data>
+  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
+    <value>Required</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
@@ -1438,6 +1483,75 @@
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>
   </data>
+  <data name="ShortDay1" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="ShortDay2" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="ShortDay3" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="ShortDay4" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="ShortDay5" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="ShortDay6" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="ShortDay7" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+  <data name="ShortMonth1" xml:space="preserve">
+    <value>Jan</value>
+  </data>
+  <data name="ShortMonth10" xml:space="preserve">
+    <value>Oct</value>
+  </data>
+  <data name="ShortMonth11" xml:space="preserve">
+    <value>Nov</value>
+  </data>
+  <data name="ShortMonth12" xml:space="preserve">
+    <value>Dec</value>
+  </data>
+  <data name="ShortMonth2" xml:space="preserve">
+    <value>Feb</value>
+  </data>
+  <data name="ShortMonth3" xml:space="preserve">
+    <value>Mar</value>
+  </data>
+  <data name="ShortMonth4" xml:space="preserve">
+    <value>Apr</value>
+  </data>
+  <data name="ShortMonth5" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="ShortMonth6" xml:space="preserve">
+    <value>Jun</value>
+  </data>
+  <data name="ShortMonth7" xml:space="preserve">
+    <value>Jul</value>
+  </data>
+  <data name="ShortMonth8" xml:space="preserve">
+    <value>Aug</value>
+  </data>
+  <data name="ShortMonth9" xml:space="preserve">
+    <value>Sep</value>
+  </data>
+  <data name="ShortQuarter1" xml:space="preserve">
+    <value>Q1</value>
+  </data>
+  <data name="ShortQuarter2" xml:space="preserve">
+    <value>Q2</value>
+  </data>
+  <data name="ShortQuarter3" xml:space="preserve">
+    <value>Q3</value>
+  </data>
+  <data name="ShortQuarter4" xml:space="preserve">
+    <value>Q4</value>
+  </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>On Behalf Of</value>
   </data>
@@ -1498,6 +1612,12 @@
   <data name="StringLengthAttribute2" xml:space="preserve">
     <value>The field {0} must be at least {2} and at max {1} characters long.</value>
   </data>
+  <data name="SummaryEntries" xml:space="preserve">
+    <value>Summary Entries</value>
+  </data>
+  <data name="SummaryEntry" xml:space="preserve">
+    <value>Summary Entry</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>Culture</value>
   </data>
@@ -1527,6 +1647,9 @@
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>Singular Name</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>To Date (Incl.)</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>

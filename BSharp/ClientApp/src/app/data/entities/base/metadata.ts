@@ -19,6 +19,7 @@ import { Entity } from './entity';
 import { metadata_ResponsibilityCenter } from '../responsibility-center';
 import { metadata_EntryClassification } from '../entry-classification';
 import { metadata_Document } from '../document';
+import { metadata_SummaryEntry } from '../summary-entry';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -36,6 +37,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     ReportDefinition: metadata_ReportDefinition,
     ResponsibilityCenter: metadata_ResponsibilityCenter,
     EntryClassification: metadata_EntryClassification,
+    SummaryEntry: metadata_SummaryEntry,
     Document: metadata_Document,
 
     // Temp
@@ -94,12 +96,17 @@ export interface EntityDescriptor {
     orderby: string[];
 
     /**
-     * The server endpoint from which to retrieve Entities of this type, after the 'https://www.bsharp.online/api/' part.
+     * The server endpoint from which to retrieve Entities of this type, after the 'https://web.tellma.com/api/' part.
      */
     apiEndpoint: string;
 
     /**
-     * The url of the screen that displays this type after the 'https://www.bsharp.online/app/101/' part.
+     * Any built-in parameters that are needed for the query
+     */
+    parameters?: ParameterDescriptor[];
+
+    /**
+     * The url of the screen that displays this type after the 'https://web.tellma.com/app/101/' part.
      */
     screenUrl: string;
 
@@ -122,8 +129,12 @@ export interface EntityDescriptor {
      * Used for caching the list of definitions
      */
     definitionIdsArray?: SelectorChoice[];
+}
 
-    //    propertiesArray?: { name: string; desc: PropDescriptor }[];
+export interface ParameterDescriptor  {
+    key: string;
+    desc: PropDescriptor;
+    isRequired?: boolean;
 }
 
 export interface PropDescriptorBase {

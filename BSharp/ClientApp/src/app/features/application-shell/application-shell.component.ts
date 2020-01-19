@@ -1,14 +1,22 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace, DetailsStatus } from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { AuthService } from '~/app/data/auth.service';
 import { appsettings } from '~/app/data/global-resolver.guard';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { NavigationService } from '~/app/data/navigation.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, Observable, of } from 'rxjs';
 import { StorageService } from '~/app/data/storage.service';
 import { DOCUMENT } from '@angular/common';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { MyUserForSave } from '~/app/data/dto/my-user';
+import { User } from '~/app/data/entities/user';
+import { ApiService } from '~/app/data/api.service';
+import { switchMap, tap, catchError } from 'rxjs/operators';
+import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
+import { addSingleToWorkspace } from '~/app/data/util';
+import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
 
 @Component({
   selector: 'b-application-shell',
@@ -17,17 +25,36 @@ import { DOCUMENT } from '@angular/common';
 export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   // For the menu on small screens
-  private _subscription: Subscription;
   public isCollapsed = true;
+
+  // My User stuff
+  private _subscription: Subscription;
+  private notifyDestruct$ = new Subject<void>();
+  private notifyFetch$: Subject<void>;
+  private usersApi = this.apiService.usersApi(this.notifyDestruct$); // for intellisense
+  public myUser: MyUserForSave;
+  public myUserStatus: DetailsStatus;
+  private _errorMessage: string;
+  private _saveErrorMessage: string;
+
+  @ViewChild('myAccountModal', { static: true })
+  myAccountModal: TemplateRef<any>;
 
   constructor(
     public workspace: WorkspaceService, public nav: NavigationService,
     private translate: TranslateService, private progress: ProgressOverlayService,
-    private auth: AuthService, private storage: StorageService,
-    @Inject(DOCUMENT) private document: Document) {
+    private auth: AuthService, private storage: StorageService, private apiService: ApiService,
+    @Inject(DOCUMENT) private document: Document, private modalService: NgbModal) {
+
+    this.notifyFetch$ = new Subject<any>();
+    this.notifyFetch$.pipe(
+      switchMap(() => this.doFetch())
+    ).subscribe();
   }
 
   ngOnInit() {
+    this.usersApi = this.apiService.usersApi(this.notifyDestruct$);
+
     ////// These ensures that once in a company, the language is
     ////// restricted to one of the company's languages
     this.restrictToCompanyLanguages();
@@ -36,6 +63,10 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+
+    // cancel any backend operations
+    this.notifyDestruct$.next();
+
     if (!!this._subscription) {
       this._subscription.unsubscribe();
     }
@@ -112,10 +143,6 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl;
   }
 
-  public onMyCompanyAccount(): void {
-    alert('To be implemented');
-  }
-
   public onMySystemAccount(): void {
     // TODO make these pages part of the SPA
     location.href = appsettings.identityAddress + '/identity/manage/';
@@ -129,5 +156,125 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   public get flip() {
     // this is to flip the UI icons in RTL
     return this.isRtl ? 'horizontal' : null;
+  }
+
+  // All the my account stuff
+
+  public onMyCompanyAccount(): void {
+
+    this.fetch();
+    this.workspace.ignoreKeyDownEvents = true;
+    this.modalService.open(this.myAccountModal, { windowClass: 'b-myuser-modal' })
+      .result.then(
+        () => this.onMyCompanyAccountClose(),
+        () => this.onMyCompanyAccountClose(),
+      );
+  }
+
+  private fetch() {
+    this.notifyFetch$.next(null);
+  }
+
+  private doFetch(): Observable<void> {
+    // first show the rotator
+    this.myUserStatus = DetailsStatus.loading;
+    return this.usersApi.getMyUser().pipe(
+      tap((response: GetByIdResponse<User>) => {
+
+        // add the server item to the workspace
+        addSingleToWorkspace(response, this.workspace);
+
+        // remoev the rotator
+        this.myUserStatus = DetailsStatus.loaded;
+        this.onEdit();
+      }),
+      catchError((friendlyError) => {
+        this._errorMessage = friendlyError.error;
+        this.myUserStatus = DetailsStatus.error;
+        return of(null);
+      })
+    );
+  }
+
+  private onEdit() {
+    const myId = this.ws.userSettings.UserId;
+    const user = this.ws.get('User', myId) as User;
+
+    this.myUser = {
+      Name: user.Name,
+      Name2: user.Name2,
+      Name3: user.Name3,
+      PreferredLanguage: user.PreferredLanguage
+    };
+  }
+
+  public onSave(modal: NgbActiveModal) {
+
+    // clear any errors displayed
+    this._errorMessage = null;
+    this._saveErrorMessage = null;
+    clearServerErrors(this.myUser);
+
+    // prepare the save observable
+    this.usersApi.saveMyUser(this.myUser).subscribe(
+      (response: GetByIdResponse<User>) => {
+
+        // update the workspace with the entity from the server
+        addSingleToWorkspace(response, this.workspace);
+        modal.close(true);
+      },
+      (friendlyError) => {
+
+        // This handles 422 ModelState errors
+        if (friendlyError.status === 422) {
+          const unboundServerErrors = applyServerErrors(this.myUser, friendlyError.error);
+
+          if (Object.keys(unboundServerErrors).length > 0) {
+            // This shouldn't happen
+            console.error(unboundServerErrors);
+          }
+        } else {
+          this._saveErrorMessage = friendlyError.error;
+        }
+
+        return of(null);
+      }
+    );
+  }
+
+  private onMyCompanyAccountClose(): void {
+    this.workspace.ignoreKeyDownEvents = false;
+  }
+
+  public get errorMessage(): string {
+    return this._errorMessage;
+  }
+
+  public get saveErrorMessage(): string {
+    return this._saveErrorMessage;
+  }
+
+  public get isMyUserLoaded(): boolean {
+    return this.myUserStatus === DetailsStatus.loaded;
+  }
+
+  public get isMyUserError(): boolean {
+    return this.myUserStatus === DetailsStatus.error;
+  }
+
+  public get isMyUserLoading(): boolean {
+    return this.myUserStatus === DetailsStatus.loading;
+  }
+
+  public get myEmail(): string {
+    return (this.ws.get('User', this.ws.userSettings.UserId) as User).Email;
+  }
+
+  public get myImageId(): string {
+    return (this.ws.get('User', this.ws.userSettings.UserId) as User).ImageId;
+  }
+
+  public get canSave(): boolean {
+    return this.isMyUserLoaded;
   }
 }

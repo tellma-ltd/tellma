@@ -142,6 +142,11 @@ export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
+    'summary-entries': {
+        name: 'SummaryEntries',
+        read: true,
+        actions: []
+    },
     'settings': {
         name: 'Settings',
         actions: [

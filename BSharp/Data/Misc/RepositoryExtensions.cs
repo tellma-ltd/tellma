@@ -32,7 +32,7 @@ namespace BSharp.Data
         /// </summary>
         public static SqlParameter Add(this SqlParameterCollection target, string parameterName, object value)
         {
-            value = value ?? DBNull.Value;
+            value ??= DBNull.Value;
             return target.AddWithValue(parameterName, value);
         }
     }

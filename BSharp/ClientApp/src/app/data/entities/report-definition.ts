@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
+import { Visibility } from '../dto/definitions-for-client';
 
 export type ReportOrderDirection = 'asc' | 'desc';
 export type ReportType = 'Summary' | 'Details';
@@ -17,6 +18,7 @@ export type ChartType = 'Card' | 'BarsVertical' | 'BarsVerticalGrouped' | 'BarsV
 export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie';
 export type DefinitionState = 'Draft' | 'Deployed' | 'Archived';
+export type Modifier = 'year' | 'quarter' | 'month' | 'dayofyear' | 'day' | 'week' | 'weekday';
 
 export interface ReportDefinitionForSave<
     TParameter = ReportParameterDefinitionForSave,
@@ -63,7 +65,8 @@ export interface ReportParameterDefinitionForSave extends EntityForSave {
     Label?: string;
     Label2?: string;
     Label3?: string;
-    IsRequired?: boolean;
+    Visibility?: Visibility;
+    Value?: string;
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -87,6 +90,7 @@ export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
 export interface ReportDimensionDefinition extends EntityForSave {
     ReportDefinitionId?: string | number;
     Path?: string;
+    Modifier?: string;
     Label?: string;
     Label2?: string;
     Label3?: string;

@@ -61,24 +61,22 @@ namespace BSharp.Controllers
             await CheckActionPermissions("UpdateState", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            // TODO: UPDATE state in DB
+            if (returnEntities)
             {
-                // await _repo.ReportDefinitions__Activate(ids, isActive);
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
-        
+
         protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args, Query<ReportDefinition> queryOverride)
         {
             // Prepare the query
@@ -156,12 +154,19 @@ namespace BSharp.Controllers
                         entity.Parameters.Add(new ReportParameterDefinition
                         {
                             Id = e.Id == 0 ? _id++ : e.Id,
-                            IsRequired = e.IsRequired,
                             Key = e.Key,
                             Label = e.Label,
                             Label2 = e.Label2,
                             Label3 = e.Label3,
-                            ReportDefinitionId = e.ReportDefinitionId
+                            //Control = e.Control,
+                            //Collection = e.Collection,
+                            //DefinitionId = e.DefinitionId,
+                            //Filter = e.Filter,
+                            //MinDecimalPlaces = e.MinDecimalPlaces,
+                            //MaxDecimalPlaces = e.MaxDecimalPlaces,
+                            Visibility = e.Visibility,
+                            ReportDefinitionId = e.ReportDefinitionId,
+                            Value = e.Value
                         });
                     }
                 }
@@ -180,6 +185,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
+                            Modifier = e.Modifier,
                             OrderDirection = e.OrderDirection
                         });
                     }
@@ -199,6 +205,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
+                            Modifier = e.Modifier,
                             OrderDirection = e.OrderDirection
                         });
                     }
@@ -370,7 +377,7 @@ namespace BSharp.Controllers
         }
 
         private static int _id = 1000;
-        private static Dictionary<string, ReportDefinition> _db = new Dictionary<string, ReportDefinition>
+        private static readonly Dictionary<string, ReportDefinition> _db = new Dictionary<string, ReportDefinition>
         {
             ["my-amazing-report"] = new ReportDefinition
             {
@@ -386,7 +393,7 @@ namespace BSharp.Controllers
                 Chart = "Line",
                 DefaultsToChart = false,
                 Collection = "MeasurementUnit",
-                Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
+                Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name)",
                 Parameters = new List<ReportParameterDefinition>
                 {
                     new ReportParameterDefinition
@@ -395,7 +402,7 @@ namespace BSharp.Controllers
                         Label = "Name Contains",
                         Label2 = "الإسم يحتوي",
                         Label3 = "我的密",
-                        IsRequired = false
+                        Visibility = Visibility.Optional
                     },
                 },
                 Columns = new List<ReportColumnDefinition>
@@ -500,7 +507,7 @@ namespace BSharp.Controllers
                         Label = "Memo Contains",
                         Label2 = "الملاحظات تحتوي",
                         Label3 = "我的密",
-                        IsRequired = false
+                        Visibility = Visibility.Optional
                     }
                 },
                 Columns = new List<ReportColumnDefinition>

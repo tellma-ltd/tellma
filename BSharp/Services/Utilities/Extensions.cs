@@ -1,6 +1,8 @@
 ﻿using BSharp.Entities;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -267,20 +269,16 @@ namespace BSharp.Services.Utilities
         /// nullable types also it cannot handle DateTimeOffset
         /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="conversion"></param>
-        /// <param name="sourceTimeZone"></param>
-        /// <returns></returns>
         public static object ChangeType(this object obj, Type conversion, TimeZoneInfo sourceTimeZone = null)
         {
+            if (obj is null)
+            {
+                return null;
+            }
+
             var t = conversion;
             if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (obj == null)
-                {
-                    return null;
-                }
-
                 t = Nullable.GetUnderlyingType(t);
             }
 
@@ -313,9 +311,8 @@ namespace BSharp.Services.Utilities
             }
             catch (Exception)
             {
-                throw new InvalidOperationException($"Failed to convert value: {obj?.ToString()} to type: {t.Name}");
+                throw new InvalidOperationException($"Failed to convert value: '{obj?.ToString()}' to type: {t.Name}");
             }
-
         }
 
         /// <summary>
@@ -427,6 +424,22 @@ namespace BSharp.Services.Utilities
         public static Type GetRootType(this Type type)
         {
             return type.GetCustomAttribute<StrongEntityAttribute>()?.Type ?? type;
+        }
+
+        public static void Set(this IHeaderDictionary dic, string key, StringValues value)
+        {
+            if (dic is null)
+            {
+                throw new ArgumentNullException(nameof(dic));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("message", nameof(key));
+            }
+
+            dic.Remove(key);
+            dic.Add(key, value);
         }
     }
 }

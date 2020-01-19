@@ -119,22 +119,20 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsActive", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Agents__Activate(ids, isActive);
+
+            if (returnEntities)
             {
-                await _repo.Agents__Activate(ids, isActive);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
 
@@ -234,17 +232,15 @@ namespace BSharp.Controllers
 
             try
             {
-                using (var trx = ControllerUtilities.CreateTransaction())
+                using var trx = ControllerUtilities.CreateTransaction();
+                await _repo.Agents__Delete(ids);
+
+                if (blobsToDelete.Any())
                 {
-                    await _repo.Agents__Delete(ids);
-
-                    if (blobsToDelete.Any())
-                    {
-                        await _blobService.DeleteBlobsAsync(blobsToDelete);
-                    }
-
-                    trx.Complete();
+                    await _blobService.DeleteBlobsAsync(blobsToDelete);
                 }
+
+                trx.Complete();
             }
             catch (ForeignKeyViolationException)
             {

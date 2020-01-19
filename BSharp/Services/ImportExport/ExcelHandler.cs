@@ -18,52 +18,50 @@ namespace BSharp.Services.ImportExport
 
         public override AbstractDataGrid ToAbstractGrid(Stream fileStream)
         {
-            using (var excelPackage = new ExcelPackage(fileStream))
+            using var excelPackage = new ExcelPackage(fileStream);
+            // Determine which sheet is to be imported
+            var sheets = excelPackage.Workbook.Worksheets;
+            ExcelWorksheet sheet;
+            if (sheets.Count == 1)
             {
-                // Determine which sheet is to be imported
-                var sheets = excelPackage.Workbook.Worksheets;
-                ExcelWorksheet sheet;
-                if(sheets.Count == 1)
-                {
-                    sheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
-                }
-                else
-                {
-                    sheet = excelPackage.Workbook.Worksheets.FirstOrDefault(e => e.Name == _localizer["Data"]);
-                }
-
-                if (sheet == null)
-                {
-                    throw new FormatException(_localizer["Error_ExcelContainsMultipleSheetsNameOne0", _localizer["Data"]]);
-                }
-
-                // This code copies all the cells in the Excel field to an abstract 2-D string representation
-                var cells = sheet.Cells;
-                var range = cells.Where(e => !string.IsNullOrWhiteSpace(e.Value?.ToString()));
-
-                // If the Excel file is empty then return an empty grid
-                if(range.Count() == 0)
-                {
-                    return new AbstractDataGrid(0, 0);
-                }
-
-                int maxCol = range.Max(e => e.End.Column);
-                int maxRow = range.Max(e => e.End.Row);
-                var abstractGrid = new AbstractDataGrid(maxCol, maxRow);
-
-                // Loop over the Excel and copy the data to the abstract grid
-                for (int row = 1; row <= maxRow; row++)
-                {
-                    abstractGrid.AddRow();
-                    for (int column = 1; column <= maxCol; column++)
-                    {
-                        var cell = cells[row, column];
-                        abstractGrid[row - 1][column - 1] = AbstractDataCell.Cell(cell.Value);
-                    }
-                }
-
-                return abstractGrid;
+                sheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
             }
+            else
+            {
+                sheet = excelPackage.Workbook.Worksheets.FirstOrDefault(e => e.Name == _localizer["Data"]);
+            }
+
+            if (sheet == null)
+            {
+                throw new FormatException(_localizer["Error_ExcelContainsMultipleSheetsNameOne0", _localizer["Data"]]);
+            }
+
+            // This code copies all the cells in the Excel field to an abstract 2-D string representation
+            var cells = sheet.Cells;
+            var range = cells.Where(e => !string.IsNullOrWhiteSpace(e.Value?.ToString()));
+
+            // If the Excel file is empty then return an empty grid
+            if (range.Count() == 0)
+            {
+                return new AbstractDataGrid(0, 0);
+            }
+
+            int maxCol = range.Max(e => e.End.Column);
+            int maxRow = range.Max(e => e.End.Row);
+            var abstractGrid = new AbstractDataGrid(maxCol, maxRow);
+
+            // Loop over the Excel and copy the data to the abstract grid
+            for (int row = 1; row <= maxRow; row++)
+            {
+                abstractGrid.AddRow();
+                for (int column = 1; column <= maxCol; column++)
+                {
+                    var cell = cells[row, column];
+                    abstractGrid[row - 1][column - 1] = AbstractDataCell.Cell(cell.Value);
+                }
+            }
+
+            return abstractGrid;
         }
 
         public override Stream ToFileStream(AbstractDataGrid abstractGrid)

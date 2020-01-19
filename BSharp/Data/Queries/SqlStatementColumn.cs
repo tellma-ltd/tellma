@@ -20,6 +20,11 @@ namespace BSharp.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
+        /// The function applied on the column if any (e.g. dayofyear)
+        /// </summary>
+        public string Function { get; set; }
+
+        /// <summary>
         /// The aggregation function applied on the column if any (e.g. sum)
         /// </summary>
         public string Aggregation { get; set; }

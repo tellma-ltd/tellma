@@ -23,10 +23,11 @@ import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
-import { Aggregation, ReportDefinition } from './entities/report-definition';
+import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
+import { isSpecified } from './util';
 
 export enum MasterStatus {
 
@@ -424,6 +425,7 @@ export interface MeasureInfo {
 export interface DimensionInfo {
   key: string;
   path: string;
+  modifier: Modifier;
   propDesc: PropDescriptor;
 
   /**
@@ -440,6 +442,7 @@ export interface DimensionInfo {
 export class DimensionCell {
   type: 'dimension';
   path: string;
+  modifier: Modifier;
   value: any;
   valueId: any;
   propDesc: PropDescriptor;
@@ -462,14 +465,17 @@ export class ChartDimensionCell {
   constructor(
     public display: string,
     public path: string,
+    public modifier: Modifier,
     public valueId: any,
     public propDesc: PropDescriptor,
     public entityDesc: EntityDescriptor,
     public parent?: ChartDimensionCell) { }
 
   toString() {
-    return this.display;
-    // return isSpecified(this.valueId) ? this.valueId : '';
+    // ngx-charts throws an error if you return null
+    // The value returned must uniquely identify the dimension
+    // formatting will be handled in the tooltip template
+    return isSpecified(this.valueId) ? this.valueId.toString() : '';
   }
 }
 
@@ -858,6 +864,15 @@ export class WorkspaceService {
   // Those are user-independent, company-independent and don't even require a sign-in, so they should never be cleared
   public globalSettings: GlobalSettingsForClient;
   public globalSettingsVersion: string;
+
+  // This is to tell components that auto-capture user input (main menu, master screens etc...)
+  // that user input is needed for something else so do not capture
+  public ignoreKeyDownEvents = false;
+
+  /**
+   * Indicates that the client appears to be offline, signals the root shell to show an offline indicator
+   */
+  public offline = false;
 
   /**
    * Notifies that something has changed in workspace.

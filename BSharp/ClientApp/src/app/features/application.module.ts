@@ -33,7 +33,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
   faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder,
-  faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt
+  faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt, faLock
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -369,7 +369,11 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
       // Misc
-      { path: 'main-menu', component: MainMenuComponent },
+      {
+        path: 'main-menu',
+        component: MainMenuComponent,
+        canDeactivate: [SaveInProgressGuard] // for saving my user
+      },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
@@ -460,7 +464,7 @@ export class ApplicationModule {
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
-      faTruck, faUserFriends, faExchangeAlt
+      faTruck, faUserFriends, faExchangeAlt, faLock
     );
   }
 }

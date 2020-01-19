@@ -239,7 +239,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     let key: string = event.key;
 
     // Focus on the search field as soon as the user starts typing letters or numbers
-    if (!this.searchInputIsFocused && !!key && key.trim().length === 1) {
+    if (!this.searchInputIsFocused && !!key && key.trim().length === 1 && !this.workspace.ignoreKeyDownEvents) {
       this.currentXMemory = -1;
       this.searchInput.nativeElement.value = '';
       this.searchInput.nativeElement.focus();

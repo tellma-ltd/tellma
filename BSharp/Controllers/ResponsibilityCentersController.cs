@@ -71,22 +71,20 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsActive", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.ResponsibilityCenters__Activate(ids, isActive);
+
+            if (returnEntities)
             {
-                await _repo.ResponsibilityCenters__Activate(ids, isActive);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
 

@@ -25,6 +25,6 @@ export class NgbDateStringAdapter implements NgbDateAdapter<string> {
             return null;
         }
 
-        return this.nativeAdapter.toModel(date).toISOString(); // .split('T')[0];
+        return this.nativeAdapter.toModel(date).toISOString().split('T')[0];
     }
 }

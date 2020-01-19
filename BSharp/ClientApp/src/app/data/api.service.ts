@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
@@ -47,6 +47,7 @@ import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
 import { AssignArguments } from './dto/assign-arguments';
+import { MyUserForSave } from './dto/my-user';
 
 
 @Injectable({
@@ -198,7 +199,6 @@ export class ApiService {
           paramsArray.push(`signedAt=${encodeURIComponent(args.signedAt)}`);
         }
 
-
         if (!!args.returnEntities) {
           paramsArray.push(`returnEntities=${args.returnEntities}`);
         }
@@ -328,6 +328,37 @@ export class ApiService {
         );
 
         return obs$;
+      },
+      getMyUser: () => {
+        const url = appsettings.apiAddress + `api/users/me`;
+        const obs$ = this.http.get<GetByIdResponse<User>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveMyUser: (entity: MyUserForSave) => {
+        this.showRotator = true;
+        const url = appsettings.apiAddress + `api/users/me`;
+
+        const obs$ = this.http.post<GetByIdResponse<User>>(url, entity, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
       }
     };
   }
@@ -367,6 +398,19 @@ export class ApiService {
       ping: () => {
         const url = appsettings.apiAddress + `api/global-settings/ping`;
         const obs$ = this.http.get(url).pipe(
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public pingApi(cancellationToken$: Observable<void>) {
+    return {
+      ping: () => {
+        const url = appsettings.apiAddress + `api/ping`;
+        const obs$ = this.http.get<void>(url).pipe(
           takeUntil(cancellationToken$)
         );
 
@@ -488,8 +532,19 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      get: (args: GetArguments) => {
+      get: (args: GetArguments, extras?: {[key: string]: any}) => {
         const paramsArray = this.stringifyGetArguments(args);
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
+
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
 
@@ -530,7 +585,7 @@ export class ApiService {
         return obs$;
       },
 
-      getAggregate: (args: GetAggregateArguments) => {
+      getAggregate: (args: GetAggregateArguments, extras?: {[key: string]: any}) => {
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -540,6 +595,16 @@ export class ApiService {
 
         if (!!args.filter) {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
         }
 
         const params: string = paramsArray.join('&');

@@ -65,34 +65,39 @@ namespace BSharp.Data.Queries
                 }
 
                 // Efficiently calculates the dynamic property name
-                var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string), string>();
-                string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation)
+                var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string, string), string>();
+                string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation, string function)
                 {
-                    if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation)))
+                    if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation, function)))
                     {
-                        string pathAndPropertyString = prop;
+                        string result = prop;
 
                         string pathString = string.Join('/', path);
                         if (!string.IsNullOrWhiteSpace(pathString))
                         {
-                            pathAndPropertyString = $"{pathString}/{pathAndPropertyString}";
+                            result = $"{pathString}/{result}";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(function))
+                        {
+                            result = $"{result}|{function}";
                         }
 
                         if (!string.IsNullOrWhiteSpace(aggregation))
                         {
-                            pathAndPropertyString = $"{aggregation}({pathAndPropertyString})";
+                            result = $"{aggregation}({result})";
                         }
 
-                        cacheDynamicPropertyName[(path, prop, aggregation)] = pathAndPropertyString;
+                        cacheDynamicPropertyName[(path, prop, aggregation, function)] = result;
                     }
 
-                    return cacheDynamicPropertyName[(path, prop, aggregation)];
+                    return cacheDynamicPropertyName[(path, prop, aggregation, function)];
                 }
 
                 // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
                 void HydrateDynamicProperties(SqlDataReader reader, DynamicEntity entity, ColumnMapTree entityDef)
                 {
-                    foreach (var (propInfo, index, aggregation) in entityDef.Properties)
+                    foreach (var (propInfo, index, aggregation, function) in entityDef.Properties)
                     {
                         if (propInfo.PropertyType == typeof(HierarchyId))
                         {
@@ -109,7 +114,7 @@ namespace BSharp.Data.Queries
                             }
 
                             // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                            string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation);
+                            string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation, function);
                             entity[propName] = dbValue;
                         }
                     }
@@ -123,18 +128,17 @@ namespace BSharp.Data.Queries
                 // Results are loaded
                 try
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        // Group the column map by the path (which represents the target entity)
-                        var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: true);
+                    using var reader = await cmd.ExecuteReaderAsync();
 
-                        // Loop over the result from the result set
-                        while (await reader.ReadAsync())
-                        {
-                            var dynamicEntity = new DynamicEntity();
-                            HydrateDynamicProperties(reader, dynamicEntity, entityDef);
-                            result.Add(dynamicEntity);
-                        }
+                    // Group the column map by the path (which represents the target entity)
+                    var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: true);
+
+                    // Loop over the result from the result set
+                    while (await reader.ReadAsync())
+                    {
+                        var dynamicEntity = new DynamicEntity();
+                        HydrateDynamicProperties(reader, dynamicEntity, entityDef);
+                        result.Add(dynamicEntity);
                     }
                 }
                 finally
@@ -169,321 +173,319 @@ namespace BSharp.Data.Queries
             var results = statements.ToDictionary(e => e.Query, e => new List<Entity>());
 
             // Prepare the SQL command
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+
+            // Command Text
+            cmd.CommandText = PrepareSql(preparatorySql, statements.ToArray());
+
+            // Command Parameters
+            foreach (var parameter in ps)
             {
-                // Command Text
-                cmd.CommandText = PrepareSql(preparatorySql, statements.ToArray());
+                cmd.Parameters.Add(parameter);
+            }
 
-                // Command Parameters
-                foreach (var parameter in ps)
+            // It will always be open, but we add this nonetheless for robustness
+            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            if (ownsConnection)
+            {
+                conn.Open();
+            }
+
+            var memory = new HashSet<(object Id, ColumnMapTree Tree)>(); // Remembers which (Id, tree) combinations have been added already
+            var allIdEntities = new IndexedEntities(); // This data structure is a dictionary that maps Type -> Id -> Entity, and will contain all loaded entities with Ids
+
+            // This recursive method will return one of 3 things: 
+            // 1 - Either a proper EntityWithKey, if the entity definition contains an Id index
+            // 2 - Or a Fact Entity (without Id), if the entity defintion does not contain an Id index
+            // 3 - Or a DynamicEntity (a dictionary), if the entity defintion does not contain an Id index and this is an aggregate query
+            Entity AddEntity(SqlDataReader reader, ColumnMapTree entityDef)
+            {
+                Entity entity;
+                var isHydrated = false;
+                var entityType = entityDef.Type; // TODO: The specific type to use when instantiating the entity: should come from discriminator e.g. Agent
+
+                if (entityDef.IdExists)
                 {
-                    cmd.Parameters.Add(parameter);
-                }
+                    var collectionType = entityType.GetRootType();
 
-                // It will always be open, but we add this nonetheless for robustness
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
-                if (ownsConnection)
-                {
-                    conn.Open();
-                }
-
-                var memory = new HashSet<(object Id, ColumnMapTree Tree)>(); // Remembers which (Id, tree) combinations have been added already
-                var allIdEntities = new IndexedEntities(); // This data structure is a dictionary that maps Type -> Id -> Entity, and will contain all loaded entities with Ids
-
-                // This recursive method will return one of 3 things: 
-                // 1 - Either a proper EntityWithKey, if the entity definition contains an Id index
-                // 2 - Or a Fact Entity (without Id), if the entity defintion does not contain an Id index
-                // 3 - Or a DynamicEntity (a dictionary), if the entity defintion does not contain an Id index and this is an aggregate query
-                Entity AddEntity(SqlDataReader reader, ColumnMapTree entityDef)
-                {
-                    Entity entity;
-                    var isHydrated = false;
-                    var entityType = entityDef.Type; // TODO: The specific type to use when instantiating the entity: should come from discriminator e.g. Agent
-
-                    if (entityDef.IdExists)
+                    // Make sure the dictionary that tracks this type is created already
+                    if (!allIdEntities.TryGetValue(collectionType, out IndexedEntitiesOfType entitiesOfType))
                     {
-                        var collectionType = entityType.GetRootType();
+                        entitiesOfType = allIdEntities[collectionType] = new IndexedEntitiesOfType();
+                    }
 
-                        // Make sure the dictionary that tracks this type is created already
-                        if (!allIdEntities.TryGetValue(collectionType, out IndexedEntitiesOfType entitiesOfType))
+                    // Get the Id of this entity
+                    var dbId = reader[entityDef.IdIndex];
+                    if (dbId == DBNull.Value)
+                    {
+                        return null;
+                    }
+
+                    var id = dbId;
+                    entitiesOfType.TryGetValue(id, out EntityWithKey keyEntity);
+
+                    if (keyEntity == null)
+                    {
+                        // If the entity has not been created already, create it and flag it for hydration
+                        keyEntity = Activator.CreateInstance(entityType) as EntityWithKey;
+                        keyEntity.SetId(dbId);
+
+                        entitiesOfType.Add(id, keyEntity);
+                        memory.Add((id, entityDef));
+
+                        // New entity
+                        isHydrated = false;
+                    }
+                    else
+                    {
+                        // Otherwise check if it has been added from the same part of the join tree or from a different one
+                        if (memory.Add((id, entityDef)))
                         {
-                            entitiesOfType = allIdEntities[collectionType] = new IndexedEntitiesOfType();
-                        }
-
-                        // Get the Id of this entity
-                        var dbId = reader[entityDef.IdIndex];
-                        if (dbId == DBNull.Value)
-                        {
-                            return null;
-                        }
-
-                        var id = dbId;
-                        entitiesOfType.TryGetValue(id, out EntityWithKey keyEntity);
-
-                        if (keyEntity == null)
-                        {
-                            // If the entity has not been created already, create it and flag it for hydration
-                            keyEntity = Activator.CreateInstance(entityType) as EntityWithKey;
-                            keyEntity.SetId(dbId);
-
-                            entitiesOfType.Add(id, keyEntity);
-                            memory.Add((id, entityDef));
-
-                            // New entity
+                            // Entity added before, but from a different part of the join tree, flag it for hydration
                             isHydrated = false;
                         }
                         else
                         {
-                            // Otherwise check if it has been added from the same part of the join tree or from a different one
-                            if (memory.Add((id, entityDef)))
+                            // Entity added in a previous row, therefore already hydrated
+                            isHydrated = true;
+                        }
+                    }
+
+                    entity = keyEntity;
+                }
+                else // Entity has no Id, NOTE: This must be a level 0, otherwise validation earlier would capture it
+                {
+                    // New entity, flag it for hydration
+                    isHydrated = false;
+
+                    // Create the entity
+                    entity = Activator.CreateInstance(entityType) as Entity;
+                }
+
+                // As an optimization, only hydrate again if not hydrated before
+                if (!isHydrated)
+                {
+                    // Hydrate the simple properties at the current entityDef level
+                    foreach (var (propInfo, index, aggregation, function) in entityDef.Properties)
+                    {
+                        if (propInfo.PropertyType == typeof(HierarchyId))
+                        {
+                            continue;
+                        }
+
+                        var dbValue = reader[index];
+                        if (dbValue != DBNull.Value)
+                        {
+                            // char still comes from the DB as a string
+                            if (propInfo.PropertyType == typeof(char?))
                             {
-                                // Entity added before, but from a different part of the join tree, flag it for hydration
-                                isHydrated = false;
+                                dbValue = dbValue.ToString()[0]; // gets the char
+                            }
+
+                            propInfo.SetValue(entity, dbValue);
+                        }
+
+                        entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
+                    }
+                }
+
+                // Recursively call the next levels down
+                foreach (var subEntityDef in entityDef.Children)
+                {
+                    AddEntity(reader, subEntityDef);
+                }
+
+                return entity;
+            }
+
+            // This collection will be returned at the end
+            var result = new List<Entity>();
+
+            try
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                foreach (var statement in statements)
+                {
+                    var list = results[statement.Query];
+
+                    // Group the column map by the path (which represents the target entity)
+                    var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: false);
+
+                    // Sanity checking: if this isn't an aggregate query, 
+                    if (entityDef.Children.Any(e => !e.IdExists))
+                    {
+                        // Developer mistake
+                        throw new InvalidOperationException($"The query for '{statement.Sql}' is not an aggregate query but is missing essential Ids");
+                    }
+
+                    // Loop over the result from the result set
+                    while (await reader.ReadAsync())
+                    {
+                        Entity record = AddEntity(reader, entityDef);
+                        list.Add(record);
+                    }
+
+                    if (statement.Query?.PrincipalQuery == null)
+                    {
+                        // This is the root query, assign the result to the final list
+                        result = list;
+                    }
+
+                    // Go over to the next result set
+                    await reader.NextResultAsync();
+                }
+            }
+            finally
+            {
+                // Otherwise we might get an error when a parameter is reused
+                cmd.Parameters.Clear();
+
+                // The connection is never owned, but we add this code anyways for robustness
+                if (ownsConnection)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
+            }
+
+            // Here we prepare a dictionary of all the entities loaded so far
+            Dictionary<Type, List<Entity>> allEntities = allIdEntities
+                .ToDictionary(e => e.Key, e => e.Value.Values.Cast<Entity>().ToList());
+
+            if (result.Any())
+            {
+                var resultRootType = result.First().GetType().GetRootType();
+                if (!allEntities.ContainsKey(resultRootType))
+                {
+                    // this indicates that the main result is a fact table, we add the fact lines
+                    // here in order to have their weak nav properties hydrated
+                    allEntities[resultRootType] = result;
+                }
+            }
+
+            // The method below efficiently retrieves the navigation properties of each entity
+            Type cacheType = null;
+            List<(PropertyInfo NavProp, PropertyInfo FkProp)> navAndFkCache = null;
+            List<(PropertyInfo NavProp, PropertyInfo FkProp)> GetNavAndFkProps(Entity entity)
+            {
+                if (entity.GetType() != cacheType) // In a single root type we might have entities belonging to multiple different deriving types
+                {
+                    cacheType = entity.GetType();
+                    navAndFkCache = new List<(PropertyInfo NavProp, PropertyInfo FkProp)>();
+
+                    IEnumerable<PropertyInfo> nonListProperties = cacheType.GetProperties()
+                            .Where(e => !e.PropertyType.IsList());
+
+                    navAndFkCache = nonListProperties
+                        .Where(p => p.ForeignKeyProperty() != null && allIdEntities.ContainsKey(p.PropertyType.GetRootType()))
+                        .Select(p => (p, p.ForeignKeyProperty()))
+                        .ToList();
+                }
+
+                return navAndFkCache;
+            }
+
+            // All simple properties are populated before, but not navigation properties, those are done here
+            foreach (var (rootType, entitiesOfType) in allEntities.Where(e => e.Value.Any()))
+            {
+                // Loop over all entities and use the method above to hydrate the navigation properties
+                foreach (var entity in entitiesOfType)
+                {
+                    foreach (var (navProp, fkProp) in GetNavAndFkProps(entity))
+                    {
+                        // The nav property can only be loaded if the FK property is loaded first
+                        if (fkProp.Name == "Id" || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
+                        {
+                            var fkValue = fkProp.GetValue(entity);
+                            if (fkValue == null)
+                            {
+                                // it is loaded and its value is NULL
+                                entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
                             }
                             else
                             {
-                                // Entity added in a previous row, therefore already hydrated
-                                isHydrated = true;
-                            }
-                        }
-
-                        entity = keyEntity;
-                    }
-                    else // Entity has no Id, NOTE: This must be a level 0, otherwise validation earlier would capture it
-                    {
-                        // New entity, flag it for hydration
-                        isHydrated = false;
-
-                        // Create the entity
-                        entity = Activator.CreateInstance(entityType) as Entity;
-                    }
-
-                    // As an optimization, only hydrate again if not hydrated before
-                    if (!isHydrated)
-                    {
-                        // Hydrate the simple properties at the current entityDef level
-                        foreach (var (propInfo, index, aggregation) in entityDef.Properties)
-                        {
-                            if (propInfo.PropertyType == typeof(HierarchyId))
-                            {
-                                continue;
-                            }
-
-                            var dbValue = reader[index];
-                            if (dbValue != DBNull.Value)
-                            {
-                                // char still comes from the DB as a string
-                                if (propInfo.PropertyType == typeof(char?))
+                                var propCollectionType = navProp.PropertyType.GetRootType();
+                                var entitiesOfPropertyType = allIdEntities[propCollectionType]; // It must be available since we checked earlier that it is
+                                entitiesOfPropertyType.TryGetValue(fkValue, out EntityWithKey navPropValue);
+                                if (navPropValue != null)
                                 {
-                                    dbValue = dbValue.ToString()[0]; // gets the char
-                                }
-
-                                propInfo.SetValue(entity, dbValue);
-                            }
-
-                            entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
-                        }
-                    }
-
-                    // Recursively call the next levels down
-                    foreach (var subEntityDef in entityDef.Children)
-                    {
-                        AddEntity(reader, subEntityDef);
-                    }
-
-                    return entity;
-                }
-
-                // This collection will be returned at the end
-                var result = new List<Entity>();
-
-                try
-                {
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        foreach (var statement in statements)
-                        {
-                            var list = results[statement.Query];
-
-                            // Group the column map by the path (which represents the target entity)
-                            var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: false);
-
-                            // Sanity checking: if this isn't an aggregate query, 
-                            if (entityDef.Children.Any(e => !e.IdExists))
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"The query for '{statement.Sql}' is not an aggregate query but is missing essential Ids");
-                            }
-
-                            // Loop over the result from the result set
-                            while (await reader.ReadAsync())
-                            {
-                                Entity record = AddEntity(reader, entityDef);
-                                list.Add(record);
-                            }
-
-                            if (statement.Query?.PrincipalQuery == null)
-                            {
-                                // This is the root query, assign the result to the final list
-                                result = list;
-                            }
-
-                            // Go over to the next result set
-                            await reader.NextResultAsync();
-                        }
-                    }
-                }
-                finally
-                {
-                    // Otherwise we might get an error when a parameter is reused
-                    cmd.Parameters.Clear();
-
-                    // The connection is never owned, but we add this code anyways for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
-                }
-
-                // Here we prepare a dictionary of all the entities loaded so far
-                Dictionary<Type, List<Entity>> allEntities = allIdEntities
-                    .ToDictionary(e => e.Key, e => e.Value.Values.Cast<Entity>().ToList());
-
-                if (result.Any())
-                {
-                    var resultRootType = result.First().GetType().GetRootType();
-                    if (!allEntities.ContainsKey(resultRootType))
-                    {
-                        // this indicates that the main result is a fact table, we add the fact lines
-                        // here in order to have their weak nav properties hydrated
-                        allEntities[resultRootType] = result;
-                    }
-                }
-
-                // The method below efficiently retrieves the navigation properties of each entity
-                Type cacheType = null;
-                List<(PropertyInfo NavProp, PropertyInfo FkProp)> navAndFkCache = null;
-                List<(PropertyInfo NavProp, PropertyInfo FkProp)> GetNavAndFkProps(Entity entity)
-                {
-                    if (entity.GetType() != cacheType) // In a single root type we might have entities belonging to multiple different deriving types
-                    {
-                        cacheType = entity.GetType();
-                        navAndFkCache = new List<(PropertyInfo NavProp, PropertyInfo FkProp)>();
-
-                        IEnumerable<PropertyInfo> nonListProperties = cacheType.GetProperties()
-                                .Where(e => !e.PropertyType.IsList());
-
-                        navAndFkCache = nonListProperties
-                            .Where(p => p.ForeignKeyProperty() != null && allIdEntities.ContainsKey(p.PropertyType.GetRootType()))
-                            .Select(p => (p, p.ForeignKeyProperty()))
-                            .ToList();
-                    }
-
-                    return navAndFkCache;
-                }
-
-                // All simple properties are populated before, but not navigation properties, those are done here
-                foreach (var (rootType, entitiesOfType) in allEntities.Where(e => e.Value.Any()))
-                {
-                    // Loop over all entities and use the method above to hydrate the navigation properties
-                    foreach (var entity in entitiesOfType)
-                    {
-                        foreach (var (navProp, fkProp) in GetNavAndFkProps(entity))
-                        {
-                            // The nav property can only be loaded if the FK property is loaded first
-                            if (fkProp.Name == "Id" || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
-                            {
-                                var fkValue = fkProp.GetValue(entity);
-                                if (fkValue == null)
-                                {
-                                    // it is loaded and its value is NULL
+                                    // it is loaded and it has a value
                                     entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
-                                }
-                                else
-                                {
-                                    var propCollectionType = navProp.PropertyType.GetRootType();
-                                    var entitiesOfPropertyType = allIdEntities[propCollectionType]; // It must be available since we checked earlier that it is
-                                    entitiesOfPropertyType.TryGetValue(fkValue, out EntityWithKey navPropValue);
-                                    if (navPropValue != null)
-                                    {
-                                        // it is loaded and it has a value
-                                        entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
-                                        navProp.SetValue(entity, navPropValue);
-                                    }
+                                    navProp.SetValue(entity, navPropValue);
                                 }
                             }
                         }
                     }
                 }
-
-                // Here we populate the collection navigation properties after the navigation properties have been populated
-                foreach (var (query, list) in results)
-                {
-                    if (query.IsAncestorExpand)
-                    {
-                        // Nothing to do here since this isn't a collection navigation property
-                        // This is the Parent property which was already populated in the previous step
-                        continue;
-                    }
-                    else if (query.PrincipalQuery != null)
-                    {
-                        var principalEntities = results[query.PrincipalQuery]; // The list of entities with collection nav properties
-                        var pathToCollection = query.PathToCollectionPropertyInPrincipal;
-                        var pathToCollectionEntity = new ArraySegment<string>(pathToCollection.Array, pathToCollection.Offset, pathToCollection.Count - 1);
-                        var collectionPropName = pathToCollection[pathToCollection.Count - 1];
-
-                        // In the first step, we collect the collection entities in a hashset, by following the paths from the principal query result list
-                        var collectionEntities = new HashSet<Entity>();
-                        foreach (var principalEntity in principalEntities)
-                        {
-                            // We go down the path updating currentEntity as we go
-                            var currentEntity = principalEntity;
-                            foreach (var step in pathToCollectionEntity)
-                            {
-                                var prop = currentEntity.GetType().GetProperty(step);
-                                currentEntity = prop.GetValue(currentEntity) as Entity;
-
-                                // Check if the nextObject is null
-                                if (currentEntity == null)
-                                {
-                                    // If there is a null object on the path, call it quits
-                                    break;
-                                }
-                            }
-
-                            // Add the object (if any) to the collection entities
-                            if (currentEntity != null)
-                            {
-                                collectionEntities.Add(currentEntity);
-                            }
-                        }
-
-                        var fkName = query.ForeignKeyToPrincipalQuery;
-                        var fkProp = query.ResultType.GetProperty(fkName);
-                        var groupedCollections = list.GroupBy(e => fkProp.GetValue(e)).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
-
-                        PropertyInfo collectionProp = null;
-                        foreach (var collectionEntity in collectionEntities.Cast<EntityWithKey>())
-                        {
-                            // Rule every entity with collections attached to it must be a EntityWithKey
-                            if (collectionProp == null)
-                            {
-                                collectionProp = collectionEntity.GetType().GetProperty(collectionPropName);
-                            }
-
-                            var id = collectionEntity.GetId();
-                            var collection = groupedCollections.ContainsKey(id) ? groupedCollections[id] : MakeList(query.ResultType);
-
-                            collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
-                            collectionProp.SetValue(collectionEntity, collection);
-                        }
-                    }
-                }
-
-                // Return the result
-                return result;
             }
+
+            // Here we populate the collection navigation properties after the navigation properties have been populated
+            foreach (var (query, list) in results)
+            {
+                if (query.IsAncestorExpand)
+                {
+                    // Nothing to do here since this isn't a collection navigation property
+                    // This is the Parent property which was already populated in the previous step
+                    continue;
+                }
+                else if (query.PrincipalQuery != null)
+                {
+                    var principalEntities = results[query.PrincipalQuery]; // The list of entities with collection nav properties
+                    var pathToCollection = query.PathToCollectionPropertyInPrincipal;
+                    var pathToCollectionEntity = new ArraySegment<string>(pathToCollection.Array, pathToCollection.Offset, pathToCollection.Count - 1);
+                    var collectionPropName = pathToCollection[pathToCollection.Count - 1];
+
+                    // In the first step, we collect the collection entities in a hashset, by following the paths from the principal query result list
+                    var collectionEntities = new HashSet<Entity>();
+                    foreach (var principalEntity in principalEntities)
+                    {
+                        // We go down the path updating currentEntity as we go
+                        var currentEntity = principalEntity;
+                        foreach (var step in pathToCollectionEntity)
+                        {
+                            var prop = currentEntity.GetType().GetProperty(step);
+                            currentEntity = prop.GetValue(currentEntity) as Entity;
+
+                            // Check if the nextObject is null
+                            if (currentEntity == null)
+                            {
+                                // If there is a null object on the path, call it quits
+                                break;
+                            }
+                        }
+
+                        // Add the object (if any) to the collection entities
+                        if (currentEntity != null)
+                        {
+                            collectionEntities.Add(currentEntity);
+                        }
+                    }
+
+                    var fkName = query.ForeignKeyToPrincipalQuery;
+                    var fkProp = query.ResultType.GetProperty(fkName);
+                    var groupedCollections = list.GroupBy(e => fkProp.GetValue(e)).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
+
+                    PropertyInfo collectionProp = null;
+                    foreach (var collectionEntity in collectionEntities.Cast<EntityWithKey>())
+                    {
+                        // Rule every entity with collections attached to it must be a EntityWithKey
+                        if (collectionProp == null)
+                        {
+                            collectionProp = collectionEntity.GetType().GetProperty(collectionPropName);
+                        }
+
+                        var id = collectionEntity.GetId();
+                        var collection = groupedCollections.ContainsKey(id) ? groupedCollections[id] : MakeList(query.ResultType);
+
+                        collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
+                        collectionProp.SetValue(collectionEntity, collection);
+                    }
+                }
+            }
+
+            // Return the result
+            return result;
         }
 
         public static PropertyInfo ForeignKeyProperty(this PropertyInfo _propInfo)
@@ -537,7 +539,7 @@ namespace BSharp.Data.Queries
             /// <summary>
             /// All the properties at this level mentioned by all the paths
             /// </summary>
-            public List<(PropertyInfo Property, int Index, string Aggregation)> Properties { get; set; } = new List<(PropertyInfo, int, string)>();
+            public List<(PropertyInfo Property, int Index, string Aggregation, string Function)> Properties { get; set; } = new List<(PropertyInfo, int, string, string)>();
 
             /// <summary>
             /// The segment of the path leading up to this level
@@ -568,6 +570,7 @@ namespace BSharp.Data.Queries
                     var path = columnInfo.Path;
                     var propName = columnInfo.Property;
                     var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
+                    var function = string.IsNullOrWhiteSpace(columnInfo.Function) ? null : columnInfo.Function;
                     var currentTree = root;
 
                     for (int j = 0; j < path.Count; j++)
@@ -594,7 +597,7 @@ namespace BSharp.Data.Queries
                     }
 
                     // In flat queries, the Id is given special treatment for efficiency, since it used to connect related entities together
-                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && currentTree.Type.IsSubclassOf(typeof(EntityWithKey)))
+                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && string.IsNullOrWhiteSpace(function) && currentTree.Type.IsSubclassOf(typeof(EntityWithKey)))
                     {
                         // This IdIndex is only set for Entityable path terminals
                         currentTree.IdIndex = i;
@@ -602,7 +605,7 @@ namespace BSharp.Data.Queries
                     else
                     {
                         var propInfo = currentTree.Type.GetProperty(propName);
-                        currentTree.Properties.Add((propInfo, i, aggregation));
+                        currentTree.Properties.Add((propInfo, i, aggregation, function));
                     }
                 }
 

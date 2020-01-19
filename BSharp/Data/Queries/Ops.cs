@@ -11,9 +11,19 @@
         public const string gt = nameof(gt);
 
         /// <summary>
+        /// Greater than
+        /// </summary>
+        public const string gtSign = ">";
+
+        /// <summary>
         /// Greater than or equals
         /// </summary>
         public const string ge = nameof(ge);
+
+        /// <summary>
+        /// Greater than or equals
+        /// </summary>
+        public const string geSign = ">=";
 
         /// <summary>
         /// Less than
@@ -21,9 +31,19 @@
         public const string lt = nameof(lt);
 
         /// <summary>
+        /// Less than
+        /// </summary>
+        public const string ltSign = "<";
+
+        /// <summary>
         /// Less than or equals
         /// </summary>
         public const string le = nameof(le);
+
+        /// <summary>
+        /// Less than or equals
+        /// </summary>
+        public const string leSign = "<=";
 
         /// <summary>
         /// Equals
@@ -31,9 +51,24 @@
         public const string eq = nameof(eq);
 
         /// <summary>
+        /// Equals
+        /// </summary>
+        public const string eqSign = "=";
+
+        /// <summary>
         /// Not equals
         /// </summary>
         public const string ne = nameof(ne);
+
+        /// <summary>
+        /// Not equals
+        /// </summary>
+        public const string neSign = "!=";
+
+        /// <summary>
+        /// Not equals
+        /// </summary>
+        public const string neSign2 = "<>";
 
         /// <summary>
         /// String contains

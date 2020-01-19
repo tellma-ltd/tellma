@@ -214,9 +214,6 @@
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
   </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
-  </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>标题</value>
   </data>
@@ -739,6 +736,9 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>忘记密码了吗？</value>
   </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>从日期</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>生成恢复代码</value>
   </data>
@@ -924,6 +924,27 @@
   </data>
   <data name="ModifiedBy" xml:space="preserve">
     <value>修改者</value>
+  </data>
+  <data name="Modifier_day" xml:space="preserve">
+    <value>月日</value>
+  </data>
+  <data name="Modifier_dayofyear" xml:space="preserve">
+    <value>年度日</value>
+  </data>
+  <data name="Modifier_month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="Modifier_quarter" xml:space="preserve">
+    <value>美分硬币</value>
+  </data>
+  <data name="Modifier_week" xml:space="preserve">
+    <value>周</value>
+  </data>
+  <data name="Modifier_weekday" xml:space="preserve">
+    <value>本周日</value>
+  </data>
+  <data name="Modifier_year" xml:space="preserve">
+    <value>年</value>
   </data>
   <data name="MU_BaseAmount" xml:space="preserve">
     <value>金额基本单元</value>
@@ -1183,8 +1204,14 @@
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
     <value>默认到图表</value>
   </data>
+  <data name="ReportDefinition_Definition" xml:space="preserve">
+    <value>定义</value>
+  </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>定义</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>过滤</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>过滤</value>
@@ -1197,6 +1224,9 @@
   </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
     <value>措施</value>
+  </data>
+  <data name="ReportDefinition_Modifier" xml:space="preserve">
+    <value>功能</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
     <value>排序</value>
@@ -1239,6 +1269,21 @@
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
     <value>摘要</value>
+  </data>
+  <data name="ReportDefinition_Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="ReportDefinition_Visibility" xml:space="preserve">
+    <value>能见度</value>
+  </data>
+  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
+    <value>隐</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
+    <value>可见</value>
+  </data>
+  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
+    <value>需要</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>报告定义</value>
@@ -1432,6 +1477,75 @@
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
   </data>
+  <data name="ShortDay1" xml:space="preserve">
+    <value>莫</value>
+  </data>
+  <data name="ShortDay2" xml:space="preserve">
+    <value>涂</value>
+  </data>
+  <data name="ShortDay3" xml:space="preserve">
+    <value>我们</value>
+  </data>
+  <data name="ShortDay4" xml:space="preserve">
+    <value>钍</value>
+  </data>
+  <data name="ShortDay5" xml:space="preserve">
+    <value>神父</value>
+  </data>
+  <data name="ShortDay6" xml:space="preserve">
+    <value>萨</value>
+  </data>
+  <data name="ShortDay7" xml:space="preserve">
+    <value>苏</value>
+  </data>
+  <data name="ShortMonth1" xml:space="preserve">
+    <value>一月</value>
+  </data>
+  <data name="ShortMonth10" xml:space="preserve">
+    <value>十月</value>
+  </data>
+  <data name="ShortMonth11" xml:space="preserve">
+    <value>十一月</value>
+  </data>
+  <data name="ShortMonth12" xml:space="preserve">
+    <value>十二月</value>
+  </data>
+  <data name="ShortMonth2" xml:space="preserve">
+    <value>二月</value>
+  </data>
+  <data name="ShortMonth3" xml:space="preserve">
+    <value>损伤</value>
+  </data>
+  <data name="ShortMonth4" xml:space="preserve">
+    <value>四月</value>
+  </data>
+  <data name="ShortMonth5" xml:space="preserve">
+    <value>可以</value>
+  </data>
+  <data name="ShortMonth6" xml:space="preserve">
+    <value>君</value>
+  </data>
+  <data name="ShortMonth7" xml:space="preserve">
+    <value>七月</value>
+  </data>
+  <data name="ShortMonth8" xml:space="preserve">
+    <value>八月</value>
+  </data>
+  <data name="ShortMonth9" xml:space="preserve">
+    <value>九月</value>
+  </data>
+  <data name="ShortQuarter1" xml:space="preserve">
+    <value>1季度</value>
+  </data>
+  <data name="ShortQuarter2" xml:space="preserve">
+    <value>2季度</value>
+  </data>
+  <data name="ShortQuarter3" xml:space="preserve">
+    <value>3季度</value>
+  </data>
+  <data name="ShortQuarter4" xml:space="preserve">
+    <value>4季度</value>
+  </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>代表</value>
   </data>
@@ -1492,6 +1606,12 @@
   <data name="StringLengthAttribute2" xml:space="preserve">
     <value>字段{0}必须至少{2}和在最大{1}个字符长。</value>
   </data>
+  <data name="SummaryEntries" xml:space="preserve">
+    <value>摘要条目</value>
+  </data>
+  <data name="SummaryEntry" xml:space="preserve">
+    <value>摘要入口</value>
+  </data>
   <data name="T_CultureId" xml:space="preserve">
     <value>文化</value>
   </data>
@@ -1521,6 +1641,9 @@
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>标志</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>要日期（含）</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>总</value>

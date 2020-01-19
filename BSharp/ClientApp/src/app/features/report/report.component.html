@@ -31,8 +31,7 @@
                         <!-- Serial -->
                         <b-decimal-editor *ngSwitchCase="'serial'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0"
-                            [maxDecimalPlaces]="0">
+                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
                         </b-decimal-editor>
 
                         <!-- Date -->
@@ -41,11 +40,10 @@
                         </b-date-picker>
 
                         <!-- Date Time -->
-                        <ng-container *ngSwitchCase="'datetime'">
-                            <div class="text-danger font-weight-bold" *ngSwitchDefault>
-                                TODO: datetime control
-                            </div>
-                        </ng-container>
+                        <b-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="arguments[p.key]"
+                            [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()">
+                        </b-date-picker>
 
                         <!-- Choice -->
                         <b-selector *ngSwitchCase="'choice'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
@@ -67,9 +65,69 @@
                         </div>
 
                         <!-- Navigation -->
-                        <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['collection']">
+                        <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
+
+                            <b-account-classifications-picker *ngSwitchCase="'AccountClassification'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-account-classifications-picker>
+
+                            <b-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-account-types-picker>
+
+                            <b-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-accounts-picker>
+
+                            <b-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="arguments[p.key]"
+                                [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-agents-picker>
+
+                            <b-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-currencies-picker>
+
+                            <b-entry-classifications-picker *ngSwitchCase="'EntryClassification'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-entry-classifications-picker>
+
+                            <b-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="arguments[p.key]"
+                                [definitionId]="p.desc['definition']" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-lookups-picker>
+
+                            <b-measurement-units-picker *ngSwitchCase="'MeasurementUnit'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-measurement-units-picker>
+
+                            <b-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
+                                [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-resources-picker>
+
+                            <b-resource-classifications-picker *ngSwitchCase="'ResourceClassification'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-resource-classifications-picker>
+
+                            <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-responsibility-centers-picker>
+
+                            <b-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-roles-picker>
+
+                            <b-users-picker *ngSwitchCase="'User'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </b-users-picker>
+
                             <div class="text-danger font-weight-bold" *ngSwitchDefault>
-                                TODO: navigation controls
+                                TODO: control for '{{ p.desc['type'] || p.desc['collection'] }}''
                             </div>
                         </ng-container>
 

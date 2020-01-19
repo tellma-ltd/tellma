@@ -45,22 +45,18 @@ namespace BSharp.Services.GlobalSettings
                     result = _cache;
                     if (result == null || CacheIsExpired())
                     {
-                        using (var scope = _serviceProvider.CreateScope())
+                        using var scope = _serviceProvider.CreateScope();
+                        using var db = scope.ServiceProvider.GetRequiredService<AdminRepository>();
+                        var dbVersion = LoadGlobalSettingsVersion(db);
+
+                        if (result == null || _version != dbVersion)
                         {
-                            using (var db = scope.ServiceProvider.GetRequiredService<AdminRepository>())
-                            {
-                                var dbVersion = LoadGlobalSettingsVersion(db);
-
-                                if (result == null || _version != dbVersion)
-                                {
-                                    _cache = LoadGlobalSettings(db);
-                                    result = _cache;
-                                }
-
-                                _version = dbVersion;
-                                _lastChecked = DateTimeOffset.Now;
-                            }
+                            _cache = LoadGlobalSettings(db);
+                            result = _cache;
                         }
+
+                        _version = dbVersion;
+                        _lastChecked = DateTimeOffset.Now;
                     }
                 }
                 finally

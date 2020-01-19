@@ -34,15 +34,12 @@ namespace BSharp.Data.Queries
         private string _fromSql;
         private string _preSql;
         private SqlParameter[] _parameters;
+        private List<(string ParamName, object Value)> _additionalParameters;
 
         /// <summary>
         /// Creates a new instance of <see cref="Query"/>
         /// </summary>
-        /// <param name="conn">The connection to use when loading the results</param>
-        /// <param name="sources">Mapping from every type into SQL code that can be used to query that type</param>
-        /// <param name="localizer">For validation error messages</param>
-        /// <param name="userId">Used as context when preparing certain filter expressions</param>
-        /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
+        /// <param name="factory">Delegate that can asynchronously returns the <see cref="QueryArguments"/></param>
         public Query(QueryArgumentsFactory factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -67,6 +64,7 @@ namespace BSharp.Data.Queries
                 _fromSql = _fromSql,
                 _preSql = _preSql,
                 _parameters = _parameters?.ToArray(),
+                _additionalParameters = _additionalParameters?.ToList()
             };
 
             return clone;
@@ -122,7 +120,7 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
-                clone._filterConditions = clone._filterConditions ?? new List<FilterExpression>();
+                clone._filterConditions ??= new List<FilterExpression>();
                 clone._filterConditions.Add(condition);
             }
 
@@ -245,6 +243,23 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
+        /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
+        /// must be supplied this method must be supplied through this method before loading any data
+        /// </summary>
+        public Query<T> AdditionalParameters(params (string ParamName, object Value)[] parameters)
+        {
+            var clone = Clone();
+            if (clone._additionalParameters == null)
+            {
+                clone._additionalParameters = new List<(string ParamName, object Value)>();
+            }
+
+            clone._additionalParameters.AddRange(parameters);           
+
+            return clone;
+        }
+
+        /// <summary>
         /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>
         /// </summary>
         public async Task<int> CountAsync()
@@ -253,7 +268,7 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userToday = args.UserToday;
             var localizer = args.Localizer;
 
             SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
@@ -290,11 +305,20 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Load the statement
-            var sql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
+            var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -309,39 +333,38 @@ namespace BSharp.Data.Queries
             }
 
             // Execute the SqlStatement
-            using (var cmd = conn.CreateCommand())
-            {
-                // Prepare the SQL command
-                cmd.CommandText = sql;
-                foreach (var parameter in ps)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
+            using var cmd = conn.CreateCommand();
 
-                // It is alawys closed, but we add this code anyways for robustness
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            // Prepare the SQL command
+            cmd.CommandText = sql;
+            foreach (var parameter in ps)
+            {
+                cmd.Parameters.Add(parameter);
+            }
+
+            // It is alawys closed, but we add this code anyways for robustness
+            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            if (ownsConnection)
+            {
+                conn.Open();
+            }
+
+            try
+            {
+                // Execute the query and return the result
+                int count = (int)await cmd.ExecuteScalarAsync();
+                return count;
+            }
+            finally
+            {
+                // Otherwise we might get an error
+                cmd.Parameters.Clear();
+
+                // This block is never entered, but we put anyways for robustness
                 if (ownsConnection)
                 {
-                    conn.Open();
-                }
-
-                try
-                {
-                    // Execute the query and return the result
-                    int count = (int)await cmd.ExecuteScalarAsync();
-                    return count;
-                }
-                finally
-                {
-                    // Otherwise we might get an error
-                    cmd.Parameters.Clear();
-
-                    // This block is never entered, but we put anyways for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
         }
@@ -355,10 +378,10 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
-            _orderby = _orderby ?? (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
+            _orderby ??= (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
                 throw new InvalidOperationException($"Query<{typeof(T).Name}> was executed without an orderby clause"));
 
             // Prepare all the query parameters
@@ -486,7 +509,7 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            expandExp = expandExp ?? ExpandExpression.RootSingleton;
+            expandExp ??= ExpandExpression.RootSingleton;
             {
                 var expandTree = PathTree.Build(typeof(T), expandExp.Select(e => e.Path));
                 foreach (var expandAtom in expandExp)
@@ -506,7 +529,7 @@ namespace BSharp.Data.Queries
                             var flatQuery = segments[previousFullPath];
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
                             {
-                                flatQuery.Expand = flatQuery.Expand ?? new ExpandExpression();
+                                flatQuery.Expand ??= new ExpandExpression();
                                 flatQuery.Expand.Add(new ExpandAtom { Path = subPath.SkipLast(1).ToArray() });
                             }
                         }
@@ -519,7 +542,7 @@ namespace BSharp.Data.Queries
                         if (subPath.Count > 0)
                         {
                             var flatQuery = segments[previousFullPath];
-                            flatQuery.Expand = flatQuery.Expand ?? new ExpandExpression();
+                            flatQuery.Expand ??= new ExpandExpression();
                             flatQuery.Expand.Add(new ExpandAtom
                             {
                                 Path = subPath.ToArray(),
@@ -554,12 +577,21 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Prepare the SqlStatements
             List<SqlStatement> statements = segments.Values
-                .Select(q => q.PrepareStatement(rawSources, ps, userId, userTimeZone))
+                .Select(q => q.PrepareStatement(sources, ps, userId, userTimeZone))
                 .ToList(); // The order matters for the Entity loader
 
             // Load the entities
@@ -627,7 +659,7 @@ namespace BSharp.Data.Queries
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
-            var userTimeZone = args.UserTimeZone;
+            var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
             if (_select != null || _expand != null)
@@ -670,11 +702,20 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // Get raw SQL sources
-            var rawSources = QueryTools.RawSources(sources, ps);
+            if (_additionalParameters != null)
+            {
+                foreach (var (paramName, value) in _additionalParameters)
+                {
+                    ps.AddParameter(new SqlParameter
+                    {
+                        ParameterName = paramName,
+                        Value = value ?? DBNull.Value
+                    });
+                }
+            }
 
             // Use the internal query to create the SQL
-            var sourceSql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
+            var sourceSql = flatQuery.PrepareStatement(sources, ps, userId, userTimeZone).Sql;
 
             List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
             foreach (var criteriaIndex in criteriaIndexes)
@@ -693,8 +734,8 @@ namespace BSharp.Data.Queries
                 };
 
                 JoinTree joinTree = criteriaQuery.JoinSql();
-                string joinSql = joinTree.GetSql(rawSources, fromSql: $@"({sourceSql})");
-                string whereSql = criteriaQuery.WhereSql(rawSources, joinTree, ps, userId, userTimeZone);
+                string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
+                string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();
@@ -718,54 +759,53 @@ UNION
 {sql}";
             }
 
-            using (var cmd = conn.CreateCommand())
+            using var cmd = conn.CreateCommand();
+
+            // Prepare the SQL command
+            cmd.CommandText = sql;
+            foreach (var parameter in ps)
             {
-                // Prepare the SQL command
-                cmd.CommandText = sql;
-                foreach (var parameter in ps)
+                cmd.Parameters.Add(parameter);
+            }
+
+            // This block is never entered, but we add it anyways for robustness sake
+            bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+            if (ownsConnection)
+            {
+                conn.Open();
+            }
+
+            try
+            {
+                var result = new List<IndexedId<TKey>>();
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    cmd.Parameters.Add(parameter);
+                    // Loop over the result from the database
+                    while (await reader.ReadAsync())
+                    {
+                        var dbId = reader["Id"];
+                        var dbIndex = reader.GetInt32(1);
+
+                        result.Add(new IndexedId<TKey>
+                        {
+                            Id = (TKey)dbId,
+                            Index = dbIndex
+                        });
+                    }
                 }
 
-                // This block is never entered, but we add it anyways for robustness sake
-                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
+                return result;
+            }
+            finally
+            {
+                // Otherwise we might get an error
+                cmd.Parameters.Clear();
+
+                // This block is never entered but we add it here for robustness
                 if (ownsConnection)
                 {
-                    conn.Open();
-                }
-
-                try
-                {
-                    var result = new List<IndexedId<TKey>>();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        // Loop over the result from the database
-                        while (await reader.ReadAsync())
-                        {
-                            var dbId = reader["Id"];
-                            var dbIndex = reader.GetInt32(1);
-
-                            result.Add(new IndexedId<TKey>
-                            {
-                                Id = (TKey)dbId,
-                                Index = dbIndex
-                            });
-                        }
-                    }
-
-                    return result;
-                }
-                finally
-                {
-                    // Otherwise we might get an error
-                    cmd.Parameters.Clear();
-
-                    // This block is never entered but we add it here for robustness
-                    if (ownsConnection)
-                    {
-                        conn.Close();
-                        conn.Dispose();
-                    }
+                    conn.Close();
+                    conn.Dispose();
                 }
             }
         }
@@ -939,7 +979,7 @@ UNION
                         yield return (fullPath, subPath, currentTree.Type);
 
                         // Add the count to the offset and then zero the count
-                        offset = offset + count;
+                        offset += count;
                         count = 0;
                     }
                 }

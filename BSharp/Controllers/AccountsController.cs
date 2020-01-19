@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class AccountsController : CrudControllerBase<AccountForSave, Account, int>
@@ -25,7 +24,7 @@ namespace BSharp.Controllers
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
-        private string View => $"{BASE_ADDRESS}";
+        private string View => BASE_ADDRESS;
 
         public AccountsController(
             ILogger<AccountsController> logger,
@@ -75,22 +74,20 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsDeprecated", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Accounts__Deprecate(ids, isDeprecated);
+
+            if (returnEntities)
             {
-                await _repo.Accounts__Deprecate(ids, isDeprecated);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
 
@@ -128,12 +125,12 @@ namespace BSharp.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             entities.ForEach(entity =>
             {
-                entity.IsSmart = entity.IsSmart ?? false;
+                entity.IsSmart ??= false;
 
                 if (!entity.IsSmart.Value)
                 {
                     // Only for dumb accounts
-                    entity.CurrencyId = entity.CurrencyId ?? settings.FunctionalCurrencyId;
+                    entity.CurrencyId ??= settings.FunctionalCurrencyId;
 
                     // Dumb accounts set all these to null
                     entity.ResponsibilityCenterId = null;

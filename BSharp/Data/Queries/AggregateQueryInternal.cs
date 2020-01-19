@@ -37,8 +37,8 @@ namespace BSharp.Data.Queries
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
             SqlStatementParameters ps,
-            int currentUserId,
-            TimeZoneInfo currentUserTimeZone)
+            int userId,
+            DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
             var joinTree = PrepareJoin();
@@ -50,7 +50,7 @@ namespace BSharp.Data.Queries
             var groupbySql = selectClause.ToGroupBySql();
 
             // (3) Prepare the WHERE clause
-            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, userId, userToday);
 
             // (4) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -103,8 +103,8 @@ namespace BSharp.Data.Queries
         /// </summary>
         private SqlSelectGroupByClause PrepareSelect(JoinTree joinTree)
         {
-            var selects = new HashSet<(string Symbol, string PropName, string aggregate)>(); // To ensure uniqueness
-            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate)>();
+            var selects = new HashSet<(string Symbol, string PropName, string Aggregate, string Modifier)>(); // To ensure uniqueness
+            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, string Modifier)>();
 
             foreach (var select in Select)
             {
@@ -114,11 +114,12 @@ namespace BSharp.Data.Queries
                 var symbol = join.Symbol;
                 var propName = select.Property; // Can be null
                 var aggregation = select.Aggregation;
+                var modifier = select.Modifier;
 
                 // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
-                if (selects.Add((symbol, propName, aggregation)))
+                if (selects.Add((symbol, propName, aggregation, modifier)))
                 {
-                    columns.Add((symbol, path, propName, aggregation));
+                    columns.Add((symbol, path, propName, aggregation, modifier));
                 }
             }
 
@@ -129,9 +130,9 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
-            string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, currentUserId, currentUserTimeZone) ?? "";
+            string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday) ?? "";
 
             // Add the "WHERE" keyword
             if (!string.IsNullOrEmpty(whereSql))
@@ -164,7 +165,7 @@ namespace BSharp.Data.Queries
                     throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
                 }
                 var symbol = join.Symbol;
-                string orderby = QueryTools.AtomSql(symbol, atom.Property, atom.Aggregation) + $" {atom.OrderDirection.ToUpper()}";
+                string orderby = QueryTools.AtomSql(symbol, atom.Property, atom.Aggregation, atom.Modifier) + $" {atom.OrderDirection.ToUpper()}";
                 orderbys.Add(orderby);
             }
 

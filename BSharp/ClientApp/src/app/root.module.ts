@@ -1,4 +1,4 @@
-import { NgModule, Component } from '@angular/core';
+import { NgModule, Component, ApplicationRef } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
@@ -12,13 +12,12 @@ import { ApiService } from './data/api.service';
 import { Router, RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
-import { SignOutComponent } from './features/sign-out/sign-out.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
 import {
   faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch,
-  faHands, faCube, faCogs, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt
+  faHands, faCube, faCogs, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt, faWifi
 } from '@fortawesome/free-solid-svg-icons';
 import { RootShellComponent } from './features/root-shell/root-shell.component';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -133,7 +132,6 @@ export const routes: Routes = [
     RootComponent,
     CompaniesComponent,
     PlaceholderComponent,
-    SignOutComponent,
     RootShellComponent,
     LandingComponent,
     ErrorComponent
@@ -169,7 +167,7 @@ export const routes: Routes = [
 export class RootModule {
 
   constructor(library: FaIconLibrary) {
-    library.addIcons(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight,
+    library.addIcons(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight, faWifi,
       faSyncAlt, faSearch, faCube, faCogs, faHands, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt);
   }
 }
