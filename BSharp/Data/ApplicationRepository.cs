@@ -2579,7 +2579,79 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
 
         #region AccountTypes
 
-        public async Task AccountTypes__Activate(List<string> ids, bool isActive)
+        public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__Save(List<AccountTypeForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(AccountType)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountTypes_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> AccountTypes__Save(List<AccountTypeForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AccountType)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(AccountTypes__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task AccountTypes__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2587,7 +2659,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                TypeName = $"[dbo].[StringList]",
+                TypeName = $"[dbo].[IdList]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -2600,6 +2672,110 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountTypes_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task AccountTypes__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountTypes__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> AccountTypes_Validate__DeleteWithDescendants(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AccountTypes_Validate__DeleteWithDescendants)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task AccountTypes__DeleteWithDescendants(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AccountTypes__DeleteWithDescendants)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
         }
 
         #endregion
