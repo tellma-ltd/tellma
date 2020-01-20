@@ -7,6 +7,7 @@
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
+	[CurrencyId]				NCHAR (3)		,
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[ResponsibilityCenterId]	INT,
@@ -23,10 +24,10 @@
 	[Value]						DECIMAL (19,4),--		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[RelatedAgentId]			INT,
-	[RelatedAgentName]			NVARCHAR (50),
-	[RelatedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedDate]				DATE,
+	[NotedAgentId]				INT,
+	[NotedAgentName]			NVARCHAR (50),
+	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate]					DATE,
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0)
 );

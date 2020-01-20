@@ -8,10 +8,10 @@ BEGIN
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 		SUM(J.[MonetaryValue]) AS VAT,
-		SUM(J.[RelatedAmount]) AS [Taxable Amount],
+		SUM(J.[NotedAmount]) AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	WHERE
 		J.[AccountTypeId] = dbo.fn_RCCode__Id( N'ValueAddedTaxReceivables')
 	AND J.Direction = 1

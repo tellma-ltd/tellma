@@ -50,6 +50,6 @@ BEGIN
 		--	THEN J.Direction * J.[Value] Else 0 
 		--	END) AS [Pension Contribution 11%]
 	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	GROUP BY A.TaxIdentificationNumber, A.[Name];
 END

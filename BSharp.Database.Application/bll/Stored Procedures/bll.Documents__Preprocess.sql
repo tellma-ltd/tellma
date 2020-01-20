@@ -41,6 +41,7 @@ JOIN dbo.Accounts A ON E.AccountId = A.Id;
 -- Copy information from Account to entries
 UPDATE E 
 SET
+	E.[CurrencyId]				= COALESCE(A.[CurrencyId], E.[CurrencyId]),
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
@@ -71,8 +72,8 @@ JOIN dbo.Resources R ON E.ResourceId = R.Id
 
 UPDATE E
 SET
-	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction]),
-	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
+	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction])
+--	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
 	-- TODO: fill with all the remaining defaults
 
 FROM @PreprocessedEntries E
@@ -85,11 +86,10 @@ SET -- to allow flexibility, we can either enter value and get monetary value or
 	E.[MonetaryValue]	= COALESCE(E.[MonetaryValue], E.[Value]),
 	E.[Value]			= COALESCE(E.[Value], E.[MonetaryValue])
 FROM @PreprocessedEntries E
-JOIN dbo.Accounts A ON E.AccountId = A.Id
 JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
-	A.[CurrencyId] = @FunctionalCurrencyId
+	E.[CurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] IS NULL OR E.[MonetaryValue] IS NULL);
 
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service

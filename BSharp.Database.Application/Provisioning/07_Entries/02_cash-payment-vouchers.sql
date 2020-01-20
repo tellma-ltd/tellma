@@ -1,6 +1,10 @@
 ﻿DECLARE @D_CPV [dbo].[DocumentList], @L_CPV [dbo].LineList, @E_CPV [dbo].EntryList, @D_CPVIds dbo.IdList;
+/* CPV consists of the following tabs
 DECLARE @WL_CPV [dbo].[WideLineList];
-
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), 
+*/
 BEGIN
 	INSERT INTO @D_CPV
 	([Index],	[DocumentDate], [Memo]) VALUES
@@ -25,7 +29,7 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Capital Investment (M): Insert: ' + @ValidationErrorsJson
+		Print 'Cash Payment Voucher: Insert: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

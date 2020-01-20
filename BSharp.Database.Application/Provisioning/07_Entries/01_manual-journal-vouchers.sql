@@ -65,10 +65,10 @@ BEGIN -- Inserting
 	-- Account, Debit, Credit, Memo
 	-- For smart accounts, 
 	---------------------- we will have dynamic properties as follows:
-	-- If agentdefinition = N'tax-agencies' show: RelatedAgent, RelatedAmount, ExternalReference, and 
-		-- if RelatedAgentDefinition =  N'customers' show also ExternalReference, Invoice #
-		-- if RelatedAgentDefinition =  N'suppliers' show also AdditionalReference, Machine #
-	-- If Contract type = N'OnHand',  show also RelatedAgentName, Debit: To - Credi: From
+	-- If agentdefinition = N'tax-agencies' show: NotedAgent, NotedAmount, ExternalReference, and 
+		-- if NotedAgentDefinition =  N'customers' show also ExternalReference, Invoice #
+		-- if NotedAgentDefinition =  N'suppliers' show also AdditionalReference, Machine #
+	-- If Contract type = N'OnHand',  show also NotedAgentName, Debit: To - Credi: From
 	-- If Contract type = N'Payable', Credit, and AgentDefinition = N'suppliers', Credit, show External Reference: Invoice #
 	-- If Contract type = N'Receivable', Credit, and AgentDefinition = N'customers', Debit, show External Reference: Invoice #
 	-- Resource is always among the dynamic properties
@@ -77,19 +77,19 @@ BEGIN -- Inserting
 	-- If AgentDefinition is not null, Show Agent
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[EntryTypeId],[ResourceId], [Value], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
-	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),--
-	(7, 7, 2,1,+1,@VATInput,	NULL, 						NULL,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
-	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),
-	(9, 9, 2,1,+1,@VATInput,	NULL, 						NULL,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
-	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					NULL,		1380000,		N'C-14209',			NULL,					NULL,			NULL),
+				[AccountId],	[EntryTypeId],				[Value],	[ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAmount]) VALUES
+	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,			N'C-14209',			NULL,					NULL,			NULL),--
+	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
+	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,			N'C-14209',			NULL,					NULL,			NULL),
+	(9, 9, 2,1,+1,@VATInput,	NULL, 						90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
+	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					1380000,		N'C-14209',			NULL,					NULL,			NULL),
 
-	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				NULL,		600000,			NULL,				NULL, NULL, NULL),
-	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		NULL,		600000,			NULL,				NULL, NULL, NULL),
+	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				600000,			NULL,				NULL, NULL, NULL),
+	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		600000,			NULL,				NULL, NULL, NULL),
 	
-	(13,13,4,1,+1,@VATInput,	NULL,						NULL,		2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
-	(14,14,4,1,+1,@PrepaidRental,NULL,						NULL,		15000,			N'C-25301',			NULL,					NULL,			NULL),
-	(15,15,4,1,-1,@RegusAccount,NULL, 						NULL,		17250,			N'C-25301',			NULL,					NULL,			NULL);
+	(13,13,4,1,+1,@VATInput,	NULL,						2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
+	(14,14,4,1,+1,@PrepaidRental,NULL,						15000,			N'C-25301',			NULL,					NULL,			NULL),
+	(15,15,4,1,-1,@RegusAccount,NULL, 						17250,			N'C-25301',			NULL,					NULL,			NULL);
 	; 
 	
 	EXEC [api].[Documents__Save]
@@ -198,11 +198,11 @@ BEGIN
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
-		FORMAT(SUM(J.[RelatedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
+		FORMAT(SUM(J.[NotedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [map].[DetailsEntries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
 
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	WHERE J.[AccountId] = @VATInput
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
 END

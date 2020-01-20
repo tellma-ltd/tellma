@@ -17,13 +17,17 @@
 	[HasResource]					BIT				NOT NULL DEFAULT 0,
 	[HasAgent]						BIT				NOT NULL DEFAULT 0,
 	[IsRelated]						BIT				NOT NULL DEFAULT 0,
-	[HasReferenceAgent]				BIT				NOT NULL DEFAULT 0,	
-	[HasReferenceText]				BIT				NOT NULL DEFAULT 0,
-	[HasReferenceAmount]			BIT				NOT NULL DEFAULT 0, 
-	--[HasReferenceResource]		BIT				NOT NULL DEFAULT 0,
+
+	[HasExternalReference]			BIT				NOT NULL DEFAULT 0,	
+	[HasAdditionalReference]		BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAgentId]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAgentName]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAmount]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedDate]					BIT				NOT NULL DEFAULT 0,	
+
 	[AgentId]						INT,
 	[ResourceId]					INT,
-	[CurrencyId]					NCHAR (3)			NOT NULL,
+	[CurrencyId]					NCHAR (3),
 	[Identifier]					NVARCHAR (10),
 -- Entry Property
 	[EntryTypeId]					INT

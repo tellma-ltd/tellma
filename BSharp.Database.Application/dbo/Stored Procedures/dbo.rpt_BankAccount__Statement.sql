@@ -18,9 +18,9 @@ BEGIN
 		[VoucherNumericReference] As [CPV_CRV_Ref],
 		[Memo],
 		[ExternalReference] As [CheckRef],
-		[RelatedAgentId] As [OtherParty],
+		[NotedAgentId] As [OtherParty],
 		-- TODO: where to show the related currency?
-		[RelatedAmount] As [OtherPartyAmount]
+		[NotedAmount] As [OtherPartyAmount]
 	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL)
 	WHERE [AccountId] = @AccountId;
 END;

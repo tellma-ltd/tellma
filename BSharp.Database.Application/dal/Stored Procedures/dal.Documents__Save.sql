@@ -119,12 +119,12 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],
+			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
-			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount],
-			E.[RelatedDate], E.[Time1], E.[Time2]
+			E.[ExternalReference], E.[AdditionalReference], E.[NotedAgentId], E.[NotedAgentName], E.[NotedAmount],
+			E.[NotedDate], E.[Time1], E.[Time2]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index]
@@ -133,6 +133,7 @@ BEGIN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
+			t.[CurrencyId]				= s.[CurrencyId],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
@@ -144,32 +145,32 @@ BEGIN
 			t.[Count]					= s.[Count],
 			t.[Mass]					= s.[Mass],
 			t.[Volume]					= s.[Volume],
-			t.[RelatedDate]				= s.[RelatedDate],
 			t.[Time]					= s.[Time],
 			t.[Value]					= s.[Value],
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[AdditionalReference]		= s.[AdditionalReference],
-			t.[RelatedAgentId]			= s.[RelatedAgentId],
-			t.[RelatedAgentName]		= s.[RelatedAgentName],
-			t.[RelatedAmount]			= s.[RelatedAmount],
+			t.[NotedAgentId]			= s.[NotedAgentId],
+			t.[NotedAgentName]			= s.[NotedAgentName],
+			t.[NotedAmount]				= s.[NotedAmount],
+			t.[NotedDate]				= s.[NotedDate],
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [EntryNumber], [Direction], [AccountId],
+		INSERT ([LineId], [EntryNumber], [Direction], [AccountId], [CurrencyId],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[EntryTypeId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
-			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
-			[RelatedDate], [Time1], [Time2]
+			[ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAgentName], [NotedAmount],
+			[NotedDate], [Time1], [Time2]
 		)
-		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId],
+		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
-			s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAgentName], s.[RelatedAmount],
-			s.[RelatedDate], s.[Time1], s.[Time2]
+			s.[ExternalReference], s.[AdditionalReference], s.[NotedAgentId], s.[NotedAgentName], s.[NotedAmount],
+			s.[NotedDate], s.[Time1], s.[Time2]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

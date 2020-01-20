@@ -36,7 +36,7 @@ RETURN
 		LEFT JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
-		JOIN dbo.Currencies C ON A.[CurrencyId] = C.[Id]
+		JOIN dbo.Currencies C ON DLE.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)

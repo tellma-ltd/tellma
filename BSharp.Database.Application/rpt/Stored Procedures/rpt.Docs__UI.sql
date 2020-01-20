@@ -19,7 +19,7 @@ WITH Docs AS (
 			L.[State] AS [LineState],
 			E.[Direction],
 			E.[EntryNumber], A.[Name] AS [Account], A.[HasAgent] AS [A?], A.[HasResource] AS [R?],
-			A.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
+			E.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
 		FROM dbo.Documents D
