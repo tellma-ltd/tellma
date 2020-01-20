@@ -257,7 +257,7 @@ namespace BSharp.Controllers
 
         public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo)
         {
-            var (isMultiResponsibilityCenter, settings, classificationsMap) = await repo.Settings__Load();
+            var (isMultiResponsibilityCenter, settings) = await repo.Settings__Load();
             if (settings == null)
             {
                 // This should never happen
@@ -292,17 +292,6 @@ namespace BSharp.Controllers
             settingsForClient.PrimaryLanguageName = GetCultureDisplayName(settingsForClient.PrimaryLanguageId);
             settingsForClient.SecondaryLanguageName = GetCultureDisplayName(settingsForClient.SecondaryLanguageId);
             settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);
-
-            // Resource Classification Entry Classification map
-            settingsForClient.ResourceEntryClassificationMap = new List<ResourceToEntryClassification>();
-            foreach (var (resourceClassificationPath, entryClassificationId) in classificationsMap)
-            {
-                settingsForClient.ResourceEntryClassificationMap.Add(new ResourceToEntryClassification
-                {
-                    ResourceClassificationPath = resourceClassificationPath,
-                    EntryClassificationId = entryClassificationId
-                });
-            }
 
             // Tag the settings for client with their current version
             var result = new DataWithVersion<SettingsForClient>

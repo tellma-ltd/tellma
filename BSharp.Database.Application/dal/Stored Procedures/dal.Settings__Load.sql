@@ -12,6 +12,3 @@ AS
 	-- The functional currency
 	SELECT [C].* FROM [dbo].[Currencies] AS [C] 
 	JOIN [dbo].[Settings] AS [S] ON [C].[Id] = [S].[FunctionalCurrencyId]
-
-	-- Load the mappings
-	SELECT N'TODO: change the code' AS [ResourceClassificationPath], 0 AS [EntryClassificationId]
