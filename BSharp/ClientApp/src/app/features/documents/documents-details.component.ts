@@ -18,7 +18,7 @@ import { AccountForSave } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
-import { ResourceClassification } from '~/app/data/entities/resource-classification';
+import { LegacyType } from '~/app/data/entities/legacy-type';
 
 interface DocumentEventBase {
   time: string;
@@ -453,9 +453,9 @@ Document_State_Closed
   public resourceDefinitionIds(entry: Entry): string[] {
     const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
     const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
-    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as ResourceClassification;
+    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
 
-    return !!resourceClassification ? [resourceClassification.ResourceDefinitionId] : [];
+    return []; // !!resourceClassification ? [resourceClassification.ResourceDefinitionId] : [];
   }
 
   public resourceLabel(entry: Entry): string {
@@ -571,8 +571,8 @@ Document_State_Closed
   private resourceClassificationPath(entry: Entry) {
     const resource = this.resource(entry) as Resource;
     const resourceClassificationId = !!resource ? resource.ResourceClassificationId : null;
-    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as ResourceClassification;
-    const resourceClassificationPath = !!resourceClassification ? resourceClassification.Path : null;
+    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
+    const resourceClassificationPath = null; // !!resourceClassification ? resourceClassification.Path : null;
 
     return resourceClassificationPath;
   }

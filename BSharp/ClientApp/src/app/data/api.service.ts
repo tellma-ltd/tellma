@@ -27,14 +27,14 @@ import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
-import { ResourceClassification } from './entities/resource-classification';
+import { LegacyType } from './entities/legacy-type';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
 import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 import { User } from './entities/user';
-import { AccountClassification } from './entities/account-classification';
+import { LegacyClassification } from './entities/legacy-classification';
 import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
@@ -43,11 +43,12 @@ import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { friendlify } from './util';
-import { EntryClassification } from './entities/entry-classification';
+import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
 import { AssignArguments } from './dto/assign-arguments';
 import { MyUserForSave } from './dto/my-user';
+import { AccountType } from './entities/account-type';
 
 
 @Injectable({
@@ -88,10 +89,10 @@ export class ApiService {
     };
   }
 
-  public resourceClassificationsApi(cancellationToken$: Observable<void>) {
+  public accountTypesApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<ResourceClassification>(`resource-classifications`, cancellationToken$),
-      deactivate: this.deactivateFactory<ResourceClassification>(`resource-classifications`, cancellationToken$)
+      activate: this.activateFactory<AccountType>(`account-types`, cancellationToken$),
+      deactivate: this.deactivateFactory<AccountType>(`account-types`, cancellationToken$)
     };
   }
 
@@ -116,17 +117,17 @@ export class ApiService {
     };
   }
 
-  public accountClassificationsApi(cancellationToken$: Observable<void>) {
+  public legacyClassificationsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<AccountClassification>('account-classifications', cancellationToken$),
-      deactivate: this.deactivateFactory<AccountClassification>('account-classifications', cancellationToken$)
+      activate: this.activateFactory<LegacyClassification>('legacy-classifications', cancellationToken$),
+      deactivate: this.deactivateFactory<LegacyClassification>('legacy-classifications', cancellationToken$)
     };
   }
 
-  public entryClassificationsApi(cancellationToken$: Observable<void>) {
+  public entryTypesApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<EntryClassification>(`entry-classifications`, cancellationToken$),
-      deactivate: this.deactivateFactory<EntryClassification>(`entry-classifications`, cancellationToken$)
+      activate: this.activateFactory<EntryType>(`entry-types`, cancellationToken$),
+      deactivate: this.deactivateFactory<EntryType>(`entry-types`, cancellationToken$)
     };
   }
 

@@ -87,9 +87,9 @@
                 {{ ws.getMultilingualValue('ResourceClassification', model.ResourceClassificationId, 'Name') }}
             </b-view-link>
         </b-restricted>
-        <b-resource-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [required]="true"
+        <b-legacy-types-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [required]="true"
             [filter]="'ResourceDefinitionId eq \'' + definitionId + '\''">
-        </b-resource-classifications-picker>
+        </b-legacy-types-picker>
     </b-form-group>
 
     <!-- Currency -->

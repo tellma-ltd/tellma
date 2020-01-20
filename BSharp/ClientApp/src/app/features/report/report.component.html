@@ -67,10 +67,10 @@
                         <!-- Navigation -->
                         <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
 
-                            <b-account-classifications-picker *ngSwitchCase="'AccountClassification'"
+                            <b-legacy-classifications-picker *ngSwitchCase="'LegacyClassification'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-account-classifications-picker>
+                            </b-legacy-classifications-picker>
 
                             <b-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
@@ -89,10 +89,10 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </b-currencies-picker>
 
-                            <b-entry-classifications-picker *ngSwitchCase="'EntryClassification'"
+                            <b-entry-types-picker *ngSwitchCase="'EntryType'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-entry-classifications-picker>
+                            </b-entry-types-picker>
 
                             <b-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="arguments[p.key]"
                                 [definitionId]="p.desc['definition']" [required]="p.isRequired"
@@ -108,10 +108,10 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </b-resources-picker>
 
-                            <b-resource-classifications-picker *ngSwitchCase="'ResourceClassification'"
+                            <b-legacy-types-picker *ngSwitchCase="'LegacyType'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
-                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-resource-classifications-picker>
+                                (ngModelChange)="onArgumentChange()">
+                            </b-legacy-types-picker>
 
                             <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"

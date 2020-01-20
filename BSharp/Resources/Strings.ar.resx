@@ -124,7 +124,7 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Account_EntryClassification" xml:space="preserve">
+  <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
   <data name="Account_Identifier" xml:space="preserve">
@@ -151,20 +151,26 @@
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
   </data>
-  <data name="AccountClassification" xml:space="preserve">
-    <value>تصنيف حساب</value>
-  </data>
-  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
-  </data>
-  <data name="AccountClassifications" xml:space="preserve">
-    <value>تصنيفات حسابات</value>
-  </data>
   <data name="Accounts" xml:space="preserve">
     <value>حسابات</value>
   </data>
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
+  </data>
+  <data name="AccountType_EntryTypeParent" xml:space="preserve">
+    <value>تصنيف الغرض</value>
+  </data>
+  <data name="AccountType_IsCurrent" xml:space="preserve">
+    <value>حسابات جارية</value>
+  </data>
+  <data name="AccountType_IsPersonal" xml:space="preserve">
+    <value>حسابات شخصية</value>
+  </data>
+  <data name="AccountType_IsReal" xml:space="preserve">
+    <value>حسابات حقيقية</value>
+  </data>
+  <data name="AccountType_IsResourceClassification" xml:space="preserve">
+    <value>تصنيف أصول</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
@@ -478,7 +484,7 @@
   <data name="Entry_DueDate" xml:space="preserve">
     <value>تاريخ الاستحقاق</value>
   </data>
-  <data name="Entry_EntryClassification" xml:space="preserve">
+  <data name="Entry_EntryType" xml:space="preserve">
     <value>السبب</value>
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
@@ -526,17 +532,17 @@
   <data name="Entry_Volume" xml:space="preserve">
     <value>الحجم</value>
   </data>
-  <data name="EntryClassification" xml:space="preserve">
+  <data name="EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
   </data>
-  <data name="EntryClassifications" xml:space="preserve">
-    <value>تصنيفات الأسطر</value>
-  </data>
-  <data name="EntryClassifications_ForCredit" xml:space="preserve">
+  <data name="EntryType_ForCredit" xml:space="preserve">
     <value>للدائن</value>
   </data>
-  <data name="EntryClassifications_ForDebit" xml:space="preserve">
+  <data name="EntryType_ForDebit" xml:space="preserve">
     <value>للمدين</value>
+  </data>
+  <data name="EntryTypes" xml:space="preserve">
+    <value>تصنيفات الأسطر</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
@@ -838,8 +844,26 @@
   <data name="IsLeaf" xml:space="preserve">
     <value>بدون فروع</value>
   </data>
+  <data name="IsSystem" xml:space="preserve">
+    <value>من النظام</value>
+  </data>
   <data name="Label" xml:space="preserve">
     <value>الاسم</value>
+  </data>
+  <data name="LegacyClassification" xml:space="preserve">
+    <value>تصنيف سابق</value>
+  </data>
+  <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
+    <value>مؤرشف</value>
+  </data>
+  <data name="LegacyClassifications" xml:space="preserve">
+    <value>تصنيفات سابقة</value>
+  </data>
+  <data name="LegacyType" xml:space="preserve">
+    <value>نوع سابق</value>
+  </data>
+  <data name="LegacyTypes" xml:space="preserve">
+    <value>أنواع سابقة</value>
   </data>
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>مرجع إضافي</value>
@@ -1377,15 +1401,6 @@
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>وحدة قياس الحجم</value>
-  </data>
-  <data name="ResourceClassification" xml:space="preserve">
-    <value>تصنيف أصل</value>
-  </data>
-  <data name="ResourceClassification_ResourceDefinition" xml:space="preserve">
-    <value>تعريف الموارد</value>
-  </data>
-  <data name="ResourceClassifications" xml:space="preserve">
-    <value>تصنيفات أصول</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>موارد</value>

@@ -56,8 +56,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'accounts', sortKey: 100
         },
         {
-          label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
-          view: 'account-classifications', sortKey: 200
+          label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
+          view: 'legacy-classifications', sortKey: 200
         },
         // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 100 },
         {
@@ -98,12 +98,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 500
         },
         {
-          label: 'ResourceClassifications', icon: 'sitemap', link: '../resource-classifications',
-          view: 'resource-classifications', sortKey: 600
+          label: 'LegacyTypes', icon: 'sitemap', link: '../legacy-types',
+          view: 'legacy-types', sortKey: 600
         },
         {
-          label: 'EntryClassifications', icon: 'sitemap', link: '../entry-classifications',
-          view: 'entry-classifications', sortKey: 700
+          label: 'EntryTypes', icon: 'sitemap', link: '../entry-types',
+          view: 'entry-types', sortKey: 700
         },
       ]
     },

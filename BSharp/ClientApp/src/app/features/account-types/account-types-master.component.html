@@ -1,8 +1,14 @@
-<b-master collection="AccountType" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
-  [additionalSelect]="additionalSelect" [masterCrumb]="'AccountTypes' | translate" [showImportButton]="false"
-  [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Id" selectForTiles="Name,Name2,Name3" inactiveFilter=""
-  [multiselectActions]="[]">
+<b-master collection="AccountType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'AccountTypes' | translate"
+  [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="IsAssignable,IsCurrent,IsReal,IsActive" selectForTiles="Name,Name2,Name3" [multiselectActions]="[
+  { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+  { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+  ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+    'CreatedBy' : [
+      { template: createdByMe, expression: 'CreatedById eq me'}
+    ]
+  }">
 </b-master>
 
 <!-- Tile Template -->
@@ -15,7 +21,6 @@
   </div>
 </ng-template>
 
-
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
   {{ 'AccountType' | translate }}
@@ -27,3 +32,10 @@
     <b-auto-cell collection="AccountType" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

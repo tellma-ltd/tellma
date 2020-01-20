@@ -414,7 +414,7 @@
 
                         <!-- Entry Classification -->
                         <b-form-group-dynamic class="border-left px-1 b-dark-border2"
-                            *ngIf="showEntryClassification(entry)" [label]="'Entry_EntryClassification' | translate"
+                            *ngIf="showEntryClassification(entry)" [label]="'Entry_EntryType' | translate"
                             [serverErrors]="entry.serverErrors?.EntryClassificationId">
                             <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.EntryClassificationId">
                                 <b-view-link link="../../../entry-classifications"
@@ -426,12 +426,12 @@
                                 </b-view-link>
                             </b-restricted>
                             <ng-container *ngIf="isEdit">
-                                <b-entry-classifications-picker style="min-width: 150px;"
+                                <b-entry-types-picker style="min-width: 150px;"
                                     *ngIf="!account(entry)?.EntryClassificationId"
                                     [(ngModel)]="entry.EntryClassificationId" (ngModelChange)="update.call(null, item);"
                                     [filter]="'IsAssignable eq true and IsActive eq true and Node descof ' + entryClassificationRoot(entry) + forDebitCreditFilter(entry)"
                                     required>
-                                </b-entry-classifications-picker>
+                                </b-entry-types-picker>
                                 <b-restricted *ngIf="!!account(entry)?.EntryClassificationId"
                                     [metadata]="entry.EntityMetadata?.EntryClassificationId">
                                     <div class="text-truncate" style="max-width: 200px;"

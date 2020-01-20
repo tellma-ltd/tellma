@@ -96,7 +96,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // var etbId = "ETB";
             var accountId = Shared.Get<Account>("Account_Payables").Id;
-            var entryClassificationId = Shared.Get<EntryClassification>("EntryClassification_SM").Id;
+            var entryClassificationId = Shared.Get<EntryType>("EntryClassification_SM").Id;
             var resourceId = Shared.Get<Resource>("Resource_HR1000x0.8").Id;
 
             // Prepare a well formed entity

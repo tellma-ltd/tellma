@@ -1,0 +1,12 @@
+<b-details-picker [filter]="filter" collection="LegacyType" [masterTemplate]="master"
+    [additionalSelect]="additionalSelect">
+</b-details-picker>
+
+<!-- The Master Modal -->
+<ng-template #master let-modal="modal" let-update="update" let-filter="filter">
+    <div class="modal-body">
+        <b-legacy-types-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
+            (choose)="modal.close(true); update.call(null, $event); " [additionalSelect]="additionalSelect">
+        </b-legacy-types-master>
+    </div>
+</ng-template>

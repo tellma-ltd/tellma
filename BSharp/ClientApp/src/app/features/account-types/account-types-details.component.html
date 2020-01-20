@@ -1,6 +1,8 @@
-<b-details collection="AccountType" [expand]="expand" [mode]="mode" [showCreateButton]="false" [showEditButton]="false"
-  [showDeleteButton]="false" [masterCrumb]="'AccountTypes' | translate" [detailsCrumb]="detailsCrumb"
-  [idString]="idString" [documentTemplate]="document" [actions]="[]">
+<b-details collection="AccountType" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
+  [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+          { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+          { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+         ]">
 
 </b-details>
 
@@ -9,52 +11,161 @@
   <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
-
 <!-- Edit/View Template -->
-<ng-template #document let-model="model">
+<ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2">
-    <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+
+    <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required>
+    </b-text-editor>
+
+    <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+    </b-text-editor>
+
+    <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
+    </b-text-editor>
   </b-form-group>
 
   <!-- Name -->
-  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix">
-    <div>{{ model?.Name }}</div>
+  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Name">
+    <div *ngIf="!isEdit">{{ model?.Name }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </b-text-editor>
   </b-form-group>
 
   <!-- Name2 -->
   <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
-    [label]="('Name' | translate) + ws.secondaryPostfix">
-    <div>{{ model?.Name2 }}</div>
+    [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Name3 -->
   <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
     [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
-    <div>{{ model?.Name3 }}</div>
+    <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
-  <!-- Id -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate">
-    <div>{{ model?.Id }}</div>
+  <!-- Code -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    <div class="text-truncate" *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
   </b-form-group>
 
   <!-- Description -->
   <b-form-group class="b-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
     [serverErrors]="model?.serverErrors?.Description">
-    <div>{{ model?.Description }}</div>
+    <div *ngIf="!isEdit">{{ model?.Description }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-text-editor>
   </b-form-group>
 
   <!-- Description2 -->
   <b-form-group class="b-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-    [label]="('Description' | translate) + ws.secondaryPostfix">
-    <div>{{ model?.Description2 }}</div>
+    [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
+    <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-text-editor>
   </b-form-group>
 
   <!-- Description3 -->
   <b-form-group class="b-form-group" *ngIf="ws.settings.TernaryLanguageId"
-    [label]="('Description' | translate) + ws.ternaryPostfix">
-    <div>{{ model?.Description3 }}</div>
+    [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
+    <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-text-editor>
   </b-form-group>
+
+  <!-- Parent -->
+  <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
+    <b-restricted [metadata]="model?.EntityMetadata?.Parent">
+      <b-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.ParentId">{{
+        ws.getMultilingualValue('AccountType', model?.ParentId, 'Name') }}</b-view-link>
+    </b-restricted>
+    <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
+    </b-account-types-picker>
+  </b-form-group>
+
+  <!-- Is Assignable -->
+  <b-form-group class="b-form-group" [label]="'IsAssignable' | translate"
+    [serverErrors]="model?.serverErrors?.IsAssignable">
+    <div *ngIf="!isEdit">{{ (model?.IsAssignable ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAssignable" id="isAssignable">
+      <label class="custom-control-label b-pointer" for="isAssignable">&zwnj;</label>
+    </div>
+  </b-form-group>
+
+  <!-- Is Current -->
+  <b-form-group class="b-form-group" [label]="'AccountType_IsCurrent' | translate"
+    [serverErrors]="model?.serverErrors?.IsCurrent">
+    <div *ngIf="!isEdit">
+      {{ (model?.IsCurrent === true ? 'Yes' : model?.IsCurrent === false ? 'No' : ' ') | translate }}</div>
+    <b-selector *ngIf="isEdit" [ngModel]="getIsCurrent(model)" (ngModelChange)="setIsCurrent(model, $event)"
+      [choices]="isCurrentChoices">
+    </b-selector>
+  </b-form-group>
+
+  <!-- Is Real -->
+  <b-form-group class="b-form-group" [label]="'AccountType_IsReal' | translate"
+    [serverErrors]="model?.serverErrors?.IsReal">
+    <div *ngIf="!isEdit">{{ (model?.IsReal ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsReal" id="isReal">
+      <label class="custom-control-label b-pointer" for="isReal">&zwnj;</label>
+    </div>
+  </b-form-group>
+
+  <!-- Is Resource Classification -->
+  <b-form-group class="b-form-group" [label]="'AccountType_IsResourceClassification' | translate"
+    [serverErrors]="model?.serverErrors?.IsResourceClassification">
+    <div *ngIf="!isEdit">{{ (model?.IsResourceClassification ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsResourceClassification"
+        id="isResourceClassification">
+      <label class="custom-control-label b-pointer" for="isResourceClassification">&zwnj;</label>
+    </div>
+  </b-form-group>
+
+  <!-- Is Personal -->
+  <b-form-group class="b-form-group" [label]="'AccountType_IsPersonal' | translate"
+    [serverErrors]="model?.serverErrors?.IsPersonal">
+    <div *ngIf="!isEdit">{{ (model?.IsPersonal ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsPersonal" id="isPersonal">
+      <label class="custom-control-label b-pointer" for="isPersonal">&zwnj;</label>
+    </div>
+  </b-form-group>
+
+  <!-- Entry Type Parent -->
+  <b-form-group class="b-form-group" [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
+    <b-restricted [metadata]="model?.EntityMetadata?.EntryTypeParent">
+      <b-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.EntryTypeParentId">{{
+        ws.getMultilingualValue('EntryType', model?.EntryTypeParentId, 'Name') }}</b-view-link>
+    </b-restricted>
+    <b-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeParentId">
+    </b-entry-types-picker>
+  </b-form-group>
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </b-form-group>
+
+  <!-- IsSystem -->
+  <b-form-group class="b-form-group" [label]="'IsSystem' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsSystem ? 'Yes' : 'No') | translate }}</div>
+  </b-form-group>
+
 </ng-template>
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

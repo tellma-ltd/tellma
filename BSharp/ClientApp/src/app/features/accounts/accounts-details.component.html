@@ -80,8 +80,8 @@
             <b-auto-cell collection="Account" path="AccountClassification" [entity]="model">
             </b-auto-cell>
         </b-view-link>
-        <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
-        </b-account-classifications-picker>
+        <b-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
+        </b-legacy-classifications-picker>
     </b-form-group>
 
     <!-- Is Smart -->
@@ -169,9 +169,9 @@
             <!-- In edit mode -->
             <span
                 *ngIf="isEdit && !!model?.ResourceId">{{ ws.getMultilingualValue('ResourceClassification', ResourceClassificationId(model), 'Name') }}</span>
-            <b-resource-classifications-picker *ngIf="isEdit && !model?.ResourceId"
+            <b-legacy-types-picker *ngIf="isEdit && !model?.ResourceId"
                 [(ngModel)]="model.ResourceClassificationId">
-            </b-resource-classifications-picker>
+            </b-legacy-types-picker>
         </b-form-group>
 
         <!-- Is Current -->
@@ -195,14 +195,14 @@
         </b-form-group>
 
         <!-- Entry Classification -->
-        <b-form-group class="b-form-group" [label]="'Account_EntryClassification' | translate"
+        <b-form-group class="b-form-group" [label]="'Account_EntryType' | translate"
             [serverErrors]="model?.serverErrors?.EntryClassificationId">
             <b-view-link *ngIf="!isEdit" link="../../entry-classifications" [itemId]="model?.EntryClassificationId">
                 <b-auto-cell collection="Account" path="EntryClassification" [entity]="model">
                 </b-auto-cell>
             </b-view-link>
-            <b-entry-classifications-picker *ngIf="isEdit" [(ngModel)]="model.EntryClassificationId">
-            </b-entry-classifications-picker>
+            <b-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryClassificationId">
+            </b-entry-types-picker>
         </b-form-group>
 
     </ng-container>
