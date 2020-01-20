@@ -23,7 +23,7 @@ SET
 	A.[IsCurrent]	= COALESCE([AT].[IsCurrent], A.[IsCurrent]),
 	A.[HasResource] = (CASE WHEN [AT].IsReal = 0 THEN 0 ELSE A.[HasResource] END),
 	A.[HasAgent]	= (CASE WHEN [AT].[IsPersonal] = 0 THEN 0 ELSE A.[HasAgent] END),
-	A.[EntryTypeId] = (CASE WHEN [AT].[EntryTypeParentCode] IS NULL THEN NULL ELSE A.[EntryTypeId] END)
+	A.[EntryTypeId] = (CASE WHEN [AT].[EntryTypeParentId] IS NULL THEN NULL ELSE A.[EntryTypeId] END)
 FROM @ProcessedEntities A JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 
 -- Return the result

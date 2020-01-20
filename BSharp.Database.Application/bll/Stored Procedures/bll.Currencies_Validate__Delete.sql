@@ -16,5 +16,9 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Currencies] C ON C.[Id] = FE.[Id]
 	JOIN dbo.Accounts A ON A.CurrencyId = FE.[Id];
 
+	-- TODO: Currency must not be used in Resources
+
+	-- TODO: Currency must not be used in Entries
+
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

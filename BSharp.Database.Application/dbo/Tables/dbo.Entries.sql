@@ -5,6 +5,7 @@
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
+	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	-- Agent Id is required in Entries only if we have Agent Definition in the account
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	-- Resource Id is Required in Entries only if we have resource classification in the account
@@ -42,10 +43,10 @@
 -- The following are sort of dynamic properties that capture information for reporting purposes
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[RelatedAgentId]			INT,
-	[RelatedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
-	[RelatedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
-	[RelatedDate]					DATE,
+	[NotedAgentId]				INT,
+	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
+	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
+	[NotedDate]					DATE,
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 -- for auditing

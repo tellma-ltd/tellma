@@ -62,7 +62,7 @@ SET NOCOUNT ON;
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE (E.[EntryTypeId] IS NULL) AND [AT].EntryTypeParentCode IS NOT NULL;
+	WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL;
 
 	-- Invalid Entry Type for Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -76,7 +76,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentCode] = ETA.[Code]
+	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Code]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
 	-- RelatedAgent is required for selected account definition, 

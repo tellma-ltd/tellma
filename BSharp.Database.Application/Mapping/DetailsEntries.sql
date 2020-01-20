@@ -55,7 +55,7 @@ RETURN
 		--E.[ResourceIdentifier],
 		E.[DueDate],
 		E.[MonetaryValue],
-		A.[CurrencyId],
+		E.[CurrencyId],
 		E.[Count],
 		R.[CountUnitId],
 		E.[Count] * ISNULL(CR.[Ratio], 0) AS [NormalizedCount],
@@ -71,8 +71,8 @@ RETURN
 		L.[Memo],
 		E.[ExternalReference],
 		E.[AdditionalReference],
-		E.[RelatedAgentId],
-		E.[RelatedAmount]
+		E.[NotedAgentId],
+		E.[NotedAmount]
 	FROM
 		[dbo].[Entries] E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id

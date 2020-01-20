@@ -47,7 +47,7 @@ BEGIN
 			(N'CurrentFuel',						N'Fuel',										N'/1/11/7/',	1,37),
 	-- Financial resources
 	(N'FinancialAssets',							N'Financial assets',							N'/2/',			1,38),
-	(N'CashAndCashEquivalents',						N'Cash and cash equivalents',					N'/3/',			0,39),
+	(N'',						N'Cash and cash equivalents',					N'/3/',			0,39),
 		(N'Cash',									N'Cash',										N'/3/1/',		1,40),
 		(N'CashEquivalents',						N'Cash equivalents',							N'/3/2/',		1,41),
 	-- Equitiy and Liabilities and 
@@ -220,10 +220,12 @@ INSERT INTO @AT VALUES(172,0, '1', 0, '/2/15/', 1,NULL,'IncomeTaxExpenseContinui
 	--FROM @AccountTypesTemp RC
 
 	INSERT INTO @AccountTypes ([Index], [Code], [Name], [ParentIndex], [IsAssignable], [IsCurrent],
-								[IsResourceClassification], [EntryTypeParentCode], [Description])
-	SELECT [Index], [Code], [Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable],  [IsCurrent],
-								[IsResourceClassification], [EntryTypeParentCode], [Description]
+								[IsResourceClassification], [EntryTypeParentId], [Description])
+	SELECT RC.[Index], RC.[Code], RC.[Name], (SELECT [Index] FROM @AT WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex,
+			[IsAssignable],  [IsCurrent], [IsResourceClassification],
+			(SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = RC.EntryTypeParentCode), [Description]
 	FROM @AT RC
+
 	--select * from 	@AccountTypes;			
 	EXEC [api].[AccountTypes__Save]
 		@Entities = @AccountTypes,

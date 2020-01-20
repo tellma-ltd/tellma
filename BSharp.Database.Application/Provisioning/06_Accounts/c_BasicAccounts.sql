@@ -6,7 +6,6 @@ DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxa
 		@SalariesAccrualsNonTaxable INT, @EmployeesPayable INT, @EmployeesIncomeTaxPayable INT;
 
 DECLARE @BasicAccounts dbo.AccountList;
-DECLARE @RC_Cash INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Cash');
 
 --IF @DB = N'100' -- ACME, USD, en/ar/zh
 --INSERT INTO @BasicAccounts([Index],

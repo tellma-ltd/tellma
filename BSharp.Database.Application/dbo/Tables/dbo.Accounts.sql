@@ -19,10 +19,14 @@
 	[HasResource]					BIT				NOT NULL DEFAULT 0,
 	[HasAgent]						BIT				NOT NULL DEFAULT 0,
 	[IsRelated]						BIT				NOT NULL DEFAULT 0,
-	[HasReferenceAgent]				BIT				NOT NULL DEFAULT 0,	
-	[HasReferenceText]				BIT				NOT NULL DEFAULT 0,
-	[HasReferenceAmount]			BIT				NOT NULL DEFAULT 0, 
-	--[HasReferenceResource]		BIT				NOT NULL DEFAULT 0,
+
+	[HasExternalReference]			BIT				NOT NULL DEFAULT 0,	
+	[HasAdditionalReference]		BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAgentId]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAgentName]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedAmount]				BIT				NOT NULL DEFAULT 0,	
+	[HasNotedDate]					BIT				NOT NULL DEFAULT 0,	
+
 -- Minor properties: range of values is restricted by defining a major property. For example, 
 -- If AgentId is NULL:
 --	a) If the agent definition itself is null, then it is not defined
@@ -32,7 +36,7 @@
 	CONSTRAINT [FK_Accounts__AgentDefinitionId_AgentId] FOREIGN KEY ([AgentId], [AgentDefinitionId]) REFERENCES [dbo].[Agents] ([Id], [DefinitionId]),
 	[ResourceId]					INT,
 	-- Especially needed for non-smart accounts to support multi-currencies
-	[CurrencyId]					NCHAR (3)			NOT NULL CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	CONSTRAINT [FK_Accounts__ResourceId_CurrencyId] FOREIGN KEY ([ResourceId],[CurrencyId]) REFERENCES [dbo].[Resources] ([Id], [CurrencyId]),
 	[Identifier]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__Identifier] REFERENCES dbo.[AccountIdentifiers]([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property

@@ -22,8 +22,8 @@ RETURN
 		J.[EntryTypeId],
 		J.[VoucherNumericReference],
 		J.[Memo],
-		J.[RelatedAgentId],
-		J.[RelatedAmount],
+		J.[NotedAgentId],
+		J.[NotedAmount],
 		
 		R.[DefinitionId],
 		R.[Lookup1Id],

@@ -17,12 +17,12 @@ SET NOCOUNT ON;
 				E.[Index], E.[Id], E.[ParentId],
 				-- TODO: use index and last node number to add a tree that is pre-sorted
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
-				E.[Name], E.[Name2], E.[Name3], E.[Description], E.[Code], E.[IsAssignable],
+				E.[Name], E.[Name2], E.[Name3], E.[Description], E.[Description2], E.[Description3], E.[Code], E.[IsAssignable],
 				E.[IsCurrent],
 				E.[IsReal],
 				E.[IsResourceClassification],
 				E.[IsPersonal],
-				E.[EntryTypeParentCode]
+				E.[EntryTypeParentId]
 			FROM @Entities E
 		) AS s ON (t.[Code] = s.[Code])
 		WHEN MATCHED 
@@ -33,28 +33,30 @@ SET NOCOUNT ON;
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
 				t.[Description]				= s.[Description],
+				t.[Description2]			= s.[Description2],
+				t.[Description3]			= s.[Description3],
 				t.[Code]					= s.[Code],
 				t.[IsAssignable]			= s.[IsAssignable],
 				t.[IsCurrent]				= s.[IsCurrent],
 				t.[IsReal]					= s.[IsReal],
 				t.[IsResourceClassification]= s.[IsResourceClassification],
 				t.[IsPersonal]				= s.[IsPersonal],
-				t.[EntryTypeParentCode]		= s.[EntryTypeParentCode],
-				t.[ModifiedAt]			= @Now,
-				t.[ModifiedById]		= @UserId
+				t.[EntryTypeParentId]		= s.[EntryTypeParentId],
+				t.[ModifiedAt]				= @Now,
+				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId],		[Name],		[Name2], [Name3], [Description], [Code],	[Node],	[IsAssignable],
+			INSERT ([ParentId],		[Name],		[Name2], [Name3], [Description], [Description2], [Description3],		[Code],	[Node],	[IsAssignable],
 					[IsCurrent],
 					[IsReal],
 					[IsResourceClassification],
 					[IsPersonal],
-					[EntryTypeParentCode])
-			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Code], s.[Node],  s.[IsAssignable],
+					[EntryTypeParentId])
+			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[Code], s.[Node],  s.[IsAssignable],
 					s.[IsCurrent],
 					s.[IsReal],
 					s.[IsResourceClassification],
 					s.[IsPersonal],
-					s.[EntryTypeParentCode])
+					s.[EntryTypeParentId])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
