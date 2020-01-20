@@ -10,20 +10,19 @@ Missing
 DECLARE @LegacyClassifications dbo.LegacyClassificationList;
 Declare @Assets_AC INT, @CurrentAssets_AC INT, @BankAndCash_AC INT, @Debtors_AC INT, @Inventories_AC INT, @NonCurrentAssets_AC INT,
 	@Liabilities_AC INT, @Equity_AC INT, @Revenue_AC INT, @Expenses_AC INT;
-
-
-
-INSERT INTO @LegacyClassifications([Index], [Name], [Code]) VALUES
-(0, N'Assets', N'1'),
-(1, N'Current Assets', N'11'),
-(2, N'Bank and Cash', N'111'),
-(3, N'Debtors', N'112'),
-(4, N'Inventory', N'113'),
-(5, N'Non-current Assets', N'12'),
-(6, N'Liabilities', N'2'),
-(7, N'Equity', N'3'),
-(8, N'Revenue', N'4'),
-(9, N'Expenses', N'5')
+	   
+INSERT INTO @LegacyClassifications([Index],
+[Name],						[Code], [ParentIndex]) VALUES
+(0,	N'Assets',				N'1',	NULL),
+(1, N'Current Assets',		N'11',	0),
+(2, N'Bank and Cash',		N'111',	1),
+(3, N'Debtors',				N'112',	1),
+(4, N'Inventory',			N'113', 1),
+(5, N'Non-current Assets',	N'12',	0),
+(6, N'Liabilities',			N'2',	NULL),
+(7, N'Equity',				N'3',	NULL),
+(8, N'Revenue',				N'4',	NULL),
+(9, N'Expenses',			N'5',	NULL);
 ;
 EXEC [api].[LegacyClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @LegacyClassifications,

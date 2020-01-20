@@ -7,5 +7,6 @@
 	[ColumnName]				NVARCHAR (50)	NOT NULL,
 	[Label]						NVARCHAR (50)	NOT NULL,
 	[Label2]					NVARCHAR (50),
-	[Label3]					NVARCHAR (50)
+	[Label3]					NVARCHAR (50),
+	[IsRequired]				BIT				NOT NULL DEFAULT 0
 );

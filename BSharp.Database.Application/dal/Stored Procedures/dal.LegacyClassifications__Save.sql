@@ -14,13 +14,14 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[LegacyClassifications] AS t
 		USING (
 			SELECT
-				[Index], [Id], [Name], [Name2], [Name3], [Code],
+				[Index], [Id], [ParentId], [Name], [Name2], [Name3], [Code],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node]
 			FROM @Entities 
-		) AS s ON (t.Id = s.Id)
+		) AS s ON (t.[Code] = s.[Code])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
+				t.[ParentId]				= s.[ParentId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -28,13 +29,23 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Name], [Name2], [Name3], [Code], [Node])
-			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Node]
+			INSERT ([ParentId], [Name], [Name2], [Name3], [Code], [Node])
+			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Node]
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+
+	MERGE [dbo].[LegacyClassifications] As t
+	USING (
+		SELECT II.[Id], IIParent.[Id] As ParentId
+		FROM @Entities O
+		JOIN @IndexedIds IIParent ON IIParent.[Index] = O.ParentIndex
+		JOIN @IndexedIds II ON II.[Index] = O.[Index]
+	) As s
+	ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[ParentId] = s.[ParentId];
 	
-	WITH DirectParents AS (
+/*	WITH DirectParents AS (
 		SELECT EC.[Code] AS ChildCode, MAX(EP.Code) AS ParentCode
 		FROM dbo.[LegacyClassifications] EC
 		LEFT JOIN dbo.[LegacyClassifications] EP ON EC.[Code] LIKE EP.[Code] +'%' AND EC.[Code] <> EP.[Code]
@@ -61,6 +72,26 @@ SET NOCOUNT ON;
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 	----SELECT  *, [Node].ToString() As [Path] FROM @Entities;-- ORDER BY [Node].GetLevel(), [Node];
-	
+*/
+	WITH Children ([Id], [ParentId], [Num]) AS (
+		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		FROM [dbo].[LegacyClassifications] E
+		LEFT JOIN [dbo].[LegacyClassifications] E2 ON E.[ParentId] = E2.[Id]
+	),
+	Paths ([Node], [Id]) AS (  
+		-- This section provides the value for the roots of the hierarchy  
+		SELECT CAST(('/'  + CAST(C.Num AS VARCHAR(30)) + '/') AS HIERARCHYID) AS [Node], [Id]
+		FROM Children AS C   
+		WHERE [ParentId] IS NULL
+		UNION ALL   
+		-- This section provides values for all nodes except the root  
+		SELECT CAST(P.[Node].ToString() + CAST(C.Num AS VARCHAR(30)) + '/' AS HIERARCHYID), C.[Id]
+		FROM Children C
+		JOIN Paths P ON C.[ParentId] = P.[Id]
+	)
+	MERGE INTO [dbo].[LegacyClassifications] As t
+	USING Paths As s ON (t.[Id] = s.[Id])
+	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

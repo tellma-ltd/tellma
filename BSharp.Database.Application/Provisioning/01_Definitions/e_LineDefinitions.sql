@@ -7,12 +7,12 @@ INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
 0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[ColumnName],		[Label],		[Label2]) VALUES
-(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان'), -- only if it appears,
-(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب'),
-(2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين'), -- see special case
-(3,0,3,		N'Entry[0].Value',	N'Credit',		N'دائن'),
-(4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات');
+[SortKey],	[ColumnName],		[Label],		[Label2],		[IsRequired]) VALUES
+(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان',		0), -- only if it appears,
+(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب',		1),
+(2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين',		1), -- see special case
+(3,0,3,		N'Entry[0].Value',	N'Credit',		N'دائن',		1),
+(4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات',	0);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
@@ -52,15 +52,15 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 (0,2,1,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[ColumnName],					[Label],				[Label2]) VALUES
-(0,2,0,		N'Line.Description',			N'Description',			N'البيان'), 
-(1,2,1,		N'Entry[1].MonetaryAmount',		N'Pay Amount',			N'المبلغ'), 
-(2,2,2,		N'Line.CurrencyId',				N'Pay Currency',		N'العملة'),
-(3,2,3,		N'Entry[1].NotedAgentName',		N'Beneficiary',			N'المستفيد'),
-(4,2,4,		N'Entry[1].EntryTypeId',		N'Purpose',				N'الغرض'),
-(5,2,5,		N'Entry[1].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة'),
-(6,2,6,		N'Entry[1].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال'),
-(7,2,7,		N'Entry[1].NotedDate'	,		N'Check Date',			N'تاريخ الشيك')
+[SortKey],	[ColumnName],					[Label],				[Label2],		[IsRequired]) VALUES
+(0,2,0,		N'Line.Description',			N'Description',			N'البيان',		0), 
+(1,2,1,		N'Entry[1].MonetaryAmount',		N'Pay Amount',			N'المبلغ',		1), 
+(2,2,2,		N'Line.CurrencyId',				N'Pay Currency',		N'العملة',		1),
+(3,2,3,		N'Entry[1].NotedAgentName',		N'Beneficiary',			N'المستفيد',	1),
+(4,2,4,		N'Entry[1].EntryTypeId',		N'Purpose',				N'الغرض',		0),
+(5,2,5,		N'Entry[1].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
+(6,2,6,		N'Entry[1].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
+(7,2,7,		N'Entry[1].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	0)
 ;
 
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],

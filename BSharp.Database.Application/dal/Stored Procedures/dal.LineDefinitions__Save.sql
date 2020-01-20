@@ -84,7 +84,8 @@ SET NOCOUNT ON;
 			LDC.[ColumnName],
 			LDC.[Label],
 			LDC.[Label2],
-			LDC.[Label3]
+			LDC.[Label3],
+			LDC.[IsRequired]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 	) AS s
@@ -95,12 +96,13 @@ SET NOCOUNT ON;
 			t.[ColumnName]		= s.[ColumnName],
 			t.[Label]			= s.[Label],
 			t.[Label2]			= s.[Label2],
-			t.[Label3]			= s.[Label3]
+			t.[Label3]			= s.[Label3],
+			t.[IsRequired]		= s.[IsRequired]
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId], [SortKey],	[ColumnName],	[Label],	[Label2],	[Label3])
-		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3]);
+		INSERT ([LineDefinitionId], [SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsRequired])
+		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsRequired]);
 
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (

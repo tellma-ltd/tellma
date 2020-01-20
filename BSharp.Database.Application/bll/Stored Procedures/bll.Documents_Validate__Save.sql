@@ -43,7 +43,7 @@ SET NOCOUNT ON;
 	-- (FE Check, DB IU trigger) Cannot save a CLOSED document
 	-- TODO: if it is not allowed to change a line once (Requested), report error
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].DocumentState',
 		N'Error_CanOnlySaveADocumentInActiveState'
 	FROM @Documents FE
@@ -54,7 +54,7 @@ SET NOCOUNT ON;
 
 	-- Missing Entry Type for given Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_TheAccountType0RequiresAnEntryType',
@@ -66,7 +66,7 @@ SET NOCOUNT ON;
 
 	-- Invalid Entry Type for Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_IncompatibleAccountType0AndEntryType1',
@@ -79,71 +79,62 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
-	-- RelatedAgent is required for selected account definition, 
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-	--	N'Error_TheRelatedAgentIsNotSpecified'
-	--FROM @Entries E
-	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	--JOIN dbo.[AccountGroups] AD ON A.[AccountDefinitionId] = AD.Id
-	--WHERE (E.[RelatedAgentId] IS NULL)
-	--AND (AD.[HasRelatedAgent] = 1);
-
-	/* TODO: Revisit after the design is stable
-	-- No inactive Account Type
-	-- No expired Ifrs Note
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsEntryClassificationId0HasExpired',
-		IC.[Label]
-	FROM @Entries E
-	JOIN @Documents T ON E.[DocumentIndex] = T.[Index]
-	JOIN dbo.[IfrsEntryClassifications] N ON E.[IfrsEntryClassificationId] = N.Id
-	JOIN dbo.[IfrsConcepts] IC ON N.Id = IC.Id
-	WHERE (IC.ExpiryDate < T.[DocumentDate]);
-	
-	-- External Reference is required for selected account and direction, 
+		-- If Account HasAgent = 1, then AgentId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AgentId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheAgentIsNotSpecified'
+	FROM @Entries E
+	JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	WHERE (E.[AgentId] IS NULL)
+	AND (A.[HasAgent] = 1);
+
+	-- If Account HasResource = 1, then ResourceId is required
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheResourceIsNotSpecified'
+	FROM @Entries E
+	JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	WHERE (E.[ResourceId] IS NULL)
+	AND (A.[HasResource] = 1);
+
+
+	-- NotedAgent is required for selected account definition, 
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		N'Error_TheNotedAgentIsNotSpecified'
+	FROM @Entries E
+	JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	WHERE (E.[NotedAgentId] IS NULL)
+	AND (A.[HasNotedAgentId] = 1);
+
+	-- External Reference is required for selected account
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheReferenceIsNotSpecified'
+		N'Error_TheExternalReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
-	WHERE (E.ExternalReference IS NULL)
-	AND (E.[Direction] = 1 AND IA.[DebitExternalReferenceSetting] = N'Required' OR
-		E.[Direction] = -1 AND IA.[CreditExternalReferenceSetting] = N'Required');
-
-	-- Additional Reference is required for selected account and direction, 
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].RelatedReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheRelatedReferenceIsNotSpecified'
-	FROM @Entries E
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
-	WHERE (E.[AdditionalReference] IS NULL)
-	AND (E.[Direction] = 1 AND IA.[DebitAdditionalReferenceSetting] = N'Required' OR
-		E.[Direction] = -1 AND IA.[CreditAdditionalReferenceSetting] = N'Required');
-
-
+	WHERE (E.[ExternalReference] IS NULL)
+	AND (A.[HasExternalReference] = 1);
 	
-	-- RelatedResource is required for selected account and direction, 
+	-- Additional Reference is required for selected account
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].RelatedResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheRelatedResourceIsNotSpecified'
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheAdditionalReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
-	WHERE (E.[RelatedResourceId] IS NULL)
-	AND (IA.[RelatedResourceSetting] = N'Required');
-*/
+	WHERE (E.[AdditionalReference] IS NULL)
+	AND (A.[HasAdditionalReference] = 1);	
+	
+
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;
