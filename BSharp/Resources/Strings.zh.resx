@@ -151,15 +151,6 @@
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>
   </data>
-  <data name="AccountClassification" xml:space="preserve">
-    <value>帐户分类</value>
-  </data>
-  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
-    <value>已弃用</value>
-  </data>
-  <data name="AccountClassifications" xml:space="preserve">
-    <value>帐户分类</value>
-  </data>
   <data name="Accounts" xml:space="preserve">
     <value>帐号</value>
   </data>
@@ -858,6 +849,15 @@
   </data>
   <data name="Label" xml:space="preserve">
     <value>标签</value>
+  </data>
+  <data name="LegacyClassification" xml:space="preserve">
+    <value>帐户分类</value>
+  </data>
+  <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
+    <value>已弃用</value>
+  </data>
+  <data name="LegacyClassifications" xml:space="preserve">
+    <value>帐户分类</value>
   </data>
   <data name="LegacyType" xml:space="preserve">
     <value>资源分类</value>

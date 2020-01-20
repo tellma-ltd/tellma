@@ -80,8 +80,8 @@
             <b-auto-cell collection="Account" path="AccountClassification" [entity]="model">
             </b-auto-cell>
         </b-view-link>
-        <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
-        </b-account-classifications-picker>
+        <b-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
+        </b-legacy-classifications-picker>
     </b-form-group>
 
     <!-- Is Smart -->

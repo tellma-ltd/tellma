@@ -1,6 +1,6 @@
-<b-details collection="AccountClassification" [idString]="idString" [createFunc]="create" [expand]="expand"
-    [mode]="mode" [masterCrumb]="'AccountClassifications' | translate" [detailsCrumb]="detailsCrumb"
-    [documentTemplate]="document" [actions]="[
+<b-details collection="LegacyClassification" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [masterCrumb]="'LegacyClassifications' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+    [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
             { template: deprecate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
            ]">
@@ -16,7 +16,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2"
+        [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
         <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
@@ -58,20 +59,23 @@
     <!-- Code -->
     <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
         <div *ngIf="!isEdit">{{model?.Code}}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
     </b-form-group>
 
     <!-- Parent -->
-    <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId"
-        *ngIf="!isEdit">
-        <b-view-link link="../../account-classifications" [itemId]="model?.ParentId">
-            <b-auto-cell collection="AccountClassification" [entity]="model" path="Parent"></b-auto-cell>
-        </b-view-link>
+    <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
+        <b-restricted [metadata]="model?.EntityMetadata?.Parent">
+            <b-view-link *ngIf="!isEdit" link="../../legacy-classifications" [itemId]="model?.ParentId">{{
+            ws.getMultilingualValue('LegacyClassification', model?.ParentId, 'Name') }}</b-view-link>
+        </b-restricted>
+        <b-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
+        </b-legacy-classifications-picker>
     </b-form-group>
 
     <!-- Is Deprecated -->
-    <b-form-group class="b-form-group" [label]="'AccountClassification_IsDeprecated' | translate" *ngIf="!isEdit">
-        <b-auto-cell collection="AccountClassification" [entity]="model" path="IsDeprecated"></b-auto-cell>
+    <b-form-group class="b-form-group" [label]="'LegacyClassification_IsDeprecated' | translate" *ngIf="!isEdit">
+        <b-auto-cell collection="LegacyClassification" [entity]="model" path="IsDeprecated"></b-auto-cell>
     </b-form-group>
 </ng-template>
 

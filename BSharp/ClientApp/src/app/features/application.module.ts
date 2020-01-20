@@ -43,10 +43,10 @@ import { ResourcesImportComponent } from './resources/resources-import.component
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
 import { MeasurementUnitsPickerComponent } from './measurement-units/measurement-units-picker.component';
 import { LookupsPickerComponent } from './lookups/lookups-picker.component';
-import { AccountClassificationsMasterComponent } from './account-classifications/account-classifications-master.component';
-import { AccountClassificationsDetailsComponent } from './account-classifications/account-classifications-details.component';
-import { AccountClassificationsImportComponent } from './account-classifications/account-classifications-import.component';
-import { AccountClassificationsPickerComponent } from './account-classifications/account-classifications-picker.component';
+import { LegacyClassificationsMasterComponent } from './legacy-classifications/legacy-classifications-master.component';
+import { LegacyClassificationsDetailsComponent } from './legacy-classifications/legacy-classifications-details.component';
+import { LegacyClassificationsImportComponent } from './legacy-classifications/legacy-classifications-import.component';
+import { LegacyClassificationsPickerComponent } from './legacy-classifications/legacy-classifications-picker.component';
 import { AccountTypesMasterComponent } from './account-types/account-types-master.component';
 import { AccountTypesDetailsComponent } from './account-types/account-types-details.component';
 import { AccountTypesPickerComponent } from './account-types/account-types-picker.component';
@@ -247,18 +247,18 @@ const routes: Routes = [
 
       // Account Classifications
       {
-        path: 'account-classifications',
-        component: AccountClassificationsMasterComponent,
+        path: 'legacy-classifications',
+        component: LegacyClassificationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'account-classifications/import',
-        component: AccountClassificationsImportComponent,
+        path: 'legacy-classifications/import',
+        component: LegacyClassificationsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'account-classifications/:id',
-        component: AccountClassificationsDetailsComponent,
+        path: 'legacy-classifications/:id',
+        component: LegacyClassificationsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -421,10 +421,10 @@ const routes: Routes = [
     ResourcesImportComponent,
     MeasurementUnitsPickerComponent,
     LookupsPickerComponent,
-    AccountClassificationsMasterComponent,
-    AccountClassificationsDetailsComponent,
-    AccountClassificationsImportComponent,
-    AccountClassificationsPickerComponent,
+    LegacyClassificationsMasterComponent,
+    LegacyClassificationsDetailsComponent,
+    LegacyClassificationsImportComponent,
+    LegacyClassificationsPickerComponent,
     AccountTypesMasterComponent,
     AccountTypesDetailsComponent,
     AccountTypesPickerComponent,

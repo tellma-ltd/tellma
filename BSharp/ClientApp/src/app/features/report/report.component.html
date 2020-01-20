@@ -67,10 +67,10 @@
                         <!-- Navigation -->
                         <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
 
-                            <b-account-classifications-picker *ngSwitchCase="'AccountClassification'"
+                            <b-legacy-classifications-picker *ngSwitchCase="'LegacyClassification'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-account-classifications-picker>
+                            </b-legacy-classifications-picker>
 
                             <b-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">

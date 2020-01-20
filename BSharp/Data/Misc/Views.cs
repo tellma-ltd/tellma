@@ -78,8 +78,8 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "account-classifications",
-                        Name = "AccountClassifications",
+                        Id = "legacy-classifications",
+                        Name = "LegacyClassifications",
                         Read = true,
                         Update = true,
                         Delete = true,

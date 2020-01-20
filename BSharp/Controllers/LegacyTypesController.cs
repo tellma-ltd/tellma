@@ -12,13 +12,11 @@ namespace BSharp.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
-    public class LegacyTypesController : FactWithIdControllerBase<LegacyType, int>
+    public class LegacyTypesController : FactGetByIdControllerBase<LegacyType, string>
     {
         public const string BASE_ADDRESS = "legacy-types";
 
         private readonly ApplicationRepository _repo;
-        private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
 
         private string View => BASE_ADDRESS;
 
@@ -27,8 +25,6 @@ namespace BSharp.Controllers
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
-            _logger = logger;
-            _localizer = localizer;
             _repo = repo;
         }
 

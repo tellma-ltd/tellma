@@ -81,8 +81,8 @@ export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive')
         ]
     },
-    'account-classifications': {
-        name: 'AccountClassifications',
+    'legacy-classifications': {
+        name: 'LegacyClassifications',
         read: true,
         update: true,
         delete: true,

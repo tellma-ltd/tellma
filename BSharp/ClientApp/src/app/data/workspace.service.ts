@@ -17,7 +17,7 @@ import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitio
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
-import { AccountClassification } from './entities/account-classification';
+import { LegacyClassification } from './entities/legacy-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
@@ -207,7 +207,7 @@ export class TenantWorkspace {
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
-  AccountClassification: EntityWorkspace<AccountClassification>;
+  LegacyClassification: EntityWorkspace<LegacyClassification>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
@@ -233,7 +233,7 @@ export class TenantWorkspace {
     this.Lookup = new EntityWorkspace<Lookup>();
     this.Currency = new EntityWorkspace<Currency>();
     this.Resource = new EntityWorkspace<Resource>();
-    this.AccountClassification = new EntityWorkspace<AccountClassification>();
+    this.LegacyClassification = new EntityWorkspace<LegacyClassification>();
     this.AccountType = new EntityWorkspace<AccountType>();
     this.Account = new EntityWorkspace<Account>();
     this.ReportDefinition = new EntityWorkspace<ReportDefinition>();

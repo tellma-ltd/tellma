@@ -151,15 +151,6 @@
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
   </data>
-  <data name="AccountClassification" xml:space="preserve">
-    <value>تصنيف حساب</value>
-  </data>
-  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
-  </data>
-  <data name="AccountClassifications" xml:space="preserve">
-    <value>تصنيفات حسابات</value>
-  </data>
   <data name="Accounts" xml:space="preserve">
     <value>حسابات</value>
   </data>
@@ -859,11 +850,20 @@
   <data name="Label" xml:space="preserve">
     <value>الاسم</value>
   </data>
-  <data name="LegacyType" xml:space="preserve">
+  <data name="LegacyClassification" xml:space="preserve">
     <value>تصنيف سابق</value>
   </data>
-  <data name="LegacyTypes" xml:space="preserve">
+  <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
+    <value>مؤرشف</value>
+  </data>
+  <data name="LegacyClassifications" xml:space="preserve">
     <value>تصنيفات سابقة</value>
+  </data>
+  <data name="LegacyType" xml:space="preserve">
+    <value>نوع سابق</value>
+  </data>
+  <data name="LegacyTypes" xml:space="preserve">
+    <value>أنواع سابقة</value>
   </data>
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>مرجع إضافي</value>

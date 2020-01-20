@@ -5,21 +5,21 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { AccountClassificationForSave, AccountClassification } from '~/app/data/entities/account-classification';
+import { LegacyClassificationForSave, LegacyClassification } from '~/app/data/entities/legacy-classification';
 
 @Component({
-  selector: 'b-account-classifications-details',
-  templateUrl: './account-classifications-details.component.html',
+  selector: 'b-legacy-classifications-details',
+  templateUrl: './legacy-classifications-details.component.html',
   styles: []
 })
-export class AccountClassificationsDetailsComponent extends DetailsBaseComponent {
+export class LegacyClassificationsDetailsComponent extends DetailsBaseComponent {
 
-  private accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
+  private legacyClassificationsApi = this.api.legacyClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
 
   create = () => {
-    const result: AccountClassificationForSave = {};
+    const result: LegacyClassificationForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -35,34 +35,34 @@ export class AccountClassificationsDetailsComponent extends DetailsBaseComponent
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$);
+    this.legacyClassificationsApi = this.api.legacyClassificationsApi(this.notifyDestruct$);
   }
 
   public get ws() {
     return this.workspace.current;
   }
 
-  public onActivate = (model: AccountClassification): void => {
+  public onActivate = (model: LegacyClassification): void => {
     if (!!model && !!model.Id) {
-      this.accountClassificationsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.legacyClassificationsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeprecate = (model: AccountClassification): void => {
+  public onDeprecate = (model: LegacyClassification): void => {
     if (!!model && !!model.Id) {
-      this.accountClassificationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.legacyClassificationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: AccountClassification) => !!model && model.IsDeprecated;
-  public showDeprecate = (model: AccountClassification) => !!model && !model.IsDeprecated;
+  public showActivate = (model: LegacyClassification) => !!model && model.IsDeprecated;
+  public showDeprecate = (model: LegacyClassification) => !!model && !model.IsDeprecated;
 
-  public canActivateDeprecateItem = (model: AccountClassification) => this.ws.canDo('account-classifications', 'IsDeprecated', model.Id);
+  public canActivateDeprecateItem = (model: LegacyClassification) => this.ws.canDo('legacy-classifications', 'IsDeprecated', model.Id);
 
-  public activateDeprecateTooltip = (model: AccountClassification) => this.canActivateDeprecateItem(model) ? '' :
+  public activateDeprecateTooltip = (model: LegacyClassification) => this.canActivateDeprecateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

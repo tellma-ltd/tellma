@@ -104,7 +104,7 @@ namespace BSharp.Entities
 
         [Display(Name = "Account_Classification")]
         [ForeignKey(nameof(AccountClassificationId))]
-        public AccountClassification AccountClassification { get; set; }
+        public LegacyClassification AccountClassification { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]

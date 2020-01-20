@@ -3,7 +3,7 @@
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class LegacyType : EntityWithKey<int>
+    public class LegacyType : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

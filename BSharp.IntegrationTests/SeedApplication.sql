@@ -19,11 +19,10 @@ DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
 DELETE FROM [dbo].[Agents];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM [dbo].[Settings]);
---DELETE FROM [dbo].[ResourceClassifications] WHERE [Code] NOT IN (N'CashAndCashEquivalents');
 
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];
-DELETE FROM [dbo].[AccountClassifications];
+DELETE FROM [dbo].[LegacyClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];

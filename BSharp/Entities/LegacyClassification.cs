@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class AccountClassificationForSave : EntityWithKey<int>
+    public class LegacyClassificationForSave : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -24,12 +24,13 @@ namespace BSharp.Entities
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; } // The basis of the tree structure
     }
 
-    public class AccountClassification : AccountClassificationForSave
+    public class LegacyClassification : LegacyClassificationForSave
     {
         [AlwaysAccessible]
         public int? ParentId { get; set; }
@@ -43,7 +44,7 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public int? ChildCount { get; set; }
 
-        [Display(Name = "AccountClassification_IsDeprecated")]
+        [Display(Name = "LegacyClassification_IsDeprecated")]
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }
 
@@ -69,7 +70,7 @@ namespace BSharp.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public AccountClassification Parent { get; set; }
+        public LegacyClassification Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

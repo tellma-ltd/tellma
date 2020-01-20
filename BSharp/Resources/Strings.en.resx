@@ -151,15 +151,6 @@
   <data name="Account_Type" xml:space="preserve">
     <value>Type</value>
   </data>
-  <data name="AccountClassification" xml:space="preserve">
-    <value>Account Classification</value>
-  </data>
-  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
-    <value>Is Deprecated</value>
-  </data>
-  <data name="AccountClassifications" xml:space="preserve">
-    <value>Account Classifications</value>
-  </data>
   <data name="Accounts" xml:space="preserve">
     <value>Accounts</value>
   </data>
@@ -858,6 +849,15 @@
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
+  </data>
+  <data name="LegacyClassification" xml:space="preserve">
+    <value>Legacy Classification</value>
+  </data>
+  <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
+    <value>Is Deprecated</value>
+  </data>
+  <data name="LegacyClassifications" xml:space="preserve">
+    <value>Legacy Classifications</value>
   </data>
   <data name="LegacyType" xml:space="preserve">
     <value>Legacy Type</value>

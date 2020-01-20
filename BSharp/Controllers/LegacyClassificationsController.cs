@@ -14,9 +14,9 @@ namespace BSharp.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
-    public class AccountClassificationsController : CrudTreeControllerBase<AccountClassificationForSave, AccountClassification, int>
+    public class LegacyClassificationsController : CrudTreeControllerBase<LegacyClassificationForSave, LegacyClassification, int>
     {
-        public const string BASE_ADDRESS = "account-classifications";
+        public const string BASE_ADDRESS = "legacy-classifications";
 
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
@@ -24,8 +24,8 @@ namespace BSharp.Controllers
 
         private string View => BASE_ADDRESS;
 
-        public AccountClassificationsController(
-            ILogger<AccountClassificationsController> logger,
+        public LegacyClassificationsController(
+            ILogger<LegacyClassificationsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -35,7 +35,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -48,7 +48,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -60,7 +60,7 @@ namespace BSharp.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<AccountClassification>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -71,7 +71,7 @@ namespace BSharp.Controllers
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.AccountClassifications__Deprecate(ids, isDeprecated);
+            await _repo.LegacyClassifications__Deprecate(ids, isDeprecated);
 
             if (returnEntities)
             {
@@ -97,17 +97,17 @@ namespace BSharp.Controllers
             return _repo;
         }
 
-        protected override Query<AccountClassification> Search(Query<AccountClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<LegacyClassification> Search(Query<LegacyClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(AccountClassification.Name);
-                var name2 = nameof(AccountClassification.Name2);
-                var name3 = nameof(AccountClassification.Name3);
-                var code = nameof(AccountClassification.Code);
+                var name = nameof(LegacyClassification.Name);
+                var name2 = nameof(LegacyClassification.Name2);
+                var name3 = nameof(LegacyClassification.Name3);
+                var code = nameof(LegacyClassification.Code);
 
                 var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
@@ -116,26 +116,26 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<AccountClassificationForSave> entities)
+        protected override async Task SaveValidateAsync(List<LegacyClassificationForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.AccountClassifications_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.LegacyClassifications_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<LegacyClassificationForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.AccountClassifications__Save(entities, returnIds);
+            return await _repo.LegacyClassifications__Save(entities, returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.AccountClassifications_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.LegacyClassifications_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -145,11 +145,11 @@ namespace BSharp.Controllers
         {
             try
             {
-                await _repo.AccountClassifications__Delete(ids);
+                await _repo.LegacyClassifications__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["LegacyClassification"]]);
             }
         }
 
@@ -157,7 +157,7 @@ namespace BSharp.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.AccountClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.LegacyClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -167,17 +167,17 @@ namespace BSharp.Controllers
         {
             try
             {
-                await _repo.AccountClassifications__DeleteWithDescendants(ids);
+                await _repo.LegacyClassifications__DeleteWithDescendants(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["LegacyClassification"]]);
             }
         }
 
-        protected override Query<AccountClassification> GetAsQuery(List<AccountClassificationForSave> entities)
+        protected override Query<LegacyClassification> GetAsQuery(List<LegacyClassificationForSave> entities)
         {
-            return _repo.AccountClassifications__AsQuery(entities);
+            return _repo.LegacyClassifications__AsQuery(entities);
         }
     }
 }

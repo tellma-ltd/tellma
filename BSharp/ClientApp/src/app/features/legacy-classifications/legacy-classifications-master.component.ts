@@ -8,23 +8,23 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-account-classifications-master',
-  templateUrl: './account-classifications-master.component.html',
+  selector: 'b-legacy-classifications-master',
+  templateUrl: './legacy-classifications-master.component.html',
   styles: []
 })
-export class AccountClassificationsMasterComponent extends MasterBaseComponent {
+export class LegacyClassificationsMasterComponent extends MasterBaseComponent {
 
-  private accountClassificationApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
+  private legacyClassificationApi = this.api.legacyClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    this.accountClassificationApi = this.api.accountClassificationsApi(this.notifyDestruct$);
+    this.legacyClassificationApi = this.api.legacyClassificationsApi(this.notifyDestruct$);
   }
 
   public get c() {
-    return this.workspace.current.AccountClassification;
+    return this.workspace.current.LegacyClassification;
   }
 
   public get ws() {
@@ -32,7 +32,7 @@ export class AccountClassificationsMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.accountClassificationApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.legacyClassificationApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -41,7 +41,7 @@ export class AccountClassificationsMasterComponent extends MasterBaseComponent {
   }
 
   public onDeprecate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.accountClassificationApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.legacyClassificationApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -49,7 +49,7 @@ export class AccountClassificationsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo('account-classifications', 'IsDeprecated', null);
+  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo('legacy-classifications', 'IsDeprecated', null);
 
   public activateDeprecateTooltip = (ids: (number | string)[]) => this.canActivateDeprecateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

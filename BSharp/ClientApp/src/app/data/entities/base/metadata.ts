@@ -10,7 +10,7 @@ import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
 import { metadata_VoucherBooklet, metadata_IfrsAccountClassification } from '../_temp';
-import { metadata_AccountClassification } from '../account-classification';
+import { metadata_LegacyClassification } from '../legacy-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
@@ -31,7 +31,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
     Resource: metadata_Resource,
-    AccountClassification: metadata_AccountClassification,
+    LegacyClassification: metadata_LegacyClassification,
     AccountType: metadata_AccountType,
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,

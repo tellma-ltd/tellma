@@ -34,7 +34,7 @@ import { Currency } from './entities/currency';
 import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 import { User } from './entities/user';
-import { AccountClassification } from './entities/account-classification';
+import { LegacyClassification } from './entities/legacy-classification';
 import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
@@ -117,10 +117,10 @@ export class ApiService {
     };
   }
 
-  public accountClassificationsApi(cancellationToken$: Observable<void>) {
+  public legacyClassificationsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<AccountClassification>('account-classifications', cancellationToken$),
-      deactivate: this.deactivateFactory<AccountClassification>('account-classifications', cancellationToken$)
+      activate: this.activateFactory<LegacyClassification>('legacy-classifications', cancellationToken$),
+      deactivate: this.deactivateFactory<LegacyClassification>('legacy-classifications', cancellationToken$)
     };
   }
 
