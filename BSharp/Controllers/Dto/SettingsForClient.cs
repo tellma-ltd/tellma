@@ -52,20 +52,5 @@ namespace BSharp.Controllers.Dto
         public DateTimeOffset CreatedAt { get; set; }
 
         public bool IsMultiResponsibilityCenter { get; set; }
-
-        public List<ResourceToEntryClassification> ResourceEntryClassificationMap { get; set; }
-    }
-
-    public class ResourceToEntryClassification
-    {
-        /// <summary>
-        /// This is Node.toString() of the root resource classification
-        /// </summary>
-        public string ResourceClassificationPath { get; set; }
-
-        /// <summary>
-        /// This is the root of allowed entry classifications
-        /// </summary>
-        public int EntryClassificationId { get; set; }
     }
 }

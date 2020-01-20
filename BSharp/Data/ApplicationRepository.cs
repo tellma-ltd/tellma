@@ -519,16 +519,14 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
             return (version, user, customSettings);
         }
 
-        public async Task<(bool, Settings, IEnumerable<(string, int)>)> Settings__Load()
+        public async Task<(bool, Settings)> Settings__Load()
         {
             // Returns 
             // (1) whether active leaf responsibility centers are multiple or single
             // (2) the settings with the functional currency expanded
-            // (3) mapping from ResourceClassification.Node.toString() to entry classification Id based on [dbo].[ResourceClassificationsEntryClassifications]
 
             bool isMultiResonsibilityCenter = false;
             Settings settings = new Settings();
-            List<(string, int)> mappings = new List<(string, int)>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -592,19 +590,9 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
                     // Programmer mistake
                     throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
                 }
-
-                // Next load the mapping
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
-                {
-                    string resourceClassificationPath = reader.GetString(0);
-                    int entityClassificationId = reader.GetInt32(1);
-
-                    mappings.Add((resourceClassificationPath, entityClassificationId));
-                }
             }
 
-            return (isMultiResonsibilityCenter, settings, mappings);
+            return (isMultiResonsibilityCenter, settings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
@@ -2143,7 +2131,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
 
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",
@@ -2160,7 +2148,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",
@@ -2185,7 +2173,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])";
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
                     TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",

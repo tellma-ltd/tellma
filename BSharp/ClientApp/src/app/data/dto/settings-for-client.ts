@@ -23,10 +23,4 @@ export interface SettingsForClient {
     BrandColor: string;
     CreatedAt: string;
     IsMultiResponsibilityCenter: boolean;
-    ResourceEntryClassificationMap: ResourceToEntryClassification[];
-}
-
-export interface ResourceToEntryClassification {
-    ResourceClassificationPath: string;
-    EntryClassificationId: number;
 }

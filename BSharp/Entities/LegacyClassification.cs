@@ -7,6 +7,13 @@ namespace BSharp.Entities
     [StrongEntity]
     public class LegacyClassificationForSave : EntityWithKey<int>
     {
+        [NotMapped]
+        public int? ParentIndex { get; set; }
+
+        [Display(Name = "TreeParent")]
+        [AlwaysAccessible]
+        public int? ParentId { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -32,9 +39,6 @@ namespace BSharp.Entities
 
     public class LegacyClassification : LegacyClassificationForSave
     {
-        [AlwaysAccessible]
-        public int? ParentId { get; set; }
-
         [AlwaysAccessible]
         public short? Level { get; set; }
 

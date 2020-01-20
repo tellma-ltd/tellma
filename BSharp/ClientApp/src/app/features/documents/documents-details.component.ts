@@ -550,8 +550,9 @@ Document_State_Closed
 
       // Show entry classification if the resource is descended from one of the mapped resource classification paths
       const resourceClassificationPath = this.resourceClassificationPath(entry);
-      return !!resourceClassificationPath &&
-        this.ws.settings.ResourceEntryClassificationMap.some(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+      // return !!resourceClassificationPath &&
+      //   this.ws.settings.ResourceEntryClassificationMap.some(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+      return false;
     }
   }
 
@@ -562,10 +563,11 @@ Document_State_Closed
 
     // Show entry classification if the resource is descended from one of the mapped resource classification paths
     const resourceClassificationPath = this.resourceClassificationPath(entry);
-    const map = this.ws.settings.ResourceEntryClassificationMap
-      .find(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+    // const map = this.ws.settings.ResourceEntryClassificationMap
+    //   .find(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
 
-    return !!map ? map.EntryClassificationId : null;
+    // return !!map ? map.EntryClassificationId : null;
+    return null;
   }
 
   private resourceClassificationPath(entry: Entry) {

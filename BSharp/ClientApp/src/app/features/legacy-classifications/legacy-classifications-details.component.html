@@ -67,7 +67,7 @@
     <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
         <b-restricted [metadata]="model?.EntityMetadata?.Parent">
             <b-view-link *ngIf="!isEdit" link="../../legacy-classifications" [itemId]="model?.ParentId">{{
-            ws.getMultilingualValue('LegacyClassification', model?.ParentId, 'Name') }}</b-view-link>
+        ws.getMultilingualValue('LegacyClassification', model?.ParentId, 'Name') }}</b-view-link>
         </b-restricted>
         <b-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
         </b-legacy-classifications-picker>
