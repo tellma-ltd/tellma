@@ -46,32 +46,28 @@ namespace BSharp.Entities
         public string Description3 { get; set; }
 
         [Display(Name = "Code")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "IsAssignable")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 
         [Display(Name = "AccountType_IsCurrent")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsCurrent { get; set; }
 
         [Display(Name = "AccountType_IsReal")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsReal { get; set; }
 
         [Display(Name = "AccountType_IsResourceClassification")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsResourceClassification { get; set; }
 
         [Display(Name = "AccountType_IsPersonal")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsPersonal { get; set; }
 
@@ -134,8 +130,8 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        //[Display(Name = "AccountType_EntryTypeParent")]
-        //[ForeignKey(nameof(EntryTypeParentId))]
-        //public EntryType EntryTypeParent { get; set; }
+        [Display(Name = "AccountType_EntryTypeParent")]
+        [ForeignKey(nameof(EntryTypeParentId))]
+        public EntryType EntryTypeParent { get; set; }
     }
 }

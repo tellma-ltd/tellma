@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import {
-  ResourceClassificationForSave, ResourceClassification, metadata_ResourceClassification
-} from '~/app/data/entities/resource-classification';
+import { EntryTypeForSave, EntryType, metadata_EntryType } from '~/app/data/entities/entry-type';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,12 +8,12 @@ import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 
 @Component({
-  selector: 'b-resource-classifications-details',
-  templateUrl: './resource-classifications-details.component.html'
+  selector: 'b-entry-types-details',
+  templateUrl: './entry-types-details.component.html'
 })
-export class ResourceClassificationsDetailsComponent extends DetailsBaseComponent {
+export class EntryTypesDetailsComponent extends DetailsBaseComponent {
 
-  private resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$); // for intellisense
+  private entryTypesApi = this.api.entryTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
 
@@ -23,15 +21,15 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
+    this.entryTypesApi = this.api.entryTypesApi(this.notifyDestruct$);
   }
 
   get view(): string {
-    return `resource-classifications`;
+    return `entry-types`;
   }
 
   create = () => {
-    const result: ResourceClassificationForSave = { };
+    const result: EntryTypeForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -41,6 +39,8 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
     }
 
     result.IsAssignable = true;
+    result.ForDebit = true;
+    result.ForCredit = true;
     return result;
   }
 
@@ -48,32 +48,32 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
     return this.workspace.current;
   }
 
-  public onActivate = (model: ResourceClassification): void => {
+  public onActivate = (model: EntryType): void => {
     if (!!model && !!model.Id) {
-      this.resourceClassificationsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.entryTypesApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: ResourceClassification): void => {
+  public onDeactivate = (model: EntryType): void => {
     if (!!model && !!model.Id) {
-      this.resourceClassificationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.entryTypesApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: ResourceClassification) => !!model && !model.IsActive;
-  public showDeactivate = (model: ResourceClassification) => !!model && model.IsActive;
+  public showActivate = (model: EntryType) => !!model && !model.IsActive;
+  public showDeactivate = (model: EntryType) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ResourceClassification) => this.ws.canDo(this.view, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: EntryType) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: ResourceClassification) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: EntryType) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_ResourceClassification(this.ws, this.translate, null);
+    const entityDesc = metadata_EntryType(this.ws, this.translate, null);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 }

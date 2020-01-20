@@ -39,7 +39,7 @@ namespace BSharp.Entities
         [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Entry_EntryClassification")]
+        [Display(Name = "Entry_EntryType")]
         public int? EntryClassificationId { get; set; }
 
         [Display(Name = "Entry_DueDate")]
@@ -117,9 +117,9 @@ namespace BSharp.Entities
         [ForeignKey(nameof(AccountId))]
         public Account Account { get; set; }
 
-        [Display(Name = "Entry_EntryClassification")]
+        [Display(Name = "Entry_EntryType")]
         [ForeignKey(nameof(EntryClassificationId))]
-        public EntryClassification EntryClassification { get; set; }
+        public EntryType EntryClassification { get; set; }
 
         [Display(Name = "Entry_Agent")]
         [ForeignKey(nameof(AgentId))]

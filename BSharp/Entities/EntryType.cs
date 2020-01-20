@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class EntryClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class EntryTypeForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -31,6 +31,7 @@ namespace BSharp.Entities
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
@@ -40,16 +41,16 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 
-        [Display(Name = "EntryClassifications_ForDebit")]
+        [Display(Name = "EntryType_ForDebit")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public bool? ForDebit { get; set; }
 
-        [Display(Name = "EntryClassifications_ForCredit")]
+        [Display(Name = "EntryType_ForCredit")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public bool? ForCredit { get; set; }
     }
 
-    public class EntryClassification : EntryClassificationForSave, ITreeEntity<int>
+    public class EntryType : EntryTypeForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
@@ -63,6 +64,10 @@ namespace BSharp.Entities
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
+
+        [Display(Name = "IsSystem")]
+        [AlwaysAccessible]
+        public bool? IsSystem { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -86,7 +91,7 @@ namespace BSharp.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public EntryClassification Parent { get; set; }
+        public EntryType Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

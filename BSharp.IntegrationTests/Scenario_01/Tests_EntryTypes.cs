@@ -13,19 +13,19 @@ using Xunit.Abstractions;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    public class Tests_13_EntryClassifications : Scenario_01
+    public class Tests_13_EntryTypes : Scenario_01
     {
-        public Tests_13_EntryClassifications(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_13_EntryTypes(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "entry-classifications";
+        public readonly string _baseAddress = "entry-types";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific entry definition
         public string View => _baseAddress; // For permissions
 
 
-        [Fact(DisplayName = "01 Getting all entry classifications before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting all entry types before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -37,7 +37,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all entry classifications before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "02 Getting all entry types before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
@@ -50,16 +50,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<EntryClassification>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<EntryType>>();
 
             // Assert the result makes sense
-            Assert.Equal("EntryClassification", responseData.CollectionName);
+            Assert.Equal("EntryType", responseData.CollectionName);
 
             Assert.Equal(3, responseData.TotalCount);
             Assert.NotEmpty(responseData.Result);
         }
 
-        [Fact(DisplayName = "03 Getting a non-existent entry classification id returns a 404 Not Found")]
+        [Fact(DisplayName = "03 Getting a non-existent entry type id returns a 404 Not Found")]
         public async Task Test03()
         {
             int nonExistentId = 0;
@@ -69,13 +69,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "04 Saving a single well-formed EntryClassificationForSave returns a 200 OK result")]
+        [Fact(DisplayName = "04 Saving a single well-formed EntryTypeForSave returns a 200 OK result")]
         public async Task Test04()
         {
-            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'ChangesInPropertyPlantAndEquipment'")).Content.ReadAsAsync<GetResponse<EntryClassification>>()).Result.Single().Id;
+            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'ChangesInPropertyPlantAndEquipment'")).Content.ReadAsAsync<GetResponse<EntryType>>()).Result.Single().Id;
 
             // Prepare a well formed entity
-            var dtoForSave = new EntryClassificationForSave
+            var dtoForSave = new EntryTypeForSave
             {
                 Name = "Sheet Metals",
                 Name2 = "صفائح المعدن",
@@ -87,19 +87,19 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Save it
-            var dtosForSave = new List<EntryClassificationForSave> { dtoForSave };
+            var dtosForSave = new List<EntryTypeForSave> { dtoForSave };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of EntryClassification
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryClassification>>();
+            // Assert that the response is well-formed singleton of EntryType
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryType>>();
             Assert.Single(responseData.Result);
 
             // Assert that the result matches the saved entity
-            Assert.Equal("EntryClassification", responseData.CollectionName);
+            Assert.Equal("EntryType", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDto = responseData.Result.SingleOrDefault();
@@ -114,23 +114,23 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.ForCredit, responseDto.ForCredit);
 
 
-            Shared.Set("EntryClassification_SM", responseDto);
+            Shared.Set("EntryType_SM", responseDto);
         }
 
-        [Fact(DisplayName = "05 Getting the Id of the EntryClassificationForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "05 Getting the Id of the EntryTypeForSave just saved returns a 200 OK result")]
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<EntryClassification>("EntryClassification_SM");
+            var entity = Shared.Get<EntryType>("EntryType_SM");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of entry classification
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<EntryClassification>>();
-            Assert.Equal("EntryClassification", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of entry type
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<EntryType>>();
+            Assert.Equal("EntryType", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
@@ -142,12 +142,12 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.ForCredit, responseDto.ForCredit);
         }
 
-        [Fact(DisplayName = "06 Saving a EntryClassificationForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "06 Saving a EntryTypeForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
             // Prepare a record with the same code 'kg' as one that has been saved already
-            var list = new List<EntryClassificationForSave> {
-                new EntryClassificationForSave
+            var list = new List<EntryTypeForSave> {
+                new EntryTypeForSave
                 {
                     Name = "Another Name",
                     Name2 = "Another Name",
@@ -177,12 +177,12 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "07 Saving a EntryClassificationForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "07 Saving a EntryTypeForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new EntryClassificationForSave
+            var dtoForSave = new EntryTypeForSave
             {
                 Name = "  Hollow Section", // Leading space
                 Name2 = "مقطع أجوف",
@@ -194,11 +194,11 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<EntryClassificationForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<EntryTypeForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryType>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -209,16 +209,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("EntryClassification_HS", responseDto);
+            Shared.Set("EntryType_HS", responseDto);
         }
 
-        [Fact(DisplayName = "08 Deleting an existing entry classification Id returns a 200 OK")]
+        [Fact(DisplayName = "08 Deleting an existing entry type Id returns a 200 OK")]
         public async Task Test08()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<EntryClassification>("EntryClassification_HS");
+            var entity = Shared.Get<EntryType>("EntryType_HS");
             var id = entity.Id;
 
             // Query the delete API
@@ -232,7 +232,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test09()
         {
             // Get the Id
-            var entity = Shared.Get<EntryClassification>("EntryClassification_HS");
+            var entity = Shared.Get<EntryType>("EntryType_HS");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -243,13 +243,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "10 Deactivating an active entry classification returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "10 Deactivating an active entry type returns a 200 OK inactive entity")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
-            var entity = Shared.Get<EntryClassification>("EntryClassification_SM");
+            var entity = Shared.Get<EntryType>("EntryType_SM");
             var id = entity.Id;
 
             // Call the API
@@ -260,19 +260,19 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryType>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The entry classification was not deactivated");
+            Assert.False(responseDto.IsActive, "The entry type was not deactivated");
         }
 
-        [Fact(DisplayName = "11 Activating an inactive entry classification returns a 200 OK active entity")]
+        [Fact(DisplayName = "11 Activating an inactive entry type returns a 200 OK active entity")]
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<EntryClassification>("EntryClassification_SM");
+            var entity = Shared.Get<EntryType>("EntryType_SM");
             var id = entity.Id;
 
             // Call the API
@@ -283,19 +283,19 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<EntryType>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The entry classification was not activated");
+            Assert.True(responseDto.IsActive, "The entry type was not activated");
         }
 
         [Fact(DisplayName = "12 Using Select argument works as expected")]
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<EntryClassification>("EntryClassification_SM");
+            var entity = Shared.Get<EntryType>("EntryType_SM");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -303,9 +303,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of entry classification
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<EntryClassification>>();
-            Assert.Equal("EntryClassification", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of entry type
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<EntryType>>();
+            Assert.Equal("EntryType", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);

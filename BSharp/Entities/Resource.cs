@@ -138,7 +138,7 @@ namespace BSharp.Entities
 
         [Display(Name = "Resource_Classification")]
         [ForeignKey(nameof(ResourceClassificationId))]
-        public ResourceClassification ResourceClassification { get; set; }
+        public LegacyType ResourceClassification { get; set; }
 
         [Display(Name = "Resource_Currency")]
         [ForeignKey(nameof(CurrencyId))]

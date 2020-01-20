@@ -71,7 +71,7 @@ namespace BSharp.Entities
         [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
         public string Identifier { get; set; }
 
-        [Display(Name = "Account_EntryClassification")]
+        [Display(Name = "Account_EntryType")]
         public int? EntryClassificationId { get; set; }
     }
 
@@ -120,7 +120,7 @@ namespace BSharp.Entities
 
         [Display(Name = "Account_ResourceClassification")]
         [ForeignKey(nameof(ResourceClassificationId))]
-        public ResourceClassification ResourceClassification { get; set; }
+        public LegacyType ResourceClassification { get; set; }
 
         [Display(Name = "Account_Agent")]
         [ForeignKey(nameof(AgentId))]
@@ -130,9 +130,9 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
 
-        [Display(Name = "Account_EntryClassification")]
+        [Display(Name = "Account_EntryType")]
         [ForeignKey(nameof(EntryClassificationId))]
-        public EntryClassification EntryClassification { get; set; }
+        public EntryType EntryClassification { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -3,7 +3,7 @@ import { TenantWorkspace } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
-import { metadata_ResourceClassification } from '../resource-classification';
+import { metadata_LegacyType } from '../legacy-type';
 import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
@@ -17,7 +17,7 @@ import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_ResponsibilityCenter } from '../responsibility-center';
-import { metadata_EntryClassification } from '../entry-classification';
+import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
 import { metadata_SummaryEntry } from '../summary-entry';
 
@@ -26,7 +26,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     User: metadata_User,
     Agent: metadata_Agent,
     Role: metadata_Role,
-    ResourceClassification: metadata_ResourceClassification,
+    LegacyType: metadata_LegacyType,
     IfrsNote: metadata_IfrsNote,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
@@ -36,7 +36,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,
     ResponsibilityCenter: metadata_ResponsibilityCenter,
-    EntryClassification: metadata_EntryClassification,
+    EntryType: metadata_EntryType,
     SummaryEntry: metadata_SummaryEntry,
     Document: metadata_Document,
 

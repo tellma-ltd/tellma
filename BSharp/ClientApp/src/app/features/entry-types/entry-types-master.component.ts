@@ -6,15 +6,14 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
-import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
 
 @Component({
-  selector: 'b-resource-classifications-master',
-  templateUrl: './resource-classifications-master.component.html'
+  selector: 'b-entry-types-master',
+  templateUrl: './entry-types-master.component.html'
 })
-export class ResourceClassificationsMasterComponent extends MasterBaseComponent {
+export class EntryTypesMasterComponent extends MasterBaseComponent {
 
-  private resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$); // for intellisense
+  private entryTypesApi = this.api.entryTypesApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
@@ -22,24 +21,24 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
+    this.entryTypesApi = this.api.entryTypesApi(this.notifyDestruct$);
   }
 
   private get view(): string {
-    return `resource-classifications`;
+    return `entry-types`;
   }
 
   // UI Binding
 
   public get c() {
-    return this.workspace.current.ResourceClassification;
+    return this.workspace.current.EntryType;
   }
 
   public get ws() {
     return this.workspace.current;
   }
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourceClassificationsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.entryTypesApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -48,7 +47,7 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourceClassificationsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.entryTypesApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 

@@ -6,7 +6,7 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export interface EntryClassificationForSave extends EntityForSave {
+export interface EntryTypeForSave extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -14,9 +14,11 @@ export interface EntryClassificationForSave extends EntityForSave {
   Code?: string;
   EntryDefinitionId?: string;
   IsAssignable?: boolean;
+  ForDebit?: boolean;
+  ForCredit?: boolean;
 }
 
-export interface EntryClassification extends EntryClassificationForSave {
+export interface EntryType extends EntryTypeForSave {
   Level?: number;
   ActiveChildCount?: number;
   ChildCount?: number;
@@ -31,7 +33,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_EntryClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_EntryType(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
     _settings = ws.settings;
@@ -44,11 +46,11 @@ export function metadata_EntryClassification(ws: TenantWorkspace, trx: Translate
 
     const entityDesc: EntityDescriptor = {
       collection: 'MeasurementUnit',
-      titleSingular: () => trx.instant('EntryClassification'),
-      titlePlural: () => trx.instant('EntryClassifications'),
+      titleSingular: () => trx.instant('EntryType'),
+      titlePlural: () => trx.instant('EntryTypes'),
       select: _select,
-      apiEndpoint: 'entry-classifications',
-      screenUrl: 'entry-classifications',
+      apiEndpoint: 'entry-types',
+      screenUrl: 'entry-types',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -59,8 +61,8 @@ export function metadata_EntryClassification(ws: TenantWorkspace, trx: Translate
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
-        ForDebit: { control: 'boolean', label: () => trx.instant('EntryClassifications_ForDebit') },
-        ForCredit: { control: 'boolean', label: () => trx.instant('EntryClassifications_ForCredit') },
+        ForDebit: { control: 'boolean', label: () => trx.instant('EntryType_ForDebit') },
+        ForCredit: { control: 'boolean', label: () => trx.instant('EntryType_ForCredit') },
 
         // tree stuff
         ParentId: {
@@ -68,7 +70,7 @@ export function metadata_EntryClassification(ws: TenantWorkspace, trx: Translate
           minDecimalPlaces: 0, maxDecimalPlaces: 0
         },
         Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'EntryClassification',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'EntryType',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {

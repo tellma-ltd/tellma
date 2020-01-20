@@ -23,9 +23,9 @@ import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
 import { IfrsNotesMasterComponent } from './ifrs-notes/ifrs-notes-master.component';
 import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.component';
-import { ResourceClassificationsMasterComponent } from './resource-classifications/resource-classifications-master.component';
-import { ResourceClassificationsImportComponent } from './resource-classifications/resource-classifications-import.component';
-import { ResourceClassificationsDetailsComponent } from './resource-classifications/resource-classifications-details.component';
+import { LegacyTypesMasterComponent } from './legacy-types/legacy-types-master.component';
+import { LegacyTypesImportComponent } from './legacy-types/legacy-types-import.component';
+import { LegacyTypesDetailsComponent } from './legacy-types/legacy-types-details.component';
 import { LookupsMasterComponent } from './lookups/lookups-master.component';
 import { LookupsDetailsComponent } from './lookups/lookups-details.component';
 import { LookupsImportComponent } from './lookups/lookups-import.component';
@@ -64,14 +64,14 @@ import { ReportDefinitionsImportComponent } from './report-definitions/report-de
 import { ResponsibilityCentersMasterComponent } from './responsibility-centers/responsibility-centers-master.component';
 import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
 import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
-import { ResourceClassificationsPickerComponent } from './resource-classifications/resource-classifications-picker.component';
+import { LegacyTypesPickerComponent } from './legacy-types/legacy-types-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
 import { CurrenciesPickerComponent } from './currencies/currencies-picker.component';
-import { EntryClassificationsMasterComponent } from './entry-classifications/entry-classifications-master.component';
-import { EntryClassificationsImportComponent } from './entry-classifications/entry-classifications-import.component';
-import { EntryClassificationsDetailsComponent } from './entry-classifications/entry-classifications-details.component';
-import { EntryClassificationsPickerComponent } from './entry-classifications/entry-classifications-picker.component';
+import { EntryTypesMasterComponent } from './entry-types/entry-types-master.component';
+import { EntryTypesImportComponent } from './entry-types/entry-types-import.component';
+import { EntryTypesDetailsComponent } from './entry-types/entry-types-details.component';
+import { EntryTypesPickerComponent } from './entry-types/entry-types-picker.component';
 import { DocumentsMasterComponent } from './documents/documents-master.component';
 import { DocumentsDetailsComponent } from './documents/documents-details.component';
 
@@ -167,20 +167,20 @@ const routes: Routes = [
       //   canDeactivate: [UnsavedChangesGuard]
       // },
 
-      // Resource Classifications
+      // Legacy Types
       {
-        path: 'resource-classifications',
-        component: ResourceClassificationsMasterComponent,
+        path: 'legacy-types',
+        component: LegacyTypesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-classifications/import',
-        component: ResourceClassificationsImportComponent,
+        path: 'legacy-types/import',
+        component: LegacyTypesImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-classifications/:id',
-        component: ResourceClassificationsDetailsComponent,
+        path: 'legacy-types/:id',
+        component: LegacyTypesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -291,20 +291,20 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Entry Classifications
+      // Entry Types
       {
-        path: 'entry-classifications',
-        component: EntryClassificationsMasterComponent,
+        path: 'entry-types',
+        component: EntryTypesMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'entry-classifications/import',
-        component: EntryClassificationsImportComponent,
+        path: 'entry-types/import',
+        component: EntryTypesImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'entry-classifications/:id',
-        component: EntryClassificationsDetailsComponent,
+        path: 'entry-types/:id',
+        component: EntryTypesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -406,10 +406,10 @@ const routes: Routes = [
     SettingsComponent,
     IfrsNotesMasterComponent,
     IfrsNotesDetailsComponent,
-    ResourceClassificationsMasterComponent,
-    ResourceClassificationsImportComponent,
-    ResourceClassificationsDetailsComponent,
-    ResourceClassificationsPickerComponent,
+    LegacyTypesMasterComponent,
+    LegacyTypesImportComponent,
+    LegacyTypesDetailsComponent,
+    LegacyTypesPickerComponent,
     LookupsMasterComponent,
     LookupsDetailsComponent,
     LookupsImportComponent,
@@ -445,10 +445,10 @@ const routes: Routes = [
     UsersPickerComponent,
     RolesPickerComponent,
     CurrenciesPickerComponent,
-    EntryClassificationsMasterComponent,
-    EntryClassificationsImportComponent,
-    EntryClassificationsDetailsComponent,
-    EntryClassificationsPickerComponent,
+    EntryTypesMasterComponent,
+    EntryTypesImportComponent,
+    EntryTypesDetailsComponent,
+    EntryTypesPickerComponent,
     DocumentsMasterComponent,
     DocumentsDetailsComponent,
   ],

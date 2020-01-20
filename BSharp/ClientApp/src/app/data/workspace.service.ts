@@ -9,7 +9,7 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
-import { ResourceClassification } from './entities/resource-classification';
+import { LegacyType } from './entities/legacy-type';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
@@ -25,7 +25,7 @@ import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
 import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
-import { EntryClassification } from './entities/entry-classification';
+import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { isSpecified } from './util';
 
@@ -203,7 +203,7 @@ export class TenantWorkspace {
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
-  ResourceClassification: EntityWorkspace<ResourceClassification>;
+  LegacyType: EntityWorkspace<LegacyType>;
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
@@ -212,7 +212,7 @@ export class TenantWorkspace {
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
   ResponsibilityCenter: EntityWorkspace<ResponsibilityCenter>;
-  EntryClassification: EntityWorkspace<EntryClassification>;
+  EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
 
   constructor(private workspaceService: WorkspaceService) {
@@ -229,7 +229,7 @@ export class TenantWorkspace {
     this.User = new EntityWorkspace<User>();
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
-    this.ResourceClassification = new EntityWorkspace<ResourceClassification>();
+    this.LegacyType = new EntityWorkspace<LegacyType>();
     this.Lookup = new EntityWorkspace<Lookup>();
     this.Currency = new EntityWorkspace<Currency>();
     this.Resource = new EntityWorkspace<Resource>();
@@ -238,7 +238,7 @@ export class TenantWorkspace {
     this.Account = new EntityWorkspace<Account>();
     this.ReportDefinition = new EntityWorkspace<ReportDefinition>();
     this.ResponsibilityCenter = new EntityWorkspace<ResponsibilityCenter>();
-    this.EntryClassification = new EntityWorkspace<EntryClassification>();
+    this.EntryType = new EntityWorkspace<EntryType>();
     this.Document = new EntityWorkspace<Document>();
 
     this.notifyStateChanged();

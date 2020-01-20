@@ -1,4 +1,4 @@
-<b-details collection="EntryClassification" [idString]="idString" [createFunc]="create" [expand]="expand"
+<b-details collection="EntryType" [idString]="idString" [createFunc]="create" [expand]="expand"
   [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -9,7 +9,6 @@
 <ng-template #detailsCrumb let-model="model">
   <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
-
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
@@ -54,19 +53,37 @@
   </b-form-group>
 
   <!-- Code -->
-  <b-form-group class="b-form-group text-truncate" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <div *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    <div class="text-truncate" *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
   </b-form-group>
 
   <!-- Parent -->
   <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
     <b-restricted [metadata]="model?.EntityMetadata?.Parent">
-      <b-view-link *ngIf="!isEdit" link="../../entry-classifications" [itemId]="model?.ParentId">{{
-        ws.getMultilingualValue('EntryClassification', model?.ParentId, 'Name') }}</b-view-link>
+      <b-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.ParentId">{{
+        ws.getMultilingualValue('EntryType', model?.ParentId, 'Name') }}</b-view-link>
     </b-restricted>
-    <b-entry-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
-    </b-entry-classifications-picker>
+    <b-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
+    </b-entry-types-picker>
+  </b-form-group>
+  
+  <!-- For Debit -->
+  <b-form-group class="b-form-group" [label]="'EntryType_ForDebit' | translate">
+    <div *ngIf="!isEdit">{{ (model?.ForDebit === true ? 'Yes' : model?.ForDebit === false ? 'No' : 'Undefined') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.ForDebit" id="forDebit">
+      <label class="custom-control-label b-pointer" for="forDebit">&zwnj;</label>
+    </div>
+  </b-form-group>
+  
+  <!-- For Credit -->
+  <b-form-group class="b-form-group" [label]="'EntryType_ForCredit' | translate">
+    <div *ngIf="!isEdit">{{ (model?.ForCredit === true ? 'Yes' : model?.ForCredit === false ? 'No' : 'Undefined') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.ForCredit" id="forCredit">
+      <label class="custom-control-label b-pointer" for="forCredit">&zwnj;</label>
+    </div>
   </b-form-group>
 
   <!-- Is Assignable -->

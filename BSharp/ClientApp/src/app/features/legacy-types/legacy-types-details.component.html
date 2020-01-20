@@ -1,0 +1,54 @@
+<b-details collection="LegacyType" [expand]="expand" [mode]="mode" [showCreateButton]="false" [showEditButton]="false"
+  [showDeleteButton]="false" [masterCrumb]="'LegacyTypes' | translate" [detailsCrumb]="detailsCrumb"
+  [idString]="idString" [documentTemplate]="document" [actions]="[]">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+  <!-- Header Name -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2">
+    <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+  </b-form-group>
+
+  <!-- Name -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix">
+    <div>{{ model?.Name }}</div>
+  </b-form-group>
+
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+    [label]="('Name' | translate) + ws.secondaryPostfix">
+    <div>{{ model?.Name2 }}</div>
+  </b-form-group>
+
+  <!-- Name3 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+    [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+    <div>{{ model?.Name3 }}</div>
+  </b-form-group>
+
+  <!-- Description -->
+  <b-form-group class="b-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Description">
+    <div>{{ model?.Description }}</div>
+  </b-form-group>
+
+  <!-- Description2 -->
+  <b-form-group class="b-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+    [label]="('Description' | translate) + ws.secondaryPostfix">
+    <div>{{ model?.Description2 }}</div>
+  </b-form-group>
+
+  <!-- Description3 -->
+  <b-form-group class="b-form-group" *ngIf="ws.settings.TernaryLanguageId"
+    [label]="('Description' | translate) + ws.ternaryPostfix">
+    <div>{{ model?.Description3 }}</div>
+  </b-form-group>
+</ng-template>

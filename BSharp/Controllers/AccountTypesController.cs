@@ -120,7 +120,19 @@ namespace BSharp.Controllers
         {
             throw new System.NotImplementedException();
         }
+        protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)
+        {
+            // Set defaults
+            entities.ForEach(entity =>
+            {
+                entity.IsAssignable ??= true;
+                entity.IsReal ??= false;
+                entity.IsResourceClassification ??= false;
+                entity.IsPersonal ??= false;
+            });
 
+            return Task.FromResult(entities);
+        }
         protected override async Task SaveValidateAsync(List<AccountTypeForSave> entities)
         {
             // Check that codes are not duplicated within the arriving collection

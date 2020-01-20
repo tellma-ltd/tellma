@@ -142,19 +142,16 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "resource-classifications",
-                        Name = "ResourceClassifications",
+                        Id = "legacy-types",
+                        Name = "LegacyTypes",
                         Read = true,
-                        Update = true,
-                        Delete = true,
                         Actions = new ActionInfo[]
                         {
-                            Li("IsActive")
                         }
                     },
                     new ViewInfo {
-                        Id = "entry-classifications",
-                        Name = "EntryClassifications",
+                        Id = "entry-types",
+                        Name = "EntryTypes",
                         Read = true,
                         Update = true,
                         Delete = true,

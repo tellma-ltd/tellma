@@ -124,8 +124,8 @@
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Account_EntryClassification" xml:space="preserve">
-    <value>Entry Classification</value>
+  <data name="Account_EntryType" xml:space="preserve">
+    <value>Entry Type</value>
   </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>Identifier</value>
@@ -493,7 +493,7 @@
   <data name="Entry_DueDate" xml:space="preserve">
     <value>Due Date</value>
   </data>
-  <data name="Entry_EntryClassification" xml:space="preserve">
+  <data name="Entry_EntryType" xml:space="preserve">
     <value>Purpose</value>
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
@@ -541,17 +541,17 @@
   <data name="Entry_Volume" xml:space="preserve">
     <value>Volume</value>
   </data>
-  <data name="EntryClassification" xml:space="preserve">
-    <value>Entry Classification</value>
+  <data name="EntryType" xml:space="preserve">
+    <value>Entry Type</value>
   </data>
-  <data name="EntryClassifications" xml:space="preserve">
-    <value>Entry Classifications</value>
-  </data>
-  <data name="EntryClassifications_ForCredit" xml:space="preserve">
+  <data name="EntryType_ForCredit" xml:space="preserve">
     <value>For Credit</value>
   </data>
-  <data name="EntryClassifications_ForDebit" xml:space="preserve">
+  <data name="EntryType_ForDebit" xml:space="preserve">
     <value>For Debit</value>
+  </data>
+  <data name="EntryTypes" xml:space="preserve">
+    <value>Entry Types</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0} path cannot terminate with a navigation field {1}.</value>
@@ -858,6 +858,12 @@
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
+  </data>
+  <data name="LegacyType" xml:space="preserve">
+    <value>Legacy Type</value>
+  </data>
+  <data name="LegacyTypes" xml:space="preserve">
+    <value>Legacy Types</value>
   </data>
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>
@@ -1395,15 +1401,6 @@
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>Volume Unit</value>
-  </data>
-  <data name="ResourceClassification" xml:space="preserve">
-    <value>Resource Classification</value>
-  </data>
-  <data name="ResourceClassification_ResourceDefinition" xml:space="preserve">
-    <value>Resource Definition</value>
-  </data>
-  <data name="ResourceClassifications" xml:space="preserve">
-    <value>Resource Classifications</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>Resources</value>

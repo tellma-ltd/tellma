@@ -124,17 +124,13 @@ export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
-    'resource-classifications': {
-        name: 'ResourceClassifications',
+    'legacy-types': {
+        name: 'LegacyTypes',
         read: true,
-        update: true,
-        delete: true,
-        actions: [
-            li('IsActive', false)
-        ]
+        actions: []
     },
-    'entry-classifications': {
-        name: 'EntryClassifications',
+    'entry-types': {
+        name: 'EntryTypes',
         read: true,
         update: true,
         delete: true,

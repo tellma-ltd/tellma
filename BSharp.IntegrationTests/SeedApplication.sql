@@ -21,8 +21,6 @@ DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM [dbo].[Settings]);
 --DELETE FROM [dbo].[ResourceClassifications] WHERE [Code] NOT IN (N'CashAndCashEquivalents');
 
-DELETE FROM [dbo].[ResourceClassificationsEntryClassifications];
-DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];
 DELETE FROM [dbo].[AccountClassifications];
@@ -30,7 +28,7 @@ DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];
 DELETE FROM [dbo].[AccountTypes];
-DELETE FROM [dbo].[EntryClassifications];
+DELETE FROM [dbo].[EntryTypes];
 
 -- Populate
 
@@ -76,35 +74,17 @@ IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'currencie
 
 UPDATE Settings SET DefinitionsVersion = NEWID(), SettingsVersion = NEWID();
 
--- Resource Types
-DECLARE @ResourceClassifications dbo.ResourceClassificationList
-INSERT INTO @ResourceClassifications
-([Code],									[Name],											[ParentIndex],		[IsAssignable], [Index], [ResourceDefinitionId]) VALUES
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					NULL,				1,				0,			N'currencies'),
-	(N'Cash',								N'Cash',										0,					1,				1,			N'currencies'),
-	(N'CashEquivalents',					N'Cash equivalents',							0,					1,				2,			N'currencies');
-
 DECLARE @ValidationErrorsJson nvarchar(max);
-EXEC [api].[ResourceClassifications__Save]
-	@Entities = @ResourceClassifications,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-DECLARE @EntryClassifications dbo.EntryClassificationList;
-INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredit], [ParentIndex], [Code], [Name]) VALUES
+DECLARE @EntryTypes dbo.EntryTypeList;
+INSERT INTO @EntryTypes([IsAssignable], [Index], [ForDebit], [ForCredit], [ParentIndex], [Code], [Name]) VALUES
  (0, 0, 1, 1, NULL, 'ChangesInPropertyPlantAndEquipment', 'Increase (decrease) in property, plant and equipment')
 ,(1, 1, 1, 0, 0, 'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', 'Additions other than through business combinations, property, plant and equipment')
 ,(1, 2, 1, 0, 0, 'AcquisitionsThroughBusinessCombinationsPropertyPlantAndEquipment', 'Acquisitions through business combinations, property, plant and equipment')
 
-EXEC [api].[EntryClassifications__Save]
-	@Entities = @EntryClassifications,
+EXEC [api].[EntryTypes__Save]
+	@Entities = @EntryTypes,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
--- Add mapping
-DECLARE @EntryClassificationId INT = (SELECT Id FROM [EntryClassifications] WHERE Code = 'ChangesInPropertyPlantAndEquipment')
-DECLARE @ResourceClassificationId INT = (SELECT Id FROM [ResourceClassifications] WHERE Code = 'CashAndCashEquivalents')
-INSERT INTO [dbo].[ResourceClassificationsEntryClassifications] (ResourceClassificationId, EntryClassificationId, IsEnforced)
-VALUES
-(@ResourceClassificationId, @EntryClassificationId, 1);
 
 -- Currencies
 DECLARE @Currencies CurrencyList;
