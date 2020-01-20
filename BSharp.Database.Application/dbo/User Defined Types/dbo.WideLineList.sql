@@ -12,6 +12,34 @@
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
 	
+	[Direction0]				SMALLINT,
+	[AccountId0]				INT,
+	[AgentDefinitionId0]		NVARCHAR (50),
+	[AccountTypeId0]			INT,
+	[IsCurrent0]				BIT,
+	[AgentId0]					INT,
+	[ResourceId0]				INT,
+	[ResponsibilityCenterId0]	INT,
+	[AccountIdentifier0]		NVARCHAR (10),
+	[ResourceIdentifier0]		NVARCHAR (10),
+	[CurrencyId0]				NCHAR (3),
+	[EntryTypeId0]				INT,
+	[DueDate0]					DATE,
+	[MonetaryValue0]			DECIMAL (19,4),
+	[Count0]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
+	[Mass0]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
+	[Volume0]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+	[Time0]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Value0]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
+	[ExternalReference0]		NVARCHAR (255),
+	[AdditionalReference0]		NVARCHAR (255),
+	[RelatedAgentId0]			INT,
+	[RelatedAgentName0]			NVARCHAR (50),
+	[RelatedAmount0]			DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[RelatedDate0]				DATE,
+	[Time10]					TIME (0),	-- from time
+	[Time20]					TIME (0),	-- to time
+
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
 	[AgentDefinitionId1]		NVARCHAR (50),
@@ -66,33 +94,5 @@
 	[RelatedAmount2]			DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedDate2]				DATE,
 	[Time12]					TIME (0),	-- from time
-	[Time22]					TIME (0),	-- to time
-
-	[Direction3]				SMALLINT,
-	[AccountId3]				INT,
-	[AgentDefinitionId3]		NVARCHAR (50),
-	[AccountTypeId3]			INT,
-	[IsCurrent3]				BIT,
-	[AgentId3]					INT,
-	[ResourceId3]				INT,
-	[ResponsibilityCenterId3]	INT,
-	[AccountIdentifier3]		NVARCHAR (10),
-	[ResourceIdentifier3]		NVARCHAR (10),
-	[CurrencyId3]				NCHAR (3),
-	[EntryTypeId3]				INT,
-	[DueDate3]					DATE,
-	[MonetaryValue3]			DECIMAL (19,4),
-	[Count3]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
-	[Mass3]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume3]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Time3]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[Value3]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
-	[ExternalReference3]		NVARCHAR (255),
-	[AdditionalReference3]		NVARCHAR (255),
-	[RelatedAgentId3]			INT,
-	[RelatedAgentName3]			NVARCHAR (50),
-	[RelatedAmount3]			DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedDate3]				DATE,
-	[Time13]					TIME (0),	-- from time
-	[Time23]					TIME (0)	-- to time
+	[Time22]					TIME (0)	-- to time
 );

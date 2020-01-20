@@ -4,7 +4,7 @@
 	[HeaderIndex]				INT,
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]						INT		DEFAULT 0,
-	[EntryNumber]				INT		CHECK([EntryNumber] > 0),
+	[EntryNumber]				INT		CHECK([EntryNumber] >= 0),
 	[Direction]					SMALLINT,
 	-- Source = -1 (n/a), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Noted in Line, 7:

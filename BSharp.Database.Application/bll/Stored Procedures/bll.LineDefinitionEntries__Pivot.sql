@@ -12,23 +12,23 @@ AS
 
 	UPDATE WL
 	SET
-		WL.[Direction1]			= LDE.[Direction]
+		WL.[Direction0]			= LDE.[Direction]
 		--WL.[AgentDefinitionId1]	= LDE.AgentDefinitionId
+	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
+	WHERE LDE.EntryNumber = 0
+
+	UPDATE WL
+	SET
+		WL.[Direction1]			= LDE.[Direction]
+		--WL.[AgentDefinitionId2]	= LDE.AgentDefinitionId
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
 	WHERE LDE.EntryNumber = 1
 
 	UPDATE WL
 	SET
 		WL.[Direction2]			= LDE.[Direction]
-		--WL.[AgentDefinitionId2]	= LDE.AgentDefinitionId
-	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
-	WHERE LDE.EntryNumber = 2
-
-	UPDATE WL
-	SET
-		WL.[Direction3]			= LDE.[Direction]
 		--WL.[AgentDefinitionId3]	= LDE.AgentDefinitionId
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
-	WHERE LDE.EntryNumber = 3
+	WHERE LDE.EntryNumber = 2
 
 	SELECT * FROM @WideLines;

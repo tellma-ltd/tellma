@@ -49,18 +49,18 @@ INSERT @LineDefinitions([Index],
 
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [AgentSource],[ResourceSource],[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [NotedAgentSource]) VALUES
-(0,2,1,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
+(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],					[Label],				[Label2],		[IsRequired]) VALUES
 (0,2,0,		N'Line.Description',			N'Description',			N'البيان',		0), 
-(1,2,1,		N'Entry[1].MonetaryAmount',		N'Pay Amount',			N'المبلغ',		1), 
-(2,2,2,		N'Line.CurrencyId',				N'Pay Currency',		N'العملة',		1),
-(3,2,3,		N'Entry[1].NotedAgentName',		N'Beneficiary',			N'المستفيد',	1),
-(4,2,4,		N'Entry[1].EntryTypeId',		N'Purpose',				N'الغرض',		0),
-(5,2,5,		N'Entry[1].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
-(6,2,6,		N'Entry[1].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
-(7,2,7,		N'Entry[1].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	0)
+(1,2,1,		N'Entry[0].MonetaryAmount',		N'Pay Amount',			N'المبلغ',		1), 
+(2,2,2,		N'Entry[0]..CurrencyId',		N'Pay Currency',		N'العملة',		1),
+(3,2,3,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',	1),
+(4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		0),
+(5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
+(6,2,6,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
+(7,2,7,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	0)
 ;
 
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
@@ -78,12 +78,12 @@ INSERT INTO @LineDefinitionEntries
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
 (N'PettyCashPayment',		0,		N'Line.Description',					N'Description'), 
-(N'PettyCashPayment',		1,		N'Entry[1].MonetaryAmount',				N'Pay Amount'), 
-(N'PettyCashPayment',		2,		N'Entry[1].CurrencyId',					N'Pay Currency'),
-(N'PettyCashPayment',		3,		N'Entry[1].AdditionalReference',		N'Beneficiary'),
-(N'PettyCashPayment',		4,		N'Entry[1].EntryClassification',		N'Purpose'),
-(N'CashPayment',			5,		N'Entry[1].AgentId',					N'Cashier'), -- TODO: Read it from document
-(N'PettyCashPayment',		6,		N'Entry[1].ExternalReference',			N'Receipt #')
+(N'PettyCashPayment',		1,		N'Entry[0].MonetaryAmount',				N'Pay Amount'), 
+(N'PettyCashPayment',		2,		N'Entry[0].CurrencyId',					N'Pay Currency'),
+(N'PettyCashPayment',		3,		N'Entry[0].AdditionalReference',		N'Beneficiary'),
+(N'PettyCashPayment',		4,		N'Entry[0].EntryClassification',		N'Purpose'),
+(N'CashPayment',			5,		N'Entry[0].AgentId',					N'Cashier'), -- TODO: Read it from document
+(N'PettyCashPayment',		6,		N'Entry[0].ExternalReference',			N'Receipt #')
 ;
 
 -- TODO: this is still unfinished

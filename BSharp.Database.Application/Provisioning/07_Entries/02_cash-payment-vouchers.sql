@@ -17,7 +17,7 @@ BEGIN
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'CashPayment';
 	UPDATE @WL_CPV
 	SET
-		CurrencyId1 = @FunctionalCurrencyId
+		CurrencyId0 = @FunctionalCurrencyId
 	WHERE [Index] = 0;
 
 	EXEC [api].[Documents__Save]
