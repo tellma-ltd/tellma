@@ -18,7 +18,7 @@ BEGIN
 		MERGE INTO [dbo].[Documents] AS t
 		USING (
 			SELECT 
-				[Index], [Id], --[OperatingSegmentId], 
+				[Index], [Id],
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
@@ -31,25 +31,21 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DocumentDate]			= s.[DocumentDate],
-				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
 				t.[MemoIsCommon]			= s.[MemoIsCommon],
-				--t.[Frequency]				= s.[Frequency],
-				--t.[Repetitions]			= s.[Repetitions],
-
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DefinitionId], [SerialNumber], --[OperatingSegmentId], 
+				[DefinitionId], [SerialNumber], 
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
-				[Memo], [MemoIsCommon]--, [Frequency], [Repetitions]
+				[Memo], [MemoIsCommon]
 			)
 			VALUES (
 				@DefinitionId, s.[SerialNumber], --s.[OperatingSegmentId], 
 				s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
-				s.[Memo], s.[MemoIsCommon]--, s.[Frequency], s.[Repetitions]
+				s.[Memo], s.[MemoIsCommon]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;

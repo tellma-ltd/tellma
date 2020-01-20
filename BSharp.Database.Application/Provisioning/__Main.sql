@@ -61,8 +61,8 @@ END
 :r .\06_Accounts\c_BasicAccounts.sql
 :r .\06_Accounts\d_SmartAccounts.sql
 
---:r .\07_Entries\01_manual-journal-vouchers.sql
-
+:r .\07_Entries\01_manual-journal-vouchers.sql
+:r .\07_Entries\02_cash-payment-vouchers.sql
 
 RETURN;
 ERR_LABEL:

@@ -76,7 +76,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Code]
+	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
 	-- RelatedAgent is required for selected account definition, 
