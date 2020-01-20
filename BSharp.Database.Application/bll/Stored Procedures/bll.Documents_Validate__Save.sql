@@ -100,8 +100,19 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[ResourceId] IS NULL)
 	AND (A.[HasResource] = 1);
+	
+	-- If LineDefinition requires a resource in that entry number, 
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+	--	N'Error_TheResourceIsNotSpecified'
+	--FROM @Entries E
+	--JOIN @Lines L ON E.[LineIndex] = L.[Index]
+	--JOIN dbo.LineDefinitionColumns LDC ON L.DefinitionId = LDC.LineDefinitionId
 
-
+	--WHERE (E.[ResourceId] IS NULL)
+	
 	-- NotedAgent is required for selected account definition, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
