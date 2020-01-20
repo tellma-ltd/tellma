@@ -35,7 +35,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(7,			N'Mestawet G/Egziyabhare','2019.09.01',N'E7',4700,			0,							28.25),
 	(8,			N'Ayelech Hora',	'2019.09.01',	N'E8',	4700,			0,							0);
 
-	UPDATE @employees SET UserId = @UserId WHERE [Index] = 0;
+	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'employees',
 		@Entities = @employees,

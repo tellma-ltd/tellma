@@ -9,7 +9,7 @@
 	[Description]			NVARCHAR (1024),
 	[Description2]			NVARCHAR (1024),
 	[Description3]			NVARCHAR (1024),
-	[Code]					NVARCHAR (255)	NOT NULL UNIQUE,
+	[Code]					NVARCHAR (255)		NOT NULL UNIQUE,
 	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
 	[IsCurrent]				BIT,
 	[IsReal]				BIT					NOT NULL DEFAULT 0,

@@ -514,6 +514,9 @@
     <None Include="Provisioning\06_Accounts\a_LegacyTypes.sql" />
     <None Include="Provisioning\00_Common\d_EntryTypes.sql" />
     <None Include="Provisioning\00_Common\e_AccountTypes.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryList.sql" />
+    <Build Include="api\Stored Procedures\api.LineDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

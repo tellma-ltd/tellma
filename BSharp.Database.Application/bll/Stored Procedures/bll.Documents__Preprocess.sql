@@ -30,6 +30,12 @@ FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
 
+--UPDATE E 
+--SET E.CurrencyId = L.CurrencyId
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.CurrencySource = 1 AND E.CurrencyId <> L.CurrencyId
+
 -- When no resource or agent, set to NULL
 UPDATE E
 SET

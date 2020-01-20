@@ -1,70 +1,8 @@
 ﻿DECLARE @LineDefinitions dbo.LineDefinitionList;
 DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
+DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
-/*
-	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
-	[AgentId]							INT					REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
 
-	[ResourceSource]					SMALLINT			NOT NULL DEFAULT 1,
-	[ResourceId]						INT					REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
-	
-	[CurrencySource]					SMALLINT			NOT NULL DEFAULT 2,
-	[CurrencyId]						NCHAR (3)			REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
-
-	[EntryClassificationSource]			SMALLINT			NOT NULL DEFAULT 0,
-	[EntryClassificationCode]			NVARCHAR (255),
-	
-	[MonetaryValueSource]				SMALLINT			NOT NULL DEFAULT 1,
-	[QuantitySource]					SMALLINT			NOT NULL DEFAULT 1,
-	[ExternalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
-	[AdditionalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
-	[NotedAgentSource]					SMALLINT			NOT NULL DEFAULT 2,
-	[NotedAmountSource]					SMALLINT			NOT NULL DEFAULT 2,
-	[DueDateSource]						SMALLINT			NOT NULL DEFAULT 1
-	*/
-DECLARE @LineDefinitionEntries TABLE (
-	[Index]						INT,
-	[HeaderIndex]				INT,
-	PRIMARY KEY ([Index], [HeaderIndex]),
-	[Id]						INT		DEFAULT 0,
-	[EntryNumber]				INT,
-	[Direction]					SMALLINT,
-	-- Source = -1 (n/a), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
-	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Noted in Line, 7:
-	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
-	
-	-- The idea is to allow the user to enter enough information, so Tellma can figure out the account, or at least short list it:
-	-- AccountType, which must be a child of the AccountTypeParentCode
-	-- Account.CurrencyId must match that entered by user. So, Line has CurrencyId
-	-- Account.IsCurrent must conform to that computed by system (from DueDate), otherwise, return all conforming Accounts
-	-- Account.ResponsibilityCenter must match or be ancestor of Line.ResponsibilityCenter
-	-- Account.IsNoted must match that computed by system (from Agent.IsNoted). If No agent is specified, return all
-	-- Account.AgentDefinition must match that of Agent
-	-- Account.Identifier might help uniquely identify, but let us postpone it
-
-	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
-	[AgentDefinitionList]		NVARCHAR (1024),
-	[CurrencySource]			SMALLINT			NOT NULL DEFAULT -1,
-	[AgentSource]				SMALLINT			NOT NULL DEFAULT -1,
-	[ResourceSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[EntryTypeCode]				NVARCHAR (255),
---	[NotedAgentDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 1: set from line 2: from entry
-	[NotedAgentDefinitionId]	NVARCHAR (50),
-
-	[MonetaryValueSource]		SMALLINT			NOT NULL DEFAULT 2,
-	[QuantitySource]			SMALLINT			NOT NULL DEFAULT -1,
-	[ExternalReferenceSource]	SMALLINT			NOT NULL DEFAULT -1,
-	[AdditionalReferenceSource]	SMALLINT			NOT NULL DEFAULT -1,
-	[NotedAgentSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[NotedAmountSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[DueDateSource]				SMALLINT			NOT NULL DEFAULT -1
-);
--- The behavior of the manual line is driven by the account.
--- There is a special case, where 
--- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [Value] = [Debit]-[Credit]
--- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([Value]), [Credit] = 0
--- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([Value])
--- NB: Debit & Credit Cannot be both non-zero. If both are zero, we set direction to +1.
 INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
 0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
@@ -74,13 +12,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب'),
 (2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين'), -- see special case
 (3,0,3,		N'Entry[0].Value',	N'Credit',		N'دائن'),
--- Properties shown are as follows:
--- Currency and monetary value, if Account Currency is <> functional
--- Resource if account is smart and Account.[Resource Classification] is not null
--- Agent if account is smart and Account.[Agent Definition] is not null
--- Account Identifier if Account is smart and Account.[Has Identifier] = 1
--- Based on Resource Definition: we show: Count, Mass, Volume, Time, Resource Identifier, Due Date
--- Additional dynamic properties based on the tuple (Contract Type, Agent Definition, Resource Classifitation) -- to be stored in table
 (4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات');
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
@@ -118,7 +49,7 @@ INSERT @LineDefinitions([Index],
 
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [AgentSource],[ResourceSource],[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [NotedAgentSource]) VALUES
-(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
+(0,2,1,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],					[Label],				[Label2]) VALUES
@@ -188,160 +119,18 @@ INSERT INTO @LineDefinitionColumns
 -- payroll lines (one per comlumn)
 -- etc...
 
-DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-MERGE [dbo].[LineDefinitions] AS t
-USING @LineDefinitions AS s
-ON s.Id = t.Id
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[TitleSingular]	= s.[TitleSingular],
-		t.[TitleSingular2]	= s.[TitleSingular2],
-		t.[TitleSingular3]	= s.[TitleSingular3],
-		t.[TitlePlural]		= s.[TitlePlural],
-		t.[TitlePlural2]	= s.[TitlePlural2],
-		t.[TitlePlural3]	= s.[TitlePlural3],
-		t.[SavedById]		= @UserId
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3])
-    VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3]);
+EXEC [api].[LineDefinitions__Save]
+	@Entities = @LineDefinitions,
+	@LineDefinitionColumns = @LineDefinitionColumns,
+	@LineDefinitionEntries = @LineDefinitionEntries,
+	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-MERGE [dbo].[LineDefinitionColumns] AS t
-USING (
-	SELECT
-		LDC.[Id],
-		LD.[Id] AS [LineDefinitionId],
-		LDC.[SortKey],
-		LDC.[ColumnName],
-		LDC.[Label],
-		LDC.[Label2],
-		LDC.[Label3]
-	FROM @LineDefinitionColumns LDC
-	JOIN @LineDefinitions LD ON LDC.HeaderIndex = LD.[Index]
-) AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[SortKey]			= s.[SortKey],
-		t.[ColumnName]		= s.[ColumnName],
-		t.[Label]			= s.[Label],
-		t.[Label2]			= s.[Label2],
-		t.[Label3]			= s.[Label3]
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([LineDefinitionId], [SortKey],	[ColumnName],	[Label],	[Label2],	[Label3])
-    VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3]);
-
-MERGE [dbo].[LineDefinitionEntries] AS t
-USING (
-	SELECT
-		LDE.[Id],
-		LDE.[EntryNumber],
-		LDE.[Direction]	,
-		LDE.[AccountTypeParentCode]	,
-		LDE.[AgentDefinitionList],
-		LDE.[CurrencySource],
-		LDE.[AgentSource],
-		LDE.[ResourceSource],
-		LDE.[EntryTypeCode],
-		LDE.[NotedAgentDefinitionId],
-		LDE.[MonetaryValueSource],
-		LDE.[QuantitySource],
-		LDE.[ExternalReferenceSource],
-		LDE.[AdditionalReferenceSource]	,
-		LDE.[NotedAgentSource],
-		LDE.[NotedAmountSource],
-		LDE.[DueDateSource]	
-	FROM @LineDefinitionEntries LDE
-	JOIN @LineDefinitions LD ON LDE.HeaderIndex = LD.[Index]
-) AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[EntryNumber]				= s.[EntryNumber],
-		t.[Direction]				= t.[Direction],
-		t.[AccountTypeParentCode]	= t.[AccountTypeParentCode],
-		t.[AgentDefinitionList]		= t.[AgentDefinitionList],
-		t.[CurrencySource]			= t.[CurrencySource],
-		t.[AgentSource]				= t.[AgentSource],
-		t.[ResourceSource]			= t.[ResourceSource],
-		t.[EntryTypeCode]			= t.[EntryTypeCode],
-		t.[NotedAgentDefinitionId]	= t.[NotedAgentDefinitionId],
-		t.[MonetaryValueSource]		= t.[MonetaryValueSource],
-		t.[QuantitySource]			= t.[QuantitySource],
-		t.[ExternalReferenceSource]	= t.[ExternalReferenceSource],
-		t.[AdditionalReferenceSource]= t.[AdditionalReferenceSource],
-		t.[NotedAgentSource]		= t.[NotedAgentSource],
-		t.[NotedAmountSource]		= t.[NotedAmountSource],
-		t.[DueDateSource]			= t.[DueDateSource]	
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-		[EntryNumber],
-		[Direction],
-		[AccountTypeParentCode]	,
-		[AgentDefinitionList],
-		[CurrencySource],
-		[AgentSource],
-		[ResourceSource],
-		[EntryTypeCode],
-		[NotedAgentDefinitionId],
-		[MonetaryValueSource],
-		[QuantitySource],
-		[ExternalReferenceSource],
-		[AdditionalReferenceSource]	,
-		[NotedAgentSource],
-		[NotedAmountSource],
-		[DueDateSource]	
-	)
-    VALUES (
-		s.[EntryNumber],
-		s.[Direction],
-		s.[AccountTypeParentCode],
-		s.[AgentDefinitionList],
-		s.[CurrencySource],
-		s.[AgentSource],
-		s.[ResourceSource],
-
-		s.[EntryTypeCode],
-		s.[NotedAgentDefinitionId],
-		s.[MonetaryValueSource],
-		s.[QuantitySource],
-		s.[ExternalReferenceSource],
-		s.[AdditionalReferenceSource],
-		s.[NotedAgentSource],
-		s.[NotedAmountSource],
-		s.[DueDateSource]	
-	);
-
-MERGE [dbo].[LineDefinitionStateReasons] AS t
-USING (
-	SELECT
-		LDSR.[Id],
-		LD.[Id] AS [LineDefinitionId],
-		LDSR.[StateId],
-		LDSR.[Name],
-		LDSR.[Name2],
-		LDSR.[Name3]
-	FROM @LineDefinitionStateReasons LDSR
-	JOIN @LineDefinitions LD ON LDSR.HeaderIndex = LD.[Index]
-)AS s
-ON s.Id = t.Id
-WHEN MATCHED THEN
-	UPDATE SET
-		t.[LineDefinitionId]= s.[LineDefinitionId],
-		t.[StateId]			= s.[StateId],
-		t.[Name]			= s.[Name],
-		t.[Name2]			= s.[Name2],
-		t.[Name3]			= s.[Name3]
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([LineDefinitionId],		[StateId], [Name],		[Name2], [Name3])
-    VALUES (s.[LineDefinitionId], s.[StateId], s.[Name], s.[Name2], s.[Name3]);
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'AgentDefinitions: Inserting: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
 
 IF @DebugLineDefinitions = 1
 BEGIN

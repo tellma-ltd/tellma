@@ -9,8 +9,16 @@ RETURN (
 		E.[Name], 
 		E.[Name2], 
 		E.[Name3], 
+		E.[Description],
+		E.[Description2],
+		E.[Description3],
 		E.[Code],
 		E.[IsAssignable],
+		E.[IsCurrent],
+		E.[IsReal],
+		E.[IsResourceClassification],
+		E.[IsPersonal],
+		E.[EntryTypeParentId],
 		CAST(1 AS BIT) AS IsActive,
 		NULL As [Level],
 		CAST(0 AS INT) As [ChildCount], 
@@ -20,4 +28,4 @@ RETURN (
 		SYSDATETIMEOFFSET() AS [ModifiedAt],
 		CONVERT(INT, SESSION_CONTEXT(N'UserId')) AS [ModifiedById]
 	FROM @Entities E
-);
+);	

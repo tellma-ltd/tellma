@@ -1,4 +1,5 @@
 ﻿DECLARE @D_CPV [dbo].[DocumentList], @L_CPV [dbo].LineList, @E_CPV [dbo].EntryList, @D_CPVIds dbo.IdList;
+DECLARE @WL_CPV [dbo].[WideLineList];
 /* CPV consists of the following tabs
 DECLARE @WL_CPV [dbo].[WideLineList];
 	(0,1,	N'CashPayment',		1),
@@ -13,14 +14,11 @@ BEGIN
 	(2,			'2018.02.22',	N'HP laser jet ink + SQL Server 2019 License'); -- Consumables + Intangible
 
 	INSERT INTO @WL_CPV
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'BankPayment';
-
-	select * FROM @WL_CPV;
-	--INSERT INTO @WL_CPV
-	--([Index], [DocumentIndex], [DefinitionId],		[AgentId]) VALUES
-	--(1,			2,				N'PurchaseInvoice',	@Amazon),
-	--(2,			2,				N'PurchaseInvoice',	@Amazon);--,
-	----(3,			2,				N'ManualLine');
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'CashPayment';
+	UPDATE @WL_CPV
+	SET
+		CurrencyId1 = @FunctionalCurrencyId
+	WHERE [Index] = 0;
 
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',
@@ -38,5 +36,4 @@ BEGIN
 			INSERT INTO @D_CPVIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
 			EXEC [rpt].[Docs__UI] @D_CPVIds;
 	END
-
 END
