@@ -123,27 +123,19 @@ namespace BSharp.Controllers
         {
             // Defaults
             //var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
-            //entities.ForEach(entity =>
-            //{
-            //    entity.IsSmart ??= false;
-
-            //    if (!entity.IsSmart.Value)
-            //    {
-            //        // Only for dumb accounts
-            //        entity.CurrencyId ??= settings.FunctionalCurrencyId;
-
-            //        // Dumb accounts set all these to null
-            //        entity.ResponsibilityCenterId = null;
-            //        entity.ContractType = null;
-            //        entity.AgentDefinitionId = null;
-            //        entity.LegacyTypeId = null;
-            //        entity.IsCurrent = null;
-            //        entity.AgentId = null;
-            //        entity.ResourceId = null;
-            //        entity.Identifier = null;
-            //        entity.EntryTypeId = null;
-            //    }
-            //});
+            entities.ForEach(result =>
+            {
+                result.IsCurrent ??= false;
+                result.HasResource ??= false;
+                result.HasAgent ??= false;
+                result.IsRelated ??= false;
+                result.HasExternalReference ??= false;
+                result.HasAdditionalReference ??= false;
+                result.HasNotedAgentId ??= false;
+                result.HasNotedAgentName ??= false;
+                result.HasNotedAmount ??= false;
+                result.HasNotedDate ??= false;
+            });
 
             // SQL Preprocessing
             await _repo.Accounts__Preprocess(entities);

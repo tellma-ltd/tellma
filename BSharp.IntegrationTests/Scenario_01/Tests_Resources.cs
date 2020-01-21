@@ -103,7 +103,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new ResourceForSave
             {
-                AccountTypeId = Shared.Get<LegacyType>("ResourceClassification_SM").Id,
+                AccountTypeId = Shared.Get<AccountType>("AccountType_SM").Id,
                 Name = "HR 1000x0.8",
                 Name2 = "HR 1000x0.8",
                 Code = "HR 1000x0.8",
@@ -169,7 +169,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<ResourceForSave> {
                 new ResourceForSave
                 {
-                AccountTypeId = Shared.Get<LegacyType>("ResourceClassification_SM").Id,
+                    AccountTypeId = Shared.Get<AccountType>("AccountType_SM").Id,
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "HR 1000x0.8",
@@ -202,7 +202,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ResourceForSave
             {
-                AccountTypeId = Shared.Get<LegacyType>("ResourceClassification_SM").Id,
+                AccountTypeId = Shared.Get<AccountType>("AccountType_SM").Id,
                 Name = "  HR 1000x0.9", // Leading space
                 Name2 = "HR 1000x0.9",
                 Code = "0HR 1000x0.9  ", // Trailing space

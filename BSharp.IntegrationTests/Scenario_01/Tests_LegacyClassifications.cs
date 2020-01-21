@@ -13,19 +13,19 @@ using Xunit.Abstractions;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    public class Tests_07_AccountClassifications : Scenario_01
+    public class Tests_07_LegacyClassifications : Scenario_01
     {
-        public Tests_07_AccountClassifications(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_07_LegacyClassifications(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "account-classifications";
+        public readonly string _baseAddress = "legacy-classifications";
 
-        public string Url => $"/api/{_baseAddress}"; // For querying and updating specific account definition
+        public string Url => $"/api/{_baseAddress}"; // For querying and updating specific legacy definition
         public string View => $"{_baseAddress}"; // For permissions
 
 
-        [Fact(DisplayName = "01 Getting all account classifications before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting all legacy classifications before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -37,7 +37,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all account classifications before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "02 Getting all legacy classifications before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id ge 0");
@@ -53,13 +53,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseData = await response.Content.ReadAsAsync<GetResponse<LegacyClassification>>();
 
             // Assert the result makes sense
-            Assert.Equal("AccountClassification", responseData.CollectionName);
+            Assert.Equal("LegacyClassification", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "03 Getting a non-existent account classification id returns a 404 Not Found")]
+        [Fact(DisplayName = "03 Getting a non-existent legacy classification id returns a 404 Not Found")]
         public async Task Test03()
         {
             int nonExistentId = 1;
@@ -69,7 +69,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "04 Saving a single well-formed AccountClassificationForSave returns a 200 OK result")]
+        [Fact(DisplayName = "04 Saving a single well-formed LegacyClassificationForSave returns a 200 OK result")]
         public async Task Test04()
         {
             // Prepare a well formed entity
@@ -96,12 +96,12 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of AccountClassification
+            // Assert that the response is well-formed singleton of LegacyClassification
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<LegacyClassification>>();
             Assert.Equal(2, responseData.Result.Count());
 
             // Assert that the result matches the saved entity
-            Assert.Equal("AccountClassification", responseData.CollectionName);
+            Assert.Equal("LegacyClassification", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDtoParent = responseData.Result.FirstOrDefault();
@@ -120,24 +120,24 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSaveChild.Code, responseDtoChild.Code);
 
 
-            Shared.Set("AccountClassification_Parent", responseDtoParent);
-            Shared.Set("AccountClassification_Child", responseDtoChild);
+            Shared.Set("LegacyClassification_Parent", responseDtoParent);
+            Shared.Set("LegacyClassification_Child", responseDtoChild);
         }
 
-        [Fact(DisplayName = "05 Getting the Id of the AccountClassificationForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "05 Getting the Id of the LegacyClassificationForSave just saved returns a 200 OK result")]
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of account classification
+            // Confirm that the response is a well formed GetByIdResponse of legacy classification
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<LegacyClassification>>();
-            Assert.Equal("AccountClassification", getByIdResponse.CollectionName);
+            Assert.Equal("LegacyClassification", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
@@ -147,7 +147,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.ParentId, responseDto.ParentId);
         }
 
-        [Fact(DisplayName = "06 Saving a AccountClassificationForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "06 Saving a LegacyClassificationForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
             // Prepare a record with the same code 'kg' as one that has been saved already
@@ -179,7 +179,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "07 Saving a AccountClassificationForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "07 Saving a LegacyClassificationForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
             // Prepare a DTO for save, that contains leading and 
@@ -207,16 +207,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("AccountClassification_Child2", responseDto);
+            Shared.Set("LegacyClassification_Child2", responseDto);
         }
 
-        [Fact(DisplayName = "08 Deleting an existing account classification Id returns a 200 OK")]
+        [Fact(DisplayName = "08 Deleting an existing legacy classification Id returns a 200 OK")]
         public async Task Test08()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child2");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child2");
             var id = entity.Id;
 
             // Query the delete API
@@ -230,7 +230,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test09()
         {
             // Get the Id
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child2");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child2");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -241,13 +241,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "10 Deactivating an active account classification returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "10 Deactivating an active legacy classification returns a 200 OK inactive entity")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(View, "IsDeprecated", null);
 
             // Get the Id
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child");
             var id = entity.Id;
 
             // Call the API
@@ -263,14 +263,14 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.True(responseDto.IsDeprecated, "The account classification was not deprecated");
+            Assert.True(responseDto.IsDeprecated, "The legacy classification was not deprecated");
         }
 
-        [Fact(DisplayName = "11 Activating an inactive account classification returns a 200 OK active entity")]
+        [Fact(DisplayName = "11 Activating an inactive legacy classification returns a 200 OK active entity")]
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child");
             var id = entity.Id;
 
             // Call the API
@@ -286,14 +286,14 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.False(responseDto.IsDeprecated, "The account classification was not activated");
+            Assert.False(responseDto.IsDeprecated, "The legacy classification was not activated");
         }
 
         [Fact(DisplayName = "12 Using Select argument works as expected")]
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<LegacyClassification>("AccountClassification_Child");
+            var entity = Shared.Get<LegacyClassification>("LegacyClassification_Child");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -301,9 +301,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of account classification
+            // Confirm that the response is a well formed GetByIdResponse of legacy classification
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<LegacyClassification>>();
-            Assert.Equal("AccountClassification", getByIdResponse.CollectionName);
+            Assert.Equal("LegacyClassification", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);

@@ -54,7 +54,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("AccountType", responseData.CollectionName);
 
-            Assert.Equal(3, responseData.TotalCount);
+            Assert.Equal(2, responseData.TotalCount);
             Assert.NotEmpty(responseData.Result);
         }
 
@@ -71,7 +71,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "04 Saving a single well-formed AccountTypeForSave returns a 200 OK result")]
         public async Task Test04()
         {
-            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'CashAndCashEquivalents'")).Content.ReadAsAsync<GetResponse<AccountType>>()).Result.Single().Id;
+            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'AccountsPayable'")).Content.ReadAsAsync<GetResponse<AccountType>>()).Result.Single().Id;
 
             // Prepare a well formed entity
             var dtoForSave = new AccountTypeForSave

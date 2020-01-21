@@ -71,15 +71,16 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "04 Saving a single well-formed AccountForSave returns a 200 OK result")]
         public async Task Test04()
         {
+            var accountTypeId = Shared.Get<AccountType>("AccountType_SM").Id;
+
             // Prepare a well formed entity
             var dtoForSave = new AccountForSave
             {
                 Name = "Accounts Payable",
                 Name2 = "مستحقات",
                 Code = "Payables",
-                AccountTypeId = "AccountsPayable",
-                LegacyClassificationId = null,
-                IsSmart = false
+                AccountTypeId = accountTypeId,
+                LegacyClassificationId = null
             };
 
             // Save it
@@ -138,6 +139,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "06 Saving a AccountForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
+            var accountTypeId = Shared.Get<AccountType>("AccountType_SM").Id;
+
             // Prepare a record with the same code 'kg' as one that has been saved already
             var list = new List<AccountForSave> {
                 new AccountForSave
@@ -145,9 +148,8 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "Payables",
-                    AccountTypeId = "AccountsPayable",
+                    AccountTypeId = accountTypeId,
                     LegacyClassificationId = null,
-                    IsSmart = false,
                 }
             };
 
@@ -173,6 +175,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "07 Saving a AccountForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
+            var accountTypeId = Shared.Get<AccountType>("AccountType_SM").Id;
+
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
             var dtoForSave = new AccountForSave
@@ -181,8 +185,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "مطلوبات",
                 Code = "Receivables  ", // Trailing space
                 LegacyClassificationId = null,
-                AccountTypeId = "AccountsReceivable",
-                IsSmart = false,
+                AccountTypeId = accountTypeId,
             };
 
             // Call the API

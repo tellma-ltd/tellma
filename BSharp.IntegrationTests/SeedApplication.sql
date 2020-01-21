@@ -34,13 +34,12 @@ DELETE FROM [dbo].[EntryTypes];
 
 DECLARE @PTAccountTypes dbo.[AccountTypeList];
 INSERT INTO @PTAccountTypes (
-	[Id],					[Name],						[Description]) VALUES
-(N'AccountsPayable',		N'Accounts Payable',		N'This represents balances owed to vendors for goods, supplies, and services purchased on an open account. Accounts payable balances are used in accrual-based accounting, are generally due in 30 or 60 days, and do not bear interest.'),
-(N'AccountsReceivable',		N'Accounts Receivable',		N'This represents amounts owed by customers for items or services sold to them when cash is not received at the time of sale. Typically, accounts receivable balances are recorded on sales invoices that include terms of payment. Accounts receivable are used in accrual-based accounting.');
+	[Index], [Code],					[Name],						[Description]) VALUES
+(0, N'AccountsPayable',		N'Accounts Payable',		N'This represents balances owed to vendors for goods, supplies, and services purchased on an open account. Accounts payable balances are used in accrual-based accounting, are generally due in 30 or 60 days, and do not bear interest.'),
+(1, N'AccountsReceivable',		N'Accounts Receivable',		N'This represents amounts owed by customers for items or services sold to them when cash is not received at the time of sale. Typically, accounts receivable balances are recorded on sales invoices that include terms of payment. Accounts receivable are used in accrual-based accounting.');
 
-DECLARE @OdooAccountTypes dbo.[AccountTypeList];
-
-INSERT INTO dbo.AccountTypes SELECT * FROM @PTAccountTypes;
+EXEC dal.AccountTypes__Save @Entities = @PTAccountTypes;
+-- INSERT INTO dbo.AccountTypes ([Code], [Name], [Description]) SELECT [Code], [Name], [Description] FROM @PTAccountTypes;
 
 INSERT INTO [dbo].[Permissions] ([RoleId], [View], [Action])
 VALUES
@@ -51,13 +50,13 @@ VALUES
 INSERT INTO [dbo].[RoleMemberships] ([UserId], [RoleId])
 VALUES (@UserId, @RoleId)
 
-IF NOT EXISTS(SELECT * FROM [dbo].[DocumentDefinitions] WHERE [Id] = N'manual-journal-vouchers')
-	INSERT INTO [dbo].[DocumentDefinitions]	([Id], [TitleSingular], [TitlePlural], [Prefix]) VALUES
-	(N'manual-journal-vouchers', N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV');
+--IF NOT EXISTS(SELECT * FROM [dbo].[DocumentDefinitions] WHERE [Id] = N'manual-journal-vouchers')
+--	INSERT INTO [dbo].[DocumentDefinitions]	([Id], [TitleSingular], [TitlePlural], [Prefix]) VALUES
+--	(N'manual-journal-vouchers', N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV');
 	
-IF NOT EXISTS(SELECT * FROM [dbo].[LineDefinitions] WHERE [Id] = N'ManualLine')
-	INSERT INTO [dbo].[LineDefinitions]([Id], [TitleSingular], [TitlePlural]) VALUES
-	(N'ManualLine', N'Adjustment', N'Adjustments');
+--IF NOT EXISTS(SELECT * FROM [dbo].[LineDefinitions] WHERE [Id] = N'ManualLine')
+--	INSERT INTO [dbo].[LineDefinitions]([Id], [TitleSingular], [TitlePlural]) VALUES
+--	(N'ManualLine', N'Adjustment', N'Adjustments');
 
 IF NOT EXISTS(SELECT * FROM [dbo].[LookupDefinitions] WHERE [Id] = N'colors')
 	INSERT INTO [dbo].[LookupDefinitions]([Id])

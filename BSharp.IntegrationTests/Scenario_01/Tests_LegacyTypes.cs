@@ -35,7 +35,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all legacy types before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id ne null");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -50,7 +50,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("LegacyType", responseData.CollectionName);
 
-            Assert.Equal(3, responseData.TotalCount);
+            Assert.NotEqual(0, responseData.TotalCount);
             Assert.NotEmpty(responseData.Result);
         }
 
