@@ -14,11 +14,13 @@ BEGIN
 	DECLARE @AllEntries dbo.EntryList;
 	DECLARE @FilledAllEntries [dbo].EntryList;
 
-	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo], [ExternalReference], [AdditionalReference])
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo], [ExternalReference], [AdditionalReference]
+		
+
+	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAgentName], [NotedAmount], [NotedDate])
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAgentName], [NotedAmount], [NotedDate]
 	FROM @Lines
 	UNION
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo], [ExternalReference], [AdditionalReference]
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [Amount], [Memo],[ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAgentName], [NotedAmount], [NotedDate]
 	FROM @WideLines
 
 	INSERT INTO @AllEntries SELECT * FROM @Entries;

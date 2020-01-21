@@ -117,33 +117,36 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
 		N'Error_TheNotedAgentIsNotSpecified'
 	FROM @Entries E
+	JOIN @Lines L ON E.LineIndex = L.[Index]
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[NotedAgentId] IS NULL)
+	WHERE (L.[NotedAgentId] IS NULL)
 	AND (A.[HasNotedAgentId] = 1);
 
 	-- External Reference is required for selected account
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[Index] AS NVARCHAR(255)),
 		N'Error_TheExternalReferenceIsNotSpecified'
 	FROM @Entries E
+	JOIN @Lines L ON E.LineIndex = L.[Index]
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[ExternalReference] IS NULL)
+	WHERE (L.[ExternalReference] IS NULL)
 	AND (A.[HasExternalReference] = 1);
 	
 	-- Additional Reference is required for selected account
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[Index] AS NVARCHAR(255)),
 		N'Error_TheAdditionalReferenceIsNotSpecified'
 	FROM @Entries E
+	JOIN @Lines L ON E.LineIndex = L.[Index]
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[AdditionalReference] IS NULL)
+	WHERE (L.[AdditionalReference] IS NULL)
 	AND (A.[HasAdditionalReference] = 1);	
 	
 

@@ -14,10 +14,9 @@
 -- for support documents, such as deposit slip reference, invoice number, etc...
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50)
-
-	--[RelatedResourceId]		INT, -- Good, Service, Labor, Machine usage
-	--[RelatedAgentId]		INT,
-	--[RelatedQuantity]		DECIMAL (19,4) ,			-- used in Tax accounts, to store the quantiy of taxable item
-	--[RelatedDECIMAL (19,4)Amount]	DECIMAL (19,4) 				NOT NULL DEFAULT 0 -- e.g., amount subject to tax
+	[AdditionalReference]		NVARCHAR (50),
+	[NotedAgentId]				INT,
+	[NotedAgentName]			NVARCHAR (50),
+	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate]					DATE
 );

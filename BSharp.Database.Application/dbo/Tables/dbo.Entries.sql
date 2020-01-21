@@ -41,12 +41,7 @@
 	
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
-	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
-	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
-	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
-	[NotedDate]					DATE,
+
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 -- for auditing

@@ -19,6 +19,10 @@
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
+	[NotedAgentId]				INT,
+	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
+	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
+	[NotedDate]					DATE,
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
 -- for support documents, such as deposit slip reference, invoice number, etc...
 

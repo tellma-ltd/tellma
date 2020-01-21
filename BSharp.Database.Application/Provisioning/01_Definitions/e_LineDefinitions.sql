@@ -53,14 +53,14 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],					[Label],				[Label2],		[IsRequired]) VALUES
-(0,2,0,		N'Line.Description',			N'Description',			N'البيان',		0), 
-(1,2,1,		N'Entry[0].MonetaryAmount',		N'Pay Amount',			N'المبلغ',		1), 
-(2,2,2,		N'Entry[0]..CurrencyId',		N'Pay Currency',		N'العملة',		1),
-(3,2,3,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',	1),
+(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',		0), 
+(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		1), 
+(2,2,2,		N'Entry[0].CurrencyId',			N'Pay Currency',		N'العملة',		1),
+(3,2,3,		N'Line.NotedAgentName',			N'Beneficiary',			N'المستفيد',	1),
 (4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		0),
 (5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
-(6,2,6,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
-(7,2,7,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	0)
+(6,2,6,		N'Line.ExternalReference',		N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
+(7,2,7,		N'Line.NotedDate'	,			N'Check Date',			N'تاريخ الشيك',	0)
 ;
 
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],

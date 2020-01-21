@@ -36,20 +36,22 @@ BEGIN -- Inserting
 	(3,			0,				N'ManualLine'),
 
 	(4,			1,				N'ManualLine'),
-	(5,			1,				N'ManualLine'),
+	(5,			1,				N'ManualLine');
 
-	(6,			2,				N'ManualLine'),
-	(7,			2,				N'ManualLine'),
-	(8,			2,				N'ManualLine'),
-	(9,			2,				N'ManualLine'),
-	(10,		2,				N'ManualLine'),
+	INSERT INTO @L
+	([Index], [DocumentIndex], [DefinitionId], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAmount]) VALUES
+	(6,			2,				N'ManualLine',	N'C-14209',			NULL,					NULL,			NULL),--
+	(7,			2,				N'ManualLine',	N'C-14209',			N'FS010102',			@Toyota,		600000),--
+	(8,			2,				N'ManualLine',	N'C-14209',			NULL,					NULL,			NULL),
+	(9,			2,				N'ManualLine',	N'C-14209',			N'FS010102',			@Toyota,		600000),
+	(10,		2,				N'ManualLine',	N'C-14209',			NULL,					NULL,			NULL),
 	
-	(11,		3,				N'ManualLine'),
-	(12,		3,				N'ManualLine'),
+	(11,		3,				N'ManualLine',	NULL,				NULL,					NULL,			NULL),
+	(12,		3,				N'ManualLine',	NULL,				NULL,					NULL,			NULL),
 
-	(13,		4,				N'ManualLine'),
-	(14,		4,				N'ManualLine'),
-	(15,		4,				N'ManualLine')
+	(13,		4,				N'ManualLine',	N'C-25301',			N'BP188954',			@Regus,			15000),
+	(14,		4,				N'ManualLine',	N'C-25301',			NULL,					NULL,			NULL),
+	(15,		4,				N'ManualLine',	N'C-25301',			NULL,					NULL,			NULL);
 		;
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[EntryTypeId],					[MonetaryValue],[Value]) VALUES
@@ -77,19 +79,19 @@ BEGIN -- Inserting
 	-- If AgentDefinition is not null, Show Agent
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[EntryTypeId],				[Value],	[ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAmount]) VALUES
-	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,			N'C-14209',			NULL,					NULL,			NULL),--
-	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
-	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,			N'C-14209',			NULL,					NULL,			NULL),
-	(9, 9, 2,1,+1,@VATInput,	NULL, 						90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
-	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					1380000,		N'C-14209',			NULL,					NULL,			NULL),
+				[AccountId],	[EntryTypeId],				[Value]) VALUES
+	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000),		
+	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000),
+	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000),	
+	(9, 9, 2,1,+1,@VATInput,	NULL, 						90000),
+	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					1380000),
 
-	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				600000,			NULL,				NULL, NULL, NULL),
-	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		600000,			NULL,				NULL, NULL, NULL),
+	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				600000),
+	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		600000),	
 	
-	(13,13,4,1,+1,@VATInput,	NULL,						2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
-	(14,14,4,1,+1,@PrepaidRental,NULL,						15000,			N'C-25301',			NULL,					NULL,			NULL),
-	(15,15,4,1,-1,@RegusAccount,NULL, 						17250,			N'C-25301',			NULL,					NULL,			NULL);
+	(13,13,4,1,+1,@VATInput,	NULL,						2250),
+	(14,14,4,1,+1,@PrepaidRental,NULL,						15000),		
+	(15,15,4,1,-1,@RegusAccount,NULL, 						17250)
 	; 
 	
 	EXEC [api].[Documents__Save]

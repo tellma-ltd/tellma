@@ -22,12 +22,7 @@
 	[Volume]					DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
 	[Time]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	[Value]						DECIMAL (19,4),--		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
-	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
-	[NotedAgentName]			NVARCHAR (50),
-	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate]					DATE,
+
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0)
 );
