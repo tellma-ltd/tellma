@@ -69,16 +69,17 @@ SET NOCOUNT ON;
 	-- It is already added as FK constraint, but this will give a friendly error message
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheResourceType0IsNotCompatibleWithResource1',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [ResourceType],
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAccountType0IsNotCompatibleWithResource1',
+		dbo.fn_Localize([AAT].[Name], [AAT].[Name2], [AAT].[Name3]) AS [AccountType],
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
-	FROM @Entities FE 
-	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
-	LEFT JOIN dbo.[AccountTypes] [AT] ON [AT].[Id]= FE.[AccountTypeId]
-	WHERE (FE.[HasResource] = 1)
-	--AND (FE.ResourceId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Resources
-	AND (FE.[AccountTypeId] IS NULL OR R.[AccountTypeId] <> FE.[AccountTypeId])
+	FROM @Entities A 
+	JOIN [dbo].[Resources] R ON R.[Id] = A.ResourceId
+	JOIN dbo.[AccountTypes] [AAT] ON [AAT].[Id]= A.[AccountTypeId]
+	JOIN dbo.[AccountTypes] [RAT] ON [RAT].[Id]= R.[AccountTypeId]
+	WHERE (A.[HasResource] = 1)
+	AND ([AAT].[IsResourceClassification] = 1)
+	AND ([RAT].[Node].IsDescendantOf([AAT].[Node]) = 0)
 
 	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
 	-- It is already added as FK constraint, but this will give a friendly error message
