@@ -79,17 +79,17 @@
         </b-text-editor>
     </b-form-group>
 
-    <!-- Classification -->
-    <b-form-group class="b-form-group" [label]="'Resource_Classification' | translate"
-        [serverErrors]="model?.serverErrors?.ResourceClassificationId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResourceClassification">
-            <b-view-link link="../../../resource-classifications" [itemId]="model?.ResourceClassificationId">
-                {{ ws.getMultilingualValue('ResourceClassification', model.ResourceClassificationId, 'Name') }}
+    <!-- Account Type -->
+    <b-form-group class="b-form-group" [label]="'Resource_AccountType' | translate"
+        [serverErrors]="model?.serverErrors?.AccountTypeId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AccountType">
+            <b-view-link link="../../../account-types" [itemId]="model?.AccountTypeId">
+                {{ ws.getMultilingualValue('AccountType', model.AccountTypeId, 'Name') }}
             </b-view-link>
         </b-restricted>
-        <b-legacy-types-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [required]="true"
-            [filter]="'ResourceDefinitionId eq \'' + definitionId + '\''">
-        </b-legacy-types-picker>
+        <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="true"
+            filter="IsResourceClassification eq true">
+        </b-account-types-picker>
     </b-form-group>
 
     <!-- Currency -->

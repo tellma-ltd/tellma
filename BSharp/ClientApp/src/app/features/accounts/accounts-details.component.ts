@@ -123,7 +123,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     if (!!model.ResourceId) {
-      return (this.ws.get('Resource', model.ResourceId) as Resource).ResourceClassificationId;
+      return (this.ws.get('Resource', model.ResourceId) as Resource).AccountTypeId;
     }
 
     return model.ResourceClassificationId;

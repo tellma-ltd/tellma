@@ -1345,14 +1345,14 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
+  <data name="Resource_AccountType" xml:space="preserve">
+    <value>分类</value>
+  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>由于可用</value>
   </data>
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>可直到</value>
-  </data>
-  <data name="Resource_Classification" xml:space="preserve">
-    <value>分类</value>
   </data>
   <data name="Resource_Count" xml:space="preserve">
     <value>计数</value>

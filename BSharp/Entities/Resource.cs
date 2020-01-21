@@ -7,10 +7,10 @@ namespace BSharp.Entities
     [StrongEntity]
     public class ResourceForSave : EntityWithKey<int>
     {
-        [Display(Name = "Resource_Classification")]
+        [Display(Name = "Resource_AccountType")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
-        public int? ResourceClassificationId { get; set; }
+        public int? AccountTypeId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -136,9 +136,9 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        [Display(Name = "Resource_Classification")]
-        [ForeignKey(nameof(ResourceClassificationId))]
-        public LegacyType ResourceClassification { get; set; }
+        [Display(Name = "Resource_AccountType")]
+        [ForeignKey(nameof(AccountTypeId))]
+        public AccountType AccountType { get; set; }
 
         [Display(Name = "Resource_Currency")]
         [ForeignKey(nameof(CurrencyId))]

@@ -572,7 +572,7 @@ Document_State_Closed
 
   private resourceClassificationPath(entry: Entry) {
     const resource = this.resource(entry) as Resource;
-    const resourceClassificationId = !!resource ? resource.ResourceClassificationId : null;
+    const resourceClassificationId = !!resource ? resource.AccountTypeId : null;
     const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
     const resourceClassificationPath = null; // !!resourceClassification ? resourceClassification.Path : null;
 
