@@ -1345,14 +1345,14 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
+  <data name="Resource_AccountType" xml:space="preserve">
+    <value>Account Type</value>
+  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>Available Since</value>
   </data>
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>Available Till</value>
-  </data>
-  <data name="Resource_Classification" xml:space="preserve">
-    <value>Classification</value>
   </data>
   <data name="Resource_Count" xml:space="preserve">
     <value>Count</value>

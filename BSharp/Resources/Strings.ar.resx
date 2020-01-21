@@ -1345,14 +1345,14 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
+  <data name="Resource_AccountType" xml:space="preserve">
+    <value>نوع الحسابات</value>
+  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>متاح من</value>
   </data>
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>متاح إلى</value>
-  </data>
-  <data name="Resource_Classification" xml:space="preserve">
-    <value>التصنيف</value>
   </data>
   <data name="Resource_Count" xml:space="preserve">
     <value>العدد</value>

@@ -32,7 +32,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `ResourceClassification,Currency,CountUnit,MassUnit,VolumeUnit,TimeUnit,Lookup1,Lookup2`;
+  public expand = `AccountType,Currency,CountUnit,MassUnit,VolumeUnit,TimeUnit,Lookup1,Lookup2`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,

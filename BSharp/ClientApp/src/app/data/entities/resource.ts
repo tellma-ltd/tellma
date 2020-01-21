@@ -8,7 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
 export interface ResourceForSave extends EntityWithKey {
-    ResourceClassificationId?: number;
+    AccountTypeId?: number;
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -84,8 +84,8 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ResourceDefinition', foreignKeyName: 'DefinitionId' },
-                ResourceClassificationId: { control: 'number', label: () => `${trx.instant('Resource_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResourceClassification: { control: 'navigation', label: () => trx.instant('Resource_Classification'), type: 'ResourceClassification', definition: definitionId, foreignKeyName: 'ResourceClassificationId' },
+                AccountTypeId: { control: 'number', label: () => `${trx.instant('Resource_AccountType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AccountType: { control: 'navigation', label: () => trx.instant('Resource_AccountType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'AccountTypeId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
