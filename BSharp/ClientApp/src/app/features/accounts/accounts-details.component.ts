@@ -212,6 +212,19 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return accountType.IsReal && model.HasResource;
   }
 
+  public filterResource(model: AccountForSave) {
+    if (!model || !model.AccountTypeId) {
+      return null;
+    }
+
+    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
+    if (!!accountType.IsResourceClassification) {
+      return `AccountType/Node descof ${model.AccountTypeId}`;
+    } else {
+      return null;
+    }
+  }
+
   // CurrencyId
   public readonlyCurrencyId(model: AccountForSave): boolean {
     if (!model) {
@@ -241,7 +254,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return !!accountType.EntryTypeParentId;
   }
 
-  public entryTypeFilter(model: AccountForSave) {
+  public filterEntryType(model: AccountForSave) {
     if (!model || !model.AccountTypeId) {
       return null;
     }

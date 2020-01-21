@@ -34,7 +34,38 @@
         </b-text-editor>
     </b-form-group>
 
-    <ngb-tabset class="w-100" [destroyOnHide]="true">
+    <!-- Name -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+        [serverErrors]="model?.serverErrors?.Name">
+        <div *ngIf="!isEdit">{{ model?.Name }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Name2 -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+        [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+        <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Name3 -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+        [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+        <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Code -->
+    <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+        <div *ngIf="!isEdit">{{ model?.Code }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
+        </b-text-editor>
+    </b-form-group>
+
+    <ngb-tabset class="w-100 pt-3 pt-sm-4" [destroyOnHide]="true">
         <!-- Basic -->
         <ngb-tab>
             <ng-template ngbTabTitle>
@@ -42,40 +73,6 @@
             </ng-template>
             <ng-template ngbTabContent>
                 <div class="row m-0 pt-2 pt-sm-3">
-                    <!-- Name -->
-                    <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage"
-                        [label]="('Name' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Name">
-                        <div *ngIf="!isEdit">{{ model?.Name }}</div>
-                        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-                            required>
-                        </b-text-editor>
-                    </b-form-group>
-
-                    <!-- Name2 -->
-                    <b-form-group class="b-form-group"
-                        *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
-                        [label]="('Name' | translate) + ws.secondaryPostfix"
-                        [serverErrors]="model?.serverErrors?.Name2">
-                        <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-                        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
-                        </b-text-editor>
-                    </b-form-group>
-
-                    <!-- Name3 -->
-                    <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
-                        [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
-                        <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-                        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
-                        </b-text-editor>
-                    </b-form-group>
-
-                    <!-- Code -->
-                    <b-form-group class="b-form-group" [label]="'Code' | translate"
-                        [serverErrors]="model?.serverErrors?.Code">
-                        <div *ngIf="!isEdit">{{ model?.Code }}</div>
-                        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
-                        </b-text-editor>
-                    </b-form-group>
 
                     <!-- Responsibility Center -->
                     <b-form-group class="b-form-group" *ngIf="showResponsibilityCenter(model)"
@@ -143,7 +140,7 @@
                             </b-auto-cell>
                         </b-view-link>
                         <b-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
-                            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3">
+                            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3" [filter]="filterResource(model)">
                         </b-resources-picker>
                     </b-form-group>
 
@@ -231,7 +228,7 @@
                             </b-auto-cell>
                         </b-view-link>
                         <b-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId"
-                            [filter]="entryTypeFilter(model)">
+                            [filter]="filterEntryType(model)">
                         </b-entry-types-picker>
                     </b-form-group>
 
