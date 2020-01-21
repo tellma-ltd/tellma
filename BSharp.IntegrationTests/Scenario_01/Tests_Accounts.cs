@@ -78,7 +78,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "مستحقات",
                 Code = "Payables",
                 AccountTypeId = "AccountsPayable",
-                AccountClassificationId = null,
+                LegacyClassificationId = null,
                 IsSmart = false
             };
 
@@ -106,7 +106,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name3, responseDto.Name3);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.AccountTypeId, responseDto.AccountTypeId);
-            Assert.Equal(dtoForSave.AccountClassificationId, responseDto.AccountClassificationId);
+            Assert.Equal(dtoForSave.LegacyClassificationId, responseDto.LegacyClassificationId);
             Shared.Set("Account_Payables", responseDto);
         }
 
@@ -132,7 +132,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name3, responseDto.Name3);
             Assert.Equal(entity.Code, responseDto.Code);
             Assert.Equal(entity.AccountTypeId, responseDto.AccountTypeId);
-            Assert.Equal(entity.AccountClassificationId, responseDto.AccountClassificationId);
+            Assert.Equal(entity.LegacyClassificationId, responseDto.LegacyClassificationId);
         }
 
         [Fact(DisplayName = "06 Saving a AccountForSave with an existing code returns a 422 Unprocessable Entity")]
@@ -146,7 +146,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name2 = "Another Name",
                     Code = "Payables",
                     AccountTypeId = "AccountsPayable",
-                    AccountClassificationId = null,
+                    LegacyClassificationId = null,
                     IsSmart = false,
                 }
             };
@@ -180,7 +180,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "  Accounts Receivable", // Leading space
                 Name2 = "مطلوبات",
                 Code = "Receivables  ", // Trailing space
-                AccountClassificationId = null,
+                LegacyClassificationId = null,
                 AccountTypeId = "AccountsReceivable",
                 IsSmart = false,
             };

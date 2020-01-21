@@ -1024,4 +1024,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[EntryTypeParentId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d4c2cbac-9586-41b3-8926-70a83eac4bb4" ChangeDateTime="01/21/2020 10:14:47">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[LegacyType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[LegacyTypeId]" />
+  </Operation>
 </Operations>

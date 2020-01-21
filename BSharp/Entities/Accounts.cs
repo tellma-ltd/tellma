@@ -7,6 +7,9 @@ namespace BSharp.Entities
     [StrongEntity]
     public class AccountForSave : EntityWithKey<int>
     {
+        [Display(Name = "Account_ResponsibilityCenter")]
+        public int? ResponsibilityCenterId { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -28,38 +31,51 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Account_IsSmart")]
-        [AlwaysAccessible]
-        public bool? IsSmart { get; set; }
-
         [Display(Name = "Account_Type")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public string AccountTypeId { get; set; }
+        public int? AccountTypeId { get; set; }
 
-        [Display(Name = "Account_Classification")]
-        public int? AccountClassificationId { get; set; }
+        [Display(Name = "Account_IsCurrent")]
+        public bool? IsCurrent { get; set; }
 
-        [Display(Name = "Account_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
-        public string CurrencyId { get; set; }
+        [Display(Name = "Account_LegacyClassification")]
+        public int? LegacyClassificationId { get; set; }
 
-        [Display(Name = "Account_ResponsibilityCenter")]
-        public int? ResponsibilityCenterId { get; set; }
-
-        [Display(Name = "Account_ContractType")]
-        public string ContractType { get; set; }
+        [Display(Name = "Account_LegacyType")]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string LegacyTypeId { get; set; }
 
         [Display(Name = "Account_AgentDefinition")]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         public string AgentDefinitionId { get; set; }
 
-        [Display(Name = "Account_ResourceClassification")]
-        public int? ResourceClassificationId { get; set; }
+        [Display(Name = "Account_HasResource")]
+        public bool? HasResource { get; set; }
 
-        [Display(Name = "Account_IsCurrent")]
-        public bool? IsCurrent { get; set; }
+        [Display(Name = "Account_HasAgent")]
+        public bool? HasAgent { get; set; }
+
+        [Display(Name = "Account_IsRelated")]
+        public bool? IsRelated { get; set; }
+
+        [Display(Name = "Account_HasExternalReference")]
+        public bool? HasExternalReference { get; set; }
+
+        [Display(Name = "Account_HasAdditionalReference")]
+        public bool? HasAdditionalReference { get; set; }
+
+        [Display(Name = "Account_HasNotedAgentId")]
+        public bool? HasNotedAgentId { get; set; }
+
+        [Display(Name = "Account_HasNotedAgentName")]
+        public bool? HasNotedAgentName { get; set; }
+
+        [Display(Name = "Account_HasNotedAmount")]
+        public bool? HasNotedAmount { get; set; }
+
+        [Display(Name = "Account_HasNotedDate")]
+        public bool? HasNotedDate { get; set; }
 
         [Display(Name = "Account_Agent")]
         public int? AgentId { get; set; }
@@ -67,12 +83,16 @@ namespace BSharp.Entities
         [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
 
+        [Display(Name = "Account_Currency")]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        public string CurrencyId { get; set; }
+
         [Display(Name = "Account_Identifier")]
         [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
         public string Identifier { get; set; }
 
         [Display(Name = "Account_EntryType")]
-        public int? EntryClassificationId { get; set; }
+        public int? EntryTypeId { get; set; }
     }
 
     public class Account : AccountForSave
@@ -102,9 +122,9 @@ namespace BSharp.Entities
         [ForeignKey(nameof(AccountTypeId))]
         public AccountType AccountType { get; set; }
 
-        [Display(Name = "Account_Classification")]
-        [ForeignKey(nameof(AccountClassificationId))]
-        public LegacyClassification AccountClassification { get; set; }
+        [Display(Name = "Account_LegacyClassification")]
+        [ForeignKey(nameof(LegacyClassificationId))]
+        public LegacyClassification LegacyClassification { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]
@@ -114,13 +134,13 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ResponsibilityCenterId))]
         public ResponsibilityCenter ResponsibilityCenter { get; set; }
 
-        //[Display(Name = "Account_AgentDefinition")]
-        //[ForeignKey(nameof(AgentDefinitionId))]
-        //public AgentDefinition AgentDefinition { get; set; }
+        [Display(Name = "Account_AgentDefinition")]
+        [ForeignKey(nameof(AgentDefinitionId))]
+        public AgentDefinition AgentDefinition { get; set; }
 
-        [Display(Name = "Account_ResourceClassification")]
-        [ForeignKey(nameof(ResourceClassificationId))]
-        public LegacyType ResourceClassification { get; set; }
+        [Display(Name = "Account_LegacyType")]
+        [ForeignKey(nameof(LegacyTypeId))]
+        public LegacyType LegacyType { get; set; }
 
         [Display(Name = "Account_Agent")]
         [ForeignKey(nameof(AgentId))]
@@ -131,8 +151,8 @@ namespace BSharp.Entities
         public Resource Resource { get; set; }
 
         [Display(Name = "Account_EntryType")]
-        [ForeignKey(nameof(EntryClassificationId))]
-        public EntryType EntryClassification { get; set; }
+        [ForeignKey(nameof(EntryTypeId))]
+        public EntryType EntryType { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

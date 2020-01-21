@@ -43,7 +43,7 @@ RETURN
 		E.[EntryNumber],
 		E.[Direction],
 		E.[AccountId],
-		A.[LegacyType],
+		A.[LegacyTypeId],
 		A.[IsCurrent],
 		A.[LegacyClassificationId],
 		A.[AccountTypeId],

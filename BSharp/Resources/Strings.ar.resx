@@ -76,56 +76,35 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>تعريف الذمة</value>
   </data>
-  <data name="Account_Classification" xml:space="preserve">
-    <value>التصنيف</value>
-  </data>
-  <data name="Account_ContractType" xml:space="preserve">
-    <value>نوع العقد</value>
-  </data>
-  <data name="Account_ContractType_AccruedExpense" xml:space="preserve">
-    <value>مصروف مستحق</value>
-  </data>
-  <data name="Account_ContractType_AccruedIncome" xml:space="preserve">
-    <value>دخل مستحق</value>
-  </data>
-  <data name="Account_ContractType_Borrowing" xml:space="preserve">
-    <value>اقتراض</value>
-  </data>
-  <data name="Account_ContractType_Deposit" xml:space="preserve">
-    <value>وديعة</value>
-  </data>
-  <data name="Account_ContractType_Equity" xml:space="preserve">
-    <value>حقوق مالكين</value>
-  </data>
-  <data name="Account_ContractType_Expense" xml:space="preserve">
-    <value>مصروف</value>
-  </data>
-  <data name="Account_ContractType_InTransit" xml:space="preserve">
-    <value>على الطريق</value>
-  </data>
-  <data name="Account_ContractType_Loan" xml:space="preserve">
-    <value>قرض</value>
-  </data>
-  <data name="Account_ContractType_OnHand" xml:space="preserve">
-    <value>في اليد</value>
-  </data>
-  <data name="Account_ContractType_Payable" xml:space="preserve">
-    <value>ذمة دائنة</value>
-  </data>
-  <data name="Account_ContractType_Receivable" xml:space="preserve">
-    <value>ذمة مدينة</value>
-  </data>
-  <data name="Account_ContractType_Retention" xml:space="preserve">
-    <value>ضمان</value>
-  </data>
-  <data name="Account_ContractType_Revenue" xml:space="preserve">
-    <value>إيراد</value>
-  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
+  </data>
+  <data name="Account_HasAdditionalReference" xml:space="preserve">
+    <value>مرتبط بمرجع إضافي</value>
+  </data>
+  <data name="Account_HasAgent" xml:space="preserve">
+    <value>مرتبط بذمة</value>
+  </data>
+  <data name="Account_HasExternalReference" xml:space="preserve">
+    <value>مرتبط بمرجع خارجي</value>
+  </data>
+  <data name="Account_HasNotedAgentId" xml:space="preserve">
+    <value>مرتبط بذمة جانبية</value>
+  </data>
+  <data name="Account_HasNotedAgentName" xml:space="preserve">
+    <value>مرتبط باسم ذمة جانبية</value>
+  </data>
+  <data name="Account_HasNotedAmount" xml:space="preserve">
+    <value>مرتبط بمبلغ جانبي</value>
+  </data>
+  <data name="Account_HasNotedDate" xml:space="preserve">
+    <value>مربتط بتاريخ جانبي</value>
+  </data>
+  <data name="Account_HasResource" xml:space="preserve">
+    <value>مرتبط بمورد</value>
   </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>رقم التعريف</value>
@@ -136,14 +115,17 @@
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>حساب ذكي</value>
+  <data name="Account_IsRelated" xml:space="preserve">
+    <value>ذمة ذات علاقة</value>
+  </data>
+  <data name="Account_LegacyClassification" xml:space="preserve">
+    <value>التصنيف السابق</value>
+  </data>
+  <data name="Account_LegacyType" xml:space="preserve">
+    <value>النوع السابق</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Account_ResourceClassification" xml:space="preserve">
-    <value>تصنيف المورد</value>
   </data>
   <data name="Account_ResponsibilityCenter" xml:space="preserve">
     <value>مركز المسؤولية</value>

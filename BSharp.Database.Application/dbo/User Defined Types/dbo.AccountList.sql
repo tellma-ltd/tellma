@@ -11,7 +11,7 @@
 	[IsCurrent]						BIT,
 --
 	[LegacyClassificationId]		INT,
-	[LegacyType]					NVARCHAR (50),
+	[LegacyTypeId]					NVARCHAR (50),
 -- Major properties: NULL means it is not defined.
 	[AgentDefinitionId]				NVARCHAR (50),
 	[HasResource]					BIT				NOT NULL DEFAULT 0,

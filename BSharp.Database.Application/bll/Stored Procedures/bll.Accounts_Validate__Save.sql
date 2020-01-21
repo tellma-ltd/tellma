@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 		FE.HasAgent					<> A.[HasAgent]					OR
 		FE.HasResource				<> A.[HasResource]					OR
 		--FE.[ResponsibilityCenterId] <> A.[ResponsibilityCenterId]	OR
-		FE.[LegacyType]				<> A.[LegacyType]				OR
+		FE.[LegacyTypeId]				<> A.[LegacyTypeId]				OR
 		FE.[AgentDefinitionId]		<> A.[AgentDefinitionId]		OR
 		FE.[AccountTypeId]			<> A.[AccountTypeId] OR
 		FE.[IsCurrent]				<> A.[IsCurrent]				--OR

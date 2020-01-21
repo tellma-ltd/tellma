@@ -9,7 +9,7 @@ DECLARE @BasicAccounts dbo.AccountList;
 
 --IF @DB = N'100' -- ACME, USD, en/ar/zh
 --INSERT INTO @BasicAccounts([Index],
---	[AccountTypeId],				[LegacyType],				[AccountClassificationId],		[Name],								[Code], [CurrencyId]) VALUES
+--	[AccountTypeId],				[LegacyTypeId],				[AccountClassificationId],		[Name],								[Code], [CurrencyId]) VALUES
 --(0,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - USD',						N'1101', N'USD'),
 --(1,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - ETB',						N'1102', N'ETB'),
 --(2,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - LC',						N'1201', N'ETB'), -- reserved DECIMAL (19,4) to pay for LC when needed
@@ -39,7 +39,7 @@ DECLARE @BasicAccounts dbo.AccountList;
 --	Print N''
 --ELSE IF @DB = N'102' -- Banan ET, ETB, en
 INSERT INTO @BasicAccounts([Index],
-	[AccountTypeId],			[LegacyType],			[LegacyClassificationId],	[Name],								[Code], [CurrencyId]) VALUES
+	[AccountTypeId],			[LegacyTypeId],			[LegacyClassificationId],	[Name],								[Code], [CurrencyId]) VALUES
 (0,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'CBE - USD',						N'1101', N'USD'),
 (1,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'CBE - ETB',						N'1102', N'ETB'),
 (2,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'CBE - LC',						N'1201', N'ETB'), -- reserved DECIMAL (19,4) to pay for LC when needed
@@ -70,7 +70,7 @@ UPDATE @BasicAccounts SET IsCurrent = (CASE WHEN [Index] IN (5,17,18) THEN 0 ELS
 --	Print N''
 --ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 --INSERT INTO @BasicAccounts([Index],
---	[AccountTypeId],			[LegacyType],				[[LegacyClassificationId]],		[Name],								[Code], [CurrencyId]) VALUES
+--	[AccountTypeId],			[LegacyTypeId],				[[LegacyClassificationId]],		[Name],								[Code], [CurrencyId]) VALUES
 --(0,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - USD',						N'1101', N'USD'),
 --(1,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - ETB',						N'1102', N'ETB'),
 --(2,N'CashAndCashEquivalents',	N'Cash',						@BankAndCash_AC,			N'CBE - LC',						N'1201', N'ETB'), -- reserved DECIMAL (19,4) to pay for LC when needed
