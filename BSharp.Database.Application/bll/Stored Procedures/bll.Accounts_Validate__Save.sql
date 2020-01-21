@@ -253,8 +253,8 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
--- Setting the responsibility center for smart accounts to given one (whether it was null or null)
-	-- is not allowed if the account has been used already in an line but with different responsibility center
+-- Updating the responsibility center for an account is not allowed if the account has been used already in a line
+-- but with different responsibility center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -273,8 +273,7 @@ SET NOCOUNT ON;
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
-	--AND FE.[Identifier] IS NOT NULL
-	--AND E.[AccountIdentifier] IS NOT NULL
-	--AND FE.[Identifier] <> E.[AccountIdentifier]
+	AND FE.[ResponsibilityCenterId] IS NOT NULL
+	AND FE.[ResponsibilityCenterId] <> E.[ResponsibilityCenterId]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
