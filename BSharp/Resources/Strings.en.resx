@@ -76,56 +76,35 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>Agent Definition</value>
   </data>
-  <data name="Account_Classification" xml:space="preserve">
-    <value>Classification</value>
-  </data>
-  <data name="Account_ContractType" xml:space="preserve">
-    <value>Contract Type</value>
-  </data>
-  <data name="Account_ContractType_AccruedExpense" xml:space="preserve">
-    <value>Accrued Expense</value>
-  </data>
-  <data name="Account_ContractType_AccruedIncome" xml:space="preserve">
-    <value>Accured Income</value>
-  </data>
-  <data name="Account_ContractType_Borrowing" xml:space="preserve">
-    <value>Borrowing</value>
-  </data>
-  <data name="Account_ContractType_Deposit" xml:space="preserve">
-    <value>Deposit</value>
-  </data>
-  <data name="Account_ContractType_Equity" xml:space="preserve">
-    <value>Equity</value>
-  </data>
-  <data name="Account_ContractType_Expense" xml:space="preserve">
-    <value>Expense</value>
-  </data>
-  <data name="Account_ContractType_InTransit" xml:space="preserve">
-    <value>In Transit</value>
-  </data>
-  <data name="Account_ContractType_Loan" xml:space="preserve">
-    <value>Loan</value>
-  </data>
-  <data name="Account_ContractType_OnHand" xml:space="preserve">
-    <value>On Hand</value>
-  </data>
-  <data name="Account_ContractType_Payable" xml:space="preserve">
-    <value>Payable</value>
-  </data>
-  <data name="Account_ContractType_Receivable" xml:space="preserve">
-    <value>Receivable</value>
-  </data>
-  <data name="Account_ContractType_Retention" xml:space="preserve">
-    <value>Retention</value>
-  </data>
-  <data name="Account_ContractType_Revenue" xml:space="preserve">
-    <value>Revenue</value>
-  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
+  </data>
+  <data name="Account_HasAdditionalReference" xml:space="preserve">
+    <value>Has Additional Reference</value>
+  </data>
+  <data name="Account_HasAgent" xml:space="preserve">
+    <value>Has Agent</value>
+  </data>
+  <data name="Account_HasExternalReference" xml:space="preserve">
+    <value>Has External Reference</value>
+  </data>
+  <data name="Account_HasNotedAgentId" xml:space="preserve">
+    <value>Has Noted Agent</value>
+  </data>
+  <data name="Account_HasNotedAgentName" xml:space="preserve">
+    <value>Has Noted Agent Name</value>
+  </data>
+  <data name="Account_HasNotedAmount" xml:space="preserve">
+    <value>Has Noted Amount</value>
+  </data>
+  <data name="Account_HasNotedDate" xml:space="preserve">
+    <value>Has Noted Date</value>
+  </data>
+  <data name="Account_HasResource" xml:space="preserve">
+    <value>Has Resource</value>
   </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>Identifier</value>
@@ -136,14 +115,17 @@
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>Is Deprecated</value>
   </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>Is Smart</value>
+  <data name="Account_IsRelated" xml:space="preserve">
+    <value>Is Related</value>
+  </data>
+  <data name="Account_LegacyClassification" xml:space="preserve">
+    <value>Legacy Classification</value>
+  </data>
+  <data name="Account_LegacyType" xml:space="preserve">
+    <value>Legacy Type</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
-  </data>
-  <data name="Account_ResourceClassification" xml:space="preserve">
-    <value>Resource Classification</value>
   </data>
   <data name="Account_ResponsibilityCenter" xml:space="preserve">
     <value>Responsibility Center</value>

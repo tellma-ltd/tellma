@@ -104,7 +104,7 @@ SET NOCOUNT ON;
 	WITH
 	ConservativeAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[LegacyType] = N'OnHand'
+		WHERE A.[LegacyTypeId] = N'OnHand'
 		AND A.[AccountTypeId] IN (
 			SELECT [Id] FROM dbo.[AccountTypes]
 			WHERE [Node].IsDescendantOf(@NonFinancialResourceClassificationNode) = 1

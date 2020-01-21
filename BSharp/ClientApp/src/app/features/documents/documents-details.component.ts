@@ -442,18 +442,20 @@ Document_State_Closed
 
   public showResource(entry: Entry): boolean {
     const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    return !!account && !!account.ResourceClassificationId;
+    // return !!account && !!account.ResourceClassificationId;
+    return !!account && account.HasResource;
   }
 
   public resourceFilter(entry: Entry): string {
     const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    return !!account ? `ResourceClassification/Node descof ${account.ResourceClassificationId}` : '';
+    // return !!account ? `ResourceClassification/Node descof ${account.ResourceClassificationId}` : '';
+    return '';
   }
 
   public resourceDefinitionIds(entry: Entry): string[] {
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
-    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
+    // const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    // const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
+    // const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
 
     return []; // !!resourceClassification ? [resourceClassification.ResourceDefinitionId] : [];
   }
@@ -542,8 +544,8 @@ Document_State_Closed
     const account = this.account(entry);
     if (!account) {
       return false;
-    } else if (!!account.EntryClassificationId) {
-      return true;
+    // } else if (!!account.EntryClassificationId) {
+    //   return true;
     } else {
       // There is an account but it doesn't have EntryClassification
       // We look at whether the resource has a special resource classification

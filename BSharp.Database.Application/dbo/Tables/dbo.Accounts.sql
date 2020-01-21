@@ -13,7 +13,7 @@
 	[LegacyClassificationId]		INT					CONSTRAINT [FK_Accounts__LegacyClassificationId] 
 														REFERENCES [dbo].[LegacyClassifications] ([Id]) ON DELETE CASCADE,
 
-	[LegacyType]					NVARCHAR (50)		CONSTRAINT [CK_Accounts__LegacyType] REFERENCES dbo.[LegacyTypes]([Id]),
+	[LegacyTypeId]					NVARCHAR (50)		CONSTRAINT [CK_Accounts__LegacyType] REFERENCES dbo.[LegacyTypes]([Id]),
 -- Major properties: NULL means it is not defined.
 	[AgentDefinitionId]				NVARCHAR (50),
 	[HasResource]					BIT				NOT NULL DEFAULT 0,

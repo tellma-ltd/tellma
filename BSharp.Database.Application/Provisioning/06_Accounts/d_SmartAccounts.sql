@@ -8,7 +8,7 @@ DECLARE @SmartAccounts dbo.AccountList;
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 INSERT INTO @SmartAccounts([Index],
-	[AccountTypeId],				[LegacyType],[LegacyClassificationId],	[Name],			[Code],		[AgentDefinitionId], [IsCurrent], [AgentId],			[ResourceId], [EntryTypeId], [CurrencyId], [ResponsibilityCenterId]) VALUES
+	[AccountTypeId],				[LegacyTypeId],[LegacyClassificationId],	[Name],			[Code],		[AgentDefinitionId], [IsCurrent], [AgentId],			[ResourceId], [EntryTypeId], [CurrencyId], [ResponsibilityCenterId]) VALUES
 	(0,@CashAndCashEquivalents,		N'Cash',			@BankAndCash_AC,N'GM Fund/USD',		N'1011',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'USD',		@RC_ExecutiveOffice),
 	(1,@CashAndCashEquivalents,		N'Cash',			@BankAndCash_AC,N'GM Fund/SDG',		N'1012',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
 	--(2,@CashAndCashEquivalents	N'Cash',			@BankAndCash_AC,N'GM Fund',			N'1013',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
@@ -23,7 +23,7 @@ INSERT INTO @SmartAccounts([Index],
 END
 ELSE BEGIN
 INSERT INTO @SmartAccounts([Index],
-	[AccountTypeId],		[LegacyType],	[LegacyClassificationId],	[Name],			[Code],	[AgentDefinitionId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryTypeId], [CurrencyId]) VALUES
+	[AccountTypeId],		[LegacyTypeId],	[LegacyClassificationId],	[Name],			[Code],	[AgentDefinitionId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryTypeId], [CurrencyId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 --(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
 (0,@CashAndCashEquivalents,	N'Cash',			@BankAndCash_AC,		N'CBE - USD 2',	N'1111',	N'banks',				1,		@Bank_CBE,		NULL,			NULL,			NULL,				N'USD'),

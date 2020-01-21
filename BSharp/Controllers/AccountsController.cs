@@ -122,28 +122,28 @@ namespace BSharp.Controllers
         protected override async Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
         {
             // Defaults
-            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
-            entities.ForEach(entity =>
-            {
-                entity.IsSmart ??= false;
+            //var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+            //entities.ForEach(entity =>
+            //{
+            //    entity.IsSmart ??= false;
 
-                if (!entity.IsSmart.Value)
-                {
-                    // Only for dumb accounts
-                    entity.CurrencyId ??= settings.FunctionalCurrencyId;
+            //    if (!entity.IsSmart.Value)
+            //    {
+            //        // Only for dumb accounts
+            //        entity.CurrencyId ??= settings.FunctionalCurrencyId;
 
-                    // Dumb accounts set all these to null
-                    entity.ResponsibilityCenterId = null;
-                    entity.ContractType = null;
-                    entity.AgentDefinitionId = null;
-                    entity.ResourceClassificationId = null;
-                    entity.IsCurrent = null;
-                    entity.AgentId = null;
-                    entity.ResourceId = null;
-                    entity.Identifier = null;
-                    entity.EntryClassificationId = null;
-                }
-            });
+            //        // Dumb accounts set all these to null
+            //        entity.ResponsibilityCenterId = null;
+            //        entity.ContractType = null;
+            //        entity.AgentDefinitionId = null;
+            //        entity.LegacyTypeId = null;
+            //        entity.IsCurrent = null;
+            //        entity.AgentId = null;
+            //        entity.ResourceId = null;
+            //        entity.Identifier = null;
+            //        entity.EntryTypeId = null;
+            //    }
+            //});
 
             // SQL Preprocessing
             await _repo.Accounts__Preprocess(entities);
@@ -154,18 +154,18 @@ namespace BSharp.Controllers
         {
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                if (entity.IsSmart ?? false)
-                {
-                    // These are required for smart accounts
-                    if(entity.ContractType == null)
-                    {
-                        string path = $"[{index}].{nameof(entity.ContractType)}";
-                        string propDisplayName = _localizer["Account_ContractType"];
-                        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
+                //if (entity.IsSmart ?? false)
+                //{
+                //    // These are required for smart accounts
+                //    if(entity.ContractType == null)
+                //    {
+                //        string path = $"[{index}].{nameof(entity.ContractType)}";
+                //        string propDisplayName = _localizer["Account_ContractType"];
+                //        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
 
-                        ModelState.AddModelError(path, errorMsg);
-                    }
-                }
+                //        ModelState.AddModelError(path, errorMsg);
+                //    }
+                //}
 
                 if (ModelState.HasReachedMaxErrors)
                 {

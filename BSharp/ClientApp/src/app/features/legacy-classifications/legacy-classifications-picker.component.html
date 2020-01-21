@@ -2,7 +2,7 @@
     [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </b-details-picker>
 
-<!-- The Resource Classifications Details Modal -->
+<!-- The Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
         <b-legacy-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
@@ -11,7 +11,7 @@
     </div>
 </ng-template>
 
-<!-- The Resource Classifications Master Modal -->
+<!-- The Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-legacy-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
