@@ -50,26 +50,27 @@ SET NOCOUNT ON;
 	JOIN [dbo].[LegacyClassifications] BE ON FE.[LegacyClassificationId] = BE.Id
 	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[LegacyClassifications]);
 
-	-- If Agent Id is not null, then account and agent must have same agent definition
-	-- It is already added as FK constraint, but this will give a friendly error message
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAgentDefinition0IsNotCompatibleWithAgent1',
-		dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
-	FROM @Entities FE 
-	JOIN [dbo].[Agents] AG ON AG.[Id] = FE.[AgentId]
-	LEFT JOIN dbo.[AgentDefinitions] AD ON AD.[Id] = FE.[AgentDefinitionId]
-	WHERE (FE.[HasAgent] = 1)
-	--AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
-	AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
+	-- bll.Preprocess copies the AgentDefinition from Agent
+	---- If Agent Id is not null, then account and agent must have same agent definition
+	---- It is already added as FK constraint, but this will give a friendly error message
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	--SELECT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
+	--	N'Error_TheAgentDefinition0IsNotCompatibleWithAgent1',
+	--	dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
+	--	dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
+	--FROM @Entities FE 
+	--JOIN [dbo].[Agents] AG ON AG.[Id] = FE.[AgentId]
+	--LEFT JOIN dbo.[AgentDefinitions] AD ON AD.[Id] = FE.[AgentDefinitionId]
+	--WHERE (FE.[HasAgent] = 1)
+	----AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
+	--AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
 
 	-- If Resource Id is not null, then Account and Resource must have same resource classification
 	-- It is already added as FK constraint, but this will give a friendly error message
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
-		'[' + CAST(A.[Index] AS NVARCHAR (255)) + ']',
+		'[' + CAST(A.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheAccountType0IsNotCompatibleWithResource1',
 		dbo.fn_Localize([AAT].[Name], [AAT].[Name2], [AAT].[Name3]) AS [AccountType],
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
@@ -85,7 +86,7 @@ SET NOCOUNT ON;
 	-- It is already added as FK constraint, but this will give a friendly error message
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
 		N'Error_TheResource0hasCurrency1whileAccountHasCurrency2',
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
@@ -198,12 +199,36 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.Resources R ON R.Id = E.[AgentId]
+	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[ResourceId] IS NOT NULL
 	AND FE.[ResourceId] <> E.[ResourceId]
+
+	-- Changing the currency for smart accounts to given one (whether it was null or null)
+	-- is not allowed if the account has been used already in an line but with different currency
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAccount0IsUsedIn12LineDefinition3WithCurrency4',
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
+		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
+		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
+		L.DefinitionId,
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Currency]
+	FROM @Entities FE
+	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
+	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
+	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
+	JOIN dbo.Currencies R ON R.Id = E.[CurrencyId]
+	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
+	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
+	WHERE L.[State] >= 0
+	AND FE.[CurrencyId] IS NOT NULL
+	AND FE.[CurrencyId] <> E.[CurrencyId]
 
 	-- Changing the resource classification is allowed provided that the resources used in the entries are
 	-- compatible with the new classification
@@ -230,7 +255,7 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND ERC.[Node].IsDescendantOf(ARC.[Node]) = 0;
 
-	-- Changing the Account entry classification is allowed provided that the entry classification used in the entries are
+	-- Changing the Account entry type is allowed provided that the entry type used in the entries are
 	-- compatible with the new classification
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
 	SELECT TOP (@Top)
