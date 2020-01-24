@@ -448,9 +448,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>Additional Reference</value>
-  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
@@ -469,29 +466,11 @@
   <data name="Entry_EntryType" xml:space="preserve">
     <value>Purpose</value>
   </data>
-  <data name="Entry_ExternalReference" xml:space="preserve">
-    <value>External Reference</value>
-  </data>
-  <data name="Entry_IsCurrent" xml:space="preserve">
-    <value>Is Current</value>
-  </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>Mass</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
-  </data>
-  <data name="Entry_RelatedAgent" xml:space="preserve">
-    <value>Related Agent</value>
-  </data>
-  <data name="Entry_RelatedAgentName" xml:space="preserve">
-    <value>Related Agent Name</value>
-  </data>
-  <data name="Entry_RelatedAmount" xml:space="preserve">
-    <value>Related Amount</value>
-  </data>
-  <data name="Entry_RelatedDate" xml:space="preserve">
-    <value>Related Date</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -861,6 +840,18 @@
   </data>
   <data name="Line_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
+  </data>
+  <data name="Line_NotedAgent" xml:space="preserve">
+    <value>Noted Agent</value>
+  </data>
+  <data name="Line_NotedAgentName" xml:space="preserve">
+    <value>Noted Agent Name</value>
+  </data>
+  <data name="Line_NotedAmount" xml:space="preserve">
+    <value>Noted Amount</value>
+  </data>
+  <data name="Line_NotedDate" xml:space="preserve">
+    <value>Noted Date</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>Resource</value>

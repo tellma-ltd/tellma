@@ -96,7 +96,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // var etbId = "ETB";
             var accountId = Shared.Get<Account>("Account_Payables").Id;
-            var entryClassificationId = Shared.Get<EntryType>("EntryClassification_SM").Id;
+            var entryClassificationId = Shared.Get<EntryType>("EntryType_SM").Id;
             var resourceId = Shared.Get<Resource>("Resource_HR1000x0.8").Id;
 
             // Prepare a well formed entity
@@ -117,7 +117,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                                  EntryNumber = 1,
                                  Direction = 1,
                                  AccountId = accountId,
-                                 EntryClassificationId = entryClassificationId,
+                                 EntryTypeId = entryClassificationId,
                                  ResourceId = resourceId,
                                  MonetaryValue = 25000,
                                  Value = 25000
@@ -134,7 +134,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                                  EntryNumber = 1,
                                  Direction = -1,
                                  AccountId = accountId,
-                                 EntryClassificationId = entryClassificationId,
+                                 EntryTypeId = entryClassificationId,
                                  ResourceId = resourceId,
                                  MonetaryValue = 25000,
                                  Value = 25000
@@ -181,7 +181,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                                 Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Null(entry.EntryClassificationId);
+                                Assert.Null(entry.EntryTypeId);
                                 Assert.Null(entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
@@ -199,7 +199,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                                 Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Null(entry.EntryClassificationId);
+                                Assert.Null(entry.EntryTypeId);
                                 Assert.Null(entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
