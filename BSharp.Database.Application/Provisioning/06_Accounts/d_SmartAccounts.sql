@@ -19,7 +19,7 @@ INSERT INTO @SmartAccounts([Index],
 	(7,@TradeAndOtherReceivables,	N'AccountsReceivable',@Debtors_AC,	N'Prepaid Salaries/USD',N'1201',N'employees',			1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice)
 	
 	;
-	UPDATE @SmartAccounts SET HasAgent = 1;
+	--UPDATE @SmartAccounts SET HasAgent = 1;
 END
 ELSE BEGIN
 INSERT INTO @SmartAccounts([Index],
@@ -48,7 +48,7 @@ INSERT INTO @SmartAccounts([Index],
 --(22,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
 --(23,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expenses',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
 (24,@EmployeeBenefitsExpense,	N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'),	N'ETB');
-	UPDATE @SmartAccounts SET HasAgent = 1;
+	--UPDATE @SmartAccounts SET HasAgent = 1;
 	UPDATE @SmartAccounts SET HasResource = 1 WHERE [Index] IN (4, 5, 19,20, 21, 22, 23, 24);
 END
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',

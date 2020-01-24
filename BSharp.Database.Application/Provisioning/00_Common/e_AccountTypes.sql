@@ -233,7 +233,7 @@ INSERT INTO @AT VALUES(172,0, '1', 0, '/2/15/', 1,NULL,'IncomeTaxExpenseContinui
 
 	UPDATE dbo.[AccountTypes] SET IsSystem = 1;
 	UPDATE dbo.[AccountTypes] SET IsActive = 0 WHERE [Code] IN (SELECT [Code] FROM @AT WHERE IsActive = 0);
-	UPDATE dbo.[AccountTypes] SET IsReal = 1 WHERE [Node].IsDescendantOf('/1/1/1/') = 1
+
 	UPDATE dbo.[AccountTypes] SET IsReal = 1
 	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment')) = 1
 	UPDATE dbo.[AccountTypes] SET IsReal = 1

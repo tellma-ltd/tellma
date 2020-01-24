@@ -1,6 +1,7 @@
 ﻿DECLARE @D [dbo].[DocumentList], @L [dbo].LineList, @E [dbo].EntryList, @DIds dbo.IdList;
 
 --DECLARE @date1 date = '2017.02.01', @date2 date = '2022.02.01', @date3 datetime = '2023.02.01';
+--IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN -- Inserting
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo]) VALUES

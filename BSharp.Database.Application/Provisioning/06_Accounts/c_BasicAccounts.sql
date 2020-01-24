@@ -38,6 +38,7 @@ DECLARE @BasicAccounts dbo.AccountList;
 --ELSE IF @DB = N'101' -- Banan SD, USD, en
 --	Print N''
 --ELSE IF @DB = N'102' -- Banan ET, ETB, en
+--IF @DB IN (N'101', N'102', N'103', N'104') 
 INSERT INTO @BasicAccounts([Index],
 	[AccountTypeId],			[LegacyTypeId],			[LegacyClassificationId],	[Name],								[Code], [CurrencyId]) VALUES
 (0,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'CBE - USD',						N'1101', N'USD'),

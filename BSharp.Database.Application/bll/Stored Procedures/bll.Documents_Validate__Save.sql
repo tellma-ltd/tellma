@@ -114,40 +114,40 @@ SET NOCOUNT ON;
 	--WHERE (E.[ResourceId] IS NULL)
 	
 	-- NotedAgent is required for selected account definition, 
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
-		N'Error_TheNotedAgentIsNotSpecified'
-	FROM @Entries E
-	JOIN @Lines L ON E.LineIndex = L.[Index]
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (L.[NotedAgentId] IS NULL)
-	AND (A.[HasNotedAgentId] = 1);
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
+	--	N'Error_TheNotedAgentIsNotSpecified'
+	--FROM @Entries E
+	--JOIN @Lines L ON E.LineIndex = L.[Index]
+	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	--WHERE (L.[NotedAgentId] IS NULL)
+	--AND (A.[HasNotedAgentId] = 1);
 
-	-- External Reference is required for selected account
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[Index] AS NVARCHAR(255)),
-		N'Error_TheExternalReferenceIsNotSpecified'
-	FROM @Entries E
-	JOIN @Lines L ON E.LineIndex = L.[Index]
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (L.[ExternalReference] IS NULL)
-	AND (A.[HasExternalReference] = 1);
+	---- External Reference is required for selected account
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[Index] AS NVARCHAR(255)),
+	--	N'Error_TheExternalReferenceIsNotSpecified'
+	--FROM @Entries E
+	--JOIN @Lines L ON E.LineIndex = L.[Index]
+	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	--WHERE (L.[ExternalReference] IS NULL)
+	--AND (A.[HasExternalReference] = 1);
 	
-	-- Additional Reference is required for selected account
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[Index] AS NVARCHAR(255)),
-		N'Error_TheAdditionalReferenceIsNotSpecified'
-	FROM @Entries E
-	JOIN @Lines L ON E.LineIndex = L.[Index]
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (L.[AdditionalReference] IS NULL)
-	AND (A.[HasAdditionalReference] = 1);	
+	---- Additional Reference is required for selected account
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[Index] AS NVARCHAR(255)),
+	--	N'Error_TheAdditionalReferenceIsNotSpecified'
+	--FROM @Entries E
+	--JOIN @Lines L ON E.LineIndex = L.[Index]
+	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	--WHERE (L.[AdditionalReference] IS NULL)
+	--AND (A.[HasAdditionalReference] = 1);	
 	
 
 
