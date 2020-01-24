@@ -1,0 +1,82 @@
+﻿@page "/identity/sign-in"
+
+@using Microsoft.Extensions.Options
+@using Tellma.Services.Utilities
+@inject IHtmlLocalizer<Strings> Localizer
+@inject IOptions<GlobalOptions> Config
+@model LoginModel
+
+@{
+    ViewData["Title"] = Localizer["SignIn"];
+}
+<div>
+    @*<h1 class="mt-4">@ViewData["Title"]</h1>*@
+    <section>
+        <form id="account" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <div class="custom-control custom-checkbox d-inline">
+                        <input type="checkbox" class="custom-control-input" asp-for="Input.RememberMe" checked>
+                        <label class="custom-control-label b-pointer mb-2" asp-for="Input.RememberMe">@Html.DisplayNameFor(m => m.Input.RememberMe)</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sign-in-alt @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignIn"]
+                </button>
+            </div>
+            @if (Config.Value.EmailEnabled)
+            {
+                <div class="form-group">
+                    <p>
+                        <span>@Localizer["ForgotYourPassword"]</span> <a id="forgot-password" asp-page="./ForgotPassword">@Localizer["ClickHere"]</a>
+                    </p>
+                </div>
+            }
+        </form>
+    </section>
+</div>
+@{
+    if ((Model.ExternalLogins?.Count ?? 0) > 0)
+    {
+        <div>
+            <section>
+                <div class="d-flex align-items-center">
+                    <hr class="flex-grow-1 b-bar" />
+                    <span class="p-3">@Localizer["Or"]</span>
+                    <hr class="flex-grow-1 b-bar" />
+                </div>
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <div class="d-flex justify-content-center">
+                        <div class="d-flex flex-column align-items-start">
+                            @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="btn btn-light b-white-button text-primary mb-2" name="provider" value="@provider.Name"
+                                    title="Log in using your @provider.DisplayName account">
+                                <i class="fab fa-@provider.Name.ToLower() font-weight-normal"></i>&nbsp;&nbsp;&nbsp;@Localizer["SignInWith0", Localizer[provider.DisplayName]]
+                            </button>
+                        }
+                        </div>
+                    </div>
+
+                </form>
+            </section>
+        </div>
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

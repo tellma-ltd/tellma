@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma", "Tellma\Tellma.csproj", "{94FB2436-EC57-4997-B8A7-D1C8621DD14D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7} = {7F0B3C51-FA2A-4881-9A62-10571E15D8B7}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tellma.IntegrationTests", "Tellma.IntegrationTests\Tellma.IntegrationTests.csproj", "{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Admin", "Tellma.Database.Manager\Tellma.Database.Admin.sqlproj", "{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Application", "Tellma.Database.Application\Tellma.Database.Application.sqlproj", "{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tellma.Database.Identity", "Tellma.Database.Identity\Tellma.Database.Identity.sqlproj", "{8F9E57E8-8D87-45D2-A521-768161F98B8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{236B8C4D-A593-4FF0-A768-8424E39A3F40}"
+	ProjectSection(SolutionItems) = preProject
+		.filenesting.json = .filenesting.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translations", "Translations", "{F74551DD-8EB5-403C-956F-1BD1D271DF28}"
+	ProjectSection(SolutionItems) = preProject
+		Translations\Translations.xlsx = Translations\Translations.xlsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sync", "Sync", "{53982F95-6210-4513-9EE6-D9D07E9D265A}"
+	ProjectSection(SolutionItems) = preProject
+		Translations\Sync\Sync.bat = Translations\Sync\Sync.bat
+		Translations\Sync\TranslationsManager.deps.json = Translations\Sync\TranslationsManager.deps.json
+		Translations\Sync\TranslationsManager.dll = Translations\Sync\TranslationsManager.dll
+		Translations\Sync\TranslationsManager.pdb = Translations\Sync\TranslationsManager.pdb
+		Translations\Sync\TranslationsManager.runtimeconfig.dev.json = Translations\Sync\TranslationsManager.runtimeconfig.dev.json
+		Translations\Sync\TranslationsManager.runtimeconfig.json = Translations\Sync\TranslationsManager.runtimeconfig.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94FB2436-EC57-4997-B8A7-D1C8621DD14D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0B3C51-FA2A-4881-9A62-10571E15D8B7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53982F95-6210-4513-9EE6-D9D07E9D265A} = {F74551DD-8EB5-403C-956F-1BD1D271DF28}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6A0E140B-FBB2-43B3-8968-3D850303A54D}
+	EndGlobalSection
+EndGlobal

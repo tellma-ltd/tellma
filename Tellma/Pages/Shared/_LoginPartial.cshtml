@@ -1,0 +1,12 @@
+@using Microsoft.AspNetCore.Identity
+@using Tellma.Services.EmbeddedIdentityServer
+
+@inject SignInManager<EmbeddedIdentityServerUser> SignInManager
+@inject UserManager<EmbeddedIdentityServerUser> UserManager
+@inject IHtmlLocalizer<Strings> Localizer
+
+<ul class="navbar-nav">
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+    </li>
+</ul>

@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Http.Extensions
+@using Tellma.Services.GlobalSettings
+
+@inject IGlobalSettingsCache GlobalSettingsCache
+@inject IHtmlLocalizer<Strings> Localizer
+
+@{
+    var httpContext = ViewContext.HttpContext;
+    var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
+    var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
+
+    var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
+    var culturesList = cultures.Select(e => new SelectListItem
+    {
+        Value = e.Id,
+        Text = e.Name,
+        Selected = e.Id == currentCulture.Name
+    });
+}
+
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @Localizer["AppName"]</title>
+    <link rel="stylesheet" href="~/lib/fontawesome-free-5.7.2-web/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="h-100 bg-light b-banner p-0 @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
+    <div class="h-100 w-100 overflow-auto d-flex justify-content-center">
+        <div class="h-100 d-flex flex-column align-items-center p-0 pt-sm-5">
+            <partial name="_CookieConsentPartial" />
+
+            <!-- Content -->
+            <div class="shadow bg-white border p-3 p-sm-4 m-2 mt-sm-5" style="max-width:@(ViewData["MaxWidth"] ?? "425px")">
+
+                <div class="d-flex justify-content-center p-3 p-sm-4">
+                    <div class="d-flex flex-column align-items-center justify-content-center px-1" style="height: 68px;">
+                        <img src="/img/tellma-light.png" width="128">
+                    </div>
+                    @*<table class="@(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "ml-2": "mr-2")">
+                        <tbody>
+                            <tr>
+                                <th>
+                                    <img src="/favicon.ico" width="60">
+                                </th>
+                                <th>
+                                    <span style="font-size: 200%;">
+                                        <span class="font-weight-bold text-black-50">&nbsp;@Localizer["AppName"]</span><span class="font-weight-bold b-brand">ERP</span>
+                                    </span>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>*@
+                </div>
+                @RenderBody()
+                <footer class="pt-3 pt-sm-5">
+                    <div class="text-center">
+                        @Localizer["CopyrightNotice0", "2000 - " + DateTime.Today.Year]
+
+                    </div>
+                    <div class="text-center mt-1">
+                        <a asp-area="" asp-page="/Privacy">@Localizer["PrivacyPolicy"]</a>
+                        <span>&nbsp;|&nbsp;</span>
+                        <a asp-area="" asp-page="/TermsOfService">@Localizer["TermsOfService"]</a>
+
+                        @if (cultures.Count() > 1)
+                        {
+                            <span>&nbsp;|</span>
+
+                            <form class="d-inline" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl" method="post">
+                                <select asp-items="culturesList" name="culture" class="text-primary bg-white" style="border: 1px solid white" onchange="this.form.submit()"></select>
+                            </form>
+                        }
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

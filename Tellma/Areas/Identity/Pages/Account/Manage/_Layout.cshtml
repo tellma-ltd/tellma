@@ -1,0 +1,109 @@
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.Extensions.Options
+@using Tellma.Services.EmbeddedIdentityServer
+@using Tellma.Services.Utilities
+
+@inject IHtmlLocalizer<Strings> Localizer
+@inject UserManager<EmbeddedIdentityServerUser> UserManager
+@inject IOptions<GlobalOptions> Config
+@inject SignInManager<EmbeddedIdentityServerUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
+    var httpContext = ViewContext.HttpContext;
+    var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
+    var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
+
+    var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
+    var appUri = (Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
+}
+
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @Localizer["AppName"]</title>
+    <link rel="stylesheet" href="~/lib/fontawesome-free-5.7.2-web/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="h-100 bg-light @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
+    <header>
+        <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch">
+            <a class="b-brand-link b-navbar-button" href="@appUri">
+                <div class="d-flex flex-column align-items-center justify-content-center px-1" style="height: 34px;">
+                    <img src="/img/tellma.png" width="64">
+                </div>
+            </a>
+
+            <button class="navbar-toggler ml-2 mr-2" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse align-items-stretch">
+                <ol class="nav navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./Index">@Localizer["Menu_Profile"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ChangePassword">@Localizer["Menu_Password"]</a>
+                    </li>
+                    @if (hasExternalLogins)
+                    {
+                        <li class="nav-item">
+                            <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ExternalLogins">@Localizer["Menu_ExternalSignIns"]</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./TwoFactorAuthentication">@Localizer["Menu_TwoFactorAuthentication"]</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center"
+                           href="@appUri">@Localizer["GoTo0", Localizer["AppName"]]</a>
+                    </li>
+                </ol>
+
+                <ol class="nav navbar-nav p-0">
+                    <li class="nav-item dropdown">
+                        <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow px-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="d-flex flex-column justify-content-center">
+                                @UserManager.GetUserName(User)
+                            </div>
+                        </button>
+                        <div class="dropdown-menu shadow m-0  @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "": "dropdown-menu-right")" aria-labelledby="dropdownMenuButton">
+                            @if (cultures.Count() > 1)
+                            {
+                                <form method="post" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl">
+                                    @foreach (var culture in cultures)
+                                    {
+                                        <button type="submit" class="dropdown-item btn-light" name="culture" value="@culture.Id">
+                                            @culture.Name
+                                        </button>
+                                    }
+
+                                </form>
+                                <hr />
+                            }
+                            <form class="form-inline h-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Login", new { area = "Identity" })" method="get">
+                                <button type="submit" class="dropdown-item btn-light">@Localizer["SignOut"]</button>
+                            </form>
+                        </div>
+                    </li>
+
+                </ol>
+            </div>
+        </nav>
+    </header>
+    <main class="container p-4">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
