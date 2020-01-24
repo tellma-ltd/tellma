@@ -184,9 +184,9 @@ INSERT INTO @AT VALUES(85,0, '0', 1, '/1/2/1/3/', 1,'ChangesInEquity','OtherRese
 INSERT INTO @AT VALUES(102,0, NULL, 1, '/1/2/2/', 0,NULL,'LiabilitiesAbstract', 'Liabilities [abstract]','')
 INSERT INTO @AT VALUES(103,0, NULL, 1, '/1/2/2/1/', 1,NULL,'TradeAndOtherPayables', 'Trade and other payables','The amount of trade payables and other payables. [Refer: Trade payables; Other payables]')
 INSERT INTO @AT VALUES(112,0, NULL, 1, '/1/2/2/2/', 0,NULL,'ProvisionsAbstract', 'Provisions [abstract]','')
-INSERT INTO @AT VALUES(113,0, NULL, 1, '/1/2/2/3/', 1,NULL,'ProvisionsForEmployeeBenefits', 'Provisions for employee benefits','The amount of provisions for employee benefits. [Refer: Employee benefits expense; Provisions]')
-INSERT INTO @AT VALUES(114,0, NULL, 1, '/1/2/2/4/', 1,'ChangesInOtherProvisions','OtherProvisions', 'Other provisions','The amount of provisions other than provisions for employee benefits. [Refer: Provisions]')
-INSERT INTO @AT VALUES(121,0, NULL, 1, '/1/2/2/5/', 1,NULL,'OtherFinancialLiabilities', 'Other financial liabilities','The amount of financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Financial liabilities]')
+INSERT INTO @AT VALUES(113,0, NULL, 1, '/1/2/2/2/1/', 1,NULL,'ProvisionsForEmployeeBenefits', 'Provisions for employee benefits','The amount of provisions for employee benefits. [Refer: Employee benefits expense; Provisions]')
+INSERT INTO @AT VALUES(114,0, NULL, 1, '/1/2/2/2/2/', 1,'ChangesInOtherProvisions','OtherProvisions', 'Other provisions','The amount of provisions other than provisions for employee benefits. [Refer: Provisions]')
+INSERT INTO @AT VALUES(121,0, NULL, 1, '/1/2/2/3/', 1,NULL,'OtherFinancialLiabilities', 'Other financial liabilities','The amount of financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Financial liabilities]')
 INSERT INTO @AT VALUES(122,0, NULL, 1, '/1/2/2/6/', 1,NULL,'OtherNonfinancialLiabilities', 'Other non-financial liabilities','The amount of non-financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]')
 INSERT INTO @AT VALUES(125,0, NULL, 1, '/1/2/2/7/', 1,NULL,'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale', 'Liabilities included in disposal groups classified as held for sale','The amount of liabilities included in disposal groups classified as held for sale. [Refer: Liabilities; Disposal groups classified as held for sale [member]]')
 INSERT INTO @AT VALUES(126,0, NULL, 1, '/2/', 0,NULL,'IncomeStatementAbstract', 'Profit or loss [abstract]','')
@@ -233,6 +233,22 @@ INSERT INTO @AT VALUES(172,0, '1', 0, '/2/15/', 1,NULL,'IncomeTaxExpenseContinui
 
 	UPDATE dbo.[AccountTypes] SET IsSystem = 1;
 	UPDATE dbo.[AccountTypes] SET IsActive = 0 WHERE [Code] IN (SELECT [Code] FROM @AT WHERE IsActive = 0);
+	UPDATE dbo.[AccountTypes] SET IsReal = 1 WHERE [Node].IsDescendantOf('/1/1/1/') = 1
+	UPDATE dbo.[AccountTypes] SET IsReal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment')) = 1
+	UPDATE dbo.[AccountTypes] SET IsReal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'InvestmentProperty')) = 1
+	UPDATE dbo.[AccountTypes] SET IsReal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'BiologicalAssets')) = 1
+	UPDATE dbo.[AccountTypes] SET IsReal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'InventoriesTotal')) = 1
+	UPDATE dbo.[AccountTypes] SET IsReal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'ExpenseByNatureAbstract')) = 1
+
+	UPDATE dbo.[AccountTypes] SET IsPersonal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherReceivables')) = 1
+	UPDATE dbo.[AccountTypes] SET IsPersonal = 1
+	WHERE [Node].IsDescendantOf((SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherPayables')) = 1
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

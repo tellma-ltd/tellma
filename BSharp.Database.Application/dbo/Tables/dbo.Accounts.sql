@@ -34,10 +34,9 @@
 	
 	[AgentId]						INT,
 	CONSTRAINT [FK_Accounts__AgentDefinitionId_AgentId] FOREIGN KEY ([AgentId], [AgentDefinitionId]) REFERENCES [dbo].[Agents] ([Id], [DefinitionId]),
-	[ResourceId]					INT,
+	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	-- Especially needed for non-smart accounts to support multi-currencies
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	CONSTRAINT [FK_Accounts__ResourceId_CurrencyId] FOREIGN KEY ([ResourceId],[CurrencyId]) REFERENCES [dbo].[Resources] ([Id], [CurrencyId]),
 	[Identifier]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__Identifier] REFERENCES dbo.[AccountIdentifiers]([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
 	[EntryTypeId]					INT					CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES dbo.[EntryTypes],
