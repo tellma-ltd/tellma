@@ -5,6 +5,7 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-users-master',
@@ -14,7 +15,7 @@ export class UsersMasterComponent extends MasterBaseComponent {
 
   private usersApi = this.api.usersApi(this.notifyDestruct$); // for intellisense
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.usersApi = this.api.usersApi(this.notifyDestruct$);
   }
@@ -45,7 +46,8 @@ export class UsersMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateOrDeactivate = () => {
-    return this.workspace.current.canDo('measurement-units', 'IsActive', null);
-  }
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('roles', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

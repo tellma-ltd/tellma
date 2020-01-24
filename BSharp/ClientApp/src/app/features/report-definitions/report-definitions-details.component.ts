@@ -59,7 +59,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public collapseDefinition = false;
 
   public modelRef: ReportDefinition;
-  public itemToEditHasChanged: false;
+  public itemToEditHasChanged = false;
   public itemToEditNature: 'dimension' | 'measure' | 'select' | 'parameter';
   public itemToEdit: ReportRowDefinition | ReportColumnDefinition |
     ReportMeasureDefinition | ReportSelectDefinition | ReportParameterDefinition;
