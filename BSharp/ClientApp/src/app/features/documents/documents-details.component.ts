@@ -19,6 +19,7 @@ import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { LegacyType } from '~/app/data/entities/legacy-type';
+import { AccountType } from '~/app/data/entities/account-type';
 
 interface DocumentEventBase {
   time: string;
@@ -79,14 +80,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
-    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryClassification', 'Resource/ResourceClassification', 'ResourceClassification']
+    ['Currency', /* 'Resource/Currency', */ 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
+      'Resource/TimeUnit', 'Agent', 'EntryType', 'AccountType'] // , 'Resource/ResourceClassification', 'ResourceClassification']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryClassification', 'Resource/ResourceClassification']
+      'Resource/TimeUnit', 'Agent', 'EntryType'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
+
+    // Line
+    ['NotedAgent']
+      .map(prop => `Lines/${prop}`).join(',') + ',' +
 
     // Signatures
     ['OnBehalfOfUser', 'Role', 'CreatedBy']
@@ -205,7 +210,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   onNewLine(item: LineForSave) {
     item.DefinitionId = 'ManualLine';
-    item.Entries = [{ }];
+    item.Entries = [{}];
     item.Entries[0].Direction = 1;
     return item;
   }
@@ -234,6 +239,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   isDebit(entry: Entry) {
     return entry.Direction === 1;
+  }
+
+  public get functional_decimals(): number {
+    return this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public get functional_format(): string {
+    const decimals = this.functional_decimals;
+    return `1.${decimals}-${decimals}`;
   }
 
   public columnPaths(model: DocumentForSave): string[] {
@@ -424,15 +438,32 @@ Document_State_Closed
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
+  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
+    const resource = this.resource(entry);
+    const defId = !!resource ? resource.DefinitionId : null;
+    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+    return resourceDefinition;
+  }
+
   // AgentId
 
   public showAgent(entry: Entry): boolean {
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    return !!account && !!account.AgentDefinitionId;
+    const account = this.account(entry);
+    return !!account && !!account.HasAgent;
   }
 
-  public agentLabel(entry: Entry): string {
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+  public readonlyAgent(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.AgentId;
+  }
+
+  public readonlyValueAgentId(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.AgentId : null;
+  }
+
+  public labelAgent(entry: Entry): string {
+    const account = this.account(entry);
     const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
 
     return metadata_Agent(this.ws, this.translate, agentDefinitionId).titleSingular();
@@ -441,40 +472,36 @@ Document_State_Closed
   // ResourceId
 
   public showResource(entry: Entry): boolean {
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    // return !!account && !!account.ResourceClassificationId;
+    const account = this.account(entry);
     return !!account && account.HasResource;
   }
 
-  public resourceFilter(entry: Entry): string {
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    // return !!account ? `ResourceClassification/Node descof ${account.ResourceClassificationId}` : '';
-    return '';
+  public readonlyResource(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.ResourceId;
   }
 
-  public resourceDefinitionIds(entry: Entry): string[] {
-    // const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    // const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
-    // const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
-
-    return []; // !!resourceClassification ? [resourceClassification.ResourceDefinitionId] : [];
+  public readonlyValueResourceId(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.ResourceId : null;
   }
 
-  public resourceLabel(entry: Entry): string {
-    const resourceDefinitionIds = this.resourceDefinitionIds(entry);
-    const resourceDefinitionId = resourceDefinitionIds[0];
+  public filterResource(entry: Entry): string {
+    const account = this.account(entry);
+    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
 
-    return metadata_Resource(this.ws, this.translate, resourceDefinitionId).titleSingular();
+    if (!!accountType.IsResourceClassification) {
+      return `AccountType/Node descof ${account.AccountTypeId}`;
+    } else {
+      return null;
+    }
+  }
+
+  public labelResource(_: Entry): string {
+    return this.translate.instant('Resource');
   }
 
   // DueDate
-
-  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
-    const resource = this.resource(entry);
-    const defId = !!resource ? resource.DefinitionId : null;
-    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
-    return resourceDefinition;
-  }
 
   public showDueDate(entry: Entry): boolean {
     const resourceDefinition = this.resourceDefinition(entry);
@@ -491,101 +518,134 @@ Document_State_Closed
     return this.ws.getMultilingualValueImmediate(resourceDefinition, 'DueDateLabel');
   }
 
-  // MonetaryValue + CurrencyId
+  // Currency
 
-  public showMonetaryValue(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && (!account.CurrencyId || account.CurrencyId !== this.ws.settings.FunctionalCurrencyId);
-  }
-
-  public getAccountCurrencyId(entry: Entry): string {
-    // returns the currency Id if any
+  private getAccountResourceCurrencyId(entry: Entry): string {
+    // returns the currency Id (if any) that will eventually be copied to the Entry in the bll
     if (!entry) {
       return null;
     }
 
-    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
-    const resource = (!!account ? this.ws.get('Resource', account.ResourceId) : null) as Resource;
+    const account = this.account(entry);
+    const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
 
-    const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
     const accountCurrencyId = !!account ? account.CurrencyId : null;
+    const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
 
     return accountCurrencyId || resourceCurrencyId;
   }
 
-  public getCurrencyId(entry: Entry): string {
+  public showCurrency(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !this.getAccountResourceCurrencyId(entry);
+  }
+
+  public readonlyValueCurrencyId(entry: Entry): string {
     // returns the currency Id if any
     if (!entry) {
       return null;
     }
 
-    const accountCurrencyId = this.getAccountCurrencyId(entry);
+    const accountResourceCurrencyId = this.getAccountResourceCurrencyId(entry);
     const entryCurrencyId = entry.CurrencyId;
 
-    return accountCurrencyId || entryCurrencyId;
-  }
-
-  public MonetaryValue_decimals(currencyId: string): number {
-    const currency = this.ws.get('Currency', currencyId) as Currency;
-    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+    return accountResourceCurrencyId || entryCurrencyId;
   }
 
   public get functionalId(): string {
     return this.ws.settings.FunctionalCurrencyId;
   }
 
+  // MonetaryValue
+
+  public showMonetaryValue(entry: Entry): boolean {
+    const account = this.account(entry);
+    const currencyId = this.readonlyValueCurrencyId(entry);
+    return !!account && !!currencyId && currencyId !== this.functionalId;
+  }
+
+  public MonetaryValue_decimals(entry: Entry): number {
+    const currencyId = this.readonlyValueCurrencyId(entry);
+    const currency = this.ws.get('Currency', currencyId) as Currency;
+    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public MonetaryValue_format(entry: Entry): string {
+    const decimals = this.MonetaryValue_decimals(entry);
+    return `1.${decimals}-${decimals}`;
+  }
+
   // Entry Classification
 
-  public showEntryClassification(entry: Entry): boolean {
-    if (!entry) {
-      return null;
-    }
-
+  public showEntryType(entry: Entry): boolean {
     const account = this.account(entry);
-    if (!account) {
-      return false;
-    // } else if (!!account.EntryClassificationId) {
-    //   return true;
-    } else {
-      // There is an account but it doesn't have EntryClassification
-      // We look at whether the resource has a special resource classification
-
-      // Show entry classification if the resource is descended from one of the mapped resource classification paths
-      const resourceClassificationPath = this.resourceClassificationPath(entry);
-      // return !!resourceClassificationPath &&
-      //   this.ws.settings.ResourceEntryClassificationMap.some(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+    if (!account || !account.AccountTypeId) {
       return false;
     }
+
+    // Show entry type when the account's type has an entry type parent Id
+    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
+    return !!accountType.EntryTypeParentId;
   }
 
-  public entryClassificationRoot(entry: Entry): number {
-    if (!entry) {
+  public readonlyEntryType(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !!account.EntryTypeId;
+  }
+
+  public readonlyValueEntryTypeId(entry: Entry): number {
+    const account = this.account(entry);
+    return !!account ? account.EntryTypeId : null;
+  }
+
+  public filterEntryType(entry: Entry): string {
+    const account = this.account(entry);
+    if (!account || !account.AccountTypeId) {
       return null;
     }
 
-    // Show entry classification if the resource is descended from one of the mapped resource classification paths
-    const resourceClassificationPath = this.resourceClassificationPath(entry);
-    // const map = this.ws.settings.ResourceEntryClassificationMap
-    //   .find(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
-
-    // return !!map ? map.EntryClassificationId : null;
-    return null;
+    const debitCreditFilter = entry.Direction === 1 ? ' and ForDebit eq true' : entry.Direction === -1 ? ' and ForCredit eq true' : '';
+    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
+    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId} ${debitCreditFilter}`;
   }
 
-  private resourceClassificationPath(entry: Entry) {
-    const resource = this.resource(entry) as Resource;
-    const resourceClassificationId = !!resource ? resource.AccountTypeId : null;
-    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as LegacyType;
-    const resourceClassificationPath = null; // !!resourceClassification ? resourceClassification.Path : null;
+  // External Reference
 
-    return resourceClassificationPath;
+  public showExternalReference(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasExternalReference : false;
   }
 
-  public forDebitCreditFilter(entry: Entry): string {
-    if (!entry) {
-      return '';
-    }
+  // Additional Reference
 
-    return entry.Direction === 1 ? ' and ForDebit eq true' : entry.Direction === -1 ? ' and ForCredit eq true' : '';
+  public showAdditionalReference(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasAdditionalReference : false;
+  }
+
+  // Noted Agent Id
+
+  public showNotedAgent(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasNotedAgentId : false;
+  }
+
+  // Noted Agent Name
+
+  public showNotedAgentName(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasNotedAgentName : false;
+  }
+
+  // Noted Amount
+  public showNotedAmount(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasNotedAmount : false;
+  }
+
+  // Noted Date
+  public showNotedDate(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account ? account.HasNotedDate : false;
   }
 }

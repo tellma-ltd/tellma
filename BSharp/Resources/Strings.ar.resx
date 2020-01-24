@@ -92,16 +92,16 @@
     <value>مرتبط بمرجع خارجي</value>
   </data>
   <data name="Account_HasNotedAgentId" xml:space="preserve">
-    <value>مرتبط بذمة جانبية</value>
+    <value>مرتبط بذمة معنية</value>
   </data>
   <data name="Account_HasNotedAgentName" xml:space="preserve">
-    <value>مرتبط باسم ذمة جانبية</value>
+    <value>مرتبط باسم ذمة معنية</value>
   </data>
   <data name="Account_HasNotedAmount" xml:space="preserve">
-    <value>مرتبط بمبلغ جانبي</value>
+    <value>مرتبط بمبلغ معني</value>
   </data>
   <data name="Account_HasNotedDate" xml:space="preserve">
-    <value>مربتط بتاريخ جانبي</value>
+    <value>مربتط بتاريخ معني</value>
   </data>
   <data name="Account_HasResource" xml:space="preserve">
     <value>مرتبط بمورد</value>
@@ -448,9 +448,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>المرجع الإضافي</value>
-  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>الذمّة</value>
   </data>
@@ -469,29 +466,11 @@
   <data name="Entry_EntryType" xml:space="preserve">
     <value>السبب</value>
   </data>
-  <data name="Entry_ExternalReference" xml:space="preserve">
-    <value>المرجع الخارجي</value>
-  </data>
-  <data name="Entry_IsCurrent" xml:space="preserve">
-    <value>جار</value>
-  </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>الكتلة</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>المبلغ النقدي</value>
-  </data>
-  <data name="Entry_RelatedAgent" xml:space="preserve">
-    <value>الذمة المتعلقة</value>
-  </data>
-  <data name="Entry_RelatedAgentName" xml:space="preserve">
-    <value>اسم الذمة المتعلقة</value>
-  </data>
-  <data name="Entry_RelatedAmount" xml:space="preserve">
-    <value>المبلغ المتعلق</value>
-  </data>
-  <data name="Entry_RelatedDate" xml:space="preserve">
-    <value>التاريخ المتعلق</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
@@ -848,7 +827,7 @@
     <value>أنواع سابقة</value>
   </data>
   <data name="Line_AdditionalReference" xml:space="preserve">
-    <value>مرجع إضافي</value>
+    <value>المرجع الإضافي</value>
   </data>
   <data name="Line_Agent" xml:space="preserve">
     <value>الذمة</value>
@@ -860,7 +839,19 @@
     <value>العملة</value>
   </data>
   <data name="Line_ExternalReference" xml:space="preserve">
-    <value>رقم المرجع الخارجي</value>
+    <value>المرجع الخارجي</value>
+  </data>
+  <data name="Line_NotedAgent" xml:space="preserve">
+    <value>الذمة المعنية</value>
+  </data>
+  <data name="Line_NotedAgentName" xml:space="preserve">
+    <value>اسم الذمة المعنية</value>
+  </data>
+  <data name="Line_NotedAmount" xml:space="preserve">
+    <value>المبلغ المعني</value>
+  </data>
+  <data name="Line_NotedDate" xml:space="preserve">
+    <value>التاريخ المعني</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>المورد</value>

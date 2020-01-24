@@ -254,6 +254,11 @@ export class TenantWorkspace {
       return null;
     }
 
+    if (!this[collection]) {
+      // Developer error
+      console.error(`Collection '${collection}' doesn't exist in the workspace`);
+    }
+
     return this[collection][id];
   }
 

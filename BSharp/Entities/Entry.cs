@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,8 +22,9 @@ namespace BSharp.Entities
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
-        [Display(Name = "Entry_IsCurrent")]
-        public bool IsCurrent { get; set; }
+        [Display(Name = "Entry_Currency")]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        public string CurrencyId { get; set; }
 
         [Display(Name = "Entry_Agent")]
         public int? AgentId { get; set; }
@@ -35,12 +35,8 @@ namespace BSharp.Entities
         [Display(Name = "Entry_ResponsibilityCenter")]
         public int? ResponsibilityCenterId { get; set; }
 
-        [Display(Name = "Entry_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
-        public string CurrencyId { get; set; }
-
         [Display(Name = "Entry_EntryType")]
-        public int? EntryClassificationId { get; set; }
+        public int? EntryTypeId { get; set; } // EntryTypeId
 
         [Display(Name = "Entry_DueDate")]
         public DateTime? DueDate { get; set; }
@@ -63,27 +59,6 @@ namespace BSharp.Entities
         [Display(Name = "Entry_Value")]
         public decimal? Value { get; set; }
 
-        [Display(Name = "Entry_ExternalReference")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string ExternalReference { get; set; }
-
-        [Display(Name = "Entry_AdditionalReference")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string AdditionalReference { get; set; }
-
-        [Display(Name = "Entry_RelatedAgent")]
-        public int? RelatedAgentId { get; set; }
-
-        [Display(Name = "Entry_RelatedAgentName")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string RelatedAgentName { get; set; }
-
-        [Display(Name = "Entry_RelatedAmount")]
-        public decimal? RelatedAmount { get; set; }
-
-        [Display(Name = "Entry_RelatedDate")]
-        public DateTime? RelatedDate { get; set; }
-
         [Display(Name = "Entry_Time1")]
         public TimeSpan? Time1 { get; set; }
 
@@ -94,11 +69,7 @@ namespace BSharp.Entities
     public class Entry : EntryForSave
     {
         public int? LineId { get; set; }
-
-        // TODO: Choice List
-        [Display(Name = "Entry_ContractType")]
-        public string ContractType { get; set; }
-
+        
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
@@ -118,8 +89,8 @@ namespace BSharp.Entities
         public Account Account { get; set; }
 
         [Display(Name = "Entry_EntryType")]
-        [ForeignKey(nameof(EntryClassificationId))]
-        public EntryType EntryClassification { get; set; }
+        [ForeignKey(nameof(EntryTypeId))]
+        public EntryType EntryType { get; set; }
 
         [Display(Name = "Entry_Agent")]
         [ForeignKey(nameof(AgentId))]
@@ -136,10 +107,6 @@ namespace BSharp.Entities
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
-
-        [Display(Name = "Entry_RelatedAgent")]
-        [ForeignKey(nameof(RelatedAgentId))]
-        public Agent RelatedAgent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

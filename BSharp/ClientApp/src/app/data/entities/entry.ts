@@ -6,12 +6,11 @@ export interface EntryForSave extends EntityWithKey {
     EntryNumber?: number;
     Direction?: 1 | -1;
     AccountId?: number;
-    IsCurrent?: boolean;
+    CurrencyId?: string;
     AgentId?: number;
     ResourceId?: number;
     ResponsibilityCenterId?: number;
-    CurrencyId?: string;
-    EntryClassificationId?: number;
+    EntryTypeId?: number;
     DueDate?: string;
     MonetaryValue?: number;
     Count?: number;
@@ -19,12 +18,6 @@ export interface EntryForSave extends EntityWithKey {
     Volume?: number;
     Time?: number;
     Value?: number;
-    ExternalReference?: string;
-    AdditionalReference?: string;
-    RelatedAgentId?: number;
-    RelatedAgentName?: string;
-    RelatedAmount?: number;
-    RelatedDate?: string;
     Time1?: string;
     Time2?: string;
 }

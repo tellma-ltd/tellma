@@ -38,11 +38,24 @@ namespace BSharp.Entities
 
         [Display(Name = "Line_ExternalReference")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string ExternalReference { get; set; } // HIDDEN
+        public string ExternalReference { get; set; }
 
         [Display(Name = "Line_AdditionalReference")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string AdditionalReference { get; set; } // HIDDEN
+        public string AdditionalReference { get; set; }
+        
+        [Display(Name = "Line_NotedAgent")]
+        public int? NotedAgentId { get; set; }
+
+        [Display(Name = "Line_NotedAgentName")]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string NotedAgentName { get; set; }
+
+        [Display(Name = "Line_NotedAmount")]
+        public decimal? NotedAmount { get; set; }
+
+        [Display(Name = "Line_NotedDate")]
+        public DateTime? NotedDate { get; set; }
 
         [ForeignKey(nameof(Entry.LineId))]
         public List<TEntry> Entries { get; set; }
@@ -110,6 +123,10 @@ namespace BSharp.Entities
         public User ModifiedBy { get; set; }
 
         // HIDDEN
+
+        [Display(Name = "Line_NotedAgent")]
+        [ForeignKey(nameof(NotedAgentId))]
+        public Agent NotedAgent { get; set; }
 
         [Display(Name = "Line_Currency")]
         [ForeignKey(nameof(CurrencyId))]

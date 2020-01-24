@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 				t.[IsRelated]				= s.[IsRelated],
 				t.[HasExternalReference]	= s.[HasExternalReference],
 				t.[HasAdditionalReference]	= s.[HasAdditionalReference],
-				t.[HasNotedAgentId]			= s.[HasAdditionalReference],
+				t.[HasNotedAgentId]			= s.[HasNotedAgentId],
 				t.[HasNotedAgentName]		= s.[HasNotedAgentName],
 				t.[HasNotedAmount]			= s.[HasNotedAmount],
 				t.[HasNotedDate]			= s.[HasNotedAmount],

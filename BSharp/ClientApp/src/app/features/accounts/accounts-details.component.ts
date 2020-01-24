@@ -260,6 +260,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return `Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
   }
 }

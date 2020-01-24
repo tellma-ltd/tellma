@@ -144,7 +144,7 @@
                         </b-restricted>
                         <b-accounts-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
                             (ngModelChange)="update.call(null, item)"
-                            additionalSelect="EntryClassification/Name,EntryClassification/Name2,EntryClassification/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,ResourceClassification/Path,ResourceClassification/ResourceDefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/ResourceClassification/Path,Resource/DefinitionId,Resource/Currency/Name,Resource/Currency/Name2,Resource/Currency/Name3,Resource/CountUnit/Name,Resource/CountUnit/Name2,Resource/CountUnit/Name3,Resource/MassUnit/Name,Resource/MassUnit/Name2,Resource/MassUnit/Name3,Resource/VolumeUnit/Name,Resource/VolumeUnit/Name2,Resource/VolumeUnit/Name3,Resource/TimeUnit/Name,Resource/TimeUnit/Name2,Resource/TimeUnit/Name3">
+                            additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,HasNotedAmount,HasNotedDate,HasAgent,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/CountUnit/Name,Resource/CountUnit/Name2,Resource/CountUnit/Name3,Resource/MassUnit/Name,Resource/MassUnit/Name2,Resource/MassUnit/Name3,Resource/VolumeUnit/Name,Resource/VolumeUnit/Name2,Resource/VolumeUnit/Name3,Resource/TimeUnit/Name,Resource/TimeUnit/Name2,Resource/TimeUnit/Name3">
                         </b-accounts-picker>
                     </b-form-group>
                 </ng-template>
@@ -177,11 +177,12 @@
                 <ng-template #row_Debit let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
                     <b-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
-                        <div style="float: right">{{ getDebit(entry) | number:'1.2-2' }}</div>
+                        <div style="float: right">{{ getDebit(entry) | number:functional_format }}</div>
                     </b-restricted>
                     <b-form-group *ngIf="isEdit" class="b-form-group" [serverErrors]="entry.serverErrors?.Value">
-                        <b-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="2" [minDecimalPlaces]="2"
-                            textAlignment="right" (ngModelChange)="setDebit(entry, $event); update.call(null, item);"
+                        <b-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="functional_decimals"
+                            [minDecimalPlaces]="functional_decimals" textAlignment="right"
+                            (ngModelChange)="setDebit(entry, $event); update.call(null, item);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </b-decimal-editor>
                     </b-form-group>
@@ -194,11 +195,12 @@
                 <ng-template #row_Credit let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
                     <b-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
-                        <div style="float: right">{{ getCredit(entry) | number:'1.2-2' }}</div>
+                        <div style="float: right">{{ getCredit(entry) | number:functional_format }}</div>
                     </b-restricted>
                     <b-form-group *ngIf="isEdit" class="b-form-group" [serverErrors]="entry.serverErrors?.Value">
-                        <b-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="2" [minDecimalPlaces]="2"
-                            textAlignment="right" (ngModelChange)="setCredit(entry, $event); update.call(null, item);"
+                        <b-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="functional_decimals"
+                            [minDecimalPlaces]="functional_decimals" textAlignment="right"
+                            (ngModelChange)="setCredit(entry, $event); update.call(null, item);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </b-decimal-editor>
                     </b-form-group>
@@ -212,70 +214,76 @@
                     let-update="update">
                     <div class="d-flex">
 
-                        <!-- Monetary Value + Currency -->
+                        <!-- Currency -->
+                        <ng-container *ngIf="showCurrency(entry)">
+                            <b-form-group-dynamic class="px-1" [label]="'Entry_Currency' | translate"
+                                [serverErrors]="entry.serverErrors?.CurrencyId">
+                                <!-- View -->
+                                <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.CurrencyId">
+                                    <b-view-link link="../../../currencies" [itemId]="entry.CurrencyId">
+                                        {{ ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name') }}
+                                    </b-view-link>
+                                </b-restricted>
+                                <!-- Edit -->
+                                <b-currencies-picker *ngIf="isEdit" style="min-width: 100px;"
+                                    [(ngModel)]="entry.CurrencyId" (ngModelChange)="update.call(null, item);" required>
+                                </b-currencies-picker>
+                            </b-form-group-dynamic>
+                        </ng-container>
+
+                        <!-- Monetary Value -->
                         <ng-container *ngIf="showMonetaryValue(entry)">
-                            <b-form-group-dynamic class="border-left px-1" [label]="'Equivalent' | translate"
+                            <b-form-group-dynamic class="border-left px-1" label="="
                                 [serverErrors]="entry.serverErrors?.MonetaryValue">
+                                <!-- View -->
                                 <ng-container *ngIf="!isEdit">
                                     <b-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
-                                        {{ entry.MonetaryValue | number:'1.2-2'}}
+                                        {{ entry.MonetaryValue | number:MonetaryValue_format(entry) }}
                                     </b-restricted>
                                 </ng-container>
+                                <!-- Edit -->
                                 <ng-container *ngIf="isEdit">
-                                    <b-decimal-editor style="min-width: 100px;" [(ngModel)]="entry.MonetaryValue"
-                                        [maxDecimalPlaces]="MonetaryValue_decimals(getCurrencyId(entry))"
-                                        [minDecimalPlaces]="MonetaryValue_decimals(getCurrencyId(entry))"
+                                    <b-decimal-editor style="min-width: 75px; max-width: 125px"
+                                        [(ngModel)]="entry.MonetaryValue"
+                                        [maxDecimalPlaces]="MonetaryValue_decimals(entry)"
+                                        [minDecimalPlaces]="MonetaryValue_decimals(entry)"
                                         (ngModelChange)="update.call(null, item);"
                                         [ngModelOptions]="{ updateOn: 'blur' }" textAlignment="right" required>
                                     </b-decimal-editor>
                                 </ng-container>
                             </b-form-group-dynamic>
-                            <b-form-group-dynamic class="px-1" [serverErrors]="entry.serverErrors?.CurrencyId">
-                                <ng-container *ngIf="!isEdit">
-                                    <b-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
-                                        <!-- <b-view-link link="../../../currencies" [itemId]="entry.CurrencyId"> -->
-                                        {{ ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name') }}
-                                        <!-- </b-view-link> -->
-                                    </b-restricted>
-                                </ng-container>
-                                <ng-container *ngIf="isEdit">
-                                    <b-currencies-picker style="min-width: 150px;" *ngIf="!getAccountCurrencyId(entry)"
-                                        [(ngModel)]="entry.CurrencyId" (ngModelChange)="update.call(null, item);"
-                                        [filter]="'Id ne \'' + functionalId + '\''"
-                                        required>
-                                    </b-currencies-picker>
-                                    <b-restricted *ngIf="!!getAccountCurrencyId(entry)"
-                                        [metadata]="entry.EntityMetadata?.CurrencyId">
-                                        {{ ws.getMultilingualValue('Currency', getAccountCurrencyId(entry), 'Name') }}
-                                    </b-restricted>
-                                </ng-container>
-                            </b-form-group-dynamic>
+                            <!-- Readonly Currency -->
+                            <b-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
+                                {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
+                            </b-restricted>
                         </ng-container>
 
                         <!-- Agent -->
-                        <b-form-group-dynamic class="border-left px-1 b-dark-border2" *ngIf="showAgent(entry)"
-                            [label]="agentLabel(entry)" [serverErrors]="entry.serverErrors?.AgentId">
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showAgent(entry)"
+                            [label]="labelAgent(entry)" [serverErrors]="entry.serverErrors?.AgentId">
+                            <!-- View -->
                             <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.AgentId">
                                 <b-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
                                     [itemId]="entry.AgentId">
                                     {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
                                 </b-view-link>
                             </b-restricted>
+                            <!-- Edit -->
                             <ng-container *ngIf="isEdit">
-                                <b-agents-picker style="min-width: 150px;" *ngIf="!account(entry)?.AgentId"
+                                <b-agents-picker style="min-width: 150px;" *ngIf="!readonlyAgent(entry)"
                                     [(ngModel)]="entry.AgentId" (ngModelChange)="update.call(null, item);"
                                     [definitionIds]="[account(entry)?.AgentDefinitionId]" required>
                                 </b-agents-picker>
-                                <b-restricted *ngIf="!!account(entry)?.AgentId"
-                                    [metadata]="entry.EntityMetadata?.AgentId">
-                                    {{ ws.getMultilingualValue('Agent', account(entry)?.AgentId, 'Name') }}
+                                <b-restricted *ngIf="readonlyAgent(entry)" [metadata]="entry.EntityMetadata?.AgentId">
+                                    {{ ws.getMultilingualValue('Agent', readonlyValueAgentId(entry), 'Name') }}
                                 </b-restricted>
                             </ng-container>
                         </b-form-group-dynamic>
 
                         <!-- Resource -->
-                        <b-form-group-dynamic class="border-left px-1 b-dark-border2" *ngIf="showResource(entry)"
-                            [label]="resourceLabel(entry)" [serverErrors]="entry.serverErrors?.ResourceId">
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showResource(entry)"
+                            [label]="labelResource(entry)" [serverErrors]="entry.serverErrors?.ResourceId">
+                            <!-- View -->
                             <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ResourceId">
                                 <b-view-link
                                     [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
@@ -283,17 +291,16 @@
                                     {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
                                 </b-view-link>
                             </b-restricted>
+                            <!-- Edit -->
                             <ng-container *ngIf="isEdit">
-                                <b-resources-picker style="min-width: 150px;" *ngIf="!account(entry)?.ResourceId"
+                                <b-resources-picker style="min-width: 150px;" *ngIf="!readonlyResource(entry)"
                                     [(ngModel)]="entry.ResourceId" (ngModelChange)="update.call(null, item);"
-                                    [definitionIds]="resourceDefinitionIds(entry)"
-                                    additionalSelect="ResourceClassification/Path,CountUnit/Name,CountUnit/Name2,CountUnit/Name3,MassUnit/Name,MassUnit/Name2,MassUnit/Name3,VolumeUnit/Name,VolumeUnit/Name2,VolumeUnit/Name3,TimeUnit/Name,TimeUnit/Name2,TimeUnit/Name3"
-                                    [filter]="resourceFilter(entry)"
-                                    required>
+                                    additionalSelect="CountUnit/Name,CountUnit/Name2,CountUnit/Name3,MassUnit/Name,MassUnit/Name2,MassUnit/Name3,VolumeUnit/Name,VolumeUnit/Name2,VolumeUnit/Name3,TimeUnit/Name,TimeUnit/Name2,TimeUnit/Name3"
+                                    [filter]="filterResource(entry)" required>
                                 </b-resources-picker>
-                                <b-restricted *ngIf="!!account(entry)?.ResourceId"
+                                <b-restricted *ngIf="readonlyResource(entry)"
                                     [metadata]="entry.EntityMetadata?.ResourceId">
-                                    {{ ws.getMultilingualValue('Resource', account(entry)?.ResourceId, 'Name') }}
+                                    {{ ws.getMultilingualValue('Resource', readonlyValueResourceId(entry), 'Name') }}
                                 </b-restricted>
                             </ng-container>
                         </b-form-group-dynamic>
@@ -412,34 +419,130 @@
                             </b-form-group-dynamic>
                         </ng-container>
 
-                        <!-- Entry Classification -->
-                        <b-form-group-dynamic class="border-left px-1 b-dark-border2"
-                            *ngIf="showEntryClassification(entry)" [label]="'Entry_EntryType' | translate"
-                            [serverErrors]="entry.serverErrors?.EntryClassificationId">
-                            <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.EntryClassificationId">
-                                <b-view-link link="../../../entry-classifications"
-                                    [itemId]="entry.EntryClassificationId">
+                        <!-- Entry Type -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showEntryType(entry)"
+                            [label]="'Entry_EntryType' | translate" [serverErrors]="entry.serverErrors?.EntryTypeId">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.EntryTypeId">
+                                <b-view-link link="../../../entry-types" [itemId]="entry.EntryTypeId">
                                     <div class="text-truncate" style="max-width: 200px;"
-                                        [title]="ws.getMultilingualValue('EntryClassification', entry.EntryClassificationId, 'Name')">
-                                        {{ ws.getMultilingualValue('EntryClassification', entry.EntryClassificationId, 'Name') }}
+                                        [title]="ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name')">
+                                        {{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}
                                     </div>
                                 </b-view-link>
                             </b-restricted>
+                            <!-- Edit -->
                             <ng-container *ngIf="isEdit">
-                                <b-entry-types-picker style="min-width: 150px;"
-                                    *ngIf="!account(entry)?.EntryClassificationId"
-                                    [(ngModel)]="entry.EntryClassificationId" (ngModelChange)="update.call(null, item);"
-                                    [filter]="'IsAssignable eq true and IsActive eq true and Node descof ' + entryClassificationRoot(entry) + forDebitCreditFilter(entry)"
-                                    required>
+                                <b-entry-types-picker style="min-width: 150px;" *ngIf="!readonlyEntryType(entry)"
+                                    [(ngModel)]="entry.EntryTypeId" (ngModelChange)="update.call(null, item);"
+                                    [filter]="filterEntryType(entry)" required>
                                 </b-entry-types-picker>
-                                <b-restricted *ngIf="!!account(entry)?.EntryClassificationId"
-                                    [metadata]="entry.EntityMetadata?.EntryClassificationId">
+                                <b-restricted *ngIf="readonlyEntryType(entry)"
+                                    [metadata]="entry.EntityMetadata?.EntryTypeId">
                                     <div class="text-truncate" style="max-width: 200px;"
-                                        [title]="ws.getMultilingualValue('EntryClassification', entry.EntryClassificationId, 'Name')">
-                                        {{ ws.getMultilingualValue('EntryClassification', account(entry)?.EntryClassificationId, 'Name') }}
+                                        [title]="ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name')">
+                                        {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId(entry), 'Name') }}
                                     </div>
                                 </b-restricted>
                             </ng-container>
+                        </b-form-group-dynamic>
+
+                        <!-- External Reference -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showExternalReference(entry)"
+                            [label]="'Line_ExternalReference' | translate"
+                            [serverErrors]="item.serverErrors?.ExternalReference">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.ExternalReference">
+                                <div class="text-truncate" style="max-width: 200px; min-width: 50px;" [title]="item.ExternalReference">
+                                    {{ item.ExternalReference }}
+                                </div>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.ExternalReference"
+                                (ngModelChange)="update.call(null, item);">
+                            </b-text-editor>
+                        </b-form-group-dynamic>
+
+                        <!-- Additional Reference -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showAdditionalReference(entry)"
+                            [label]="'Line_AdditionalReference' | translate"
+                            [serverErrors]="item.serverErrors?.AdditionalReference">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.AdditionalReference">
+                                <div class="text-truncate" style="max-width: 200px; min-width: 50px;" [title]="item.AdditionalReference">
+                                    {{ item.AdditionalReference }}
+                                </div>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-text-editor *ngIf="isEdit" style="min-width: 150px;"
+                                [(ngModel)]="item.AdditionalReference" (ngModelChange)="update.call(null, item);">
+                            </b-text-editor>
+                        </b-form-group-dynamic>
+
+                        <!-- Noted Agent -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showNotedAgent(entry)"
+                            [label]="'Line_NotedAgent' | translate" [serverErrors]="item.serverErrors?.NotedAgent">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAgentId">
+                                <b-view-link
+                                    [link]="'../../../agents/' + ws.get('Agent', item.NotedAgentId)?.DefinitionId"
+                                    [itemId]="item.NotedAgentId">
+                                    {{ ws.getMultilingualValue('Agent', item.NotedAgentId, 'Name') }}
+                                </b-view-link>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-agents-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.NotedAgentId"
+                                (ngModelChange)="update.call(null, item);">
+                            </b-agents-picker>
+                        </b-form-group-dynamic>
+
+                        <!-- Noted Agent Name -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showNotedAgentName(entry)"
+                            [label]="'Line_NotedAgentName' | translate"
+                            [serverErrors]="item.serverErrors?.NotedAgentName">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAgentName">
+                                <div class="text-truncate" style="max-width: 200px; min-width: 50px;" [title]="item.NotedAgentName">
+                                    {{ item.NotedAgentName }}
+                                </div>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.NotedAgentName"
+                                (ngModelChange)="update.call(null, item);">
+                            </b-text-editor>
+                        </b-form-group-dynamic>
+
+                        <!-- Noted Amount -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showNotedAmount(entry)"
+                            [label]="'Line_NotedAmount' | translate" [serverErrors]="item.serverErrors?.NotedAmount">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAmount">
+                                <div class="text-truncate" style="max-width: 200px; min-width: 50px;" [title]="item.NotedAmount">
+                                    {{ item.NotedAmount | number:MonetaryValue_format(entry) }}
+                                </div>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-decimal-editor *ngIf="isEdit" style="min-width: 150px;"
+                                [minDecimalPlaces]="MonetaryValue_decimals(entry)"
+                                [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="item.NotedAmount"
+                                (ngModelChange)="update.call(null, item);">
+                            </b-decimal-editor>
+                        </b-form-group-dynamic>
+
+                        <!-- Noted Date -->
+                        <b-form-group-dynamic class="border-left px-1" *ngIf="showNotedDate(entry)"
+                            [label]="'Line_NotedDate' | translate"
+                            [serverErrors]="item.serverErrors?.NotedDate">
+                            <!-- View -->
+                            <b-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedDate">
+                                <div class="text-truncate" style="max-width: 200px; min-width: 50px;" [title]="item.NotedDate">
+                                    {{ item.NotedDate | date:'yyyy-MM-dd' }}
+                                </div>
+                            </b-restricted>
+                            <!-- Edit -->
+                            <b-date-picker *ngIf="isEdit" style="min-width: 150px;"
+                                [(ngModel)]="item.NotedDate" (ngModelChange)="update.call(null, item);">
+                            </b-date-picker>
                         </b-form-group-dynamic>
                     </div>
                 </ng-template>

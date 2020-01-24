@@ -448,9 +448,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
   </data>
-  <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>其他参考</value>
-  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
@@ -469,29 +466,11 @@
   <data name="Entry_EntryType" xml:space="preserve">
     <value>条目分类</value>
   </data>
-  <data name="Entry_ExternalReference" xml:space="preserve">
-    <value>外部参考</value>
-  </data>
-  <data name="Entry_IsCurrent" xml:space="preserve">
-    <value>是当前的</value>
-  </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>块</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
-  </data>
-  <data name="Entry_RelatedAgent" xml:space="preserve">
-    <value>相关代理</value>
-  </data>
-  <data name="Entry_RelatedAgentName" xml:space="preserve">
-    <value>相关代理机构名称</value>
-  </data>
-  <data name="Entry_RelatedAmount" xml:space="preserve">
-    <value>关联量</value>
-  </data>
-  <data name="Entry_RelatedDate" xml:space="preserve">
-    <value>相关日期</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
@@ -861,6 +840,18 @@
   </data>
   <data name="Line_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
+  </data>
+  <data name="Line_NotedAgent" xml:space="preserve">
+    <value>相关代理</value>
+  </data>
+  <data name="Line_NotedAgentName" xml:space="preserve">
+    <value>相关代理机构名称</value>
+  </data>
+  <data name="Line_NotedAmount" xml:space="preserve">
+    <value>关联量</value>
+  </data>
+  <data name="Line_NotedDate" xml:space="preserve">
+    <value>相关日期</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>资源</value>
