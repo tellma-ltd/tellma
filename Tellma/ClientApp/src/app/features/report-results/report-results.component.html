@@ -35,7 +35,7 @@
             <table class="table table-hover table-bordered border table-sm bg-white t-report-table text-nowrap">
                 <tbody>
                     <!-- Top Section -->
-                    <ng-container *ngFor="let row of columnHeaders; index as r">
+                    <ng-container *ngFor="let row of columnHeaders; index as r;">
                         <tr *ngIf="showHeaderRow(r)">
 
                             <!-- Blank Cell -->
@@ -93,8 +93,8 @@
                     </tr>
 
                     <!-- Bottom Section -->
-                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject" style="height: 32px">
-                        <ng-container *ngFor="let cell of row" [ngSwitch]="cell.type">
+                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject;" style="height: 32px;">
+                        <ng-container *ngFor="let cell of row;" [ngSwitch]="cell.type">
 
                             <!-- Row Cell -->
                             <td class="t-report-dimension" *ngSwitchCase="'dimension'">
@@ -115,7 +115,7 @@
                             <ng-container *ngSwitchCase="'measure'">
                                 <ng-container *ngIf="isMeasureVisible(cell)">
                                     <td class="t-report-measure" [class.font-weight-bold]="cell.isTotal"
-                                        *ngFor="let info of measures; index as i" (click)="onMeasureClick(cell, r)">
+                                        *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, r)">
                                         <t-auto-cell [propDescriptor]="info.desc" [entity]="cell.values[i]">
                                         </t-auto-cell>
                                     </td>
@@ -145,7 +145,7 @@
 
     <!-- Charts -->
     <div class="h-100 w-100" style="position: relative;" *ngIf="showChart">
-        <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0">
+        <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
 
             <!-- Card -->
             <ng-container *ngSwitchCase="'Card'">
@@ -359,7 +359,7 @@
                     (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
                     [yAxisTickFormatting]="formatChartDimension">
                     <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
                         </ng-container>
                     </ng-template>
                 </ngx-charts-heat-map>
@@ -446,6 +446,19 @@
                     </div>
                 </div>
             </ng-template>
+            
+            <!-- Tooltip template -->
+            <ng-template #heatmapTooltip let-model="model">
+                <!-- model: {
+                    series: ChartDimensionCell,
+                    name: any, // simple value
+                    value: number
+                } -->
+                <div class="text-white p-1">
+                    <span style="font-size: 130%;">{{ model.value }}</span>
+                </div>
+            </ng-template>
+
         </div><!-- End *ngIf="showChart" -->
     </div>
 
