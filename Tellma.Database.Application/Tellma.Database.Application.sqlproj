@@ -521,7 +521,6 @@
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
     <None Include="Tests\72_ResourceClassifications.sql" />
-    <None Include="Dev.publish.xml" />
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />
     <None Include="IntegrationTests.publish.xml" />
@@ -546,7 +545,7 @@
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
-      <DefaultValue>support@banan-it.com</DefaultValue>
+      <DefaultValue>admin@tellma.com</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="FunctionalCurrency">

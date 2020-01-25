@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
 using Tellma.Services.EmbeddedIdentityServer;
 using Microsoft.Extensions.Options;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -17,14 +18,18 @@ namespace Tellma.Areas.Identity.Pages.Account
         private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
+        private readonly GlobalOptions _globalConfig;
         private readonly ClientApplicationsOptions _config;
 
         public LoginWithRecoveryCodeModel(SignInManager<EmbeddedIdentityServerUser> signInManager, ILogger<LoginWithRecoveryCodeModel> logger, 
-            IStringLocalizer<Strings> localizer, IOptions<ClientApplicationsOptions> options)
+            IStringLocalizer<Strings> localizer,
+            IOptions<GlobalOptions> globalOptions,
+            IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
+            _globalConfig = globalOptions.Value;
             _config = options.Value;
         }
 
@@ -76,7 +81,7 @@ namespace Tellma.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", user.Id);
-                return SafeRedirect(returnUrl ?? _config.WebClientUri ?? Url.Content("~/"));
+                return OnSignIn(returnUrl);
             }
             if (result.IsLockedOut)
             {
@@ -91,15 +96,26 @@ namespace Tellma.Areas.Identity.Pages.Account
             }
         }
 
-        private ActionResult SafeRedirect(string url)
+        private IActionResult OnSignIn(string returnUrl)
         {
-            if (url == _config.WebClientUri)
+            if (returnUrl != null)
             {
-                return Redirect(url);
+                // This url most likely came from identity server
+                return LocalRedirect(returnUrl);
             }
             else
             {
-                return LocalRedirect(url);
+                // If no return url, send the user to the client app
+                if (_globalConfig.EmbeddedClientApplicationEnabled)
+                {
+                    // Embedded web client app
+                    return LocalRedirect("~/");
+                }
+                else
+                {
+                    // Validation ensures this value is not null
+                    return Redirect(_config?.WebClientUri);
+                }
             }
         }
     }
