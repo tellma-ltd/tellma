@@ -67,4 +67,4 @@ Follow the steps below to setup the solution for the first time.
 - Make sure you pull the latest version of the code from GitHub
 - Make sure the latest version of the database is deployed to `[Tellma.IntegrationTests.101]`
 - Start the app: Debug -> Start without debugging (Make sure Tellma is the startup project)
-- Right Click BSharp.IntegrationTests -> Run Tests
+- Right Click Tellma.IntegrationTests -> Run Tests
