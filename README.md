@@ -6,7 +6,7 @@ Follow the steps below to setup the solution for the first time.
 
 ### Database Tier
 - Make sure SQL Server 2017 (or later) Developer Edition is installed and accessible on "." with Windows auth
-- Deploy the Tellma.Database.Admin and BSharp.Database.Identity sql projects in one database `[Tellma]` on the server "."
+- Deploy the Tellma.Database.Admin and Tellma.Database.Identity sql projects in one database `[Tellma]` on the server "."
 - Deploy the Tellma.Database.Application sql project in a separate database `[Tellma.101]` on the same server "."
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
 	`SqlDatabases: Id=101, ServerId=1, DatabaseName=(Name of application database), CreatedById=1, ModifiedById=1`
