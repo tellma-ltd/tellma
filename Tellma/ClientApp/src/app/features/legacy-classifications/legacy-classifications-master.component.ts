@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-legacy-classifications-master',
+  selector: 't-legacy-classifications-master',
   templateUrl: './legacy-classifications-master.component.html',
   styles: []
 })

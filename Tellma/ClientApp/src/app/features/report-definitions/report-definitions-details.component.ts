@@ -32,7 +32,7 @@ export interface FieldInfo {
 }
 
 @Component({
-  selector: 'b-report-definitions-details',
+  selector: 't-report-definitions-details',
   templateUrl: './report-definitions-details.component.html',
   styles: []
 })
@@ -573,7 +573,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.itemToEditNature = 'dimension';
     this.modelRef = model;
 
-    this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
+    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
         model.Rows[index] = itemToEdit;
         this.onDefinitionChange(model);
@@ -588,7 +588,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.itemToEditNature = 'dimension';
     this.modelRef = model;
 
-    this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(
+    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(
       () => {
         if (this.itemToEditHasChanged) {
           model.Columns[index] = itemToEdit;
@@ -605,7 +605,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.itemToEditNature = 'measure';
     this.modelRef = model;
 
-    this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
+    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
         model.Measures[index] = itemToEdit;
         this.onDefinitionChange(model);
@@ -620,7 +620,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.itemToEditNature = 'select';
     this.modelRef = model;
 
-    this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
+    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
         model.Select[index] = itemToEdit;
         this.onDefinitionChange(model);
@@ -635,7 +635,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     this.itemToEditNature = 'parameter';
     this.modelRef = model;
 
-    this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
+    this.modalService.open(this.configureModal, { windowClass: 't-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
         model.Parameters[index] = itemToEdit;
         this.onDefinitionChange(model);

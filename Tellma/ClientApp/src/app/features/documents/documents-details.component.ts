@@ -39,7 +39,7 @@ interface DocumentCreationEvent extends DocumentEventBase {
 type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent;
 
 @Component({
-  selector: 'b-documents-details',
+  selector: 't-documents-details',
   templateUrl: './documents-details.component.html',
   styles: []
 })

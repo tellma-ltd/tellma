@@ -9,7 +9,7 @@ export class MasterBaseComponent implements OnDestroy {
 
   // a convenience class that canonical master components can inherit from
   // it provides all common functionality of the TypeScript part of the component
-  // and complements a b-master in the root of its HTML template
+  // and complements a t-master in the root of its HTML template
 
   @Input()
   public showCreate = true; // For details pickers

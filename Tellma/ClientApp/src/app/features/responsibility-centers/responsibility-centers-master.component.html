@@ -1,4 +1,4 @@
-<b-master collection="ResponsibilityCenter" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="ResponsibilityCenter" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
     [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'ResponsibilityCenters' | translate"
     [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="Code,ResponsibilityType" selectForTiles="Code, ResponsibilityType" [multiselectActions]="[
@@ -15,7 +15,7 @@
                 { template: cost, expression: 'ResponsibilityType eq \'Cost\''}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

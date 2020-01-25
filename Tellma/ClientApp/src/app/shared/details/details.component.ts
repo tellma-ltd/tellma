@@ -30,7 +30,7 @@ export interface DropdownAction {
 export type DocumentLayout = 'document' | 'full-screen';
 
 @Component({
-  selector: 'b-details',
+  selector: 't-details',
   templateUrl: './details.component.html'
 })
 export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeactivate {

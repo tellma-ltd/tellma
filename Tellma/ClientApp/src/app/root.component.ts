@@ -13,7 +13,7 @@ import { appsettings } from './data/global-resolver.guard';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
-  selector: 'b-root',
+  selector: 't-root',
   templateUrl: './root.component.html',
   styles: []
 })
@@ -144,9 +144,9 @@ export class RootComponent {
 
     // set RTL on the DOM document
     if (isRtl && !!document) {
-      this.document.body.classList.add('b-rtl');
+      this.document.body.classList.add('t-rtl');
     } else {
-      this.document.body.classList.remove('b-rtl');
+      this.document.body.classList.remove('t-rtl');
     }
   }
 

@@ -38,7 +38,7 @@ interface PivotHash {
 }
 
 @Component({
-  selector: 'b-report-results',
+  selector: 't-report-results',
   templateUrl: './report-results.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush

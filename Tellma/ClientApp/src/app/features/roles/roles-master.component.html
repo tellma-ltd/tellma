@@ -1,4 +1,4 @@
-<b-master collection="Role" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="Role" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" selectForTiles="Code" selectDefault="Code,IsPublic,IsActive"
   [tableSummaryHeaderTemplate]="summaryHeader" [multiselectActions]="[
@@ -13,7 +13,7 @@
               { template: isNotPublic, expression: 'IsPublic eq false'}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

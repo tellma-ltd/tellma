@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, HostBinding, AfterView
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'b-text-editor',
+  selector: 't-text-editor',
   templateUrl: './text-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: TextEditorComponent }]
 })

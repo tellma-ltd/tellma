@@ -5,7 +5,7 @@ import { Location } from '@angular/common';
 import { StorageService } from '~/app/data/storage.service';
 
 @Component({
-  selector: 'b-error',
+  selector: 't-error',
   templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit {

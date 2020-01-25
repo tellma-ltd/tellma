@@ -1,4 +1,4 @@
-<b-master collection="AccountType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="AccountType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'AccountTypes' | translate"
   [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="IsAssignable,IsCurrent,IsReal,IsActive" selectForTiles="Name,Name2,Name3" [multiselectActions]="[
@@ -9,7 +9,7 @@
       { template: createdByMe, expression: 'CreatedById eq me'}
     ]
   }">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
@@ -17,7 +17,7 @@
     <span class="d-block text-truncate">{{ ws.getMultilingualValue('AccountType', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-auto-cell collection="AccountType" [entity]="c[id]" path="Id"></b-auto-cell>
+    <t-auto-cell collection="AccountType" [entity]="c[id]" path="Id"></t-auto-cell>
   </div>
 </ng-template>
 
@@ -29,7 +29,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="AccountType" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="AccountType" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

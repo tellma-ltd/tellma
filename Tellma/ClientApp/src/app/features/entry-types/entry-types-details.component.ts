@@ -8,7 +8,7 @@ import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 
 @Component({
-  selector: 'b-entry-types-details',
+  selector: 't-entry-types-details',
   templateUrl: './entry-types-details.component.html'
 })
 export class EntryTypesDetailsComponent extends DetailsBaseComponent {

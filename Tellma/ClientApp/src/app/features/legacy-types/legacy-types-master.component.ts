@@ -3,7 +3,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
-  selector: 'b-legacy-types-master',
+  selector: 't-legacy-types-master',
   templateUrl: './legacy-types-master.component.html'
 })
 export class LegacyTypesMasterComponent extends MasterBaseComponent {

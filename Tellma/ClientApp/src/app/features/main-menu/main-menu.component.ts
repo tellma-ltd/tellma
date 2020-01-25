@@ -13,7 +13,7 @@ interface MenuSectionInfo { label?: string; background: string; items: MenuItemI
 interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
 
 @Component({
-  selector: 'b-main-menu',
+  selector: 't-main-menu',
   templateUrl: './main-menu.component.html'
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -49,7 +49,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
     Financials: {
-      background: 'b-green',
+      background: 't-green',
       items: [
         {
           label: 'Accounts', icon: 'coins', link: '../accounts',
@@ -75,7 +75,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Administration: {
-      background: 'b-blue',
+      background: 't-blue',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',
@@ -108,7 +108,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Miscellaneous: { // TODO
-      background: 'b-grey',
+      background: 't-grey',
       items: [
       ]
     }
@@ -208,7 +208,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const count = this.mainMenu.reduce((sum, obj) => sum + obj.items.length, 0);
 
     // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('b-banner');
+    this.document.body.classList.add('t-banner');
 
     // if the main menu is enormous, it causes an uncomfortable lag before navigation
     // we eliminate this lag by not rendering the menu items immediately if  they are too many
@@ -224,7 +224,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     // other screens have a simple grey background
-    this.document.body.classList.remove('b-banner');
+    this.document.body.classList.remove('t-banner');
   }
 
   initialize() {

@@ -3,7 +3,7 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.component';
 
 @Component({
-  selector: 'b-lookups-picker',
+  selector: 't-lookups-picker',
   templateUrl: './lookups-picker.component.html',
   styles: [],
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: LookupsPickerComponent }]

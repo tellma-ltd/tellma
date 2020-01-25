@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-roles-master',
+  selector: 't-roles-master',
   templateUrl: './roles-master.component.html'
 })
 export class RolesMasterComponent extends MasterBaseComponent {

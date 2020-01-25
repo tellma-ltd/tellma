@@ -1,24 +1,24 @@
-.b-image-placeholder {
+.t-image-placeholder {
     color: lightgrey;
   }
   
-  .b-image-controls {
+  .t-image-controls {
     height: 23px;
     margin-top: -23px;
   }
   
   @media (min-width: 768px) {
-    .b-image-controls {
+    .t-image-controls {
       opacity: 0;
       transition: opacity ease 100ms;
     }
   
-    .b-image:hover .b-image-controls {
+    .t-image:hover .t-image-controls {
       opacity: 1;
     }
   }
   
-  .b-image-round {
+  .t-image-round {
     border-radius: 50%;
   }
   

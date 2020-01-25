@@ -8,7 +8,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-account-types-master',
+  selector: 't-account-types-master',
   templateUrl: './account-types-master.component.html',
   styles: []
 })

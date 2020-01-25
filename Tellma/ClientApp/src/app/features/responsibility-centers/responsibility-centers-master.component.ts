@@ -8,7 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-responsibility-centers-master',
+  selector: 't-responsibility-centers-master',
   templateUrl: './responsibility-centers-master.component.html',
   styles: []
 })

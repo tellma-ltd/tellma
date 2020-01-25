@@ -14,7 +14,7 @@ import {
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 'b-responsibility-centers-details',
+  selector: 't-responsibility-centers-details',
   templateUrl: './responsibility-centers-details.component.html',
   styles: []
 })

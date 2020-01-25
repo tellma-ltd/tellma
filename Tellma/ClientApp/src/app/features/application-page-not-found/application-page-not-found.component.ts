@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
-  selector: 'b-application-page-not-found',
+  selector: 't-application-page-not-found',
   templateUrl: './application-page-not-found.component.html'
 })
 export class ApplicationPageNotFoundComponent implements OnInit {

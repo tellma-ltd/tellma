@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'b-lookups-details',
+  selector: 't-lookups-details',
   templateUrl: './lookups-details.component.html',
   styles: []
 })

@@ -1,11 +1,11 @@
-<b-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
+<t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
     [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
             { template: deactivate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
            ]">
 
-</b-details>
+</t-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
@@ -16,54 +16,54 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2"
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
         [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
-        <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+        <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'"
             required>
-        </b-text-editor>
+        </t-text-editor>
 
-        <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+        <t-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
-        </b-text-editor>
+        </t-text-editor>
 
-        <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+        <t-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
-        </b-text-editor>
-    </b-form-group>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Name -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
         [serverErrors]="model?.serverErrors?.Name">
         <div *ngIf="!isEdit">{{ model?.Name }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Name2 -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+    <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
         [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
         <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Name3 -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+    <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
         [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
         <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Code -->
-    <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
         <div *ngIf="!isEdit">{{ model?.Code }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
-        </b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
 
     <ngb-tabset class="w-100 pt-3 pt-sm-4" [destroyOnHide]="true">
         <!-- Basic -->
@@ -75,177 +75,177 @@
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- Responsibility Center -->
-                    <b-form-group class="b-form-group" *ngIf="showResponsibilityCenter(model)"
+                    <t-form-group class="t-form-group" *ngIf="showResponsibilityCenter(model)"
                         [label]="'Account_ResponsibilityCenter' | translate"
                         [serverErrors]="model?.serverErrors?.ResponsibilityCenterId">
-                        <b-view-link *ngIf="!isEdit" link="../../responsibility-centers"
+                        <t-view-link *ngIf="!isEdit" link="../../responsibility-centers"
                             [itemId]="model?.ResponsibilityCenterId">
-                            <b-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId">
-                        </b-responsibility-centers-picker>
-                    </b-form-group>
+                            <t-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId">
+                        </t-responsibility-centers-picker>
+                    </t-form-group>
 
                     <!-- Type -->
-                    <b-form-group class="b-form-group" [label]="'Account_Type' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_Type' | translate"
                         [serverErrors]="model?.serverErrors?.AccountTypeId">
-                        <b-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.AccountTypeId">
-                            <b-auto-cell collection="Account" path="AccountType" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="false"
+                        <t-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.AccountTypeId">
+                            <t-auto-cell collection="Account" path="AccountType" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="false"
                             additionalSelect="IsReal,IsPersonal,IsCurrent,EntryTypeParentId">
-                        </b-account-types-picker>
-                    </b-form-group>
+                        </t-account-types-picker>
+                    </t-form-group>
 
                     <!-- Is Current -->
-                    <b-form-group class="b-form-group" [label]="'Account_IsCurrent' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_IsCurrent' | translate"
                         [serverErrors]="model?.serverErrors?.IsCurrent">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsCurrent">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsCurrent">
                             {{ (model?.IsCurrent ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
+                        </t-restricted>
                         <ng-container *ngIf="isEdit">
                             <span
                                 *ngIf="readonlyIsCurrent(model)">{{ (ws.get('AccountType', model.AccountTypeId)?.IsCurrent ? 'Yes' : 'No') | translate }}</span>
                             <div *ngIf="!readonlyIsCurrent(model)"
-                                class="custom-control custom-checkbox b-labelless-checkbox">
+                                class="custom-control custom-checkbox t-labelless-checkbox">
                                 <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsCurrent"
                                     id="isCurrent">
-                                <label class="custom-control-label b-pointer" for="isCurrent">&zwnj;</label>
+                                <label class="custom-control-label t-pointer" for="isCurrent">&zwnj;</label>
                             </div>
                         </ng-container>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has Resource -->
-                    <b-form-group class="b-form-group" *ngIf="showHasResource(model)"
+                    <t-form-group class="t-form-group" *ngIf="showHasResource(model)"
                         [label]="'Account_HasResource' | translate" [serverErrors]="model?.serverErrors?.HasResource">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasResource">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasResource">
                             {{ (model?.HasResource ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasResource"
                                 id="hasResource">
-                            <label class="custom-control-label b-pointer" for="hasResource">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasResource">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Resource -->
-                    <b-form-group class="b-form-group" *ngIf="showResource(model)"
+                    <t-form-group class="t-form-group" *ngIf="showResource(model)"
                         [label]="'Account_Resource' | translate" [serverErrors]="model?.serverErrors?.ResourceId">
-                        <b-view-link *ngIf="!isEdit"
+                        <t-view-link *ngIf="!isEdit"
                             [link]="'../../resources/' + ws.get('Resource', model?.ResourceId)?.DefinitionId"
                             [itemId]="model?.ResourceId">
-                            <b-auto-cell collection="Account" path="Resource" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
+                            <t-auto-cell collection="Account" path="Resource" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
                             additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3" [filter]="filterResource(model)">
-                        </b-resources-picker>
-                    </b-form-group>
+                        </t-resources-picker>
+                    </t-form-group>
 
                     <!-- Currency -->
-                    <b-form-group class="b-form-group" [label]="'Account_Currency' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_Currency' | translate"
                         [serverErrors]="model?.serverErrors?.CurrencyId">
                         <!-- View mode -->
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-                            <b-view-link link="../../currencies" [itemId]="model?.CurrencyId">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+                            <t-view-link link="../../currencies" [itemId]="model?.CurrencyId">
                                 {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
-                            </b-view-link>
-                        </b-restricted>
+                            </t-view-link>
+                        </t-restricted>
 
                         <!-- Edit mode -->
                         <ng-container *ngIf="isEdit">
                             <span
                                 *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency', readonlyValueCurrencyId(model), 'Name') }}</span>
-                            <b-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
-                            </b-currencies-picker>
+                            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
+                            </t-currencies-picker>
                         </ng-container>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Is Related -->
-                    <b-form-group class="b-form-group" *ngIf="showIsRelated(model)"
+                    <t-form-group class="t-form-group" *ngIf="showIsRelated(model)"
                         [label]="'Account_IsRelated' | translate" [serverErrors]="model?.serverErrors?.IsRelated">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
                             {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated"
                                 id="isRelated">
-                            <label class="custom-control-label b-pointer" for="isRelated">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="isRelated">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has Agent -->
-                    <b-form-group class="b-form-group" *ngIf="showHasAgent(model)"
+                    <t-form-group class="t-form-group" *ngIf="showHasAgent(model)"
                         [label]="'Account_HasAgent' | translate" [serverErrors]="model?.serverErrors?.HasAgent">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
                             {{ (model?.HasAgent ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasAgent"
                                 id="hasAgent">
-                            <label class="custom-control-label b-pointer" for="hasAgent">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasAgent">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Agent -->
-                    <b-form-group class="b-form-group" *ngIf="showAgent(model)" [label]="'Account_Agent' | translate"
+                    <t-form-group class="t-form-group" *ngIf="showAgent(model)" [label]="'Account_Agent' | translate"
                         [serverErrors]="model?.serverErrors?.AgentId">
-                        <b-view-link *ngIf="!isEdit"
+                        <t-view-link *ngIf="!isEdit"
                             [link]="'../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
                             [itemId]="model?.AgentId">
-                            <b-auto-cell collection="Account" path="Agent" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" additionalSelect="DefinitionId">
-                        </b-agents-picker>
-                    </b-form-group>
+                            <t-auto-cell collection="Account" path="Agent" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" additionalSelect="DefinitionId">
+                        </t-agents-picker>
+                    </t-form-group>
 
                     <!-- Agent Definition -->
-                    <b-form-group class="b-form-group" *ngIf="showAgentDefinitionId(model)"
+                    <t-form-group class="t-form-group" *ngIf="showAgentDefinitionId(model)"
                         [label]="'Account_AgentDefinition' | translate"
                         [serverErrors]="model?.serverErrors?.AgentDefinitionId">
                         <!-- View Mode -->
-                        <b-auto-cell *ngIf="!isEdit" collection="Account" path="AgentDefinitionId" [entity]="model">
-                        </b-auto-cell>
+                        <t-auto-cell *ngIf="!isEdit" collection="Account" path="AgentDefinitionId" [entity]="model">
+                        </t-auto-cell>
 
                         <!-- Edit Mode -->
                         <ng-container *ngIf="isEdit">
                             <span
                                 *ngIf="readonlyAgentDefinitionId(model)">{{ formatAgentDefinitionId(readonlyValueAgentDefinitionId(model)) }}</span>
-                            <b-selector *ngIf="!readonlyAgentDefinitionId(model)" [(ngModel)]="model.AgentDefinitionId"
+                            <t-selector *ngIf="!readonlyAgentDefinitionId(model)" [(ngModel)]="model.AgentDefinitionId"
                                 [choices]="choicesAgentDefinitionId" required>
-                            </b-selector>
+                            </t-selector>
                         </ng-container>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Entry Type -->
-                    <b-form-group class="b-form-group" *ngIf="showEntryType(model)"
+                    <t-form-group class="t-form-group" *ngIf="showEntryType(model)"
                         [label]="'Account_EntryType' | translate" [serverErrors]="model?.serverErrors?.EntryTypeId">
-                        <b-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.EntryTypeId">
-                            <b-auto-cell collection="Account" path="EntryType" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId"
+                        <t-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.EntryTypeId">
+                            <t-auto-cell collection="Account" path="EntryType" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId"
                             [filter]="filterEntryType(model)">
-                        </b-entry-types-picker>
-                    </b-form-group>
+                        </t-entry-types-picker>
+                    </t-form-group>
 
                     <!-- Identifier -->
-                    <b-form-group *ngIf="false" class="b-form-group" [label]="'Account_Identifier' | translate"
+                    <t-form-group *ngIf="false" class="t-form-group" [label]="'Account_Identifier' | translate"
                         [serverErrors]="model?.serverErrors?.Identifier">
                         <div *ngIf="!isEdit">{{ model?.Identifier }}</div>
-                        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier"
+                        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier"
                             [ngModelOptions]="{ updateOn: 'blur' }">
-                        </b-text-editor>
-                    </b-form-group>
+                        </t-text-editor>
+                    </t-form-group>
 
                     <!-- Is Deprecated -->
-                    <b-form-group class="b-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
-                        <b-auto-cell collection="Account" [entity]="model" path="IsDeprecated">
-                        </b-auto-cell>
-                    </b-form-group>
+                    <t-form-group class="t-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
+                        <t-auto-cell collection="Account" [entity]="model" path="IsDeprecated">
+                        </t-auto-cell>
+                    </t-form-group>
 
                 </div>
             </ng-template>
@@ -260,104 +260,104 @@
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- Legacy Classification -->
-                    <b-form-group class="b-form-group" [label]="'Account_LegacyClassification' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_LegacyClassification' | translate"
                         [serverErrors]="model?.serverErrors?.LegacyClassificationId">
-                        <b-view-link *ngIf="!isEdit" link="../../legacy-classifications"
+                        <t-view-link *ngIf="!isEdit" link="../../legacy-classifications"
                             [itemId]="model?.LegacyClassificationId">
-                            <b-auto-cell collection="Account" path="LegacyClassification" [entity]="model">
-                            </b-auto-cell>
-                        </b-view-link>
-                        <b-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.LegacyClassificationId">
-                        </b-legacy-classifications-picker>
-                    </b-form-group>
+                            <t-auto-cell collection="Account" path="LegacyClassification" [entity]="model">
+                            </t-auto-cell>
+                        </t-view-link>
+                        <t-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.LegacyClassificationId">
+                        </t-legacy-classifications-picker>
+                    </t-form-group>
 
                     <!-- Legacy Type -->
-                    <b-form-group class="b-form-group" [label]="'Account_LegacyType' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_LegacyType' | translate"
                         [serverErrors]="model?.serverErrors?.LegacyTypeId">
-                        <b-view-link *ngIf="!isEdit" link="../../legacy-types" [itemId]="model.LegacyTypeId">
+                        <t-view-link *ngIf="!isEdit" link="../../legacy-types" [itemId]="model.LegacyTypeId">
                             {{ ws.getMultilingualValue('LegacyType', model.LegacyTypeId, 'Name') }}
-                        </b-view-link>
-                        <b-legacy-types-picker *ngIf="isEdit" [(ngModel)]="model.LegacyTypeId">
-                        </b-legacy-types-picker>
-                    </b-form-group>
+                        </t-view-link>
+                        <t-legacy-types-picker *ngIf="isEdit" [(ngModel)]="model.LegacyTypeId">
+                        </t-legacy-types-picker>
+                    </t-form-group>
 
                     <!-- Has ExternalReference -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasExternalReference' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasExternalReference' | translate"
                         [serverErrors]="model?.serverErrors?.HasExternalReference">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasExternalReference">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasExternalReference">
                             {{ (model?.HasExternalReference ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasExternalReference"
                                 id="hasExternalReference">
-                            <label class="custom-control-label b-pointer" for="hasExternalReference">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasExternalReference">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has AdditionalReference -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasAdditionalReference' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasAdditionalReference' | translate"
                         [serverErrors]="model?.serverErrors?.HasAdditionalReference">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAdditionalReference">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAdditionalReference">
                             {{ (model?.HasAdditionalReference ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input"
                                 [(ngModel)]="model.HasAdditionalReference" id="hasAdditionalReference">
-                            <label class="custom-control-label b-pointer" for="hasAdditionalReference">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasAdditionalReference">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has NotedAgentId -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasNotedAgentId' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasNotedAgentId' | translate"
                         [serverErrors]="model?.serverErrors?.HasNotedAgentId">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentId">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentId">
                             {{ (model?.HasNotedAgentId ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAgentId"
                                 id="hasNotedAgentId">
-                            <label class="custom-control-label b-pointer" for="hasNotedAgentId">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasNotedAgentId">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has NotedAgentName -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasNotedAgentName' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasNotedAgentName' | translate"
                         [serverErrors]="model?.serverErrors?.HasNotedAgentName">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentName">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentName">
                             {{ (model?.HasNotedAgentName ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAgentName"
                                 id="hasNotedAgentName">
-                            <label class="custom-control-label b-pointer" for="hasNotedAgentName">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasNotedAgentName">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has NotedAmount -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasNotedAmount' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasNotedAmount' | translate"
                         [serverErrors]="model?.serverErrors?.HasNotedAmount">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAmount">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAmount">
                             {{ (model?.HasNotedAmount ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAmount"
                                 id="hasNotedAmount">
-                            <label class="custom-control-label b-pointer" for="hasNotedAmount">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasNotedAmount">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                     <!-- Has NotedDate -->
-                    <b-form-group class="b-form-group" [label]="'Account_HasNotedDate' | translate"
+                    <t-form-group class="t-form-group" [label]="'Account_HasNotedDate' | translate"
                         [serverErrors]="model?.serverErrors?.HasNotedDate">
-                        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedDate">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedDate">
                             {{ (model?.HasNotedDate ? 'Yes' : 'No') | translate }}
-                        </b-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                        </t-restricted>
+                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedDate"
                                 id="hasNotedDate">
-                            <label class="custom-control-label b-pointer" for="hasNotedDate">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="hasNotedDate">&zwnj;</label>
                         </div>
-                    </b-form-group>
+                    </t-form-group>
 
                 </div>
             </ng-template>

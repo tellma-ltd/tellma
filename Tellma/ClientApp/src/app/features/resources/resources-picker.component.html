@@ -1,15 +1,15 @@
-<b-details-picker [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null" [filter]="filter"
+<t-details-picker [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null" [filter]="filter"
     [definitionIds]="definitionIds" collection="Resource" [additionalSelect]="additionalSelect">
-</b-details-picker>
+</t-details-picker>
 
 <!-- The Resource Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
     let-definitionId="definitionId" let-idString="idString">
     <div class="modal-body">
-        <b-resources-details mode="popup" [idString]="idString" [initialText]="initialText"
+        <t-resources-details mode="popup" [idString]="idString" [initialText]="initialText"
             [definitionId]="definitionId" (cancel)="modal.close(false);"
             (saved)="modal.close(true); update.call(null, $event);">
-        </b-resources-details>
+        </t-resources-details>
     </div>
 </ng-template>
 
@@ -17,9 +17,9 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId"
     let-filter="filter">
     <div class="modal-body">
-        <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
+        <t-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
             (choose)="modal.close(true); update.call(null, $event);" (create)="modal.close(false); create.call()"
             [showCreate]="showCreate" [additionalSelect]="additionalSelect">
-        </b-resources-master>
+        </t-resources-master>
     </div>
 </ng-template>

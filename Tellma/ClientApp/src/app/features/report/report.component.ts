@@ -16,7 +16,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
 @Component({
-  selector: 'b-report',
+  selector: 't-report',
   templateUrl: './report.component.html',
   styles: []
 })

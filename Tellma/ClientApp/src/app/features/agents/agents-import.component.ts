@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'b-agents-import',
+  selector: 't-agents-import',
   templateUrl: './agents-import.component.html'
 })
 export class AgentsImportComponent {

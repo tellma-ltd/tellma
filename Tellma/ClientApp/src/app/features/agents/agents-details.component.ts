@@ -10,7 +10,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 'b-agents-details',
+  selector: 't-agents-details',
   templateUrl: './agents-details.component.html'
 })
 export class AgentsDetailsComponent extends DetailsBaseComponent implements OnInit {

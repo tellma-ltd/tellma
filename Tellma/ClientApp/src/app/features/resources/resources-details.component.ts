@@ -11,7 +11,7 @@ import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-clie
 import { Currency } from '~/app/data/entities/currency';
 
 @Component({
-  selector: 'b-resources-details',
+  selector: 't-resources-details',
   templateUrl: './resources-details.component.html',
   styles: []
 })

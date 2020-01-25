@@ -1,4 +1,4 @@
-<select class="form-control b-input" #selector (change)="onChange($event.target.value); onTouched();" (blur)="onTouched();"
+<select class="form-control t-input" #selector (change)="onChange($event.target.value); onTouched();" (blur)="onTouched();"
   [disabled]="isDisabled">
   <option></option>
   <option *ngFor="let choice of choices; trackBy: trackByFn" value="{{choice.value}}">{{ choice.name() }}</option>

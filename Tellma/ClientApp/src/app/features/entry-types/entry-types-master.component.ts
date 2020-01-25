@@ -8,7 +8,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-entry-types-master',
+  selector: 't-entry-types-master',
   templateUrl: './entry-types-master.component.html'
 })
 export class EntryTypesMasterComponent extends MasterBaseComponent {

@@ -19,7 +19,7 @@ import { addSingleToWorkspace } from '~/app/data/util';
 import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
 
 @Component({
-  selector: 'b-application-shell',
+  selector: 't-application-shell',
   templateUrl: './application-shell.component.html'
 })
 export class ApplicationShellComponent implements OnInit, OnDestroy {
@@ -164,7 +164,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
     this.fetch();
     this.workspace.ignoreKeyDownEvents = true;
-    this.modalService.open(this.myAccountModal, { windowClass: 'b-myuser-modal' })
+    this.modalService.open(this.myAccountModal, { windowClass: 't-myuser-modal' })
       .result.then(
         () => this.onMyCompanyAccountClose(),
         () => this.onMyCompanyAccountClose(),

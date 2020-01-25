@@ -1,4 +1,4 @@
-<b-master collection="EntryType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="EntryType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'EntryTypes' | translate"
   [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="IsAssignable" selectForTiles="Code" [multiselectActions]="[
@@ -9,7 +9,7 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

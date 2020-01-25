@@ -817,7 +817,7 @@ export class ApiService {
     };
   }
 
-  // We refactored this out to support the b-image component
+  // We refactored this out to support the t-image component
   public getImage(endpoint: string, imageId: string, cancellationToken$: Observable<void>) {
 
     // Note: cache=true instructs the HTTP interceptor to not add cache-busting parameters

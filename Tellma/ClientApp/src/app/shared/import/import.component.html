@@ -16,13 +16,13 @@
     </div>
 
     <!-- Toolbar -->
-    <div class="col-12 p-1 d-flex justify-content-between b-toolbar">
+    <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
 
       <!-- Left Buttons -->
       <div>
 
         <!-- Cancel -->
-        <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCancel()">
+        <button type="button" class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button" (click)="onCancel()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
@@ -37,10 +37,10 @@
 
 
   <!-- The main area -->
-  <div class="row b-rest-of-screen bg-light">
+  <div class="row t-rest-of-screen bg-light">
     <div class="w-100 p-2">
 
-      <div class=" p-3 border b-paper bg-white mb-3 mt-2 align-items-center" style="max-width: 600px">
+      <div class=" p-3 border t-paper bg-white mb-3 mt-2 align-items-center" style="max-width: 600px">
 
         <!-- Step 1 -->
         <h3 class="font-weight-light">{{ 'Step1' | translate }}</h3>
@@ -49,19 +49,19 @@
         </div>
         <div class="form-group">
           <label class="font-weight-bold small">{{ 'Format' | translate }}</label>
-          <b-selector [choices]="formatChoices" [(ngModel)]="format"></b-selector>
+          <t-selector [choices]="formatChoices" [(ngModel)]="format"></t-selector>
         </div>
 
         <button type="button" class="btn btn-primary w-100 mb-1" (click)="onDownloadTemplate()">
           <fa-icon icon="file-download"></fa-icon>
           &nbsp;{{ 'DownloadTemplate' | translate }}
-          <b-spinner class="ml-1" *ngIf="showSpinner" [scale]="1"></b-spinner>
+          <t-spinner class="ml-1" *ngIf="showSpinner" [scale]="1"></t-spinner>
         </button>
 
         <!-- Error message -->
-        <b-error-message *ngIf="showDownloadErrorMessage">
+        <t-error-message *ngIf="showDownloadErrorMessage">
           {{ downloadErrorMessage }}
-        </b-error-message>
+        </t-error-message>
 
         <!-- Step 2-->
         <h3 class="font-weight-light mt-4">{{ 'Step2' | translate }}</h3>
@@ -70,26 +70,26 @@
         </div>
         <div class="form-group">
           <label class="font-weight-bold small">{{ 'Mode' | translate }}</label>
-          <b-selector [choices]="modeChoices" [(ngModel)]="mode"></b-selector>
+          <t-selector [choices]="modeChoices" [(ngModel)]="mode"></t-selector>
         </div>
 
         <div class="custom-file mb-1">
           <input type="file" class="custom-file-input" accept=".xlsx" id="import" #input onclick="this.value = null"
             (change)="onImport(input)">
-          <label class="btn btn-primary b-file-input-label" for="customFile">
+          <label class="btn btn-primary t-file-input-label" for="customFile">
             <fa-icon icon="upload"></fa-icon>
             &nbsp;{{ 'Import' | translate }}
           </label>
         </div>
 
-        <b-success-message *ngIf="showSuccessMessage">
+        <t-success-message *ngIf="showSuccessMessage">
           {{ 'ImportMergeSuccessMessage' | translate:importResult }}
-        </b-success-message>
+        </t-success-message>
 
         <!-- No items found -->
-        <b-error-message *ngIf="showImportErrorMessage">
+        <t-error-message *ngIf="showImportErrorMessage">
           {{ importErrorMessage }}
-        </b-error-message>
+        </t-error-message>
 
       </div>
 

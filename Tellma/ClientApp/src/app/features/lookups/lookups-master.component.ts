@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 'b-lookups-master',
+  selector: 't-lookups-master',
   templateUrl: './lookups-master.component.html',
   styles: []
 })

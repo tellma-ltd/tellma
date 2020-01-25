@@ -2,7 +2,7 @@ import { Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy } from '
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
-  selector: 'b-table',
+  selector: 't-table',
   templateUrl: './table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

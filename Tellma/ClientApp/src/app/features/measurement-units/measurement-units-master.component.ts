@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
-  selector: 'b-measurement-units-master',
+  selector: 't-measurement-units-master',
   templateUrl: './measurement-units-master.component.html'
 })
 export class MeasurementUnitsMasterComponent extends MasterBaseComponent {

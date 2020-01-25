@@ -3,7 +3,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'b-lookups-import',
+  selector: 't-lookups-import',
   templateUrl: './lookups-import.component.html',
   styles: []
 })

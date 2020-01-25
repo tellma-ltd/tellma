@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LegacyClassificationForSave, LegacyClassification } from '~/app/data/entities/legacy-classification';
 
 @Component({
-  selector: 'b-legacy-classifications-details',
+  selector: 't-legacy-classifications-details',
   templateUrl: './legacy-classifications-details.component.html',
   styles: []
 })

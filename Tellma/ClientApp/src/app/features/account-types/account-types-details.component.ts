@@ -9,7 +9,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 'b-account-types-details',
+  selector: 't-account-types-details',
   templateUrl: './account-types-details.component.html',
   styles: []
 })

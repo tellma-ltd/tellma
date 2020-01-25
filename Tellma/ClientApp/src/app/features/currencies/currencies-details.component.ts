@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 'b-currencies-details',
+  selector: 't-currencies-details',
   templateUrl: './currencies-details.component.html',
   styles: []
 })

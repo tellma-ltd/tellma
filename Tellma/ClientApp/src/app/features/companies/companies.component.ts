@@ -7,7 +7,7 @@ import { DOCUMENT } from '@angular/common';
 import { Key } from '~/app/data/util';
 
 @Component({
-  selector: 'b-companies',
+  selector: 't-companies',
   templateUrl: './companies.component.html'
 })
 export class CompaniesComponent implements OnInit, OnDestroy {

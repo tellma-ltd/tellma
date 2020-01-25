@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'b-accounts-import',
+  selector: 't-accounts-import',
   templateUrl: './accounts-import.component.html',
   styles: []
 })

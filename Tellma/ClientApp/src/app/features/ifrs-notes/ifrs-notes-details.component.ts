@@ -8,7 +8,7 @@ import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-ifrs-notes-details',
+  selector: 't-ifrs-notes-details',
   templateUrl: './ifrs-notes-details.component.html'
 })
 export class IfrsNotesDetailsComponent extends DetailsBaseComponent {

@@ -1,4 +1,4 @@
-<b-master collection="IfrsNote" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+<t-master collection="IfrsNote" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [enableTreeView]="true" [showImportButton]="false" [showDeleteButton]="false"
   [masterCrumb]="'IfrsNotes' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader"
@@ -15,7 +15,7 @@
               { template: regulatory, expression: 'IfrsType eq \'Regulatory\''}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

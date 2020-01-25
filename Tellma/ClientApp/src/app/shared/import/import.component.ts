@@ -11,7 +11,7 @@ import { ImportResult } from '~/app/data/dto/import-result';
 import { SelectorChoice } from '../selector/selector.component';
 
 @Component({
-  selector: 'b-import',
+  selector: 't-import',
   templateUrl: './import.component.html'
 })
 export class ImportComponent implements OnInit, OnDestroy {

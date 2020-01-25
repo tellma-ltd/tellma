@@ -16,7 +16,7 @@ import { supportedCultures } from '~/app/data/supported-cultures';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 'b-settings',
+  selector: 't-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })

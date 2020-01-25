@@ -14,7 +14,7 @@ export interface SelectorChoice {
 }
 
 @Component({
-  selector: 'b-selector',
+  selector: 't-selector',
   templateUrl: './selector.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: SelectorComponent }]
 })
