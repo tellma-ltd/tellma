@@ -61,7 +61,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 100 },
         {
-          label: 'AccountTypes', icon: 'list', link: '../account-types',
+          label: 'AccountTypes', icon: 'sitemap', link: '../account-types',
           view: 'account-types', sortKey: 300
         },
         {
@@ -98,7 +98,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'report-definitions', sortKey: 500
         },
         {
-          label: 'LegacyTypes', icon: 'sitemap', link: '../legacy-types',
+          label: 'LegacyTypes', icon: 'list', link: '../legacy-types',
           view: 'legacy-types', sortKey: 600
         },
         {
