@@ -1,4 +1,4 @@
-﻿# BSharp
+﻿# Tellma
 For the time being, this document will contain instructions for developers.
 
 ## First Time Setup
