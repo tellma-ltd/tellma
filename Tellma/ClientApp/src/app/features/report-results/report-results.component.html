@@ -356,7 +356,8 @@
                     [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
                     [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
                     [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
-                    (select)="onChartSelect($event.name)">
+                    (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
+                    [yAxisTickFormatting]="formatChartDimension">
                     <ng-template #tooltipTemplate let-model="model">
                         <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
                         </ng-container>
@@ -377,7 +378,8 @@
             <!-- Tree Map -->
             <ng-container *ngSwitchCase="'TreeMap'">
                 <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)">
+                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)"
+                    [labelFormatting]="formatAlternativeChartDimension">
                     <ng-template #tooltipTemplate let-model="model">
                         <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
                         </ng-container>
@@ -389,7 +391,7 @@
             <ng-container *ngSwitchCase="'NumberCards'">
                 <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)" cardColor="#EAF0F5"
-                    textColor="black">
+                    textColor="black" [labelFormatting]="formatAlternativeChartDimension">
                 </ngx-charts-number-card>
             </ng-container>
 

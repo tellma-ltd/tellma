@@ -1502,6 +1502,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return d.display; // The chart labels
   }
 
+  public formatAlternativeChartDimension(d: { data: { name: ChartDimensionCell }}) {
+    // For some reason, some chart types pass this data structure instead
+    return d.data.name.display;
+  }
+
   public get firstDimensionLabel() {
     const dimension = this.state.uniqueDimensions[0];
     return !!dimension ? dimension.label() : '';
