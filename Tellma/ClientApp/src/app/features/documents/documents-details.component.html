@@ -450,102 +450,102 @@
 
                         <!-- External Reference -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showExternalReference(entry)"
-                            [label]="'Line_ExternalReference' | translate"
-                            [serverErrors]="item.serverErrors?.ExternalReference">
+                            [label]="'Entry_ExternalReference' | translate"
+                            [serverErrors]="entry.serverErrors?.ExternalReference">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.ExternalReference">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ExternalReference">
                                 <div class="text-truncate" style="max-width: 200px; min-width: 50px;"
-                                    [title]="item.ExternalReference">
-                                    {{ item.ExternalReference }}
+                                    [title]="entry.ExternalReference">
+                                    {{ entry.ExternalReference }}
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
-                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.ExternalReference"
+                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.ExternalReference"
                                 (ngModelChange)="update.call(null, item);">
                             </t-text-editor>
                         </t-form-group-dynamic>
 
                         <!-- Additional Reference -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showAdditionalReference(entry)"
-                            [label]="'Line_AdditionalReference' | translate"
-                            [serverErrors]="item.serverErrors?.AdditionalReference">
+                            [label]="'Entry_AdditionalReference' | translate"
+                            [serverErrors]="entry.serverErrors?.AdditionalReference">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.AdditionalReference">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.AdditionalReference">
                                 <div class="text-truncate" style="max-width: 200px; min-width: 50px;"
-                                    [title]="item.AdditionalReference">
-                                    {{ item.AdditionalReference }}
+                                    [title]="entry.AdditionalReference">
+                                    {{ entry.AdditionalReference }}
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
                             <t-text-editor *ngIf="isEdit" style="min-width: 150px;"
-                                [(ngModel)]="item.AdditionalReference" (ngModelChange)="update.call(null, item);">
+                                [(ngModel)]="entry.AdditionalReference" (ngModelChange)="update.call(null, item);">
                             </t-text-editor>
                         </t-form-group-dynamic>
 
                         <!-- Noted Agent -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showNotedAgent(entry)"
-                            [label]="'Line_NotedAgent' | translate" [serverErrors]="item.serverErrors?.NotedAgent">
+                            [label]="'Entry_NotedAgent' | translate" [serverErrors]="entry.serverErrors?.NotedAgent">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAgentId">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAgentId">
                                 <t-view-link
-                                    [link]="'../../../agents/' + ws.get('Agent', item.NotedAgentId)?.DefinitionId"
-                                    [itemId]="item.NotedAgentId">
-                                    {{ ws.getMultilingualValue('Agent', item.NotedAgentId, 'Name') }}
+                                    [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
+                                    [itemId]="entry.NotedAgentId">
+                                    {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
                                 </t-view-link>
                             </t-restricted>
                             <!-- Edit -->
-                            <t-agents-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.NotedAgentId"
+                            <t-agents-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.NotedAgentId"
                                 (ngModelChange)="update.call(null, item);">
                             </t-agents-picker>
                         </t-form-group-dynamic>
 
                         <!-- Noted Agent Name -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showNotedAgentName(entry)"
-                            [label]="'Line_NotedAgentName' | translate"
-                            [serverErrors]="item.serverErrors?.NotedAgentName">
+                            [label]="'Entry_NotedAgentName' | translate"
+                            [serverErrors]="entry.serverErrors?.NotedAgentName">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAgentName">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAgentName">
                                 <div class="text-truncate" style="max-width: 200px; min-width: 50px;"
-                                    [title]="item.NotedAgentName">
-                                    {{ item.NotedAgentName }}
+                                    [title]="entry.NotedAgentName">
+                                    {{ entry.NotedAgentName }}
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
-                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.NotedAgentName"
+                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.NotedAgentName"
                                 (ngModelChange)="update.call(null, item);">
                             </t-text-editor>
                         </t-form-group-dynamic>
 
                         <!-- Noted Amount -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showNotedAmount(entry)"
-                            [label]="'Line_NotedAmount' | translate" [serverErrors]="item.serverErrors?.NotedAmount">
+                            [label]="'Entry_NotedAmount' | translate" [serverErrors]="entry.serverErrors?.NotedAmount">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedAmount">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAmount">
                                 <div class="text-truncate" style="max-width: 200px; min-width: 50px;"
-                                    [title]="item.NotedAmount">
-                                    {{ item.NotedAmount | number:MonetaryValue_format(entry) }}
+                                    [title]="entry.NotedAmount">
+                                    {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
                             <t-decimal-editor *ngIf="isEdit" style="min-width: 150px;"
                                 [minDecimalPlaces]="MonetaryValue_decimals(entry)"
-                                [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="item.NotedAmount"
+                                [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="entry.NotedAmount"
                                 (ngModelChange)="update.call(null, item);">
                             </t-decimal-editor>
                         </t-form-group-dynamic>
 
                         <!-- Noted Date -->
                         <t-form-group-dynamic class="border-left px-1" *ngIf="showNotedDate(entry)"
-                            [label]="'Line_NotedDate' | translate" [serverErrors]="item.serverErrors?.NotedDate">
+                            [label]="'Entry_NotedDate' | translate" [serverErrors]="entry.serverErrors?.NotedDate">
                             <!-- View -->
-                            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.NotedDate">
+                            <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedDate">
                                 <div class="text-truncate" style="max-width: 200px; min-width: 50px;"
-                                    [title]="item.NotedDate">
-                                    {{ item.NotedDate | date:'yyyy-MM-dd' }}
+                                    [title]="entry.NotedDate">
+                                    {{ entry.NotedDate | date:'yyyy-MM-dd' }}
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
-                            <t-date-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="item.NotedDate"
+                            <t-date-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.NotedDate"
                                 (ngModelChange)="update.call(null, item);">
                             </t-date-picker>
                         </t-form-group-dynamic>

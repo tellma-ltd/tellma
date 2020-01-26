@@ -10,14 +10,8 @@ export interface LineForSave<TEntry = EntryForSave> extends EntityWithKey {
     CurrencyId?: string;
     AgentId?: number;
     ResourceId?: number;
-    Amount?: number;
+    MonetaryValue?: number;
     Memo?: string;
-    ExternalReference?: string;
-    AdditionalReference?: string;
-    NotedAgentId?: number;
-    NotedAgentName?: string;
-    NotedAmount?: number;
-    NotedDate?: string;
     Entries?: TEntry[];
 }
 

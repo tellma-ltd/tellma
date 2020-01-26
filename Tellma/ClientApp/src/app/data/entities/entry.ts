@@ -20,6 +20,12 @@ export interface EntryForSave extends EntityWithKey {
     Value?: number;
     Time1?: string;
     Time2?: string;
+    ExternalReference?: string;
+    AdditionalReference?: string;
+    NotedAgentId?: number;
+    NotedAgentName?: string;
+    NotedAmount?: number;
+    NotedDate?: string;
 }
 
 export interface Entry extends EntryForSave {
