@@ -19,50 +19,6 @@ namespace Tellma.Controllers
         }
     }
 
-    [Route("api/ifrs-account-classifications")]
-    [ApplicationApi]
-    public class IfrsAccountClassificationsController : FactGetByIdControllerBase<IfrsAccountClassification, string>
-    {
-        private readonly ApplicationRepository _repo;
-
-        private string VIEW => "ifrs-account-classifications";
-
-        public IfrsAccountClassificationsController(
-            ILogger<IfrsAccountClassificationsController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
-        {
-            _repo = repo;
-        }
-
-        protected override IRepository GetRepository()
-        {
-            return _repo;
-        }
-
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        {
-            return Task.FromResult(TempUtil.UserPermissions(VIEW));
-        }
-
-        protected override Query<IfrsAccountClassification> Search(Query<IfrsAccountClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
-        {
-            string search = args.Search;
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
-
-                var label = nameof(IfrsAccountClassification.Label);
-                var label2 = nameof(IfrsAccountClassification.Label2);
-                var label3 = nameof(IfrsAccountClassification.Label3);
-
-                query = query.Filter($"{label} {Ops.contains} '{search}' or {label2} {Ops.contains} '{search}' or {label3} {Ops.contains} '{search}'");
-            }
-
-            return query;
-        }
-    }
-
     [Route("api/voucher-booklets")]
     [ApplicationApi]
     public class VoucherBookletsController : FactGetByIdControllerBase<VoucherBooklet, int>
