@@ -104,6 +104,7 @@ SET NOCOUNT ON;
 	WITH
 	ConservativeAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
+		--TODO: use  Account Type instead, and limit to state COMPLETED
 		WHERE A.[LegacyTypeId] = N'OnHand'
 		AND A.[AccountTypeId] IN (
 			SELECT [Id] FROM dbo.[AccountTypes]

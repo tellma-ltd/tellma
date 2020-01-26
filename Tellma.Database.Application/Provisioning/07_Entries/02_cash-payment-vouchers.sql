@@ -15,14 +15,14 @@ BEGIN
 
 	INSERT INTO @WL_CPV
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'CashPayment';
---(0,2,0,		N'Line.Memo',			N'Memo',			N'البيان',		0), 
---(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		1), 
---(2,2,2,		N'Entry[0].CurrencyId',		N'Pay Currency',		N'العملة',		1),
---(3,2,3,		N'Line.NotedAgentName',		N'Beneficiary',			N'المستفيد',	1),
---(4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		0),
---(5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
---(6,2,6,		N'Line.ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
---(7,2,7,		N'Line.NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	0)
+--(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',		1), 
+--(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		0), 
+--(2,2,2,		N'Entry[0].CurrencyId',			N'Pay Currency',		N'العملة',		0),
+--(3,2,3,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',	0),
+--(4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		1),
+--(5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',0),
+--(6,2,6,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 1),
+--(7,2,7,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	1)
 
 
 	UPDATE @WL_CPV
@@ -30,11 +30,11 @@ BEGIN
 		[Memo] = N'Payment HP laser jet ink + SQL Server 2019 License',
 		[MonetaryValue0] = 7500,
 		[CurrencyId0] = @FunctionalCurrencyId,
-		[NotedAgentName] = N'Malek Books and Pens',
+		[NotedAgentName0] = N'Malek Books and Pens',
 		[EntryTypeId0] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices'),
 		[AgentId0] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'suppliers' AND [Name] = N'Microsoft'),
-		[ExternalReference] = N'121109',
-		[NotedDate] = N'2020.01.21'
+		[ExternalReference0] = N'121109',
+		[NotedDate0] = N'2020.01.21'
 	WHERE [Index] = 0;
 
 	EXEC [api].[Documents__Save]

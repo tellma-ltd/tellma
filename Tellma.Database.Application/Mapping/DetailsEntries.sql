@@ -69,11 +69,11 @@ RETURN
 		R.[TimeUnitId],
 		E.[Value],
 		L.[Memo],
-		L.[ExternalReference],
-		L.[AdditionalReference],
-		L.[NotedAgentId],
-		L.[NotedAgentName],
-		L.[NotedAmount]
+		E.[ExternalReference],
+		E.[AdditionalReference],
+		E.[NotedAgentId],
+		E.[NotedAgentName],
+		E.[NotedAmount]
 	FROM
 		[dbo].[Entries] E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id

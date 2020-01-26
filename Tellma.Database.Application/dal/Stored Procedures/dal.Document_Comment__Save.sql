@@ -7,7 +7,7 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
 
 	UPDATE dbo.DocumentAssignments
-	SET Comment = @Comment, [CreatedAt] = @Now, [CreatedById] = @DocumentId
+	SET Comment = @Comment, [CreatedAt] = @Now, [CreatedById] = @UserId
 	WHERE DocumentId = @DocumentId
 
 	INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])

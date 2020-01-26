@@ -4,19 +4,20 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
-	[CurrencyId]				NCHAR (3),
+	[ResponsibilityCenterId]	INT,
 	[AgentId]					INT,
 	[ResourceId]				INT,
-	[Amount]					DECIMAL (19,4),
+	[CurrencyId]				NCHAR (3),
+	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
+	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
+	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	
+	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 
 -- Additional information to satisfy reporting requirements
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
 -- for support documents, such as deposit slip reference, invoice number, etc...
-	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
-	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
-	[NotedAgentName]			NVARCHAR (50),
-	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
-	[NotedDate]					DATE
+	[Memo]						NVARCHAR (255) -- a textual description for statements and reports
 );

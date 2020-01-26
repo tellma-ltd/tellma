@@ -204,6 +204,13 @@ BEGIN
 END;									
 
 UPDATE dbo.[EntryTypes] SET IsSystem = 1;
+	
+DECLARE @ProceedsFromIssuingShares		INT;
+DECLARE @IssueOfEquity					INT;
+DECLARE @InternalCashTransferExtension	INT;
+DECLARE @InventoryPurchaseExtension		INT;
+DECLARE @PPEAdditions					INT;
+DECLARE @InvReclassifiedAsPPE			INT;
 
 SET @ProceedsFromIssuingShares		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
 SET @IssueOfEquity					 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );

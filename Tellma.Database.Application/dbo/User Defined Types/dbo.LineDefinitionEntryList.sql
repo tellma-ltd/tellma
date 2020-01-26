@@ -21,18 +21,22 @@
 
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
 	[AgentDefinitionList]		NVARCHAR (1024),
-	[CurrencySource]			SMALLINT			NOT NULL DEFAULT -1,
-	[AgentSource]				SMALLINT			NOT NULL DEFAULT -1,
-	[ResourceSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[EntryTypeCode]				NVARCHAR (255),
---	[NotedAgentDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 1: set from line 2: from entry
-	[NotedAgentDefinitionId]	NVARCHAR (50),
+	[ResponsibilityCenterSource]NVARCHAR (50),
+	[AgentSource]				NVARCHAR (50),
+	[ResourceSource]			NVARCHAR (50),
+	[CurrencySource]			NVARCHAR (50),
 
-	[MonetaryValueSource]		SMALLINT			NOT NULL DEFAULT 2,
-	[QuantitySource]			SMALLINT			NOT NULL DEFAULT -1,
-	[ExternalReferenceSource]	SMALLINT			NOT NULL DEFAULT -1,
-	[AdditionalReferenceSource]	SMALLINT			NOT NULL DEFAULT -1,
-	[NotedAgentSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[NotedAmountSource]			SMALLINT			NOT NULL DEFAULT -1,
-	[DueDateSource]				SMALLINT			NOT NULL DEFAULT -1
+	[MonetaryValueSource]		NVARCHAR (50),
+-- Tracking additive measures, the data type is to be decided by AA
+	[CountSource]				NVARCHAR (50),
+	[MassSource]				NVARCHAR (50),
+	[VolumeSource]				NVARCHAR (50),
+	[TimeSource]				NVARCHAR (50),
+	
+	[ValueSource]				NVARCHAR (50),
+	[EntryTypeCode]				NVARCHAR (255),
+	[NotedAgentDefinitionId]	NVARCHAR (50),	
+	[QuantitySource]			NVARCHAR (50),
+	[NotedAgentSource]			NVARCHAR (50),
+	[NotedAmountSource]			NVARCHAR (50)
 )

@@ -429,9 +429,6 @@
     <None Include="Provisioning\00_Common\c_Settings.sql" />
     <None Include="Provisioning\00_Common\w_IfrsConcepts.sql" />
     <None Include="Provisioning\00_Common\x_IfrsDisclosures.sql" />
-    <None Include="Provisioning\00_Common\y_IfrsEntryClassifications.sql" />
-    <None Include="Provisioning\00_Common\z_IfrsAccountClassifications.sql" />
-    <None Include="Provisioning\00_Common\zz_DELETE_LineDefinitionEntries.sql" />
     <Build Include="dbo\Functions\dbo.fn_LanguageId__Symbol.sql" />
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
@@ -576,5 +573,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tellma.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>

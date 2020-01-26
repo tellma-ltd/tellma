@@ -8,24 +8,24 @@ AS
 	)
 	INSERT INTO @AllEntries
 	(
-			[Index], [LineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction],[AccountId],[AgentId],[ResourceId],[ResponsibilityCenterId],
+			[Index], [LineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction],[AgentId],[ResourceId],[ResponsibilityCenterId],
 			--[AccountIdentifier],[ResourceIdentifier],
-			[CurrencyId],[EntryTypeId],	[DueDate],	[MonetaryValue])
-	SELECT 3*[Index], [Index],	[DocumentIndex], [Id],		0,		[Direction0],[AccountId0],[AgentId0],[ResourceId0],[ResponsibilityCenterId0],
+			[CurrencyId],[EntryTypeId],	[DueDate],	[MonetaryValue], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAgentName], [NotedAmount], [NotedDate])
+	SELECT 3*[Index], [Index],	[DocumentIndex], [Id],		0,		[Direction0],[AgentId0],[ResourceId0],[ResponsibilityCenterId0],
 			--[AccountIdentifier0],[ResourceIdentifier0],
-			[CurrencyId0],[EntryTypeId0],	[DueDate0],	[MonetaryValue0]
+			[CurrencyId0],[EntryTypeId0],	[DueDate0],	[MonetaryValue0], [ExternalReference0], [AdditionalReference0], [NotedAgentId0], [NotedAgentName0], [NotedAmount0], [NotedDate0]
 	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
 	WHERE LD.EntryCount >= 1
 	UNION
-	SELECT 3*[Index] + 1, [Index],	[DocumentIndex], [Id],		1,	[Direction1],[AccountId1],[AgentId1],[ResourceId1],[ResponsibilityCenterId1],
+	SELECT 3*[Index] + 1, [Index],	[DocumentIndex], [Id],		1,	[Direction1],[AgentId1],[ResourceId1],[ResponsibilityCenterId1],
 			--[AccountIdentifier1],[ResourceIdentifier1],
-			[CurrencyId1],[EntryTypeId1],	[DueDate1],	[MonetaryValue1]
+			[CurrencyId1],[EntryTypeId1],	[DueDate1],	[MonetaryValue1], [ExternalReference1], [AdditionalReference1], [NotedAgentId1], [NotedAgentName1], [NotedAmount1], [NotedDate1]
 	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
 	WHERE LD.EntryCount >= 2
 	UNION
-	SELECT 3*[Index] + 2, [Index],	[DocumentIndex], [Id],		2,	[Direction2],[AccountId2],[AgentId2],[ResourceId2],[ResponsibilityCenterId2],
+	SELECT 3*[Index] + 2, [Index],	[DocumentIndex], [Id],		2,	[Direction2],[AgentId2],[ResourceId2],[ResponsibilityCenterId2],
 			--[AccountIdentifier2],[ResourceIdentifier2],
-			[CurrencyId2],[EntryTypeId2],	[DueDate2],	[MonetaryValue2]
+			[CurrencyId2],[EntryTypeId2],	[DueDate2],	[MonetaryValue2], [ExternalReference2], [AdditionalReference2], [NotedAgentId2], [NotedAgentName2], [NotedAmount2], [NotedDate2]
 	FROM @WideLines WL JOIN LD ON WL.DefinitionId = LD.LineDefinitionId
 	WHERE LD.EntryCount >= 3
 

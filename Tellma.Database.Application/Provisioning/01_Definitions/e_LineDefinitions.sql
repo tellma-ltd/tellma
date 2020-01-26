@@ -4,41 +4,43 @@ DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 
 INSERT @LineDefinitions([Index],
-[Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
-0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
+[Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES
+(0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[ColumnName],		[Label],		[Label2],		[IsRequired]) VALUES
-(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان',		0), -- only if it appears,
-(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب',		1),
-(2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين',		1), -- see special case
-(3,0,3,		N'Entry[0].Value',	N'Credit',		N'دائن',		1),
-(4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات',	0);
+[SortKey],	[ColumnName],		[Label],		[Label2],		[IsOptional]) VALUES
+(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان',		1), -- only if it appears,
+(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب',		0),
+(2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين',		0), -- see special case
+(3,0,3,		N'Entry[0].Value',	N'Credit',		N'دائن',		0),
+(4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات',	1);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
-/*
-INSERT @LineDefinitions(
-[Id],					[TitleSingular],		[TitlePlural],		[AgentDefinitionId]) VALUES
-(N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices',	N'suppliers');
-INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[Direction],	[AccountTypeId],		[AgentDefinitionId],[EntryClassificationSource],[NotedAgentDefinitionSource], [NotedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [NotedAgentSource], [NotedAmountSource], [DueDateSource]) VALUES
-(N'PurchaseInvoice',	0,			-1,			N'Payable',			N'tax-agencies',		-1,						0,								N'suppliers',				-1,					0,			0,					2,						1,						1,								6,					6,						1),
-(N'PurchaseInvoice',	1,			+1,			N'AccruedExpense',	N'suppliers',			-1,						-1,								NULL,						1,					0,			0,					1,						1,						1,								-1,					-1,						-1),
-(N'PurchaseInvoice',	2,			-1,			N'Payable',			N'suppliers',			-1,						-1,								NULL,						1,					0,			0,					8,						1,						1,								-1,					-1,						1);
-INSERT INTO @LineDefinitionColumns
-([LineDefinitionId], [SortIndex], [ColumnName],					[Label]) VALUES
-(N'PurchaseInvoice',	0,			N'Line.Description',		N'Description'), 
-(N'PurchaseInvoice',	1,			N'Line.ExternalReference',	N'Invoice #'), 
-(N'PurchaseInvoice',	2,			N'Line.AgentId',			N'Supplier'),
---(N'PurchaseInvoice',	3,			N'Line.Currency',			N'Currency'),
-(N'PurchaseInvoice',	4,			N'Line.MonetaryAmount',		N'Price Excl. VAT'),
-(N'PurchaseInvoice',	5,			N'Entry[0].MonetaryAmount',	N'VAT'),
-(N'PurchaseInvoice',	6,			N'Entry[2].MonetaryAmount',	N'Total'),
-(N'PurchaseInvoice',	7,			N'Entry[2].DueDate',		N'Due Date')
+
+INSERT @LineDefinitions([Index],
+[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionId]) VALUES
+(1,N'PurchaseInvoice',	N'Purchase Invoice',	N'فاتورة مشتريات',	N'Purchase Invoices',	N'فواتير مشتريات',	N'suppliers');
+-- Source = -1 (n/a), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
+-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Noted in Line, 7:
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+[Direction],[AccountTypeParentCode],		[AgentDefinitionList],[AgentSource],	[CurrencySource],		[MonetaryValueSource], [ValueSource],	[NotedAgentSource], [NotedAmountSource]) VALUES
+(0,1,0,+1,	N'ValueAddedTaxPayables',				NULL,			NULL,			N'FunctionalCurrencyId',NULL,					NULL,			N'Line.AgentId',	N'Line.Value'),
+(1,1,1,+1,	N'Accruals',							N'suppliers',	N'Line.AgentId',N'FunctionalCurrencyId',NULL,					N'Line.Value',	NULL,				NULL),
+(2,1,2,-1,	N'TradeAndOtherPayablesToTradeSuppliers',N'suppliers',	N'Line.AgentId',N'FunctionalCurrencyId',N'Balance',				N'Balance',		NULL,				NULL);
+
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+[SortKey],	[ColumnName],				[Label],				[Label2],				[IsOptional], [IsReadOnly]) VALUES
+(0,1,0,		N'Line.Memo',				N'Memo',				N'البيان',				1,				0), 
+(1,1,1,		N'Entry[0].ExternalReference',N'Invoice #',			N'رقم الفاتورة',		0,				0), 
+(2,1,2,		N'Line.AgentId',			N'Supplier',			N'المورد',				0,				0),
+(3,1,3,		N'Line.Value',				N'Price Excl. VAT',		N'المبلغ قبل الضريية',	0,				0),
+(4,1,4,		N'Entry[0].Value',			N'VAT',					N'القيمة المضافة',		0,				0),
+(5,1,5,		N'Entry[2].Value',			N'Total',				N'المبلغ بعد الضريبة',	0,				1),-- script is needed to find sum
+(6,1,6,		N'Entry[2].DueDate',		N'Due Date',			N'تاريخ الاستحقاق',		1,				0)
 ;
-*/
+
 -- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 -- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
 -- AgentDefinition is filtered by AccountType.AgentDefinitionList
@@ -48,19 +50,18 @@ INSERT @LineDefinitions([Index],
 2,N'CashPayment',	N'Payment',		N'الدفعية',			N'Payments',	N'الدفعيات');
 
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [AgentSource],[ResourceSource],[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [NotedAgentSource]) VALUES
-(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',		2,				-1,				1,				2,						2,								2);
+[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [CurrencySource]) VALUES
+(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',	N'FunctionalCurrencyId');
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[ColumnName],					[Label],				[Label2],		[IsRequired]) VALUES
-(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',		0), 
-(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		1), 
-(2,2,2,		N'Entry[0].CurrencyId',			N'Pay Currency',		N'العملة',		1),
-(3,2,3,		N'Line.NotedAgentName',			N'Beneficiary',			N'المستفيد',	1),
-(4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		0),
-(5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',1),
-(6,2,6,		N'Line.ExternalReference',		N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 0),
-(7,2,7,		N'Line.NotedDate'	,			N'Check Date',			N'تاريخ الشيك',	0)
+[SortKey],	[ColumnName],					[Label],				[Label2],		[IsOptional]) VALUES
+(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',		1), 
+(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		0), 
+(2,2,2,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',	0),
+(3,2,3,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		1),
+(4,2,4,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',0),
+(5,2,5,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 1),
+(6,2,6,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	1)
 ;
 
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],

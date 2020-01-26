@@ -44,6 +44,13 @@
 
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
+
+	[ExternalReference]			NVARCHAR (50),
+	[AdditionalReference]		NVARCHAR (50),
+	[NotedAgentId]				INT,
+	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
+	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
+	[NotedDate]					DATE,
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),

@@ -2,12 +2,12 @@
 AS
 	SELECT
 		[AccountId],
-		SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
-		SUM([Direction] * [Mass]) AS [Mass],
-		SUM([Direction] * [Volume]) AS [Volume],
-		SUM([Direction] * [Count]) AS [Count],
-		SUM([Direction] * [Time]) AS [Time],
-		SUM([Direction] * [Value]) AS [Value]
+		SUM(DLE.[Direction] * DLE.[MonetaryValue]) AS [MonetaryValue],
+		SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass],
+		SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume],
+		SUM(DLE.[Direction] * DLE.[Count]) AS [Count],
+		SUM(DLE.[Direction] * DLE.[Time]) AS [Time],
+		SUM(DLE.[Direction] * DLE.[Value]) AS [Value]
 	FROM dbo.[Entries] DLE
 	JOIN dbo.[Lines] DL ON DLE.[LineId] = DL.[Id]
 	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
@@ -17,10 +17,10 @@ AS
 	GROUP BY
 		[AccountId]
 	HAVING
-		SUM([Direction] * [MonetaryValue]) <> 0 OR
-		SUM([Direction] * [Mass]) <> 0 OR 
-		SUM([Direction] * [Volume]) <> 0 OR
-		SUM([Direction] * [Count]) <> 0 OR
-		SUM([Direction] * [Time]) <> 0 OR
-		SUM([Direction] * [Value]) <> 0;
+		SUM(DLE.[Direction] * DLE.[MonetaryValue]) <> 0 OR
+		SUM(DLE.[Direction] * DLE.[Mass]) <> 0 OR 
+		SUM(DLE.[Direction] * DLE.[Volume]) <> 0 OR
+		SUM(DLE.[Direction] * DLE.[Count]) <> 0 OR
+		SUM(DLE.[Direction] * DLE.[Time]) <> 0 OR
+		SUM(DLE.[Direction] * DLE.[Value]) <> 0;
 GO;

@@ -23,9 +23,3 @@
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	DECLARE @PId INT ;
-	DECLARE @ProceedsFromIssuingShares		INT;
-	DECLARE @IssueOfEquity					INT;
-	DECLARE @InternalCashTransferExtension	INT;
-	DECLARE @InventoryPurchaseExtension		INT;
-	DECLARE @PPEAdditions					INT;
-	DECLARE @InvReclassifiedAsPPE			INT;

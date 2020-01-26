@@ -43,7 +43,7 @@ BEGIN
 				[Memo], [MemoIsCommon]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], --s.[OperatingSegmentId], 
+				@DefinitionId, s.[SerialNumber],
 				s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
 				s.[Memo], s.[MemoIsCommon]
 			)
@@ -64,17 +64,18 @@ BEGIN
 				L.[Index],
 				L.[Id],
 				DI.Id AS DocumentId,
-				L.[DefinitionId], 
+				L.[DefinitionId],
+				L.[ResponsibilityCenterId],
 				L.[AgentId],
 				L.[ResourceId],
-				L.[Amount],
-				L.[Memo],
-				L.[ExternalReference],
-				L.[AdditionalReference],
-				L.[NotedAgentId], 
-				L.[NotedAgentName], 
-				L.[NotedAmount], 
-				L.[NotedDate]
+				L.[CurrencyId],
+				L.[MonetaryValue],
+				L.[Count],
+				L.[Mass],
+				L.[Volume],
+				L.[Time],
+				L.[Value],
+				L.[Memo]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -83,40 +84,40 @@ BEGIN
 				t.[DefinitionId]		= s.[DefinitionId],
 				t.[AgentId]				= s.[AgentId],
 				t.[ResourceId]			= s.[ResourceId],
-				t.[Amount]				= s.[Amount],
+				t.[CurrencyId]			= s.[CurrencyId],
+				t.[MonetaryValue]		= s.[MonetaryValue],
+				t.[Count]				= s.[Count],
+				t.[Mass]				= s.[Mass],
+				t.[Volume]				= s.[Volume],
+				t.[Time]				= s.[Time],
+				t.[Value]				= s.[Value],
 				t.[Memo]				= s.[Memo],
-				t.[ExternalReference]		= s.[ExternalReference],
-				t.[AdditionalReference]		= s.[AdditionalReference],
-				t.[NotedAgentId]			= s.[NotedAgentId],
-				t.[NotedAgentName]			= s.[NotedAgentName],
-				t.[NotedAmount]				= s.[NotedAmount],
-				t.[NotedDate]				= s.[NotedDate],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
 				[AgentId],
 				[ResourceId],
-				[Amount],
-				[Memo],
-				[ExternalReference],
-				[AdditionalReference],
-				[NotedAgentId], 
-				[NotedAgentName], 
-				[NotedAmount], 
-				[NotedDate]
+				[CurrencyId],
+				[MonetaryValue],
+				[Count],
+				[Mass],
+				[Volume],
+				[Time],
+				[Value],
+				[Memo]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
 				s.[AgentId],
 				s.[ResourceId],
-				s.[Amount],
-				s.[Memo],
-				s.[ExternalReference],
-				s.[AdditionalReference],
-				s.[NotedAgentId], 
-				s.[NotedAgentName], 
-				s.[NotedAmount], 
-				s.[NotedDate]
+				s.[CurrencyId],
+				s.[MonetaryValue],
+				s.[Count],
+				s.[Mass],
+				s.[Volume],
+				s.[Time],
+				s.[Value],
+				s.[Memo]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
@@ -135,7 +136,13 @@ BEGIN
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
-			E.[Time1], E.[Time2]
+			E.[Time1], E.[Time2],
+			E.[ExternalReference],
+			E.[AdditionalReference],
+			E.[NotedAgentId], 
+			E.[NotedAgentName], 
+			E.[NotedAmount], 
+			E.[NotedDate]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index]
@@ -158,9 +165,14 @@ BEGIN
 			t.[Volume]					= s.[Volume],
 			t.[Time]					= s.[Time],
 			t.[Value]					= s.[Value],
-
-		t.[Time1]					= s.[Time1],
+			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
+			t.[ExternalReference]	= s.[ExternalReference],
+			t.[AdditionalReference]	= s.[AdditionalReference],
+			t.[NotedAgentId]		= s.[NotedAgentId],
+			t.[NotedAgentName]		= s.[NotedAgentName],
+			t.[NotedAmount]			= s.[NotedAmount],
+			t.[NotedDate]			= s.[NotedDate],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
@@ -168,13 +180,25 @@ BEGIN
 			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[EntryTypeId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
-			[Time1], [Time2]
+			[Time1], [Time2],
+			[ExternalReference],
+			[AdditionalReference],
+			[NotedAgentId], 
+			[NotedAgentName], 
+			[NotedAmount], 
+			[NotedDate]
 		)
 		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
-			s.[Time1], s.[Time2]
+			s.[Time1], s.[Time2],
+			s.[ExternalReference],
+			s.[AdditionalReference],
+			s.[NotedAgentId], 
+			s.[NotedAgentName], 
+			s.[NotedAmount], 
+			s.[NotedDate]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

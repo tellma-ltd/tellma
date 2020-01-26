@@ -22,8 +22,6 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			--[AgentDefinitionId],
-			--[AccountTypeCode],
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
@@ -39,8 +37,6 @@ SET NOCOUNT ON;
 			t.[TitlePlural]					= s.[TitlePlural],
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
-			--t.[AgentDefinitionId]			= s.[AgentDefinitionId],
-			--t.[AccountTypeCode]	= s.[AccountTypeCode],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
@@ -55,8 +51,6 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			--[AgentDefinitionId],
-			--[AccountTypeCode],
 			[Script]
 		)
 		VALUES (
@@ -70,8 +64,6 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
-			--s.[AgentDefinitionId],
-			--s.[AccountTypeCode],
 			s.[Script]
 		);
 
@@ -85,7 +77,8 @@ SET NOCOUNT ON;
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
-			LDC.[IsRequired]
+			LDC.[IsOptional],
+			LDC.[IsReadOnly]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 	) AS s
@@ -97,12 +90,13 @@ SET NOCOUNT ON;
 			t.[Label]			= s.[Label],
 			t.[Label2]			= s.[Label2],
 			t.[Label3]			= s.[Label3],
-			t.[IsRequired]		= s.[IsRequired]
+			t.[IsOptional]		= s.[IsOptional],
+			t.[IsReadOnly]		= s.[IsReadOnly]
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId], [SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsRequired])
-		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsRequired]);
+		INSERT ([LineDefinitionId],		[SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsOptional], [IsReadOnly])
+		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsOptional], s.[IsReadOnly]);
 
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (
@@ -113,40 +107,44 @@ SET NOCOUNT ON;
 			LDE.[Direction]	,
 			LDE.[AccountTypeParentCode]	,
 			LDE.[AgentDefinitionList],
-			LDE.[CurrencySource],
+			LDE.[ResponsibilityCenterSource],
 			LDE.[AgentSource],
 			LDE.[ResourceSource],
+			LDE.[CurrencySource],
+			LDE.[MonetaryValueSource],
+			LDE.[CountSource],
+			LDE.[MassSource],
+			LDE.[VolumeSource],
+			LDE.[TimeSource],
+			LDE.[ValueSource],
 			LDE.[EntryTypeCode],
 			LDE.[NotedAgentDefinitionId],
-			LDE.[MonetaryValueSource],
-			LDE.[QuantitySource],
-			LDE.[ExternalReferenceSource],
-			LDE.[AdditionalReferenceSource]	,
 			LDE.[NotedAgentSource],
-			LDE.[NotedAmountSource],
-			LDE.[DueDateSource]	
+			LDE.[NotedAmountSource]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 	UPDATE SET
-		t.[EntryNumber]				= s.[EntryNumber],
-		t.[Direction]				= t.[Direction],
-		t.[AccountTypeParentCode]	= t.[AccountTypeParentCode],
-		t.[AgentDefinitionList]		= t.[AgentDefinitionList],
-		t.[CurrencySource]			= t.[CurrencySource],
-		t.[AgentSource]				= t.[AgentSource],
-		t.[ResourceSource]			= t.[ResourceSource],
-		t.[EntryTypeCode]			= t.[EntryTypeCode],
-		t.[NotedAgentDefinitionId]	= t.[NotedAgentDefinitionId],
-		t.[MonetaryValueSource]		= t.[MonetaryValueSource],
-		t.[QuantitySource]			= t.[QuantitySource],
-		t.[ExternalReferenceSource]	= t.[ExternalReferenceSource],
-		t.[AdditionalReferenceSource]= t.[AdditionalReferenceSource],
-		t.[NotedAgentSource]		= t.[NotedAgentSource],
-		t.[NotedAmountSource]		= t.[NotedAmountSource],
-		t.[DueDateSource]			= t.[DueDateSource]	
+		t.[EntryNumber]					= s.[EntryNumber],
+		t.[Direction]					= s.[Direction],
+		t.[AccountTypeParentCode]		= s.[AccountTypeParentCode],
+		t.[AgentDefinitionList]			= s.[AgentDefinitionList],
+		t.[ResponsibilityCenterSource]	= s.[ResponsibilityCenterSource],
+		t.[AgentSource]					= s.[AgentSource],
+		t.[ResourceSource]				= s.[ResourceSource],
+		t.[CurrencySource]				= s.[CurrencySource],
+		t.[MonetaryValueSource]			= s.[MonetaryValueSource],
+		t.[CountSource]					= s.[CountSource],
+		t.[MassSource]					= s.[MassSource],
+		t.[VolumeSource]				= s.[VolumeSource],
+		t.[TimeSource]					= s.[TimeSource],
+		t.[ValueSource]					= s.[ValueSource],
+		t.[EntryTypeCode]				= s.[EntryTypeCode],
+		t.[NotedAgentDefinitionId]		= s.[NotedAgentDefinitionId],
+		t.[NotedAgentSource]			= s.[NotedAgentSource],
+		t.[NotedAmountSource]			= s.[NotedAmountSource]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
@@ -156,18 +154,20 @@ WHEN NOT MATCHED BY TARGET THEN
 		[Direction],
 		[AccountTypeParentCode]	,
 		[AgentDefinitionList],
-		[CurrencySource],
+		[ResponsibilityCenterSource],
 		[AgentSource],
 		[ResourceSource],
+		[CurrencySource],
+		[MonetaryValueSource],
+		[CountSource],
+		[MassSource],
+		[VolumeSource],
+		[TimeSource],
+		[ValueSource],
 		[EntryTypeCode],
 		[NotedAgentDefinitionId],
-		[MonetaryValueSource],
-		[QuantitySource],
-		[ExternalReferenceSource],
-		[AdditionalReferenceSource]	,
 		[NotedAgentSource],
-		[NotedAmountSource],
-		[DueDateSource]	
+		[NotedAmountSource]
 	)
     VALUES (
 		s.[LineDefinitionId],
@@ -175,18 +175,20 @@ WHEN NOT MATCHED BY TARGET THEN
 		s.[Direction],
 		s.[AccountTypeParentCode],
 		s.[AgentDefinitionList],
-		s.[CurrencySource],
+		s.[ResponsibilityCenterSource],
 		s.[AgentSource],
 		s.[ResourceSource],
+		s.[CurrencySource],
+		s.[MonetaryValueSource],
+		s.[CountSource],
+		s.[MassSource],
+		s.[VolumeSource],
+		s.[TimeSource],
+		s.[ValueSource],
 		s.[EntryTypeCode],
 		s.[NotedAgentDefinitionId],
-		s.[MonetaryValueSource],
-		s.[QuantitySource],
-		s.[ExternalReferenceSource],
-		s.[AdditionalReferenceSource],
 		s.[NotedAgentSource],
-		s.[NotedAmountSource],
-		s.[DueDateSource]	
+		s.[NotedAmountSource]
 	);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t

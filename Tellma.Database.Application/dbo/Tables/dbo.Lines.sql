@@ -10,19 +10,23 @@
 	--[AuthorizeddAt]				DATETIMEOFFSET(7),
 	--[CompletedAt]				DATETIMEOFFSET(7),
 	--[ReviewedAt]				DATETIMEOFFSET(7),
-
-	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),
+	[ResponsibilityCenterId]	INT					CONSTRAINT [FK_Lines__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
-	[Amount]					DECIMAL (19,4),
+	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),
+
+--	[Amount]					DECIMAL (19,4),
+
+	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
+-- Tracking additive measures, the data type is to be decided by AA
+	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
+	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	
+	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- Additional information to satisfy reporting requirements
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
-	[ExternalReference]			NVARCHAR (50),
-	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
-	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
-	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
-	[NotedDate]					DATE,
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
 -- for support documents, such as deposit slip reference, invoice number, etc...
 

@@ -8,5 +8,6 @@
 	[Label]						NVARCHAR (50)	NOT NULL,
 	[Label2]					NVARCHAR (50),
 	[Label3]					NVARCHAR (50),
-	[IsRequired]				BIT				NOT NULL DEFAULT 0
+	[IsOptional]				BIT				NOT NULL DEFAULT 0, 
+    [IsReadOnly]				BIT				NOT NULL DEFAULT 0
 );

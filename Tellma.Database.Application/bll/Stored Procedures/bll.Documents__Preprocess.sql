@@ -10,31 +10,70 @@ DECLARE @FunctionalCurrencyId NCHAR(3) = CONVERT(NCHAR(3), SESSION_CONTEXT(N'Fun
 DECLARE @PreprocessedEntries [dbo].EntryList;
 INSERT INTO @PreprocessedEntries SELECT * FROM @Entries;
 
--- Applies to All line types
--- Copy information from documents to Lines
---UPDATE L
---SET L.AgentId = D.AgentId
---FROM @FilledLines L JOIN @Documents D ON L.DocumentIndex = D.[Index]
---WHERE 
-
 -- Copy information from Lines to Entries
+UPDATE E
+SET
+	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction]),
+	E.[CurrencyId] = (CASE WHEN LDE.CurrencySource = N'FunctionalCurrencyId' THEN dbo.fn_FunctionalCurrencyId() ELSE E.[CurrencyId] END)
+--	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
+	-- TODO: fill with all the remaining defaults
+FROM @PreprocessedEntries E
+JOIN @Lines L ON E.[LineIndex] = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber];
+
+UPDATE E 
+SET E.ResponsibilityCenterId = L.ResponsibilityCenterId
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.ResponsibilityCenterSource = N'Line.ResponsibilityCenterId' AND E.ResponsibilityCenterId <> L.ResponsibilityCenterId;
+
 UPDATE E 
 SET E.AgentId = L.AgentId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.AgentSource = 1 AND E.AgentId <> L.AgentId
+WHERE LDE.AgentSource = N'Line.AgentId' AND E.AgentId <> L.AgentId;
+
+UPDATE E 
+SET E.NotedAgentId = L.AgentId
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.NotedAgentSource = N'Line.AgentId' AND E.NotedAgentId <> L.AgentId;
 
 UPDATE E 
 SET E.ResourceId = L.ResourceId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
+WHERE LDE.ResourceSource = N'Line.ResourceId' AND E.ResourceId <> L.ResourceId;
 
---UPDATE E 
---SET E.CurrencyId = L.CurrencyId
---FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
---JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
---WHERE LDE.CurrencySource = 1 AND E.CurrencyId <> L.CurrencyId
+UPDATE E 
+SET E.CurrencyId = L.CurrencyId
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.CurrencySource = N'Line.CurrencyId' AND E.CurrencyId <> L.CurrencyId;
+
+UPDATE E 
+SET E.MonetaryValue = L.MonetaryValue
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.CurrencySource = N'Line.MonetaryValue' AND E.MonetaryValue <> L.MonetaryValue;
+
+UPDATE E 
+SET E.[Value] = L.[Value]
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.CurrencySource = N'Line.Value' AND E.[Value] <> L.[Value];
+
+UPDATE E 
+SET E.NotedAmount = L.MonetaryValue
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' AND E.NotedAmount <> L.MonetaryValue;
+
+UPDATE E 
+SET E.NotedAmount = L.[Value]
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.NotedAmountSource = N'Line.Value' AND E.NotedAmount <> L.[Value];
 
 -- When no resource or agent, set to NULL
 UPDATE E
@@ -52,7 +91,7 @@ SET
 	E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 --	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
-	E.[EntryTypeId]	= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+	E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 
@@ -60,6 +99,7 @@ JOIN dbo.Accounts A ON E.AccountId = A.Id
 -- set the count to one, if singleton
 UPDATE E 
 SET
+	E.[CurrencyId]			= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 --	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
 	E.[Count]				=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
@@ -75,16 +115,6 @@ SET
 	E.[Time]		=	COALESCE(R.[Time] * E.[Count], E.[Time])
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
-
-UPDATE E
-SET
-	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction])
---	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
-	-- TODO: fill with all the remaining defaults
-
-FROM @PreprocessedEntries E
-JOIN @Lines L ON E.[LineIndex] = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber]
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 

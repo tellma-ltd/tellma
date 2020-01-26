@@ -1,6 +1,6 @@
 ﻿CREATE FUNCTION [bll].[fi_Lines__Ready]
 (
-	-- Determine which of the selected Lines are reacdy for state change
+	-- Determine which of the selected Lines are ready for state change
 	-- Note that If a line definition does not a have a workflow, the transition is always accepted
 	@Ids dbo.IdList READONLY,
 	@ToState SMALLINT -- NVARCHAR (30)
@@ -15,7 +15,7 @@ RETURNS TABLE AS RETURN
 		JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 		WHERE [bll].[fn_Line_Criteria__Satisfied](FE.[Id], WS.Criteria) = 1	
 	),
-	AvailabeSignatures AS (
+	AvailableSignatures AS (
 		SELECT [LineId], RoleId
 		FROM dbo.[LineSignatures]
 		WHERE ToState = @ToState
@@ -26,7 +26,7 @@ RETURNS TABLE AS RETURN
 		FROM RequiredSignatures
 		EXCEPT
 		SELECT [LineId], RoleId
-		FROM AvailabeSignatures
+		FROM AvailableSignatures
 	)
 	SELECT [Id]
 	FROM @Ids
