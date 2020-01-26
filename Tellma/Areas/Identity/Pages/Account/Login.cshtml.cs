@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -22,14 +23,17 @@ namespace Tellma.Areas.Identity.Pages.Account
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ClientApplicationsOptions _config;
+        private readonly GlobalOptions _globalConfig;
 
         public LoginModel(SignInManager<EmbeddedIdentityServerUser> signInManager, 
-            ILogger<LoginModel> logger, IStringLocalizer<Strings> localizer, IOptions<ClientApplicationsOptions> options)
+            ILogger<LoginModel> logger, IStringLocalizer<Strings> localizer, 
+            IOptions<GlobalOptions> globalOptions, IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
             _config = options.Value;
+            _globalConfig = globalOptions.Value;
         }
 
         [BindProperty]
@@ -65,7 +69,7 @@ namespace Tellma.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl ??= DefaultReturnUrl();
+            // returnUrl ??= DefaultReturnUrl();
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -75,15 +79,8 @@ namespace Tellma.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        private string DefaultReturnUrl()
-        {
-            return _config.WebClientUri ?? Url.Content("~/");
-        }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= DefaultReturnUrl(); // Url.Content("~/");
-
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
@@ -92,10 +89,7 @@ namespace Tellma.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    if(returnUrl != null)
-                    {
-                        return SafeRedirect(returnUrl);
-                    }
+                    return OnSignIn(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -125,15 +119,26 @@ namespace Tellma.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private ActionResult SafeRedirect(string url)
+        private IActionResult OnSignIn(string returnUrl)
         {
-            if (url == _config.WebClientUri)
+            if (returnUrl != null)
             {
-                return Redirect(url);
+                // This url most likely came from identity server
+                return LocalRedirect(returnUrl);
             }
             else
             {
-                return LocalRedirect(url);
+                // If no return url, send the user to the client app
+                if (_globalConfig.EmbeddedClientApplicationEnabled)
+                {
+                    // Embedded web client app
+                    return LocalRedirect("~/");
+                }
+                else
+                {
+                    // Validation ensures this value is not null
+                    return Redirect(_config?.WebClientUri);
+                }
             }
         }
     }

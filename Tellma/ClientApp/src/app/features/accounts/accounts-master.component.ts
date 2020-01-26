@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-accounts-master',
+  selector: 't-accounts-master',
   templateUrl: './accounts-master.component.html',
   styles: []
 })

@@ -16,13 +16,13 @@
     </button>
   </div>
 
-  <div class="row border-bottom" [class.bg-white]="isLight" [class.b-less-dark]="isDark" [class.b-dark-border]="isDark"
-    [class.b-text-whitish]="isDark">
+  <div class="row border-bottom" [class.bg-white]="isLight" [class.t-less-dark]="isDark" [class.t-dark-border]="isDark"
+    [class.t-text-whitish]="isDark">
 
     <!-- Breadcrumb -->
     <div class="col-6 p-1" *ngIf="isScreenMode">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item active" [class.b-text-whitish]="isDark">
+        <li class="breadcrumb-item active" [class.t-text-whitish]="isDark">
           {{ masterCrumb }}
         </li>
       </ul>
@@ -31,26 +31,26 @@
 
     <!-- Search and Filter -->
     <div class="p-1" [class.col-6]="isScreenMode" [class.col-12]="isPopupMode">
-      <div class="d-flex b-search">
+      <div class="d-flex t-search">
         <!-- Search Box -->
-        <b-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode">
-        </b-text-editor>
+        <t-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode">
+        </t-text-editor>
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
-          <button class="btn btn-sm d-flex b-no-arrow b-filter-button" ngbDropdownToggle
-            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          <button class="btn btn-sm d-flex t-no-arrow t-filter-button" ngbDropdownToggle
+            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
             type="button" title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
-            <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
+            <div class="bg-danger t-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
 
-          <ul class="b-filter-dropdown-menu shadow" style="min-width: 250px" ngbDropdownMenu
-            [class.b-less-dark]="isDark">
+          <ul class="t-filter-dropdown-menu shadow" style="min-width: 250px" ngbDropdownMenu
+            [class.t-less-dark]="isDark">
 
             <!-- Include Inactive -->
-            <li *ngIf="showIncludeInactive" class="dropdown-item b-transparent-background"
-              [class.b-text-whitish]="isDark" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
+            <li *ngIf="showIncludeInactive" class="dropdown-item t-transparent-background"
+              [class.t-text-whitish]="isDark" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
                 includeInactiveLabel }} </span></li>
             <li *ngIf="showIncludeInactive">
               <hr />
@@ -59,7 +59,7 @@
             <!-- Custom filter options -->
             <ng-container *ngFor="let groupName of groupNames">
               <ng-container *ngFor="let e of filterTemplates(groupName)">
-                <li class="dropdown-item b-transparent-background" [class.b-text-whitish]="isDark"
+                <li class="dropdown-item t-transparent-background" [class.t-text-whitish]="isDark"
                   [class.selected]="isFilterChecked(groupName, e.expression)"
                   (click)="onFilterCheck(groupName, e.expression)">
                   <div>
@@ -76,10 +76,10 @@
             </ng-container>
 
             <!-- Custom Filter -->
-            <li class="dropdown-item b-transparent-background" [class.bg-white]="isLight" [class.b-less-dark]="isDark"
-              style="cursor: default" [class.b-text-whitish]="isDark" [class.selected]="!!customFilter">
+            <li class="dropdown-item t-transparent-background" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
+              style="cursor: default" [class.t-text-whitish]="isDark" [class.selected]="!!customFilter">
               <div>
-                <input class="form-control b-input w-100 border-0" style="font-size: inherit"
+                <input class="form-control t-input w-100 border-0" style="font-size: inherit"
                   placeholder="{{ 'CustomFilter' | translate }}..." [(ngModel)]="customFilter"
                   [ngModelOptions]="{updateOn: 'blur'}" />
               </div>
@@ -89,10 +89,10 @@
             </li>
 
             <!-- Clear Filter -->
-            <li class="dropdown-item b-transparent-background d-flex justify-content-between"
-              [class.b-text-whitish]="isDark" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
+            <li class="dropdown-item t-transparent-background d-flex justify-content-between"
+              [class.t-text-whitish]="isDark" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
                 class="d-block">{{ 'ClearFilter' | translate }}</span><span [class.text-danger]="isLight"
-                [class.b-text-whitish]="isDark">&#x2718;</span></li>
+                [class.t-text-whitish]="isDark">&#x2718;</span></li>
           </ul>
         </div>
 
@@ -100,15 +100,15 @@
     </div>
 
     <!-- Regular Toolbar -->
-    <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="!areAnyChecked">
+    <div class="col-12 p-1 d-flex justify-content-between t-toolbar" *ngIf="!areAnyChecked">
 
       <!-- Left Buttons -->
       <div>
         <!-- Create -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body"
           *ngIf="showCreate">
-          <button type="button" class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight"
-            [class.b-text-whitish]="isDark" [class.font-weight-normal]="isDark" (click)="onCreate()"
+          <button type="button" class="btn btn-sm t-toolbar-button" [class.btn-primary]="isLight"
+            [class.t-text-whitish]="isDark" [class.font-weight-normal]="isDark" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
@@ -118,7 +118,7 @@
         <!-- Collapse All -->
         <!-- <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="collapseAllTooltip" container="body"
           *ngIf="showCollapseAll">
-          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCollapseAll()"
+          <button type="button" class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button" (click)="onCollapseAll()"
             [disabled]="!canCollapseAll">
             <fa-icon icon="minus-square"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'CollapseAll' | translate }}</span>
@@ -126,24 +126,24 @@
         </div> -->
 
         <!-- Data dropdown -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
+        <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
           *ngIf="showDataDropdown">
-          <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle
-            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }">
+          <button type="button" class="btn btn-sm t-toolbar-button dropdown-toggle" ngbDropdownToggle
+            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }">
             {{ 'Data' | translate }}
           </button>
-          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.b-less-dark]="isDark">
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.t-less-dark]="isDark">
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
               *ngIf="showExport">
-              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                [class.b-text-whitish]="isDark" (click)="exportErrorMessage = null; modalService.open(exportModal);"
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="exportErrorMessage = null; modalService.open(exportModal);"
                 [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
-              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                [class.b-text-whitish]="isDark" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
                 {{ 'Import' | translate }}
               </button>
             </div>
@@ -151,8 +151,8 @@
               [disabled]="!canExpandNextLevel" *ngIf="showExpandNextLevel">
               {{ 'ExpandLevel0' | translate: { level: level+1 } }}
             </button> -->
-            <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-              [class.b-text-whitish]="isDark" (click)="onCollapseAll()" [disabled]="!canCollapseAll"
+            <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+              [class.t-text-whitish]="isDark" (click)="onCollapseAll()" [disabled]="!canCollapseAll"
               *ngIf="showCollapseAll">
               {{ 'CollapseAll' | translate }}
             </button>
@@ -164,8 +164,8 @@
       <div>
 
         <!-- Refresh -->
-        <button class="btn btn-sm b-toolbar-button"
-          [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+        <button class="btn btn-sm t-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
           type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
@@ -173,31 +173,31 @@
         <!-- Paging -->
         <ng-container *ngIf="showPagingControls">
           <div class="d-inline small mx-2">
-            <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
+            <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
             </span>
-            <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+            <span class="t-vertical-align-middle"> / {{ total | number }}</span>
           </div>
-          <button class="btn btn-sm b-toolbar-button"
-            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          <button class="btn btn-sm t-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
             type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
             <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
           </button>
-          <button class="btn btn-sm b-toolbar-button"
-            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          <button class="btn btn-sm t-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
             type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
           </button>
         </ng-container>
 
         <!-- Flat/Tree Toggle -->
-        <div class="btn-group btn-group-toggle b-toolbar-button" *ngIf="enableTree">
-          <label class="btn btn-sm btn-light b-pointer" [class.active]="isTreeMode" title="{{ 'Tree' | translate }}"
+        <div class="btn-group btn-group-toggle t-toolbar-button" *ngIf="enableTree">
+          <label class="btn btn-sm btn-light t-pointer" [class.active]="isTreeMode" title="{{ 'Tree' | translate }}"
             (click)="onTreeMode()">
             <input type="radio" name="displayMode">
             <fa-icon icon="code-branch" rotate="90"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Tree' | translate }}</span>
           </label>
-          <label class="btn btn-sm btn-light b-pointer" [class.active]="isFlatMode" title="{{ 'Flat' | translate }}"
+          <label class="btn btn-sm btn-light t-pointer" [class.active]="isFlatMode" title="{{ 'Flat' | translate }}"
             (click)="onFlatMode()">
             <input type="radio" name="displayMode">
             <fa-icon icon="bars"></fa-icon>
@@ -206,13 +206,13 @@
         </div>
 
         <!-- Tiles/Table Toggle -->
-        <div class="btn-group btn-group-toggle b-toolbar-button">
-          <label class="btn btn-sm b-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
+        <div class="btn-group btn-group-toggle t-toolbar-button">
+          <label class="btn btn-sm t-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
             [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
             <input type="radio" name="searchView">
             <fa-icon icon="th-large"></fa-icon>
           </label>
-          <label class="btn btn-sm b-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
+          <label class="btn btn-sm t-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
             [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
             <input type="radio" name="searchView">
             <fa-icon icon="table" [flip]="flip"></fa-icon>
@@ -222,39 +222,39 @@
     </div>
 
     <!-- Multi-Select Toolbar -->
-    <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="areAnyChecked">
+    <div class="col-12 p-1 d-flex justify-content-between t-toolbar" *ngIf="areAnyChecked">
       <div>
-        <span class="mx-2 b-vertical-align-middle">
+        <span class="mx-2 t-vertical-align-middle">
           {{ 'NSelectedItems' | translate: { count: checkedCount } }}
         </span>
 
         <!-- Actions -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-          <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" [class.btn-primary]="isLight"
-            [class.b-text-whitish]="isDark" [class.font-weight-normal]="isDark" ngbDropdownToggle>
+        <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+          <button type="button" class="btn btn-sm t-toolbar-button dropdown-toggle" [class.btn-primary]="isLight"
+            [class.t-text-whitish]="isDark" [class.font-weight-normal]="isDark" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
-          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.b-less-dark]="isDark">
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.t-less-dark]="isDark">
             <ng-container *ngFor="let action of multiselectActions">
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">
-                <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                  [class.b-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
+                <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                  [class.t-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
             </ng-container>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDelete">
-              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                [class.b-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete">
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDeleteWithDescendants">
-              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                [class.b-text-whitish]="isDark" (click)="modalService.open(deleteWithDescendantsModal)"
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="modalService.open(deleteWithDescendantsModal)"
                 [disabled]="!canDelete">
                 {{ 'DeleteWithDescendants' | translate }}
               </button>
@@ -263,8 +263,8 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-sm b-toolbar-button"
-          [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+        <button class="btn btn-sm t-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
           type="button" (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
@@ -274,7 +274,7 @@
   </div>
 
   <!-- The search results -->
-  <div class="row b-rest-of-screen" [class.b-much-less-dark]="isDark">
+  <div class="row t-rest-of-screen" [class.t-much-less-dark]="isDark">
     <div class="w-100">
 
       <!-- Tiles -->
@@ -282,10 +282,10 @@
         <div class="row mb-3">
 
           <ng-container *ngIf="isFlatMode">
-            <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
+            <div class="t-tile-container p-0 p-sm-1" [class.t-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
-              <div class="p-2 b-tile" [class.bg-white]="isLight" [class.b-less-dark]="isDark"
-                [class.b-dark-border]="isDark" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+              <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
+                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
                 </ng-container>
               </div>
@@ -295,7 +295,7 @@
           <ng-container *ngIf="isTreeMode">
             <div class="w-100 border bg-white" style="border-top-width: 0!important"
               *ngFor="let node of treeNodes; trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)">
-              <div class="b-tree-tile" [class.b-highlight]="isRecentlyViewed(node.id)">
+              <div class="t-tree-tile" [class.t-highlight]="isRecentlyViewed(node.id)">
                 <div [style.padding-left]="paddingLeft(node)" [style.padding-right]="paddingRight(node)">
                   <button class="border-0 px-4 w-100 h-100" style="background-color: transparent"
                     [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
@@ -304,13 +304,13 @@
                   </button>
                 </div>
                 &nbsp;
-                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)"
+                <div class="p-2 t-pointer flex-grow-1" (click)="onSelect(node.id)"
                   [class.font-weight-bold]="node.highlight">
                   <ng-container *ngTemplateOutlet="tileTemplate;context: { id : node.id }">
                   </ng-container>
                 </div>
                 <div class="px-2 py-1" *ngIf="showNodeSpinner(node)">
-                  <b-spinner></b-spinner>
+                  <t-spinner></t-spinner>
                 </div>
               </div>
             </div>
@@ -320,29 +320,29 @@
 
       <!-- Table -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm border-bottom b-master-table text-nowrap" [class.bg-white]="isLight"
-          [class.table-dark]="isDark" [class.b-dark-border]="isDark" [class.table-striped]="isFlatMode">
+        <table class="table table-hover table-sm border-bottom t-master-table text-nowrap" [class.bg-white]="isLight"
+          [class.table-dark]="isDark" [class.t-dark-border]="isDark" [class.table-striped]="isFlatMode">
           <thead>
             <tr [class.dropup]="desc" cdkDropList cdkDropListOrientation="horizontal"
               (cdkDropListDropped)="onDragLeave($event)">
 
               <!-- Checkboxes -->
-              <th class="b-multiselect-th">
+              <th class="t-multiselect-th">
                 <div class="mx-2">
-                  <div class="custom-control custom-checkbox b-labelless-checkbox" *ngIf="showCheckboxes">
+                  <div class="custom-control custom-checkbox t-labelless-checkbox" *ngIf="showCheckboxes">
                     <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
                       (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
-                    <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
+                    <label class="custom-control-label t-pointer" for="checkAll">&zwnj;</label>
                   </div>
                 </div>
               </th>
 
               <!-- Errors -->
-              <th class="b-multiselect-th px-0" *ngIf="isScreenMode">
+              <th class="t-multiselect-th px-0" *ngIf="isScreenMode">
               </th>
 
               <!-- Descrpition  -->
-              <th class="b-pointer" [style.width]="colWidth('(Description)')"
+              <th class="t-pointer" [style.width]="colWidth('(Description)')"
                 [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
                 <ng-content *ngTemplateOutlet="tableSummaryHeaderTemplateDefault">
                 </ng-content>
@@ -353,17 +353,17 @@
               </th>
 
               <!-- Custom feature columns -->
-              <th class="b-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
+              <th class="t-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
                 [style.width]="colWidth(colPath)" [class.dropdown-toggle]="isOrderedBy(colPath)"
                 (click)="onOrderBy(colPath)" cdkDrag>
-                <b-auto-label [collection]="collection" [path]="colPath" [definition]="definition">
-                </b-auto-label>
+                <t-auto-label [collection]="collection" [path]="colPath" [definition]="definition">
+                </t-auto-label>
               </th>
 
               <!-- Cog -->
               <th>
-                <button class="btn btn-sm b-toolbar-button"
-                  [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+                <button class="btn btn-sm t-toolbar-button"
+                  [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"
                   type="button" title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
                   (click)="modalService.open(editColumns)">
                   <fa-icon icon="cog"></fa-icon>
@@ -375,7 +375,7 @@
 
             <!-- Flat -->
             <ng-container *ngIf="isFlatMode">
-              <tr *ngFor="let id of flatIds" [class.b-highlight]="isRecentlyViewed(id)">
+              <tr *ngFor="let id of flatIds" [class.t-highlight]="isRecentlyViewed(id)">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: id }">
@@ -386,7 +386,7 @@
                 </ng-content>
 
                 <!-- Description -->
-                <td class="b-pointer" (click)="onSelect(id)">
+                <td class="t-pointer" (click)="onSelect(id)">
                   <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: id }">
                   </ng-content>
                 </td>
@@ -402,7 +402,7 @@
             <!-- Tree -->
             <ng-container *ngIf="isTreeMode">
               <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)"
-                [class.b-highlight]="isRecentlyViewed(node.id)" [style.opacity]="node.fromResult ? 1 : 1">
+                [class.t-highlight]="isRecentlyViewed(node.id)" [style.opacity]="node.fromResult ? 1 : 1">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">
@@ -423,11 +423,11 @@
                       <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
                     </button>
                     <!-- The node button -->
-                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
+                    <div class="t-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
                       (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
                       <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: node.id }">
                       </ng-content>
-                      <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
+                      <t-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></t-spinner>
                     </div>
                   </div>
                 </td>
@@ -452,15 +452,15 @@
             <div class="mx-2">
 
               <!-- checkbox -->
-              <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
+              <div class="custom-control custom-checkbox t-labelless-checkbox d-inline">
                 <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
-                <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+                <label class="custom-control-label t-pointer" for="check{{id}}">&zwnj;</label>
               </div>
             </div>
           </td>
 
           <!-- In popup mode, this column is merely a clickable margin -->
-          <td class="b-pointer" (click)="onSelect(id)" *ngIf="!showCheckboxes">
+          <td class="t-pointer" (click)="onSelect(id)" *ngIf="!showCheckboxes">
 
           </td>
         </ng-template>
@@ -479,16 +479,16 @@
 
         <!-- Template reused in both tree and flat tables -->
         <ng-template #selectColumns let-id="id">
-          <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-            <b-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
-            </b-auto-cell>
+          <td class="t-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
+            <t-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
+            </t-auto-cell>
           </td>
         </ng-template>
       </div>
 
       <!-- Spinner -->
       <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
-        <b-spinner [scale]="2"></b-spinner>
+        <t-spinner [scale]="2"></t-spinner>
       </div>
 
       <!-- No items found -->
@@ -497,9 +497,9 @@
       </div>
 
       <!-- Error message -->
-      <b-error-message *ngIf="showErrorMessage">
+      <t-error-message *ngIf="showErrorMessage">
         {{ errorMessage }}
-      </b-error-message>
+      </t-error-message>
 
     </div>
   </div>
@@ -518,52 +518,52 @@
     <!-- Format -->
     <div class="mt-1">
       <div class="font-weight-bold small">
-        <span class="b-vertical-align-middle">{{ 'Format' | translate }}</span>
+        <span class="t-vertical-align-middle">{{ 'Format' | translate }}</span>
       </div>
-      <b-selector [choices]="formatChoices" [(ngModel)]="exportFormat"></b-selector>
+      <t-selector [choices]="formatChoices" [(ngModel)]="exportFormat"></t-selector>
     </div>
 
     <!-- Page -->
     <div class="mt-3 mb-2">
       <div class="font-weight-bold small">
-        <span class="b-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
+        <span class="t-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
       </div>
       <div [class.mt-1]="showExportPaging">
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging" type="button"
+        <button class="btn btn-light btn-sm t-white-button t-toolbar-button" *ngIf="showExportPaging" type="button"
           title="{{ 'Previous' | translate }}" (click)="onPerviousPageExport()" [disabled]="!canPreviousPageExport">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
         </button>
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging" type="button"
+        <button class="btn btn-light btn-sm t-white-button t-toolbar-button" *ngIf="showExportPaging" type="button"
           title="{{ 'Next' | translate }}" (click)="onNextPageExport()" [disabled]="!canNextPageExport">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
 
         <div class="d-inline mx-2">
-          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number
+          <span class="t-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number
               }}</span>
           </span>
-          <span class="b-vertical-align-middle"> / {{ totalExport | number }}</span>
+          <span class="t-vertical-align-middle"> / {{ totalExport | number }}</span>
         </div>
       </div>
     </div>
 
-    <b-warning-message *ngIf="showExportPaging">
+    <t-warning-message *ngIf="showExportPaging">
       {{ 'MaxExportSizeWarning' | translate: { max: (maxTotalExport | number) } }}
-    </b-warning-message>
+    </t-warning-message>
 
     <!-- Error message -->
-    <b-error-message *ngIf="showExportErrorMessage">
+    <t-error-message *ngIf="showExportErrorMessage">
       {{ exportErrorMessage }}
-    </b-error-message>
+    </t-error-message>
 
   </div>
   <div class="modal-footer">
     <button class="btn btn-primary" (click)="onExport();" ngbAutofocus>
       <fa-icon icon="download"></fa-icon>
       &nbsp;{{ 'Export' | translate }}
-      <b-spinner class="ml-1" *ngIf="showExportSpinner" [scale]="1"></b-spinner>
+      <t-spinner class="ml-1" *ngIf="showExportSpinner" [scale]="1"></t-spinner>
     </button>
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>
@@ -592,7 +592,7 @@
       <fa-icon icon="trash"></fa-icon>
       &nbsp;{{ 'Delete' | translate }}
     </button>
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>
@@ -621,7 +621,7 @@
       <fa-icon icon="trash"></fa-icon>
       &nbsp;{{ 'Delete' | translate }}
     </button>
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>
@@ -671,7 +671,7 @@
 
   <!-- body -->
   <div class="modal-body">
-    <input class="form-control b-input w-100" type="text" [(ngModel)]="stateSelect"
+    <input class="form-control t-input w-100" type="text" [(ngModel)]="stateSelect"
       [ngModelOptions]="{updateOn: 'blur'}" />
   </div>
 

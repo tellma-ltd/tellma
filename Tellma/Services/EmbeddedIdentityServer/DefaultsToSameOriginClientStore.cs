@@ -23,11 +23,13 @@ namespace Tellma.Services.EmbeddedIdentityServer
     public class DefaultsToSameOriginClientStore : IClientStore
     {
         private readonly IHttpContextAccessor _accessor;
+        private readonly GlobalOptions _globalConfig;
         private readonly ClientApplicationsOptions _config;
 
-        public DefaultsToSameOriginClientStore(IHttpContextAccessor accessor, IOptions<ClientApplicationsOptions> options)
+        public DefaultsToSameOriginClientStore(IHttpContextAccessor accessor, IOptions<GlobalOptions> globalOptions, IOptions<ClientApplicationsOptions> options)
         {
             _accessor = accessor;
+            _globalConfig = globalOptions.Value;
             _config = options.Value;
         }
 
@@ -35,12 +37,18 @@ namespace Tellma.Services.EmbeddedIdentityServer
         private IEnumerable<Client> GetClients()
         {
             // Determine the ClientApp's URI from the config file
-            var webClientOrigin = _config?.WebClientUri.WithoutTrailingSlash();
-            if (string.IsNullOrWhiteSpace(webClientOrigin))
+            string webClientOrigin;
+            if (_globalConfig.EmbeddedClientApplicationEnabled)
             {
-                // IF it is not defined, then use the same origin as IdentityServer by default
+                // IF the embedded client app is enabled, use the same origin as the embedded IdentityServer
                 var request = _accessor?.HttpContext?.Request;
                 webClientOrigin = $"https://{request?.Host}/{request?.PathBase}".WithoutTrailingSlash();
+            }
+            else
+            {
+                // IF the client app is hosted elsewhere, use the the WebClientUri value
+                // in the config (validation in Startup.cs ensures this value isn't null)
+                webClientOrigin = _config?.WebClientUri.WithoutTrailingSlash();
             }
 
             // return the Application Client Web App

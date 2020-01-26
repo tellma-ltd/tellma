@@ -11,7 +11,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
 @Component({
-  selector: 'b-users-details',
+  selector: 't-users-details',
   templateUrl: './users-details.component.html'
 })
 export class UsersDetailsComponent extends DetailsBaseComponent {

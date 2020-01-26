@@ -1,4 +1,4 @@
-<b-master collection="Account" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="Account" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3"
@@ -14,16 +14,16 @@
               { template: smart, expression: 'IsSmart eq true'}              
             ]
           }">
-</b-master>
+</t-master>
 
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <b-auto-cell collection="Account" path="" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Account" path="" [entity]="c[id]"></t-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-auto-cell collection="Account" path="Code" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Account" path="Code" [entity]="c[id]"></t-auto-cell>
   </div>
 </ng-template>
 
@@ -35,7 +35,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="Account" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Account" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

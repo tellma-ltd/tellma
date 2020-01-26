@@ -1,11 +1,11 @@
-<b-details collection="MeasurementUnit" [createFunc]="create"
+<t-details collection="MeasurementUnit" [createFunc]="create"
   [expand]="expand" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
-</b-details>
+</t-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
@@ -17,106 +17,106 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2"
+  <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
     [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
-    <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+    <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
       [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required>
-    </b-text-editor>
+    </t-text-editor>
 
-    <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+    <t-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
       [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
-    </b-text-editor>
+    </t-text-editor>
 
-    <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+    <t-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
       [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
-    </b-text-editor>
-  </b-form-group>
+    </t-text-editor>
+  </t-form-group>
 
   <!-- Name -->
-  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+  <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
     [serverErrors]="model?.serverErrors?.Name">
     <div *ngIf="!isEdit">{{ model?.Name }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </t-text-editor>
+  </t-form-group>
 
   <!-- Name2 -->
-  <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+  <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
     [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
     <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+  </t-form-group>
 
   <!-- Name3 -->
-  <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+  <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
     [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
     <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+  </t-form-group>
 
   <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+  <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
     <div *ngIf="!isEdit">{{ model?.Code }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+  </t-form-group>
 
   <!-- Description -->
-  <b-form-group class="b-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
+  <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
     [serverErrors]="model?.serverErrors?.Description">
     <div *ngIf="!isEdit">{{ model?.Description }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </t-text-editor>
+  </t-form-group>
 
   <!-- Description2 -->
-  <b-form-group class="b-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+  <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
     [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
     <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+  </t-form-group>
 
   <!-- Description3 -->
-  <b-form-group class="b-form-group" *ngIf="ws.settings.TernaryLanguageId"
+  <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
     [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
     <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+  </t-form-group>
 
   <!-- Unit Type -->
-  <b-form-group class="b-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
+  <t-form-group class="t-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
     <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.UnitType"> {{ unitTypeLookup(model?.UnitType) | translate }}
-      </b-restricted>
+      <t-restricted [metadata]="model?.EntityMetadata?.UnitType"> {{ unitTypeLookup(model?.UnitType) | translate }}
+      </t-restricted>
     </div>
-    <b-selector *ngIf="isEdit" [(ngModel)]="model.UnitType" [choices]="unitTypeChoices" required></b-selector>
-  </b-form-group>
+    <t-selector *ngIf="isEdit" [(ngModel)]="model.UnitType" [choices]="unitTypeChoices" required></t-selector>
+  </t-form-group>
 
   <!-- Unit Amount -->
-  <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate"
+  <t-form-group class="t-form-group" [label]="'MU_UnitAmount' | translate"
     [serverErrors]="model?.serverErrors?.UnitAmount">
     <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.UnitAmount"> {{model?.UnitAmount | number}}</b-restricted>
+      <t-restricted [metadata]="model?.EntityMetadata?.UnitAmount"> {{model?.UnitAmount | number}}</t-restricted>
     </div>
-    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </b-decimal-editor>
-  </b-form-group>
+    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </t-decimal-editor>
+  </t-form-group>
 
   <!-- Base Amount -->
-  <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate"
+  <t-form-group class="t-form-group" [label]="'MU_BaseAmount' | translate"
     [serverErrors]="model?.serverErrors?.BaseAmount">
     <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.BaseAmount"> {{model?.BaseAmount | number}}</b-restricted>
+      <t-restricted [metadata]="model?.EntityMetadata?.BaseAmount"> {{model?.BaseAmount | number}}</t-restricted>
     </div>
-    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
-    </b-decimal-editor>
-  </b-form-group>
+    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </t-decimal-editor>
+  </t-form-group>
 
   <!-- Is Active -->
-  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <b-auto-cell collection="MeasurementUnit" [entity]="model" path="IsActive"></b-auto-cell>
-  </b-form-group>
+  <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <t-auto-cell collection="MeasurementUnit" [entity]="model" path="IsActive"></t-auto-cell>
+  </t-form-group>
 </ng-template>
 
 

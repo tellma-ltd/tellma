@@ -3,7 +3,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
-  selector: 'b-legacy-types-details',
+  selector: 't-legacy-types-details',
   templateUrl: './legacy-types-details.component.html'
 })
 export class LegacyTypesDetailsComponent extends DetailsBaseComponent {

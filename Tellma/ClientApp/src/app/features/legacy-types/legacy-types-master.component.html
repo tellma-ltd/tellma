@@ -1,9 +1,9 @@
-<b-master collection="LegacyType" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+<t-master collection="LegacyType" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'LegacyTypes' | translate" [showImportButton]="false"
   [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Id"
   selectForTiles="Name,Name2,Name3" inactiveFilter="" [multiselectActions]="[]">
-</b-master>
+</t-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

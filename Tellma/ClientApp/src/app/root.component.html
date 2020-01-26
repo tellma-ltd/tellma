@@ -34,14 +34,14 @@
   </div>
 
   <!-- The app -->
-  <div class="b-rest-of-screen">
+  <div class="t-rest-of-screen">
     <router-outlet></router-outlet>
   </div>
 </div>
 
-<div class="b-overlay text-white" *ngIf="showOverlay">
-  <fa-icon class="b-overlay-spinner" icon="spinner" [spin]="true"></fa-icon>
+<div class="t-overlay text-white" *ngIf="showOverlay">
+  <fa-icon class="t-overlay-spinner" icon="spinner" [spin]="true"></fa-icon>
   <ng-container *ngFor="let labelName of labelNames">
-    <div class="b-overlay-message" *ngIf="labelName"> {{ labelName | translate }}... </div>
+    <div class="t-overlay-message" *ngIf="labelName"> {{ labelName | translate }}... </div>
   </ng-container>
 </div>

@@ -5,7 +5,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 
 @Component({
-  selector: 'b-landing',
+  selector: 't-landing',
   templateUrl: './landing.component.html'
 })
 export class LandingComponent implements OnInit, OnDestroy {

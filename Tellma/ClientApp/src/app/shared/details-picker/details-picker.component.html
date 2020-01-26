@@ -2,14 +2,14 @@
 
   <!-- The Search Field -->
   <div class="d-flex">
-    <input class="form-control b-input" style="height: 21px;" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
+    <input class="form-control t-input" style="height: 21px;" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off"/>
     &nbsp;
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" *ngIf="showEditSelected" type="button"
+    <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1" *ngIf="showEditSelected" type="button"
       title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()" [disabled]="isDisabled || disableEditSelected">
       <fa-icon icon="external-link-alt"></fa-icon>
     </button>
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" style="width:22.6px" *ngIf="showMagnifier"
+    <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1" style="width:22.6px" *ngIf="showMagnifier"
       type="button" title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>
@@ -26,17 +26,17 @@
     </ng-container>
     <div class="text-center">
       <span>
-        <b-spinner *ngIf="showSpinner"></b-spinner>
+        <t-spinner *ngIf="showSpinner"></t-spinner>
       </span>
     </div>
     <div class="pl-2 pr-2">
-      <b-error-message *ngIf="showError"> {{ errorMessage }}</b-error-message>
+      <t-error-message *ngIf="showError"> {{ errorMessage }}</t-error-message>
       <span class="font-italic text-muted" *ngIf="showNoItemsFound">{{ 'NoItemsFound' | translate }}</span>
     </div>
     <ng-container *ngIf="showCreateNew">
       <hr />
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
-        <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew"
+        <button class="dropdown-item t-slightly-bold" [class.text-primary]="canCreateNew"
           [class.text-muted]="!canCreateNew" [class.active]="highlightCreateNew" (click)="onCreateFromFocus()"
           [disabled]="!canCreateNew">
           {{ 'Create' | translate }}...
@@ -84,7 +84,7 @@
 
   <!-- footer -->
   <div class="modal-footer">
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>
@@ -117,7 +117,7 @@
 
   <!-- footer -->
   <div class="modal-footer">
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>

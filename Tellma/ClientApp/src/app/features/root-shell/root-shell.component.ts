@@ -10,7 +10,7 @@ import { supportedCultures } from '~/app/data/supported-cultures';
 import { StorageService } from '~/app/data/storage.service';
 
 @Component({
-  selector: 'b-root-shell',
+  selector: 't-root-shell',
   templateUrl: './root-shell.component.html'
 })
 export class RootShellComponent implements OnInit, OnDestroy {
@@ -30,13 +30,13 @@ export class RootShellComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('b-banner');
+    this.document.body.classList.add('t-banner');
   }
 
   ngOnDestroy() {
 
     // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.remove('b-banner');
+    this.document.body.classList.remove('t-banner');
   }
 
   onToggleCollapse() {

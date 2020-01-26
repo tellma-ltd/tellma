@@ -10,7 +10,7 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { metadata_Currency } from '~/app/data/entities/currency';
 
 @Component({
-  selector: 'b-currencies-master',
+  selector: 't-currencies-master',
   templateUrl: './currencies-master.component.html',
   styles: []
 })

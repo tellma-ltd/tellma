@@ -32,7 +32,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "b",
+      "prefix": "t",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

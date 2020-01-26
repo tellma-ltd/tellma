@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Areas.Identity.Pages.Account
 {
@@ -22,6 +23,7 @@ namespace Tellma.Areas.Identity.Pages.Account
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
+        private readonly GlobalOptions _globalConfig;
         private readonly ClientApplicationsOptions _config;
 
         public ExternalLoginModel(
@@ -29,12 +31,14 @@ namespace Tellma.Areas.Identity.Pages.Account
             UserManager<EmbeddedIdentityServerUser> userManager,
             ILogger<ExternalLoginModel> logger,
             IStringLocalizer<Strings> localizer,
+            IOptions<GlobalOptions> globalOptions,
             IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _localizer = localizer;
+            _globalConfig = globalOptions.Value;
             _config = options.Value;
         }
 
@@ -56,7 +60,6 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            returnUrl ??= _config.WebClientUri ?? Url.Content("~/");
             if (remoteError != null)
             {
                 ErrorMessage = _localizer["Error_ErrorFromExternalProvider0", remoteError];
@@ -74,7 +77,7 @@ namespace Tellma.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                return SafeRedirect(returnUrl);
+                return OnSignIn(returnUrl);
             }
             if (result.IsLockedOut)
             {
@@ -123,7 +126,7 @@ namespace Tellma.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                    return SafeRedirect(returnUrl); // TODO make sure it is valid
+                    return OnSignIn(returnUrl);
                 }
                 if (result.IsLockedOut)
                 {
@@ -137,16 +140,27 @@ namespace Tellma.Areas.Identity.Pages.Account
                 }
             }
         }
-
-        private ActionResult SafeRedirect(string url)
+               
+        private IActionResult OnSignIn(string returnUrl)
         {
-            if(url == _config.WebClientUri)
+            if (returnUrl != null)
             {
-                return Redirect(url);
+                // This url most likely came from identity server
+                return LocalRedirect(returnUrl);
             }
             else
             {
-                return LocalRedirect(url);
+                // If no return url, send the user to the client app
+                if (_globalConfig.EmbeddedClientApplicationEnabled)
+                {
+                    // Embedded web client app
+                    return LocalRedirect("~/");
+                }
+                else
+                {
+                    // Validation ensures this value is not null
+                    return Redirect(_config?.WebClientUri);
+                }
             }
         }
     }

@@ -4,7 +4,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, Validator, ValidationErrors, A
 import { NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'b-date-picker',
+  selector: 't-date-picker',
   templateUrl: './date-picker.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DatePickerComponent },
   { provide: NG_VALIDATORS, useExisting: DatePickerComponent, multi: true }]

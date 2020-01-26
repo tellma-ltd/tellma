@@ -21,7 +21,7 @@ enum SearchStatus {
 }
 
 @Component({
-  selector: 'b-details-picker',
+  selector: 't-details-picker',
   templateUrl: './details-picker.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DetailsPickerComponent }]
 })
@@ -665,7 +665,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._initialText = '';
     this._definitionId = definitionId;
 
-    this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
+    this.modalService.open(this.masterWrapperTemplate, { windowClass: 't-master-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
       .result.then(this.onFocusInput, this.onFocusInput);
@@ -700,7 +700,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._definitionId = definitionId;
     this._idString = 'new';
 
-    this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
+    this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
       .result.then(this.onFocusInput, this.onFocusInput);
@@ -712,7 +712,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       this._definitionId = this.chosenItemDefinition;
 
       if (!!this._idString) {
-        this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
+        this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' })
 
           // this guarantees that the input will be focused again when the modal closes
           .result.then(this.onFocusInput, this.onFocusInput);

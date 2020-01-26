@@ -1,4 +1,4 @@
-<b-master collection="User" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="User" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Email,State,LastAccess" selectForTiles="ImageId,State,Email" [multiselectActions]="[
@@ -17,25 +17,25 @@
               { template: withoutPicture, expression: 'ImageId eq null'}
             ]
           }">
-</b-master>
+</t-master>
 
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
-      <div class="border b-dp-wrapper2">
-        <b-image [src]="'users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+      <div class="border t-dp-wrapper2">
+        <t-image [src]="'users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></t-image>
       </div>
       &nbsp;&nbsp;&nbsp;
     </ng-container>
-    <div class="flex-grow-1 d-inline-block b-mw-0">
+    <div class="flex-grow-1 d-inline-block t-mw-0">
       <div class="d-flex justify-content-between">
-        <b-auto-cell collection="User" path="" [entity]="c[id]"></b-auto-cell>
+        <t-auto-cell collection="User" path="" [entity]="c[id]"></t-auto-cell>
       </div>
       <div class="d-flex justify-content-between mt-1 small">
-        <b-auto-cell collection="User" path="Email" [entity]="c[id]"></b-auto-cell>
-        <b-auto-cell collection="User" path="State" [entity]="c[id]"></b-auto-cell>
+        <t-auto-cell collection="User" path="Email" [entity]="c[id]"></t-auto-cell>
+        <t-auto-cell collection="User" path="State" [entity]="c[id]"></t-auto-cell>
       </div>
     </div>
   </div>
@@ -48,7 +48,7 @@
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-  <b-auto-cell collection="User" [entity]="c[id]"></b-auto-cell>
+  <t-auto-cell collection="User" [entity]="c[id]"></t-auto-cell>
 </ng-template>
 
 <!-- Multiselect Actions -->

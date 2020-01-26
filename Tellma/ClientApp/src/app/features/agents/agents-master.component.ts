@@ -10,7 +10,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 'b-agents-master',
+  selector: 't-agents-master',
   templateUrl: './agents-master.component.html'
 })
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {

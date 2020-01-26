@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'b-currencies-import',
+  selector: 't-currencies-import',
   templateUrl: './currencies-import.component.html',
   styles: []
 })

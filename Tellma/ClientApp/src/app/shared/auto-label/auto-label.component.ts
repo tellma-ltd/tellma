@@ -5,7 +5,7 @@ import { metadata, PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'b-auto-label',
+  selector: 't-auto-label',
   templateUrl: './auto-label.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

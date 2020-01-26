@@ -114,60 +114,58 @@ export class GlobalResolverGuard implements CanActivate {
       return of(true);
     }
 
+    // This function handles the settings retrieved from the JSON file
+    const readAppSettings = (jsonSettings: AppSettings) => {
+      jsonSettings = jsonSettings || {};
+      Object.assign(appsettings, jsonSettings);
+
+      // Base addresses default to same origin
+      const sameOrigin = window.location.origin.replace('http://', 'https://') + '/';
+      appsettings.apiAddress = appsettings.apiAddress || sameOrigin;
+      appsettings.identityAddress = appsettings.identityAddress || appsettings.apiAddress;
+
+      // The api address should end with a forward slash
+      if (!appsettings.apiAddress.endsWith('/')) {
+        appsettings.apiAddress += '/';
+      }
+
+      // The identity address should not end with forward slash
+      while (appsettings.identityAddress.length > 0 && appsettings.identityAddress.endsWith('/')) {
+        appsettings.identityAddress = appsettings.identityAddress.slice(0, -1);
+      }
+
+      // If not the case, append the identity server url to the 3 urls below
+      const idConfig = appsettings.identityConfig;
+      if (!!idConfig) {
+        const loginUrl = idConfig.loginUrl;
+        if (!!loginUrl && !loginUrl.startsWith(appsettings.identityAddress)) {
+          idConfig.loginUrl = appsettings.identityAddress + loginUrl;
+        }
+
+        const iframeUrl = idConfig.sessionCheckIFrameUrl;
+        if (!!iframeUrl && !iframeUrl.startsWith(appsettings.identityAddress)) {
+          idConfig.sessionCheckIFrameUrl = appsettings.identityAddress + iframeUrl;
+        }
+
+        const logoutUrl = idConfig.logoutUrl;
+        if (!!logoutUrl && !logoutUrl.startsWith(appsettings.identityAddress)) {
+          idConfig.logoutUrl = appsettings.identityAddress + logoutUrl;
+        }
+
+        // Refresh rate defaults to once per hour
+        idConfig.tokenRefreshPeriodInSeconds = idConfig.tokenRefreshPeriodInSeconds || 60 * 60;
+      }
+
+      appsettingsIsLoaded = true; // No need to load twice
+    };
+
     const appsettingsUri = environment.production ? '/assets/appsettings.json' : '/assets/appsettings.development.json';
     return this.http.get<AppSettings>(appsettingsUri)
       .pipe(
         // Add defaults and massage the results
-        tap(jsonSettings => {
-          jsonSettings = jsonSettings || {};
-          Object.assign(appsettings, jsonSettings);
-
-          // Base addresses default to same origin
-          const sameOrigin = window.location.origin.replace('http://', 'https://') + '/';
-          appsettings.apiAddress = appsettings.apiAddress || sameOrigin;
-          appsettings.identityAddress = appsettings.identityAddress || appsettings.apiAddress;
-
-          // The api address should end with a forward slash
-          if (!appsettings.apiAddress.endsWith('/')) {
-            appsettings.apiAddress += '/';
-          }
-
-          // The identity address should not end with forward slash
-          while (appsettings.identityAddress.length > 0 && appsettings.identityAddress.endsWith('/')) {
-            appsettings.identityAddress = appsettings.identityAddress.slice(0, -1);
-          }
-
-          // If not the case, append the identity server url to the 3 urls below
-          const idConfig = appsettings.identityConfig;
-          if (!!idConfig) {
-            const loginUrl = idConfig.loginUrl;
-            if (!!loginUrl && !loginUrl.startsWith(appsettings.identityAddress)) {
-              idConfig.loginUrl = appsettings.identityAddress + loginUrl;
-            }
-
-            const iframeUrl = idConfig.sessionCheckIFrameUrl;
-            if (!!iframeUrl && !iframeUrl.startsWith(appsettings.identityAddress)) {
-              idConfig.sessionCheckIFrameUrl = appsettings.identityAddress + iframeUrl;
-            }
-
-            const logoutUrl = idConfig.logoutUrl;
-            if (!!logoutUrl && !logoutUrl.startsWith(appsettings.identityAddress)) {
-              idConfig.logoutUrl = appsettings.identityAddress + logoutUrl;
-            }
-
-            // Refresh rate defaults to once per hour
-            idConfig.tokenRefreshPeriodInSeconds = idConfig.tokenRefreshPeriodInSeconds || 60 * 60;
-          }
-
-          appsettingsIsLoaded = true; // No need to load twice
-        }),
+        tap(readAppSettings),
         map(_ => true),
         catchError(error => {
-          // We do the clueless developer a favor and help her out
-          if (!environment.production && error instanceof HttpErrorResponse && error.status === 404) {
-            alert(`The file '${appsettingsUri}' is required for development`);
-          }
-
           console.error(error);
           const friendlyError = friendlify(error, this.trx);
           return throwError(friendlyError);

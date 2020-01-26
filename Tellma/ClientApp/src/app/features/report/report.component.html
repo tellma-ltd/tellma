@@ -14,117 +14,117 @@
         <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection">
             <div class="w-100" *ngIf="showParameters">
                 <div class="row m-0 px-0 px-lg-1 py-1">
-                    <b-form-group *ngFor="let p of parameters" class="b-form-group"
+                    <t-form-group *ngFor="let p of parameters" class="t-form-group"
                         [label]="p.label() + (p.isRequired ? ' *' : '')" [ngSwitch]="p.desc.control">
                         <!-- Text -->
-                        <b-text-editor *ngSwitchCase="'text'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                        <t-text-editor *ngSwitchCase="'text'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">
-                        </b-text-editor>
+                        </t-text-editor>
 
                         <!-- Decimal -->
-                        <b-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="arguments[p.key]"
+                        <t-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
                             (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="p.desc['minDecimalPlaces']"
                             [maxDecimalPlaces]="p.desc['maxDecimalPlaces']">
-                        </b-decimal-editor>
+                        </t-decimal-editor>
 
                         <!-- Serial -->
-                        <b-decimal-editor *ngSwitchCase="'serial'" [(ngModel)]="arguments[p.key]"
+                        <t-decimal-editor *ngSwitchCase="'serial'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
                             (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
-                        </b-decimal-editor>
+                        </t-decimal-editor>
 
                         <!-- Date -->
-                        <b-date-picker *ngSwitchCase="'date'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                        <t-date-picker *ngSwitchCase="'date'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">
-                        </b-date-picker>
+                        </t-date-picker>
 
                         <!-- Date Time -->
-                        <b-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="arguments[p.key]"
+                        <t-date-picker *ngSwitchCase="'datetime'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
                             (ngModelChange)="onArgumentChange()">
-                        </b-date-picker>
+                        </t-date-picker>
 
                         <!-- Choice -->
-                        <b-selector *ngSwitchCase="'choice'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                        <t-selector *ngSwitchCase="'choice'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [choices]="choices(p.desc)" [ngModelOptions]="{ updateOn: 'blur' }"
                             (ngModelChange)="onArgumentChange()">
-                        </b-selector>
+                        </t-selector>
 
                         <!-- State -->
-                        <b-selector *ngSwitchCase="'state'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                        <t-selector *ngSwitchCase="'state'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [choices]="choices(p.desc)" [ngModelOptions]="{ updateOn: 'blur' }"
                             (ngModelChange)="onArgumentChange()">
-                        </b-selector>
+                        </t-selector>
 
                         <!-- Boolean -->
-                        <div *ngSwitchCase="'boolean'" class="custom-control custom-checkbox b-labelless-checkbox">
+                        <div *ngSwitchCase="'boolean'" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="arguments[p.key]"
                                 id="{{p.key}}" (ngModelChange)="onArgumentChange()">
-                            <label class="custom-control-label b-pointer" for="{{p.key}}">&zwnj;</label>
+                            <label class="custom-control-label t-pointer" for="{{p.key}}">&zwnj;</label>
                         </div>
 
                         <!-- Navigation -->
                         <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
 
-                            <b-legacy-classifications-picker *ngSwitchCase="'LegacyClassification'"
+                            <t-legacy-classifications-picker *ngSwitchCase="'LegacyClassification'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-legacy-classifications-picker>
+                            </t-legacy-classifications-picker>
 
-                            <b-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
+                            <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-account-types-picker>
+                            </t-account-types-picker>
 
-                            <b-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="arguments[p.key]"
+                            <t-accounts-picker *ngSwitchCase="'Account'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-accounts-picker>
+                            </t-accounts-picker>
 
-                            <b-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="arguments[p.key]"
+                            <t-agents-picker *ngSwitchCase="'Agent'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-agents-picker>
+                            </t-agents-picker>
 
-                            <b-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="arguments[p.key]"
+                            <t-currencies-picker *ngSwitchCase="'Currency'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-currencies-picker>
+                            </t-currencies-picker>
 
-                            <b-entry-types-picker *ngSwitchCase="'EntryType'"
+                            <t-entry-types-picker *ngSwitchCase="'EntryType'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-entry-types-picker>
+                            </t-entry-types-picker>
 
-                            <b-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="arguments[p.key]"
+                            <t-lookups-picker *ngSwitchCase="'Lookup'" [(ngModel)]="arguments[p.key]"
                                 [definitionId]="p.desc['definition']" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-lookups-picker>
+                            </t-lookups-picker>
 
-                            <b-measurement-units-picker *ngSwitchCase="'MeasurementUnit'" [(ngModel)]="arguments[p.key]"
+                            <t-measurement-units-picker *ngSwitchCase="'MeasurementUnit'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-measurement-units-picker>
+                            </t-measurement-units-picker>
 
-                            <b-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
+                            <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-resources-picker>
+                            </t-resources-picker>
 
-                            <b-legacy-types-picker *ngSwitchCase="'LegacyType'"
+                            <t-legacy-types-picker *ngSwitchCase="'LegacyType'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()">
-                            </b-legacy-types-picker>
+                            </t-legacy-types-picker>
 
-                            <b-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
+                            <t-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-responsibility-centers-picker>
+                            </t-responsibility-centers-picker>
 
-                            <b-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="arguments[p.key]"
+                            <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-roles-picker>
+                            </t-roles-picker>
 
-                            <b-users-picker *ngSwitchCase="'User'" [(ngModel)]="arguments[p.key]"
+                            <t-users-picker *ngSwitchCase="'User'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </b-users-picker>
+                            </t-users-picker>
 
                             <div class="text-danger font-weight-bold" *ngSwitchDefault>
                                 TODO: control for '{{ p.desc['type'] || p.desc['collection'] }}''
@@ -134,31 +134,31 @@
                         <div class="text-danger font-weight-bold" *ngSwitchDefault>
                             No suitable control for '{{ p.desc.control }}'
                         </div>
-                    </b-form-group>
+                    </t-form-group>
                 </div>
             </div>
-            <b-error-message *ngIf="showParametersErrorMessage">
+            <t-error-message *ngIf="showParametersErrorMessage">
                 {{ parametersErrorMessage }}
-            </b-error-message>
+            </t-error-message>
         </div>
 
         <!-- Toolbar -->
-        <div class="col-12 p-1 d-flex justify-content-between b-toolbar">
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
 
             <!-- Left Buttons -->
             <div class="d-flex">
 
                 <!-- Refresh -->
-                <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onRefresh()"
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()"
                     [disabled]="disableRefresh">
                     <fa-icon icon="sync-alt"></fa-icon>
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
                 </button>
 
                 <!-- Data dropdown -->
-                <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
                     <button type="button"
-                        class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
+                        class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
                         {{ 'Data' | translate }}
                     </button>
@@ -180,24 +180,24 @@
                 <!-- Paging -->
                 <div *ngIf="showPagingControls">
                     <div class="d-inline small mx-2">
-                        <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
+                        <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
                             <span>{{ to | number }}</span>
                         </span>
-                        <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+                        <span class="t-vertical-align-middle"> / {{ total | number }}</span>
                     </div>
-                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                         title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
                         <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
                     </button>
-                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                    <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                         title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
                         <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
                     </button>
                 </div>
 
                 <!-- Report View Toggle -->
-                <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
-                    <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
+                <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle t-toolbar-button">
+                    <label *ngFor="let view of views" class="btn btn-sm btn-light t-pointer"
                         [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
                         (click)="onView(view.view)">
                         <input type="radio" name="{{view.view}}">
@@ -207,10 +207,10 @@
             </div>
         </div>
     </div>
-    <div class="row b-rest-of-screen" [style.overflow]="overflow">
-        <b-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified" [definition]="definition"
+    <div class="row t-rest-of-screen" [style.overflow]="overflow">
+        <t-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified" [definition]="definition"
             [arguments]="immutableArguments" [view]="view" [refresh]="refresh" [state]="state" [mode]="mode">
-        </b-report-results>
+        </t-report-results>
         <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
             <fa-icon icon="info-circle"></fa-icon>
             &nbsp;

@@ -1,4 +1,4 @@
-<b-master collection="MeasurementUnit" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+<t-master collection="MeasurementUnit" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code,Name,Name2,Name3"
@@ -18,7 +18,7 @@
               { template: volume, expression: 'UnitType eq \'Volume\''}
             ]
           }">
-</b-master>
+</t-master>
 
 
 <!-- Tile Template -->
@@ -39,7 +39,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="MeasurementUnit" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="MeasurementUnit" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

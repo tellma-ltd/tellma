@@ -52,7 +52,7 @@ export function areServerErrors(serverErrors: string[]) {
 }
 
 @Component({
-  selector: 'b-form-group-base',
+  selector: 't-form-group-base',
   template: ''
 })
 export class FormGroupBaseComponent {

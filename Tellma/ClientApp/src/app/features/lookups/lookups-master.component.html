@@ -1,4 +1,4 @@
-<b-master *ngIf="found;else pageNotFound" collection="Lookup" [definition]="definitionId" [mode]="mode"
+<t-master *ngIf="found;else pageNotFound" collection="Lookup" [definition]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate"
   [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
@@ -10,21 +10,21 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
-  <b-application-page-not-found>
-  </b-application-page-not-found>
+  <t-application-page-not-found>
+  </t-application-page-not-found>
 </ng-template>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <b-auto-cell collection="Lookup" [definition]="definitionId" path="" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Lookup" [definition]="definitionId" path="" [entity]="c[id]"></t-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-auto-cell collection="Lookup" [definition]="definitionId" path="Code" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Lookup" [definition]="definitionId" path="Code" [entity]="c[id]"></t-auto-cell>
   </div>
 </ng-template>
 
@@ -36,7 +36,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="Lookup" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Lookup" [definition]="definitionId" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

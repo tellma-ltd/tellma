@@ -2,26 +2,26 @@
     <!-- Details (Flat Table) -->
     <div class="w-100 h-100 table-responsive" *ngIf="showDetails">
         <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
-            <table class="table table-hover table-striped table-sm bg-white border-bottom b-master-table text-nowrap">
+            <table class="table table-hover table-striped table-sm bg-white border-bottom t-master-table text-nowrap">
                 <!-- Column Header -->
                 <thead>
                     <tr>
                         <th style="width:10px"></th>
                         <th *ngFor="let col of select">
-                            <b-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
+                            <t-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
                                 [definition]="definitionId">
-                            </b-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
+                            </t-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
                         </th>
                     </tr>
                 </thead>
                 <!-- Rows -->
                 <tbody>
-                    <tr class="b-pointer" *cdkVirtualFor="let entity of entities" [class.b-highlight]="false">
+                    <tr class="t-pointer" *cdkVirtualFor="let entity of entities" [class.t-highlight]="false">
                         <td>&zwnj;</td>
                         <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
-                            <b-auto-cell [collection]="collection" [path]="col.Path" [definition]="definitionId"
+                            <t-auto-cell [collection]="collection" [path]="col.Path" [definition]="definitionId"
                                 [entity]="entity">
-                            </b-auto-cell>
+                            </t-auto-cell>
                         </td>
                     </tr>
                 </tbody>
@@ -32,14 +32,14 @@
     <!-- Pivot Table -->
     <ng-container *ngIf="showSummary">
         <cdk-virtual-scroll-viewport class="h-100" itemSize="33">
-            <table class="table table-hover table-bordered border table-sm bg-white b-report-table text-nowrap">
+            <table class="table table-hover table-bordered border table-sm bg-white t-report-table text-nowrap">
                 <tbody>
                     <!-- Top Section -->
-                    <ng-container *ngFor="let row of columnHeaders; index as r">
+                    <ng-container *ngFor="let row of columnHeaders; index as r;">
                         <tr *ngIf="showHeaderRow(r)">
 
                             <!-- Blank Cell -->
-                            <td *ngIf="r === 0 && !!colSpan && !!rowSpan" class="b-report-dimension" [colSpan]="colSpan"
+                            <td *ngIf="r === 0 && !!colSpan && !!rowSpan" class="t-report-dimension" [colSpan]="colSpan"
                                 [rowSpan]="rowSpan">
                                 &zwnj;
                             </td>
@@ -47,7 +47,7 @@
                             <!-- Column Cells -->
                             <ng-container *ngFor="let col of row; index as i; trackBy: trackByObject"
                                 [ngSwitch]="col.type">
-                                <td *ngIf="col.isVisible" class="b-report-dimension align-middle"
+                                <td *ngIf="col.isVisible" class="t-report-dimension align-middle"
                                     [class.font-weight-bold]="col.isTotal" [rowSpan]="col.rowSpan"
                                     [colSpan]="col.colSpan">
                                     <ng-container *ngSwitchCase="'dimension'">
@@ -58,9 +58,9 @@
                                                     [rotate]="rotateArrow(col)">
                                                 </fa-icon>
                                             </button>&nbsp;</ng-container>
-                                        <b-auto-cell *ngIf="isDefined(col)" [propDescriptor]="dim(col).propDesc"
+                                        <t-auto-cell *ngIf="isDefined(col)" [propDescriptor]="dim(col).propDesc"
                                             [entityDescriptor]="dim(col).entityDesc" [entity]="dim(col).value">
-                                        </b-auto-cell>
+                                        </t-auto-cell>
                                         <span class="font-italic text-muted"
                                             *ngIf="!isDefined(col)">{{ 'Undefined' | translate }}</span>
                                     </ng-container>
@@ -78,14 +78,14 @@
 
                         <!-- Blank Cell -->
                         <td *ngIf="(!showHeaderRow(0) || columnHeaders.length === 0) && !!colSpan && !!rowSpan"
-                            class="b-report-dimension" [colSpan]="colSpan" [rowSpan]="1">
+                            class="t-report-dimension" [colSpan]="colSpan" [rowSpan]="1">
                             &zwnj;
                         </td>
 
                         <!-- Measure Labels -->
                         <ng-container *ngFor="let cell of rows[0]">
                             <ng-container *ngIf="cell.type === 'measure' && isMeasureVisible(cell)">
-                                <td class="b-report-dimension" [class.font-weight-bold]="cell.isTotal"
+                                <td class="t-report-dimension" [class.font-weight-bold]="cell.isTotal"
                                     *ngFor="let info of measures"> {{ info.label() }}
                                 </td>
                             </ng-container>
@@ -93,11 +93,11 @@
                     </tr>
 
                     <!-- Bottom Section -->
-                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject" style="height: 32px">
-                        <ng-container *ngFor="let cell of row" [ngSwitch]="cell.type">
+                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject;" style="height: 32px;">
+                        <ng-container *ngFor="let cell of row;" [ngSwitch]="cell.type">
 
                             <!-- Row Cell -->
-                            <td class="b-report-dimension" *ngSwitchCase="'dimension'">
+                            <td class="t-report-dimension" *ngSwitchCase="'dimension'">
                                 <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
                                     style="background-color: transparent" [style.margin-left]="paddingLeft(cell)"
                                     [style.margin-right]="paddingRight(cell)"
@@ -105,21 +105,21 @@
                                     (click)="onExpandRow(cell)">
                                     <fa-icon icon="angle-right" [flip]="flipArrow(cell)" [rotate]="rotateArrow(cell)">
                                     </fa-icon>
-                                </button>&nbsp;<b-auto-cell *ngIf="isDefined(cell)" [propDescriptor]="cell.propDesc"
+                                </button>&nbsp;<t-auto-cell *ngIf="isDefined(cell)" [propDescriptor]="cell.propDesc"
                                     [entityDescriptor]="cell.entityDesc" [entity]="cell.value">
-                                </b-auto-cell><span class="font-italic text-muted"
+                                </t-auto-cell><span class="font-italic text-muted"
                                     *ngIf="!isDefined(cell)">{{ 'Undefined' | translate }}</span>
                             </td>
 
                             <!-- Measure Cells -->
                             <ng-container *ngSwitchCase="'measure'">
                                 <ng-container *ngIf="isMeasureVisible(cell)">
-                                    <td class="b-report-measure" [class.font-weight-bold]="cell.isTotal"
-                                        *ngFor="let info of measures; index as i" (click)="onMeasureClick(cell, r)">
-                                        <b-auto-cell [propDescriptor]="info.desc" [entity]="cell.values[i]">
-                                        </b-auto-cell>
+                                    <td class="t-report-measure" [class.font-weight-bold]="cell.isTotal"
+                                        *ngFor="let info of measures; index as i;" (click)="onMeasureClick(cell, r)">
+                                        <t-auto-cell [propDescriptor]="info.desc" [entity]="cell.values[i]">
+                                        </t-auto-cell>
                                     </td>
-                                    <td *ngIf="measures.length === 0" class="b-report-measure"
+                                    <td *ngIf="measures.length === 0" class="t-report-measure"
                                         (click)="onMeasureClick(cell, r)">
 
                                     </td>
@@ -128,7 +128,7 @@
 
                             <!-- Labels -->
                             <ng-container *ngSwitchCase="'label'">
-                                <td class="b-report-dimension" [class.font-weight-bold]="cell.isTotal">
+                                <td class="t-report-dimension" [class.font-weight-bold]="cell.isTotal">
                                     <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
                                         style="background-color: transparent" style="opacity: 0" disabled>
                                         <fa-icon icon="angle-right">
@@ -145,18 +145,18 @@
 
     <!-- Charts -->
     <div class="h-100 w-100" style="position: relative;" *ngIf="showChart">
-        <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0">
+        <div [ngSwitch]="chart" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
 
             <!-- Card -->
             <ng-container *ngSwitchCase="'Card'">
                 <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
-                    <h1 class="display-3 b-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
+                    <h1 class="display-3 t-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
                 </div>
             </ng-container>
 
             <!-- Vertical Bars Chart -->
             <ng-container *ngSwitchCase="'BarsVertical'">
-                <ngx-charts-bar-vertical class="b-ltr" *ngIf="supportsSingle;else notsupported"
+                <ngx-charts-bar-vertical class="t-ltr" *ngIf="supportsSingle;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
@@ -170,7 +170,7 @@
 
             <!-- Grouped Vertical Bars Chart -->
             <ng-container *ngSwitchCase="'BarsVerticalGrouped'">
-                <ngx-charts-bar-vertical-2d class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-vertical-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
@@ -184,7 +184,7 @@
 
             <!-- Stacked Vertical Bars Chart -->
             <ng-container *ngSwitchCase="'BarsVerticalStacked'">
-                <ngx-charts-bar-vertical-stacked class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-vertical-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
@@ -198,7 +198,7 @@
 
             <!-- Normalized Vertical Bars Chart -->
             <ng-container *ngSwitchCase="'BarsVerticalNormalized'">
-                <ngx-charts-bar-vertical-normalized class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-vertical-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel"
@@ -213,7 +213,7 @@
 
             <!-- Horizontal Bars Chart -->
             <ng-container *ngSwitchCase="'BarsHorizontal'">
-                <ngx-charts-bar-horizontal class="b-ltr" *ngIf="supportsSingle;else notsupported"
+                <ngx-charts-bar-horizontal class="t-ltr" *ngIf="supportsSingle;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="single" [roundEdges]="false"
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
@@ -227,7 +227,7 @@
 
             <!-- Grouped Horizontal Bars Chart -->
             <ng-container *ngSwitchCase="'BarsHorizontalGrouped'">
-                <ngx-charts-bar-horizontal-2d class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-horizontal-2d class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [roundEdges]="false"
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
@@ -241,7 +241,7 @@
 
             <!-- Stacked Horizontal Bars Chart -->
             <ng-container *ngSwitchCase="'BarsHorizontalStacked'">
-                <ngx-charts-bar-horizontal-stacked class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-horizontal-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
@@ -255,7 +255,7 @@
 
             <!-- Normalized Horizontal Bars Chart -->
             <ng-container *ngSwitchCase="'BarsHorizontalNormalized'">
-                <ngx-charts-bar-horizontal-normalized class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                <ngx-charts-bar-horizontal-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel + ' %'"
@@ -270,7 +270,7 @@
 
             <!-- Line Chart -->
             <ng-container *ngSwitchCase="'Line'">
-                <ngx-charts-line-chart class="b-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
+                <ngx-charts-line-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
@@ -289,7 +289,7 @@
 
             <!-- Area Chart -->
             <ng-container *ngSwitchCase="'Area'">
-                <ngx-charts-area-chart class="b-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
+                <ngx-charts-area-chart class="t-ltr" *ngIf="(supportsSingle || supportsMulti);else notsupported"
                     [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
@@ -308,7 +308,7 @@
 
             <!-- Stacked Area Chart -->
             <!-- <ng-container *ngSwitchCase="'AreaStacked'">
-                        <ngx-charts-area-chart-stacked class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                        <ngx-charts-area-chart-stacked class="t-ltr" *ngIf="supportsMulti;else notsupported"
                             [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                             [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
                             [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel"
@@ -318,7 +318,7 @@
 
             <!-- Normalized Area Chart -->
             <!-- <ng-container *ngSwitchCase="'AreaNormalized'">
-                        <ngx-charts-area-chart-normalized class="b-ltr" *ngIf="supportsMulti;else notsupported"
+                        <ngx-charts-area-chart-normalized class="t-ltr" *ngIf="supportsMulti;else notsupported"
                             [animations]="animations" [scheme]="colorful" [results]="multi" [xAxis]="showXAxis"
                             [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel" [legend]="false"
                             [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel" [yAxisLabel]="measureLabel + ' %'"
@@ -328,7 +328,7 @@
 
             <!-- Pie Chart -->
             <ng-container *ngSwitchCase="'Pie'">
-                <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
                     (select)="onChartSelect($event.name)">
                     <ng-template #tooltipTemplate let-model="model">
@@ -340,7 +340,7 @@
 
             <!-- Doughnut Chart -->
             <ng-container *ngSwitchCase="'Doughnut'">
-                <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                <ngx-charts-pie-chart class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [doughnut]="true" [labelFormatting]="formatChartDimension"
                     [labels]="true" (select)="onChartSelect($event.name)">
                     <ng-template #tooltipTemplate let-model="model">
@@ -352,13 +352,14 @@
 
             <!-- Heat Map -->
             <ng-container *ngSwitchCase="'HeatMap'">
-                <ngx-charts-heat-map class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                <ngx-charts-heat-map class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
                     [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
                     [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
                     [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
-                    (select)="onChartSelect($event.name)">
+                    (select)="onChartSelect($event.name)" [xAxisTickFormatting]="formatChartDimension"
+                    [yAxisTickFormatting]="formatChartDimension">
                     <ng-template #tooltipTemplate let-model="model">
-                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        <ng-container *ngTemplateOutlet="heatmapTooltip;context: { model: model }">
                         </ng-container>
                     </ng-template>
                 </ngx-charts-heat-map>
@@ -366,7 +367,7 @@
 
             <!-- Radar Chart -->
             <!-- <ng-container *ngSwitchCase="'Radar'">
-                        <ngx-charts-polar-chart class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                        <ngx-charts-polar-chart class="t-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
                             [scheme]="heat" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
                             [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
                             [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
@@ -376,8 +377,9 @@
 
             <!-- Tree Map -->
             <ng-container *ngSwitchCase="'TreeMap'">
-                <ngx-charts-tree-map class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)">
+                <ngx-charts-tree-map class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                    [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)"
+                    [labelFormatting]="formatAlternativeChartDimension">
                     <ng-template #tooltipTemplate let-model="model">
                         <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
                         </ng-container>
@@ -387,15 +389,15 @@
 
             <!-- Number Cards -->
             <ng-container *ngSwitchCase="'NumberCards'">
-                <ngx-charts-number-card class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                <ngx-charts-number-card class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)" cardColor="#EAF0F5"
-                    textColor="black">
+                    textColor="black" [labelFormatting]="formatAlternativeChartDimension">
                 </ngx-charts-number-card>
             </ng-container>
 
             <!-- Gauge -->
             <ng-container *ngSwitchCase="'Gauge'">
-                <ngx-charts-gauge class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                <ngx-charts-gauge class="t-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [max]="0" (select)="onChartSelect($event.name)"
                     [showText]="false">
                     <ng-template #tooltipTemplate let-model="model">
@@ -444,6 +446,19 @@
                     </div>
                 </div>
             </ng-template>
+            
+            <!-- Tooltip template -->
+            <ng-template #heatmapTooltip let-model="model">
+                <!-- model: {
+                    series: ChartDimensionCell,
+                    name: any, // simple value
+                    value: number
+                } -->
+                <div class="text-white p-1">
+                    <span style="font-size: 130%;">{{ model.value }}</span>
+                </div>
+            </ng-template>
+
         </div><!-- End *ngIf="showChart" -->
     </div>
 
@@ -456,7 +471,7 @@
 
 <!-- Spinner -->
 <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
-    <b-spinner [scale]="2"></b-spinner>
+    <t-spinner [scale]="2"></t-spinner>
 </div>
 
 <!-- No items found -->
@@ -466,9 +481,9 @@
 
 <!-- Error message -->
 <div class="w-100 mt-3" *ngIf="showErrorMessage">
-    <b-error-message>
+    <t-error-message>
         {{ errorMessage }}
-    </b-error-message>
+    </t-error-message>
 </div>
 
 <div class="w-100 p-3 px-4" *ngIf="showInformation">

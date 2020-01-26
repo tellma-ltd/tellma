@@ -3,7 +3,7 @@ import { FormGroupBaseComponent } from '../form-group-base/form-group-base.compo
 
 
 @Component({
-  selector: 'b-form-group',
+  selector: 't-form-group',
   templateUrl: './form-group.component.html',
 })
 export class FormGroupComponent extends FormGroupBaseComponent {

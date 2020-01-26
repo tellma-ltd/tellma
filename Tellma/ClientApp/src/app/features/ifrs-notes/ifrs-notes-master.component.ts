@@ -9,7 +9,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-ifrs-notes-master',
+  selector: 't-ifrs-notes-master',
   templateUrl: './ifrs-notes-master.component.html'
 })
 export class IfrsNotesMasterComponent extends MasterBaseComponent {

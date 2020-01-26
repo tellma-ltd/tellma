@@ -23,7 +23,7 @@ interface ConcreteViewInfo {
 }
 
 @Component({
-  selector: 'b-roles-details',
+  selector: 't-roles-details',
   templateUrl: './roles-details.component.html'
 })
 export class RolesDetailsComponent extends DetailsBaseComponent {

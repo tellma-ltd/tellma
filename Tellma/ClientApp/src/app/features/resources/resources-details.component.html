@@ -1,16 +1,16 @@
-<b-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
     [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
-</b-details>
+</t-details>
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
-    <b-application-page-not-found>
-    </b-application-page-not-found>
+    <t-application-page-not-found>
+    </t-application-page-not-found>
 </ng-template>
 
 <!-- Details Crumb -->
@@ -23,323 +23,323 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
-        <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+        <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'"
             required>
-        </b-text-editor>
+        </t-text-editor>
 
-        <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+        <t-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
-        </b-text-editor>
+        </t-text-editor>
 
-        <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+        <t-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
-        </b-text-editor>
-    </b-form-group>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Name -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
         [serverErrors]="model?.serverErrors?.Name">
         <div *ngIf="!isEdit">{{ model?.Name }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Name2 -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+    <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
         [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
         <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+    </t-form-group>
 
     <!-- Name3 -->
-    <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+    <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
         [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
         <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+    </t-form-group>
 
     <!-- Code -->
-    <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
         <div *ngIf="!isEdit">{{ model?.Code }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-    </b-form-group>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+    </t-form-group>
 
     <!-- Identifier -->
-    <b-form-group *ngIf="Identifier_isVisible" class="b-form-group" [label]="Identifier_label"
+    <t-form-group *ngIf="Identifier_isVisible" class="t-form-group" [label]="Identifier_label"
         [serverErrors]="model?.serverErrors?.Identifier">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Identifier">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Identifier">
             <div>{{ model?.Identifier }}</div>
-        </b-restricted>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Identifier_isRequired">
-        </b-text-editor>
-    </b-form-group>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Account Type -->
-    <b-form-group class="b-form-group" [label]="'Resource_AccountType' | translate"
+    <t-form-group class="t-form-group" [label]="'Resource_AccountType' | translate"
         [serverErrors]="model?.serverErrors?.AccountTypeId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AccountType">
-            <b-view-link link="../../../account-types" [itemId]="model?.AccountTypeId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AccountType">
+            <t-view-link link="../../../account-types" [itemId]="model?.AccountTypeId">
                 {{ ws.getMultilingualValue('AccountType', model.AccountTypeId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="true"
+            </t-view-link>
+        </t-restricted>
+        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="true"
             filter="IsResourceClassification eq true">
-        </b-account-types-picker>
-    </b-form-group>
+        </t-account-types-picker>
+    </t-form-group>
 
     <!-- Currency -->
-    <b-form-group *ngIf="Currency_isVisible" class="b-form-group" [label]="Currency_label"
+    <t-form-group *ngIf="Currency_isVisible" class="t-form-group" [label]="Currency_label"
         [serverErrors]="model?.serverErrors?.CurrencyId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <b-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+            <t-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
                 {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
-        </b-currencies-picker>
-    </b-form-group>
+            </t-view-link>
+        </t-restricted>
+        <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
+        </t-currencies-picker>
+    </t-form-group>
 
     <!-- MonetaryValue -->
-    <b-form-group *ngIf="MonetaryValue_isVisible" class="b-form-group" [label]="MonetaryValue_label"
+    <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
         [serverErrors]="model?.serverErrors?.MonetaryValue">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
             <div>{{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}</div>
-        </b-restricted>
-        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
             [maxDecimalPlaces]="MonetaryValue_decimals(model)">
-        </b-decimal-editor>
-    </b-form-group>
+        </t-decimal-editor>
+    </t-form-group>
 
     <!-- Count Unit -->
-    <b-form-group *ngIf="CountUnit_isVisible" class="b-form-group" [label]="CountUnit_label"
+    <t-form-group *ngIf="CountUnit_isVisible" class="t-form-group" [label]="CountUnit_label"
         [serverErrors]="model?.serverErrors?.CountUnitId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CountUnit">
-            <b-view-link link="../../../measurement-units" [itemId]="model?.CountUnitId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CountUnit">
+            <t-view-link link="../../../measurement-units" [itemId]="model?.CountUnitId">
                 {{ ws.getMultilingualValue('MeasurementUnit', model.CountUnitId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.CountUnitId" filter="UnitType eq 'Count'"
+            </t-view-link>
+        </t-restricted>
+        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.CountUnitId" filter="UnitType eq 'Count'"
             [required]="CountUnit_isRequired">
-        </b-measurement-units-picker>
-    </b-form-group>
+        </t-measurement-units-picker>
+    </t-form-group>
 
     <!-- Count -->
-    <b-form-group *ngIf="Count_isVisible" class="b-form-group" [label]="Count_label"
+    <t-form-group *ngIf="Count_isVisible" class="t-form-group" [label]="Count_label"
         [serverErrors]="model?.serverErrors?.Count">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Count">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Count">
             <div>{{ model?.Count | number:'1.0-4' }}</div>
-        </b-restricted>
-        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Count" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Count" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Count_isRequired" [maxDecimalPlaces]="4">
-        </b-decimal-editor>
-    </b-form-group>
+        </t-decimal-editor>
+    </t-form-group>
 
     <!-- Mass Unit -->
-    <b-form-group *ngIf="MassUnit_isVisible" class="b-form-group" [label]="MassUnit_label"
+    <t-form-group *ngIf="MassUnit_isVisible" class="t-form-group" [label]="MassUnit_label"
         [serverErrors]="model?.serverErrors?.MassUnitId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MassUnit">
-            <b-view-link link="../../../measurement-units" [itemId]="model?.MassUnitId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MassUnit">
+            <t-view-link link="../../../measurement-units" [itemId]="model?.MassUnitId">
                 {{ ws.getMultilingualValue('MeasurementUnit', model.MassUnitId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
+            </t-view-link>
+        </t-restricted>
+        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
             [required]="MassUnit_isRequired">
-        </b-measurement-units-picker>
-    </b-form-group>
+        </t-measurement-units-picker>
+    </t-form-group>
 
     <!-- Mass -->
-    <b-form-group *ngIf="Mass_isVisible" class="b-form-group" [label]="Mass_label"
+    <t-form-group *ngIf="Mass_isVisible" class="t-form-group" [label]="Mass_label"
         [serverErrors]="model?.serverErrors?.Mass">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Mass">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Mass">
             <div>{{ model?.Mass | number:'1.0-4' }}</div>
-        </b-restricted>
-        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Mass" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Mass" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Mass_isRequired" [maxDecimalPlaces]="4">
-        </b-decimal-editor>
-    </b-form-group>
+        </t-decimal-editor>
+    </t-form-group>
 
     <!-- Volume Unit -->
-    <b-form-group *ngIf="VolumeUnit_isVisible" class="b-form-group" [label]="VolumeUnit_label"
+    <t-form-group *ngIf="VolumeUnit_isVisible" class="t-form-group" [label]="VolumeUnit_label"
         [serverErrors]="model?.serverErrors?.VolumeUnitId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.VolumeUnit">
-            <b-view-link link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.VolumeUnit">
+            <t-view-link link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
                 {{ ws.getMultilingualValue('MeasurementUnit', model.VolumeUnitId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
+            </t-view-link>
+        </t-restricted>
+        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
             [required]="VolumeUnit_isRequired">
-        </b-measurement-units-picker>
-    </b-form-group>
+        </t-measurement-units-picker>
+    </t-form-group>
 
     <!-- Volume -->
-    <b-form-group *ngIf="Volume_isVisible" class="b-form-group" [label]="Volume_label"
+    <t-form-group *ngIf="Volume_isVisible" class="t-form-group" [label]="Volume_label"
         [serverErrors]="model?.serverErrors?.Volume">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Volume">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Volume">
             <div>{{ model?.Volume | number:'1.0-4' }}</div>
-        </b-restricted>
-        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Volume" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Volume" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Volume_isRequired" [maxDecimalPlaces]="4">
-        </b-decimal-editor>
-    </b-form-group>
+        </t-decimal-editor>
+    </t-form-group>
 
     <!-- Time Unit -->
-    <b-form-group *ngIf="TimeUnit_isVisible" class="b-form-group" [label]="TimeUnit_label"
+    <t-form-group *ngIf="TimeUnit_isVisible" class="t-form-group" [label]="TimeUnit_label"
         [serverErrors]="model?.serverErrors?.TimeUnitId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TimeUnit">
-            <b-view-link link="../../../measurement-units" [itemId]="model?.TimeUnitId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TimeUnit">
+            <t-view-link link="../../../measurement-units" [itemId]="model?.TimeUnitId">
                 {{ ws.getMultilingualValue('MeasurementUnit', model.TimeUnitId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
+            </t-view-link>
+        </t-restricted>
+        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
             [required]="TimeUnit_isRequired">
-        </b-measurement-units-picker>
-    </b-form-group>
+        </t-measurement-units-picker>
+    </t-form-group>
 
     <!-- Time -->
-    <b-form-group *ngIf="Time_isVisible" class="b-form-group" [label]="Time_label"
+    <t-form-group *ngIf="Time_isVisible" class="t-form-group" [label]="Time_label"
         [serverErrors]="model?.serverErrors?.Time">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time">
             <div>{{ model?.Time | number:'1.0-4' }}</div>
-        </b-restricted>
-        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Time" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Time" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Time_isRequired" [maxDecimalPlaces]="4">
-        </b-decimal-editor>
-    </b-form-group>
+        </t-decimal-editor>
+    </t-form-group>
 
     <!-- Lookup 1 -->
-    <b-form-group class="b-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
+    <t-form-group class="t-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup1Id">
 
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup1">
-            <b-view-link [link]="'../../../lookups/' + Lookup1_DefinitionId" [itemId]="model?.Lookup1Id">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup1">
+            <t-view-link [link]="'../../../lookups/' + Lookup1_DefinitionId" [itemId]="model?.Lookup1Id">
                 {{ ws.getMultilingualValue('Lookup', model.Lookup1Id, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup1Id" [definitionId]="Lookup1_DefinitionId"
+            </t-view-link>
+        </t-restricted>
+        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup1Id" [definitionId]="Lookup1_DefinitionId"
             [required]="Lookup1_isRequired">
-        </b-lookups-picker>
-    </b-form-group>
+        </t-lookups-picker>
+    </t-form-group>
 
     <!-- Lookup 2 -->
-    <b-form-group class="b-form-group" [label]="Lookup2_label" *ngIf="Lookup2_isVisible"
+    <t-form-group class="t-form-group" [label]="Lookup2_label" *ngIf="Lookup2_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup2Id">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup2">
-            <b-view-link [link]="'../../../lookups/' + Lookup2_DefinitionId" [itemId]="model?.Lookup2Id">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup2">
+            <t-view-link [link]="'../../../lookups/' + Lookup2_DefinitionId" [itemId]="model?.Lookup2Id">
                 {{ ws.getMultilingualValue('Lookup', model.Lookup2Id, 'Name') }}
-            </b-view-link>
-        </b-restricted>
+            </t-view-link>
+        </t-restricted>
 
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup2Id" [definitionId]="Lookup2_DefinitionId"
+        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup2Id" [definitionId]="Lookup2_DefinitionId"
             [required]="Lookup2_isRequired">
-        </b-lookups-picker>
-    </b-form-group>
+        </t-lookups-picker>
+    </t-form-group>
 
     <!-- Lookup 3 -->
-    <!-- <b-form-group class="b-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
+    <!-- <t-form-group class="t-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup3Id">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup3">
-        <b-view-link [link]="'../../../lookups/' + Lookup3_DefinitionId" [itemId]="model?.Lookup3Id">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup3">
+        <t-view-link [link]="'../../../lookups/' + Lookup3_DefinitionId" [itemId]="model?.Lookup3Id">
             {{ ws.getMultilingualValue('Lookup', model.Lookup3Id, 'Name') }}
-        </b-view-link>
-        </b-restricted>
+        </t-view-link>
+        </t-restricted>
 
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup3Id" [definitionId]="Lookup3_DefinitionId"
+        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup3Id" [definitionId]="Lookup3_DefinitionId"
             [required]="Lookup3_isRequired">
-        </b-lookups-picker>
-    </b-form-group> -->
+        </t-lookups-picker>
+    </t-form-group> -->
 
     <!-- Lookup 4 -->
-    <!-- <b-form-group class="b-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
+    <!-- <t-form-group class="t-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup4Id">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup4">
-        <b-view-link [link]="'../../../lookups/' + Lookup4_DefinitionId" [itemId]="model?.Lookup4Id">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup4">
+        <t-view-link [link]="'../../../lookups/' + Lookup4_DefinitionId" [itemId]="model?.Lookup4Id">
             {{ ws.getMultilingualValue('Lookup', model.Lookup4Id, 'Name') }}
-        </b-view-link>
-        </b-restricted>
+        </t-view-link>
+        </t-restricted>
 
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup4Id" [definitionId]="Lookup4_DefinitionId"
+        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup4Id" [definitionId]="Lookup4_DefinitionId"
             [required]="Lookup4_isRequired">
-        </b-lookups-picker>
-    </b-form-group> -->
+        </t-lookups-picker>
+    </t-form-group> -->
 
     <!-- Lookup 5 -->
-    <!-- <b-form-group class="b-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
+    <!-- <t-form-group class="t-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup5Id">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
-        <b-view-link [link]="'../../../lookups/' + Lookup5_DefinitionId" [itemId]="model?.Lookup5Id">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
+        <t-view-link [link]="'../../../lookups/' + Lookup5_DefinitionId" [itemId]="model?.Lookup5Id">
             {{ ws.getMultilingualValue('Lookup', model.Lookup5Id, 'Name') }}
-        </b-view-link>
-        </b-restricted>
+        </t-view-link>
+        </t-restricted>
 
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5_DefinitionId"
+        <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5_DefinitionId"
             [required]="Lookup5_isRequired">
-        </b-lookups-picker>
-    </b-form-group> -->
+        </t-lookups-picker>
+    </t-form-group> -->
 
     <!-- Available Since -->
-    <b-form-group *ngIf="AvailableSince_isVisible" class="b-form-group" [label]="AvailableSince_label"
+    <t-form-group *ngIf="AvailableSince_isVisible" class="t-form-group" [label]="AvailableSince_label"
         [serverErrors]="model?.serverErrors?.AvailableSince">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableSince">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableSince">
             <div>{{ model?.AvailableSince | date:'yyyy-MM-dd' }}</div>
-        </b-restricted>
-        <b-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableSince" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableSince" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="AvailableSince_isRequired">
-        </b-date-picker>
-    </b-form-group>
+        </t-date-picker>
+    </t-form-group>
 
     <!-- Available Till -->
-    <b-form-group *ngIf="AvailableTill_isVisible" class="b-form-group" [label]="AvailableTill_label"
+    <t-form-group *ngIf="AvailableTill_isVisible" class="t-form-group" [label]="AvailableTill_label"
         [serverErrors]="model?.serverErrors?.AvailableTill">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableTill">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableTill">
             <div>{{ model?.AvailableTill | date:'yyyy-MM-dd' }}</div>
-        </b-restricted>
-        <b-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableTill" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableTill" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="AvailableTill_isRequired">
-        </b-date-picker>
-    </b-form-group>
+        </t-date-picker>
+    </t-form-group>
 
 
     <!-- Description -->
-    <b-form-group *ngIf="Description_isVisible" class="b-form-group"
+    <t-form-group *ngIf="Description_isVisible" class="t-form-group"
         [label]="('Description' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Description">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description">
             <div *ngIf="!isEdit">{{ model?.Description }}</div>
-        </b-restricted>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Description_isRequired">
-        </b-text-editor>
-    </b-form-group>
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Description2 -->
-    <b-form-group *ngIf="Description_isVisible && ws.settings.SecondaryLanguageId" class="b-form-group"
+    <t-form-group *ngIf="Description_isVisible && ws.settings.SecondaryLanguageId" class="t-form-group"
         [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description2">
             <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
-        </b-restricted>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
-        </b-text-editor>
-    </b-form-group>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Description3 -->
-    <b-form-group *ngIf="Description_isVisible && ws.settings.TernaryLanguageId" class="b-form-group"
+    <t-form-group *ngIf="Description_isVisible && ws.settings.TernaryLanguageId" class="t-form-group"
         [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description3">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description3">
             <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
-        </b-restricted>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
-        </b-text-editor>
-    </b-form-group>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Is Active -->
-    <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
         {{ (model?.IsActive ? 'Yes' : 'No') | translate }}
-    </b-form-group>
+    </t-form-group>
 </ng-template>
 
 <!-- Actions -->

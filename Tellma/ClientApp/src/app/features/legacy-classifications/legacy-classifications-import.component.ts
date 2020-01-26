@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'b-legacy-classifications-import',
+  selector: 't-legacy-classifications-import',
   templateUrl: './legacy-classifications-import.component.html',
   styles: []
 })

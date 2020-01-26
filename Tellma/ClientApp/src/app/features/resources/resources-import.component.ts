@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'b-resources-import',
+  selector: 't-resources-import',
   templateUrl: './resources-import.component.html',
   styles: []
 })

@@ -3,7 +3,7 @@
     <div class="container d-flex align-items-sm-stretch">
 
       <!-- Brand -->
-      <a class="b-brand-link b-navbar-button" routerLink="/root/welcome" [title]="'Home' | translate">
+      <a class="t-brand-link t-navbar-button" routerLink="/root/welcome" [title]="'Home' | translate">
         <div class="d-flex flex-column align-items-center justify-content-center px-1" style="height: 34px;">
           <img src="/assets/tellma-light.png" width="64">
         </div>
@@ -11,12 +11,12 @@
 
       <!-- Back and Forward -->
       <div class="mx-2 d-flex">
-        <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
           *ngIf="nav.showBack">
           <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
         </button>
         &nbsp;
-        <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
+        <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
           *ngIf="nav.showForward">
           <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
         </button>
@@ -34,7 +34,7 @@
         </ol>
         <ol class="nav navbar-nav p-0 px-4 px-sm-0">
           <li class="nav-item" ngbDropdown container="" *ngIf="activeLanguages.length > 1">
-            <button class="h-100 w-100 b-navbar-button b-no-arrow" ngbDropdownToggle>
+            <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
               <span class="px-1">
                 {{ currentLanguageDisplay }}
               </span>
@@ -51,14 +51,14 @@
             </div>
           </li>
           <li class="nav-item" *ngIf="!isAuthenticated">
-            <button class="h-100 w-100 b-navbar-button" (click)="onSignIn()">
+            <button class="h-100 w-100 t-navbar-button" (click)="onSignIn()">
               <span class="px-1">
                 {{ 'SignIn' | translate }}
               </span>
             </button>
           </li>
           <li class="nav-item" ngbDropdown container="" *ngIf="isAuthenticated">
-            <button class="h-100 w-100 b-navbar-button b-no-arrow" ngbDropdownToggle>
+            <button class="h-100 w-100 t-navbar-button t-no-arrow" ngbDropdownToggle>
               <span class="px-1">
                 {{ userName }}
               </span>
@@ -84,7 +84,7 @@
     </div>
 
   </nav>
-  <main class="b-rest-of-screen container-fluid bg-white2 b-banner3">
+  <main class="t-rest-of-screen container-fluid bg-white2 t-banner3">
     <router-outlet></router-outlet>
   </main>
 </div>

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'b-users-import',
+  selector: 't-users-import',
   templateUrl: './users-import.component.html'
 })
 export class UsersImportComponent {

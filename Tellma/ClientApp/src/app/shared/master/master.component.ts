@@ -41,7 +41,7 @@ export interface MultiselectAction {
 }
 
 @Component({
-  selector: 'b-master',
+  selector: 't-master',
   templateUrl: './master.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, HostBinding } from '@angular/core';
 
 @Component({
-  selector: 'b-restricted',
+  selector: 't-restricted',
   templateUrl: './restricted.component.html'
 })
 export class RestrictedComponent {

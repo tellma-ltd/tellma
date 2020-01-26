@@ -1,15 +1,15 @@
-<b-details-picker [definitionIds]="[definitionId]" [masterTemplate]="master"
+<t-details-picker [definitionIds]="[definitionId]" [masterTemplate]="master"
     [detailsTemplate]="showCreate ? details : null" collection="Lookup" [filter]="filter" [additionalSelect]="additionalSelect">
-</b-details-picker>
+</t-details-picker>
 
 
 <!-- The Lookup Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <b-lookups-details mode="popup" [initialText]="initialText" [idString]="idString" [definitionId]="definitionId"
+        <t-lookups-details mode="popup" [initialText]="initialText" [idString]="idString" [definitionId]="definitionId"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);">
-        </b-lookups-details>
+        </t-lookups-details>
     </div>
 </ng-template>
 
@@ -17,9 +17,9 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId"
     let-filter="filter">
     <div class="modal-body">
-        <b-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
+        <t-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
             (choose)="modal.close(true); update.call(null, $event);" (create)="modal.close(false); create.call()"
             [showCreate]="showCreate" [additionalSelect]="additionalSelect">
-        </b-lookups-master>
+        </t-lookups-master>
     </div>
 </ng-template>

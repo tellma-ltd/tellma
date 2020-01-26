@@ -1,4 +1,4 @@
-<b-master *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [mode]="mode"
+<t-master *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated" selectForTiles="Code,ImageId"
@@ -10,25 +10,25 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]
           }">
-</b-master>
+</t-master>
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
-  <b-application-page-not-found>
-  </b-application-page-not-found>
+  <t-application-page-not-found>
+  </t-application-page-not-found>
 </ng-template>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
-      <div class="border b-dp-wrapper2">
-        <b-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
-          [size]="42" icon="camera"></b-image>
+      <div class="border t-dp-wrapper2">
+        <t-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
+          [size]="42" icon="camera"></t-image>
       </div>
       &nbsp;&nbsp;&nbsp;
     </ng-container>
-    <div class="flex-grow-1 d-inline-block b-mw-0">
+    <div class="flex-grow-1 d-inline-block t-mw-0">
       <div class="d-flex justify-content-between">
         <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
       </div>
@@ -47,7 +47,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
+    <t-auto-cell collection="Agent" [definition]="definitionId" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

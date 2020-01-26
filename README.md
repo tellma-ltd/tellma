@@ -1,4 +1,4 @@
-﻿# BSharp
+﻿# Tellma
 For the time being, this document will contain instructions for developers.
 
 ## First Time Setup
@@ -6,38 +6,24 @@ Follow the steps below to setup the solution for the first time.
 
 ### Database Tier
 - Make sure SQL Server 2017 (or later) Developer Edition is installed and accessible on "." with Windows auth
-- Deploy the BSharp.Database.Admin and BSharp.Database.Identity sql projects in one database `[BSharp]` on the server "."
-- Deploy the BSharp.Database.Application sql project in a separate database `[BSharp.101]` on the same server "."
+- Deploy the Tellma.Database.Admin and Tellma.Database.Identity sql projects in one database `[Tellma]` on the server "."
+- Deploy the Tellma.Database.Application sql project in a separate database `[Tellma.101]` on the same server "."
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
-	`AdminUsers: Id=1, Email='admin@bsharp.online', Name='Administrator', CreatedById=1, ModifiedById=1`
-	`SqlServers: Id=1, ServerName='<AdminServer>, UserName='', CreatedById=1, ModifiedById=1`
 	`SqlDatabases: Id=101, ServerId=1, DatabaseName=(Name of application database), CreatedById=1, ModifiedById=1`
-	`GlobalUsers: Id=1, Email='admin@bsharp.online'`
+	`GlobalUsers: Id=1, Email='admin@tellma.com'`
 	`GlobalUserMemberships: UserId=1, DatabaseId=101`
-- Repeat the steps above for the integration tests databases: `[BSharp.IntegrationTests]` and `[BSharp.IntegrationTests.101]`, this time without deploying BSharp.Database.Identity
+- Repeat the steps above for the integration tests databases: `[Tellma.IntegrationTests]` and `[Tellma.IntegrationTests.101]`, this time without deploying Tellma.Database.Identity
 
 ### Application Tier
-- Right click BSharp project -> Properties -> Debug, un-check "Launch browser" and check "Enable SSL", copy the SSL address into the App URL (making them identical), keep it for the next steps
-- Right click BSharp project -> Manage User Secrets, and paste the following (replacing XXXXX with values from your environment):
+- Make sure Tellma project is your startup project
+- Change your debug profile from IIS Express to Tellma
+- Right click Tellma project -> Manage User Secrets, and paste the following (replacing XXXXX with values from your environment):
 ```
 {
   "Email": {
     "SendGrid": {
       "ApiKey": "XXXXX"
     }
-  },
-  "ApiAuthentication": {
-    "AuthorityUri": "https://localhost:XXXXX"
-  }
-}
-```
-
-- Right click BSharp.IntegrationTests project -> Manage User Secrets, and paste the following:
-```
-{
-  "AccessToken": "(To be specified)"
-  "ApiAuthentication": {
-    "AuthorityUri": "https://localhost:XXXXX"
   }
 }
 ```
@@ -46,54 +32,39 @@ Follow the steps below to setup the solution for the first time.
 - Install NodeJS (LTS edition) from the [official website](https://nodejs.org/en/)
 - Install Angular CLI by running the following in cmd: `npm install -g @angular/cli`
 - Install typescript by running the following in cmd: `npm install -g typescript`
-- Install node_modules as follows: In the command line go inside "(SolutionDir)/BSharp/ClientApp/" and run: `npm install`
-- Inside "(SolutionDir)/BSharp/ClientApp/src/assets/" create a file appsettings.development.json, and fill it with the following (replacing XXXXX with values from your environment):
+- Install node_modules as follows: In the command line go inside "(SolutionDir)/Tellma/ClientApp/" and run: `npm install`
+- Inside "(SolutionDir)/Tellma/ClientApp/src/assets/" create a file appsettings.development.json, and fill it with the following:
 ```
 {
-    "apiAddress": "https://localhost:XXXXX/",
-    "identityAddress": "https://localhost:XXXXX",
-    "identityConfig": {
-        "jwks": {
-            "keys": [
-                {
-                    "kty": "RSA",
-                    "use": "sig",
-                    "kid": "2b8f9fe7747e07c0679d633c88d372c1",
-                    "e": "AQAB",
-                    "alg": "RS256",
-                    "n": "rGVpLbPuUqscSDYG6X0oVfnBnH4oUugnHFMxg8s2xqMnjDZ32luEC67n9nwukknDEq4HBYAfyiGfa8oi0MSsCH1Etj7otaKuqStxU7rf-y-9yKz7RIDCNJ6IWkXMmNIs79CdWAtqtX6RXK0mgG48nmZmbNml7as-CvvKtTSwPDrlwrTtTYff8UIgKpA__zmP52UNAPZKmiXHeiZqM3W75NUzS2qrpRpoBcm1HZH5OiHPI8upOed8IogauiLXh-kY5eTc6b5qg2nBwphkVKZ3I5lJkrsGQkNkvH6pLQmw6O9FgbswM2fHaLKMhLOhPlAgDAVpfYnTF2OKFuswa3WUQQ"
-                }
-            ]
-        },
-        "loginUrl": "/connect/authorize",
-        "sessionCheckIFrameUrl": "/connect/checksession",
-        "logoutUrl": "/connect/endsession",
-        "tokenRefreshPeriodInSeconds": 3600
-    }
+    "apiAddress": null,
+    "identityAddress": null
 }
 ```
 
 ### Integration Tests - Final Steps
-- Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays to 3650
+- Open (SolutionDir)/Tellma/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays to 3650
 - Run the app (as per the below instructions)
-- In the Chrome browser open developer tools (by hitting F12 on Windows), and go to Application >- Local Storage -> http://localhost:4200
+- In the Chrome browser open developer tools (by hitting F12 on Windows), and go to Application >- Local Storage -> http://localhost:5001
 - Find the value of access_token and copy it
-- Right click BSharp.IntegrationTests project -> Manage User Secrets, and paste the value as the AccessToken. 
-- Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays back to 3
+- Right click Tellma.IntegrationTests project -> Manage User Secrets, and paste the following, replacing XXX with the access token:
+```
+{
+  "AccessToken": "XXXXX"
+}
+```
+- Open (SolutionDir)/Tellma/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays back to 3
 
 
 
 ## Running The App
 ### To Run The Application
 - Make sure you pull the latest version of the code from GitHub
-- Make sure the latest version of the database is deployed to `[BSharp.101]`
-- If the database is fresh, run `FillSampleData.sql`
-- Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
-- Start the frontend server: Open the command line inside "(SolutionDir)/BSharp/ClientApp/" and run: `ng serve -o`
-- Sign in with username: `admin@bsharp.online`, default password: `Admin@123`
+- Make sure the latest version of the database is deployed to `[Tellma.101]`
+- Start the app: Debug -> Start without debugging (Make sure Tellma is the startup project)
+- Sign in with username: `admin@tellma.com`, default password: `Admin@123`
 
 ### To Run The Tests
 - Make sure you pull the latest version of the code from GitHub
-- Make sure the latest version of the database is deployed to `[BSharp.IntegrationTests.101]`
-- Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
-- Right Click BSharp.IntegrationTests -> Run Tests
+- Make sure the latest version of the database is deployed to `[Tellma.IntegrationTests.101]`
+- Start the app: Debug -> Start without debugging (Make sure Tellma is the startup project)
+- Right Click Tellma.IntegrationTests -> Run Tests

@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, Input, HostBinding, OnChanges, Simple
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'b-decimal-editor',
+  selector: 't-decimal-editor',
   templateUrl: './decimal-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DecimalEditorComponent }]
 })

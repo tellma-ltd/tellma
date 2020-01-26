@@ -7,7 +7,7 @@ import { Entity } from '~/app/data/entities/base/entity';
 import { formatNumber, formatDate } from '@angular/common';
 
 @Component({
-  selector: 'b-auto-cell',
+  selector: 't-auto-cell',
   templateUrl: './auto-cell.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,18 +1,18 @@
 <div class="d-flex flex-column h-100">
-  <!-- <b-warning-message>The license has expired. The system will become read-only in <b>22 days.</b></b-warning-message> -->
-  <!-- <b-error-message>The system is readonly, please renew your license</b-error-message> -->
-  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
+  <!-- <t-warning-message>The license has expired. The system will become read-only in <b>22 days.</b></t-warning-message> -->
+  <!-- <t-error-message>The system is readonly, please renew your license</t-error-message> -->
+  <nav class="navbar navbar-dark t-dark navbar-expand-lg p-0 align-items-lg-stretch"
     [style.background-color]="settings?.BrandColor">
-    <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
-      <b-brand [scale]="1.0"></b-brand>
+    <a class="t-brand-link t-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
+      <t-brand [scale]="1.0"></t-brand>
     </a>
     <div class="mx-2 d-flex">
-      <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+      <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
         *ngIf="nav.showBack">
         <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
       </button>
       &nbsp;
-      <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
+      <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
         *ngIf="nav.showForward">
         <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
       </button>
@@ -23,94 +23,94 @@
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
             {{ 'Home' | translate }}
           </a>
         </li> -->
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./ifrs-notes"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./ifrs-notes"
             (click)="onCollapse()">
             {{ 'IfrsNotes' | translate }}
           </a>
         </li> -->
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
             (click)="onCollapse()">
             {{ 'Users' | translate }}
           </a>
         </li>
 
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/raw-materials" (click)="onCollapse()">
             {{ 'Raw Materials' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/currencies" (click)="onCollapse()">
             {{ 'Currencies' | translate }}
           </a>
         </li>
         
         <li class="nav-item">
-            <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
               routerLink="./resources/bla" (click)="onCollapse()">
               {{ 'Bla' | translate }}
             </a>
           </li> -->
 
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
             (click)="onCollapse()">
             {{ 'Roles' | translate }}
           </a>
         </li>
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./accounts/gl-accounts" (click)="onCollapse()">
             {{ 'G/L Accounts' | translate }}
           </a>
         </li> -->
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./measurement-units" (click)="onCollapse()">
             {{ 'MeasurementUnits' | translate }}
           </a>
         </li>
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/raw-materials" (click)="onCollapse()">
             {{ 'Raw Materials' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/finished-goods" (click)="onCollapse()">
             {{ 'Finished Goods' | translate }}
           </a>
         </li> -->
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
             (click)="onCollapse()">
             {{ 'Currencies' | translate }}
           </a>
         </li>
         <!-- <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./lookups/colors" (click)="onCollapse()">
             {{ 'Colors' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./lookups/thicknesses" (click)="onCollapse()">
             {{ 'Thicknesses' | translate }}
           </a>
         </li> -->
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
             (click)="onCollapse()">
             {{ 'Settings' | translate }}
           </a>
@@ -119,11 +119,11 @@
 
       <ol class="nav navbar-nav p-0">
         <li class="nav-item" ngbDropdown container="">
-          <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
-              <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
-                <b-image [src]="'users/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
-                  shape="circle" [size]="28"></b-image>
+              <div class="t-dp-wrapper t-dp-dark bg-white mx-1">
+                <t-image [src]="'users/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
+                  shape="circle" [size]="28"></t-image>
               </div>
             </div>
             &nbsp;&nbsp;
@@ -172,7 +172,7 @@
       </ol>
     </div>
   </nav>
-  <main class="b-rest-of-screen container-fluid">
+  <main class="t-rest-of-screen container-fluid">
     <router-outlet></router-outlet>
   </main>
 </div>
@@ -191,48 +191,48 @@
   <div class="modal-body p-0 bg-white">
     <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5" *ngIf="isMyUserLoaded">
       <!-- Header Name -->
-      <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2">
+      <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2">
         <h2 class="font-weight-normal">{{ myEmail }}</h2>
-      </b-form-group>
+      </t-form-group>
 
       <!-- Image -->
-      <div class="col-12 col-md-4 b-details-image-container">
+      <div class="col-12 col-md-4 t-details-image-container">
         <div class="border">
-          <b-image [src]="'users/' + ws.userSettings.UserId + '/image'" [imageId]="myImageId" [(ngModel)]="myUser.Image"
-            [isEdit]="true" [size]="70"></b-image>
+          <t-image [src]="'users/' + ws.userSettings.UserId + '/image'" [imageId]="myImageId" [(ngModel)]="myUser.Image"
+            [isEdit]="true" [size]="70"></t-image>
         </div>
       </div>
 
       <!-- Name -->
-      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
+      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.primaryPostfix"
         [serverErrors]="myUser?.serverErrors?.Name">
-        <b-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </b-text-editor>
-      </b-form-group>
+        <t-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+      </t-form-group>
 
       <!-- Name2 -->
-      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
+      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
         *ngIf="ws.settings.SecondaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name2">
-        <b-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </b-text-editor>
-      </b-form-group>
+        <t-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+      </t-form-group>
 
       <!-- Name3 -->
-      <b-form-group class="b-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
+      <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
         *ngIf="ws.settings.TernaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name3">
-        <b-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </b-text-editor>
-      </b-form-group>
+        <t-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </t-text-editor>
+      </t-form-group>
     </div>
-    <b-error-message *ngIf="isMyUserLoaded && !!saveErrorMessage">
+    <t-error-message *ngIf="isMyUserLoaded && !!saveErrorMessage">
       {{ saveErrorMessage }}
-    </b-error-message>
-    <b-error-message *ngIf="isMyUserError">
+    </t-error-message>
+    <t-error-message *ngIf="isMyUserError">
       {{ errorMessage }}
-    </b-error-message>
+    </t-error-message>
     <div *ngIf="isMyUserLoading" class="d-flex justify-content-center py-2">
-      <b-spinner [scale]="2">
-      </b-spinner>
+      <t-spinner [scale]="2">
+      </t-spinner>
     </div>
   </div>
 
@@ -242,7 +242,7 @@
       <fa-icon icon="save"></fa-icon>
       &nbsp;{{ 'Save' | translate }}
     </button>
-    <button class="btn btn-light text-primary b-white-button" (click)="modal.close(false)" ngbAutofocus>
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
     </button>

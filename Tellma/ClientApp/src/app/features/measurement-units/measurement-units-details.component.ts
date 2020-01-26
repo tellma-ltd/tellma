@@ -10,7 +10,7 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 'b-measurement-units-details',
+  selector: 't-measurement-units-details',
   templateUrl: './measurement-units-details.component.html'
 })
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {

@@ -1,22 +1,22 @@
-<b-details-picker [filter]="filter" collection="Account" [masterTemplate]="master"
+<t-details-picker [filter]="filter" collection="Account" [masterTemplate]="master"
     [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
-</b-details-picker>
+</t-details-picker>
 
 <!-- The Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
-        <b-accounts-details mode="popup" [initialText]="initialText" [idString]="idString"
+        <t-accounts-details mode="popup" [initialText]="initialText" [idString]="idString"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);">
-        </b-accounts-details>
+        </t-accounts-details>
     </div>
 </ng-template>
 
 <!-- The Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
-        <b-accounts-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
+        <t-accounts-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
             (choose)="modal.close(true); update.call(null, $event); " (create)="modal.close(false); create.call()"
             [additionalSelect]="additionalSelect">
-        </b-accounts-master>
+        </t-accounts-master>
     </div>
 </ng-template>

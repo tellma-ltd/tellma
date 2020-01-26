@@ -22,7 +22,7 @@ enum ImageStatus {
 }
 
 @Component({
-  selector: 'b-image',
+  selector: 't-image',
   templateUrl: './image.component.html',
   styleUrls: ['./image.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

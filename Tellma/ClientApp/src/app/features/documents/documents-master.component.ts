@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 'b-documents-master',
+  selector: 't-documents-master',
   templateUrl: './documents-master.component.html',
   styles: []
 })

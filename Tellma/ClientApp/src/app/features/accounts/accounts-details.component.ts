@@ -13,7 +13,7 @@ import { Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 
 @Component({
-  selector: 'b-accounts-details',
+  selector: 't-accounts-details',
   templateUrl: './accounts-details.component.html',
   styles: []
 })
