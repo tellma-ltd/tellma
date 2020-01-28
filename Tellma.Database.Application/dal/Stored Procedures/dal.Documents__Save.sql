@@ -82,6 +82,7 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
+				t.[ResponsibilityCenterId]=s.[ResponsibilityCenterId],
 				t.[AgentId]				= s.[AgentId],
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
@@ -96,6 +97,7 @@ BEGIN
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
+				[ResponsibilityCenterId],
 				[AgentId],
 				[ResourceId],
 				[CurrencyId],
@@ -108,6 +110,7 @@ BEGIN
 				[Memo]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
+				s.[ResponsibilityCenterId],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[CurrencyId],

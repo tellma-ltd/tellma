@@ -514,6 +514,9 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryList.sql" />
     <Build Include="api\Stored Procedures\api.LineDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Cancel.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Cancel.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Cancel.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

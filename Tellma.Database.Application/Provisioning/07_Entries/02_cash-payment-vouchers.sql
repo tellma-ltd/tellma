@@ -15,27 +15,49 @@ BEGIN
 
 	INSERT INTO @WL_CPV
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'CashPayment';
---(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',		1), 
---(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',		0), 
---(2,2,2,		N'Entry[0].CurrencyId',			N'Pay Currency',		N'العملة',		0),
---(3,2,3,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',	0),
---(4,2,4,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',		1),
---(5,2,5,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',0),
---(6,2,6,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال', 1),
---(7,2,7,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',	1)
 
+	INSERT INTO @WL_CPV
+	EXEC bll.LineDefinitionEntries__Pivot @index = 1, @DocumentIndex = 2, @DefinitionId = N'PurchaseInvoice';
 
+	--(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',					1), 
+--(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',					0), 
+--(2,2,2,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',				0),
+--(3,2,3,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',					1),
+--(4,2,4,		N'Entry[0].AgentId',			N'Bank/Cashier',		N'البنك/الخزنة',			0),
+--(5,2,5,		N'Entry[0].ExternalReference',	N'Check #/Receipt #',	N'رقم الشيك/رقم الإيصال',	1),
+--(6,2,6,		N'Entry[0].NotedDate'	,		N'Check Date',			N'تاريخ الشيك',				1),
+--(7,2,7,		N'Entry[0].ResponsibilityCenterId',N'Responsibility Center',N'مركز المسؤولية',		0)
 	UPDATE @WL_CPV
 	SET
 		[Memo] = N'Payment HP laser jet ink + SQL Server 2019 License',
-		[MonetaryValue0] = 7500,
-		[CurrencyId0] = @FunctionalCurrencyId,
+		[Value0] = 7500,
 		[NotedAgentName0] = N'Malek Books and Pens',
 		[EntryTypeId0] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices'),
-		[AgentId0] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'suppliers' AND [Name] = N'Microsoft'),
+		[AgentId0] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'banks' AND [Code] = N'CBE'),
 		[ExternalReference0] = N'121109',
-		[NotedDate0] = N'2020.01.21'
-	WHERE [Index] = 0;
+		[NotedDate0] = N'2020.01.21',
+		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+	WHERE [DocumentIndex] = 2 AND [Index] = 0;
+
+--(0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,				0), 
+--(1,1,1,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		0,				0), 
+--(2,1,2,	N'Line.AgentId',				N'Supplier',			N'المورد',				0,				0),
+--(3,1,3,	N'Line.Value',					N'Price Excl. VAT',		N'المبلغ قبل الضريية',	0,				0),
+--(4,1,4,	N'Entry[0].Value',				N'VAT',					N'القيمة المضافة',		0,				0),
+--(5,1,5,	N'Entry[2].Value',				N'Total',				N'المبلغ بعد الضريبة',	0,				1),-- script is needed to find sum
+--(6,1,6,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,				0),
+--(7,1,7,	N'Line.ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,				0)
+--;
+	UPDATE @WL_CPV
+	SET
+		[Memo] = N'Invoice HP laser jet ink + SQL Server 2019 License',
+		[ExternalReference0] = N'C-1008',
+		[AgentId] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'suppliers' AND [Name] = N'Microsoft'),
+		[Value] = 7500,
+		[Value0] = 1125,
+		--[Value2] = 8625,
+		[ResponsibilityCenterId] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+	WHERE [DocumentIndex] = 2 AND [Index] = 1;
 
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',

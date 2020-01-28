@@ -48,7 +48,7 @@ SET NOCOUNT ON;
 		N'Error_CanOnlySaveADocumentInActiveState'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	WHERE (BE.[State] = 5); -- Closed
+	WHERE BE.[State] IN (-5, +5); -- Closed
 
 	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
@@ -79,7 +79,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
-		-- If Account HasAgent = 1, then AgentId is required
+	-- If Account HasAgent = 1, then AgentId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -101,54 +101,4 @@ SET NOCOUNT ON;
 	WHERE (E.[ResourceId] IS NULL)
 	AND (A.[HasResource] = 1);
 	
-	-- If LineDefinition requires a resource in that entry number, 
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-	--	N'Error_TheResourceIsNotSpecified'
-	--FROM @Entries E
-	--JOIN @Lines L ON E.[LineIndex] = L.[Index]
-	--JOIN dbo.LineDefinitionColumns LDC ON L.DefinitionId = LDC.LineDefinitionId
-
-	--WHERE (E.[ResourceId] IS NULL)
-	
-	-- NotedAgent is required for selected account definition, 
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
-	--	N'Error_TheNotedAgentIsNotSpecified'
-	--FROM @Entries E
-	--JOIN @Lines L ON E.LineIndex = L.[Index]
-	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	--WHERE (L.[NotedAgentId] IS NULL)
-	--AND (A.[HasNotedAgentId] = 1);
-
-	---- External Reference is required for selected account
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[Index] AS NVARCHAR(255)),
-	--	N'Error_TheExternalReferenceIsNotSpecified'
-	--FROM @Entries E
-	--JOIN @Lines L ON E.LineIndex = L.[Index]
-	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	--WHERE (L.[ExternalReference] IS NULL)
-	--AND (A.[HasExternalReference] = 1);
-	
-	---- Additional Reference is required for selected account
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AdditionalReference' + CAST(E.[Index] AS NVARCHAR(255)),
-	--	N'Error_TheAdditionalReferenceIsNotSpecified'
-	--FROM @Entries E
-	--JOIN @Lines L ON E.LineIndex = L.[Index]
-	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	--WHERE (L.[AdditionalReference] IS NULL)
-	--AND (A.[HasAdditionalReference] = 1);	
-	
-
-
 	SELECT TOP (@Top) * FROM @ValidationErrors;

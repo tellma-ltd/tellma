@@ -25,55 +25,55 @@ UPDATE E
 SET E.ResponsibilityCenterId = L.ResponsibilityCenterId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResponsibilityCenterSource = N'Line.ResponsibilityCenterId' AND E.ResponsibilityCenterId <> L.ResponsibilityCenterId;
+WHERE LDE.ResponsibilityCenterSource = N'Line.ResponsibilityCenterId' -- AND E.ResponsibilityCenterId <> L.ResponsibilityCenterId;
 
 UPDATE E 
 SET E.AgentId = L.AgentId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.AgentSource = N'Line.AgentId' AND E.AgentId <> L.AgentId;
+WHERE LDE.AgentSource = N'Line.AgentId' --AND E.AgentId <> L.AgentId;
 
 UPDATE E 
 SET E.NotedAgentId = L.AgentId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAgentSource = N'Line.AgentId' AND E.NotedAgentId <> L.AgentId;
+WHERE LDE.NotedAgentSource = N'Line.AgentId' --AND E.NotedAgentId <> L.AgentId;
 
 UPDATE E 
 SET E.ResourceId = L.ResourceId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResourceSource = N'Line.ResourceId' AND E.ResourceId <> L.ResourceId;
+WHERE LDE.ResourceSource = N'Line.ResourceId' --AND E.ResourceId <> L.ResourceId;
 
 UPDATE E 
 SET E.CurrencyId = L.CurrencyId
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.CurrencySource = N'Line.CurrencyId' AND E.CurrencyId <> L.CurrencyId;
+WHERE LDE.CurrencySource = N'Line.CurrencyId' --AND E.CurrencyId <> L.CurrencyId;
 
 UPDATE E 
 SET E.MonetaryValue = L.MonetaryValue
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.CurrencySource = N'Line.MonetaryValue' AND E.MonetaryValue <> L.MonetaryValue;
+WHERE LDE.MonetaryValueSource = N'Line.MonetaryValue' --AND E.MonetaryValue <> L.MonetaryValue;
 
 UPDATE E 
 SET E.[Value] = L.[Value]
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.CurrencySource = N'Line.Value' AND E.[Value] <> L.[Value];
+WHERE LDE.ValueSource = N'Line.Value' --AND E.[Value] <> L.[Value];
 
 UPDATE E 
 SET E.NotedAmount = L.MonetaryValue
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' AND E.NotedAmount <> L.MonetaryValue;
+WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' --AND E.NotedAmount <> L.MonetaryValue;
 
 UPDATE E 
 SET E.NotedAmount = L.[Value]
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAmountSource = N'Line.Value' AND E.NotedAmount <> L.[Value];
+WHERE LDE.NotedAmountSource = N'Line.Value' --AND E.NotedAmount <> L.[Value];
 
 -- When no resource or agent, set to NULL
 UPDATE E
@@ -94,6 +94,8 @@ SET
 	E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
+WHERE L.DefinitionId = N'ManualLine'
+
 
 -- for all lines, Get currency and identifier from Resources if available.
 -- set the count to one, if singleton
@@ -127,6 +129,56 @@ JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
 	E.[CurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] IS NULL OR E.[MonetaryValue] IS NULL);
+
+WITH NetVariances AS (
+	SELECT L.[Index],  L.DefinitionId, SUM(E.[Direction] * E.[Value]) AS Net
+	FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+	WHERE (LDE.ValueSource IS NULL OR LDE.ValueSource <> N'Balance')
+	GROUP BY L.[Index], L.DefinitionId
+)
+UPDATE E 
+SET E.[Value] = -E.[Direction] * L.Net
+FROM @PreprocessedEntries E JOIN NetVariances L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.ValueSource = N'Balance';
+
+UPDATE E 
+SET E.[MonetaryValue] = E.[Value]
+FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+WHERE LDE.ValueSource = N'Balance' AND E.CurrencyId = dbo.fn_FunctionalCurrencyId();
+
+WITH ConformantAccounts AS (
+	SELECT A.[Id] AS AccountId, E.[Index]
+	FROM @PreprocessedEntries E
+	JOIN @Lines L ON E.LineIndex = L.[Index]
+	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+	JOIN dbo.Accounts A ON A.AccountTypeId IN (
+		SELECT [Id] FROM AccountTypes 
+		WHERE [Node].IsDescendantOf((
+			SELECT [Node]
+			FROM dbo.AccountTypes  
+			WHERE [Code] = LDE.AccountTypeParentCode
+		)) = 1
+	)
+	AND (A.[ResponsibilityCenterId] IS NULL OR A.[ResponsibilityCenterId] = E.[ResponsibilityCenterId])
+	AND (A.[AgentId] IS NULL				OR A.[AgentId] = E.[AgentId])
+	AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
+	AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
+	AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
+--	AND (A.[Identifier] IS NULL				OR A.[Identifier] = E.[AccountIdentifier])
+)
+-- If each E.Index has precisely one conformant account, then set to it
+-- If it has zero conformant account, then set to zero
+-- if it has multiple conformant account, then set it to null, unless E.AccountId is already one of them 
+UPDATE E
+SET E.AccountId = (
+	SELECT MIN(AccountId) FROM ConformantAccounts 
+	WHERE AccountId = E.AccountId
+)
+FROM @PreprocessedEntries E
+
 
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 
