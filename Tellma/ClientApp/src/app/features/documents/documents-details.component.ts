@@ -15,10 +15,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountForSave } from '~/app/data/entities/account';
-import { Resource, metadata_Resource } from '~/app/data/entities/resource';
+import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
-import { LegacyType } from '~/app/data/entities/legacy-type';
 import { AccountType } from '~/app/data/entities/account-type';
 
 interface DocumentEventBase {
@@ -86,12 +85,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType'] // , 'Resource/ResourceClassification']
+      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
-
-    // Line
-    ['NotedAgent']
-      .map(prop => `Lines/${prop}`).join(',') + ',' +
 
     // Signatures
     ['OnBehalfOfUser', 'Role', 'CreatedBy']

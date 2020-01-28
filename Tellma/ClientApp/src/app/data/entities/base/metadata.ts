@@ -9,7 +9,7 @@ import { metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
-import { metadata_VoucherBooklet, metadata_IfrsAccountClassification } from '../_temp';
+import { metadata_VoucherBooklet } from '../_temp';
 import { metadata_LegacyClassification } from '../legacy-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
@@ -42,7 +42,6 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
-    IfrsAccountClassification: metadata_IfrsAccountClassification,
 };
 
 let _collections: SelectorChoice[];

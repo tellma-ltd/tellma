@@ -64,6 +64,27 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_Time2")]
         public TimeSpan? Time2 { get; set; }
+
+        [Display(Name = "Entry_ExternalReference")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string ExternalReference { get; set; }
+
+        [Display(Name = "Entry_AdditionalReference")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string AdditionalReference { get; set; }
+
+        [Display(Name = "Entry_NotedAgent")]
+        public int? NotedAgentId { get; set; }
+
+        [Display(Name = "Entry_NotedAgentName")]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string NotedAgentName { get; set; }
+
+        [Display(Name = "Entry_NotedAmount")]
+        public decimal? NotedAmount { get; set; }
+
+        [Display(Name = "Entry_NotedDate")]
+        public DateTime? NotedDate { get; set; }
     }
 
     public class Entry : EntryForSave
@@ -107,6 +128,10 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
+
+        [Display(Name = "Entry_NotedAgent")]
+        [ForeignKey(nameof(NotedAgentId))]
+        public Agent NotedAgent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

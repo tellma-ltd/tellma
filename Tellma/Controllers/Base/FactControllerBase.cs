@@ -52,7 +52,7 @@ namespace Tellma.Controllers
         }
 
         // HTTP Methods
-        [HttpGet()]
+        [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TEntity>>> Get([FromQuery] GetArguments args)
         {
             return await GetInnerAsync(args);

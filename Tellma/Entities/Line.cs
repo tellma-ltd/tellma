@@ -17,9 +17,7 @@ namespace Tellma.Entities
 
         // HIDDEN
 
-        [Display(Name = "Line_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
-        public string CurrencyId { get; set; }
+        public int? ResponsibilityCenterId { get; set; } // TODO: Display
 
         [Display(Name = "Line_Agent")]
         public int? AgentId { get; set; }
@@ -27,35 +25,23 @@ namespace Tellma.Entities
         [Display(Name = "Line_Resource")]
         public int? ResourceId { get; set; }
 
-        [Display(Name = "Line_Amount")]
-        public decimal Amount { get; set; }
+        [Display(Name = "Line_Currency")]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        public string CurrencyId { get; set; }
+
+        [Display(Name = "Line_MonetaryValue")]
+        public decimal? MonetaryValue { get; set; }
+        public decimal? Count { get; set; } // TODO: Display
+        public decimal? Mass { get; set; } // TODO: Display
+        public decimal? Volume { get; set; } // TODO: Display
+        public decimal? Time { get; set; } // TODO: Display
+        public decimal? Value { get; set; } // TODO: Display
 
         // END HIDDEN
 
         [Display(Name = "Memo")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string Memo { get; set; }        
-
-        [Display(Name = "Line_ExternalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string ExternalReference { get; set; }
-
-        [Display(Name = "Line_AdditionalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string AdditionalReference { get; set; }
-        
-        [Display(Name = "Line_NotedAgent")]
-        public int? NotedAgentId { get; set; }
-
-        [Display(Name = "Line_NotedAgentName")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string NotedAgentName { get; set; }
-
-        [Display(Name = "Line_NotedAmount")]
-        public decimal? NotedAmount { get; set; }
-
-        [Display(Name = "Line_NotedDate")]
-        public DateTime? NotedDate { get; set; }
 
         [ForeignKey(nameof(Entry.LineId))]
         public List<TEntry> Entries { get; set; }
@@ -123,10 +109,6 @@ namespace Tellma.Entities
         public User ModifiedBy { get; set; }
 
         // HIDDEN
-
-        [Display(Name = "Line_NotedAgent")]
-        [ForeignKey(nameof(NotedAgentId))]
-        public Agent NotedAgent { get; set; }
 
         [Display(Name = "Line_Currency")]
         [ForeignKey(nameof(CurrencyId))]
