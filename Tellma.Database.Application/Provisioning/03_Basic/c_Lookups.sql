@@ -28,6 +28,7 @@ BEGIN
 	(2,	N'Apple'),
 	(3,	N'Microsoft');
 
+
 	EXEC [api].Lookups__Save
 	@DefinitionId = @DefinitionId,
 	@Entities = @Lookups,
@@ -132,6 +133,32 @@ BEGIN
 	(3,	N'BMW',		N'بي أم دبليو');
 END
 
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+BEGIN
+	SET @DefinitionId = N'paper-thicknesses'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'0.3'),
+	(1,	N'0.4'),
+	(2,	N'0.7'),
+	(3,	N'1.2'),
+	(4,	N'1.4'),
+	(5,	N'1.9');
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'paper-qualities'
+	INSERT INTO @Lookups([Index],
+	[Name],			[Name2]) VALUES
+	(0,	N'Toyota',	N'تويوتا'),
+	(1,	N'Mercedes',N'مرسيدس'),
+	(2,	N'Honda',	N'هوندا'),
+	(3,	N'BMW',		N'بي أم دبليو');
+END
 	EXEC [api].Lookups__Save
 	@DefinitionId = @DefinitionId,
 	@Entities = @Lookups,

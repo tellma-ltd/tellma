@@ -1,5 +1,6 @@
 ﻿CREATE VIEW [dbo].[WorkflowsView]
-	AS
+-- TODO: Can be made into materialized view to add index on [FromState] and to improve performance
+AS
 SELECT 
 	[Id],
 	[LineDefinitionId], 

@@ -91,6 +91,22 @@ BEGIN
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],		[IsOriginalDocument],	[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	1,		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(1,	N'cash-payment-vouchers',	0,		N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		0,		N'Petty Cash Voucher',		N'Petty Cash Vouchers',		N'PCV');
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);
+END
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,

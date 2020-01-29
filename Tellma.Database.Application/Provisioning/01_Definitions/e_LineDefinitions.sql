@@ -73,6 +73,12 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
 (1,2,-3,	N'Other reasons',		N'أسباب أخرى');
+
+-- Petty cash payment
+-- Stock issue
+-- Stock receipt
+-- LC open
+-- Shipping Docs Receipt
 /*
 -- NB: We defined a Pettycash payment to separate the business rules
 INSERT @LineDefinitions(

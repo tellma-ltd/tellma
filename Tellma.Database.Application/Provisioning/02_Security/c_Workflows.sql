@@ -2,21 +2,49 @@
 DECLARE @Workflows dbo.[WorkflowList];
 DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
 
-INSERT INTO @Workflows([Index],
-[LineDefinitionId], FromState, ToState) Values
---(N'ManualLine',	N'Draft',	N'Reviewed');
-(0, N'ManualLine',		0,			+4);
+IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	--(N'ManualLine',	N'Reviewed');
+	(0, N'ManualLine',		+4);
 
---IF @DB = N'101' -- Banan SD, USD, en
+END
+IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	--(N'ManualLine',	N'Reviewed');
+	(0, N'ManualLine',		+4);
 
---IF @DB = N'102' -- Banan ET, ETB, en
+END
+IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+BEGIN
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(0, N'ManualLine',		+4);
 
---IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
-
+END
 IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(0, N'ManualLine',		+4);
+
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
 	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'AE';
+END
+IF @DB = N'105' -- Walia Steel, ETB, en/am
+BEGIN
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(0, N'ManualLine',		+3),
+	(1, N'ManualLine',		+4);
 
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
+	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'AC' UNION
+	SELECT 0, 1, [Id] FROM dbo.Roles WHERE [Code] = N'GM';
+END
 DECLARE @IndexedIds [dbo].[IndexedIdList];
 INSERT INTO @IndexedIds([Index], [Id])
 SELECT x.[Index], x.[Id]
@@ -28,8 +56,7 @@ FROM
 			[Index],
 			[Id],
 			[LineDefinitionId],
-			[FromState],
-			[ToState]		
+			[ToState]	
 		FROM @Workflows W
 	) AS s
 	ON s.Id = t.Id

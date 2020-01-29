@@ -545,6 +545,7 @@
     <None Include="Provisioning\04_Agents\02_Creditors.sql" />
     <None Include="Provisioning\04_Agents\04_Debtors.sql" />
     <None Include="Provisioning\04_Agents\07_TaxAgencies.sql" />
+    <None Include="105.Simpex.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

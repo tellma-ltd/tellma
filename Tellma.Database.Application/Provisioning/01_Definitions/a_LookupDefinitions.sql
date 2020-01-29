@@ -28,6 +28,13 @@ BEGIN
 	(0,N'steel-thicknesses',			N'Thickness',		N'Thicknesses'),
 	(1,N'vehicle-makes',				N'Vehicle Make'	,	N'Vehicle Makes');
 END
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+BEGIN
+	INSERT INTO @LookupDefinitions([Index],
+	[Id],						[TitleSingular],	[TitleSingular2],	[TitlePlural],	[TitlePlural2]) VALUES
+	(0,N'paper-thicknesses',	N'Thickness',		N'السماكة',			N'Thicknesses',	N'السماكات'),
+	(1,N'paper-qualities',		N'Quality'	,		N'النوعية',			N'Qualities',	N'النوعيات');
+END
 
 EXEC dal.LookupDefinitions__Save
 	@Entities = @LookupDefinitions

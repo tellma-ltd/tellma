@@ -1,5 +1,4 @@
 ﻿	-- We look at the specialized Excel files in the General Services department, and we add Resource definitions accordingly
-DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	DELETE FROM @ResourceDefinitions;
