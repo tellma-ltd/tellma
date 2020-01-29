@@ -8,8 +8,8 @@ DECLARE @IfrsConcepts AS TABLE (
 BEGIN-- Ifrs Concepts Extension
 	INSERT INTO @IfrsConcepts([IfrsType], [Id], [Label], [Documentation]) VALUES 
 --	(N'Extension', N'' ,N'', N'A virtual concept added to have a single root and simplify the paths strings [Extension]'),
-	(N'Extension', N'InternalCashTransferExtension' ,N'Internal cash transfer', N'In order to enforce a IFRS note on all cash transactions [Extension]'),
-	(N'Extension', N'ExpenseByFunctionExtension' ,N'Expense, by function', N'Added as a header for possible expense by functions [Extension]');
+	(N'Extension', N'InternalCashTransferExtension', N'Internal cash transfer', N'In order to enforce a IFRS note on all cash transactions [Extension]'),
+	(N'Extension', N'ExpenseByFunctionExtension', N'Expense, by function', N'Added as a header for possible expense by functions [Extension]');
 END
 BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'DisclosureOfGeneralInformationAboutFinancialStatementsExplanatory' ,N'Disclosure of general information about financial statements [text block]', N'The entire disclosure for general information about financial statements.');

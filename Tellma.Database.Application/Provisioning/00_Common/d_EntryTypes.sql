@@ -1,5 +1,4 @@
-﻿
-DECLARE @EntryTypesTemp TABLE ([IsAssignable] BIT, [Index] INT, [ForDebit] BIT, [ForCredit] BIT, [Node] HIERARCHYID, [Code] NVARCHAR(255), [Name] NVARCHAR(255))
+﻿DECLARE @EntryTypesTemp TABLE ([IsAssignable] BIT, [Index] INT, [ForDebit] BIT, [ForCredit] BIT, [Node] HIERARCHYID, [Code] NVARCHAR(255), [Name] NVARCHAR(255))
 
 INSERT INTO @EntryTypesTemp([IsAssignable], [Index], [ForDebit], [ForCredit], [Node], [Code], [Name]) VALUES
  (0, 0, 1, 1, '/1/', 'ChangesInPropertyPlantAndEquipment', 'Increase (decrease) in property, plant and equipment')
@@ -183,15 +182,13 @@ INSERT INTO @EntryTypesTemp([IsAssignable], [Index], [ForDebit], [ForCredit], [N
 ,(1, 176, 0, 1, '/10/6/', N'InventoryReclassifiedAsPropertyPlantAndEquipment', 'Inventory reclassified as property, plant and equipment') -- reclassification
 ,(1, 177, 1, 0, '/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventory', 'Fixed asset to inventory conversion') -- merge with previous
 ,(1, 178, 1, 1, '/10/9/', N'InternalInventoryTransferExtension', 'Inventory transfer')
--- we also need to add customer return and supplier return
-
+-- TODO: we also need to add customer return and supplier return
 
 DECLARE @EntryTypes dbo.EntryTypeList;
 
 INSERT INTO @EntryTypes ([IsAssignable], [Index], [ForDebit], [ForCredit], [ParentIndex], [Code], [Name])
 SELECT [IsAssignable], [Index], [ForDebit], [ForCredit], (SELECT [Index] FROM @EntryTypesTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [Code], [Name]
-FROM @EntryTypesTemp RC
-				
+FROM @EntryTypesTemp RC	
 
 EXEC [api].[EntryTypes__Save]
 	@Entities = @EntryTypes,
@@ -199,7 +196,7 @@ EXEC [api].[EntryTypes__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Entry Classifications: Inserting: ' + @ValidationErrorsJson
+	Print 'Entry Types: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;									
 
@@ -218,5 +215,3 @@ SET @InternalCashTransferExtension	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [
 SET @InventoryPurchaseExtension		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
 SET @PPEAdditions					 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
 SET @InvReclassifiedAsPPE			 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
-
-

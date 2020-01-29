@@ -517,6 +517,12 @@
     <Build Include="dbo\User Defined Types\dbo.AttachmentList.sql" />
     <Build Include="dbo\Tables\dbo.Attachments.sql" />
     <Build Include="Mapping\Attachments.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Cancel.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Cancel.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Cancel.sql" />
+    <Build Include="Mapping\RequiredSignatures.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
+    <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -542,6 +548,7 @@
     <None Include="Provisioning\04_Agents\02_Creditors.sql" />
     <None Include="Provisioning\04_Agents\04_Debtors.sql" />
     <None Include="Provisioning\04_Agents\07_TaxAgencies.sql" />
+    <None Include="105.Simpex.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

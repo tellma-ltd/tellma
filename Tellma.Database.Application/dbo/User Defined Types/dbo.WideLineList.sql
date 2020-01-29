@@ -4,6 +4,7 @@
 	[Id]						INT				NOT NULL DEFAULT 0,
 	
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
+	[ResponsibilityCenterId]	INT,
 	[CurrencyId]				NCHAR (3),
 	[AgentId]					INT,
 	[ResourceId]				INT,

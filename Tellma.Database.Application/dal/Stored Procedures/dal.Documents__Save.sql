@@ -83,6 +83,7 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
+				t.[ResponsibilityCenterId]=s.[ResponsibilityCenterId],
 				t.[AgentId]				= s.[AgentId],
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
@@ -97,6 +98,7 @@ BEGIN
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
+				[ResponsibilityCenterId],
 				[AgentId],
 				[ResourceId],
 				[CurrencyId],
@@ -109,6 +111,7 @@ BEGIN
 				[Memo]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
+				s.[ResponsibilityCenterId],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[CurrencyId],
@@ -133,7 +136,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],

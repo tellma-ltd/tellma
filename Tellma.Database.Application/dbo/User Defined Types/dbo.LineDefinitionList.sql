@@ -12,5 +12,6 @@
 	[TitlePlural3]						NVARCHAR (255),
 	[AgentDefinitionId]					NVARCHAR (50),
 	--[AccountTypeCode]		NVARCHAR (255),
+	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX) -- to store SQL code that populates the line
 );

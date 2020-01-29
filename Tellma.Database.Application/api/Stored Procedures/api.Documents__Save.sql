@@ -17,11 +17,12 @@ BEGIN
 		
 		
 
-	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
+	INSERT INTO @AllLines(	   
+		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo])
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
 	FROM @Lines
 	UNION
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [CurrencyId], [AgentId], [ResourceId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
 	FROM @WideLines
 
 	INSERT INTO @AllEntries SELECT * FROM @Entries;

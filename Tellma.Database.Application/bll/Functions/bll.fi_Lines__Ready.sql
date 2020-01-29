@@ -3,34 +3,50 @@
 	-- Determine which of the selected Lines are ready for state change
 	-- Note that If a line definition does not a have a workflow, the transition is always accepted
 	@Ids dbo.IdList READONLY,
-	@ToState SMALLINT -- NVARCHAR (30)
+	@ToState SMALLINT,
+	@LinesSatisfyingCriteria IdWithCriteriaList READONLY
 )
 RETURNS TABLE AS RETURN
 (
-	WITH RequiredSignatures AS (
-		SELECT DL.Id AS LineId, WS.RoleId
-		FROM @Ids FE
-		JOIN dbo.[Lines] DL ON FE.[Id] = DL.[Id]
-		JOIN dbo.Workflows W ON DL.[DefinitionId] = W.LineDefinitionId AND DL.[State] = W.[FromState]
-		JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-		WHERE [bll].[fn_Line_Criteria__Satisfied](FE.[Id], WS.Criteria) = 1	
+	--WITH RequiredSignatures AS (
+	--	-- Signatures always required
+	--	SELECT L.Id AS LineId, WS.RoleId, W.ToState
+	--	FROM dbo.[Lines] L
+	--	JOIN dbo.Workflows W ON L.[DefinitionId] = W.LineDefinitionId AND L.[State] = W.[FromState]
+	--	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
+	--	WHERE L.[Id] IN (SELECT [Id] FROM @Ids)
+	--	AND (WS.[Criteria] IS NULL)
+	--	UNION
+	--	-- Signatures required because criteria was satisfied
+	--	SELECT L.Id AS LineId, WS.RoleId, W.ToState
+	--	FROM dbo.[Lines] L
+	--	JOIN dbo.Workflows W ON L.[DefinitionId] = W.LineDefinitionId AND L.[State] = W.[FromState]
+	--	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
+	--	JOIN @LinesCriteria LC ON L.[Id] = LC.[Id] AND WS.[Criteria] = LC.[Criteria]
+	--	WHERE L.[Id] IN (SELECT [Id] FROM @Ids)
+	--	AND (WS.[Criteria] IS NOT NULL)
+	--),
+	WITH RequiredSignaturesForState AS (
+		SELECT [LineId], RoleId
+		FROM map.RequiredSignatures(@Ids, @LinesSatisfyingCriteria)
+		WHERE ToState = @ToState
 	),
-	AvailableSignatures AS (
+	AvailableSignaturesForState AS (
 		SELECT [LineId], RoleId
 		FROM dbo.[LineSignatures]
 		WHERE ToState = @ToState
 		AND RevokedById IS NULL
 	),
-	LinesWithMissingSignatures AS (
+	LinesWithMissingSignaturesForState AS (
 		SELECT LineId, RoleId
-		FROM RequiredSignatures
+		FROM RequiredSignaturesForState
 		EXCEPT
 		SELECT [LineId], RoleId
-		FROM AvailableSignatures
+		FROM AvailableSignaturesForState
 	)
 	SELECT [Id]
 	FROM @Ids
 	EXCEPT
 	SELECT LineId
-	FROM LinesWithMissingSignatures
+	FROM LinesWithMissingSignaturesForState
 )

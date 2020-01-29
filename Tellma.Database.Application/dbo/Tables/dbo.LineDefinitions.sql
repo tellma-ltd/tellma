@@ -11,6 +11,7 @@
 	[TitlePlural3]						NVARCHAR (255),
 	[AgentDefinitionId]					NVARCHAR (50)	CONSTRAINT [FK_LineDefinitions__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 --	[AccountTypeCode]		NVARCHAR (255),
+	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX), -- to store SQL code that populates the line
 	[SavedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]			DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,

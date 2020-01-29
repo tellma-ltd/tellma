@@ -9,7 +9,7 @@ SET NOCOUNT ON;
 	-- Document Date not before last archive date (C#)
 	-- Posting date must not be within Archived period (C#)
 
-	-- Cannot delete unless in Draft state
+	-- Cannot delete unless in Draft state or negative states
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].State',

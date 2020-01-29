@@ -68,11 +68,10 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
 		CAST(L.[State] AS NVARCHAR(50)),
-		CAST(@ToState AS NVARCHAR(50))
-		
+		CAST(@ToState AS NVARCHAR(50))		
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
-	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
+	LEFT JOIN dbo.WorkflowsView W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
 	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is open.

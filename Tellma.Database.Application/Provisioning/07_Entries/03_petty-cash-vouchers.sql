@@ -48,6 +48,39 @@ BEGIN
 	(2,			'2018.02.22',	N'Petty Cash purchases/Alem Bayu/Feb 16 - Feb 22');
 
 	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'PettyCashPayment';
+
+	UPDATE @WL_CPV
+	SET
+		[Memo] = N'Payment HP laser jet ink + SQL Server 2019 License',
+		[Value0] = 7500,
+		[NotedAgentName0] = N'Malek Books and Pens',
+		[EntryTypeId0] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices'),
+		[AgentId0] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'banks' AND [Code] = N'CBE'),
+		[ExternalReference0] = N'121109',
+		[NotedDate0] = N'2020.01.21',
+		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+	WHERE [DocumentIndex] = 0 AND [Index] = 0;
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 1, @DocumentIndex = 0, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 1, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 1, @DocumentIndex = 1, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 1, @DocumentIndex = 3, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
+	EXEC bll.LineDefinitionEntries__Pivot @index = 2, @DocumentIndex = 3, @DefinitionId = N'PettyCashPayment';
+
+	INSERT INTO @PettyCashVouchersWideLines
 	([Index], [DocumentIndex], [LineDefinitionId], [Memo]) VALUES
 	(0,			0,				N'PettyCashPayment', N'Projector for Exec office'), 
 	(1,			0,				N'PettyCashPayment', N'Fuel for car'),

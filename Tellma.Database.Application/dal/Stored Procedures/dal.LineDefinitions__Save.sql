@@ -22,6 +22,7 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[AllowSelectiveSigning],
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
@@ -37,6 +38,7 @@ SET NOCOUNT ON;
 			t.[TitlePlural]					= s.[TitlePlural],
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
+			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
@@ -51,6 +53,7 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[AllowSelectiveSigning],
 			[Script]
 		)
 		VALUES (
@@ -64,6 +67,7 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
+			s.[AllowSelectiveSigning],
 			s.[Script]
 		);
 
@@ -77,26 +81,26 @@ SET NOCOUNT ON;
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
-			LDC.[IsOptional],
-			LDC.[IsReadOnly]
+			LDC.[IsRequiredForStateId],
+			LDC.[IsReadOnlyFromStateId]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
-			t.[SortKey]			= s.[SortKey],
-			t.[ColumnName]		= s.[ColumnName],
-			t.[Label]			= s.[Label],
-			t.[Label2]			= s.[Label2],
-			t.[Label3]			= s.[Label3],
-			t.[IsOptional]		= s.[IsOptional],
-			t.[IsReadOnly]		= s.[IsReadOnly]
+			t.[SortKey]					= s.[SortKey],
+			t.[ColumnName]				= s.[ColumnName],
+			t.[Label]					= s.[Label],
+			t.[Label2]					= s.[Label2],
+			t.[Label3]					= s.[Label3],
+			t.[IsRequiredForStateId]	= s.[IsRequiredForStateId],
+			t.[IsReadOnlyFromStateId]	= s.[IsReadOnlyFromStateId]
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsOptional], [IsReadOnly])
-		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsOptional], s.[IsReadOnly]);
+		INSERT ([LineDefinitionId],		[SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsRequiredForStateId], [IsReadOnlyFromStateId])
+		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsRequiredForStateId], s.[IsReadOnlyFromStateId]);
 
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (
