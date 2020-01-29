@@ -4,6 +4,7 @@ import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, Observer } from 'rxjs';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -240,4 +241,35 @@ export function friendlify(error: any, trx: TranslateService): FriendlyError {
     console.error(error);
     return friendlyStructure(null, trx.instant(`Error_UnkownClientError`));
   }
+}
+
+export function getDataURL(blob: Blob): Observable<string> {
+  const reader = new FileReader();
+  const obs$ = new Observable<string>((obs: Observer<string>) => {
+    // implement the observable contract based on reader
+    reader.onloadend = () => {
+
+      const data = reader.result as string;
+      obs.next(data);
+      obs.complete();
+    };
+
+    reader.onerror = (e) => {
+      obs.error(e);
+    };
+  });
+
+  reader.readAsDataURL(blob);
+  return obs$;
+}
+
+export function fileSizeDisplay(fileSize: number) {
+
+  let unitIndex = 0;
+  const stepSize = 1024;
+  while (fileSize >= stepSize || -fileSize >= stepSize) {
+      fileSize /= stepSize;
+      unitIndex++;
+  }
+  return (unitIndex ? fileSize.toFixed(1) + ' ' : fileSize) + ' KMGTPEZY'[unitIndex] + 'B';
 }

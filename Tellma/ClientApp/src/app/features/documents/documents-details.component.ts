@@ -9,7 +9,7 @@ import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/
 import { LineForSave } from '~/app/data/entities/line';
 import { Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, getDataURL, downloadBlob } from '~/app/data/util';
 import { tap, catchError } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
@@ -49,6 +49,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _currentDoc: Document;
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
   private _stateChoices: SelectorChoice[];
+  private _maxAttachmentSize = 5 * 1024 * 1024;
 
   // These are bound from UI
   public assigneeId: number;
@@ -91,6 +92,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Signatures
     ['OnBehalfOfUser', 'Role', 'CreatedBy']
       .map(prop => `Signatures/${prop}`).join(',') + ',' +
+
+    // Attachments
+    ['CreatedBy', 'ModifiedBy']
+    .map(prop => `Attachments/${prop}`).join(',') + ',' +
 
     // Assignment history
     ['Assignee', 'CreatedBy']
@@ -136,7 +141,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       Memo: this.initialText,
       DocumentDate: new Date().toISOString().split('T')[0],
       MemoIsCommon: true,
-      Lines: []
+      Lines: [],
+      Attachments: []
     };
 
     // const defs = this.definition;
@@ -161,6 +167,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         });
       }
 
+      clone.Attachments = [];
       clone.AssignmentsHistory = [];
       clone.Signatures = [];
 
@@ -642,5 +649,64 @@ Document_State_Closed
   public showNotedDate(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account ? account.HasNotedDate : false;
+  }
+
+  public onFileSelected(input: any, model: DocumentForSave) {
+    const files = input.files as FileList;
+
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    if (file.size > this._maxAttachmentSize) {
+      // this.modalService.open(this.errorModal);
+      alert('File is too large'); // TODO
+      return;
+    }
+
+    input.value = '';
+    getDataURL(file).subscribe(dataUrl => {
+
+      // Get the base64 value from the data URL
+      const commaIndex = dataUrl.indexOf(',');
+      const fileBytes = dataUrl.substr(commaIndex + 1);
+
+      model.Attachments = model.Attachments || [];
+      model.Attachments.push({
+        Id: 0,
+        File: fileBytes,
+        FileName: file.name,
+        file,
+
+        toJSON() {
+          return {
+            Id: this.Id,
+            File: this.File,
+            FileName: this.FileName
+          };
+        }
+      });
+
+    }, (err) => {
+      console.error(err);
+    });
+  }
+
+  public onDeleteAttachment(model: DocumentForSave, index: number) {
+    model.Attachments.splice(index, 1);
+  }
+
+  public onDownloadAttachment(model: DocumentForSave, index: number) {
+    const docId = model.Id;
+    const att = model.Attachments[index];
+
+    if (!!att.Id) {
+      this.documentsApi.getAttachment(docId, att.Id).subscribe((blob: Blob) => {
+        downloadBlob(blob, att.FileName);
+      });
+    } else if (!!att.file) {
+      downloadBlob(att.file, att.file.name);
+    }
   }
 }

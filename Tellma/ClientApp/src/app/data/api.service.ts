@@ -230,6 +230,18 @@ export class ApiService {
         );
 
         return obs$;
+      },
+      getAttachment: (docId: string | number, attachmentId: string | number) => {
+
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
       }
     };
   }
@@ -533,7 +545,7 @@ export class ApiService {
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
-      get: (args: GetArguments, extras?: {[key: string]: any}) => {
+      get: (args: GetArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
 
         if (!!extras) {
@@ -586,7 +598,7 @@ export class ApiService {
         return obs$;
       },
 
-      getAggregate: (args: GetAggregateArguments, extras?: {[key: string]: any}) => {
+      getAggregate: (args: GetAggregateArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
 

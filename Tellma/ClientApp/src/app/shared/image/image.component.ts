@@ -9,6 +9,7 @@ import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { WorkspaceService } from '~/app/data/workspace.service';
+import { getDataURL } from '~/app/data/util';
 
 enum ImageStatus {
   // The image data is currently being fetched from the server
@@ -226,7 +227,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
         // load the image from the server
         this.status = ImageStatus.loading;
         return this.api.getImage(src, imageId, this.notifyCancel$).pipe(
-          switchMap((b: { image: Blob, imageId: string }) => this.getDataURL(b.image).pipe(
+          switchMap((b: { image: Blob, imageId: string }) => getDataURL(b.image).pipe(
             tap((dataUrl: string) => {
               this.status = ImageStatus.loaded;
               this.dataUrl = dataUrl;
@@ -250,26 +251,6 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
         );
       }
     }
-  }
-
-  private getDataURL(blob: Blob): Observable<string> {
-    const reader = new FileReader();
-    const obs$ = new Observable<string>((obs: Observer<string>) => {
-      // implement the observable contract based on reader
-      reader.onloadend = () => {
-
-        const data = reader.result as string;
-        obs.next(data);
-        obs.complete();
-      };
-
-      reader.onerror = (e) => {
-        obs.error(e);
-      };
-    });
-
-    reader.readAsDataURL(blob);
-    return obs$;
   }
 
   // UI Binding
@@ -330,7 +311,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
     }
 
     input.value = '';
-    this.getDataURL(file).subscribe(dataUrl => {
+    getDataURL(file).subscribe(dataUrl => {
 
       // Get the base64 value from the data URL
       const commaIndex = dataUrl.indexOf(',');

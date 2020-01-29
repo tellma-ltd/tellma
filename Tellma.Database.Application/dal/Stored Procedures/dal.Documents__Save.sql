@@ -2,11 +2,12 @@
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].EntryList READONLY,
+	@Entries [dbo].[EntryList] READONLY,
+	@Attachments [dbo].[AttachmentList] READONLY,
 	@ReturnIds BIT = 0
 AS
 BEGIN
-	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList], @EntriesIndexedIds [dbo].[IndexedIdList];
+	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList], @DeletedFileIds [dbo].[StringList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -203,6 +204,44 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
+	WITH BA AS (
+		SELECT * FROM dbo.[Attachments]
+		WHERE [DocumentId] IN (SELECT [Id] FROM @DocumentsIndexedIds)
+	)
+	INSERT INTO @DeletedFileIds([Id])
+	SELECT x.[DeletedFileId]
+	FROM
+	(
+		MERGE INTO BA AS t
+		USING (
+			SELECT
+				A.[Id],
+				DI.[Id] AS [DocumentId],
+				A.[FileName],
+				A.[FileId],
+				A.[Size]
+			FROM @Attachments A
+			JOIN @DocumentsIndexedIds DI ON A.[DocumentIndex] = DI.[Index]
+		) AS s ON (t.Id = s.Id)
+		WHEN MATCHED THEN
+			UPDATE SET
+				t.[FileName]			= s.[FileName],
+				t.[ModifiedAt]			= @Now,
+				t.[ModifiedById]		= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT ([DocumentId], [FileName], [FileId], [Size])
+			VALUES (s.[DocumentId], s.[FileName], s.[FileId], s.[Size])
+
+		WHEN NOT MATCHED BY SOURCE THEN
+			DELETE
+		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
+	) AS x
+	WHERE x.[InsertedFileId] IS NULL
+
+	-- Return deleted File IDs, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedFileIds;
+	
+	-- Return the document Ids if requested
 	IF (@ReturnIds = 1)
 		SELECT * FROM @DocumentsIndexedIds;
 END;

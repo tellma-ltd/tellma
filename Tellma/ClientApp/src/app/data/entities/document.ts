@@ -9,17 +9,19 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
 import { DocumentSignature } from './document-signature';
 import { DocumentAssignment } from './document-assignment';
+import { AttachmentForSave, Attachment } from './attachment';
 
 export type DocumentState = LineState | 5;
 
-export interface DocumentForSave<TLine = LineForSave> extends EntityWithKey {
+export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityWithKey {
     DocumentDate?: string;
     Memo?: string;
     MemoIsCommon?: boolean;
     Lines?: TLine[];
+    Attachments?: TAttachment[];
 }
 
-export interface Document extends DocumentForSave<Line> {
+export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: string;
     SerialNumber?: number;
     State?: DocumentState;

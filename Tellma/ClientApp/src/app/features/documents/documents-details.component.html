@@ -460,8 +460,8 @@
                                 </div>
                             </t-restricted>
                             <!-- Edit -->
-                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.ExternalReference"
-                                (ngModelChange)="update.call(null, item);">
+                            <t-text-editor *ngIf="isEdit" style="min-width: 150px;"
+                                [(ngModel)]="entry.ExternalReference" (ngModelChange)="update.call(null, item);">
                             </t-text-editor>
                         </t-form-group-dynamic>
 
@@ -554,6 +554,32 @@
             </ng-template>
         </ngb-tab>
     </ngb-tabset>
+
+    <!-- Attachments -->
+    <div class="col-12 pt-4">
+        <span class="small font-weight-bold">{{ 'Document_Attachments' | translate }}:</span>
+        <div class="d-flex">
+            <div *ngIf="!model?.Attachments?.length && !isEdit">
+                None
+            </div>
+            <div class="p-1 px-2 d-flex" *ngFor="let att of model?.Attachments; let i = index;">
+                <span class="px-1" *ngIf="!isEdit">{{ att.FileName }}</span>
+                <t-text-editor [(ngModel)]="att.FileName" class="px-1" style="max-width: 200px;" *ngIf="isEdit"></t-text-editor>
+                <button class="btn btn-primary btn-sm" (click)="onDownloadAttachment(model, i)">
+                    <fa-icon icon="download"></fa-icon>
+                </button>
+                <button class="btn btn-primary btn-sm" *ngIf="isEdit" (click)="onDeleteAttachment(model, i)">
+                    <fa-icon icon="trash"></fa-icon>
+                </button>
+            </div>
+            <div class="p-1 px-3 d-flex" *ngIf="isEdit">
+                <button class="btn btn-primary btn-sm" (click)="fileInput.click()">Attach</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- for the file dialog -->
+    <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" />
 
     <!-- Signatures -->
     <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">

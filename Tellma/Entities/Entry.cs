@@ -6,12 +6,6 @@ namespace Tellma.Entities
 {
     public class EntryForSave : EntityWithKey<int>
     {
-        [NotMapped]
-        public int? LineIndex { get; set; }
-
-        [NotMapped]
-        public int? DocumentIndex { get; set; }
-
         [AlwaysAccessible]
         public int? EntryNumber { get; set; }
 

@@ -220,6 +220,9 @@
   <data name="AppName" xml:space="preserve">
     <value>تلما</value>
   </data>
+  <data name="Attachment_Size" xml:space="preserve">
+    <value>الحجم</value>
+  </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>تطبيق (Authenticator)</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_Assingee" xml:space="preserve">
     <value>المستلم</value>
+  </data>
+  <data name="Document_Attachments" xml:space="preserve">
+    <value>المرفقات</value>
   </data>
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>

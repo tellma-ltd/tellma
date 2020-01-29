@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class DocumentForSave<TDocumentLine> : EntityWithKey<int>
+    public class DocumentForSave<TDocumentLine, TAttachment> : EntityWithKey<int>
     {
         [Display(Name = "Document_DocumentDate")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -50,14 +50,18 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
+
+        [Display(Name = "Document_Attachments")]
+        [ForeignKey(nameof(Attachment.DocumentId))]
+        public List<TAttachment> Attachments { get; set; }
     }
 
-    public class DocumentForSave : DocumentForSave<LineForSave>
+    public class DocumentForSave : DocumentForSave<LineForSave, AttachmentForSave>
     {
 
     }
 
-    public class Document : DocumentForSave<Line>
+    public class Document : DocumentForSave<Line, Attachment>
     {
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }

@@ -209,7 +209,6 @@ namespace Tellma.Data
         /// </summary>
         private static string Sources(Type t)
         {
-
             switch (t.Name)
             {
                 case nameof(Entities.Settings):
@@ -272,6 +271,9 @@ namespace Tellma.Data
                 case nameof(Entry):
                     return "[map].[Entries]()";
 
+                case nameof(Attachment):
+                    return "[map].[Attachments]()";
+
                 case nameof(DocumentSignature):
                     return "[map].[DocumentSignatures]()";
 
@@ -287,7 +289,7 @@ namespace Tellma.Data
                 case nameof(VoucherBooklet):
                     return "[dbo].[VoucherBooklets]";
 
-                #endregion
+                    #endregion
             }
 
             throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries");
@@ -3440,8 +3442,9 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> documents, bool returnIds)
+        public async Task<(List<int> Ids, List<string> DeletedFileIds)> Documents__Save(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
+            var deletedFileIds = new List<string>();
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -3468,10 +3471,18 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                var attachmentsTable = RepositoryUtilities.DataTable(attachments);
+                var attachmentsTvp = new SqlParameter("@Attachments", attachmentsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Attachment)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(docsTvp);
                 cmd.Parameters.Add(linesTvp);
                 cmd.Parameters.Add(entriesTvp);
+                cmd.Parameters.Add(attachmentsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
@@ -3479,9 +3490,18 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Documents__Save)}]";
 
                 // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // Get the deleted file IDs
+                while (await reader.ReadAsync())
+                {
+                    deletedFileIds.Add(reader.GetString(0));
+                }
+
+                // If requested, get the document Ids too
                 if (returnIds)
                 {
-                    using var reader = await cmd.ExecuteReaderAsync();
+                    await reader.NextResultAsync();
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
@@ -3492,10 +3512,6 @@ namespace Tellma.Data
                         });
                     }
                 }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
             }
 
             // Return ordered result
@@ -3505,7 +3521,7 @@ namespace Tellma.Data
                 sortedResult[e.Index] = e.Id;
             });
 
-            return sortedResult.ToList();
+            return (sortedResult.ToList(), deletedFileIds);
         }
 
         public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? agentId, int? roleId, short toState, int top)
@@ -3620,7 +3636,7 @@ namespace Tellma.Data
 
         // TODO: deal with the SPs below
 
-        public async Task Documents__Delete(IEnumerable<int> ids)
+        public async Task<List<string>> Documents__Delete(IEnumerable<int> ids)
         {
             // TODO
             var conn = await GetConnectionAsync();
@@ -3648,6 +3664,8 @@ namespace Tellma.Data
             {
                 throw new ForeignKeyViolationException();
             }
+
+            return null; // TODO
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)

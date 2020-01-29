@@ -220,6 +220,9 @@
   <data name="AppName" xml:space="preserve">
     <value>敏锐</value>
   </data>
+  <data name="Attachment_Size" xml:space="preserve">
+    <value>尺寸</value>
+  </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>身份验证器应用</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_Assingee" xml:space="preserve">
     <value>代理人</value>
+  </data>
+  <data name="Document_Attachments" xml:space="preserve">
+    <value>附件</value>
   </data>
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>

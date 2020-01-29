@@ -6,20 +6,15 @@ using Tellma.Entities;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Tellma.Controllers
 {
@@ -62,6 +57,50 @@ namespace Tellma.Controllers
             _clientInfo = clientInfo;
             _modelMetadataProvider = modelMetadataProvider;
             _tenantInfoAccessor = tenantInfoAccessor;
+        }
+
+
+        [HttpGet("{docId}/attachments/{attachmentId}")]
+        public async Task<ActionResult> GetAttachment(int docId, int attachmentId)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // GetByIdImplAsync() enforces read permissions
+                string attachments = nameof(Document.Attachments);
+                var response = await GetByIdImplAsync(docId, new GetByIdArguments
+                {
+                    Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)}"
+                });
+
+                // Get the blob name
+                var attachment = response.Result.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+                if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
+                {
+                    // Get the bytes
+                    string blobName = BlobName(attachment.FileId);
+                    var fileBytes = await _blobService.LoadBlob(blobName);
+                    var fileName = attachment.FileName ?? "Attachment";
+                    var contentType = ContentType(fileName);
+
+                    return File(fileBytes, contentType);
+                }
+                else
+                {
+                    return NotFound($"Attachment with Id {attachmentId} was not found in document with Id {docId}");
+                }
+
+            }, _logger);
+        }
+
+        private string ContentType(string fileName)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(fileName, out string contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
         }
 
         [HttpPut("assign")]
@@ -218,7 +257,6 @@ namespace Tellma.Controllers
             int docIndex = 0;
             foreach (var doc in docs)
             {
-
                 // Check that the date is not in the future
                 if (doc.DocumentDate > DateTime.Today.AddDays(1))
                 {
@@ -277,6 +315,25 @@ namespace Tellma.Controllers
                     lineIndex++;
                 }
 
+                ///////// Attachment Validation
+                int attIndex = 0;
+                foreach (var att in doc.Attachments)
+                {
+                    if (att.Id != 0 && att.File != null)
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
+                    }
+
+                    if (att.Id == 0 && att.File == null)
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                    }
+
+                    attIndex++;
+                }
+
                 docIndex++;
             }
 
@@ -296,10 +353,47 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, ExpandExpression expand, bool returnIds)
         {
+            var blobsToSave = new List<(string, byte[])>();
+
+            // Prepare the list of attachments with extras
+            var attachments = new List<AttachmentWithExtras>();
+            foreach (var (doc, docIndex) in entities.Select((d, i) => (d, i)))
+            {
+                if (doc.Attachments != null)
+                {
+                    doc.Attachments.ForEach(att =>
+                    {
+                        var attWithExtras = new AttachmentWithExtras
+                        {
+                            Id = att.Id,
+                            FileName = att.FileName,
+                            DocumentIndex = docIndex,
+                        };
+
+                        // If new attachment 
+                        if (att.Id == 0)
+                        {
+                            // Add extras: file Id and size
+                            byte[] file = att.File;
+                            string fileId = Guid.NewGuid().ToString();
+                            attWithExtras.FileId = fileId;
+                            attWithExtras.Size = file.LongLength;
+
+                            // Also add to blobsToCreate
+                            string blobName = BlobName(fileId);
+                            blobsToSave.Add((blobName, file));
+                        }
+
+                        attachments.Add(attWithExtras);
+                    });
+                }
+            }
+
             // Save the documents
-            var ids = await _repo.Documents__Save(
+            var (ids, fileIdsToDelete) = await _repo.Documents__Save(
                 DefinitionId,
                 documents: entities,
+                attachments: attachments,
                 returnIds: returnIds);
 
             // Assign new documents to the current user
@@ -307,6 +401,19 @@ namespace Tellma.Controllers
             var currentUserId = userInfo.UserId.Value;
             var newDocIds = entities.Select((doc, index) => (doc, index)).Where(e => e.doc.Id == 0).Select(e => ids[e.index]);
             await _repo.Documents__Assign(newDocIds, currentUserId, null);
+
+            // Delete the file Ids retrieved earlier if any
+            if (fileIdsToDelete.Any())
+            {
+                var blobsToDelete = fileIdsToDelete.Select(fileId => BlobName(fileId));
+                await _blobService.DeleteBlobsAsync(blobsToDelete);
+            }
+
+            // Save new blobs if any
+            if (blobsToSave.Any())
+            {
+                await _blobService.SaveBlobsAsync(blobsToSave);
+            }
 
             // Return the new Ids
             return ids;
@@ -326,7 +433,14 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.Documents__Delete(ids);
+                var fileIdsToDelete = await _repo.Documents__Delete(ids);
+
+                // Delete the file Ids retrieved earlier if any
+                if (fileIdsToDelete.Any())
+                {
+                    var blobsToDelete = fileIdsToDelete.Select(fileId => BlobName(fileId));
+                    await _blobService.DeleteBlobsAsync(blobsToDelete);
+                }
             }
             catch (ForeignKeyViolationException)
             {
@@ -343,6 +457,13 @@ namespace Tellma.Controllers
         {
             return OrderByExpression.Parse($"{nameof(Document.SerialNumber)} desc");
         }
+
+        private string BlobName(string guid)
+        {
+            int tenantId = _tenantIdAccessor.GetTenantId();
+            return $"{tenantId}/Attachments/{guid}";
+        }
+
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

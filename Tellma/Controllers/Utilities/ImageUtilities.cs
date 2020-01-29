@@ -30,8 +30,8 @@ namespace Tellma.Controllers.Utilities
             {
                 // Get old image Ids that should be deleted from Blob storage
                 var dbEntitiesWithNewImages = await repo.Query<TEntity>()
-                    .Select(nameof(Agent.ImageId))
-                    .Filter($"{nameof(Agent.ImageId)} ne null")
+                    .Select(nameof(IEntityWithImage.ImageId))
+                    .Filter($"{nameof(IEntityWithImage.ImageId)} ne null")
                     .FilterByIds(idsWithNewImages)
                     .ToListAsync();
 

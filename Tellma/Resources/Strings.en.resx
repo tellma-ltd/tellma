@@ -220,6 +220,9 @@
   <data name="AppName" xml:space="preserve">
     <value>Tellma</value>
   </data>
+  <data name="Attachment_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>Authenticator App</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_Assingee" xml:space="preserve">
     <value>Assignee</value>
+  </data>
+  <data name="Document_Attachments" xml:space="preserve">
+    <value>Attachments</value>
   </data>
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
@@ -601,11 +607,17 @@
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
     <value>Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too.</value>
   </data>
+  <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
+    <value>New attacments must include file bytes</value>
+  </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>No file was uploaded.</value>
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>Number of data points exceeds the maximum of {0}.</value>
+  </data>
+  <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
+    <value>Only new attachments can include file bytes</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>Delete mode is not supported in the parsing API.</value>

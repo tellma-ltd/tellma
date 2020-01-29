@@ -7,9 +7,6 @@ namespace Tellma.Entities
 {
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
-        [NotMapped]
-        public int? DocumentIndex { get; set; }
-
         [Display(Name = "Definition")]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]

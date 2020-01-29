@@ -56,7 +56,7 @@ BEGIN
 		RETURN;
 
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
-	INSERT INTO @DocumentsIndexedIds
+	--INSERT INTO @DocumentsIndexedIds
 	EXEC [dal].[Documents__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
