@@ -74,8 +74,19 @@ SET NOCOUNT ON;
 		@SignedAt = @SignedAt
 
 	-- Determine which of the selected Lines are reacdy for state change
-	DECLARE @ReadyIds dbo.IdList;
-	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
+	DECLARE @ReadyIds dbo.IdList, @LinesSatisfyingCriteria IdWithCriteriaList;
+		/*
+	-- C#: In C#, the system shall verify which lines satsify the corresponding criteria and return the result in @LinesCriteria
+		SELECT L.[Id], WS.[Criteria]
+		FROM dbo.Lines L
+		JOIN dbo.Workflows W ON L.[DefinitionId] = W.[LineDefinitionId]
+		JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId] AND L.[State] = W.[FromState]
+		WHERE W.[ToState] = @ToState AND WS.[Criteria] IS NOT NULL
+		AND L.[Id] IN (
+			SELECT [Id] FROM @@IndexedIds
+		)
+	*/
+	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState, @LinesSatisfyingCriteria);
 
 	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
 

@@ -19,7 +19,7 @@ BEGIN
 	INSERT INTO @WL_CPV
 	EXEC bll.LineDefinitionEntries__Pivot @index = 1, @DocumentIndex = 2, @DefinitionId = N'PurchaseInvoice';
 
-	--(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',					1), 
+--(0,2,0,		N'Line.Memo',					N'Memo',				N'البيان',					1), 
 --(1,2,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',			N'المبلغ',					0), 
 --(2,2,2,		N'Entry[0].NotedAgentName',		N'Beneficiary',			N'المستفيد',				0),
 --(3,2,3,		N'Entry[0].EntryTypeId',		N'Purpose',				N'الغرض',					1),
