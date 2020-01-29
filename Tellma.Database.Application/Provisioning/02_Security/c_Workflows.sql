@@ -36,13 +36,12 @@ FROM
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[LineDefinitionId]= s.[LineDefinitionId],
-			t.[FromState]		= s.[FromState],
 			t.[ToState]			= s.[ToState]
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[FromState], [ToState])
-		VALUES (s.[LineDefinitionId], s.[FromState], s.[ToState])
+		INSERT ([LineDefinitionId],	[ToState])
+		VALUES (s.[LineDefinitionId], s.[ToState])
 		OUTPUT s.[Index], inserted.[Id] 
 ) As x;
 

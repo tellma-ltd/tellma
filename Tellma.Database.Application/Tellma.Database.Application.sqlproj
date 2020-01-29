@@ -519,6 +519,7 @@
     <Build Include="dal\Stored Procedures\dal.Documents__Cancel.sql" />
     <Build Include="Mapping\RequiredSignatures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
+    <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

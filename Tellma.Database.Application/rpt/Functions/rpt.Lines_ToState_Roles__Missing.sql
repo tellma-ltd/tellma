@@ -8,7 +8,7 @@ RETURN
 	SELECT T.Id AS LineId, T.RoleId FROM (
 		SELECT DL.[Id], DL.[DocumentId], WS.[RoleId]
 		FROM dbo.[Lines] DL
-		JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
+		JOIN dbo.WorkflowsView W ON W.[LineDefinitionId] = DL.[DefinitionId]
 		JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.WorkflowId
 		-- Workflows are defined for positive states. Hence when moving to negative state we need to use ABS value
 		WHERE W.[ToState] = ABS(@ToState)

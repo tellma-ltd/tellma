@@ -10,14 +10,14 @@ RETURN (
 		-- Signatures always required
 		SELECT L.Id As LineId, WS.RoleId, W.ToState
 		FROM dbo.Lines L
-		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND L.[State] = W.[FromState]
+		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId
 		JOIN dbo.WorkflowSignatures WS ON WS.WorkflowId = W.[Id]
 		WHERE L.Id IN (SELECT [Id] FROM @LineIds) AND (WS.[Criteria] IS NULL)
 		UNION
 		-- Signatures required because criteria was satisfied
 		SELECT L.Id As LineId, WS.RoleId, W.ToState
 		FROM dbo.Lines L
-		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND L.[State] = W.[FromState]
+		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId
 		JOIN dbo.WorkflowSignatures WS ON WS.WorkflowId = W.[Id]
 		JOIN @LinesSatisfyingCriteria LC ON L.[Id] = LC.[Id] AND WS.[Criteria] = LC.[Criteria]
 		WHERE L.Id IN (SELECT [Id] FROM @LineIds) AND (WS.[Criteria] IS NOT NULL)
