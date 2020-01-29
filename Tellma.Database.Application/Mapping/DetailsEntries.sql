@@ -1,4 +1,5 @@
 ﻿CREATE FUNCTION [map].[DetailsEntries] (
+-- TODO: This is actually only needed for SQL prototyping. map.Entries() is good enough for reporting.
 	@fromDate Date = '2000.01.01', 
 	@toDate Date = '2100.01.01',
 	@CountUnitId INT,

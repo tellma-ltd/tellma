@@ -135,7 +135,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],

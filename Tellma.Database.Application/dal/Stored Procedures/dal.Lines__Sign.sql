@@ -14,7 +14,7 @@ BEGIN
 		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId], [RoleId], [SignedAt]
 	)
 	SELECT
-		[Id],	@ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfuserId, @UserId), @RoleId, @SignedAt
+		[Id], @ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfuserId, @UserId), @RoleId, @SignedAt
 	FROM @Ids
 
 	SELECT DISTINCT [DocumentId] FROM [dbo].[Lines] WHERE [Id] IN (SELECT [Id] FROM @Ids)
