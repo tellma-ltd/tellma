@@ -12,6 +12,12 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string FileName { get; set; }
 
+        [Display(Name = "Attachment_FileExtension")]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
+        public string FileExtension { get; set; }
+
         [NotMapped]
         public byte[] File { get; set; }
     }

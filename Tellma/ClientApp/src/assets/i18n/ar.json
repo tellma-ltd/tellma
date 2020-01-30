@@ -178,6 +178,7 @@
   "Error_CannotModifyInactiveItemPleaseActivate": "لا يمكن تعديل بيان غير منشط، يرجى تنشيط البيان أولا.",
   "Error_ConnectionLostReconnecting": "إنقطع الاتصال، تجري محاولة الاتصال من جديد...",
   "Error_DateCannotBeInTheFuture": "التاريخ لا يمكن أن يكون في المستقبل",
+  "Error_FileSizeExceedsMaximumSizeOf0": "حجم الملف يتجاوز الحد الأقصى المسموح به: {{size}}",
   "Error_ImageExceedsTheMaximumSizeOfX": "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت",
   "Error_LoadingCompanySettings": "حدث خطأ أثناء تحميل إعدادات الشركة",
   "Error_LoadingGlobalSettings": "حدث خطأ أثناء تحميل إعدادات النظام",

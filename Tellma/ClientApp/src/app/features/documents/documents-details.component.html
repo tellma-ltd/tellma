@@ -574,12 +574,14 @@
                             <div class="flex-grow-1 text-truncate">
                                 <div class="d-flex t-borderless-input2 align-items-center">
                                     <fa-icon class="px-1 text-muted" style="font-size: 150%;"
-                                        [icon]="iconFromFileName(att.FileName)">
+                                        [icon]="iconFromExtension(att.FileExtension)">
                                     </fa-icon>
                                     <span>&nbsp;&nbsp;&nbsp;</span>
                                     <span *ngIf="!isEdit">{{ att.FileName }}</span>
-                                    <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        *ngIf="isEdit"></t-text-editor>
+                                    <t-form-group class="w-100" [serverErrors]="att?.serverErrors?.FileName">
+                                        <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        *ngIf="isEdit" [required]="true"></t-text-editor>
+                                    </t-form-group>                                    
                                 </div>
                             </div>
 
@@ -616,57 +618,6 @@
         </ngb-tab>
 
     </ngb-tabset>
-
-    <!-- Attachments -->
-    <div class="col-12 pt-4" *ngIf="false">
-        <span class="small font-weight-bold">{{ 'Document_Attachments' | translate }}:</span>
-
-        <!-- No Attachments Message -->
-        <div class="pt-3 font-italic font-weight-light text-muted" *ngIf="!model?.Attachments?.length && !isEdit">
-            <span>{{ 'NoItemsFound' | translate }}</span>
-        </div>
-
-        <!-- Attachments List -->
-        <div class="pt-3" style="max-width: 400px;" *ngIf="!!model?.Attachments?.length ">
-            <div class="p-2 d-flex bg-light border-bottom t-dynamic-container2"
-                *ngFor="let att of model?.Attachments; let i = index;">
-                <!-- Icon and Name -->
-                <div class="p-0 px-1 flex-grow-1">
-                    <div class="d-flex t-borderless-input2 align-items-center" style="max-width:280px">
-                        <fa-icon class="px-1" style="font-size: 150%;" [icon]="iconFromFileName(att.FileName)">
-                        </fa-icon>
-                        <span>&nbsp;&nbsp;&nbsp;</span>
-                        <span *ngIf="!isEdit">{{ att.FileName }}</span>
-                        <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
-                            *ngIf="isEdit"></t-text-editor>
-                    </div>
-                </div>
-
-                <!-- Commands -->
-                <div class="d-flex align-items-center">
-                    <button *ngIf="!att.downloading"
-                        class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
-                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
-                        <fa-icon icon="download"></fa-icon>
-                    </button>
-                    <div class="px-2 t-toolbar-button" *ngIf="att.downloading">
-                        <t-spinner class="text-black"></t-spinner>
-                    </div>
-                    <button class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
-                        *ngIf="isEdit" (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
-                        <fa-icon icon="trash"></fa-icon>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upload Button -->
-        <div class="pt-2" *ngIf="isEdit">
-            <button class="btn btn-sm text-primary btn-light t-white-button" (click)="fileInput.click()">
-                <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Upload' | translate }}
-            </button>
-        </div>
-    </div>
 
     <!-- for the file dialog -->
     <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" />
@@ -871,3 +822,30 @@
         </button>
     </div>
 </ng-template>
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+      </h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!-- body -->
+    <div class="modal-body">
+      {{ !!modalErrorMessageFunc ? modalErrorMessageFunc() : '' }}
+    </div>
+  
+    <!-- footer -->
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+        <fa-icon icon="times"></fa-icon>
+        &nbsp;{{ 'Dismiss' | translate }}
+      </button>
+    </div>
+  </ng-template>
