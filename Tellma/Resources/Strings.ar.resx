@@ -500,7 +500,7 @@
     <value>المورد</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز التكلفة</value>
+    <value>مركز المسؤولية</value>
   </data>
   <data name="Entry_Time" xml:space="preserve">
     <value>المدة</value>
@@ -607,11 +607,17 @@
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
     <value>لا يمكن استخدام الحقل ({0}) في مسار معامل select دون استخدامه أيضا في مسار معامل expand</value>
   </data>
+  <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
+    <value>المرفقات الجديدة ينبغي أن تحتوي على ملف</value>
+  </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>لم يتم رفع أي ملف</value>
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
+  </data>
+  <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
+    <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>وضع الحذف ليس مدعوما من هذه الواجهة</value>

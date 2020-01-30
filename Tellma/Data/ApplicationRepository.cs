@@ -1570,7 +1570,7 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
                 if (await reader.ReadAsync())
                 {
                     result = (byte[])reader[0];

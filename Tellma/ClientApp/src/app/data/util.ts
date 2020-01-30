@@ -159,7 +159,7 @@ export function downloadBlob(blob: Blob, fileName: string) {
     document.body.appendChild(a);
     a.setAttribute('style', 'display: none');
     a.href = url;
-    a.download = fileName;
+    a.download = fileName || 'file';
     a.click();
     a.remove();
 
@@ -264,6 +264,9 @@ export function getDataURL(blob: Blob): Observable<string> {
 }
 
 export function fileSizeDisplay(fileSize: number) {
+  if (fileSize === null || fileSize === undefined) {
+    return '';
+  }
 
   let unitIndex = 0;
   const stepSize = 1024;

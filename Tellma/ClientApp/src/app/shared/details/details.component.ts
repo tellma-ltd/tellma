@@ -117,12 +117,12 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   private _modalErrorMessage: string; // in the modal
   private _modalSuccessMessage: string; // in the modal
   private _unboundServerErrors: string[]; // in the modal
-  private _viewModelJson: string;
+  private _pristineModelJson: string;
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
   // Moved below the fields to keep tslint happy
   @Input()
-  createFunc: () => EntityForSave = () => ({ })
+  createFunc: () => EntityForSave = () => ({})
 
   @Input()
   isInactive: (model: EntityForSave) => string = (model: EntityForSave) => !!model &&
@@ -144,6 +144,17 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       console.error('Cloning a non existing item');
       return null;
     }
+  }
+
+  @Input()
+  registerPristineFunc: (pristineModel: EntityForSave) => void =
+    (pristineModel: EntityForSave) => this._pristineModelJson = JSON.stringify(pristineModel)
+
+  @Input()
+  isDirtyFunc: (potentiallyDirtyModel: EntityForSave) => boolean = (potentiallyDirtyModel: EntityForSave) => {
+    // By default we compare the JSON for dirty check
+    // Some screens may wish to optimise this if JSON operations are expensive
+    return this._pristineModelJson !== JSON.stringify(potentiallyDirtyModel);
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -177,7 +188,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     this._modalSuccessMessage = null;
     this._unboundServerErrors = [];
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-    this._viewModelJson = null;
+    this.registerPristineFunc(null);
 
     this.paramMapSubscription = this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
@@ -269,17 +280,24 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     // then either display it or clone it
     if (isNewNotClone || isCloneOfAvailableItem) {
 
+      // Create two entities, one for editing, and the other for dirty checking
+      let editModel: EntityForSave;
+      let pristineModal: EntityForSave;
       if (isCloneOfAvailableItem) {
         // IF it's a cloning operation, clone the item from workspace
         const item = this.workspace.current[this.collection][cloneId];
-        this._editModel = this.cloneFunc(item);
+        editModel = this.cloneFunc(item);
+        pristineModal = this.cloneFunc(item);
       } else {
         // IF it's create new, don't fetch anything, create an item in memory
-        this._editModel = this.createFunc();
+        editModel = this.createFunc();
+        pristineModal = this.createFunc();
       }
 
+      this._editModel = editModel;
+
       // marks it as non-dirty until the user makes the first change
-      this._viewModelJson = JSON.stringify(this._editModel);
+      this.registerPristineFunc(pristineModal);
 
       // Show edit form
       s.detailsStatus = DetailsStatus.edit;
@@ -489,8 +507,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   get isDirty(): boolean {
-    // TODO This may cause sluggishness for large DTOs, we'll look into ways of optimizing it later
-    return this.isEdit && this._viewModelJson !== JSON.stringify(this._editModel);
+    return this.isEdit && this.isDirtyFunc(this._editModel);
   }
 
   get isEdit(): boolean {
@@ -602,9 +619,11 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
     if (this.viewModel) {
 
-      // clone the model (to allow for canceling changes)
-      this._viewModelJson = JSON.stringify(this.viewModel);
-      this._editModel = JSON.parse(this._viewModelJson);
+      // register the current model for dirty checking
+      this.registerPristineFunc(this.viewModel);
+
+      // copy the model, and edit the copy (to allow cancelling changes easily)
+      this._editModel = JSON.parse(JSON.stringify(this.viewModel));
 
       // show the edit view
       this.state.detailsStatus = DetailsStatus.edit;
@@ -659,7 +678,13 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       this.crud.save([this._editModel], { expand: this.expand, returnEntities: true }).subscribe(
         (response: EntitiesResponse) => {
 
-          // update the workspace with the DTO from the server
+          // If we're updating, copy the old entity
+          let oldEntity: EntityForSave;
+          if (!isNew) {
+            oldEntity = JSON.parse(JSON.stringify(this.viewModel));
+          }
+
+          // update the workspace with the entity from the server
           const s = this.state;
           s.detailsId = addToWorkspace(response, this.workspace)[0];
 
@@ -668,7 +693,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
           if (isNew) {
             this.globalState.insert([s.detailsId], entityWs);
           } else {
-            const oldEntity = JSON.parse(this._viewModelJson);
             this.globalState.update(oldEntity, entityWs);
           }
 

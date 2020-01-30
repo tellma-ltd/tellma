@@ -9,16 +9,17 @@ import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/
 import { LineForSave } from '~/app/data/entities/line';
 import { Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
-import { addToWorkspace, getDataURL, downloadBlob } from '~/app/data/util';
-import { tap, catchError } from 'rxjs/operators';
+import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay } from '~/app/data/util';
+import { tap, catchError, finalize, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
+import { Attachment, AttachmentForSave } from '~/app/data/entities/attachment';
 
 interface DocumentEventBase {
   time: string;
@@ -49,7 +50,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _currentDoc: Document;
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
   private _stateChoices: SelectorChoice[];
-  private _maxAttachmentSize = 5 * 1024 * 1024;
+  private _maxAttachmentSize = 20 * 1024 * 1024;
+  private _pristineDocJson: string;
 
   // These are bound from UI
   public assigneeId: number;
@@ -95,7 +97,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Attachments
     ['CreatedBy', 'ModifiedBy']
-    .map(prop => `Attachments/${prop}`).join(',') + ',' +
+      .map(prop => `Attachments/${prop}`).join(',') + ',' +
 
     // Assignment history
     ['Assignee', 'CreatedBy']
@@ -659,38 +661,42 @@ Document_State_Closed
     }
 
     const file = files[0];
+    input.value = '';
     if (file.size > this._maxAttachmentSize) {
       // this.modalService.open(this.errorModal);
       alert('File is too large'); // TODO
       return;
     }
 
-    input.value = '';
-    getDataURL(file).subscribe(dataUrl => {
+    getDataURL(file).pipe(
+      takeUntil(this.notifyDestruct$),
+      tap(dataUrl => {
 
-      // Get the base64 value from the data URL
-      const commaIndex = dataUrl.indexOf(',');
-      const fileBytes = dataUrl.substr(commaIndex + 1);
+        // Get the base64 value from the data URL
+        const commaIndex = dataUrl.indexOf(',');
+        const fileBytes = dataUrl.substr(commaIndex + 1);
 
-      model.Attachments = model.Attachments || [];
-      model.Attachments.push({
-        Id: 0,
-        File: fileBytes,
-        FileName: file.name,
-        file,
+        model.Attachments = model.Attachments || [];
+        model.Attachments.push({
+          Id: 0,
+          File: fileBytes,
+          FileName: file.name,
+          file,
 
-        toJSON() {
-          return {
-            Id: this.Id,
-            File: this.File,
-            FileName: this.FileName
-          };
-        }
-      });
-
-    }, (err) => {
-      console.error(err);
-    });
+          toJSON() {
+            return {
+              Id: this.Id,
+              File: this.File,
+              FileName: this.FileName
+            };
+          }
+        });
+      }),
+      catchError(err => {
+        console.error(err);
+        return throwError(err);
+      })
+    ).subscribe();
   }
 
   public onDeleteAttachment(model: DocumentForSave, index: number) {
@@ -702,11 +708,160 @@ Document_State_Closed
     const att = model.Attachments[index];
 
     if (!!att.Id) {
-      this.documentsApi.getAttachment(docId, att.Id).subscribe((blob: Blob) => {
-        downloadBlob(blob, att.FileName);
-      });
+      att.downloading = true; // show a little spinner
+      this.documentsApi.getAttachment(docId, att.Id).pipe(
+        tap(blob => {
+          delete att.downloading;
+          downloadBlob(blob, att.FileName || att.file.name);
+        }),
+        catchError(friendlyError => {
+          delete att.downloading;
+          alert(friendlyError.error);
+          return of(null);
+        }),
+        finalize(() => {
+          delete att.downloading;
+        })
+      ).subscribe();
+
     } else if (!!att.file) {
-      downloadBlob(att.file, att.file.name);
+      downloadBlob(att.file, att.FileName || att.file.name);
     }
+  }
+
+  public size(att: Attachment): string {
+    return fileSizeDisplay(att.Size || (!!att.file ? att.file.size : null));
+  }
+
+  public iconFromFileName(fileName: string): string {
+    if (!fileName) {
+      return 'file';
+    } else {
+      const extension = fileName.split('.').pop().toLowerCase();
+      switch (extension) {
+        case 'pdf':
+          return 'file-pdf';
+
+        case 'doc':
+        case 'docx':
+          return 'file-word';
+
+        case 'xls':
+        case 'xlsx':
+          return 'file-excel';
+
+        case 'ppt':
+        case 'pptx':
+          return 'file-powerpoint';
+
+        case 'txt':
+        case 'rtf':
+          return 'file-alt';
+
+        case 'zip':
+        case 'rar':
+        case '7z':
+        case 'tar':
+          return 'file-archive';
+
+        case 'jpg':
+        case 'jpeg':
+        case 'jpe':
+        case 'jif':
+        case 'jfif':
+        case 'jfi':
+        case 'png':
+        case 'ico':
+        case 'gif':
+        case 'webp':
+        case 'tiff':
+        case 'tif':
+        case 'psd':
+        case 'raw':
+        case 'arw':
+        case 'cr2':
+        case 'nrw':
+        case 'k25':
+        case 'bmp':
+        case 'dib':
+        case 'heif':
+        case 'heic':
+        case 'ind':
+        case 'indd':
+        case 'indt':
+        case 'jp2':
+        case 'j2k':
+        case 'jpf':
+        case 'jpx':
+        case 'jpm':
+        case 'mj2':
+        case 'svg':
+        case 'svgz':
+        case 'ai':
+        case 'eps':
+          return 'file-image';
+
+        case 'mpg':
+        case 'mp2':
+        case 'mpeg':
+        case 'mpe':
+        case 'mpv':
+        case 'ogg':
+        case 'mp4':
+        case 'm4p':
+        case 'm4v':
+        case 'avi':
+        case 'wmv':
+        case 'mov':
+        case 'qt':
+        case 'flv':
+        case 'swf':
+          return 'file-video';
+
+        case 'mp3':
+        case 'aac':
+        case 'wma':
+        case 'flac':
+        case 'alac':
+        case 'wav':
+        case 'aiff':
+          return 'file-audio';
+
+        default:
+          return 'file';
+      }
+    }
+  }
+
+  public registerPristineFunc = (pristineDoc: DocumentForSave) => {
+    const tracked = this.removeUntrackedProperties(pristineDoc);
+    this._pristineDocJson = JSON.stringify(tracked);
+  }
+
+  public isDirtyFunc = (model: DocumentForSave) => {
+    return this._pristineDocJson !== JSON.stringify(this.removeUntrackedProperties(model));
+  }
+
+  private removeUntrackedProperties(doc: Document): Document {
+    if (!doc) {
+      return doc;
+    }
+
+    // These properties and collections are not edited directly
+    // and therefore need not be compared for dirty checking
+    const copy = { ...doc } as Document;
+    delete copy.AssignmentsHistory;
+    delete copy.Signatures;
+    if (!!doc.Attachments) {
+      copy.Attachments = doc.Attachments.map(att => {
+        const attCopy = { ...att } as Attachment;
+        delete attCopy.file;
+        delete attCopy.File;
+        delete attCopy.downloading;
+        return attCopy;
+      });
+    }
+
+    return copy;
   }
 }

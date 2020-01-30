@@ -305,12 +305,12 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
     }
 
     const file = files[0];
+    input.value = '';
     if (file.size > this.maxSize) {
       this.modalService.open(this.errorModal);
       return;
     }
 
-    input.value = '';
     getDataURL(file).subscribe(dataUrl => {
 
       // Get the base64 value from the data URL
