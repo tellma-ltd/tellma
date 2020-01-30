@@ -4,7 +4,8 @@
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].[EntryList] READONLY,
 	@Attachments [dbo].[AttachmentList] READONLY,
-	@ReturnIds BIT = 0
+	@ReturnIds BIT = 0,
+	@ReturnResult NVARCHAR(MAX) = NULL OUTPUT
 AS
 BEGIN
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList], @DeletedFileIds [dbo].[StringList];
@@ -234,7 +235,6 @@ BEGIN
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [FileName], [FileId], [Size])
 			VALUES (s.[DocumentId], s.[FileName], s.[FileId], s.[Size])
-
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
@@ -245,6 +245,9 @@ BEGIN
 	SELECT [Id] FROM @DeletedFileIds;
 	
 	-- Return the document Ids if requested
-	IF (@ReturnIds = 1)
+	IF (@ReturnIds = 1) 
+	BEGIN
+		SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
 		SELECT * FROM @DocumentsIndexedIds;
+	END
 END;

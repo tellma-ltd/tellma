@@ -14,9 +14,6 @@ BEGIN
 	DECLARE @AllEntries dbo.EntryList;
 	DECLARE @FilledAllEntries [dbo].EntryList;
 
-		
-		
-
 	INSERT INTO @AllLines(	   
 		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo])
 	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
@@ -37,8 +34,6 @@ BEGIN
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
 			
-	--select * from @AllLines;
-	--select * from @FilledAllEntries;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
 		@DefinitionId = @DefinitionId,
@@ -56,14 +51,24 @@ BEGIN
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
+	DECLARE @ReturnResult NVARCHAR (MAX);
 	--INSERT INTO @DocumentsIndexedIds
 	EXEC [dal].[Documents__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @FilledAllEntries,
-		@ReturnIds = 1;
+		@ReturnIds = 1,
+		@ReturnResult = @ReturnResult OUTPUT;
+
+	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
+	INSERT INTO @DocumentsIndexedIds([Index], [Id])
+	SELECT [Index], [Id]
+	FROM OpenJson(@ReturnResult)
+	WITH (
+		[Index] INT '$.Index',
+		[Id] INT '$.Id'
+	);
 
 	---- Assign the new ones to self
 	DECLARE @NewDocumentsIds dbo.IdList;
