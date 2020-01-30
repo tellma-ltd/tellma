@@ -13,7 +13,7 @@ BEGIN
 	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	WHERE
-		J.[AccountTypeId] = dbo.fn_RCCode__Id( N'ValueAddedTaxReceivables')
+		J.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxReceivables')
 	AND J.Direction = 1
 	GROUP BY
 		A.[Name],

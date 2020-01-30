@@ -48,10 +48,10 @@ BEGIN
 	INSERT INTO @SKDs ([Index], 
 		[AccountTypeId],				[Identifier],	[Name],											[Lookup1Id]) VALUES
 		-- N'Vehicles'
-	(0, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'101',			N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
-	(1, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'102',			N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),
-	(2, dbo.fn_RCCode__Id(N'FGSedanExtension'),N'199',			N'Fake',										NULL),--1
-	(3, dbo.fn_RCCode__Id(N'FGSedanExtension'),N'201',			N'Toyota Yaris 2018 White/White/Leather',		dbo.fn_Lookup(N'body-colors', N'White'));--1
+	(0, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'101',			N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
+	(1, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'102',			N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),
+	(2, dbo.fn_ATCode__Id(N'FGSedanExtension'),N'199',			N'Fake',										NULL),--1
+	(3, dbo.fn_ATCode__Id(N'FGSedanExtension'),N'201',			N'Toyota Yaris 2018 White/White/Leather',		dbo.fn_Lookup(N'body-colors', N'White'));--1
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'skds',

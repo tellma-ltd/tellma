@@ -37,6 +37,15 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(2,			N'A.M.M METAL',						'2018.01.05', N'0045000771'),
 	(3,			N'A.R.C',							'2017.10.25', N'0023353621');
 
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+	INSERT INTO @Customers
+	([Index],	[Name],						[Name2]) VALUES
+	(0,			N'Riyadh Printshop',		N'مطبعة الرياض'),
+	(1,			N'Pro Print',				N'الطياعة الاحترافية'),
+	(2,			N'Zeej printing services',	N'خدمات زيج للطباعة'),
+	(3,			N'Afan Printing & Packaging',N'آفان للطباعة والتغليف')
+	;
+
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'customers',
 		@Entities = @Customers,

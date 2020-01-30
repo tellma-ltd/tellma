@@ -6,6 +6,7 @@ DECLARE @WL_CPV [dbo].[WideLineList];
 	(1,1,	N'ManualLine',		1),
 	(2,1,	N'PurchaseInvoice',	0), 
 */
+IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN
 	INSERT INTO @D_CPV
 	([Index],	[DocumentDate], [Memo]) VALUES

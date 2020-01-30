@@ -19,11 +19,11 @@ BEGIN
 	INSERT INTO @AccountTypes([ParentId],[Index], [ParentIndex],
 					[Code],		[Name],	[IsAssignable]--, [Node]
 																	) VALUES
-	(@PId,0,NULL,	N'D',		N'D',	1),--				N'/1/11/5/1/'),
-	(@PId,1,NULL,	N'HSP',		N'HSP',	0),--				N'/1/11/5/2/'),
-	(NULL,2,1,		N'CHS',		N'CHS',	1),--				N'/1/11/5/2/1/'),
-	(NULL,3,1,		N'RHS',		N'RHS',	1),--				N'/1/11/5/2/2/'),
-	(NULL,4,1,		N'SHS',		N'SHS',	1),--				N'/1/11/5/2/3/'),
+	(@PId,0,NULL,	N'D',		N'D',	1),--			N'/1/11/5/1/'),
+	(@PId,1,NULL,	N'HSP',		N'HSP',	0),--			N'/1/11/5/2/'),
+	(NULL,2,1,		N'CHS',		N'CHS',	1),--			N'/1/11/5/2/1/'),
+	(NULL,3,1,		N'RHS',		N'RHS',	1),--			N'/1/11/5/2/2/'),
+	(NULL,4,1,		N'SHS',		N'SHS',	1),--			N'/1/11/5/2/3/'),
 	(@PId,5,NULL,	N'LTZ',		N'LTZ',	0),--			N'/1/11/5/3/'),
 	(NULL,6,5,		N'L',		N'L',	1),--			N'/1/11/5/3/1/'),
 	(NULL,7,5,		N'T',		N'T',	1),--			N'/1/11/5/3/2/'),
@@ -46,12 +46,12 @@ BEGIN
 	INSERT INTO @SteelProducts ([Index],
 	--N'FinishedGoods'
 		[AccountTypeId],			[Name],				[Code],				[MassUnitId],				[CountUnitId]) VALUES
-	(0,	dbo.fn_RCCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(1, dbo.fn_RCCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(2, dbo.fn_RCCode__Id(N'RHS'),	 N'RHS-120x80x2.8',	N'RHS120x80x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(3, dbo.fn_RCCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(4, dbo.fn_RCCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(5, dbo.fn_RCCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
+	(0,	dbo.fn_ATCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(1, dbo.fn_ATCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(2, dbo.fn_ATCode__Id(N'RHS'),	 N'RHS-120x80x2.8',	N'RHS120x80x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(3, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(4, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(5, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'steel-products',

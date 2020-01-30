@@ -1,7 +1,7 @@
 ﻿DECLARE @D [dbo].[DocumentList], @L [dbo].LineList, @E [dbo].EntryList, @DIds dbo.IdList;
 
 --DECLARE @date1 date = '2017.02.01', @date2 date = '2022.02.01', @date3 datetime = '2023.02.01';
---IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
+IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN -- Inserting
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo]) VALUES
@@ -182,92 +182,30 @@ BEGIN -- Inserting
 			SELECT * FROM map.DocumentSignatures();
 			SELECT * FROM dbo.DocumentAssignmentsHistory;
 	END
+	IF @DebugReports = 1
+	BEGIN
+		SELECT AC.[Code], AC.[Name] AS [Classification],
+			A.[Name] AS [Account],
+			Format(Opening, '##,#.00;(##,#.00);-', 'en-us') AS Opening,
+			Format(Debit, '##,#.00;-;-', 'en-us') AS Debit,
+			Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
+			Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
+		FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
+		JOIN dbo.Accounts A ON JS.AccountId = A.Id
+		LEFT JOIN dbo.[LegacyClassifications] AC ON JS.[LegacyClassificationId] = AC.Id
+		ORDER BY AC.[Code], A.[Code]
+
+		SELECT
+			A.[Name] As [Supplier], 
+			A.TaxIdentificationNumber As TIN, 
+			J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
+			FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
+			FORMAT(SUM(J.[NotedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
+			J.DocumentDate As [Invoice Date]
+		FROM [map].[DetailsEntries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
+
+		LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
+		WHERE J.[AccountId] = @VATInput
+		GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
+	END
 END
-IF @DebugReports = 1
-BEGIN
-	SELECT AC.[Code], AC.[Name] AS [Classification],
-		A.[Name] AS [Account],
-		Format(Opening, '##,#.00;(##,#.00);-', 'en-us') AS Opening,
-		Format(Debit, '##,#.00;-;-', 'en-us') AS Debit,
-		Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
-		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
-	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
-	JOIN dbo.Accounts A ON JS.AccountId = A.Id
-	LEFT JOIN dbo.[LegacyClassifications] AC ON JS.[LegacyClassificationId] = AC.Id
-	ORDER BY AC.[Code], A.[Code]
-
-	SELECT
-		A.[Name] As [Supplier], 
-		A.TaxIdentificationNumber As TIN, 
-		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
-		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
-		FORMAT(SUM(J.[NotedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
-		J.DocumentDate As [Invoice Date]
-	FROM [map].[DetailsEntries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
-
-	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
-	WHERE J.[AccountId] = @VATInput
-	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
-END
-
---select * from DocumentAssignments;
---SELECT * FROM dbo.DocumentStatesHistory;
---select * from dbo.LineSignatures;
---SELECT * FROM dbo.LineStatesHistory;
-
---IF (1=0)
---BEGIN -- Updating document and deleting lines/entries
---	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo])
---	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo]
---	FROM dbo.Documents
---	WHERE [DocumentDefinitionId] = N'manual-journal-vouchers' AND [SerialNumber] = 1;
-
---	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineDefinitionId], [ScalingFactor], [SortKey])
---	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineDefinitionId], [ScalingFactor], [SortKey]
---	FROM dbo.Lines DL
---	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
-
---	INSERT INTO @E12([Index], [Id], [LineId], [DocumentIndex], [LineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryTypeId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
---	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index],	[EntryNumber], [Direction], [AccountId], [IfrsEntryTypeId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value]
---	FROM dbo.Entries DLE
---	JOIN @L12 L12 ON L12.[Id] = DLE.[LineId];
-
---	UPDATE @E12 SET [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
---	UPDATE @E12 SET [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
---	UPDATE @L12 SET [ScalingFactor] = 3 WHERE [ScalingFactor] = 1;
---	DELETE FROM @L12 WHERE [Index] = 1;
---	DELETE FROM @L12 WHERE [Index] = 3;
-
---	EXEC [api].[Documents__Save]
---		@DefinitionId = N'manual-journal-vouchers',
---		@Documents = @D12, @Lines = @L12, @Entries = @E12,
---		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
---	IF @ValidationErrorsJson IS NOT NULL 
---	BEGIN
---		Print 'Capital Investment (M): Update and Delete'
---		GOTO Err_Label;
---	END;
-
---	INSERT INTO @D12Ids([Id]) SELECT  [Id] FROM dbo.Documents;
---	SELECT * FROM rpt.Documents(@D12Ids) ORDER BY [SortKey], [EntryNumber];
---END
-
---BEGIN -- signing
---	DECLARE @DocsToSign [dbo].[IndexedIdList]
---	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
-
---	EXEC [api].[Lines__Sign]
---		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
---		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
---	INSERT INTO @D13Ids([Id]) SELECT [Id] FROM dbo.Documents;
---	SELECT * FROM rpt.Documents(@D13Ids) ORDER BY [SortKey], [EntryNumber];
---	SELECT * FROM [rpt].[Documents__Signatures](@D13Ids);
-
---	IF @ValidationErrorsJson IS NOT NULL 
---	BEGIN
---		Print 'Capital Investment (M): Sign'
---		GOTO Err_Label;
---	END;
---END

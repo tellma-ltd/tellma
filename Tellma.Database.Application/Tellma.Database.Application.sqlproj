@@ -396,7 +396,7 @@
     <Build Include="dbo\User Defined Types\dbo.EntryTypeList.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Save.sql" />
     <Build Include="Mapping\EntryTypes__AsQuery.sql" />
-    <Build Include="dbo\Functions\dbo.fn_RCCode__Id.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ATCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Save.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
@@ -416,7 +416,7 @@
     <Build Include="Mapping\Entries.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Open.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
-    <Build Include="dbo\Functions\dbo.fn_ECCode__Id.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ETCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
     <Build Include="Mapping\DocumentSignatures.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionStateReasons.sql" />
@@ -549,6 +549,8 @@
     <None Include="Provisioning\04_Agents\04_Debtors.sql" />
     <None Include="Provisioning\04_Agents\07_TaxAgencies.sql" />
     <None Include="105.Simpex.publish.xml" />
+    <None Include="Provisioning\05_Resources\d3_TM_paper-products.sql" />
+    <None Include="Provisioning\06_Accounts\E5_Accounts.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

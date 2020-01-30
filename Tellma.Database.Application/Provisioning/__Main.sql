@@ -1,6 +1,8 @@
 ﻿BEGIN -- Setup Configuration
 	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'admin@tellma.com';
 	DECLARE @ShortCompanyName NVARCHAR(255)			= '$(ShortCompanyName)'; --N'ACME International';
+	DECLARE @ShortCompanyName2 NVARCHAR(255);
+	DECLARE @ShortCompanyName3 NVARCHAR(255);
 	DECLARE @PrimaryLanguageId NVARCHAR(255)		= '$(PrimaryLanguageId)'; --N'en';
 	DECLARE @SecondaryLanguageId NVARCHAR(255)		= '$(SecondaryLanguageId)'; --N'en';
 	DECLARE @TernaryLanguageId NVARCHAR(255)		= '$(TernaryLanguageId)'; --N'en';
@@ -53,6 +55,7 @@ END
 :r .\05_Resources\b_Inventories_raw-materials.sql
 :r .\05_Resources\d1_FG_vehicles.sql
 :r .\05_Resources\d2_FG_steel-products.sql
+:r .\05_Resources\d3_TM_paper-products.sql
 --:r .\05_Resources\e1_CCE_received-checks.sql
 --:r .\05_Resources\h_PL_employee-benefits.sql
 
@@ -60,6 +63,7 @@ END
 :r .\06_Accounts\b_LegacyClassifications.sql
 :r .\06_Accounts\c_BasicAccounts.sql
 :r .\06_Accounts\d_SmartAccounts.sql
+:r .\06_Accounts\E5_Accounts.sql
 
 :r .\07_Entries\01_manual-journal-vouchers.sql
 :r .\07_Entries\02_cash-payment-vouchers.sql

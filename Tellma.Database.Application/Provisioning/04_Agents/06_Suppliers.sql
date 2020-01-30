@@ -33,6 +33,16 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
 	(0,		N'Banan Information technologies, plc',	'2017.09.15',	NULL),
 	(1,		N'Noc Jimma Ber Service Station',		'2018.03.11',	NULL);
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+	INSERT INTO @Suppliers
+	([Index], [Name],					[Name2]) VALUES
+	(0,		N'International Paper',		'الورق العالمية'),
+	(1,		N'Georgia-Pacific Corp',	'جورجيا باسيفيك'),
+	(2,		N'Weyerhaeuser Corporation','شركة ويرهاوزر'),
+	(3,		N'Stora Enso',				'ستورا إنسو')
+	
+	;
+
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'suppliers',

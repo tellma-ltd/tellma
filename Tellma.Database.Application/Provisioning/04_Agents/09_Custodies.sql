@@ -27,6 +27,12 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(0,		N'RM Warehouse'),
 	(1,		N'FG Warehouse'),
 	(2,		N'Cashier');
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+	INSERT INTO @Custodies
+	([Index], [Name],				[Name2]) VALUES
+	(0,		N'Jeddah Warehouse',	N'مخزن جده'),
+	(1,		N'Riyadh Warehouse',	N'مخزن الرياض'),
+	(2,		N'Dammam Warehouse',	N'مخزن الدمام');
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'custodies',

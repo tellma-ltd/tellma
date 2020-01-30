@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Settings__Save]
 	@ShortCompanyName NVARCHAR(255),
+	@ShortCompanyName2 NVARCHAR(255) = NULL,
+	@ShortCompanyName3 NVARCHAR(255) = NULL,
 	@PrimaryLanguageId NVARCHAR(255),
 	@SecondaryLanguageId NVARCHAR(255),
 	@TernaryLanguageId NVARCHAR(255),
@@ -17,6 +19,8 @@ IF Exists(SELECT * FROM dbo.Settings)
 	UPDATE dbo.[Settings]
 	SET 
 		[ShortCompanyName]		= @ShortCompanyName,
+		[ShortCompanyName2]		= @ShortCompanyName2,
+		[ShortCompanyName3]		= @ShortCompanyName3,
 		[PrimaryLanguageId]		= @PrimaryLanguageId,
 		[PrimaryLanguageSymbol] = @PrimaryLanguageSymbol,
 		[SecondaryLanguageId]	= @SecondaryLanguageId,
@@ -31,6 +35,8 @@ IF Exists(SELECT * FROM dbo.Settings)
 ELSE
 	INSERT dbo.[Settings] (
 		[ShortCompanyName],
+		[ShortCompanyName2],
+		[ShortCompanyName3],
 		[PrimaryLanguageId],
 		[PrimaryLanguageSymbol],
 		[SecondaryLanguageId],
@@ -41,7 +47,9 @@ ELSE
 		[SettingsVersion], 
 		[FunctionalCurrencyId])
 	VALUES(
-		@ShortCompanyName, 
+		@ShortCompanyName,
+		@ShortCompanyName2,
+		@ShortCompanyName3,
 		@PrimaryLanguageId,
 		@PrimaryLanguageSymbol,
 		@SecondaryLanguageId,
