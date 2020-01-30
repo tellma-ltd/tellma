@@ -608,7 +608,7 @@
     <value>Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
-    <value>New attacments must include file bytes</value>
+    <value>New attachments must include file bytes</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>No file was uploaded.</value>

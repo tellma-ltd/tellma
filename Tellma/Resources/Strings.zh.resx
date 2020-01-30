@@ -607,11 +607,17 @@
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
     <value>不能指定导航领域“{0}”中不包括它在扩大的说法太选择的说法。</value>
   </data>
+  <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
+    <value>新的附件必须包括文件的字节</value>
+  </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>没有文件被上传。</value>
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>数据点的数超过了最大的{0}。</value>
+  </data>
+  <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
+    <value>只有新的附件可以包括文件的字节</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>解析API中不支持删除模式。</value>

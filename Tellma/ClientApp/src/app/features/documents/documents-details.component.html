@@ -3,7 +3,7 @@
     [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
     [documentHeaderTemplate]="documentHeader" [actions]="[
         { template: sign, action: onSign, showAction: showSign, canAction: canSign, actionTooltip: signTooltip }
-    ]" [sidebarTemplate]="sidebar">
+    ]" [sidebarTemplate]="sidebar" [registerPristineFunc]="registerPristineFunc" [isDirtyFunc]="isDirtyFunc">
 
 </t-details>
 
@@ -97,7 +97,7 @@
     <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
 
         <!-- Entries -->
-        <ngb-tab [disabled]="true">
+        <ngb-tab>
             <ng-template ngbTabTitle><span class="small">{{ 'Entries' | translate }}<span
                         *ngIf="model?.EntityMetadata?.Lines == 2"> ({{ model?.Lines.length | number }})</span></span>
                 <span *ngIf="showLineErrors(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
@@ -553,28 +553,118 @@
                 </ng-template>
             </ng-template>
         </ngb-tab>
+        <ngb-tab>
+            <ng-template ngbTabTitle><span class="small">{{ 'Attachments' | translate }}<span
+                        *ngIf="model?.EntityMetadata?.Attachments == 2">
+                        ({{ model?.Attachments?.length | number }})</span></span>
+            </ng-template>
+            <ng-template ngbTabContent>
+                <!-- No Attachments Message -->
+                <div class="p-3 font-italic font-weight-light2 text-muted"
+                    *ngIf="!model?.Attachments?.length && !isEdit">
+                    <span>{{ 'NoItemsFound' | translate }}</span>
+                </div>
+
+                <!-- Attachments List -->
+                <div *ngIf="!!model?.Attachments?.length">
+                    <div class="p-13 col-122 t-dynamic-container2 text-nowrap"
+                        *ngFor="let att of model?.Attachments; let i = index;">
+                        <div class="p-2 bg-light border-bottom d-flex" [class.bg-light]="i % 2 === 0">
+                            <!-- Icon and Name -->
+                            <div class="flex-grow-1 text-truncate">
+                                <div class="d-flex t-borderless-input2 align-items-center">
+                                    <fa-icon class="px-1 text-muted" style="font-size: 150%;"
+                                        [icon]="iconFromFileName(att.FileName)">
+                                    </fa-icon>
+                                    <span>&nbsp;&nbsp;&nbsp;</span>
+                                    <span *ngIf="!isEdit">{{ att.FileName }}</span>
+                                    <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
+                                        *ngIf="isEdit"></t-text-editor>
+                                </div>
+                            </div>
+
+                            <!-- Commands -->
+                            <div class="d-flex align-items-center">
+                                <span class="px-2 small text-muted">{{ size(att) }}</span>
+                                <button *ngIf="!att.downloading"
+                                    class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
+                                    (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                                    <fa-icon icon="download"></fa-icon>
+                                </button>
+                                <div class="px-2 t-toolbar-button" *ngIf="att.downloading">
+                                    <t-spinner class="text-black"></t-spinner>
+                                </div>
+                                <button
+                                    class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
+                                    *ngIf="isEdit" (click)="onDeleteAttachment(model, i)"
+                                    [title]="'Delete' | translate">
+                                    <fa-icon icon="trash"></fa-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="p-2" *ngIf="isEdit">
+                    <button class="btn btn-sm text-primary btn-light t-white-button" (click)="fileInput.click()">
+                        <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Upload' | translate }}
+                    </button>
+                </div>
+
+            </ng-template>
+        </ngb-tab>
+
     </ngb-tabset>
 
     <!-- Attachments -->
-    <div class="col-12 pt-4">
+    <div class="col-12 pt-4" *ngIf="false">
         <span class="small font-weight-bold">{{ 'Document_Attachments' | translate }}:</span>
-        <div class="d-flex">
-            <div *ngIf="!model?.Attachments?.length && !isEdit">
-                None
+
+        <!-- No Attachments Message -->
+        <div class="pt-3 font-italic font-weight-light text-muted" *ngIf="!model?.Attachments?.length && !isEdit">
+            <span>{{ 'NoItemsFound' | translate }}</span>
+        </div>
+
+        <!-- Attachments List -->
+        <div class="pt-3" style="max-width: 400px;" *ngIf="!!model?.Attachments?.length ">
+            <div class="p-2 d-flex bg-light border-bottom t-dynamic-container2"
+                *ngFor="let att of model?.Attachments; let i = index;">
+                <!-- Icon and Name -->
+                <div class="p-0 px-1 flex-grow-1">
+                    <div class="d-flex t-borderless-input2 align-items-center" style="max-width:280px">
+                        <fa-icon class="px-1" style="font-size: 150%;" [icon]="iconFromFileName(att.FileName)">
+                        </fa-icon>
+                        <span>&nbsp;&nbsp;&nbsp;</span>
+                        <span *ngIf="!isEdit">{{ att.FileName }}</span>
+                        <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
+                            *ngIf="isEdit"></t-text-editor>
+                    </div>
+                </div>
+
+                <!-- Commands -->
+                <div class="d-flex align-items-center">
+                    <button *ngIf="!att.downloading"
+                        class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
+                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                        <fa-icon icon="download"></fa-icon>
+                    </button>
+                    <div class="px-2 t-toolbar-button" *ngIf="att.downloading">
+                        <t-spinner class="text-black"></t-spinner>
+                    </div>
+                    <button class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
+                        *ngIf="isEdit" (click)="onDeleteAttachment(model, i)" [title]="'Delete' | translate">
+                        <fa-icon icon="trash"></fa-icon>
+                    </button>
+                </div>
             </div>
-            <div class="p-1 px-2 d-flex" *ngFor="let att of model?.Attachments; let i = index;">
-                <span class="px-1" *ngIf="!isEdit">{{ att.FileName }}</span>
-                <t-text-editor [(ngModel)]="att.FileName" class="px-1" style="max-width: 200px;" *ngIf="isEdit"></t-text-editor>
-                <button class="btn btn-primary btn-sm" (click)="onDownloadAttachment(model, i)">
-                    <fa-icon icon="download"></fa-icon>
-                </button>
-                <button class="btn btn-primary btn-sm" *ngIf="isEdit" (click)="onDeleteAttachment(model, i)">
-                    <fa-icon icon="trash"></fa-icon>
-                </button>
-            </div>
-            <div class="p-1 px-3 d-flex" *ngIf="isEdit">
-                <button class="btn btn-primary btn-sm" (click)="fileInput.click()">Attach</button>
-            </div>
+        </div>
+
+        <!-- Upload Button -->
+        <div class="pt-2" *ngIf="isEdit">
+            <button class="btn btn-sm text-primary btn-light t-white-button" (click)="fileInput.click()">
+                <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Upload' | translate }}
+            </button>
         </div>
     </div>
 
@@ -664,7 +754,7 @@
                 <div class="px-3 py-3 small font-weight-bold">{{ dayEvents.date }}</div>
 
                 <!-- Day's history -->
-                <ng-container *ngFor="let event of dayEvents.events; let i = index">
+                <ng-container *ngFor="let event of dayEvents.events; let i = index;">
                     <div class="t-biege border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
                         [ngSwitch]="event.type">
 

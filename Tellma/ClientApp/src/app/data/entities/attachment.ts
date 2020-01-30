@@ -7,6 +7,7 @@ export interface AttachmentForSave extends EntityWithKey {
     // Only for client side
     toJSON?: () => AttachmentForSave;
     file?: File;
+    downloading?: boolean;
 }
 
 export interface Attachment extends AttachmentForSave {
