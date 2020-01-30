@@ -54,6 +54,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _pristineDocJson: string;
 
   // These are bound from UI
+  public modalErrorMessageFunc: () => string;
   public assigneeId: number;
   public comment: string;
   public picSize = 36;
@@ -79,6 +80,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
+
+  @ViewChild('errorModal', { static: true })
+  errorModal: TemplateRef<any>;
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
@@ -663,8 +667,10 @@ Document_State_Closed
     const file = files[0];
     input.value = '';
     if (file.size > this._maxAttachmentSize) {
-      // this.modalService.open(this.errorModal);
-      alert('File is too large'); // TODO
+      this.showError(() => this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
+        {
+          size: fileSizeDisplay(this._maxAttachmentSize)
+        }));
       return;
     }
 
@@ -677,17 +683,22 @@ Document_State_Closed
         const fileBytes = dataUrl.substr(commaIndex + 1);
 
         model.Attachments = model.Attachments || [];
+        const fileNamePieces = file.name.split('.');
+        const extension = fileNamePieces.pop();
+        const fileName = fileNamePieces.join('.');
         model.Attachments.push({
           Id: 0,
           File: fileBytes,
-          FileName: file.name,
+          FileName: fileName,
+          FileExtension: extension,
           file,
 
           toJSON() {
             return {
               Id: this.Id,
               File: this.File,
-              FileName: this.FileName
+              FileName: this.FileName,
+              FileExtension: this.FileExtension
             };
           }
         });
@@ -712,11 +723,11 @@ Document_State_Closed
       this.documentsApi.getAttachment(docId, att.Id).pipe(
         tap(blob => {
           delete att.downloading;
-          downloadBlob(blob, att.FileName || att.file.name);
+          downloadBlob(blob, this.fileName(att));
         }),
         catchError(friendlyError => {
           delete att.downloading;
-          alert(friendlyError.error);
+          this.showError(() => friendlyError.error);
           return of(null);
         }),
         finalize(() => {
@@ -725,19 +736,23 @@ Document_State_Closed
       ).subscribe();
 
     } else if (!!att.file) {
-      downloadBlob(att.file, att.FileName || att.file.name);
+      downloadBlob(att.file, this.fileName(att));
     }
+  }
+
+  private fileName(att: Attachment) {
+    return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` : att.file.name;
   }
 
   public size(att: Attachment): string {
     return fileSizeDisplay(att.Size || (!!att.file ? att.file.size : null));
   }
 
-  public iconFromFileName(fileName: string): string {
-    if (!fileName) {
+  public iconFromExtension(extension: string): string {
+    if (!extension) {
       return 'file';
     } else {
-      const extension = fileName.split('.').pop().toLowerCase();
+      extension = extension.toLowerCase();
       switch (extension) {
         case 'pdf':
           return 'file-pdf';
@@ -863,5 +878,14 @@ Document_State_Closed
     }
 
     return copy;
+  }
+
+  private showError(errorMessageFunc: () => string): void {
+    this.modalErrorMessageFunc = errorMessageFunc;
+    this.modalService.open(this.errorModal)
+      .result.then(
+        () => { },
+        (_: any) => { }
+      );
   }
 }

@@ -3,6 +3,7 @@
 	[Id]						INT					CONSTRAINT [PK_Attachments] PRIMARY KEY IDENTITY,
 	[DocumentId]				INT					NOT NULL CONSTRAINT [FK_Attachments__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[FileName]					NVARCHAR (255)		NOT NULL,
+	[FileExtension]				NVARCHAR (50)		NOT NULL,
 	[FileId]					NVARCHAR (50)		NOT NULL, -- Ref to blob storage
 	[Size]						BIGINT				NOT NULL,
 

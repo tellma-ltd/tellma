@@ -222,6 +222,7 @@ BEGIN
 				A.[Id],
 				DI.[Id] AS [DocumentId],
 				A.[FileName],
+				A.[FileExtension],
 				A.[FileId],
 				A.[Size]
 			FROM @Attachments A
@@ -233,8 +234,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [FileName], [FileId], [Size])
-			VALUES (s.[DocumentId], s.[FileName], s.[FileId], s.[Size])
+			INSERT ([DocumentId], [FileName], [FileExtension], [FileId], [Size])
+			VALUES (s.[DocumentId], s.[FileName], s.[FileExtension], s.[FileId], s.[Size])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]

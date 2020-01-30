@@ -178,6 +178,7 @@
   "Error_CannotModifyInactiveItemPleaseActivate": "An inactive item cannot be edited, please activate it first.",
   "Error_ConnectionLostReconnecting": "Connection lost, trying to reconnect...",
   "Error_DateCannotBeInTheFuture": "The date cannot be in the future",
+  "Error_FileSizeExceedsMaximumSizeOf0": "The file size exceeds the maximum allowed size of {{size}}",
   "Error_ImageExceedsTheMaximumSizeOfX": "The file you selected exceeds the maximum allowed size of {{maxSize}} MB",
   "Error_LoadingCompanySettings": "Error loading company settings",
   "Error_LoadingGlobalSettings": "Error loading system settings",

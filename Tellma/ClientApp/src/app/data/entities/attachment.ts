@@ -2,6 +2,7 @@ import { EntityWithKey } from './base/entity-with-key';
 
 export interface AttachmentForSave extends EntityWithKey {
     FileName?: string;
+    FileExtension?: string;
     File?: string;
 
     // Only for client side

@@ -69,7 +69,7 @@ namespace Tellma.Controllers
                 string attachments = nameof(Document.Attachments);
                 var response = await GetByIdImplAsync(docId, new GetByIdArguments
                 {
-                    Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)}"
+                    Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
                 });
 
                 // Get the blob name
@@ -79,9 +79,12 @@ namespace Tellma.Controllers
                     // Get the bytes
                     string blobName = BlobName(attachment.FileId);
                     var fileBytes = await _blobService.LoadBlob(blobName);
-                    var fileName = attachment.FileName ?? "Attachment";
+
+                    // Get the content type
+                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}" ;
                     var contentType = ContentType(fileName);
 
+                    // Return the file
                     return File(fileBytes, contentType);
                 }
                 else
@@ -367,6 +370,7 @@ namespace Tellma.Controllers
                         {
                             Id = att.Id,
                             FileName = att.FileName,
+                            FileExtension = att.FileExtension,
                             DocumentIndex = docIndex,
                         };
 
