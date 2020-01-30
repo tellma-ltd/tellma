@@ -1,12 +1,11 @@
-﻿CREATE FUNCTION [dbo].[fn_ECCode__Id]
-(
+﻿CREATE FUNCTION [dbo].[fn_ATCode__Id] (
 	@Code NVARCHAR(255)
 )
 RETURNS INT
 AS
 BEGIN
 	RETURN (
-		SELECT [Id] FROM dbo.[EntryTypes]
+		SELECT [Id] FROM dbo.[AccountTypes]
 		WHERE [Code] = @Code
 	)
 END;

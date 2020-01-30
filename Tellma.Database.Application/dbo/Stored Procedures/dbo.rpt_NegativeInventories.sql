@@ -12,7 +12,7 @@ AS
 			SUM([Volume]) As [Volume],
 			SUM([Value]) As [Value]
 	FROM [map].[DetailsEntries](NULL, @AsOfDate, NULL, NULL, NULL)
-	WHERE [AccountTypeId] = dbo.fn_RCCode__Id('TotalInventories')
+	WHERE [AccountTypeId] = dbo.[fn_ATCode__Id]('TotalInventories')
 	GROUP BY
 			[AccountId],
 			[AgentId],

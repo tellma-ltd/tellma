@@ -16,8 +16,8 @@
 	DECLARE @FixedAssets dbo.ResourceList;
 	INSERT INTO @FixedAssets ([Index],
 		[AccountTypeId],					[Name],			[TimeUnitId],				[Identifier]) VALUES
-	(0, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
-	(1, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
+	(0, dbo.fn_ATCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
+	(1, dbo.fn_ATCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'general-fixed-assets',

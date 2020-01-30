@@ -13,16 +13,16 @@
 
 	INSERT INTO @EmployeeBenefits (
 	[Index],			[AccountTypeId],					[Name],					[TimeUnitId]) VALUES
-	(0,	dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Basic',				dbo.fn_UnitName__Id(N'wmo')),
-	(1, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Transportation',		dbo.fn_UnitName__Id(N'wmo')),
-	(2, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Day Overtime',		dbo.fn_UnitName__Id(N'hr')),
-	(3, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Night Overtime',		dbo.fn_UnitName__Id(N'hr')),
-	(4, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Rest Overtime',		dbo.fn_UnitName__Id(N'hr')),
-	(5, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Holiday Overtime',	dbo.fn_UnitName__Id(N'hr')),
-	(6, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)',		dbo.fn_UnitName__Id(N'hr')),
-	(7, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Labor (daily)',		dbo.fn_UnitName__Id(N'wd')),
-	(8, dbo.fn_RCCode__Id(N'OtherShorttermEmployeeBenefits'),N'Data package',		dbo.fn_UnitName__Id(N'wmo')),
-	(9, dbo.fn_RCCode__Id(N'SocialSecurityContributions'),	N'SS Contribution (11%)',dbo.fn_UnitName__Id(N'wmo'))
+	(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic',				dbo.fn_UnitName__Id(N'wmo')),
+	(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Transportation',		dbo.fn_UnitName__Id(N'wmo')),
+	(2, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Day Overtime',		dbo.fn_UnitName__Id(N'hr')),
+	(3, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Night Overtime',		dbo.fn_UnitName__Id(N'hr')),
+	(4, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Rest Overtime',		dbo.fn_UnitName__Id(N'hr')),
+	(5, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Holiday Overtime',	dbo.fn_UnitName__Id(N'hr')),
+	(6, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)',		dbo.fn_UnitName__Id(N'hr')),
+	(7, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (daily)',		dbo.fn_UnitName__Id(N'wd')),
+	(8, dbo.fn_ATCode__Id(N'OtherShorttermEmployeeBenefits'),N'Data package',		dbo.fn_UnitName__Id(N'wmo')),
+	(9, dbo.fn_ATCode__Id(N'SocialSecurityContributions'),	N'SS Contribution (11%)',dbo.fn_UnitName__Id(N'wmo'))
 	;
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'

@@ -14,4 +14,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IsReadOnly]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9647d315-1eaa-479a-998e-800f98eb53e1" ChangeDateTime="01/30/2020 08:24:07">
+    <Property Name="ElementName" Value="[dbo].[fn_ECCode__Id]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_ETCode__Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="43c0c278-63d1-477d-abd1-2ee96b0233ad" ChangeDateTime="01/30/2020 08:24:34">
+    <Property Name="ElementName" Value="[dbo].[fn_ATCode__Id]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_ATCode__Id]" />
+  </Operation>
 </Operations>

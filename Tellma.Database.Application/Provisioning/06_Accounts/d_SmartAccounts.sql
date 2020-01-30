@@ -21,7 +21,8 @@ INSERT INTO @SmartAccounts([Index],
 	;
 	--UPDATE @SmartAccounts SET HasAgent = 1;
 END
-ELSE BEGIN
+ELSE IF @DB IN (N'101', N'102', N'103', N'104') 
+BEGIN
 INSERT INTO @SmartAccounts([Index],
 	[AccountTypeId],		[LegacyTypeId],	[LegacyClassificationId],	[Name],			[Code],	[AgentDefinitionId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryTypeId], [CurrencyId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
@@ -46,7 +47,7 @@ INSERT INTO @SmartAccounts([Index],
 --(20,N'Expenses',			@Expenses_AC,				N'fuel - Sales - admin - AG',		N'5102'),
 --(21,N'CostofSales',		@Expenses_AC,				N'fuel - Production',				N'5103'),
 --(22,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
---(23,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expenses',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
+--(23,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expenses',		N'cost-centers',	dbo.fn_ATCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
 (24,@EmployeeBenefitsExpense,	N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'),	N'ETB');
 	--UPDATE @SmartAccounts SET HasAgent = 1;
 	UPDATE @SmartAccounts SET HasResource = 1 WHERE [Index] IN (4, 5, 19,20, 21, 22, 23, 24);

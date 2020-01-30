@@ -11,7 +11,7 @@ BEGIN
 	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN dbo.Agents A ON J.[NotedAgentId] = A.Id
 	WHERE
-		J.[AccountTypeId] = dbo.fn_RCCode__Id( N'ValueAddedTaxPayables')
+		J.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxPayables')
 	AND J.Direction = -1
 END
 GO;

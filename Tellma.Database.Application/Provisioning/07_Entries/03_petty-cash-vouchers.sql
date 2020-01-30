@@ -36,7 +36,7 @@ System suggests Account3: using cash-on-hand account type, and custodian.
 Cash Purchases Tab -- Payments Tab
 -----------------------------------
 */
-
+IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN
 	INSERT INTO @PettyCashVouchers
 	([Index],	[DocumentDate], [Memo]) VALUES

@@ -14,7 +14,7 @@ BEGIN
 		SELECT Id
 		FROM Accounts
 		--TODO: add the whole subtree
-		WHERE [AccountTypeId] = dbo.fn_RCCode__Id(N'PropertyPlantAndEquipment')
+		WHERE [AccountTypeId] = dbo.[fn_ATCode__Id](N'PropertyPlantAndEquipment')
 	),
 	OpeningBalances AS (
 		SELECT

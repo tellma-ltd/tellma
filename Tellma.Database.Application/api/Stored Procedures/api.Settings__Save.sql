@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [api].[Settings__Save]
 	@ShortCompanyName NVARCHAR(255),
+	@ShortCompanyName2 NVARCHAR(255) = NULL,
+	@ShortCompanyName3 NVARCHAR(255) = NULL,
 	@PrimaryLanguageId NVARCHAR(255),
 	@SecondaryLanguageId NVARCHAR(255),
 	@TernaryLanguageId NVARCHAR(255),
@@ -34,6 +36,8 @@ SET NOCOUNT ON;
 	
 	EXEC [dal].[Settings__Save]
 		@ShortCompanyName = @ShortCompanyName,
+		@ShortCompanyName2 = @ShortCompanyName2,
+		@ShortCompanyName3 = @ShortCompanyName3,
 		@PrimaryLanguageId = @PrimaryLanguageId,
 		@SecondaryLanguageId = @SecondaryLanguageId,
 		@TernaryLanguageId = @TernaryLanguageId,

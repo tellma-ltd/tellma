@@ -178,7 +178,8 @@ SET E.AccountId = (
 	WHERE AccountId = E.AccountId
 )
 FROM @PreprocessedEntries E
-
+JOIN @Lines L ON E.LineIndex = L.[Index]
+WHERE L.DefinitionId <> N'ManualLine'
 
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 

@@ -31,9 +31,10 @@ END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @LookupDefinitions([Index],
-	[Id],						[TitleSingular],	[TitleSingular2],	[TitlePlural],	[TitlePlural2]) VALUES
-	(0,N'paper-thicknesses',	N'Thickness',		N'السماكة',			N'Thicknesses',	N'السماكات'),
-	(1,N'paper-qualities',		N'Quality'	,		N'النوعية',			N'Qualities',	N'النوعيات');
+	[Id],						[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES
+	(0,N'paper-types',			N'Paper Type',		N'نوع الورقة',		N'Paper Types',		N'أنواع الورق'),
+	(1,N'paper-sizes',			N'Paper Size',		N'مقاس الورق',		N'Paper Sizes',		N'مقاسات الورق'),
+	(2,N'paper-weights',		N'Paper Weight'	,	N'وزن الورق',		N'Paper Weights',	N'أوزان الورق');
 END
 
 EXEC dal.LookupDefinitions__Save

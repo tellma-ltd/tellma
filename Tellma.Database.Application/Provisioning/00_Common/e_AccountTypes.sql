@@ -155,7 +155,7 @@ INSERT INTO @AT VALUES(36,0, '0', 1, '/1/1/7/', 1,NULL,N'InvestmentAccountedForU
 INSERT INTO @AT VALUES(39,0, '0', 1, '/1/1/8/', 1,NULL,N'InvestmentsInSubsidiariesJointVenturesAndAssociates', N'Investments in subsidiaries, joint ventures and associates',N'The amount of investments in subsidiaries, joint ventures and associates in an entity''s separate financial statements. [Refer: Associates [member]; Joint ventures [member]; Subsidiaries [member]; Investments in subsidiaries]')
 INSERT INTO @AT VALUES(43,1, NULL, 0, '/1/1/9/', 1,N'ChangesInBiologicalAssets',N'BiologicalAssets', N'Biological assets',N'The amount of living animals or plants recognised as assets.')
 INSERT INTO @AT VALUES(44,0, NULL, 0, '/1/1/10/', 1,NULL,N'NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners', N'Non-current assets or disposal groups classified as held for sale or as held for distribution to owners',N'The amount of non-current assets or disposal groups classified as held for sale or as held for distribution to owners. [Refer: Non-current assets or disposal groups classified as held for distribution to owners; Non-current assets or disposal groups classified as held for sale]')
-INSERT INTO @AT VALUES(45,1, NULL, 1, '/1/1/11/', 1,N'ChangesInInventories',N'InventoriesTotal', N'Inventories',N'The amount of assets: (a) held for sale in the ordinary course of business; (b) in the process of production for such sale; or (c) in the form of materials or supplies to be consumed in the production process or in the rendering of services. Inventories encompass goods purchased and held for resale including, for example, merchandise purchased by a retailer and held for resale, or land and other property held for resale. Inventories also encompass finished goods produced, or work in progress being produced, by the entity and include materials and supplies awaiting use in the production process. [Refer: Current finished goods; Current merchandise; Current work in progress; Land]')
+INSERT INTO @AT VALUES(45,1, NULL, 1, '/1/1/11/', 0,N'ChangesInInventories',N'InventoriesTotal', N'Inventories',N'The amount of assets: (a) held for sale in the ordinary course of business; (b) in the process of production for such sale; or (c) in the form of materials or supplies to be consumed in the production process or in the rendering of services. Inventories encompass goods purchased and held for resale including, for example, merchandise purchased by a retailer and held for resale, or land and other property held for resale. Inventories also encompass finished goods produced, or work in progress being produced, by the entity and include materials and supplies awaiting use in the production process. [Refer: Current finished goods; Current merchandise; Current work in progress; Land]')
 INSERT INTO @AT VALUES(46,1, '1', 1, '/1/1/11/1/', 0,N'ChangesInInventories',N'CurrentRawMaterialsAndCurrentProductionSuppliesAbstract', N'Current raw materials and current production supplies [abstract]',N'')
 INSERT INTO @AT VALUES(47,1, '1', 1, '/1/1/11/1/1/', 1,N'ChangesInInventories',N'RawMaterials', N'Current raw materials',N'A classification of current inventory representing the amount of assets to be consumed in the production process or in the rendering of services. [Refer: Inventories]')
 INSERT INTO @AT VALUES(48,1, '1', 1, '/1/1/11/1/2/', 1,N'ChangesInInventories',N'ProductionSupplies', N'Current production supplies',N'A classification of current inventory representing the amount of supplies to be used for the production process. [Refer: Inventories]')
@@ -232,7 +232,11 @@ INSERT INTO @AT VALUES(170,0, '1', 0, '/2/13/', 1,NULL,N'CumulativeGainLossPrevi
 INSERT INTO @AT VALUES(171,0, '1', 0, '/2/14/', 1,NULL,N'HedgingGainsLossesForHedgeOfGroupOfItemsWithOffsettingRiskPositions', N'Hedging gains (losses) for hedge of group of items with offsetting risk positions',N'The hedging gains (losses) for hedge of group of items with offsetting risk positions.')
 INSERT INTO @AT VALUES(172,0, '1', 0, '/2/15/', 1,NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
 
-
+IF @DB = N'105'
+BEGIN
+	UPDATE @AT Set IsActive = 0 WHERE [Node].ToString() Like N'/1/1/11/%';
+	UPDATE @AT Set IsActive = 1 WHERE [Code] IN (N'InventoriesTotal', N'Merchandise', N'CurrentInventoriesInTransit', N'OtherInventories');
+END
 	DECLARE @AccountTypes dbo.AccountTypeList
 
 	--INSERT INTO @AccountTypes ([Code], [Name], [ParentIndex], [IsAssignable], [Index])
@@ -282,5 +286,11 @@ DECLARE @PropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHER
 DECLARE @TradeAndOtherReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherReceivables');
 DECLARE @TradeAndOtherPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherPayables');
 DECLARE @IssuedCapital INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IssuedCapital');
+DECLARE @Merchandise INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Merchandise');
+DECLARE @CurrentInventoriesInTransit INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentInventoriesInTransit');
+DECLARE @OtherInventories INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherInventories');
+DECLARE @Revenue INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Revenue');
+DECLARE @RawMaterialsAndConsumablesUsed INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'RawMaterialsAndConsumablesUsed');
 DECLARE @EmployeeBenefitsExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'EmployeeBenefitsExpense');
+DECLARE @WagesAndSalaries INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'WagesAndSalaries');
 DECLARE @OtherExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherExpenseByNature');

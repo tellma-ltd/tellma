@@ -34,6 +34,14 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(6,			N'Tigist Negash',	'2019.09.01',	N'E6',	4700,			0,							28.25),
 	(7,			N'Mestawet G/Egziyabhare','2019.09.01',N'E7',4700,			0,							28.25),
 	(8,			N'Ayelech Hora',	'2019.09.01',	N'E8',	4700,			0,							0);
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+	INSERT INTO @employees
+	([Index],	[Name],		[Name2],	[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
+	(0,			N'Salman',	N'سلمان',	'2017.10.01',	N'E1',	7000,			1750,						0),
+	(1,			N'Tareq',	N'طارق',	'2017.10.01',	N'E2',	7000,			0,							0),
+	(2,			N'Hisham',	N'هشام',	'2019.09.01',	N'E3',	4700,			0,							28.25);
+
+
 
 	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
 	EXEC [api].[Agents__Save]

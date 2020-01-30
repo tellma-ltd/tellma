@@ -202,16 +202,16 @@ END;
 
 UPDATE dbo.[EntryTypes] SET IsSystem = 1;
 	
-DECLARE @ProceedsFromIssuingShares		INT;
-DECLARE @IssueOfEquity					INT;
-DECLARE @InternalCashTransferExtension	INT;
-DECLARE @InventoryPurchaseExtension		INT;
-DECLARE @PPEAdditions					INT;
-DECLARE @InvReclassifiedAsPPE			INT;
 
-SET @ProceedsFromIssuingShares		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
-SET @IssueOfEquity					 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
-SET @InternalCashTransferExtension	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
-SET @InventoryPurchaseExtension		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
-SET @PPEAdditions					 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
-SET @InvReclassifiedAsPPE			 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
+
+
+DECLARE @ProceedsFromIssuingShares	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
+DECLARE @IssueOfEquity				INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
+DECLARE @InternalCashTransferExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
+DECLARE @InventoryPurchaseExtension	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
+DECLARE @PPEAdditions			INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
+DECLARE @InvReclassifiedAsPPE	INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
+DECLARE @COS	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'CostOfSales' );
+DECLARE @SND	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DistributionCosts' );
+DECLARE @ADM	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdministrativeExpense' );
+DECLARE @OEF	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'OtherExpenseByFunction' );

@@ -37,10 +37,10 @@ BEGIN
 	DECLARE @MotorVehicles dbo.ResourceList;
 	INSERT INTO @MotorVehicles ([Index],
 				[AccountTypeId],				[Name],	[AvailableSince],	[Lookup1Id],									[Identifier], [CountUnitId],				[Count]) VALUES
-	(0, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172',	dbo.fn_UnitName__Id(N'ea'), 1),--1
-	(1, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662',		dbo.fn_UnitName__Id(N'ea'), 1),--1
-	(2, dbo.fn_RCCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000',	dbo.fn_UnitName__Id(N'ea'), 1),
-	(3, dbo.fn_RCCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812',	dbo.fn_UnitName__Id(N'ea'), 1);
+	(0, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172',	dbo.fn_UnitName__Id(N'ea'), 1),--1
+	(1, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662',		dbo.fn_UnitName__Id(N'ea'), 1),--1
+	(2, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000',	dbo.fn_UnitName__Id(N'ea'), 1),
+	(3, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812',	dbo.fn_UnitName__Id(N'ea'), 1);
 	;
 
 	EXEC [api].[Resources__Save]
