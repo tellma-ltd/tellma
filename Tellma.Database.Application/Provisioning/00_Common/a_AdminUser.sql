@@ -2,8 +2,8 @@
 BEGIN
 	DECLARE @Users dbo.UserList;
 	INSERT INTO @Users
-	([Name],			[Email]) VALUES
-	(N'Administrator',	@DeployEmail);
+	([Name],			[Name2],	[Email]) VALUES
+	(N'Administrator',	N'المشرف',	@DeployEmail);
 
 	EXEC [dal].[Users__Save]
 		@Entities = @Users
@@ -16,7 +16,7 @@ IF  NOT EXISTS(SELECT * FROM [dbo].[Roles] WHERE [Code] = N'All')
 BEGIN
 	DECLARE @Roles dbo.RoleList,@Members [dbo].[RoleMembershipList], @Permissions dbo.PermissionList;
 	
-	INSERT INTO @Roles ([Name],	[Code]) VALUES	(N'Administrator', 'All');
+	INSERT INTO @Roles ([Name],[Name2],[Code]) VALUES	(N'Administrator', N'المشرف', 'All');
 	INSERT INTO @Members ([UserId])	VALUES (@AdminUserId);
 	INSERT INTO @Permissions ([View],	[Action]) VALUES (N'all', N'All');
 
