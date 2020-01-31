@@ -523,6 +523,7 @@
     <Build Include="Mapping\RequiredSignatures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
     <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.Test.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportParameterDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportSelectDefinitions.sql" />

@@ -12,7 +12,39 @@ BEGIN
 
 	DECLARE @AllLines dbo.[LineList];
 	DECLARE @AllEntries dbo.EntryList;
-	DECLARE @FilledAllEntries [dbo].EntryList;
+	DECLARE @PreprocessedWideLines dbo.[WideLineList];
+	DECLARE @PreprocessedEntries [dbo].EntryList;
+
+	-- THe following results in nested INSERT EXEC, which is not allowed. Solution: Flatten the SProc.
+	--INSERT INTO @PreprocessedWideLines
+	--EXEC bll.[WideLines__Preprocess] @WideLines;
+
+	DECLARE @LineDefinitionId NVARCHAR (50);
+	DECLARE @sp_name NVARCHAR (500);
+
+	SELECT @LineDefinitionId = MIN([DefinitionId])
+	FROM @WideLines WL
+	JOIN dbo.LineDefinitions LD ON LD.[Id] = WL.[DefinitionId]
+	WHERE LD.[Script] IS NOT NULL;
+	
+	WHILE @LineDefinitionId IS NOT NULL
+	BEGIN
+		SELECT @sp_name = [Script] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+
+		DECLARE @WL dbo.[WideLineList]; DELETE FROM @WL;
+		INSERT INTO @WL SELECT * FROM @WideLines WHERE [DefinitionId] = @LineDefinitionId;
+
+		INSERT INTO @PreprocessedWideLines
+		EXEC @sp_name @WL;
+
+		SET @LineDefinitionId = (
+			SELECT MIN(WL.[DefinitionId])
+			FROM @WideLines WL
+			JOIN dbo.LineDefinitions LD ON LD.[Id] = WL.[DefinitionId]
+			WHERE LD.[Script] IS NOT NULL
+			AND WL.[DefinitionId] > @LineDefinitionId
+		);
+	END
 
 	INSERT INTO @AllLines(	   
 		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo])
@@ -20,14 +52,14 @@ BEGIN
 	FROM @Lines
 	UNION
 	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
-	FROM @WideLines
+	FROM @PreprocessedWideLines
 
 	INSERT INTO @AllEntries SELECT * FROM @Entries;
 	INSERT INTO @AllEntries
-	EXEC [bll].[WideLines__Unpivot] @WideLines;
+	EXEC [bll].[WideLines__Unpivot] @PreprocessedWideLines;
 
 	-- using line definition Id, the entries wil be filled
-	INSERT INTO @FilledAllEntries
+	INSERT INTO @PreprocessedEntries
 	EXEC bll.[Documents__Preprocess]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
@@ -39,7 +71,7 @@ BEGIN
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
-		@Entries = @FilledAllEntries;
+		@Entries = @PreprocessedEntries;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -57,7 +89,7 @@ BEGIN
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
-		@Entries = @FilledAllEntries,
+		@Entries = @PreprocessedEntries,
 		@ReturnIds = 1,
 		@ReturnResult = @ReturnResult OUTPUT;
 
