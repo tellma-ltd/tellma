@@ -523,6 +523,26 @@
     <Build Include="Mapping\RequiredSignatures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
     <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportParameterDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportSelectDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportDimensionDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ReportMeasureDefinitions.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportParameterDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportSelectDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportDimensionDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ReportMeasureDefinitionList.sql" />
+    <Build Include="bll\Stored Procedures\bll.ReportDefinitions_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.ReportDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.ReportDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.ReportDefinitions__Delete.sql" />
+    <Build Include="Mapping\ReportDefinitions.sql" />
+    <Build Include="Mapping\ReportParameterDefinitions.sql" />
+    <Build Include="Mapping\ReportSelectDefinitions.sql" />
+    <Build Include="Mapping\ReportRowDefinitions.sql" />
+    <Build Include="Mapping\ReportColumnDefinitions.sql" />
+    <Build Include="Mapping\ReportMeasureDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

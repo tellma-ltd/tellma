@@ -111,9 +111,7 @@ export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         update: true,
         delete: true,
-        actions: [
-            li('UpdateState', false)
-        ]
+        actions: []
     },
     'responsibility-centers': {
         name: 'ResponsibilityCenters',

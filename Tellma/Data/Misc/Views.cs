@@ -167,6 +167,14 @@
                         Actions = new ActionInfo[] {}
                     },
                     new ViewInfo {
+                        Id = "report-definitions",
+                        Name = "ReportDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[] {}
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

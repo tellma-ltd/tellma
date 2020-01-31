@@ -280,6 +280,24 @@ namespace Tellma.Data
                 case nameof(DocumentAssignment):
                     return "[map].[DocumentAssignmentsHistory]()";
 
+                case nameof(ReportDefinition):
+                    return "[map].[ReportDefinitions]()";
+
+                case nameof(ReportParameterDefinition):
+                    return "[map].[ReportParameterDefinitions]()";
+
+                case nameof(ReportSelectDefinition):
+                    return "[map].[ReportSelectDefinitions]()";
+
+                case nameof(ReportRowDefinition):
+                    return "[map].[ReportRowDefinitions]()";
+
+                case nameof(ReportColumnDefinition):
+                    return "[map].[ReportColumnDefinitions]()";
+
+                case nameof(ReportMeasureDefinition):
+                    return "[map].[ReportMeasureDefinitions]()";
+
                 // Parametered fact tables
                 case nameof(SummaryEntry):
                     return "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)";
@@ -3740,6 +3758,189 @@ namespace Tellma.Data
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
+        }
+
+        #endregion
+
+        #region ReportDefinitions
+
+        public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Save(List<ReportDefinitionForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+            var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
+            var selectTvp = new SqlParameter("@Select", selectTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
+            var rowsTvp = new SqlParameter("@Rows", rowsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
+            var columnsTvp = new SqlParameter("@Columns", columnsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
+            var measuresTvp = new SqlParameter("@Measures", measuresTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(parametersTvp);
+            cmd.Parameters.Add(selectTvp);
+            cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ReportDefinitions_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task ReportDefinitions__Save(List<ReportDefinitionForSave> entities)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable parametersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Parameters);
+            var parametersTvp = new SqlParameter("@Parameters", parametersTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportParameterDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable selectTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Select);
+            var selectTvp = new SqlParameter("@Select", selectTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportSelectDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable rowsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rows);
+            var rowsTvp = new SqlParameter("@Rows", rowsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable columnsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Columns);
+            var columnsTvp = new SqlParameter("@Columns", columnsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportDimensionDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable measuresTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Measures);
+            var measuresTvp = new SqlParameter("@Measures", measuresTable)
+            {
+                TypeName = $"[dbo].[{nameof(ReportMeasureDefinition)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(parametersTvp);
+            cmd.Parameters.Add(selectTvp);
+            cmd.Parameters.Add(rowsTvp);
+            cmd.Parameters.Add(columnsTvp);
+            cmd.Parameters.Add(measuresTvp);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Save)}]";
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<string> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedStringList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ReportDefinitions_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task ReportDefinitions__Delete(IEnumerable<string> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[StringList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
         }
 
         #endregion

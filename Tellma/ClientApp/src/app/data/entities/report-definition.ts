@@ -57,10 +57,13 @@ export interface ReportDefinitionForSave<
 
 export interface ReportDefinition extends ReportDefinitionForSave<
     ReportParameterDefinition, ReportRowDefinition, ReportColumnDefinition, ReportMeasureDefinition, ReportSelectDefinition> {
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 export interface ReportParameterDefinitionForSave extends EntityForSave {
-    ReportDefinitionId?: string | number;
     Key?: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
@@ -71,11 +74,10 @@ export interface ReportParameterDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportParameterDefinition extends ReportParameterDefinitionForSave {
-
+    ReportDefinitionId?: string;
 }
 
 export interface ReportSelectDefinitionForSave extends EntityForSave {
-    ReportDefinitionId?: string | number;
     Path?: string;
     Label?: string;
     Label2?: string;
@@ -84,11 +86,10 @@ export interface ReportSelectDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
-
+    ReportDefinitionId?: string;
 }
 
 export interface ReportDimensionDefinition extends EntityForSave {
-    ReportDefinitionId?: string | number;
     Path?: string;
     Modifier?: string;
     Label?: string;
@@ -100,12 +101,11 @@ export interface ReportDimensionDefinition extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportColumnDefinitionForSave extends ReportDimensionDefinition {
-
 }
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportColumnDefinition extends ReportColumnDefinitionForSave {
-
+    ReportDefinitionId?: string;
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -115,11 +115,10 @@ export interface ReportRowDefinitionForSave extends ReportDimensionDefinition {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportRowDefinition extends ReportRowDefinitionForSave {
-
+    ReportDefinitionId?: string;
 }
 
 export interface ReportMeasureDefinitionForSave extends EntityForSave {
-    ReportDefinitionId?: string | number;
     Path?: string;
     Label?: string;
     Label2?: string;
@@ -130,7 +129,7 @@ export interface ReportMeasureDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportMeasureDefinition extends ReportMeasureDefinitionForSave {
-
+    ReportDefinitionId?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Title' + pf);
@@ -207,6 +206,10 @@ export function metadata_ReportDefinition(ws: TenantWorkspace, trx: TranslateSer
                 },
                 MainMenuSortKey: { control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
                 ShowInMainMenu: { control: 'boolean', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
+                CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+                CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+                ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+                ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
             }
         };
 

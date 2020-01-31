@@ -132,7 +132,7 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
-        [Display(Name = "CreatedBy")]
+        [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
