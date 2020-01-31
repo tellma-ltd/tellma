@@ -18,6 +18,8 @@ SET NOCOUNT ON;
 
 	*/
 
+	-- TODO: Validate that all non-zero attachment Ids exist in the DB
+
 	-- (FE Check) If CurrencyId = functional currency, the value must match the DECIMAL (19,4) amount
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT

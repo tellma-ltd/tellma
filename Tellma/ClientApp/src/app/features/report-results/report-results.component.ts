@@ -708,7 +708,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     let currentDimension = dimension;
     while (!!currentDimension) {
       let path = currentDimension.path;
-      let modifiedPath = path;
       let propDesc = currentDimension.propDesc;
 
       if (!!propDesc) {
@@ -730,17 +729,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
         // Add the modifier
         if (!!currentDimension.modifier) {
-          modifiedPath = `${modifiedPath}|${currentDimension.modifier}`;
+          path = `${path}|${currentDimension.modifier}`;
         }
 
         // (2) Calculate the filter atom and add it
         const valueId = currentDimension.valueId;
         if (!isSpecified(valueId)) {
-          atoms.push(`${modifiedPath} eq null`);
+          atoms.push(`${path} eq null`);
         } else if (isText(propDesc)) {
-          atoms.push(`${modifiedPath} eq '${valueId.replace('\'', '\'\'')}'`);
+          atoms.push(`${path} eq '${valueId.replace('\'', '\'\'')}'`);
         } else {
-          atoms.push(`${modifiedPath} eq ${valueId + ''}`);
+          atoms.push(`${path} eq ${valueId + ''}`);
         }
       }
 

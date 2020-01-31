@@ -76,7 +76,7 @@
                     [cdkDropListConnectedTo]="[rows, columns, measures, select]"
                     (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="allFields(model)"
                     cdkDropListSortingDisabled>
-                    <ng-container *ngFor="let node of allFields(model); let i = index">
+                    <ng-container *ngFor="let node of allFields(model); let i = index;">
                         <div class="t-studio-source-row t-draggable" cdkDrag [class.d-none]="!showTreeNode(node)">
                             <div class="text-truncate d-flex" [style.padding-left]="paddingLeft(node)"
                                 [style.padding-right]="paddingRight(node)">
@@ -162,8 +162,8 @@
                             <div class="py-1 px-2 t-drag-label" *ngIf="!getRows(model).length">
                                 <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
                             </div>
-                            <div class="t-studio-drop-row t-draggable" *ngFor="let dim of getRows(model); let i = index"
-                                cdkDrag>
+                            <div class="t-studio-drop-row t-draggable"
+                                *ngFor="let dim of getRows(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
@@ -197,7 +197,7 @@
                                 <span class="small t-studio-area-watermark ">{{ 'DragFieldsHere' | translate }}</span>
                             </div>
                             <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let dim of getColumns(model); let i = index" cdkDrag>
+                                *ngFor="let dim of getColumns(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
@@ -231,7 +231,7 @@
                                 <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
                             </div>
                             <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let dim of getMeasures(model); let i = index" cdkDrag>
+                                *ngFor="let dim of getMeasures(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
@@ -256,7 +256,8 @@
                     </div>
 
                     <!-- Show Columns Total -->
-                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'">
+                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'"
+                        *ngIf="!!model.Columns?.length">
                         <input type="checkbox" class="custom-control-input" id="showColumnsTotal"
                             [(ngModel)]="model.ShowColumnsTotal" (ngModelChange)="onDefinitionChange(model)">
                         <label class="custom-control-label"
@@ -264,7 +265,8 @@
                     </div>
 
                     <!-- Show Rows Total -->
-                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'">
+                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'"
+                        *ngIf="!!model.Rows?.length">
                         <input type="checkbox" class="custom-control-input" id="showRowsTotal"
                             [(ngModel)]="model.ShowRowsTotal" (ngModelChange)="onDefinitionChange(model)">
                         <label class="custom-control-label"
@@ -281,7 +283,7 @@
                                 <span class="small t-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
                             </div>
                             <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let dim of getSelect(model); let i = index" cdkDrag>
+                                *ngFor="let dim of getSelect(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
@@ -347,7 +349,7 @@
                         <div class="t-studio-drop-area" style="border-style: solid;" cdkDropList
                             (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getParameters(model)">
                             <div class="t-studio-drop-row t-draggable"
-                                *ngFor="let param of getParameters(model); let i = index" cdkDrag>
+                                *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
                                     <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
                                         title="{{ 'BuiltInParameter' | translate }}"></fa-icon>
@@ -485,40 +487,50 @@
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('MainMenu')">
 
-                    <!-- Main Menu Section -->
-                    <div class="form-group">
-                        <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
-                        <select class="form-control t-studio-input" id="mainMenuSection"
-                            [(ngModel)]="model.MainMenuSection"
-                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSection')">
-                            <option value=""></option>
-                            <option *ngFor="let mainMenuSection of allMainMenuSections"
-                                value="{{mainMenuSection.value}}">
-                                {{ mainMenuSection.name() }}</option>
-                        </select>
+                    <!-- Show In Main Menu -->
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="showInMainMenu"
+                            [(ngModel)]="model.ShowInMainMenu" (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
+                        <label class="custom-control-label"
+                            for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' | translate }}</label>
                     </div>
 
-                    <!-- Main Menu Icon -->
-                    <div class="form-group">
-                        <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
-                        <div class="t-icon-selector d-flex align-content-start flex-wrap p-1">
-                            <div class="py-1 text-center t-pointer t-icon-selector-icon"
-                                (click)="onIconClick(model, icon)"
-                                [class.t-highlighted]="icon.value === model.MainMenuIcon"
-                                *ngFor="let icon of allMainMenuIcons; let i = index">
-                                <fa-icon [icon]="icon.value"></fa-icon>
+                    <!-- Main Menu Section -->
+                    <ng-container *ngIf="model.ShowInMainMenu">
+                        <div class="form-group">
+                            <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
+                            <select class="form-control t-studio-input" id="mainMenuSection"
+                                [(ngModel)]="model.MainMenuSection"
+                                (ngModelChange)="onDefinitionChange(model, 'MainMenuSection')">
+                                <option value=""></option>
+                                <option *ngFor="let mainMenuSection of allMainMenuSections"
+                                    value="{{mainMenuSection.value}}">
+                                    {{ mainMenuSection.name() }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Main Menu Icon -->
+                        <div class="form-group">
+                            <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
+                            <div class="t-icon-selector d-flex align-content-start flex-wrap p-1">
+                                <div class="py-1 text-center t-pointer t-icon-selector-icon"
+                                    (click)="onIconClick(model, icon)"
+                                    [class.t-highlighted]="icon.value === model.MainMenuIcon"
+                                    *ngFor="let icon of allMainMenuIcons; let i = index;">
+                                    <fa-icon [icon]="icon.value"></fa-icon>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Main Menu Sort Key -->
-                    <div class="form-group">
-                        <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
-                        <input class="form-control t-studio-input" id="sortKey" type="number"
-                            [(ngModel)]="model.MainMenuSortKey"
-                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSortKey')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
-                    </div>
+                        <!-- Main Menu Sort Key -->
+                        <div class="form-group">
+                            <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
+                            <input class="form-control t-studio-input" id="sortKey" type="number"
+                                [(ngModel)]="model.MainMenuSortKey"
+                                (ngModelChange)="onDefinitionChange(model, 'MainMenuSortKey')"
+                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                        </div>
+                    </ng-container>
                 </div>
             </div>
         </div>
@@ -526,11 +538,11 @@
         <!-- Preview Section -->
         <div class="d-flex flex-column flex-grow-1">
             <!-- Header -->
-            <div class="t-dark t-text-whitish d-flex justify-content-between">
+            <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
                 <div class="p-2 px-3">
                     <span>{{ 'Preview' | translate }}</span>
                 </div>
-                <div class="t-flow-chart small" *ngIf="model.State !== 'Archived'">
+                <!-- <div class="t-flow-chart small" *ngIf="model.State !== 'Archived'">
                     <div [class.active]="model.State === 'Draft'"><span>{{'Definition_State_Draft' | translate}}</span>
                     </div>
                     <div [class.active]="model.State === 'Deployed'">
@@ -538,7 +550,7 @@
                 </div>
                 <div class="small active t-lone-state" *ngIf="model.State === 'Archived'">
                     <span>{{'Definition_State_Archived' | translate}}</span>
-                </div>
+                </div> -->
             </div>
 
             <!-- Report Preview -->

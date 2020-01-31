@@ -79,6 +79,7 @@ namespace Tellma.Controllers.Dto
         public int Top { get; set; }
         public bool ShowColumnsTotal { get; set; }
         public bool ShowRowsTotal { get; set; }
+        public bool ShowInMainMenu { get; set; }
     }
 
     public class ReportParameterDefinitionForClient

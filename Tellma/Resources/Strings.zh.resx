@@ -220,6 +220,9 @@
   <data name="AppName" xml:space="preserve">
     <value>敏锐</value>
   </data>
+  <data name="Attachment_FileExtension" xml:space="preserve">
+    <value>文件扩展名</value>
+  </data>
   <data name="Attachment_Size" xml:space="preserve">
     <value>尺寸</value>
   </data>

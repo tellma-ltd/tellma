@@ -388,12 +388,12 @@ namespace Tellma.Controllers
                 MainMenuIcon = "chart-pie",
                 MainMenuSection = "Financials",
                 MainMenuSortKey = 202m,
-                State = "Draft",
+                ShowInMainMenu = false,
                 Type = ReportType.Summary,
                 Chart = "Line",
                 DefaultsToChart = false,
                 Collection = "MeasurementUnit",
-                Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name)",
+                Filter = "UnitType eq @UnitType and (Name contains @Name)",
                 Parameters = new List<ReportParameterDefinition>
                 {
                     new ReportParameterDefinition
@@ -402,6 +402,11 @@ namespace Tellma.Controllers
                         Label = "Name Contains",
                         Label2 = "الإسم يحتوي",
                         Label3 = "我的密",
+                        Visibility = Visibility.Optional
+                    },
+                    new ReportParameterDefinition
+                    {
+                        Key = "UnitType", // "FromDate"
                         Visibility = Visibility.Optional
                     },
                 },
@@ -492,7 +497,7 @@ namespace Tellma.Controllers
                 MainMenuIcon = "chart-pie",
                 MainMenuSection = "Financials",
                 MainMenuSortKey = 202m,
-                State = "Deployed",
+                ShowInMainMenu = false,
                 Type = ReportType.Summary,
                 Chart = "Card",
                 DefaultsToChart = true,
@@ -582,7 +587,7 @@ namespace Tellma.Controllers
                 MainMenuIcon = "chart-pie",
                 MainMenuSection = "Financials",
                 MainMenuSortKey = 203m,
-                State = "Archived",
+                ShowInMainMenu = true,
                 // Top = 10,
                 Type = ReportType.Details,
                 Collection = "MeasurementUnit",

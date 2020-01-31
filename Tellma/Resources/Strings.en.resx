@@ -220,6 +220,9 @@
   <data name="AppName" xml:space="preserve">
     <value>Tellma</value>
   </data>
+  <data name="Attachment_FileExtension" xml:space="preserve">
+    <value>File Extension</value>
+  </data>
   <data name="Attachment_Size" xml:space="preserve">
     <value>Size</value>
   </data>
@@ -1263,6 +1266,9 @@
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>Show Columns Total</value>
+  </data>
+  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
+    <value>Show in Main Menu</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>Show Rows Total</value>

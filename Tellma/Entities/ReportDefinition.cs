@@ -108,6 +108,10 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? ShowRowsTotal { get; set; }
 
+        [Display(Name = "ReportDefinition_ShowInMainMenu")]
+        [AlwaysAccessible]
+        public bool? ShowInMainMenu { get; set; }
+
         [Display(Name = "MainMenuSection")]
         [ChoiceList(new object[] { "Financials", "Administration" }, // TODO Add the rest, here and in TypeScript
             new string[] { "Financials", "Administration" })]
@@ -123,12 +127,6 @@ namespace Tellma.Entities
         [Display(Name = "MainMenuSortKey")]
         [AlwaysAccessible]
         public decimal? MainMenuSortKey { get; set; }
-
-        [Display(Name = "Definition_State")]
-        [ChoiceList(new object[] { "Draft", "Deployed", "Archived" },
-            new string[] { "Definition_State_Draft", "Definition_State_Deployed", "Definition_State_Archived" })]
-        [AlwaysAccessible]
-        public string State { get; set; }
 
         [Display(Name = "ReportDefinition_Parameters")]
         [ForeignKey(nameof(ReportParameterDefinition.ReportDefinitionId))]
