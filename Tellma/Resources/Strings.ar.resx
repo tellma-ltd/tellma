@@ -1267,6 +1267,9 @@
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>أظهر مجموع الأعمدة</value>
   </data>
+  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
+    <value>إظهار في القائمة الرئيسية</value>
+  </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>أظهر مجموع الأسطر</value>
   </data>

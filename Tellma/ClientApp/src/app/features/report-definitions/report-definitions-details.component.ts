@@ -100,7 +100,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.Title3 = this.initialText;
     }
 
-    result.State = 'Draft';
+    result.ShowInMainMenu = false;
     // result.Collection = 'MeasurementUnit';
     result.Type = 'Summary';
     result.Rows = [];
@@ -170,36 +170,11 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this.workspace.current;
   }
 
-  // public onActivate = (model: ReportDefinition): void => {
-  //   if (!!model && !!model.Id) {
-  //     this.reportDefinitionsApi.activate([model.Id], { returnEntities: true }).pipe(
-  //       tap(res => addToWorkspace(res, this.workspace))
-  //     ).subscribe({ error: this.details.handleActionError });
-  //   }
-  // }
-
-  // public onDeactivate = (model: ReportDefinition): void => {
-  //   if (!!model && !!model.Id) {
-  //     this.reportDefinitionsApi.deactivate([model.Id], { returnEntities: true }).pipe(
-  //       tap(res => addToWorkspace(res, this.workspace))
-  //     ).subscribe({ error: this.details.handleActionError });
-  //   }
-  // }
-
-  // public showActivate = (model: ReportDefinition) => !!model && !model.IsActive;
-  // public showDeactivate = (model: ReportDefinition) => !!model && model.IsActive;
-
-  // public canActivateDeactivateItem = (model: ReportDefinition) => this.ws.canDo('report-definitions', 'IsActive', model.Id);
-
-  // public activateDeactivateTooltip = (model: ReportDefinition) => this.canActivateDeactivateItem(model) ? '' :
-  //   this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
-
   public get isNew(): boolean {
     return (this.isScreenMode && this.route.snapshot.paramMap.get('id') === 'new') || (this.isPopupMode && this.idString === 'new');
   }
 
-  public isInactive: (model: ReportDefinition) => string = (model: ReportDefinition) => !!model && model.State === 'Archived' ?
-    'Error_CannotModifyInactiveItemPleaseActivate' : null
+  public isInactive: (model: ReportDefinition) => string = (_: ReportDefinition) => null;
 
   public onDefinitionChange(model: ReportDefinition, prop?: string) {
 

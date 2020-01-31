@@ -46,7 +46,7 @@ export interface ReportDefinitionForSave<
     MainMenuSection?: MainMenuSection;
     MainMenuIcon?: MainMenuIcon;
     MainMenuSortKey?: number;
-    State?: DefinitionState;
+    ShowInMainMenu?: boolean;
 
     Select?: TSelect[];
     Parameters?: TParameter[];
@@ -206,20 +206,7 @@ export function metadata_ReportDefinition(ws: TenantWorkspace, trx: TranslateSer
                     },
                 },
                 MainMenuSortKey: { control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                State: {
-                    control: 'state',
-                    label: () => trx.instant('Definition_State'),
-                    choices: ['Draft', 'Deployed', 'Archived'],
-                    format: (c: string) => trx.instant(`Definition_State_${c}`),
-                    color: (c: string) => {
-                        switch (c) {
-                            case 'Draft': return '#6c757d';
-                            case 'Deployed': return '#28a745';
-                            case 'Archived': return '#dc3545';
-                            default: return c;
-                        }
-                    }
-                },
+                ShowInMainMenu: { control: 'boolean', label: () => trx.instant('ReportDefinition_ShowInMainMenu') },
             }
         };
 
