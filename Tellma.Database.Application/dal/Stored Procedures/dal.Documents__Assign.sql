@@ -27,6 +27,10 @@ BEGIN
 		INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])
 		SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById]
 		FROM dbo.DocumentAssignments
-		WHERE DocumentId IN (SELECT [Id] FROM @Ids);
+		WHERE DocumentId IN (SELECT [Id] FROM @Ids)
+		AND ( -- do not add the first assignment to history. It is redundant.
+			[AssigneeId] <> [CreatedById] OR 
+			DocumentId IN (SELECT [DocumentId] FROM dbo.DocumentAssignmentsHistory)
+		)
 	END
 END;
