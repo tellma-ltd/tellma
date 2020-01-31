@@ -282,7 +282,7 @@ namespace Tellma.Data
 
                 // Parametered fact tables
                 case nameof(SummaryEntry):
-                    return "[map].[SummaryEntries](NULL, NULL, NULL, @FromDate, @ToDate, NULL, NULL, NULL)";
+                    return "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)";
 
                 #region _Temp
 

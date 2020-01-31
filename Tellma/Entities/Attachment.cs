@@ -14,7 +14,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Attachment_FileExtension")]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public string FileExtension { get; set; }
 

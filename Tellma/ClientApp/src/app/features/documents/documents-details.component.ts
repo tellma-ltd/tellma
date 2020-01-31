@@ -674,6 +674,21 @@ Document_State_Closed
       return;
     }
 
+    // Make sure pending attachments don't exceed max file size
+    model.Attachments = model.Attachments || [];
+    const sumOfAttachmentSizesPendingSave = model.Attachments
+      .map(a => !!a.file ? a.file.size : 0)
+      .reduce((total, v) => total + v);
+
+    if (sumOfAttachmentSizesPendingSave + file.size > this._maxAttachmentSize) {
+      console.log(sumOfAttachmentSizesPendingSave);
+      this.showError(() => this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
+        {
+          size: fileSizeDisplay(this._maxAttachmentSize)
+        }));
+      return;
+    }
+
     getDataURL(file).pipe(
       takeUntil(this.notifyDestruct$),
       tap(dataUrl => {
@@ -681,11 +696,9 @@ Document_State_Closed
         // Get the base64 value from the data URL
         const commaIndex = dataUrl.indexOf(',');
         const fileBytes = dataUrl.substr(commaIndex + 1);
-
-        model.Attachments = model.Attachments || [];
         const fileNamePieces = file.name.split('.');
-        const extension = fileNamePieces.pop();
-        const fileName = fileNamePieces.join('.');
+        const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
+        const fileName = fileNamePieces.join('.') || '???';
         model.Attachments.push({
           Id: 0,
           File: fileBytes,
@@ -741,7 +754,8 @@ Document_State_Closed
   }
 
   private fileName(att: Attachment) {
-    return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` : att.file.name;
+    return !!att.FileName && !!att.FileExtension ? `${att.FileName}.${att.FileExtension}` :
+      (att.FileName || (!!att.file ? att.file.name : 'Attachment'));
   }
 
   public size(att: Attachment): string {
