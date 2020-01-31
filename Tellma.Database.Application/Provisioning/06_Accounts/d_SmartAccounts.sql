@@ -48,7 +48,7 @@ INSERT INTO @SmartAccounts([Index],
 --(21,N'CostofSales',		@Expenses_AC,				N'fuel - Production',				N'5103'),
 --(22,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
 --(23,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expenses',		N'cost-centers',	dbo.fn_ATCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
-(24,@EmployeeBenefitsExpense,	N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'),	N'ETB');
+(24,@EmployeeBenefitsExpense,	N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ETCode__Id('AdministrativeExpense'),	N'ETB');
 	--UPDATE @SmartAccounts SET HasAgent = 1;
 	UPDATE @SmartAccounts SET HasResource = 1 WHERE [Index] IN (4, 5, 19,20, 21, 22, 23, 24);
 END

@@ -1,10 +1,10 @@
 ﻿	CREATE FUNCTION [map].[SummaryEntries] (
 	--TODO: make the filtering of these parameters from NormalizedJournal
-	@FromDate Date = '01.01.2019',
-	@ToDate Date = '01.01.2020',
-	@ResponsibilityCenterId INT,
-	@AgentDefinitionId NVARCHAR(50),
-	@AccountTypeCode NVARCHAR (255),
+	@FromDate Date = '01.01.2018',
+	@ToDate Date = '01.01.2019',
+	@ResponsibilityCenterId INT = NULL,
+	@AgentDefinitionId NVARCHAR(50) = NULL,
+	@AccountTypeCode NVARCHAR (255) = NULL,
 	@CountUnitId INT = NULL,
 	@MassUnitId INT = NULL,
 	@VolumeUnitId INT = NULL
