@@ -68,7 +68,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	[Name],						[Name2],					[Code], [ResponsibilityType], [ParentIndex]) VALUES
 (0,0,N'Simpex KSA',				N'سيمبكس السعودية',		N'',	N'Investment',			NULL),
-(1,1,N'Simpex - Exec Office',	N'سيمكس - مكتب تنفيذي',	N'0',	N'Cost',				0), -- ADM
+(1,1,N'Simpex - Exec Office',	N'سيمبكس - مكتب تنفيذي',	N'0',	N'Cost',				0), -- ADM
 (2,0,N'Jeddah Branch',			N'فرع جدة',					N'1',	N'Investment',			0), -- 
 (3,1,N'Jeddah - Admin/Shared',	N'جدة - مكتب تنفيذي',		N'10',	N'Cost',				2), -- ADM
 (4,1,N'Jeddah - Sales',			N'جدة - مبيعات',			N'11',	N'Revenue',				2), -- ADM, SND
