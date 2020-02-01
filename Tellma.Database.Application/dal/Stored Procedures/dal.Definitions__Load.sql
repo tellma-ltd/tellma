@@ -12,3 +12,11 @@ SELECT * FROM [dbo].[AgentDefinitions]
 
 -- Get the resource definitions
 SELECT * FROM [dbo].[ResourceDefinitions]
+
+-- Get the report definitions
+SELECT * FROM [map].[ReportDefinitions]()
+SELECT * FROM [map].[ReportParameterDefinitions]()
+SELECT * FROM [map].[ReportSelectDefinitions]()
+SELECT * FROM [map].[ReportRowDefinitions]()
+SELECT * FROM [map].[ReportColumnDefinitions]()
+SELECT * FROM [map].[ReportMeasureDefinitions]()

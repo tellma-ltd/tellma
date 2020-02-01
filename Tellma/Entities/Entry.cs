@@ -84,7 +84,9 @@ namespace Tellma.Entities
     public class Entry : EntryForSave
     {
         public int? LineId { get; set; }
-        
+
+        public decimal? AlgebraicValue { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 

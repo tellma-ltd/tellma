@@ -47,6 +47,7 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Top?: number;
     ShowColumnsTotal: boolean;
     ShowRowsTotal: boolean;
+    ShowInMainMenu: boolean;
 }
 
 export interface ReportParameterDefinitionForClient {

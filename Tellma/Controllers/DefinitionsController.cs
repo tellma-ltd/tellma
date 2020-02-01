@@ -67,7 +67,7 @@ namespace Tellma.Controllers
             return new LookupDefinitionForClient
             {
                 MainMenuIcon = def.MainMenuIcon,
-                MainMenuSortKey = def.MainMenuSortKey,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
@@ -83,7 +83,7 @@ namespace Tellma.Controllers
             return new AgentDefinitionForClient
             {
                 MainMenuIcon = def.MainMenuIcon,
-                MainMenuSortKey = def.MainMenuSortKey,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
@@ -110,7 +110,7 @@ namespace Tellma.Controllers
             return new ResourceDefinitionForClient
             {
                 MainMenuIcon = def.MainMenuIcon,
-                MainMenuSortKey = def.MainMenuSortKey,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
@@ -154,9 +154,96 @@ namespace Tellma.Controllers
             };
         }
 
+        private static ReportDefinitionForClient MapReportDefinition(ReportDefinition def)
+        {
+            return new ReportDefinitionForClient
+            {
+                // Basics
+                Collection = def.Collection,
+                DefinitionId = def.DefinitionId,
+                Type = def.Type,
+
+                // Data
+                Rows = def.Rows?.Select(r => new ReportDimensionDefinitionForClient
+                {
+                    Path = r.Path,
+                    Label = r.Label,
+                    Label2 = r.Label2,
+                    Label3 = r.Label3,
+                    AutoExpand = r.AutoExpand ?? false,
+                    Modifier = r.Modifier,
+                    OrderDirection = r.OrderDirection, 
+                }).ToList(),
+                ShowRowsTotal = def.ShowRowsTotal ?? false,
+
+                Columns = def.Columns?.Select(c => new ReportDimensionDefinitionForClient
+                {
+                    Path = c.Path,
+                    Label = c.Label,
+                    Label2 = c.Label2,
+                    Label3 = c.Label3,
+                    AutoExpand = c.AutoExpand ?? false,
+                    Modifier = c.Modifier,
+                    OrderDirection = c.OrderDirection,
+                }).ToList(),
+                ShowColumnsTotal = def.ShowColumnsTotal ?? false,
+
+                Measures = def.Measures?.Select(m => new ReportMeasureDefinitionForClient
+                {
+                    Path = m.Path,
+                    Label = m.Label,
+                    Label2 = m.Label2,
+                    Label3 = m.Label3,
+                    OrderDirection = m.OrderDirection,
+                    Aggregation = m.Aggregation,
+                }).ToList(),
+
+                Select = def.Select?.Select(s => new ReportSelectDefinitionForClient
+                {
+                    Path = s.Path,
+                    Label = s.Label,
+                    Label2 = s.Label2,
+                    Label3 = s.Label3,
+                }).ToList(),
+
+                OrderBy = def.OrderBy,
+                Top = def.Top ?? 0,
+
+                // Filter
+                Filter = def.Filter,
+                Parameters = def.Parameters?.Select(p => new ReportParameterDefinitionForClient
+                {
+                    Key = p.Key,
+                    Label = p.Label,
+                    Label2 = p.Label2,
+                    Label3 = p.Label3,
+                    Visibility = p.Visibility,
+                    Value = p.Value,
+                }).ToList(),
+
+                // Chart
+                Chart = def.Chart,
+                DefaultsToChart = def.DefaultsToChart ?? false,
+
+                // Title
+                Title = def.Title,
+                Title2 = def.Title2,
+                Title3 = def.Title3,
+                Description = def.Description,
+                Description2 = def.Description2,
+                Description3 = def.Description3,
+
+                // Main Menu
+                ShowInMainMenu = def.ShowInMainMenu ?? false,
+                MainMenuIcon = def.MainMenuIcon,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
+                MainMenuSection = def.MainMenuSection,
+            };
+        }
+
         public static async Task<DataWithVersion<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo)
         {
-            var (version, lookupDefs, agentDefs, resourceDefs) = await repo.Definitions__Load();
+            var (version, lookupDefs, agentDefs, resourceDefs, reportDefs) = await repo.Definitions__Load();
 
             var result = new DefinitionsForClient
             {
@@ -165,6 +252,8 @@ namespace Tellma.Controllers
                 Agents = agentDefs.ToDictionary(def => def.Id, def => MapAgentDefinition(def)),
 
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
+
+                Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
 
                 // TODO: Load these from the database as well
 
@@ -194,234 +283,6 @@ namespace Tellma.Controllers
                     //    // TODO: implement mock
                     //}
                 },
-
-                Reports = new Dictionary<string, ReportDefinitionForClient>
-                {
-                    ["my-amazing-report"] = new ReportDefinitionForClient
-                    {
-                        Title = "My Amazing Report",
-                        Title2 = "تقريري المذهل",
-                        Title3 = "我的惊人报告",
-                        MainMenuIcon = "chart-pie",
-                        MainMenuSection = "Financials",
-                        MainMenuSortKey = 202m,
-
-                        Type = ReportType.Summary,
-                        Chart = "Line",
-                        DefaultsToChart = false,
-                        Collection = "MeasurementUnit",
-                        Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
-                        Parameters = new List<ReportParameterDefinitionForClient>
-                            {
-                                new ReportParameterDefinitionForClient
-                                {
-                                    Key = "Name", // "FromDate"
-                                    Label = "Name Contains",
-                                    Label2 = "الإسم يحتوي",
-                                    Label3 = "我的密",
-                                    Visibility = Visibility.Optional
-                                },
-                            },
-                        Columns = new List<ReportDimensionDefinitionForClient>
-                        {
-                            //new ReportDimensionDefinition
-                            //{
-                            //    Path = "ModifiedBy",
-                            //    Label = "Modified By",
-                            //    Label2 = "آخر تعديل",
-                            //    Label3 = "我的密",
-                            //    AutoExpand = true,
-                            //},
-                            //new ReportDimensionDefinition
-                            //{
-                            //    Path = "UnitType",
-                            //    Label = "Unit Type",
-                            //    Label2 = "نوع الوحدة",
-                            //    Label3 = "我的密",
-                            //    OrderDirection = "desc",
-                            //    AutoExpand =true
-                            //},
-                        },
-                        Rows = new List<ReportDimensionDefinitionForClient>
-                            {
-                                new ReportDimensionDefinitionForClient
-                                {
-                                    Path = "CreatedBy",
-                                    Label = "Created By",
-                                    Label2 = "إنشاء من قبل",
-                                    Label3 = "我的密",
-                                    AutoExpand = true,
-                                },
-                                new ReportDimensionDefinitionForClient
-                                {
-                                    Path = "UnitType",
-                                    Label = "Unit Type",
-                                    Label2 = "نوع الوحدة",
-                                    Label3 = "我的密",
-                                    OrderDirection = "desc",
-                                    AutoExpand = true
-                                },
-                            },
-                        Measures = new List<ReportMeasureDefinitionForClient>
-                            {
-                                new ReportMeasureDefinitionForClient
-                                {
-                                    Path = "Id",
-                                    Aggregation = "count",
-                                    Label = "Count",
-                                    Label2 = "العدد",
-                                    Label3 = "我的密"
-                                },
-                                new ReportMeasureDefinitionForClient
-                                {
-                                    Path = "Id",
-                                    Aggregation = "avg",
-                                    Label = "Average",
-                                    Label2 = "المعدل",
-                                    Label3 = "我的密"
-                                },
-                                //new ReportMeasureDefinition
-                                //{
-                                //    Path = "Name",
-                                //    Aggregation = "max",
-                                //    Label = "Max",
-                                //    Label2 = "الأقصى",
-                                //    Label3 = "我的密"
-                                //},
-                            },
-                        ShowColumnsTotal = true,
-                        ShowRowsTotal = true,
-                    },
-                    ["my-incredible-report"] = new ReportDefinitionForClient
-                    {
-                        Title = "My Incredible Report",
-                        Title2 = "تقريري المدهش",
-                        Title3 = "我的惊人报告",
-                        MainMenuIcon = "chart-pie",
-                        MainMenuSection = "Financials",
-                        MainMenuSortKey = 202m,
-
-                        Type = ReportType.Summary,
-                        Chart = "Card",
-                        DefaultsToChart = true,
-                        Collection = "Resource",
-                        DefinitionId = "finished-goods",
-                        // Filter = "Memo contains @Memo",
-                        Parameters = new List<ReportParameterDefinitionForClient>
-                            {
-                                new ReportParameterDefinitionForClient
-                                {
-                                    Key = "Memo", // "FromDate"
-                                    Label = "Memo Contains",
-                                    Label2 = "الملاحظات تحتوي",
-                                    Label3 = "我的密",
-                                    Visibility = Visibility.Optional
-                                }
-                            },
-                        Columns = new List<ReportDimensionDefinitionForClient>
-                        {
-
-                        },
-                        Rows = new List<ReportDimensionDefinitionForClient>
-                        {
-                            //new ReportDimensionDefinition
-                            //{
-                            //    Path = "ModifiedBy",
-                            //    Label = "Modified By",
-                            //    Label2 = "آخر تعديل",
-                            //    Label3 = "我的密",
-                            //    AutoExpand =false,
-                            //},
-                            //new ReportDimensionDefinition
-                            //{
-                            //    Path = "Lookup1",
-                            //    //Label = "Modified By State",
-                            //    //Label2 = "آخر تعديل",
-                            //    //Label3 = "我的密",
-                            //    OrderDirection = "desc",
-                            //    AutoExpand = true,
-                            //},
-                            //new ReportDimensionDefinition
-                            //{
-                            //    Path = "ResourceClassification",
-                            //    //Label = "Unit Type",
-                            //    //Label2 = "نوع الوحدة",
-                            //    //Label3 = "我的密",
-                            //   //  OrderDirection = "desc",
-                            //    AutoExpand =true
-                            //},
-
-                        },
-                        Measures = new List<ReportMeasureDefinitionForClient>
-                            {
-                                new ReportMeasureDefinitionForClient
-                                {
-                                    Path = "Id",
-                                    Aggregation = "count",
-                                    Label = "Count",
-                                    Label2 = "العدد",
-                                    Label3 = "我的密"
-                                },
-                                //new ReportMeasureDefinition
-                                //{
-                                //    Path = "Id",
-                                //    Aggregation = "avg",
-                                //    Label = "Average",
-                                //    Label2 = "المعدل",
-                                //    Label3 = "我的密"
-                                //}
-                            },
-                        ShowColumnsTotal = false,
-                        ShowRowsTotal = true,
-                    },
-                    ["my-awesome-report"] = new ReportDefinitionForClient
-                    {
-                        Title = "My Awesome Report",
-                        Title2 = "تقريري العجيب",
-                        Title3 = "我的惊人报告",
-                        MainMenuIcon = "chart-pie",
-                        MainMenuSection = "Financials",
-                        MainMenuSortKey = 203m,
-                        // Top = 10,
-                        Type = ReportType.Details,
-                        Collection = "MeasurementUnit",
-                        Filter = "UnitType eq @UnitType",
-                        OrderBy = "BaseAmount desc",
-                        Parameters = new List<ReportParameterDefinitionForClient>
-                        {
-                        },
-                        Select = new List<ReportSelectDefinitionForClient>
-                            {
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = ""
-                                },
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = "Description"
-                                },
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = "UnitType"
-                                },
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = "CreatedBy"
-                                },
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = "CreatedBy/State"
-                                },
-                                new ReportSelectDefinitionForClient
-                                {
-                                    Path = "BaseAmount",
-                                    Label = "My Base Amount",
-                                    Label2 = "مقداري الأساسي",
-                                    Label3 = "我的惊人报告"
-                                }
-                            }
-                    }
-                }
             };
 
             return new DataWithVersion<DefinitionsForClient>
@@ -430,5 +291,6 @@ namespace Tellma.Controllers
                 Version = version.ToString()
             };
         }
+
     }
 }

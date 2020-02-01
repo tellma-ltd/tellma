@@ -31,6 +31,7 @@ AS
 			t.[Chart]				= s.[Chart],
 			t.[DefaultsToChart]		= s.[DefaultsToChart],
 			t.[Collection]			= s.[Collection],
+			t.[DefinitionId]		= s.[DefinitionId],
 			t.[Filter]				= s.[Filter],
 			t.[OrderBy]				= s.[OrderBy],
 			t.[Top]					= s.[Top],

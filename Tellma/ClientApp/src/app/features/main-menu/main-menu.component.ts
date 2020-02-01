@@ -8,6 +8,7 @@ import { DOCUMENT } from '@angular/common';
 import { DefinitionsForClient, MasterDetailsDefinitionForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
+import { metadata } from '~/app/data/entities/base/metadata';
 
 interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
 interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
@@ -152,8 +153,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
 
-      this.addDefinitions(menu, this.workspace.current.definitions.Reports, 'report',
-        d => this.workspace.current.getMultilingualValueImmediate(d, 'Title') || this.translate.instant('Untitled'));
+      this.addReportDefinitions(menu);
 
 
       this._mainMenu = Object.keys(menu).map(e => ({
@@ -164,6 +164,73 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return this._mainMenu;
+  }
+
+  private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
+    const ws = this.workspace.current;
+    const definitions = ws.definitions.Reports;
+    if (!!definitions) {
+      const canViewAgents = Object.keys(ws.definitions.Agents).some(v => this.canView(`agents/${v}`));
+      const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
+      const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
+      const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
+
+      for (const definitionId of Object.keys(definitions)) {
+
+        // Get the definition and check it wants to appear in main menu
+        const definition = definitions[definitionId];
+        if (!definition.ShowInMainMenu) {
+          continue;
+        }
+
+        // Check if the user has permission
+        // Some reports can be based on the generic version of a definitioned collection
+        let canView: boolean;
+        if (!definition.DefinitionId) {
+          switch (definition.Collection) {
+            case 'Agent':
+              canView = canViewAgents;
+              break;
+            case 'Resource':
+              canView = canViewResources;
+              break;
+            case 'Lookup':
+              canView = canViewLookups;
+              break;
+            case 'Document':
+              canView = canViewDocuments;
+              break;
+            default:
+              const view = metadata[definition.Collection](ws, this.translate, definition.DefinitionId).apiEndpoint;
+              canView = this.canView(view);
+              break;
+          }
+        } else {
+          const view = metadata[definition.Collection](ws, this.translate, definition.DefinitionId).apiEndpoint;
+          canView = this.canView(view);
+        }
+
+        if (!canView) {
+          continue;
+        }
+
+        // get the label function
+        const label = ws.getMultilingualValueImmediate(definition, 'Title') || this.translate.instant('Untitled');
+
+        // add the menu section if missing
+        if (!menu[definition.MainMenuSection]) {
+          definition.MainMenuSection = 'Miscellaneous';
+        }
+
+        // push the menu item
+        menu[definition.MainMenuSection].items.push({
+          label,
+          sortKey: definition.MainMenuSortKey,
+          icon: definition.MainMenuIcon || 'folder',
+          link: `../report/${definitionId}`
+        });
+      }
+    }
   }
 
   private addDefinitions(

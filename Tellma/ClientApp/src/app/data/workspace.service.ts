@@ -351,10 +351,6 @@ export class TenantWorkspace {
       return false;
     }
 
-    if (view === 'all') {
-      return true;
-    }
-
     const viewPerms = this.permissions[view];
     const allPerms = this.permissions.all;
     return (!!viewPerms || !!allPerms);

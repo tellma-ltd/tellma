@@ -646,12 +646,13 @@ namespace Tellma.Data
             return (version, permissions);
         }
 
-        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>)> Definitions__Load()
+        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>, IEnumerable<ReportDefinition>)> Definitions__Load()
         {
             Guid version;
             List<LookupDefinition> lookupDefinitions = new List<LookupDefinition>();
             List<AgentDefinition> agentDefinitions = new List<AgentDefinition>();
             List<ResourceDefinition> resourceDefinitions = new List<ResourceDefinition>();
+            List<ReportDefinition> reportDefinitions = new List<ReportDefinition>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -673,9 +674,9 @@ namespace Tellma.Data
                 }
 
                 // Next load lookup definitions
-                await reader.NextResultAsync();
-
                 var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+
+                await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {
                     var entity = new LookupDefinition();
@@ -692,9 +693,9 @@ namespace Tellma.Data
                 }
 
                 // Next load agent definitions
-                await reader.NextResultAsync();
-
                 var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                
+                await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {
                     var entity = new AgentDefinition();
@@ -711,9 +712,9 @@ namespace Tellma.Data
                 }
 
                 // Next load resource definitions
-                await reader.NextResultAsync();
-
                 var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+
+                await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {
                     var entity = new ResourceDefinition();
@@ -728,9 +729,132 @@ namespace Tellma.Data
 
                     resourceDefinitions.Add(entity);
                 }
+
+
+                // Next load report definitions
+                await reader.NextResultAsync();
+
+                var reportDefinitionsDic = new Dictionary<string, ReportDefinition>();
+                var reportDefinitionProps = typeof(ReportDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportDefinition();
+                    foreach (var prop in reportDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    reportDefinitionsDic[entity.Id] = entity;
+                }
+
+                // Parameters
+                var reportParameterDefinitionProps = typeof(ReportParameterDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportParameterDefinition();
+                    foreach (var prop in reportParameterDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    reportDefinition.Parameters ??= new List<ReportParameterDefinition>();
+                    reportDefinition.Parameters.Add(entity);
+                }
+
+                // Select
+                var reportSelectDefinitionProps = typeof(ReportSelectDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportSelectDefinition();
+                    foreach (var prop in reportSelectDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    reportDefinition.Select ??= new List<ReportSelectDefinition>();
+                    reportDefinition.Select.Add(entity);
+                }
+
+                // Rows
+                var reportRowDefinitionProps = typeof(ReportRowDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportRowDefinition();
+                    foreach (var prop in reportRowDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    reportDefinition.Rows ??= new List<ReportRowDefinition>();
+                    reportDefinition.Rows.Add(entity);
+                }
+
+                // Columns
+                var reportColumnDefinitionProps = typeof(ReportColumnDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportColumnDefinition();
+                    foreach (var prop in reportColumnDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    reportDefinition.Columns ??= new List<ReportColumnDefinition>();
+                    reportDefinition.Columns.Add(entity);
+                }
+
+                // Measures
+                var reportMeasureDefinitionProps = typeof(ReportMeasureDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new ReportMeasureDefinition();
+                    foreach (var prop in reportMeasureDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    reportDefinition.Measures ??= new List<ReportMeasureDefinition>();
+                    reportDefinition.Measures.Add(entity);
+                }
+
+                reportDefinitions = reportDefinitionsDic.Values.ToList();
             }
 
-            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions);
+            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions, reportDefinitions);
         }
 
         #endregion

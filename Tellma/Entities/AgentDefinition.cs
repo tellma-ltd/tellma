@@ -52,7 +52,7 @@ namespace Tellma.Entities
 
         [Display(Name = "MainMenuSortKey")]
         [AlwaysAccessible]
-        public decimal MainMenuSortKey { get; set; }
+        public decimal? MainMenuSortKey { get; set; }
 
 
         // TODO: Add metadata

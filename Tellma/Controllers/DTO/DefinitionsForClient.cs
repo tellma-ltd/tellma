@@ -89,12 +89,6 @@ namespace Tellma.Controllers.Dto
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public string Visibility { get; set; }
-        public string Control { get; set; }
-        public string Collection { get; set; }
-        public string DefinitionId { get; set; }
-        public string Filter { get; set; }
-        public int MinDecimalPlaces { get; set; }
-        public int MaxDecimalPlaces { get; set; }
         public string Value { get; set; }
     }
 

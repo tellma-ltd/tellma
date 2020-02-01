@@ -230,9 +230,22 @@ namespace Tellma.Controllers
 
         private async Task<GetByIdResponse<User>> GetMyUserImpl()
         {
-            int myId = _appRepo.GetUserInfo().UserId.Value;
-            var response = await GetByIdImplAsync(myId, null);
-            return response;
+            int meId = _appRepo.GetUserInfo().UserId.Value;
+
+            // Prepare the odata query
+            var me = await _appRepo.Users.FilterByIds(meId).FirstOrDefaultAsync();
+
+            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+            var relatedEntities = FlattenAndTrim(new List<User> { me }, null);
+
+            // Return
+            return new GetByIdResponse<User>
+            {
+                Result = me,
+                CollectionName = GetCollectionName(typeof(User)),
+                RelatedEntities = relatedEntities
+            };
+
         }
 
         private async Task<GetByIdResponse<User>> SaveMyUserImpl([FromBody] MyUserForSave me)
