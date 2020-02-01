@@ -20,6 +20,8 @@ import { metadata_ResponsibilityCenter } from '../responsibility-center';
 import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
 import { metadata_SummaryEntry } from '../summary-entry';
+import { metadata_DetailsEntry } from '../details-entry';
+import { metadata_Line } from '../line';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -38,6 +40,8 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     ResponsibilityCenter: metadata_ResponsibilityCenter,
     EntryType: metadata_EntryType,
     SummaryEntry: metadata_SummaryEntry,
+    DetailsEntry: metadata_DetailsEntry,
+    Line: metadata_Line,
     Document: metadata_Document,
 
     // Temp
@@ -46,12 +50,14 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 
 let _collections: SelectorChoice[];
 
-export function collections(ws: TenantWorkspace, trx: TranslateService) {
+export function collectionsWithEndpoint(ws: TenantWorkspace, trx: TranslateService): SelectorChoice[] {
     if (!_collections) {
-        _collections = Object.keys(metadata).map(key => ({
-            value: key,
-            name: metadata[key](ws, trx, null).titlePlural
-        }));
+        _collections = Object.keys(metadata)
+            .filter(key => !!metadata[key](ws, trx, null).apiEndpoint)
+            .map(key => ({
+                value: key,
+                name: metadata[key](ws, trx, null).titlePlural
+            }));
     }
 
     return _collections;
@@ -97,7 +103,7 @@ export interface EntityDescriptor {
     /**
      * The server endpoint from which to retrieve Entities of this type, after the 'https://web.tellma.com/api/' part.
      */
-    apiEndpoint: string;
+    apiEndpoint?: string;
 
     /**
      * Any built-in parameters that are needed for the query
@@ -107,7 +113,7 @@ export interface EntityDescriptor {
     /**
      * The url of the screen that displays this type after the 'https://web.tellma.com/app/101/' part.
      */
-    screenUrl: string;
+    screenUrl?: string;
 
     /**
      * A function that returns a display string representing the entity.
@@ -130,7 +136,7 @@ export interface EntityDescriptor {
     definitionIdsArray?: SelectorChoice[];
 }
 
-export interface ParameterDescriptor  {
+export interface ParameterDescriptor {
     key: string;
     desc: PropDescriptor;
     isRequired?: boolean;

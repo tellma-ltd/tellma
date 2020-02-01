@@ -331,6 +331,21 @@
   <data name="Description" xml:space="preserve">
     <value>描述</value>
   </data>
+  <data name="DetailsEntries" xml:space="preserve">
+    <value>详细条目</value>
+  </data>
+  <data name="DetailsEntry" xml:space="preserve">
+    <value>详情进入</value>
+  </data>
+  <data name="DetailsEntry_NormalizedCount" xml:space="preserve">
+    <value>标准化的计数</value>
+  </data>
+  <data name="DetailsEntry_NormalizedMass" xml:space="preserve">
+    <value>规范化质量</value>
+  </data>
+  <data name="DetailsEntry_NormalizedVolume" xml:space="preserve">
+    <value>标准体积</value>
+  </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>禁用双因素认证（2FA）</value>
   </data>
@@ -472,6 +487,15 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
+  <data name="Entry_Direction" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="Entry_Direction_Credit" xml:space="preserve">
+    <value>信用</value>
+  </data>
+  <data name="Entry_Direction_Debit" xml:space="preserve">
+    <value>借方</value>
+  </data>
   <data name="Entry_DueDate" xml:space="preserve">
     <value>截止日期</value>
   </data>
@@ -480,6 +504,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
+  </data>
+  <data name="Entry_Line" xml:space="preserve">
+    <value>线</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>块</value>
@@ -706,6 +733,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>用代码的视图“{0}”不被激活。</value>
   </data>
+  <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
+    <value>标题需要显示在主菜单中的报告</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
   </data>
@@ -859,17 +889,29 @@
   <data name="LegacyTypes" xml:space="preserve">
     <value>资源分类</value>
   </data>
+  <data name="Line" xml:space="preserve">
+    <value>线</value>
+  </data>
   <data name="Line_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
   <data name="Line_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
+  <data name="Line_Definition" xml:space="preserve">
+    <value>定义</value>
+  </data>
+  <data name="Line_Document" xml:space="preserve">
+    <value>文献</value>
+  </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>量</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="Lines" xml:space="preserve">
+    <value>行</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>被锁在外面</value>
@@ -1267,6 +1309,9 @@
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
     <value>显示列总计</value>
   </data>
+  <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
+    <value>显示在主菜单</value>
+  </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
     <value>展会共行</value>
   </data>
@@ -1446,6 +1491,12 @@
   </data>
   <data name="Settings" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="Settings_ArchiveDate" xml:space="preserve">
+    <value>存档日期</value>
+  </data>
+  <data name="Settings_ArchiveDateDescription" xml:space="preserve">
+    <value>修改交易是不允许在此日期之前</value>
   </data>
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>品牌颜色</value>

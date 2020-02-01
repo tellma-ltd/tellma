@@ -331,6 +331,21 @@
   <data name="Description" xml:space="preserve">
     <value>البيان</value>
   </data>
+  <data name="DetailsEntries" xml:space="preserve">
+    <value>أسطر مفصلة</value>
+  </data>
+  <data name="DetailsEntry" xml:space="preserve">
+    <value>سطر مفصل</value>
+  </data>
+  <data name="DetailsEntry_NormalizedCount" xml:space="preserve">
+    <value>العدد المطبع</value>
+  </data>
+  <data name="DetailsEntry_NormalizedMass" xml:space="preserve">
+    <value>الكتلة المطبعة</value>
+  </data>
+  <data name="DetailsEntry_NormalizedVolume" xml:space="preserve">
+    <value>الحجم المطبع</value>
+  </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>تعطيل التوثيق مزدوج العوامل</value>
   </data>
@@ -472,6 +487,15 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
+  <data name="Entry_Direction" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="Entry_Direction_Credit" xml:space="preserve">
+    <value>دائن</value>
+  </data>
+  <data name="Entry_Direction_Debit" xml:space="preserve">
+    <value>مدين</value>
+  </data>
   <data name="Entry_DueDate" xml:space="preserve">
     <value>تاريخ الاستحقاق</value>
   </data>
@@ -480,6 +504,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
+  </data>
+  <data name="Entry_Line" xml:space="preserve">
+    <value>السطر</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>الكتلة</value>
@@ -706,6 +733,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>الواجهة ذات الكود ({0}) غير منشطة</value>
   </data>
+  <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
+    <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
   </data>
@@ -859,17 +889,29 @@
   <data name="LegacyTypes" xml:space="preserve">
     <value>أنواع سابقة</value>
   </data>
+  <data name="Line" xml:space="preserve">
+    <value>سطر</value>
+  </data>
   <data name="Line_Agent" xml:space="preserve">
     <value>الذمة</value>
   </data>
   <data name="Line_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
+  <data name="Line_Definition" xml:space="preserve">
+    <value>التعريف</value>
+  </data>
+  <data name="Line_Document" xml:space="preserve">
+    <value>المستند</value>
+  </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>المبلغ النقدي</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>المورد</value>
+  </data>
+  <data name="Lines" xml:space="preserve">
+    <value>أسطر</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>حساب معلق</value>

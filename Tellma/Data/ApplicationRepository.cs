@@ -299,6 +299,9 @@ namespace Tellma.Data
                     return "[map].[ReportMeasureDefinitions]()";
 
                 // Parametered fact tables
+                case nameof(DetailsEntry):
+                    return "[map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId)";
+
                 case nameof(SummaryEntry):
                     return "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)";
 

@@ -4,7 +4,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  ChoicePropDescriptor, getChoices, collections, metadata, entityDescriptorImpl,
+  ChoicePropDescriptor, getChoices, collectionsWithEndpoint, metadata, entityDescriptorImpl,
   isNumeric, PropDescriptor, ParameterDescriptor, EntityDescriptor
 } from '~/app/data/entities/base/metadata';
 import {
@@ -250,7 +250,8 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
             parameterDef = {
               Id: 0,
               Key: key,
-              Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' : 'Optional',
+              Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' :
+                !!builtInMatch && !builtInMatch.isRequired ? 'None' : 'Optional',
             };
 
             modelTracker[keyLower] = parameterDef;
@@ -294,7 +295,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get allCollections(): SelectorChoice[] {
-    return collections(this.ws, this.translate);
+    return collectionsWithEndpoint(this.ws, this.translate);
   }
 
   public showDefinitionIdSelector(model: ReportDefinition): boolean {

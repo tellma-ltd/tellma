@@ -118,5 +118,9 @@ namespace Tellma.Entities
         [Display(Name = "Line_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
+
+        [Display(Name = "Line_Document")]
+        [ForeignKey(nameof(DocumentId))]
+        public Document Document { get; set; }
     }
 }
