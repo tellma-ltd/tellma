@@ -15,10 +15,14 @@ BEGIN
 			[Concept],
 			[Value]
 	)
-	SELECT [AT].[Code] , SUM(E.[Direction] * E.[Value]) AS [Value]
-	FROM [map].[DetailsEntries] (NULL, @toDate, NULL, NULL, NULL) E
-	JOIN dbo.[AccountTypes] [AT] ON E.[AccountTypeId] = [AT].[Id]
-	WHERE [AT].[Code] IN (
+	SELECT [AT].[Code] , SUM(E.[Value]) AS [Value]
+	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	WHERE D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	AND [AT].[Code] IN (
 		N'PropertyPlantAndEquipment',
 		N'InvestmentProperty',
 		N'Goodwill',

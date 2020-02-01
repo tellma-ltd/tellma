@@ -4,6 +4,7 @@
 	@CountUnitId INT,
 	@MassUnitId INT,
 	@VolumeUnitId INT
+	-- TODO: rewrite using summary entries
 AS
 BEGIN
 	WITH FinishedGoodsAccountTypes AS (
@@ -28,7 +29,7 @@ BEGIN
 			R.[Lookup1Id], J.[AgentId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
-		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
+		FROM [rpt].[Entries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.Id
 		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension

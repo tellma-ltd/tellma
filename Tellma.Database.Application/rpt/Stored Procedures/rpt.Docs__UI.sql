@@ -35,7 +35,7 @@ WITH Docs AS (
 	,
 	DocsFirst AS (
 		SELECT L.DocumentId, MIN(E.[LineId]) AS [LineId]
-		FROM [Entries] E
+		FROM dbo.[Entries] E
 		LEFT JOIN dbo.[Lines] L ON E.[LineId] = L.Id
 		WHERE L.DocumentId IN (SELECT [Id] FROM @DIds)
 		GROUP BY L.DocumentId

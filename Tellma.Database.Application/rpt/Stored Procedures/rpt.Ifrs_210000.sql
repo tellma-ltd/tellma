@@ -73,11 +73,16 @@ BEGIN
 			[Concept],
 			[Value]
 	)
-	SELECT M.[Concept],	SUM(E.[Direction] * E.[Value]) AS [Value]
-	FROM [map].[DetailsEntries] (NULL, @toDate, NULL, NULL, NULL) E
-	JOIN #Mapping M
-	ON E.[AccountTypeId] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
+	SELECT M.[Concept],	SUM(E.[Value]) AS [Value]
+	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN #Mapping M ON [AT].[Code] = M.[AccountType]
+	--ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
 	AND E.[IsCurrent] = M.[IsCurrent]
+	WHERE D.DocumentDate < DATEADD(DAY, 1, @toDate)
 	GROUP BY M.[Concept]
 	
 	-- TODO: Calculate NoncontrollingInterests by adding weighted average of Equity for tenants

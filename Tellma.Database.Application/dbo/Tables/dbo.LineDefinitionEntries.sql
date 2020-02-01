@@ -17,14 +17,14 @@
 	[ResourceSource]			NVARCHAR (50),
 	[CurrencySource]			NVARCHAR (50),
 
-	[MonetaryValueSource]		NVARCHAR (50),
--- Tracking additive measures, the data type is to be decided by AA
-	[CountSource]				NVARCHAR (50),
-	[MassSource]				NVARCHAR (50),
-	[VolumeSource]				NVARCHAR (50),
-	[TimeSource]				NVARCHAR (50),
+--	[MonetaryValueSource]		NVARCHAR (50),
+---- Tracking additive measures, the data type is to be decided by AA
+--	[CountSource]				NVARCHAR (50),
+--	[MassSource]				NVARCHAR (50),
+--	[VolumeSource]				NVARCHAR (50),
+--	[TimeSource]				NVARCHAR (50),
 	
-	[ValueSource]				NVARCHAR (50),
+--	[ValueSource]				NVARCHAR (50),
 	[EntryTypeCode]				NVARCHAR (255),
 	[NotedAgentDefinitionId]	NVARCHAR (50),	
 	[QuantitySource]			NVARCHAR (50),

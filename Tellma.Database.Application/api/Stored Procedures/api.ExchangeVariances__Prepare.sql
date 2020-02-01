@@ -16,7 +16,7 @@ BEGIN
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],
 		[AccountId], -SUM([Direction] * E.[Value]) AS ValueBalance, SUM([Direction] * E.[MonetaryValue]) AS FXBalance
-		FROM [map].[DetailsEntries](NULL, @DocumentDate, NULL, NULL, NULL) E
+		FROM [rpt].[Entries](NULL, @DocumentDate, NULL, NULL, NULL) E
 		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		GROUP BY [AccountId]

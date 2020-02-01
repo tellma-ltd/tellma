@@ -21,11 +21,15 @@ BEGIN
 	SELECT
 		[AT].[Code] AS [RowConcept],
 		[ET].[Code] AS [ColumnConcept],
-		SUM(E.[Direction] * E.[Value]) AS [Value]
-	FROM [map].[DetailsEntries] (@fromDate, @toDate, NULL, NULL, NULL) E
-	JOIN dbo.[AccountTypes] [AT] ON E.[AccountTypeId] = [AT].[Id]
+		SUM(E.[Value]) AS [Value]
+	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
-	WHERE [AT].[Code] IN (
+	WHERE (@fromDate <= D.DocumentDate) AND (D.DocumentDate < DATEADD(DAY, 1, @toDate))
+	AND [AT].[Code] IN (
 		N'IssuedCapital',
 		N'RetainedEarnings',
 		N'SharePremium',

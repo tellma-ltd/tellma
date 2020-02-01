@@ -20,7 +20,7 @@ BEGIN
 	--EXEC bll.[WideLines__Preprocess] @WideLines;
 
 	DECLARE @LineDefinitionId NVARCHAR (50);
-	DECLARE @sp_name NVARCHAR (500);
+	DECLARE @Script NVARCHAR (500);
 
 	SELECT @LineDefinitionId = MIN([DefinitionId])
 	FROM @WideLines WL
@@ -29,13 +29,13 @@ BEGIN
 	
 	WHILE @LineDefinitionId IS NOT NULL
 	BEGIN
-		SELECT @sp_name = [Script] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+		SELECT @Script = [Script] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 		DECLARE @WL dbo.[WideLineList]; DELETE FROM @WL;
 		INSERT INTO @WL SELECT * FROM @WideLines WHERE [DefinitionId] = @LineDefinitionId;
 
 		INSERT INTO @PreprocessedWideLines
-		EXEC @sp_name @WL;
+		EXECUTE	sp_executesql @Script, N'@WideLines WideLineList READONLY', @WideLines = @WideLines;
 
 		SET @LineDefinitionId = (
 			SELECT MIN(WL.[DefinitionId])

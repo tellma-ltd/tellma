@@ -4,20 +4,25 @@
 AS 
 BEGIN
 	SELECT
-		A.[Name] As [Supplier], 
-		A.TaxIdentificationNumber As TIN, 
+		AG.[Name] As [Supplier], 
+		AG.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 		SUM(J.[MonetaryValue]) AS VAT,
 		SUM(J.[NotedAmount]) AS [Taxable Amount],
-		J.DocumentDate As [Invoice Date]
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
-	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
+		D.DocumentDate As [Invoice Date]
+	FROM [map].[DetailsEntries](NULL, NULL, NULL) J
+	LEFT JOIN [dbo].[Agents] AG ON J.[NotedAgentId] = AG.Id
+	JOIN dbo.Lines L ON J.[lineId] = L.[Id]
+	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+	JOIN dbo.Accounts A ON J.AccountId = A.[Id]
 	WHERE
-		J.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxReceivables')
+	@fromDate <= D.DocumentDate
+	AND D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	AND	A.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxReceivables')
 	AND J.Direction = 1
 	GROUP BY
-		A.[Name],
-		A.TaxIdentificationNumber,
+		AG.[Name],
+		AG.TaxIdentificationNumber,
 		J.ExternalReference, J.[AdditionalReference],
-		J.DocumentDate;
+		D.DocumentDate;
 END;

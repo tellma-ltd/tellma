@@ -202,7 +202,7 @@ BEGIN -- Inserting
 			FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
 			FORMAT(SUM(J.[NotedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 			J.DocumentDate As [Invoice Date]
-		FROM [map].[DetailsEntries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
+		FROM [rpt].[Entries]('2018.01.02', '2019.01.01', NULL, NULL, NULL) J
 
 		LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 		WHERE J.[AccountId] = @VATInput

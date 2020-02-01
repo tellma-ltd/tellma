@@ -30,6 +30,6 @@ RETURN
 		R.[Lookup2Id]--,
 		--R.[Lookup3Id],
 		--R.[Lookup4Id]
-	FROM [map].[DetailsEntries](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
+	FROM [rpt].[Entries](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	WHERE J.[AccountTypeId] = dbo.[fn_ATCode__Id]('TotalInventories')

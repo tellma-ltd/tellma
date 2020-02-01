@@ -28,13 +28,13 @@ RETURN
 		SELECT
 			[AccountId],
 			[CurrencyId],
-			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
-			SUM([Direction] * [Count]) AS [Count],
-			SUM([Direction] * [Mass]) AS [Mass],
-			SUM([Direction] * [Volume]) AS [Volume],
-			SUM([Direction] * [Time]) AS [Time],
-			SUM([Direction] * [Value]) AS [Opening]
-		FROM [map].[DetailsEntries](NULL, DATEADD(DAY, -1, @FromDate),  @CountUnitId, @MassUnitId, @VolumeUnitId)
+			SUM([MonetaryValue]) AS [MonetaryValue],
+			SUM([Count]) AS [Count],
+			SUM([Mass]) AS [Mass],
+			SUM([Volume]) AS [Volume],
+			SUM([Time]) AS [Time],
+			SUM([Value]) AS [Opening]
+		FROM [rpt].[Entries](NULL, DATEADD(DAY, -1, @FromDate),  @CountUnitId, @MassUnitId, @VolumeUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY AccountId, [CurrencyId]
 	),
@@ -42,18 +42,18 @@ RETURN
 		SELECT
 			[AccountId], [EntryTypeId], [CurrencyId],
 			SUM(CASE WHEN [Direction] > 0 THEN [MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
+			SUM(CASE WHEN [Direction] < 0 THEN -[MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
 
 			SUM(CASE WHEN [Direction] > 0 THEN [Count] ELSE 0 END) AS CountIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [Count] ELSE 0 END) AS CountOut,
+			SUM(CASE WHEN [Direction] < 0 THEN -[Count] ELSE 0 END) AS CountOut,
 			SUM(CASE WHEN [Direction] > 0 THEN [Mass] ELSE 0 END) AS MassIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [Mass] ELSE 0 END) AS MassOut,
+			SUM(CASE WHEN [Direction] < 0 THEN -[Mass] ELSE 0 END) AS MassOut,
 			SUM(CASE WHEN [Direction] > 0 THEN [Volume] ELSE 0 END) AS VolumeIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [Volume] ELSE 0 END) AS VolumeOut,
+			SUM(CASE WHEN [Direction] < 0 THEN -[Volume] ELSE 0 END) AS VolumeOut,
 
 			SUM(CASE WHEN [Direction] > 0 THEN [Value] ELSE 0 END) AS [Debit],
-			SUM(CASE WHEN [Direction] < 0 THEN [Value] ELSE 0 END) AS [Credit]
-		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
+			SUM(CASE WHEN [Direction] < 0 THEN -[Value] ELSE 0 END) AS [Credit]
+		FROM [rpt].[Entries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY AccountId, [EntryTypeId], [CurrencyId]
 	),

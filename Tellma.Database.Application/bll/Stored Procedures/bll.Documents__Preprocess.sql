@@ -51,29 +51,30 @@ FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.CurrencySource = N'Line.CurrencyId' --AND E.CurrencyId <> L.CurrencyId;
 
-UPDATE E 
-SET E.MonetaryValue = L.MonetaryValue
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.MonetaryValueSource = N'Line.MonetaryValue' --AND E.MonetaryValue <> L.MonetaryValue;
+-- Implemented using script
+--UPDATE E 
+--SET E.MonetaryValue = L.MonetaryValue
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.MonetaryValueSource = N'Line.MonetaryValue' --AND E.MonetaryValue <> L.MonetaryValue;
 
-UPDATE E 
-SET E.[Value] = L.[Value]
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ValueSource = N'Line.Value' --AND E.[Value] <> L.[Value];
+--UPDATE E 
+--SET E.[Value] = L.[Value]
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.ValueSource = N'Line.Value' --AND E.[Value] <> L.[Value];
 
-UPDATE E 
-SET E.NotedAmount = L.MonetaryValue
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' --AND E.NotedAmount <> L.MonetaryValue;
+--UPDATE E 
+--SET E.NotedAmount = L.MonetaryValue
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' --AND E.NotedAmount <> L.MonetaryValue;
 
-UPDATE E 
-SET E.NotedAmount = L.[Value]
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAmountSource = N'Line.Value' --AND E.NotedAmount <> L.[Value];
+--UPDATE E 
+--SET E.NotedAmount = L.[Value]
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.NotedAmountSource = N'Line.Value' --AND E.NotedAmount <> L.[Value];
 
 -- When no resource or agent, set to NULL
 UPDATE E
@@ -130,24 +131,24 @@ WHERE
 	E.[CurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] IS NULL OR E.[MonetaryValue] IS NULL);
 
-WITH NetVariances AS (
-	SELECT L.[Index],  L.DefinitionId, SUM(E.[Direction] * E.[Value]) AS Net
-	FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-	WHERE (LDE.ValueSource IS NULL OR LDE.ValueSource <> N'Balance')
-	GROUP BY L.[Index], L.DefinitionId
-)
-UPDATE E 
-SET E.[Value] = -E.[Direction] * L.Net
-FROM @PreprocessedEntries E JOIN NetVariances L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ValueSource = N'Balance';
+--WITH NetVariances AS (
+--	SELECT L.[Index],  L.DefinitionId, SUM(E.[Direction] * E.[Value]) AS Net
+--	FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--	WHERE (LDE.ValueSource IS NULL OR LDE.ValueSource <> N'Balance')
+--	GROUP BY L.[Index], L.DefinitionId
+--)
+--UPDATE E 
+--SET E.[Value] = -E.[Direction] * L.Net
+--FROM @PreprocessedEntries E JOIN NetVariances L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.ValueSource = N'Balance';
 
-UPDATE E 
-SET E.[MonetaryValue] = E.[Value]
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ValueSource = N'Balance' AND E.CurrencyId = dbo.fn_FunctionalCurrencyId();
+--UPDATE E 
+--SET E.[MonetaryValue] = E.[Value]
+--FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+--WHERE LDE.ValueSource = N'Balance' AND E.CurrencyId = dbo.fn_FunctionalCurrencyId();
 
 WITH ConformantAccounts AS (
 	SELECT A.[Id] AS AccountId, E.[Index]

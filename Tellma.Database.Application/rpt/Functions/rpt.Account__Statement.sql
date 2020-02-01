@@ -32,7 +32,7 @@ RETURN
 		[Memo],
 		[ExternalReference],
 		[AdditionalReference]
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL)
+	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL)
 	WHERE
 		(@AccountId					IS NULL	OR [AccountId]				= @AccountId)
 	AND (@ResponsibilityCenterId	IS NULL	OR [ResponsibilityCenterId] = @ResponsibilityCenterId)

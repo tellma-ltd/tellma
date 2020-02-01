@@ -115,16 +115,16 @@ SET NOCOUNT ON;
 			LDE.[AgentSource],
 			LDE.[ResourceSource],
 			LDE.[CurrencySource],
-			LDE.[MonetaryValueSource],
-			LDE.[CountSource],
-			LDE.[MassSource],
-			LDE.[VolumeSource],
-			LDE.[TimeSource],
-			LDE.[ValueSource],
+			--LDE.[MonetaryValueSource],
+			--LDE.[CountSource],
+			--LDE.[MassSource],
+			--LDE.[VolumeSource],
+			--LDE.[TimeSource],
+			--LDE.[ValueSource],
 			LDE.[EntryTypeCode],
 			LDE.[NotedAgentDefinitionId],
-			LDE.[NotedAgentSource],
-			LDE.[NotedAmountSource]
+			LDE.[NotedAgentSource]
+			--LDE.[NotedAmountSource]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
 	) AS s
@@ -139,16 +139,16 @@ SET NOCOUNT ON;
 		t.[AgentSource]					= s.[AgentSource],
 		t.[ResourceSource]				= s.[ResourceSource],
 		t.[CurrencySource]				= s.[CurrencySource],
-		t.[MonetaryValueSource]			= s.[MonetaryValueSource],
-		t.[CountSource]					= s.[CountSource],
-		t.[MassSource]					= s.[MassSource],
-		t.[VolumeSource]				= s.[VolumeSource],
-		t.[TimeSource]					= s.[TimeSource],
-		t.[ValueSource]					= s.[ValueSource],
+		--t.[MonetaryValueSource]			= s.[MonetaryValueSource],
+		--t.[CountSource]					= s.[CountSource],
+		--t.[MassSource]					= s.[MassSource],
+		--t.[VolumeSource]				= s.[VolumeSource],
+		--t.[TimeSource]					= s.[TimeSource],
+		--t.[ValueSource]					= s.[ValueSource],
 		t.[EntryTypeCode]				= s.[EntryTypeCode],
 		t.[NotedAgentDefinitionId]		= s.[NotedAgentDefinitionId],
-		t.[NotedAgentSource]			= s.[NotedAgentSource],
-		t.[NotedAmountSource]			= s.[NotedAmountSource]
+		t.[NotedAgentSource]			= s.[NotedAgentSource]
+		--t.[NotedAmountSource]			= s.[NotedAmountSource]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
@@ -162,16 +162,16 @@ WHEN NOT MATCHED BY TARGET THEN
 		[AgentSource],
 		[ResourceSource],
 		[CurrencySource],
-		[MonetaryValueSource],
-		[CountSource],
-		[MassSource],
-		[VolumeSource],
-		[TimeSource],
-		[ValueSource],
+		--[MonetaryValueSource],
+		--[CountSource],
+		--[MassSource],
+		--[VolumeSource],
+		--[TimeSource],
+		--[ValueSource],
 		[EntryTypeCode],
 		[NotedAgentDefinitionId],
-		[NotedAgentSource],
-		[NotedAmountSource]
+		[NotedAgentSource]
+		--[NotedAmountSource]
 	)
     VALUES (
 		s.[LineDefinitionId],
@@ -183,16 +183,16 @@ WHEN NOT MATCHED BY TARGET THEN
 		s.[AgentSource],
 		s.[ResourceSource],
 		s.[CurrencySource],
-		s.[MonetaryValueSource],
-		s.[CountSource],
-		s.[MassSource],
-		s.[VolumeSource],
-		s.[TimeSource],
-		s.[ValueSource],
+		--s.[MonetaryValueSource],
+		--s.[CountSource],
+		--s.[MassSource],
+		--s.[VolumeSource],
+		--s.[TimeSource],
+		--s.[ValueSource],
 		s.[EntryTypeCode],
 		s.[NotedAgentDefinitionId],
-		s.[NotedAgentSource],
-		s.[NotedAmountSource]
+		s.[NotedAgentSource]
+		--s.[NotedAmountSource]
 	);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
