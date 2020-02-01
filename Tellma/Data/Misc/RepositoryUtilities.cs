@@ -68,22 +68,26 @@ namespace Tellma.Data
             foreach (var entity in entities)
             {
                 int index = 0;
-                foreach (var line in linesFunc(entity))
+                var lines = linesFunc(entity);
+                if (lines != null)
                 {
-                    DataRow row = table.NewRow();
-
-                    // We add an index property since SQL works with un-ordered sets
-                    row["Index"] = index++;
-                    row["HeaderIndex"] = headerIndex;
-
-                    // Add the remaining properties
-                    foreach (var prop in props)
+                    foreach (var line in linesFunc(entity))
                     {
-                        var propValue = prop.GetValue(line);
-                        row[prop.Name] = propValue ?? DBNull.Value;
-                    }
+                        DataRow row = table.NewRow();
 
-                    table.Rows.Add(row);
+                        // We add an index property since SQL works with un-ordered sets
+                        row["Index"] = index++;
+                        row["HeaderIndex"] = headerIndex;
+
+                        // Add the remaining properties
+                        foreach (var prop in props)
+                        {
+                            var propValue = prop.GetValue(line);
+                            row[prop.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        table.Rows.Add(row);
+                    }
                 }
 
                 headerIndex++;

@@ -54,7 +54,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("ReportDefinition", responseData.CollectionName);
 
-            Assert.Equal(2, responseData.TotalCount);
+            Assert.Equal(0, responseData.TotalCount);
         }
 
         [Fact(DisplayName = "03 Getting a non-existent report definition id returns a 404 Not Found")]
@@ -127,7 +127,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                          Label = "Amount",
                          Label2 = "القيمة",
                          Label3 = "量",
-                         Value = "",
+                         Value = null,
                          Visibility = "Required"
                     }
                 },
@@ -155,7 +155,7 @@ namespace Tellma.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<ReportDefinitionForSave> { dtoForSave };
-            var response = await Client.PostAsJsonAsync(Url, dtosForSave);
+            var response = await Client.PostAsJsonAsync($"{Url}?expand=Parameters,Select,Rows,Columns,Measures", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -181,7 +181,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Rows, (responseRow) =>
             {
                 var rowForSave = dtoForSave.Rows[0];
-                Assert.NotEqual(0, rowForSave.Id);
+                Assert.NotEqual(0, responseRow.Id);
                 Assert.Equal(dtoForSave.Id, responseRow.ReportDefinitionId);
 
                 Assert.Equal(rowForSave.Path, responseRow.Path);
@@ -195,7 +195,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Columns, (responseCol) =>
             {
                 var colForSave = dtoForSave.Columns[0];
-                Assert.NotEqual(0, colForSave.Id);
+                Assert.NotEqual(0, responseCol.Id);
                 Assert.Equal(dtoForSave.Id, responseCol.ReportDefinitionId);
 
                 Assert.Equal(colForSave.Path, responseCol.Path);
@@ -209,7 +209,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Measures, (responseMeasure) =>
             {
                 var measureForSave = dtoForSave.Measures[0];
-                Assert.NotEqual(0, measureForSave.Id);
+                Assert.NotEqual(0, responseMeasure.Id);
                 Assert.Equal(dtoForSave.Id, responseMeasure.ReportDefinitionId);
 
                 Assert.Equal(measureForSave.Path, responseMeasure.Path);
@@ -227,7 +227,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Parameters, (responseParam) =>
             {
                 var paramForSave = dtoForSave.Parameters[0];
-                Assert.NotEqual(0, paramForSave.Id);
+                Assert.NotEqual(0, responseParam.Id);
                 Assert.Equal(dtoForSave.Id, responseParam.ReportDefinitionId);
 
                 Assert.Equal(paramForSave.Key, responseParam.Key);
@@ -267,7 +267,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var dtoForSave = Shared.Get<ReportDefinition>("Report1");
             var id = dtoForSave.Id;
-            var response = await Client.GetAsync($"{Url}/{id}");
+            var response = await Client.GetAsync($"{Url}/{id}?expand=Parameters,Select,Rows,Columns,Measures");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -288,7 +288,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Rows, (responseRow) =>
             {
                 var rowForSave = dtoForSave.Rows[0];
-                Assert.NotEqual(0, rowForSave.Id);
+                Assert.NotEqual(0, responseRow.Id);
                 Assert.Equal(dtoForSave.Id, responseRow.ReportDefinitionId);
 
                 Assert.Equal(rowForSave.Path, responseRow.Path);
@@ -302,7 +302,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Columns, (responseCol) =>
             {
                 var colForSave = dtoForSave.Columns[0];
-                Assert.NotEqual(0, colForSave.Id);
+                Assert.NotEqual(0, responseCol.Id);
                 Assert.Equal(dtoForSave.Id, responseCol.ReportDefinitionId);
 
                 Assert.Equal(colForSave.Path, responseCol.Path);
@@ -316,7 +316,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Measures, (responseMeasure) =>
             {
                 var measureForSave = dtoForSave.Measures[0];
-                Assert.NotEqual(0, measureForSave.Id);
+                Assert.NotEqual(0, responseMeasure.Id);
                 Assert.Equal(dtoForSave.Id, responseMeasure.ReportDefinitionId);
 
                 Assert.Equal(measureForSave.Path, responseMeasure.Path);
@@ -334,7 +334,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Parameters, (responseParam) =>
             {
                 var paramForSave = dtoForSave.Parameters[0];
-                Assert.NotEqual(0, paramForSave.Id);
+                Assert.NotEqual(0, responseParam.Id);
                 Assert.Equal(dtoForSave.Id, responseParam.ReportDefinitionId);
 
                 Assert.Equal(paramForSave.Key, responseParam.Key);
