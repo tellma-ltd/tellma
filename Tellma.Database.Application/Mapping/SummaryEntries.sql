@@ -1,5 +1,4 @@
 ﻿	CREATE FUNCTION [map].[SummaryEntries] (
-	--TODO: make the filtering of these parameters from NormalizedJournal
 	@FromDate Date = '01.01.2018',
 	@ToDate Date = '01.01.2019',
 	@ResponsibilityCenterId INT = NULL,
@@ -26,36 +25,45 @@ RETURN
 	),
 	OpeningBalances AS (
 		SELECT
-			[AccountId],
-			[CurrencyId],
-			SUM([MonetaryValue]) AS [MonetaryValue],
-			SUM([Count]) AS [Count],
-			SUM([Mass]) AS [Mass],
-			SUM([Volume]) AS [Volume],
-			SUM([Time]) AS [Time],
-			SUM([Value]) AS [Opening]
-		FROM [rpt].[Entries](NULL, DATEADD(DAY, -1, @FromDate),  @CountUnitId, @MassUnitId, @VolumeUnitId)
-		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
-		GROUP BY AccountId, [CurrencyId]
+			E.[AccountId],
+			E.[CurrencyId],
+			SUM(E.[AlgebraicMonetaryValue]) AS [MonetaryValue],
+			SUM(E.[AlgebraicCount]) AS [Count],
+			SUM(E.[AlgebraicMass]) AS [Mass],
+			SUM(E.[AlgebraicVolume]) AS [Volume],
+			SUM(E.[AlgebraicTime]) AS [Time],
+			SUM(E.[AlgebraicValue]) AS [Opening]
+		FROM [map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId) E
+		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
+		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
+		WHERE 
+			(@fromDate IS NOT NULL AND D.[DocumentDate] < @fromDate)
+		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
+		GROUP BY E.AccountId, E.[CurrencyId]
 	),
 	Movements AS (
 		SELECT
-			[AccountId], [EntryTypeId], [CurrencyId],
-			SUM(CASE WHEN [Direction] > 0 THEN [MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
-			SUM(CASE WHEN [Direction] < 0 THEN -[MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
+			E.[AccountId], E.[EntryTypeId], E.[CurrencyId],
+			SUM(CASE WHEN [Direction] > 0 THEN E.[MonetaryValue] ELSE 0 END) AS MonetaryValueIn,
+			SUM(CASE WHEN [Direction] < 0 THEN -E.[MonetaryValue] ELSE 0 END) AS MonetaryValueOut,
 
-			SUM(CASE WHEN [Direction] > 0 THEN [Count] ELSE 0 END) AS CountIn,
-			SUM(CASE WHEN [Direction] < 0 THEN -[Count] ELSE 0 END) AS CountOut,
-			SUM(CASE WHEN [Direction] > 0 THEN [Mass] ELSE 0 END) AS MassIn,
-			SUM(CASE WHEN [Direction] < 0 THEN -[Mass] ELSE 0 END) AS MassOut,
-			SUM(CASE WHEN [Direction] > 0 THEN [Volume] ELSE 0 END) AS VolumeIn,
-			SUM(CASE WHEN [Direction] < 0 THEN -[Volume] ELSE 0 END) AS VolumeOut,
+			SUM(CASE WHEN [Direction] > 0 THEN E.[Count] ELSE 0 END) AS CountIn,
+			SUM(CASE WHEN [Direction] < 0 THEN -E.[Count] ELSE 0 END) AS CountOut,
+			SUM(CASE WHEN [Direction] > 0 THEN E.[Mass] ELSE 0 END) AS MassIn,
+			SUM(CASE WHEN [Direction] < 0 THEN -E.[Mass] ELSE 0 END) AS MassOut,
+			SUM(CASE WHEN [Direction] > 0 THEN E.[Volume] ELSE 0 END) AS VolumeIn,
+			SUM(CASE WHEN [Direction] < 0 THEN -E.[Volume] ELSE 0 END) AS VolumeOut,
 
-			SUM(CASE WHEN [Direction] > 0 THEN [Value] ELSE 0 END) AS [Debit],
-			SUM(CASE WHEN [Direction] < 0 THEN -[Value] ELSE 0 END) AS [Credit]
-		FROM [rpt].[Entries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
-		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
-		GROUP BY AccountId, [EntryTypeId], [CurrencyId]
+			SUM(CASE WHEN [Direction] > 0 THEN E.[Value] ELSE 0 END) AS [Debit],
+			SUM(CASE WHEN [Direction] < 0 THEN -E.[Value] ELSE 0 END) AS [Credit]
+		FROM [map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId) E
+		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
+		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
+		WHERE 
+			(@fromDate IS NULL OR D.[DocumentDate] >= @fromDate)
+		AND (@toDate IS NULL OR D.[DocumentDate] < DATEADD(DAY, 1, @toDate))
+		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
+		GROUP BY E.AccountId, E.[EntryTypeId], E.[CurrencyId]
 	),
 	Register AS (
 		SELECT

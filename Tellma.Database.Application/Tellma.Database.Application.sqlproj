@@ -170,7 +170,6 @@
     <Build Include="dbo\Stored Procedures\dbo.rpt_AssetRegister.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccountBalances.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__EmploymentIncomeTax.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_PurchasesSummary.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__WitholdingTaxOnPayment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_Paysheet.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccount__Statement.sql" />
@@ -545,6 +544,7 @@
     <Build Include="Mapping\ReportColumnDefinitions.sql" />
     <Build Include="Mapping\ReportMeasureDefinitions.sql" />
     <Build Include="rpt\Functions\rpt.Entries.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.ERCA__VAT_PurchasesSummary.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

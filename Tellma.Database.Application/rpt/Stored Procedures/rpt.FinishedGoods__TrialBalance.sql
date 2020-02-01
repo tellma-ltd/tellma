@@ -6,7 +6,7 @@
 	@MassUnitId INT,
 	@VolumeUnitId INT
 AS
--- WARNING: Based on smart accounts only
+-- WARNING: Useful only when all the FG accounts have HasResource = 1
 BEGIN
 	WITH JournalSummary
 	AS (
@@ -17,7 +17,7 @@ BEGIN
 			@FromDate,
 			@ToDate,
 			@ResponsibilityCenterId,
-			N'storage-custodies',
+			NULL,
 			N'FinishedGoods', 
 			@CountUnitId,
 			@MassUnitId,
