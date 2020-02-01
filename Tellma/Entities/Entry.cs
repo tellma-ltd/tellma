@@ -85,8 +85,6 @@ namespace Tellma.Entities
     {
         public int? LineId { get; set; }
 
-        public decimal? AlgebraicValue { get; set; }
-
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
