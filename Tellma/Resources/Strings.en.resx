@@ -364,11 +364,11 @@
   <data name="Document_AssignedBy" xml:space="preserve">
     <value>Assigned By</value>
   </data>
+  <data name="Document_Assignee" xml:space="preserve">
+    <value>Assignee</value>
+  </data>
   <data name="Document_AssignmentsHistory" xml:space="preserve">
     <value>Circulation</value>
-  </data>
-  <data name="Document_Assingee" xml:space="preserve">
-    <value>Assignee</value>
   </data>
   <data name="Document_Attachments" xml:space="preserve">
     <value>Attachments</value>
