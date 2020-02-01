@@ -21,7 +21,7 @@ BEGIN
 		[NotedAgentId] As [OtherParty],
 		-- TODO: where to show the related currency?
 		[NotedAmount] As [OtherPartyAmount]
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL)
+	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL)
 	WHERE [AccountId] = @AccountId;
 END;
 GO;

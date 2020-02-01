@@ -8,7 +8,7 @@ BEGIN
 		J.ExternalReference AS RCPT_NUM, J.DocumentDate As RCPT_Date,  J.[Mass],
 		J.[NotedAmount] As Price, N'' AS COM_CODE, N'' As COM_DETAIL, -- maybe use RC.IfrsResourceClassification instead
 		N'' As [Description]
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
+	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN dbo.Agents A ON J.[NotedAgentId] = A.Id
 	WHERE
 		J.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxPayables')

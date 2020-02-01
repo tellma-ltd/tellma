@@ -11,7 +11,7 @@ AS
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
 			SUM([Value]) As [Value]
-	FROM [map].[DetailsEntries](NULL, @AsOfDate, NULL, NULL, NULL)
+	FROM [rpt].[Entries](NULL, @AsOfDate, NULL, NULL, NULL)
 	WHERE [AccountTypeId] = dbo.[fn_ATCode__Id]('TotalInventories')
 	GROUP BY
 			[AccountId],

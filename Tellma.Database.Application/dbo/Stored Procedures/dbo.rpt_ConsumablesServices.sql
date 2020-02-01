@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_ConsumablesServices]
+-- TODO: rewrite based on SumaryEntries
 	@fromDate Date = '01.01.2020',
 	@toDate Date = '01.01.2020'
 AS
@@ -7,7 +8,7 @@ BEGIN
 		SELECT
 			CO.[Id], CO.[Name], CO.[Name2], CO.[Name3], CO.[CostObjectType],
 			SUM(J.[Direction] * J.[Value]) AS [Expense]
-		FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
+		FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
 		JOIN dbo.[Agents] CO ON J.[AgentId] = CO.Id AND J.[AgentDefinitionId] = CO.[DefinitionId]
 		WHERE CO.[CostObjectType] IN (
 			N'CostUnit',

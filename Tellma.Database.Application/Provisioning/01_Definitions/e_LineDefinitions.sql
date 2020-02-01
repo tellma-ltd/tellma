@@ -21,15 +21,32 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
 
 INSERT @LineDefinitions([Index],
-[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionId], [Script]) VALUES
-(1,N'PurchaseInvoice',	N'Purchase Invoice',	N'فاتورة مشتريات',	N'Purchase Invoices',	N'فواتير مشتريات',	N'suppliers',		N'dbo.Test');
+[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionId]) VALUES
+(1,N'PurchaseInvoice',	N'Purchase Invoice',	N'فاتورة مشتريات',	N'Purchase Invoices',	N'فواتير مشتريات',	N'suppliers');
+
+UPDATE @LineDefinitions
+SET [Script] = N'
+	SET NOCOUNT ON
+	DECLARE @ProcessedWideLines WideLineList;
+
+	INSERT INTO @ProcessedWideLines
+	SELECT * FROM @WideLines;
+	-----
+	UPDATE @ProcessedWideLines
+	SET
+		[Value0] = [Value1] * 0.15,
+		[Value2] = [Value1] * 1.15,
+		[NotedAmount0] = [Value1]
+	-----
+	SELECT * FROM @ProcessedWideLines;'
+WHERE [Index] = 1;
 -- Source = -1 (n/a), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 -- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Noted in Line, 7:
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],[AccountTypeParentCode],		[AgentDefinitionList],[ResponsibilityCenterSource], [AgentSource],	[CurrencySource],		[MonetaryValueSource], [ValueSource],	[NotedAgentSource], [NotedAmountSource]) VALUES
-(0,1,0,+1,	N'ValueAddedTaxPayables',				NULL,			N'Line.ResponsibilityCenterId',	NULL,			N'FunctionalCurrencyId',NULL,					NULL,			N'Line.AgentId',	N'Line.Value'),
-(1,1,1,+1,	N'Accruals',							N'suppliers',	N'Line.ResponsibilityCenterId',	N'Line.AgentId',N'FunctionalCurrencyId',NULL,					N'Line.Value',	NULL,				NULL),
-(2,1,2,-1,	N'TradeAndOtherPayablesToTradeSuppliers',N'suppliers',	N'Line.ResponsibilityCenterId',	N'Line.AgentId',N'FunctionalCurrencyId',N'Balance',				N'Balance',		NULL,				NULL);
+[Direction],[AccountTypeParentCode],		[AgentDefinitionList],[ResponsibilityCenterSource], [AgentSource],	[CurrencySource],		[NotedAgentSource]) VALUES
+(0,1,0,+1,	N'ValueAddedTaxPayables',				NULL,			N'Line.ResponsibilityCenterId',	NULL,			N'FunctionalCurrencyId',N'Line.AgentId'),
+(1,1,1,+1,	N'Accruals',							N'suppliers',	N'Line.ResponsibilityCenterId',	N'Line.AgentId',N'FunctionalCurrencyId',NULL),
+(2,1,2,-1,	N'TradeAndOtherPayablesToTradeSuppliers',N'suppliers',	N'Line.ResponsibilityCenterId',	N'Line.AgentId',N'FunctionalCurrencyId',NULL);
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
@@ -37,9 +54,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
 (1,1,1,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		3,5), 
 (2,1,2,	N'Line.AgentId',				N'Supplier',			N'المورد',				3,4),
-(3,1,3,	N'Line.Value',					N'Price Excl. VAT',		N'المبلغ قبل الضريية',	1,4),
-(4,1,4,	N'Entry[0].Value',				N'VAT',					N'القيمة المضافة',		1,4),
-(5,1,5,	N'Entry[2].Value',				N'Total',				N'المبلغ بعد الضريبة',	1,4),-- script is needed to find sum
+(3,1,3,	N'Entry[1].Value',				N'Price Excl. VAT',		N'المبلغ قبل الضريية',	1,4),
+(4,1,4,	N'Entry[0].Value',				N'VAT',					N'القيمة المضافة',		1,1),
+(5,1,5,	N'Entry[2].Value',				N'Total',				N'المبلغ بعد الضريبة',	1,1),-- script is needed to find sum
 (6,1,6,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
 (7,1,7,	N'Line.ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4)
 ;
@@ -54,7 +71,7 @@ INSERT @LineDefinitions([Index],
 
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [CurrencySource]) VALUES
-(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,cashiers',	N'FunctionalCurrencyId');
+(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,employees',	N'FunctionalCurrencyId');
 
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],					[Label],				[Label2],					[IsRequiredForStateId],
@@ -79,25 +96,28 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 -- Stock receipt
 -- LC open
 -- Shipping Docs Receipt
-/*
--- NB: We defined a Pettycash payment to separate the business rules
-INSERT @LineDefinitions(
-[Id],					[TitleSingular],	[TitlePlural]) VALUES
-(N'PettyCashPayment',	N'Petty Cash Payment',		N'Petty Cash Payments')
-INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionSource], [ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [NotedAgentSource], [NotedAmountSource]) VALUES
-(N'PettyCashPayment',		0,			4,				N'Cash',			1,								-1,					1,					1,				-1,					-1,						-1);
-INSERT INTO @LineDefinitionColumns
-([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
-(N'PettyCashPayment',		0,		N'Line.Description',					N'Description'), 
-(N'PettyCashPayment',		1,		N'Entry[0].MonetaryAmount',				N'Pay Amount'), 
-(N'PettyCashPayment',		2,		N'Entry[0].CurrencyId',					N'Pay Currency'),
-(N'PettyCashPayment',		3,		N'Entry[0].AdditionalReference',		N'Beneficiary'),
-(N'PettyCashPayment',		4,		N'Entry[0].EntryClassification',		N'Purpose'),
-(N'CashPayment',			5,		N'Entry[0].AgentId',					N'Cashier'), -- TODO: Read it from document
-(N'PettyCashPayment',		6,		N'Entry[0].ExternalReference',			N'Receipt #')
-;
 
+-- NB: We defined a Pettycash payment to separate the business rules
+INSERT @LineDefinitions([Index],
+[Id],				[TitleSingular],			[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
+3,N'PettyCashPayment',	N'Petty Cash Payment',	N'دفعية نثرية',		N'Petty Cash Payments',	N'دفعيات النثرية');
+
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [CurrencySource]) VALUES
+(0,3,0,-1,		N'CashAndCashEquivalents',	N'employees',			N'FunctionalCurrencyId');
+
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+[SortKey],	[ColumnName],					[Label],					[Label2],			[IsRequiredForStateId],
+																							[IsReadOnlyFromStateId]) VALUES
+(0,3,0,		N'Line.Memo',					N'Memo',					N'البيان',			1,4), 
+(1,3,1,		N'Entry[0].MonetaryValue',		N'Pay Amount',				N'المبلغ',			1,2), 
+(2,3,2,		N'Entry[0].NotedAgentName',		N'Beneficiary',				N'المستفيد',		1,2),
+(3,3,3,		N'Entry[0].EntryTypeId',		N'Purpose',					N'الغرض',			4,4),
+(4,3,4,		N'Entry[0].AgentId',			N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
+(5,3,5,		N'Entry[0].ExternalReference',	N'Receipt #',				N'رقم الإيصال',		3,4),
+(6,3,7,		N'Entry[0].ResponsibilityCenterId',N'Responsibility Center',N'مركز المسؤولية',	4,4)
+;
+/*
 -- TODO: this is still unfinished
 INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES

@@ -9,7 +9,7 @@ BEGIN
 		A.[Name] As [Employee Full Name],
 		J.[NotedAmount] As [Taxable Income], 
 		J.[MonetaryValue] As [Tax Withheld]
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
+	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	WHERE J.[AccountId] = @AccountId
 	AND J.Direction = -1;

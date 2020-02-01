@@ -40,24 +40,20 @@ BEGIN
 		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
 	WHERE [DocumentIndex] = 2 AND [Index] = 0;
 
---(0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,				0), 
---(1,1,1,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		0,				0), 
---(2,1,2,	N'Line.AgentId',				N'Supplier',			N'المورد',				0,				0),
---(3,1,3,	N'Line.Value',					N'Price Excl. VAT',		N'المبلغ قبل الضريية',	0,				0),
---(4,1,4,	N'Entry[0].Value',				N'VAT',					N'القيمة المضافة',		0,				0),
---(5,1,5,	N'Entry[2].Value',				N'Total',				N'المبلغ بعد الضريبة',	0,				1),-- script is needed to find sum
---(6,1,6,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,				0),
---(7,1,7,	N'Line.ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,				0)
---;
+--(0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
+--(1,1,1,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		3,5), 
+--(2,1,2,	N'Line.AgentId',				N'Supplier',			N'المورد',				3,4),
+--(3,1,3,	N'Entry[1].Value',				N'Price Excl. VAT',		N'المبلغ قبل الضريية',	1,4),
+--(4,1,4,	N'Entry[0].Value',				N'VAT',					N'القيمة المضافة',		1,1),
+--(5,1,5,	N'Entry[2].Value',				N'Total',				N'المبلغ بعد الضريبة',	1,1),
+--(6,1,6,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
+--(7,1,7,	N'Line.ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4)
 	UPDATE @WL_CPV
 	SET
 		[Memo] = N'Invoice HP laser jet ink + SQL Server 2019 License',
 		[ExternalReference0] = N'C-1008',
 		[AgentId] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'suppliers' AND [Name] = N'Microsoft'),
 		[Value1] = 7500,
-		--[Value0] = 1125, = [Value1] * 0.15
-		--[Value2] = 8625, = [Value1] * 1.15
-		--[NotedAmount0] = [Value1]
 		[ResponsibilityCenterId] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
 	WHERE [DocumentIndex] = 2 AND [Index] = 1;
 

@@ -17,10 +17,14 @@ BEGIN
 			[Value]
 	)
 
-	SELECT [AT].[Code] AS [Concept], SUM(E.[Direction] * E.[Value]) AS [Value]
-	FROM [map].[DetailsEntries] (@fromDate, @toDate, NULL, NULL, NULL) E
-	JOIN dbo.[AccountTypes] [AT] ON E.[AccountTypeId] = [AT].[Id]
-	WHERE [AT].[Code] IN (
+	SELECT [AT].[Code] AS [Concept], SUM(E.[Value]) AS [Value]
+	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
+	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	WHERE @fromDate <= D.DocumentDate	AND D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	AND [AT].[Code] IN (
 		N'Revenue',
 		--N'InterestRevenueCalculatedUsingEffectiveInterestMethod',
 		--N'InsuranceRevenue',

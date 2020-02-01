@@ -14,7 +14,7 @@ BEGIN
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],
 		J.[LineId] -- for navigation
-	FROM [map].[DetailsEntries](@fromDate, @toDate, NULL, NULL, NULL) J
+	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
 	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 	WHERE J.[AccountId] = @AccountId
 	AND J.Direction = -1;

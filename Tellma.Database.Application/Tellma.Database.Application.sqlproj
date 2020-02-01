@@ -544,6 +544,7 @@
     <Build Include="Mapping\ReportRowDefinitions.sql" />
     <Build Include="Mapping\ReportColumnDefinitions.sql" />
     <Build Include="Mapping\ReportMeasureDefinitions.sql" />
+    <Build Include="rpt\Functions\rpt.Entries.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
