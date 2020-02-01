@@ -15,6 +15,7 @@ BEGIN
 		[IsCurrent]		BIT,
 		[Concept]		NVARCHAR (255)
 	);
+	-- The #Mapping table can be persisted and used to add the column IFRS210000_ConceptId to the fact table.
 	INSERT INTO #Mapping VALUES
 	(N'PropertyPlantAndEquipment',				0, N'PropertyPlantAndEquipment'),
 	(N'InvestmentProperty',						0, N'InvestmentProperty'),
@@ -73,7 +74,7 @@ BEGIN
 			[Concept],
 			[Value]
 	)
-	SELECT M.[Concept],	SUM(E.[Value]) AS [Value]
+	SELECT M.[Concept],	SUM(E.[AlgerbaicValue]) AS [Value]
 	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
@@ -96,6 +97,7 @@ BEGIN
 	WHERE [IsControllingInterest] = 0
 	AND [Concept] = N'Equity'
 */
+	-- Table #Rollups can be persisted as IFRS210000_Concepts, with ParentId to allow rollup of values in the tree
 	CREATE TABLE #Rollups (
 		[ParentConcept]	NVARCHAR (255),
 		[ChildConcept]	NVARCHAR (255)

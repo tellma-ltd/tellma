@@ -28,4 +28,17 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_ATCode__Id]" />
   </Operation>
+  <Operation Name="Move Schema" Key="4f8c8b3e-2bf7-4dd6-9255-ae940909e250" ChangeDateTime="02/01/2020 07:40:50">
+    <Property Name="ElementName" Value="[dbo].[rpt_ERCA__VAT_PurchasesSummary]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab6e3303-247f-415b-90a1-39092ec7f40c" ChangeDateTime="02/01/2020 07:44:54">
+    <Property Name="ElementName" Value="[rpt].[rpt_ERCA__VAT_PurchasesSummary]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ERCA__VAT_PurchasesSummary]" />
+  </Operation>
 </Operations>

@@ -17,16 +17,15 @@ BEGIN
 			[Value]
 	)
 
-	SELECT COALESCE([ET].[Code], [AT].[Code]) AS [Concept], SUM(E.[Value]) AS [Value]
+	SELECT COALESCE([ET].[Code], [AT].[Code]) AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
-	WHERE
-	@fromDate <= D.DocumentDate
-	AND D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	WHERE @fromDate <= D.DocumentDate AND D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	-- The #Mapping table can be persisted and used to add the column IFRS310000_ConceptId to the fact table.
 	AND [AT].[Code] IN (
 		N'Revenue',
 		--N'InterestRevenueCalculatedUsingEffectiveInterestMethod',

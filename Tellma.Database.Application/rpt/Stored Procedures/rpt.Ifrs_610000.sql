@@ -21,7 +21,7 @@ BEGIN
 	SELECT
 		[AT].[Code] AS [RowConcept],
 		[ET].[Code] AS [ColumnConcept],
-		SUM(E.[Value]) AS [Value]
+		SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
@@ -29,6 +29,7 @@ BEGIN
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
 	WHERE (@fromDate <= D.DocumentDate) AND (D.DocumentDate < DATEADD(DAY, 1, @toDate))
+	-- TODO: consider subtypes of the ones below
 	AND [AT].[Code] IN (
 		N'IssuedCapital',
 		N'RetainedEarnings',
