@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace Tellma.Entities
 {
@@ -77,12 +78,12 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_Collection")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Collection { get; set; }
 
         [Display(Name = "ReportDefinition_DefinitionId")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string DefinitionId { get; set; }
 
@@ -158,15 +159,34 @@ namespace Tellma.Entities
     {
 
     }
+
     public class ReportDefinition : ReportDefinitionForSave<ReportParameterDefinition, ReportRowDefinition, ReportColumnDefinition, ReportMeasureDefinition, ReportSelectDefinition>
     {
+        [Display(Name = "CreatedAt")]
+        public DateTimeOffset? CreatedAt { get; set; }
 
+        [Display(Name = "CreatedBy")]
+        public int? CreatedById { get; set; }
+
+        [Display(Name = "ModifiedAt")]
+        public DateTimeOffset? ModifiedAt { get; set; }
+
+        [Display(Name = "ModifiedBy")]
+        public int? ModifiedById { get; set; }
+
+        // For Query
+
+        [Display(Name = "CreatedBy")]
+        [ForeignKey(nameof(CreatedById))]
+        public User CreatedBy { get; set; }
+
+        [Display(Name = "ModifiedBy")]
+        [ForeignKey(nameof(ModifiedById))]
+        public User ModifiedBy { get; set; }
     }
 
     public class ReportParameterDefinitionForSave : EntityWithKey<int>
     {
-        public string ReportDefinitionId { get; set; }
-
         [Display(Name = "ReportDefinition_Key")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -211,20 +231,21 @@ namespace Tellma.Entities
         //public int MaxDecimalPlaces { get; set; }
 
         [Display(Name = "ReportDefinition_Value")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Value { get; set; }
     }
 
     public class ReportParameterDefinition : ReportParameterDefinitionForSave
     {
-
+        public string ReportDefinitionId { get; set; }
     }
 
     public class ReportSelectDefinitionForSave : EntityWithKey<int>
     {
-        public string ReportDefinitionId { get; set; }
 
         [Display(Name = "ReportDefinition_Path")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -247,12 +268,11 @@ namespace Tellma.Entities
 
     public class ReportSelectDefinition : ReportSelectDefinitionForSave
     {
-
+        public string ReportDefinitionId { get; set; }
     }
+
     public abstract class ReportDimensionDefinition : EntityWithKey<int>
     {
-        public string ReportDefinitionId { get; set; }
-
         [Display(Name = "ReportDefinition_Path")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
@@ -312,23 +332,24 @@ namespace Tellma.Entities
     {
 
     }
+
     public class ReportColumnDefinition : ReportColumnDefinitionForSave
     {
-
+        public string ReportDefinitionId { get; set; }
     }
+
     public class ReportRowDefinitionForSave : ReportDimensionDefinition
     {
 
     }
+
     public class ReportRowDefinition : ReportRowDefinitionForSave
     {
-
+        public string ReportDefinitionId { get; set; }
     }
 
     public class ReportMeasureDefinitionForSave : EntityWithKey<int>
     {
-        public string ReportDefinitionId { get; set; }
-
         [Display(Name = "ReportDefinition_Path")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
@@ -373,6 +394,6 @@ namespace Tellma.Entities
 
     public class ReportMeasureDefinition : ReportMeasureDefinitionForSave
     {
-
+        public string ReportDefinitionId { get; set; }
     }
 }

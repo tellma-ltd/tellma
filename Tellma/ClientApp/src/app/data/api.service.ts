@@ -246,42 +246,6 @@ export class ApiService {
     };
   }
 
-  // TODO
-  public reportDefinitionsApi(cancellationToken$: Observable<void>) {
-    return {
-      updateState: (ids: (string | number)[], args: UpdateStateArguments) => {
-        const paramsArray: string[] = [`state=${encodeURIComponent(args.state)}`];
-
-        if (!!args.returnEntities) {
-          paramsArray.push(`returnEntities=${args.returnEntities}`);
-        }
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${args.expand}`);
-        }
-
-        const params: string = paramsArray.join('&');
-        const url = appsettings.apiAddress + `api/report-definitions/update-state?${params}`;
-
-        this.showRotator = true;
-        const obs$ = this.http.put<EntitiesResponse<ReportDefinition>>(url, ids, {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-        }).pipe(
-          tap(() => this.showRotator = false),
-          catchError(error => {
-            this.showRotator = false;
-            const friendlyError = friendlify(error, this.trx);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$),
-          finalize(() => this.showRotator = false)
-        );
-
-        return obs$;
-      }
-    };
-  }
-
   public responsibilityCenterApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<ResponsibilityCenter>('responsibility-centers', cancellationToken$),

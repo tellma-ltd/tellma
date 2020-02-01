@@ -87,12 +87,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
     ['Currency', /* 'Resource/Currency', */ 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType', 'AccountType'] // , 'Resource/ResourceClassification', 'ResourceClassification']
+      'Resource/TimeUnit', 'Agent', 'EntryType', 'AccountType', 'ResponsibilityCenter']
+      // , 'Resource/ResourceClassification', 'ResourceClassification']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent'] // , 'Resource/ResourceClassification']
+      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
     // Signatures

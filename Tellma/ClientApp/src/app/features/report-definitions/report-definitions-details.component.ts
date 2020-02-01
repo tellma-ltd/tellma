@@ -42,7 +42,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _currentCollection: string;
   private _currentDefinitionId: string;
   private _isEdit = false;
-  private reportDefinitionsApi = this.api.reportDefinitionsApi(this.notifyDestruct$); // for intellisense
   private _sections: { [key: string]: boolean } = {
     Data: true,
     Filter: false,
@@ -51,7 +50,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     MainMenu: false
   };
 
-  public expand = '';
+  public expand = 'Parameters,Select,Rows,Columns,Measures';
   public search: string;
 
   // Collapse or expand the 2 panes on the left
@@ -157,8 +156,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
     private route: ActivatedRoute, private modalService: NgbModal) {
     super();
-
-    this.reportDefinitionsApi = this.api.reportDefinitionsApi(this.notifyDestruct$);
   }
 
   public decimalPlacesLookup(value: any): string {
@@ -254,7 +251,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
               Id: 0,
               Key: key,
               Visibility: !!builtInMatch && builtInMatch.isRequired ? 'Required' : 'Optional',
-              ReportDefinitionId: model.Id,
             };
 
             modelTracker[keyLower] = parameterDef;
@@ -447,7 +443,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       const fieldInfo = source[sourceIndex] as FieldInfo;
       const dimension: ReportColumnDefinition | ReportRowDefinition = {
         Id: 0,
-        ReportDefinitionId: model.Id,
         Path: fieldInfo.path,
         AutoExpand: true
       };
@@ -458,7 +453,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       const fieldInfo = source[sourceIndex] as FieldInfo;
       const dimension: ReportMeasureDefinition = {
         Id: 0,
-        ReportDefinitionId: model.Id,
         Path: fieldInfo.path,
         Aggregation: isNumeric(fieldInfo.desc) && fieldInfo.path !== 'Id' ? 'sum' : 'count' // Default
       };
@@ -469,7 +463,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       const fieldInfo = source[sourceIndex] as FieldInfo;
       const column: ReportSelectDefinition = {
         Id: 0,
-        ReportDefinitionId: model.Id,
         Path: fieldInfo.path,
       };
       destination.splice(destinationIndex, 0, column);

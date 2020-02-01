@@ -8,6 +8,7 @@ EXEC sp_set_session_context 'UserId', @UserId;
 
 -- Cleanup, Central records before lookup records
 
+DELETE FROM [dbo].[ReportDefinitions];
 DELETE FROM [dbo].[Documents]
 DELETE FROM [dbo].[Permissions];
 DELETE FROM [dbo].[RoleMemberships];

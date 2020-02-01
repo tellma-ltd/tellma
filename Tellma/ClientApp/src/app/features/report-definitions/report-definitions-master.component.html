@@ -1,6 +1,6 @@
 <t-master collection="ReportDefinition" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
     [masterCrumb]="'ReportDefinitions' | translate" [additionalSelect]="additionalSelect" [tileTemplate]="tile"
-    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Type"
+    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Type,ShowInMainMenu"
     selectForTiles="Title,Title2,Title3,Description,Description2,Description3" theme="dark"
     inactiveFilter="" [multiselectActions]="[]" [filterDefinition]="{
             'ShowInMainMenu' : [
@@ -9,7 +9,6 @@
             ]
           }">
 </t-master>
-
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
