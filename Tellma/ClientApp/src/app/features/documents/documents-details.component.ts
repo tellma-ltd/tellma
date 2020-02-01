@@ -677,7 +677,7 @@ Document_State_Closed
 
     // Make sure pending attachments don't exceed max file size
     model.Attachments = model.Attachments || [];
-    const sumOfAttachmentSizesPendingSave = model.Attachments
+    const sumOfAttachmentSizesPendingSave = model.Attachments.length === 0 ? 0 : model.Attachments
       .map(a => !!a.file ? a.file.size : 0)
       .reduce((total, v) => total + v);
 

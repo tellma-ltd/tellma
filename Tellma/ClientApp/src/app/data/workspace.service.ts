@@ -28,6 +28,7 @@ import { ResponsibilityCenter } from './entities/responsibility-center';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { isSpecified } from './util';
+import { DetailsEntry } from './entities/details-entry';
 
 export enum MasterStatus {
 
@@ -214,6 +215,7 @@ export class TenantWorkspace {
   ResponsibilityCenter: EntityWorkspace<ResponsibilityCenter>;
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
+  DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -240,6 +242,7 @@ export class TenantWorkspace {
     this.ResponsibilityCenter = new EntityWorkspace<ResponsibilityCenter>();
     this.EntryType = new EntityWorkspace<EntryType>();
     this.Document = new EntityWorkspace<Document>();
+    this.DetailsEntry = new EntityWorkspace<DetailsEntry>();
 
     this.notifyStateChanged();
   }

@@ -331,6 +331,21 @@
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="DetailsEntries" xml:space="preserve">
+    <value>Details Entries</value>
+  </data>
+  <data name="DetailsEntry" xml:space="preserve">
+    <value>Details Entry</value>
+  </data>
+  <data name="DetailsEntry_NormalizedCount" xml:space="preserve">
+    <value>Normalized Count</value>
+  </data>
+  <data name="DetailsEntry_NormalizedMass" xml:space="preserve">
+    <value>Normalized Mass</value>
+  </data>
+  <data name="DetailsEntry_NormalizedVolume" xml:space="preserve">
+    <value>Normalized Volume</value>
+  </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>Disable Two-Factor Authentication (2FA)</value>
   </data>
@@ -472,6 +487,15 @@
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Entry_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="Entry_Direction_Credit" xml:space="preserve">
+    <value>Credit</value>
+  </data>
+  <data name="Entry_Direction_Debit" xml:space="preserve">
+    <value>Debit</value>
+  </data>
   <data name="Entry_DueDate" xml:space="preserve">
     <value>Due Date</value>
   </data>
@@ -480,6 +504,9 @@
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
+  </data>
+  <data name="Entry_Line" xml:space="preserve">
+    <value>Line</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>Mass</value>
@@ -706,6 +733,9 @@
   <data name="Error_TheView0IsInactive" xml:space="preserve">
     <value>The view with code '{0}' is not activated.</value>
   </data>
+  <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
+    <value>Title is required to show the report in the main menu</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>An unknown error occurred while trying to sign you in using the external provider.</value>
   </data>
@@ -859,17 +889,29 @@
   <data name="LegacyTypes" xml:space="preserve">
     <value>Legacy Types</value>
   </data>
+  <data name="Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
   <data name="Line_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
   <data name="Line_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Line_Definition" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="Line_Document" xml:space="preserve">
+    <value>Document</value>
+  </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>Resource</value>
+  </data>
+  <data name="Lines" xml:space="preserve">
+    <value>Lines</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>Locked Out</value>

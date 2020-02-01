@@ -85,8 +85,6 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
                 DocumentDate: { control: 'date', label: () => trx.instant('Document_DocumentDate') },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
-
-                // TODO
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), 4)
@@ -126,6 +124,9 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
                         }
                     }
                 },
+
+                AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },
 
                 // Audit
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },

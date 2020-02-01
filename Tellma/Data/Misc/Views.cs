@@ -167,6 +167,12 @@
                         Actions = new ActionInfo[] {}
                     },
                     new ViewInfo {
+                        Id = "details-entries",
+                        Name = "DetailsEntries",
+                        Read = true,
+                        Actions = new ActionInfo[] {}
+                    },
+                    new ViewInfo {
                         Id = "report-definitions",
                         Name = "ReportDefinitions",
                         Read = true,
