@@ -54,9 +54,10 @@ BEGIN
 		[Memo] = N'Invoice HP laser jet ink + SQL Server 2019 License',
 		[ExternalReference0] = N'C-1008',
 		[AgentId] = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'suppliers' AND [Name] = N'Microsoft'),
-		[Value] = 7500,
-		[Value0] = 1125,
-		--[Value2] = 8625,
+		[Value1] = 7500,
+		--[Value0] = 1125, = [Value1] * 0.15
+		--[Value2] = 8625, = [Value1] * 1.15
+		--[NotedAmount0] = [Value1]
 		[ResponsibilityCenterId] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
 	WHERE [DocumentIndex] = 2 AND [Index] = 1;
 
