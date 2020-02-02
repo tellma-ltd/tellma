@@ -63,11 +63,11 @@ BEGIN
 		[Lookup2Label]	= N'Group',
 		[Lookup2Label2]	= N'المجموعة'	,
 		[Lookup2Visibility] = N'Required',
-		[Lookup2DefinitionId] = N'paper-groups'
-		--[Lookup3Label]	= N'Weights',
-		--[Lookup3Label2]	= N'الوزن'	,
-		--[Lookup3Visibility] = N'Required',
-		--[Lookup3DefinitionId] = N'paper-weights',
+		[Lookup2DefinitionId] = N'paper-groups',
+		[Lookup3Label]	= N'Type',
+		[Lookup3Label2]	= N'النوع'	,
+		[Lookup3Visibility] = N'Required',
+		[Lookup3DefinitionId] = N'paper-types'
 	WHERE [Id] = N'paper-products'
 END
 

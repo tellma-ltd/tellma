@@ -38,6 +38,8 @@ SET NOCOUNT ON;
 				[Description],
 				[Description2],
 				[Description3],
+				[ReorderLevel],
+				[EconomicOrderQuantity],
 				--[AttachmentsFolderURL],		
 
 				--[CustomsReference], -- how it is referred to by Customs
@@ -57,14 +59,17 @@ SET NOCOUNT ON;
 				--[Agent2Id],					
 				--[Date1]	,					
 				--[Date2],					
-
+				[Decimal1],
+				[Decimal2],
+				[Int1],
+				[Int2],
 				[Lookup1Id],
-				[Lookup2Id]
-				--[Lookup3Id],
-				--[Lookup4Id],
+				[Lookup2Id],
+				[Lookup3Id],
+				[Lookup4Id],
 				--[Lookup5Id],				
-				--[Text1],					
-				--[Text2]						
+				[Text1],					
+				[Text2]						
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -92,6 +97,8 @@ SET NOCOUNT ON;
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
+				t.[ReorderLevel]			= s.[ReorderLevel],
+				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
 				--t.[AttachmentsFolderURL]	= s.[AttachmentsFolderURL],
 				--t.[CustomsReference]		= s.[CustomsReference],
 				t.[AvailableSince]			= s.[AvailableSince],			
@@ -107,14 +114,18 @@ SET NOCOUNT ON;
 				--t.[Agent1Id]				= s.[Agent1Id],					
 				--t.[Agent2Id]				= s.[Agent2Id],					
 				--t.[Date1]					= s.[Date1],					
-				--t.[Date2]					= s.[Date2],	
+				--t.[Date2]					= s.[Date2],
+				t.[Decimal1]				= s.[Decimal1],
+				t.[Decimal2]				= s.[Decimal2],
+				t.[Int1]					= s.[Int1],
+				t.[Int2]					= s.[Int2],
 				t.[Lookup1Id]				= s.[Lookup1Id],
 				t.[Lookup2Id]				= s.[Lookup2Id],
-				--t.[Lookup3Id]				= s.[Lookup3Id],
-				--t.[Lookup4Id]				= s.[Lookup4Id],
+				t.[Lookup3Id]				= s.[Lookup3Id],
+				t.[Lookup4Id]				= s.[Lookup4Id],
 				--t.[Lookup5Id]				= s.[Lookup5Id],
-				--t.[Text1]					= s.[Text1],					
-				--t.[Text2]					= s.[Text2],	
+				t.[Text1]					= s.[Text1],					
+				t.[Text2]					= s.[Text2],	
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -133,6 +144,8 @@ SET NOCOUNT ON;
 				[Description],
 				[Description2],
 				[Description3],
+				[ReorderLevel],
+				[EconomicOrderQuantity],
 				--[AttachmentsFolderURL],		
 				--[CustomsReference], -- how it is referred to by Customs
 				--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
@@ -151,14 +164,17 @@ SET NOCOUNT ON;
 				--[Agent2Id],					
 				--[Date1]	,					
 				--[Date2],					
-
+				[Decimal1],
+				[Decimal2],
+				[Int1],
+				[Int2],
 				[Lookup1Id],
-				[Lookup2Id]
-				--[Lookup3Id],
-				--[Lookup4Id],
+				[Lookup2Id],
+				[Lookup3Id],
+				[Lookup4Id],
 				--[Lookup5Id],				
-				--[Text1],					
-				--[Text2]			
+				[Text1],					
+				[Text2]			
 				)
 			VALUES (--s.[OperatingSegmentId], 
 				s.[DefinitionId], s.[AccountTypeId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
@@ -174,6 +190,8 @@ SET NOCOUNT ON;
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
+				s.[ReorderLevel],
+				s.[EconomicOrderQuantity],
 				--s.[AttachmentsFolderURL],		
 				--s.[CustomsReference], -- how it is referred to by Customs
 				--s.[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
@@ -192,14 +210,17 @@ SET NOCOUNT ON;
 				--s.[Agent2Id],					
 				--s.[Date1]	,					
 				--s.[Date2],					
-
+				s.[Decimal1],
+				s.[Decimal2],
+				s.[Int1],
+				s.[Int2],
 				s.[Lookup1Id],
-				s.[Lookup2Id]
-				--s.[Lookup3Id],
-				--s.[Lookup4Id],
+				s.[Lookup2Id],
+				s.[Lookup3Id],
+				s.[Lookup4Id],
 				--s.[Lookup5Id],				
-				--s.[Text1],					
-				--s.[Text2]			
+				s.[Text1],					
+				s.[Text2]			
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
