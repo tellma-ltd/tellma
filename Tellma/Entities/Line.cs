@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [StrongEntity]
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
         [Display(Name = "Definition")]

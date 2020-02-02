@@ -29,6 +29,7 @@ import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { isSpecified } from './util';
 import { DetailsEntry } from './entities/details-entry';
+import { Line } from './entities/line';
 
 export enum MasterStatus {
 
@@ -215,6 +216,7 @@ export class TenantWorkspace {
   ResponsibilityCenter: EntityWorkspace<ResponsibilityCenter>;
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
+  Line: EntityWorkspace<Line>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
@@ -242,6 +244,7 @@ export class TenantWorkspace {
     this.ResponsibilityCenter = new EntityWorkspace<ResponsibilityCenter>();
     this.EntryType = new EntityWorkspace<EntryType>();
     this.Document = new EntityWorkspace<Document>();
+    this.Line = new EntityWorkspace<Line>();
     this.DetailsEntry = new EntityWorkspace<DetailsEntry>();
 
     this.notifyStateChanged();
