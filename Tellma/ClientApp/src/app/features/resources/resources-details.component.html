@@ -325,7 +325,7 @@
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal2">
             <div>{{ model?.Decimal2 | number:'1.0-4' }}</div>
         </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal1" [ngModelOptions]="{ updateOn: 'blur' }"
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal2" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Decimal2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
         </t-decimal-editor>
     </t-form-group>
@@ -334,7 +334,7 @@
     <t-form-group *ngIf="Int1_isVisible" class="t-form-group" [label]="Int1_label"
         [serverErrors]="model?.serverErrors?.Int1">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int1">
-            <div>{{ model?.Int1 | number:'1.0-4' }}</div>
+            <div>{{ model?.Int1 | number:'1.0-0' }}</div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int1" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Int1_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
@@ -345,9 +345,9 @@
     <t-form-group *ngIf="Int2_isVisible" class="t-form-group" [label]="Int2_label"
         [serverErrors]="model?.serverErrors?.Int2">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int2">
-            <div>{{ model?.Int2 | number:'1.0-4' }}</div>
+            <div>{{ model?.Int2 | number:'1.0-0' }}</div>
         </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int1" [ngModelOptions]="{ updateOn: 'blur' }"
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int2" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Int2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
         </t-decimal-editor>
     </t-form-group>
@@ -356,7 +356,7 @@
     <t-form-group *ngIf="Text1_isVisible" class="t-form-group" [label]="Text1_label"
         [serverErrors]="model?.serverErrors?.Text1">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text1">
-            <div>{{ model?.Text1 | number:'1.0-4' }}</div>
+            <div>{{ model?.Text1 }}</div>
         </t-restricted>
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text1" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Text1_isRequired">
@@ -367,9 +367,9 @@
     <t-form-group *ngIf="Text2_isVisible" class="t-form-group" [label]="Text2_label"
         [serverErrors]="model?.serverErrors?.Text2">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text2">
-            <div>{{ model?.Text2 | number:'1.0-4' }}</div>
+            <div>{{ model?.Text2 }}</div>
         </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text1" [ngModelOptions]="{ updateOn: 'blur' }"
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text2" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="Text2_isRequired">
         </t-text-editor>
     </t-form-group>

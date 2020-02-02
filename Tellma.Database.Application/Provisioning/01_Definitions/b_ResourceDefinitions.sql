@@ -90,12 +90,12 @@ BEGIN
 		[Lookup3Visibility] = N'Required',
 		[Lookup3DefinitionId] = N'paper-types',
 
-		--[Text1Label],				
-		--[Text1Label2],
+		[Text1Label] = N'Color',				
+		[Text1Label2] = N'اللون',
 		[Text1Visibility] = N'Optional',
 
-		--[Text2Label]	,
-		--[Text2Label2],
+		[Text2Label]	= N'Size',
+		[Text2Label2] = N'المقاس',
 		[Text2Visibility] = N'Optional'
 
 	WHERE [Id] = N'paper-products'
