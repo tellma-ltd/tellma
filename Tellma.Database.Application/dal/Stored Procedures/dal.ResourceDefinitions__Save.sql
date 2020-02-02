@@ -16,6 +16,7 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--[CodeRegEx], -- Null means manually defined
 			--[NameRegEx], -- Null means manually defined
@@ -80,11 +81,11 @@ SET NOCOUNT ON;
 			t.[TitlePlural] = s.[TitlePlural],
 			t.[TitlePlural2] = s.[TitlePlural2],
 			t.[TitlePlural3] = s.[TitlePlural3],
+			t.[ParentAccountTypeId] = s.[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--t.[CodeRegEx] = s.[CodeRegEx], -- Null means manually defined
 			--t.[NameRegEx] = s.[NameRegEx], -- Null means manually defined
 			-- Resource properties
-			-- t.[ResourceClassificationVisibility] = s.[ResourceClassificationVisibility],
 			t.[IdentifierLabel] = s.[IdentifierLabel],
 			t.[IdentifierLabel2] = s.[IdentifierLabel2],
 			t.[IdentifierLabel3] = s.[IdentifierLabel3],		
@@ -143,11 +144,11 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--[CodeRegEx], -- Null means manually defined
 			--[NameRegEx], -- Null means manually defined
 			-- Resource properties
-			-- [ResourceClassificationVisibility],
 			[IdentifierLabel],
 			[IdentifierLabel2],
 			[IdentifierLabel3],		
@@ -206,11 +207,11 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
+			s.[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--s.[CodeRegEx], -- Null means manually defined
 			--s.[NameRegEx], -- Null means manually defined
 			-- Resource properties
-			-- s.[ResourceClassificationVisibility],
 			s.[IdentifierLabel],
 			s.[IdentifierLabel2],
 			s.[IdentifierLabel3],		

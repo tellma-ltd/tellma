@@ -18,7 +18,7 @@ BEGIN
 	(0, N'ManualLine',		+4);
 
 END
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values

@@ -571,6 +571,7 @@
     <None Include="105.Simpex.publish.xml" />
     <None Include="Provisioning\05_Resources\d3_TM_paper-products.sql" />
     <None Include="Provisioning\06_Accounts\E5_Accounts.sql" />
+    <None Include="Tellma.Database.Application.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

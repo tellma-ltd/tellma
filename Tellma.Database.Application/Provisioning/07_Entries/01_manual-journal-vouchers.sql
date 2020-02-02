@@ -138,7 +138,7 @@ BEGIN -- Inserting
 		SELECT @OnBehalfOfRoleId = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller'
 		SELECT @OnBehalfOfuserId= [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@banan-it.com'
 	END
-	IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 		SELECT @OnBehalfOfRoleId = [Id] FROM dbo.Roles WHERE [Name] = N'Administrator'
 	IF @DB = N'104' -- Walia Steel, ETB, en/am
 	BEGIN

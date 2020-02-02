@@ -1,4 +1,4 @@
-﻿IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+﻿IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	DELETE FROM @ResourceDefinitions;
 	INSERT INTO @ResourceDefinitions (

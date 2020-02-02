@@ -13,7 +13,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	([Index], [Name]) VALUES
 	(0,		N'Mohamad Akra'),
 	(1,		N'Ahmad Akra');
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	Print N''
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	INSERT INTO @Owners

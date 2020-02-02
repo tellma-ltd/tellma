@@ -23,7 +23,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	(2,		N'Employee Income Tax Dept'),
 	(3,		N'Employee Pension Dept'),
 	(4,		N'WT Dept');
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @TaxAgencies
 	([Index], [Name]) VALUES
 	(0,		N'VAT Dept'),

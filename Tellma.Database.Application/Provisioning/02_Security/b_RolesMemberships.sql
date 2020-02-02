@@ -52,7 +52,7 @@ BEGIN
 	(3,				0,		N'all',									N'Read');
 
 END
---IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+--IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 --	INSERT INTO @Users
 --	([Index],[Name],			[Name2],		[Name3],							[Email]) VALUES
 --	(0,		N'Salman Al-Juhani',N'سلمان الجهني',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),
@@ -111,13 +111,12 @@ END
 IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @Roles
-	([Index],	[Name],					[Code]) VALUES
-	(0,			N'Finance Manager',		'FM'),
-	(1,			N'General Manager',		'GM'),
-	(2,			N'Internal Auditor',	'IA'),
-	(3,			N'Account Comptroller',	'AC'),
-	(4,			N'Material Control',	'MC');
-	;
+	([Index],	[Name],					[Name2],			[Code]) VALUES
+	(0,			N'Finance Manager',		N'المدير المالي',	'FM'),
+	(1,			N'General Manager',		N'المدير العام',	'GM'),
+	(2,			N'Internal Auditor',	N'المراجع الداخلي','IA'),
+	(3,			N'Account Comptroller',	N'مراقب الحسايات',	'AC'),
+	(4,			N'Material Control',	N'إدارة المواد',	'MC');
 
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
@@ -125,8 +124,7 @@ BEGIN
 	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'nizar.kalo@simpex.co.sa'	UNION
 	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mahdi.mrad@simpex.co.sa'		UNION
 	SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'tareq@simpex.co.sa'		UNION
-	SELECT	4,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mazen.mrad@simpex.co.sa'
-	;
+	SELECT	4,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mazen.mrad@simpex.co.sa'	;
 
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
@@ -135,25 +133,7 @@ BEGIN
 	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
 	(1,				0,		N'all',									N'Read'),
 	(4,				0,		N'all',									N'Read'),
-	(5,				0,		N'all',									N'Read')
-	;
-
-	--INSERT INTO @Users
-	--([Index],	[Name],						[Email]) VALUES
-	--(0,			N'Badege Kebede',			N'badege.kebede@gmail.com'),
-	--(1,			N'Mesfin Wolde',			N'mesfinwolde47@gmail.com'),
-	--(2,			N'Ashenafi Fantahun',		N'ashenafi935@gmail.com'),
-	--(3,			N'Ayelech Hora',			N'ayelech.hora@gmail.com'),
-	--(4,			N'Tizita Nigussie',			N'tizitanigussie@gmail.com'),
-	--(5,			N'Natnael Giragn',			N'natnaelgiragn340@gmail.com'),
-	--(6,			N'Sara Birhanu',			N'sarabirhanuk@gmail.com'),
-	--(7,			N'Sisay Tesfaye Bekele',	N'sisay41@yahoo.com'),
-	--(8,			N'Tigist Negash',			N'tigistnegash74@gmail.com'),
-	--(9,			N'Yisak Fikadu',			N'yisakfikadu79@gmail.com'),
-	--(10,		N'Zewdinesh Hora',			N'zewdnesh.hora@gmail.com'),
-	--(11,		N'Mestawet G/Egziyabhare',	N'mestawetezige@gmail.com'),
-	--(12,		N'Belay Abagero',			N'belayabagero07@gmail.com'),
-	--(13,		N'Kalkidan Asemamaw',		N'kasmamaw5@gmail.com');
+	(5,				0,		N'all',									N'Read');
 END
 
 EXEC dal.Roles__Save

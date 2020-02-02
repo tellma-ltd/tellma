@@ -41,7 +41,7 @@ END
 :r .\04_Agents\02_Creditors.sql
 :r .\04_Agents\03_Customers.sql
 :r .\04_Agents\04_Debtors.sql
-:r .\04_Agents\05_Owners.sql
+--:r .\04_Agents\05_Owners.sql
 :r .\04_Agents\06_Suppliers.sql
 :r .\04_Agents\07_TaxAgencies.sql
 :r .\04_Agents\08_Banks.sql

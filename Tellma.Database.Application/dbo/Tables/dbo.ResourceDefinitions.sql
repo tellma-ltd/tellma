@@ -7,6 +7,7 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
+	[ParentAccountTypeId]				INT				CONSTRAINT [FK_ResourceDefinitions__ParentAccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 	--[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
 	--[NameRegEx]							NVARCHAR (255), -- Null means manually defined

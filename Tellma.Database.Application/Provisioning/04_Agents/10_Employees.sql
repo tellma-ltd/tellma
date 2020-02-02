@@ -19,7 +19,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1',	7000,			1750,						0),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2',	7000,			0,							0),
 	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E3',	4700,			0,							28.25);
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @employees
 	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
 	(0,			N'Salman',			'2017.10.01',	N'E1',	7000,			1750,						0);

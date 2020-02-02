@@ -15,7 +15,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodies
 	([Index], [Name]) VALUES
 	(0,		N'GM Petty Cash');
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Custodies
 	([Index], [Name]) VALUES
 	(0,		N'RM Warehouse'),

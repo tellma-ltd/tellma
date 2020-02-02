@@ -3,7 +3,7 @@ NOTE: DEFINITIONS ARE IN A DIFFERENT FILE. THIS IS THE FILE FOR RECORDS ONLY
 
 '101' -- Banan SD, USD, en
 '102' -- Banan ET, ETB, en
-'103' -- Lifan Cars, SAR, en/ar/zh
+'103' -- Lifan Cars, ETB, en/zh
 '104' -- Walia Steel, ETB, en/am
 */
 DECLARE @Lookups dbo.LookupList, @DefinitionId NVARCHAR(50);
@@ -81,7 +81,7 @@ BEGIN
 	(3,	N'iOS 13');
 END
 
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	SET @DefinitionId = N'body-colors'
 	INSERT INTO @Lookups([Index],
@@ -135,58 +135,40 @@ END
 
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
+/*
+	(0,N'paper-origins',	N'Paper Origin',	N'مصدر الورق',		N'Paper Origins',	N'مصادر الورق'),
+	(1,N'paper-groups',		N'Paper Group',		N'مجموعة الورق',	N'Paper Groups',	N'مجموعات الورق'),
+	(2,N'paper-types',		N'Paper Type',		N'نوع الورق',		N'Paper Types',		N'أنواع الورق');
+*/
+	SET @DefinitionId = N'paper-origins'
+	INSERT INTO @Lookups([Index],
+	[Name],				[Name2]) VALUES
+	(0,	N'Thai',		N'نايلاندي'),
+	(1,	N'Finnish',		N'فنلندي')	;
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'paper-groups'
+	INSERT INTO @Lookups([Index],
+	[Name],							[Name2]) VALUES
+	(0,	N'Carbonless Coated paper',	N'ورق مكربن صفائح'),
+	(1,	N'Newspaper Roll paper',	N'رول ورق جريدة')	;
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DELETE FROM @Lookups;
 	SET @DefinitionId = N'paper-types'
 	INSERT INTO @Lookups([Index],
 	[Name],						[Name2]) VALUES
-	(0,	N'Bond paper',			N'ورق طباعة'),
-	(1,	N'Gloss coated paper',	N'ورق لامع'),
-	(2,	N'Matt coated paper',	N'ورق مطفى'),
-	(3,	N'Recycled paper',		N'ورق معاد تدويره'),
-	(4,	N'Silk coated paper',	N'ورق مصقول ناعم'),
-	(5,	N'Uncoated paper',		N'ورق غير مصقول'),
-	(6,	N'Watermarked paper',	N'ورق علامة مائية')
-	;
-
-	EXEC [api].Lookups__Save
-	@DefinitionId = @DefinitionId,
-	@Entities = @Lookups,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	DELETE FROM @Lookups;
-	SET @DefinitionId = N'paper-sizes'
-	INSERT INTO @Lookups([Index],
-	[Name]) VALUES
-	(0,	N'A0 (841 x 1189 mm)'),
-	(1,	N'A1 (594 x 841 mm)'),
-	(2,	N'A2 (420 x 594 mm)'),
-	(3,	N'A3 (297 x 420 mm)'),
-	(4,	N'A4 (210 x 297 mm)'),
-	(5,	N'A5 (148 x 210 mm)'),
-	(6,	N'A6 (105 x 148 mm)'),
-	(7,	N'A7 (74 x 105 mm)'),
-	(8,	N'A8 (52 x 74 mm)'),
-	(9,	N'A9 (37 x 52 mm)')	
-	;
-
-	EXEC [api].Lookups__Save
-	@DefinitionId = @DefinitionId,
-	@Entities = @Lookups,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	DELETE FROM @Lookups;
-	SET @DefinitionId = N'paper-weights'
-	INSERT INTO @Lookups([Index],
-	[Name]) VALUES
-	(0,	N'35 gsm'),
-	(1,	N'55 gsm'),
-	(2,	N'90 gsm'),
-	(3,	N'130 gsm'),
-	(4,	N'180 gsm'),
-	(5,	N'250 gsm'),
-	(6,	N'280 gsm'),
-	(7,	N'350 gsm')
-	;
-
+	(0,	N'Commercial paper',	N'ورق تجاري'),
+	(1,	N'Newspaper',			N'ورق جريدة')	;
 
 END
 	EXEC [api].Lookups__Save

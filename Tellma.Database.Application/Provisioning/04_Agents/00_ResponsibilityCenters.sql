@@ -40,7 +40,7 @@ INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	[Name],							[Code], [ResponsibilityType], [ParentIndex]) VALUES
 (0,1,N'IT Services',				N'',	N'Investment',			NULL);
 
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	[Name],							[Code], [ResponsibilityType], [ParentIndex]) VALUES
 (0,1,N'Car Assembly',				N'',	N'Investment',			NULL);

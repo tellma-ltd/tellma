@@ -24,6 +24,8 @@
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
+	[ReorderLevel]					Decimal (19,4),
+	[EconomicOrderQuantity]			Decimal (19,4),
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
 
 	--[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
@@ -46,20 +48,20 @@
 	--[Agent2Id]						INT,			
 	--[Date1]							DATE,			
 	--[Date2]							DATE,			
-	--[DECIMAL1]						DECIMAL,
-	--[DECIMAL2]						DECIMAL,
-	--[INT1]							INT,			-- Engine Capacity
-	--[INT2]							INT,
+	[DECIMAL1]						DECIMAL,
+	[DECIMAL2]						DECIMAL,
+	[INT1]							INT,			-- Engine Capacity
+	[INT2]							INT,
 
 	[Lookup1Id]						INT,
 	[Lookup2Id]						INT,
-	--[Lookup3Id]						INT,
-	--[Lookup4Id]						INT,
+	[Lookup3Id]						INT,
+	[Lookup4Id]						INT,
 	--[Lookup5Id]						INT,			
 	--[DECIMAL (19,4)1]						DECIMAL (19,4),
 	--[DECIMAL (19,4)2]						DECIMAL (19,4),
-	--[Text1]							NVARCHAR (255), 
-	--[Text2]							NVARCHAR (255), 
+	[Text1]							NVARCHAR (255), 
+	[Text2]							NVARCHAR (255), 
 
 	INDEX IX_ResourceList__Code ([Code])
 );

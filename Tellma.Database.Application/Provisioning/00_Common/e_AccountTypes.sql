@@ -177,7 +177,7 @@ BEGIN
 			N'RevenueFromRenderingOfServices'
 		);
 	END
-	ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	BEGIN
 		UPDATE @AT Set IsActive = 1 WHERE [Code] IN (
 			N'InventoriesTotal',

@@ -36,6 +36,8 @@ CREATE TABLE [dbo].[Resources] (
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
+	[ReorderLevel]					Decimal (19,4),
+	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
 
@@ -60,21 +62,21 @@ CREATE TABLE [dbo].[Resources] (
 	--[Agent2Id]						INT					CONSTRAINT [FK_Resources__Agent2Id] FOREIGN KEY ([Agent2Id]) REFERENCES [dbo].[Agents] ([Id]),
 	--[Date1]							DATE,			-- Registration Date
 	--[Date2]							DATE,			-- Oil change date
-	--[DECIMAL1]						DECIMAL,
-	--[DECIMAL2]						DECIMAL,
-	--[INT1]							INT,			-- Engine Capacity
-	--[INT2]							INT,
+	[DECIMAL1]						DECIMAL,
+	[DECIMAL2]						DECIMAL,
+	[INT1]							INT,			-- Engine Capacity
+	[INT2]							INT,
 -- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
 	[Lookup1Id]						INT					CONSTRAINT [FK_Resources__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
 	[Lookup2Id]						INT					CONSTRAINT [FK_Resources__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
-	--[Lookup3Id]						INT					CONSTRAINT [FK_Resources__Lookup3Id] FOREIGN KEY ([Lookup3Id]) REFERENCES [dbo].[Lookups] ([Id]),
-	--[Lookup4Id]						INT					CONSTRAINT [FK_Resources__Lookup4Id] FOREIGN KEY ([Lookup4Id]) REFERENCES [dbo].[Lookups] ([Id]),
+	[Lookup3Id]						INT					CONSTRAINT [FK_Resources__Lookup3Id] FOREIGN KEY ([Lookup3Id]) REFERENCES [dbo].[Lookups] ([Id]),
+	[Lookup4Id]						INT					CONSTRAINT [FK_Resources__Lookup4Id] FOREIGN KEY ([Lookup4Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup5Id]						INT					CONSTRAINT [FK_Resources__Lookup5Id] FOREIGN KEY ([Lookup5Id]) REFERENCES [dbo].[Lookups] ([Id]),
 --	[DECIMAL (19,4)1]						DECIMAL (19,4),
 --	[DECIMAL (19,4)2]						DECIMAL (19,4),
 ----  for additional information
---	[Text1]							NVARCHAR (255),
---	[Text2]							NVARCHAR (255), 
+	[Text1]							NVARCHAR (255),
+	[Text2]							NVARCHAR (255), 
 	--[State]					AS (CASE -- not sure about it. I though a legal case is a resource (service) but it is actually a job for costing
 	--								WHEN [IsActive] = 1 THEN N'Active'
 	--								WHEN [IsActive] = 1 AND [AvailableTill] IS NOT NULL THEN N'Error!'

@@ -16,11 +16,11 @@ IF @DB = N'102' -- Banan ET, ETB, en
 	(3,			N'Yisak Fikadu',		N'yisakfikadu79@gmail.com'),
 	(4,			N'Wondewsen Semaneh',	N'wendylulu99@gmail.com');
 
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Users
-	([Index],[Name],			[Name2],		[Name3],							[Email]) VALUES
-	(0,		N'Salman Al-Juhani',N'سلمان الجهني',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),
-	(1,		N'Sami Shubaily',	N'سامي شبيلي',	N'萨米·希比利（Sami Shibili)',		N'sami.shubaily@lifan.com');
+	([Index],[Name],			[Name2],		[Email]) VALUES
+	(0,		N'Salman Al-Juhani',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),
+	(1,		N'Sami Shubaily',	N'萨米·希比利（Sami Shibili)',		N'sami.shubaily@lifan.com');
 
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 	INSERT INTO @Users
@@ -44,7 +44,7 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	INSERT INTO @Users
 	([Index],[Name],		[Name2],		[Email]) VALUES
 	(0,		N'Nazih Kalo',	N'نزيه كالو',	N'nazih.kalo@simpex.co.sa'),
-	(1,		N'Mahdi Mrad',	N'مهدي مراد',		N'mahdi.mrad@simpex.co.sa'),
+	(1,		N'Mahdi Mrad',	N'مهدي مراد',	N'mahdi.mrad@simpex.co.sa'),
 	(2,		N'Hisham',		N'هشام',		N'hisham@simpex.co.sa'),
 	(3,		N'Tareq',		N'طارق',		N'tareq@simpex.co.sa'),
 	(4,		N'Mazen',		N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	

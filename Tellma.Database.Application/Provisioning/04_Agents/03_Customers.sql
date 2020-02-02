@@ -24,7 +24,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	(2,			N'Walia Steel Industry, plc','2018.01.05',	N'0001656462'),
 	(3,			N'Yangfan Motors, PLC',		'2017.10.25',	N'0005308731');
 
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Customers
 	([Index],	[Name],						[StartDate]) VALUES
 	(0,			N'Wendy Semaneh',			'2017.09.15');
@@ -41,7 +41,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	INSERT INTO @Customers
 	([Index],	[Name],						[Name2]) VALUES
 	(0,			N'Riyadh Printshop',		N'مطبعة الرياض'),
-	(1,			N'Pro Print',				N'الطياعة الاحترافية'),
+	(1,			N'Pro Print',				N'الطباعة الاحترافية'),
 	(2,			N'Zeej printing services',	N'خدمات زيج للطباعة'),
 	(3,			N'Afan Printing & Packaging',N'آفان للطباعة والتغليف')
 	;

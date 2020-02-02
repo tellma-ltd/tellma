@@ -60,7 +60,7 @@ BEGIN
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
@@ -94,10 +94,11 @@ END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],		[IsOriginalDocument],	[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	1,		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
-	(1,	N'cash-payment-vouchers',	0,		N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		0,		N'Petty Cash Voucher',		N'Petty Cash Vouchers',		N'PCV');
+		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId], [IsVisibleByDefault]) VALUES

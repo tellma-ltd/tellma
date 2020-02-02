@@ -1,16 +1,20 @@
 ﻿IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	DECLARE @PaperProducts dbo.ResourceList;
-	DECLARE @PM INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Merchandise');
 	INSERT INTO @PaperProducts ([Index],
 	--N'Merchandise'
-		[AccountTypeId],[Name],				[Code],				[MassUnitId],				[CountUnitId]) VALUES
-	(0,	@PM,			N'Bond/A4/White/80',N'B4W80',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(1, @PM,			N'Bond/A3/White/80',N'B3W80',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(2, @PM,			N'Bond/A4/Beige/80',N'B4B80',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(3, @PM,			N'Bond/A3/Beige/80',N'B3B80',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(4, @PM,			N'Bond/A4/White/100',N'B4W100',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(5, @PM,			N'Bond/A3/White/100',N'B3W100',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
+		[AccountTypeId],[Name],								[Name2],								[Code],
+		[Lookup1Id],										[Lookup2Id],												
+		[MassUnitId],										[CountUnitId]) VALUES
+	(0, @Merchandise,	N'رول جريدة أبيض فنلندي ستورا',	N'Newspaper Roll White Finnish Estora',	N'2504-66011',
+		[dbo].[fn_Lookup](N'paper-origins', N'Finnish'),	[dbo].[fn_Lookup](N'paper-groups', N'Newspaper Roll paper'),
+		dbo.fn_UnitName__Id(N'mt'),							NULL),
+
+	(1,	@Merchandise,	N'مكربن أولى أبيض - فونكس',		N'Carbonless Coated Paper White Phoenix',N'0200-01231',
+		[dbo].[fn_Lookup](N'paper-origins', N'Thai'),		[dbo].[fn_Lookup](N'paper-groups', N'Carbonless Coated paper'),
+		dbo.fn_UnitName__Id(N'mt'),							dbo.fn_UnitName__Id(N'pkt'))
+		
+	;
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'paper-products',

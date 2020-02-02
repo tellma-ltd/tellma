@@ -23,7 +23,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	(3,		N'Ethiopian Airlines',					'2018.01.05',	NULL),
 	(4,		N'Ethio Telecom',						'2018.01.05',	N'0000030603'),
 	(5,		N'Microsoft',							'2020.01.01',	NULL);
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Suppliers
 	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
 	(0,		N'Banan Information technologies, plc',	'2017.09.15',	NULL),
@@ -36,11 +36,11 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	INSERT INTO @Suppliers
 	([Index], [Name],					[Name2]) VALUES
-	(0,		N'International Paper',		'الورق العالمية'),
-	(1,		N'Georgia-Pacific Corp',	'جورجيا باسيفيك'),
-	(2,		N'Weyerhaeuser Corporation','شركة ويرهاوزر'),
-	(3,		N'Stora Enso',				'ستورا إنسو')
-	
+	(0,		N'International Paper',		N'الورق العالمية'),
+	(1,		N'Georgia-Pacific Corp',	N'جورجيا باسيفيك'),
+	(2,		N'Weyerhaeuser Corporation',N'شركة ويرهاوزر'),
+	(3,		N'Stora Enso',				N'ستورا إنسو'),
+	(4,		N'Phoenix Pulp',			N'فونكس')
 	;
 
 

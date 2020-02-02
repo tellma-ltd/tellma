@@ -19,7 +19,7 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	(0, N'Commercial Bank of Ethiopia',	0,			'CBE'),
 	(1, N'Awash Bank',					0,			'AWB'),
 	(2, N'NIB',							0,			'NIB');
-ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @banks([Index],
 		[Name],							[IsRelated], [Code]) VALUES
 	(0, N'al-Rajihi Bank',				0,			'RJB');
