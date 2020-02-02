@@ -56,18 +56,48 @@ BEGIN
 		[CountUnitVisibility] = N'Optional',
 		[MassUnitVisibility] = N'Required',
 		[DescriptionVisibility] = N'Optional',
+		[ReorderLevelVisibility] = N'Optional',
+		[EconomicOrderQuantityVisibility] = N'Optional',
+		
+		[Decimal1Label] = N'Property 1',			
+		[Decimal1Label2] = N'صفة 1',
+		[Decimal1Visibility]= N'Optional',
+
+		[Decimal2Label]	= N'Property 2',
+		[Decimal2Label2] = N'صفة 2',
+		[Decimal2Visibility] = N'Optional',
+
+		[Int1Label] = N'Grammage',
+		[Int1Label2] = N'غراماج',
+		[Int1Visibility] = N'Optional',
+
+		[Int2Label]	= N'Delivery Period',	
+		[Int2Label2] = N'مدة التسليم',
+		[Int2Visibility] = N'Optional',
+
 		[Lookup1Label]	= N'Origin',
 		[Lookup1Label2]	= N'التصنيع'	,
 		[Lookup1Visibility] = N'Required',
 		[Lookup1DefinitionId] = N'paper-origins',
+
 		[Lookup2Label]	= N'Group',
 		[Lookup2Label2]	= N'المجموعة'	,
 		[Lookup2Visibility] = N'Required',
 		[Lookup2DefinitionId] = N'paper-groups',
+
 		[Lookup3Label]	= N'Type',
 		[Lookup3Label2]	= N'النوع'	,
 		[Lookup3Visibility] = N'Required',
-		[Lookup3DefinitionId] = N'paper-types'
+		[Lookup3DefinitionId] = N'paper-types',
+
+		--[Text1Label],				
+		--[Text1Label2],
+		[Text1Visibility] = N'Optional',
+
+		--[Text2Label]	,
+		--[Text2Label2],
+		[Text2Visibility] = N'Optional'
+
 	WHERE [Id] = N'paper-products'
 END
 
