@@ -150,6 +150,26 @@ namespace Tellma.Controllers
                                 e => e.AvailableTillVisibility, e => e.AvailableTillLabel, e => e.AvailableTillLabel2, e => e.AvailableTillLabel3, defaultName);
                             break;
 
+                        case nameof(Resource.Decimal1):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Decimal1Visibility, e => e.Decimal1Label, e => e.Decimal1Label2, e => e.Decimal1Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.Decimal2):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Decimal2Visibility, e => e.Decimal2Label, e => e.Decimal2Label2, e => e.Decimal2Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.Int1):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Int1Visibility, e => e.Int1Label, e => e.Int1Label2, e => e.Int1Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.Int2):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Int2Visibility, e => e.Int2Label, e => e.Int2Label2, e => e.Int2Label3, defaultName);
+                            break;
+
                         case nameof(Resource.Lookup1):
                         case nameof(Resource.Lookup1Id):
                             displayMetadata = LocalizeResourceProperty(
@@ -162,20 +182,30 @@ namespace Tellma.Controllers
                                 e => e.Lookup2Visibility, e => e.Lookup2Label, e => e.Lookup2Label2, e => e.Lookup2Label3, defaultName);
                             break;
 
-                        //case nameof(Resource.Lookup3):
-                        //case nameof(Resource.Lookup3Id):
-                        //    displayMetadata = LocalizeResourceProperty(e => e.Lookup3Visibility, e => e.Lookup3Label, e => e.Lookup3Label2, e => e.Lookup3Label3, defaultName);
-                        //    break;
+                        case nameof(Resource.Lookup3):
+                        case nameof(Resource.Lookup3Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup3Visibility, e => e.Lookup3Label, e => e.Lookup3Label2, e => e.Lookup3Label3, defaultName);
+                            break;
 
-                        //case nameof(Resource.Lookup4):
-                        //case nameof(Resource.Lookup4Id):
-                        //    displayMetadata = LocalizeResourceProperty(e => e.Lookup4Visibility, e => e.Lookup4Label, e => e.Lookup4Label2, e => e.Lookup4Label3, defaultName);
-                        //    break;
+                        case nameof(Resource.Lookup4):
+                        case nameof(Resource.Lookup4Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup4Visibility, e => e.Lookup4Label, e => e.Lookup4Label2, e => e.Lookup4Label3, defaultName);
+                            break;
 
                         //case nameof(Resource.Lookup5):
                         //case nameof(Resource.Lookup5Id):
                         //    displayMetadata = LocalizeResourceProperty(e => e.Lookup5Visibility, e => e.Lookup5Label, e => e.Lookup5Label2, e => e.Lookup5Label3, defaultName);
                         //    break;
+
+                        case nameof(Resource.Text1):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Text1Visibility, e => e.Text1Label, e => e.Text1Label2, e => e.Text1Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.Text2):
+                            displayMetadata = LocalizeResourceProperty(
+                                e => e.Text2Visibility, e => e.Text2Label, e => e.Text2Label2, e => e.Text2Label3, defaultName);
+                            break;
 
                         default:
                             displayMetadata = null;

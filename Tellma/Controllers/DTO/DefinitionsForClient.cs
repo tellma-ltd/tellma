@@ -202,6 +202,13 @@ namespace Tellma.Controllers.Dto
 
         public string DescriptionVisibility { get; set; } // Yes
 
+        public string ReorderLevelVisibility { get; set; } // Yes
+        public decimal? ReorderLevelDefaultValue { get; set; }
+
+        public string EconomicOrderQuantityVisibility { get; set; } // Yes
+        public decimal? EconomicOrderQuantityDefaultValue { get; set; }
+
+
         public string AvailableSinceLabel { get; set; } // Yes
         public string AvailableSinceLabel2 { get; set; } // Yes
         public string AvailableSinceLabel3 { get; set; } // Yes
@@ -213,6 +220,34 @@ namespace Tellma.Controllers.Dto
         public string AvailableTillLabel3 { get; set; } // Yes
         public string AvailableTillVisibility { get; set; } // Yes
         public DateTime? AvailableTillDefaultValue { get; set; }
+
+        // Decimal 1
+        public string Decimal1Label { get; set; } // Yes
+        public string Decimal1Label2 { get; set; } // Yes
+        public string Decimal1Label3 { get; set; } // Yes
+        public string Decimal1Visibility { get; set; } // Yes
+        public decimal? Decimal1DefaultValue { get; set; }
+
+        // Decimal 2
+        public string Decimal2Label { get; set; } // Yes
+        public string Decimal2Label2 { get; set; } // Yes
+        public string Decimal2Label3 { get; set; } // Yes
+        public string Decimal2Visibility { get; set; } // Yes
+        public decimal? Decimal2DefaultValue { get; set; }
+
+        // Int 1
+        public string Int1Label { get; set; } // Yes
+        public string Int1Label2 { get; set; } // Yes
+        public string Int1Label3 { get; set; } // Yes
+        public string Int1Visibility { get; set; } // Yes
+        public int? Int1DefaultValue { get; set; }
+
+        // Int 2
+        public string Int2Label { get; set; } // Yes
+        public string Int2Label2 { get; set; } // Yes
+        public string Int2Label3 { get; set; } // Yes
+        public string Int2Visibility { get; set; } // Yes
+        public int? Int2DefaultValue { get; set; }
 
         // Lookup 1
         public string Lookup1Label { get; set; } // Yes
@@ -230,21 +265,21 @@ namespace Tellma.Controllers.Dto
         public int? Lookup2DefaultValue { get; set; }
         public string Lookup2DefinitionId { get; set; } // Yes
 
-        //// Lookup 3
-        //public string Lookup3Label { get; set; }
-        //public string Lookup3Label2 { get; set; }
-        //public string Lookup3Label3 { get; set; }
-        //public string Lookup3Visibility { get; set; }
-        //public int? Lookup3DefaultValue { get; set; }
-        //public string Lookup3DefinitionId { get; set; }
+        // Lookup 3
+        public string Lookup3Label { get; set; } // Yes
+        public string Lookup3Label2 { get; set; } // Yes
+        public string Lookup3Label3 { get; set; } // Yes
+        public string Lookup3Visibility { get; set; } // Yes
+        public int? Lookup3DefaultValue { get; set; }
+        public string Lookup3DefinitionId { get; set; } // Yes
 
-        //// Lookup 4
-        //public string Lookup4Label { get; set; }
-        //public string Lookup4Label2 { get; set; }
-        //public string Lookup4Label3 { get; set; }
-        //public string Lookup4Visibility { get; set; }
-        //public int? Lookup4DefaultValue { get; set; }
-        //public string Lookup4DefinitionId { get; set; }
+        // Lookup 4
+        public string Lookup4Label { get; set; } // Yes
+        public string Lookup4Label2 { get; set; } // Yes
+        public string Lookup4Label3 { get; set; } // Yes
+        public string Lookup4Visibility { get; set; } // Yes
+        public int? Lookup4DefaultValue { get; set; }
+        public string Lookup4DefinitionId { get; set; } // Yes
 
         //// Lookup 5
         //public string Lookup5Label { get; set; }
@@ -259,6 +294,20 @@ namespace Tellma.Controllers.Dto
         public string DueDateLabel3 { get; set; } // Yes
         public string DueDateVisibility { get; set; } // Yes
         public DateTime? DueDateDefaultValue { get; set; }
+
+        // Text 1
+        public string Text1Label { get; set; } // Yes
+        public string Text1Label2 { get; set; } // Yes
+        public string Text1Label3 { get; set; } // Yes
+        public string Text1Visibility { get; set; } // Yes
+        public string Text1DefaultValue { get; set; }
+
+        // Text 2
+        public string Text2Label { get; set; } // Yes
+        public string Text2Label2 { get; set; } // Yes
+        public string Text2Label3 { get; set; } // Yes
+        public string Text2Visibility { get; set; } // Yes
+        public string Text2DefaultValue { get; set; }
     }
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient

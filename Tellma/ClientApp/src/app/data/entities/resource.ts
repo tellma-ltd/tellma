@@ -27,13 +27,21 @@ export interface ResourceForSave extends EntityWithKey {
     Description?: string;
     Description2?: string;
     Description3?: string;
+    ReorderLevel?: number;
+    EconomicOrderQuantity?: number;
     AvailableSince?: string;
     AvailableTill?: string;
+    Decimal1?: number;
+    Decimal2?: number;
+    Int1?: number;
+    Int2?: number;
     Lookup1Id?: number;
     Lookup2Id?: number;
-    // Lookup3Id?: number;
-    // Lookup4Id?: number;
+    Lookup3Id?: number;
+    Lookup4Id?: number;
     // Lookup5Id?: number;
+    Text1?: string;
+    Text2?: string;
 }
 
 export interface Resource extends ResourceForSave {
@@ -109,19 +117,26 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AvailableSince: { control: 'date', label: () => trx.instant('Resource_AvailableSince') },
                 AvailableTill: { control: 'date', label: () => trx.instant('Resource_AvailableTill') },
+                Decimal1: { control: 'number', label: () => trx.instant('Resource_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                Decimal2: { control: 'number', label: () => trx.instant('Resource_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                Int1: { control: 'number', label: () => trx.instant('Resource_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Int2: { control: 'number', label: () => trx.instant('Resource_Int2'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Lookup1Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Lookup1: { control: 'navigation', label: () => trx.instant('Resource_Lookup1'), type: 'Lookup', foreignKeyName: 'Lookup1Id' },
                 Lookup2Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Lookup2: { control: 'navigation', label: () => trx.instant('Resource_Lookup2'), type: 'Lookup', foreignKeyName: 'Lookup2Id' },
-                // Lookup3Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Lookup3: { control: 'navigation', label: () => trx.instant('Resource_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
-                // Lookup4Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Lookup4: { control: 'navigation', label: () => trx.instant('Resource_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
+                Lookup3Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup3: { control: 'navigation', label: () => trx.instant('Resource_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
+                Lookup4Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup4: { control: 'navigation', label: () => trx.instant('Resource_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
                 // Lookup5Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 // Lookup5: { control: 'navigation', label: () => trx.instant('Resource_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
-
+                Text1: { control: 'text', label: () => trx.instant('Resource_Text1') },
+                Text2: { control: 'text', label: () => trx.instant('Resource_Text2') },
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
@@ -152,15 +167,22 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             delete entityDesc.properties.DefinitionId;
             delete entityDesc.properties.Definition;
 
-            // Simple properties Visibility
+            // Description, special case
             if (!definition.DescriptionVisibility) {
                 delete entityDesc.properties.Description;
                 delete entityDesc.properties.Description2;
                 delete entityDesc.properties.Description3;
             }
 
+            // Simple properties Visibility
+            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity']) {
+                if (!definition[propName + 'Visibility']) {
+                    delete entityDesc.properties[propName];
+                }
+            }
+
             // Simple properties Visibility + Label
-            for (const propName of ['Identifier', 'MonetaryValue', 'Count', 'Mass', 'Volume', 'Time', 'AvailableSince', 'AvailableTill']) {
+            for (const propName of ['Identifier', 'MonetaryValue', 'Count', 'Mass', 'Volume', 'Time', 'AvailableSince', 'AvailableTill', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {
@@ -186,7 +208,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             }
 
             // Navigation properties with definition Id
-            for (const propName of ['1', '2' /*, '3', '4', '5' */].map(pf => 'Lookup' + pf)) {
+            for (const propName of ['1', '2' , '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

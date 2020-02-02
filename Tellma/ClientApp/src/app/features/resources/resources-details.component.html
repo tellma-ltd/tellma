@@ -23,7 +23,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
+        [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
         <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
@@ -108,7 +109,9 @@
     <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
         [serverErrors]="model?.serverErrors?.MonetaryValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
-            <div>{{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}</div>
+            <div>
+                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+            </div>
         </t-restricted>
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
@@ -241,32 +244,32 @@
     </t-form-group>
 
     <!-- Lookup 3 -->
-    <!-- <t-form-group class="t-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
+    <t-form-group class="t-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup3Id">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup3">
-        <t-view-link [link]="'../../../lookups/' + Lookup3_DefinitionId" [itemId]="model?.Lookup3Id">
-            {{ ws.getMultilingualValue('Lookup', model.Lookup3Id, 'Name') }}
-        </t-view-link>
+            <t-view-link [link]="'../../../lookups/' + Lookup3_DefinitionId" [itemId]="model?.Lookup3Id">
+                {{ ws.getMultilingualValue('Lookup', model.Lookup3Id, 'Name') }}
+            </t-view-link>
         </t-restricted>
 
         <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup3Id" [definitionId]="Lookup3_DefinitionId"
             [required]="Lookup3_isRequired">
         </t-lookups-picker>
-    </t-form-group> -->
+    </t-form-group>
 
     <!-- Lookup 4 -->
-    <!-- <t-form-group class="t-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
+    <t-form-group class="t-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup4Id">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup4">
-        <t-view-link [link]="'../../../lookups/' + Lookup4_DefinitionId" [itemId]="model?.Lookup4Id">
-            {{ ws.getMultilingualValue('Lookup', model.Lookup4Id, 'Name') }}
-        </t-view-link>
+            <t-view-link [link]="'../../../lookups/' + Lookup4_DefinitionId" [itemId]="model?.Lookup4Id">
+                {{ ws.getMultilingualValue('Lookup', model.Lookup4Id, 'Name') }}
+            </t-view-link>
         </t-restricted>
 
         <t-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup4Id" [definitionId]="Lookup4_DefinitionId"
             [required]="Lookup4_isRequired">
         </t-lookups-picker>
-    </t-form-group> -->
+    </t-form-group>
 
     <!-- Lookup 5 -->
     <!-- <t-form-group class="t-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
@@ -281,6 +284,95 @@
             [required]="Lookup5_isRequired">
         </t-lookups-picker>
     </t-form-group> -->
+
+    <!-- Reorder Level -->
+    <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
+        [serverErrors]="model?.serverErrors?.ReorderLevel">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReorderLevel">
+            <div *ngIf="!isEdit">{{ model?.ReorderLevel }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ReorderLevel_isRequired">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Economic Order Quantity -->
+    <t-form-group *ngIf="EconomicOrderQuantity_isVisible" class="t-form-group"
+        [label]="'Resource_EconomicOrderQuantity' | translate"
+        [serverErrors]="model?.serverErrors?.EconomicOrderQuantity">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
+            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="EconomicOrderQuantity_isRequired">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Decimal 1 -->
+    <t-form-group *ngIf="Decimal1_isVisible" class="t-form-group" [label]="Decimal1_label"
+        [serverErrors]="model?.serverErrors?.Decimal1">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal1">
+            <div>{{ model?.Decimal1 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Decimal1_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Decimal 2 -->
+    <t-form-group *ngIf="Decimal2_isVisible" class="t-form-group" [label]="Decimal2_label"
+        [serverErrors]="model?.serverErrors?.Decimal2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Decimal2">
+            <div>{{ model?.Decimal2 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Decimal1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Decimal2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Int 1 -->
+    <t-form-group *ngIf="Int1_isVisible" class="t-form-group" [label]="Int1_label"
+        [serverErrors]="model?.serverErrors?.Int1">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int1">
+            <div>{{ model?.Int1 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Int1_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Int 2 -->
+    <t-form-group *ngIf="Int2_isVisible" class="t-form-group" [label]="Int2_label"
+        [serverErrors]="model?.serverErrors?.Int2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Int2">
+            <div>{{ model?.Int2 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Int1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Int2_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Text 1 -->
+    <t-form-group *ngIf="Text1_isVisible" class="t-form-group" [label]="Text1_label"
+        [serverErrors]="model?.serverErrors?.Text1">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text1">
+            <div>{{ model?.Text1 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Text1_isRequired">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Text 2 -->
+    <t-form-group *ngIf="Text2_isVisible" class="t-form-group" [label]="Text2_label"
+        [serverErrors]="model?.serverErrors?.Text2">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Text2">
+            <div>{{ model?.Text2 | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Text1" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Text2_isRequired">
+        </t-text-editor>
+    </t-form-group>
 
     <!-- Available Since -->
     <t-form-group *ngIf="AvailableSince_isVisible" class="t-form-group" [label]="AvailableSince_label"
@@ -303,7 +395,6 @@
             [required]="AvailableTill_isRequired">
         </t-date-picker>
     </t-form-group>
-
 
     <!-- Description -->
     <t-form-group *ngIf="Description_isVisible" class="t-form-group"

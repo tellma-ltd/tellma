@@ -455,9 +455,11 @@ namespace Tellma.Data.Queries
                 }
 
                 // This is the orderby of related queries, and the default orderby of the root query
-                var defaultOrderBy = OrderByExpression.Parse(type.HasProperty("Index") ? "Index"
-                    : type.HasProperty("SortKey") ? "SortKey" : "Id");
+                var defaultOrderBy = OrderByExpression.Parse(
+                    type.HasProperty("Index") ? "Index" :
+                    type.HasProperty("SortKey") ? "SortKey" : "Id");
 
+                // Prepare the flat query and return it
                 var flatQuery = new QueryInternal
                 {
                     PrincipalQuery = principalQuery,

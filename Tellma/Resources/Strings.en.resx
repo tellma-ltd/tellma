@@ -1420,8 +1420,23 @@
   <data name="Resource_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
+  <data name="Resource_Decimal1" xml:space="preserve">
+    <value>Decimal Attribute 1</value>
+  </data>
+  <data name="Resource_Decimal2" xml:space="preserve">
+    <value>Decimal Attribute 2</value>
+  </data>
+  <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
+    <value>Economic Order Quantity</value>
+  </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>
+  </data>
+  <data name="Resource_Int1" xml:space="preserve">
+    <value>Integer Attribute 1</value>
+  </data>
+  <data name="Resource_Int2" xml:space="preserve">
+    <value>Integer Attribute 2</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -1446,6 +1461,15 @@
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
+  </data>
+  <data name="Resource_ReorderLevel" xml:space="preserve">
+    <value>Reorder Level</value>
+  </data>
+  <data name="Resource_Text1" xml:space="preserve">
+    <value>Text Attribute 1</value>
+  </data>
+  <data name="Resource_Text2" xml:space="preserve">
+    <value>Text Attribute 2</value>
   </data>
   <data name="Resource_Time" xml:space="preserve">
     <value>Time</value>

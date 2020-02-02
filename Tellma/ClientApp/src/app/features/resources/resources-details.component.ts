@@ -70,7 +70,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   create = () => {
-    const result: ResourceForSave = { };
+    const result: ResourceForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -92,13 +92,21 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     result.Volume = defs.VolumeDefaultValue;
     result.TimeUnitId = defs.TimeUnitDefaultValue;
     result.Time = defs.TimeDefaultValue;
+    result.ReorderLevel = defs.ReorderLevelDefaultValue;
+    result.EconomicOrderQuantity = defs.EconomicOrderQuantityDefaultValue;
     result.AvailableSince = defs.AvailableSinceDefaultValue;
     result.AvailableTill = defs.AvailableTillDefaultValue;
+    result.Decimal1 = defs.Decimal1DefaultValue;
+    result.Decimal2 = defs.Decimal2DefaultValue;
+    result.Int1 = defs.Int1DefaultValue;
+    result.Int2 = defs.Int2DefaultValue;
     result.Lookup1Id = defs.Lookup1DefaultValue;
     result.Lookup2Id = defs.Lookup2DefaultValue;
-    // result.Lookup3Id = defs.Lookup3DefaultValue;
-    // result.Lookup4Id = defs.Lookup4DefaultValue;
+    result.Lookup3Id = defs.Lookup3DefaultValue;
+    result.Lookup4Id = defs.Lookup4DefaultValue;
     // result.Lookup5Id = defs.Lookup5DefaultValue;
+    result.Text1 = defs.Text1DefaultValue;
+    result.Text2 = defs.Text2DefaultValue;
 
     return result;
   }
@@ -302,6 +310,22 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.DescriptionVisibility === 'Required';
   }
 
+  public get ReorderLevel_isVisible(): boolean {
+    return !!this.definition.ReorderLevelVisibility;
+  }
+
+  public get ReorderLevel_isRequired(): boolean {
+    return this.definition.ReorderLevelVisibility === 'Required';
+  }
+
+  public get EconomicOrderQuantity_isVisible(): boolean {
+    return !!this.definition.EconomicOrderQuantityVisibility;
+  }
+
+  public get EconomicOrderQuantity_isRequired(): boolean {
+    return this.definition.EconomicOrderQuantityVisibility === 'Required';
+  }
+
   public get AvailableSince_isVisible(): boolean {
     return !!this.definition.AvailableSinceVisibility;
   }
@@ -328,6 +352,62 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.AvailableTillLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'AvailableTillLabel') :
       this.translate.instant('Resource_AvailableTill');
+  }
+
+  public get Decimal1_isVisible(): boolean {
+    return !!this.definition.Decimal1Visibility;
+  }
+
+  public get Decimal1_isRequired(): boolean {
+    return this.definition.Decimal1Visibility === 'Required';
+  }
+
+  public get Decimal1_label(): string {
+    return !!this.definition.Decimal1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal1Label') :
+      this.translate.instant('Resource_Decimal1');
+  }
+
+  public get Decimal2_isVisible(): boolean {
+    return !!this.definition.Decimal2Visibility;
+  }
+
+  public get Decimal2_isRequired(): boolean {
+    return this.definition.Decimal2Visibility === 'Required';
+  }
+
+  public get Decimal2_label(): string {
+    return !!this.definition.Decimal2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal2Label') :
+      this.translate.instant('Resource_Decimal2');
+  }
+
+  public get Int1_isVisible(): boolean {
+    return !!this.definition.Int1Visibility;
+  }
+
+  public get Int1_isRequired(): boolean {
+    return this.definition.Int1Visibility === 'Required';
+  }
+
+  public get Int1_label(): string {
+    return !!this.definition.Int1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Int1Label') :
+      this.translate.instant('Resource_Int1');
+  }
+
+  public get Int2_isVisible(): boolean {
+    return !!this.definition.Int2Visibility;
+  }
+
+  public get Int2_isRequired(): boolean {
+    return this.definition.Int2Visibility === 'Required';
+  }
+
+  public get Int2_label(): string {
+    return !!this.definition.Int2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Int2Label') :
+      this.translate.instant('Resource_Int2');
   }
 
   public get Lookup1_isVisible(): boolean {
@@ -366,15 +446,71 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.Lookup2DefinitionId;
   }
 
-  // public get Lookup3_DefinitionId() {
-  //   return this.definition.Lookup3DefinitionId;
-  // }
+  public get Lookup3_isVisible(): boolean {
+    return !!this.definition.Lookup3Visibility;
+  }
 
-  // public get Lookup4_DefinitionId() {
-  //   return this.definition.Lookup4DefinitionId;
-  // }
+  public get Lookup3_isRequired(): boolean {
+    return this.definition.Lookup3Visibility === 'Required';
+  }
+
+  public get Lookup3_label(): string {
+    return !!this.definition.Lookup3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup3Label') :
+      this.translate.instant('Resource_Lookup3');
+  }
+
+  public get Lookup3_DefinitionId() {
+    return this.definition.Lookup3DefinitionId;
+  }
+
+  public get Lookup4_isVisible(): boolean {
+    return !!this.definition.Lookup4Visibility;
+  }
+
+  public get Lookup4_isRequired(): boolean {
+    return this.definition.Lookup4Visibility === 'Required';
+  }
+
+  public get Lookup4_label(): string {
+    return !!this.definition.Lookup4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup4Label') :
+      this.translate.instant('Resource_Lookup4');
+  }
+
+  public get Lookup4_DefinitionId() {
+    return this.definition.Lookup4DefinitionId;
+  }
 
   // public get Lookup5_DefinitionId() {
   //   return this.definition.Lookup5DefinitionId;
   // }
+
+  public get Text1_isVisible(): boolean {
+    return !!this.definition.Text1Visibility;
+  }
+
+  public get Text1_isRequired(): boolean {
+    return this.definition.Text1Visibility === 'Required';
+  }
+
+  public get Text1_label(): string {
+    return !!this.definition.Text1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text1Label') :
+      this.translate.instant('Resource_Text1');
+  }
+
+  public get Text2_isVisible(): boolean {
+    return !!this.definition.Text2Visibility;
+  }
+
+  public get Text2_isRequired(): boolean {
+    return this.definition.Text2Visibility === 'Required';
+  }
+
+  public get Text2_label(): string {
+    return !!this.definition.Text2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text2Label') :
+      this.translate.instant('Resource_Text2');
+  }
 }

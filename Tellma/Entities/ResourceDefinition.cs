@@ -64,6 +64,8 @@ namespace Tellma.Entities
         public string VolumeUnitVisibility { get; set; }
         public string TimeUnitVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
+        public string ReorderLevelVisibility { get; set; }
+        public string EconomicOrderQuantityVisibility { get; set; }
         public string AvailableSinceLabel { get; set; }
         public string AvailableSinceLabel2 { get; set; }
         public string AvailableSinceLabel3 { get; set; }
@@ -72,6 +74,22 @@ namespace Tellma.Entities
         public string AvailableTillLabel2 { get; set; }
         public string AvailableTillLabel3 { get; set; }
         public string AvailableTillVisibility { get; set; }
+        public string Decimal1Label { get; set; }
+        public string Decimal1Label2 { get; set; }
+        public string Decimal1Label3 { get; set; }
+        public string Decimal1Visibility { get; set; }
+        public string Decimal2Label { get; set; }
+        public string Decimal2Label2 { get; set; }
+        public string Decimal2Label3 { get; set; }
+        public string Decimal2Visibility { get; set; }
+        public string Int1Label { get; set; }
+        public string Int1Label2 { get; set; }
+        public string Int1Label3 { get; set; }
+        public string Int1Visibility { get; set; }
+        public string Int2Label { get; set; }
+        public string Int2Label2 { get; set; }
+        public string Int2Label3 { get; set; }
+        public string Int2Visibility { get; set; }
         public string Lookup1Label { get; set; }
         public string Lookup1Label2 { get; set; }
         public string Lookup1Label3 { get; set; }
@@ -82,10 +100,28 @@ namespace Tellma.Entities
         public string Lookup2Label3 { get; set; }
         public string Lookup2Visibility { get; set; }
         public string Lookup2DefinitionId { get; set; }
+        public string Lookup3Label { get; set; }
+        public string Lookup3Label2 { get; set; }
+        public string Lookup3Label3 { get; set; }
+        public string Lookup3Visibility { get; set; }
+        public string Lookup3DefinitionId { get; set; }
+        public string Lookup4Label { get; set; }
+        public string Lookup4Label2 { get; set; }
+        public string Lookup4Label3 { get; set; }
+        public string Lookup4Visibility { get; set; }
+        public string Lookup4DefinitionId { get; set; }
         public string DueDateLabel { get; set; }
         public string DueDateLabel2 { get; set; }
         public string DueDateLabel3 { get; set; }
         public string DueDateVisibility { get; set; }
+        public string Text1Label { get; set; }
+        public string Text1Label2 { get; set; }
+        public string Text1Label3 { get; set; }
+        public string Text1Visibility { get; set; }
+        public string Text2Label { get; set; }
+        public string Text2Label2 { get; set; }
+        public string Text2Label3 { get; set; }
+        public string Text2Visibility { get; set; }
     }
 
     public class ResourceDefinition : ResourceDefinitionForSave

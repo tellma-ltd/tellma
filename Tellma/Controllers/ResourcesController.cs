@@ -139,13 +139,21 @@ namespace Tellma.Controllers
             //SetDefaultValue(entities, e => e.Description, definition.DescriptionDefaultValue);
             //SetDefaultValue(entities, e => e.Description2, definition.Description2DefaultValue);
             //SetDefaultValue(entities, e => e.Description3, definition.Description3DefaultValue);
+            SetDefaultValue(entities, e => e.ReorderLevel, definition.ReorderLevelDefaultValue);
+            SetDefaultValue(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityDefaultValue);
             SetDefaultValue(entities, e => e.AvailableSince, definition.AvailableSinceDefaultValue);
             SetDefaultValue(entities, e => e.AvailableTill, definition.AvailableTillDefaultValue);
+            SetDefaultValue(entities, e => e.Decimal1, definition.Decimal1DefaultValue);
+            SetDefaultValue(entities, e => e.Decimal2, definition.Decimal2DefaultValue);
+            SetDefaultValue(entities, e => e.Int1, definition.Int1DefaultValue);
+            SetDefaultValue(entities, e => e.Int2, definition.Int2DefaultValue);
             SetDefaultValue(entities, e => e.Lookup1Id, definition.Lookup1DefaultValue);
             SetDefaultValue(entities, e => e.Lookup2Id, definition.Lookup2DefaultValue);
-            //SetDefaultValue(entities, e => e.Lookup3Id, definition.Lookup3DefaultValue);
-            //SetDefaultValue(entities, e => e.Lookup4Id, definition.Lookup4DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup3Id, definition.Lookup3DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup4Id, definition.Lookup4DefaultValue);
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
+            SetDefaultValue(entities, e => e.Text1, definition.Text1DefaultValue);
+            SetDefaultValue(entities, e => e.Text2, definition.Text2DefaultValue);
 
             return Task.FromResult(entities);
         }
@@ -169,13 +177,21 @@ namespace Tellma.Controllers
             ValidateIfRequired(entities, e => e.Description, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description2, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description3, definition.DescriptionVisibility);
+            ValidateIfRequired(entities, e => e.ReorderLevel, definition.ReorderLevelVisibility);
+            ValidateIfRequired(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityVisibility);
             ValidateIfRequired(entities, e => e.AvailableSince, definition.AvailableSinceVisibility);
             ValidateIfRequired(entities, e => e.AvailableTill, definition.AvailableTillVisibility);
+            ValidateIfRequired(entities, e => e.Decimal1, definition.Decimal1Visibility);
+            ValidateIfRequired(entities, e => e.Decimal2, definition.Decimal2Visibility);
+            ValidateIfRequired(entities, e => e.Int1, definition.Decimal1Visibility);
+            ValidateIfRequired(entities, e => e.Int2, definition.Decimal2Visibility);
             ValidateIfRequired(entities, e => e.Lookup1Id, definition.Lookup1Visibility);
             ValidateIfRequired(entities, e => e.Lookup2Id, definition.Lookup2Visibility);
-            //ValidateIfRequired(entities, e => e.Lookup3Id, definition.Lookup3Visibility);
-            //ValidateIfRequired(entities, e => e.Lookup4Id, definition.Lookup4Visibility);
+            ValidateIfRequired(entities, e => e.Lookup3Id, definition.Lookup3Visibility);
+            ValidateIfRequired(entities, e => e.Lookup4Id, definition.Lookup4Visibility);
             //ValidateIfRequired(entities, e => e.Lookup5Id, definition.Lookup5Visibility);
+            ValidateIfRequired(entities, e => e.Text1, definition.Text1Visibility);
+            ValidateIfRequired(entities, e => e.Text2, definition.Text2Visibility);
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)
