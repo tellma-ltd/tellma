@@ -173,7 +173,7 @@ namespace Tellma.Controllers.Dto
         public string MassLabel { get; set; }
         public string MassLabel2 { get; set; }
         public string MassLabel3 { get; set; }
-        public string MassVisibility { get; set; }
+        public string MassVisibility { get; set; } // Yes
         public int? MassDefaultValue { get; set; }
 
         public string VolumeUnitLabel { get; set; }

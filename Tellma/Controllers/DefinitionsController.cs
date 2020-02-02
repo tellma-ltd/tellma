@@ -126,6 +126,7 @@ namespace Tellma.Controllers
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 CountUnitVisibility = MapVisibility(def.CountUnitVisibility),
                 MassUnitVisibility = MapVisibility(def.MassUnitVisibility),
+                MassVisibility = MapVisibility(def.MassVisibility),
                 VolumeUnitVisibility = MapVisibility(def.VolumeUnitVisibility),
                 TimeUnitVisibility = MapVisibility(def.TimeUnitVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),

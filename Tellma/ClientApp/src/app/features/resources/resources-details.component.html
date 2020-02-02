@@ -289,11 +289,11 @@
     <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
         [serverErrors]="model?.serverErrors?.ReorderLevel">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReorderLevel">
-            <div *ngIf="!isEdit">{{ model?.ReorderLevel }}</div>
+            <div *ngIf="!isEdit">{{ model?.ReorderLevel | number:'1.0-4' }}</div>
         </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="ReorderLevel_isRequired">
-        </t-text-editor>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ReorderLevel_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        </t-decimal-editor>
     </t-form-group>
 
     <!-- Economic Order Quantity -->
@@ -301,11 +301,11 @@
         [label]="'Resource_EconomicOrderQuantity' | translate"
         [serverErrors]="model?.serverErrors?.EconomicOrderQuantity">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
-            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity }}</div>
+            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | number:'1.0-4' }}</div>
         </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="EconomicOrderQuantity_isRequired">
-        </t-text-editor>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        </t-decimal-editor>
     </t-form-group>
 
     <!-- Decimal 1 -->
