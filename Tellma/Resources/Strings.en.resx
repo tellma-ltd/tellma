@@ -313,9 +313,6 @@
   <data name="DefaultError" xml:space="preserve">
     <value>An unknown failure has occurred.</value>
   </data>
-  <data name="Definition" xml:space="preserve">
-    <value>Definition</value>
-  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
   </data>
@@ -336,6 +333,33 @@
   </data>
   <data name="DetailsEntry" xml:space="preserve">
     <value>Details Entry</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
+    <value>Algebraic Count</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
+    <value>Algebraic Mass</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
+    <value>Algebraic Monetary Value</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicNormalizedCount" xml:space="preserve">
+    <value>Algebraic Normalized Count</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicNormalizedMass" xml:space="preserve">
+    <value>Algebraic Normalized Mass</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicNormalizedVolume" xml:space="preserve">
+    <value>Algebraic Normalized Volume</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
+    <value>Algebraic Time</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
+    <value>Algebraic Value</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
+    <value>Algebraic Volume</value>
   </data>
   <data name="DetailsEntry_NormalizedCount" xml:space="preserve">
     <value>Normalized Count</value>

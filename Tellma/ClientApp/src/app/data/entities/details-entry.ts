@@ -17,15 +17,24 @@ export interface DetailsEntry extends EntityWithKey {
     ResourceId?: number;
     DueDate?: string;
     MonetaryValue?: number;
+    AlgebraicMonetaryValue?: number;
     CurrencyId?: number;
     Count?: number;
+    AlgebraicCount?: number;
     NormalizedCount?: number;
+    AlgebraicNormalizedCount?: number;
     Mass?: number;
+    AlgebraicMass?: number;
     NormalizedMass?: number;
+    AlgebraicNormalizedMass?: number;
     Volume?: number;
+    AlgebraicVolume?: number;
     NormalizedVolume?: number;
+    AlgebraicNormalizedVolume?: number;
     Time?: number;
+    AlgebraicTime?: number;
     Value?: number;
+    AlgebraicValue?: number;
     ExternalReference?: string;
     AdditionalReference?: string;
     NotedAgentId?: number;
@@ -84,16 +93,25 @@ export function metadata_DetailsEntry(ws: TenantWorkspace, trx: TranslateService
                 Resource: { control: 'navigation', label: () => trx.instant('Entry_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
                 DueDate: { control: 'date', label: () => trx.instant('Entry_DueDate') },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicMonetaryValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Entry_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 Count: { control: 'number', label: () => trx.instant('Entry_Count'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicCount: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NormalizedCount: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicNormalizedCount: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Mass: { control: 'number', label: () => trx.instant('Entry_Mass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicMass: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NormalizedMass: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicNormalizedMass: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Volume: { control: 'number', label: () => trx.instant('Entry_Volume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NormalizedVolume: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicNormalizedVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Time: { control: 'number', label: () => trx.instant('Entry_Time'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                AlgebraicTime: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicTime'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Value: { control: 'number', label: () => trx.instant('Entry_Value'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
+                AlgebraicValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicValue'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
                 NotedAgentId: { control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

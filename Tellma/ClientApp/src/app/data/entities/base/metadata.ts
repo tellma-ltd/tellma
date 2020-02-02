@@ -217,6 +217,7 @@ export interface NumberPropDescriptor extends PropDescriptorBase {
      */
     minDecimalPlaces: number;
     maxDecimalPlaces: number;
+    // formatAsCurrency?: boolean;
 }
 
 export interface DatePropDscriptor extends PropDescriptorBase {
