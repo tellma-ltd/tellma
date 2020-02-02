@@ -3,7 +3,7 @@ BEGIN
 	DECLARE @PaperProducts dbo.ResourceList;
 	INSERT INTO @PaperProducts ([Index],
 	--N'Merchandise'
-		[AccountTypeId],[Name],								[Name2],								[Code],
+		[AccountTypeId],[Name2],							[Name],								[Code],
 		[Lookup1Id],										[Lookup2Id],												
 		[MassUnitId],										[CountUnitId]) VALUES
 	(0, @Merchandise,	N'رول جريدة أبيض فنلندي ستورا',	N'Newspaper Roll White Finnish Estora',	N'2504-66011',

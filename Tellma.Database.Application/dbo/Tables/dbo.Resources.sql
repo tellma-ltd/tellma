@@ -62,10 +62,10 @@ CREATE TABLE [dbo].[Resources] (
 	--[Agent2Id]						INT					CONSTRAINT [FK_Resources__Agent2Id] FOREIGN KEY ([Agent2Id]) REFERENCES [dbo].[Agents] ([Id]),
 	--[Date1]							DATE,			-- Registration Date
 	--[Date2]							DATE,			-- Oil change date
-	[DECIMAL1]						DECIMAL,
-	[DECIMAL2]						DECIMAL,
-	[INT1]							INT,			-- Engine Capacity
-	[INT2]							INT,
+	[Decimal1]						DECIMAL,
+	[Decimal2]						DECIMAL,
+	[Int1]							INT,			-- Engine Capacity
+	[Int2]							INT,
 -- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
 	[Lookup1Id]						INT					CONSTRAINT [FK_Resources__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
 	[Lookup2Id]						INT					CONSTRAINT [FK_Resources__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),

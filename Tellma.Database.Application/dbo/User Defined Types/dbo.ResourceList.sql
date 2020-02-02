@@ -48,10 +48,10 @@
 	--[Agent2Id]						INT,			
 	--[Date1]							DATE,			
 	--[Date2]							DATE,			
-	[DECIMAL1]						DECIMAL,
-	[DECIMAL2]						DECIMAL,
-	[INT1]							INT,			-- Engine Capacity
-	[INT2]							INT,
+	[Decimal1]						DECIMAL,
+	[Decimal2]						DECIMAL,
+	[Int1]							INT,			-- Engine Capacity
+	[Int2]							INT,
 
 	[Lookup1Id]						INT,
 	[Lookup2Id]						INT,
