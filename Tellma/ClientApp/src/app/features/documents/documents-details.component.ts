@@ -681,14 +681,6 @@ Document_State_Closed
       .map(a => !!a.file ? a.file.size : 0)
       .reduce((total, v) => total + v);
 
-    if (sumOfAttachmentSizesPendingSave + file.size > this._maxAttachmentSize) {
-      console.log(sumOfAttachmentSizesPendingSave);
-      this.showError(() => this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
-        {
-          size: fileSizeDisplay(this._maxAttachmentSize)
-        }));
-      return;
-    }
 
     getDataURL(file).pipe(
       takeUntil(this.notifyDestruct$),

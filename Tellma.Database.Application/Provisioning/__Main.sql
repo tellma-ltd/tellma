@@ -81,3 +81,28 @@ ERR_LABEL:
 		[Argument4] NVARCHAR (255) '$.Argument4'
 	);
 RETURN;
+
+IF @DB = N'100' -- ACME, USD, en/ar/zh playground
+BEGIN
+	Print N'Tellma'
+END
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	Print N'Tellma'
+END
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	Print N'Tellma'
+END
+ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh car service
+BEGIN
+	Print N'Tellma'
+END
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am manyfacturing and sales
+BEGIN
+	Print N'Tellma'
+END
+ELSE IF @DB = N'105' -- Simpex, SAR, en/ar trading
+BEGIN
+	Print N'Tellma'
+END

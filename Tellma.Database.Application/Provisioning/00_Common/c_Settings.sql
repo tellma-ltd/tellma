@@ -1,21 +1,24 @@
-﻿IF @DB = N'101' -- Banan SD, USD, en
+﻿
+IF @DB = N'100' -- ACME, USD, en/ar/zh playground
+BEGIN
+	SET @ShortCompanyName2 = N'أكمي إنترناشيونال';
+	SET @ShortCompanyName3= N'ACME国际'
+END
+IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	PRINT N'Tellma.' + @DB;
-
 END
 IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	PRINT N'Tellma.' + @DB;
-
 END
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
-	PRINT N'Tellma.' + @DB;
-
+	SET @ShortCompanyName2 = N'扬帆汽车'
 END
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-	PRINT N'Tellma.' + @DB;
+	SET @ShortCompanyName2 = N'ዋልያ ብረት ኢንዱስትሪ'
 END
 IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN

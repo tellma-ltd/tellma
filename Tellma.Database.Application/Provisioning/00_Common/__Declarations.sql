@@ -16,7 +16,6 @@
 	EXEC sp_set_session_context 'Debug', 1;
 
 	DECLARE @RowCount INT;
-	--DECLARE @FunctionalResourceId INT;
 	DECLARE @ValidationErrorsJson nvarchar(max);
 
 	DECLARE @DB NVARCHAR (50) = RIGHT(DB_NAME(), 3);
