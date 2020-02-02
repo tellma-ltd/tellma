@@ -364,11 +364,11 @@
   <data name="Document_AssignedBy" xml:space="preserve">
     <value>分配者</value>
   </data>
+  <data name="Document_Assignee" xml:space="preserve">
+    <value>代理人</value>
+  </data>
   <data name="Document_AssignmentsHistory" xml:space="preserve">
     <value>循环</value>
-  </data>
-  <data name="Document_Assingee" xml:space="preserve">
-    <value>代理人</value>
   </data>
   <data name="Document_Attachments" xml:space="preserve">
     <value>附件</value>

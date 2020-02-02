@@ -364,11 +364,11 @@
   <data name="Document_AssignedBy" xml:space="preserve">
     <value>المرسل</value>
   </data>
+  <data name="Document_Assignee" xml:space="preserve">
+    <value>المستلم</value>
+  </data>
   <data name="Document_AssignmentsHistory" xml:space="preserve">
     <value>التداولات</value>
-  </data>
-  <data name="Document_Assingee" xml:space="preserve">
-    <value>المستلم</value>
   </data>
   <data name="Document_Attachments" xml:space="preserve">
     <value>المرفقات</value>
