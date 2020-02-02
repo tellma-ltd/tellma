@@ -1,6 +1,6 @@
 ﻿	CREATE FUNCTION [map].[SummaryEntries] (
-	@FromDate Date = '01.01.2018',
-	@ToDate Date = '01.01.2019',
+	@fromDate Date = '01.01.2018',
+	@toDate Date = '01.01.2019',
 	@ResponsibilityCenterId INT = NULL,
 	@AgentDefinitionId NVARCHAR(50) = NULL,
 	@AccountTypeCode NVARCHAR (255) = NULL,

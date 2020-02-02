@@ -202,9 +202,6 @@ END;
 
 UPDATE dbo.[EntryTypes] SET IsSystem = 1;
 	
-
-
-
 DECLARE @ProceedsFromIssuingShares	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
 DECLARE @IssueOfEquity				INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
 DECLARE @InternalCashTransferExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );

@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[CurrencyList] AS TABLE
 (
-	[Index]			INT					PRIMARY KEY,
+	[Index]			INT					PRIMARY KEY		DEFAULT 0,
 	[Id]			NCHAR(3)			NOT NULL UNIQUE,
 	[Name]			NVARCHAR (50)		NOT NULL,
 	[Name2]			NVARCHAR (50),

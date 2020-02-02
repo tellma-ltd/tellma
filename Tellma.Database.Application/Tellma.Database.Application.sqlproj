@@ -197,8 +197,6 @@
     <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
     <Build Include="api\Stored Procedures\api.IfrsDisclosureDetails__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
-    <Build Include="api\Stored Procedures\api.IfrsConcepts__Activate.sql" />
-    <Build Include="dal\Stored Procedures\dal.IfrsConcepts__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.IfrsDisclosureDetails__Save.sql" />
     <Build Include="api\Stored Procedures\api.MeasurementUnits__Activate.sql" />
     <Build Include="api\Stored Procedures\api.MeasurementUnits__Delete.sql" />
