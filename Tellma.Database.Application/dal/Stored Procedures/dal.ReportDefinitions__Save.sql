@@ -68,6 +68,7 @@ AS
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
+			t.[Index]				= s.[Index],
 			t.[Key]					= s.[Key],
 			t.[Label]				= s.[Label],
 			t.[Label2]				= s.[Label2],
@@ -76,10 +77,10 @@ AS
 			t.[Value]				= s.[Value]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[ReportDefinitionId], [Key], [Label], [Label2], [Label3], [Visibility], [Value]
+			[Index], [ReportDefinitionId], [Key], [Label], [Label2], [Label3], [Visibility], [Value]
 		)
 		VALUES (
-			s.[ReportDefinitionId], s.[Key], s.[Label], s.[Label2], s.[Label3], s.[Visibility], s.[Value]
+			s.[Index], s.[ReportDefinitionId], s.[Key], s.[Label], s.[Label2], s.[Label3], s.[Visibility], s.[Value]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -97,16 +98,17 @@ AS
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
+			t.[Index]				= s.[Index],
 			t.[Path]				= s.[Path],
 			t.[Label]				= s.[Label],
 			t.[Label2]				= s.[Label2],
 			t.[Label3]				= s.[Label3]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[ReportDefinitionId], [Path], [Label], [Label2], [Label3]
+			[Index], [ReportDefinitionId], [Path], [Label], [Label2], [Label3]
 		)
 		VALUES (
-			s.[ReportDefinitionId], s.[Path], s.[Label], s.[Label2], s.[Label3]
+			s.[Index], s.[ReportDefinitionId], s.[Path], s.[Label], s.[Label2], s.[Label3]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -124,6 +126,7 @@ AS
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
+			t.[Index]				= s.[Index],
 			t.[Path]				= s.[Path],
 			t.[Modifier]			= s.[Modifier],
 			t.[Label]				= s.[Label],
@@ -133,10 +136,10 @@ AS
 			t.[AutoExpand]			= s.[AutoExpand]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[Discriminator], [ReportDefinitionId], [Path], [Modifier], [Label], [Label2], [Label3], [OrderDirection], [AutoExpand]
+			[Index], [Discriminator], [ReportDefinitionId], [Path], [Modifier], [Label], [Label2], [Label3], [OrderDirection], [AutoExpand]
 		)
 		VALUES (
-			N'Row', s.[ReportDefinitionId], s.[Path], s.[Modifier], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpand]
+			s.[Index], N'Row', s.[ReportDefinitionId], s.[Path], s.[Modifier], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpand]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -154,6 +157,7 @@ AS
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
+			t.[Index]				= s.[Index],
 			t.[Path]				= s.[Path],
 			t.[Modifier]			= s.[Modifier],
 			t.[Label]				= s.[Label],
@@ -163,10 +167,10 @@ AS
 			t.[AutoExpand]			= s.[AutoExpand]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[Discriminator], [ReportDefinitionId], [Path], [Modifier], [Label], [Label2], [Label3], [OrderDirection], [AutoExpand]
+			[Index], [Discriminator], [ReportDefinitionId], [Path], [Modifier], [Label], [Label2], [Label3], [OrderDirection], [AutoExpand]
 		)
 		VALUES (
-			N'Column', s.[ReportDefinitionId], s.[Path], s.[Modifier], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpand]
+			s.[Index], N'Column', s.[ReportDefinitionId], s.[Path], s.[Modifier], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[AutoExpand]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
@@ -184,6 +188,7 @@ AS
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
+			t.[Index]				= s.[Index],
 			t.[Path]				= s.[Path],
 			t.[Label]				= s.[Label],
 			t.[Label2]				= s.[Label2],
@@ -192,10 +197,10 @@ AS
 			t.[Aggregation]			= s.[Aggregation]
 	WHEN NOT MATCHED THEN
 		INSERT (
-			[ReportDefinitionId], [Path], [Label], [Label2], [Label3], [OrderDirection], [Aggregation]
+			[Index], [ReportDefinitionId], [Path], [Label], [Label2], [Label3], [OrderDirection], [Aggregation]
 		)
 		VALUES (
-			s.[ReportDefinitionId], s.[Path], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[Aggregation]
+			s.[Index], s.[ReportDefinitionId], s.[Path], s.[Label], s.[Label2], s.[Label3], s.[OrderDirection], s.[Aggregation]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

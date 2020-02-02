@@ -83,11 +83,29 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+        [Display(Name = "Resource_ReorderLevel")]
+        public decimal? ReorderLevel { get; set; }
+
+        [Display(Name = "Resource_EconomicOrderQuantity")]
+        public decimal? EconomicOrderQuantity { get; set; }
+
         [Display(Name = "Resource_AvailableSince")]
         public DateTime? AvailableSince { get; set; }
 
         [Display(Name = "Resource_AvailableTill")]
         public DateTime? AvailableTill { get; set; }
+
+        [Display(Name = "Resource_Decimal1")]
+        public decimal? Decimal1 { get; set; }
+
+        [Display(Name = "Resource_Decimal2")]
+        public decimal? Decimal2 { get; set; }
+
+        [Display(Name = "Resource_Int1")]
+        public int? Int1 { get; set; }
+
+        [Display(Name = "Resource_Int2")]
+        public int? Int2 { get; set; }
 
         [Display(Name = "Resource_Lookup1")]
         public int? Lookup1Id { get; set; }
@@ -95,14 +113,23 @@ namespace Tellma.Entities
         [Display(Name = "Resource_Lookup2")]
         public int? Lookup2Id { get; set; }
 
-        //[Display(Name = "Resource_Lookup3")]
-        //public int? Lookup3Id { get; set; }
+        [Display(Name = "Resource_Lookup3")]
+        public int? Lookup3Id { get; set; }
 
-        //[Display(Name = "Resource_Lookup4")]
-        //public int? Lookup4Id { get; set; }
+        [Display(Name = "Resource_Lookup4")]
+        public int? Lookup4Id { get; set; }
 
         //[Display(Name = "Resource_Lookup5")]
         //public int? Lookup5Id { get; set; }
+        
+        [Display(Name = "Resource_Text1")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string Text1 { get; set; }
+
+        [Display(Name = "Resource_Text2")]
+
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string Text2 { get; set; }
     }
 
     public class Resource : ResourceForSave
@@ -168,13 +195,13 @@ namespace Tellma.Entities
         [ForeignKey(nameof(Lookup2Id))]
         public Lookup Lookup2 { get; set; }
 
-        //[Display(Name = "Resource_Lookup3")]
-        //[ForeignKey(nameof(Lookup3Id))]
-        //public Lookup Lookup3 { get; set; }
+        [Display(Name = "Resource_Lookup3")]
+        [ForeignKey(nameof(Lookup3Id))]
+        public Lookup Lookup3 { get; set; }
 
-        //[Display(Name = "Resource_Lookup4")]
-        //[ForeignKey(nameof(Lookup4Id))]
-        //public Lookup Lookup4 { get; set; }
+        [Display(Name = "Resource_Lookup4")]
+        [ForeignKey(nameof(Lookup4Id))]
+        public Lookup Lookup4 { get; set; }
 
         //[Display(Name = "Resource_Lookup5")]
         //[ForeignKey(nameof(Lookup5Id))]

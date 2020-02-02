@@ -454,6 +454,12 @@ namespace Tellma.Data.Queries
                     principalQuery.PathsToParentEntitiesWithExpandedAncestors.Add(pathToParentEntity);
                 }
 
+                // This is the orderby of related queries, and the default orderby of the root query
+                var defaultOrderBy = OrderByExpression.Parse(
+                    type.HasProperty("Index") ? "Index" :
+                    type.HasProperty("SortKey") ? "SortKey" : "Id");
+
+                // Prepare the flat query and return it
                 var flatQuery = new QueryInternal
                 {
                     PrincipalQuery = principalQuery,
@@ -462,7 +468,7 @@ namespace Tellma.Data.Queries
                     ForeignKeyToPrincipalQuery = foreignKeyToPrincipalQuery,
                     ResultType = type,
                     KeyType = keyType,
-                    OrderBy = OrderByExpression.Parse("Id")
+                    OrderBy = defaultOrderBy
                 };
 
                 return flatQuery;

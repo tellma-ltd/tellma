@@ -167,6 +167,12 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 
     DescriptionVisibility: Visibility;
 
+    ReorderLevelVisibility: string;
+    ReorderLevelDefaultValue: number;
+
+    EconomicOrderQuantityVisibility: string;
+    EconomicOrderQuantityDefaultValue: number;
+
     AvailableSinceLabel: string;
     AvailableSinceLabel2: string;
     AvailableSinceLabel3: string;
@@ -179,11 +185,39 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     AvailableTillVisibility: Visibility;
     AvailableTillDefaultValue: string;
 
+    // Decimal 1
+    Decimal1Label: string;
+    Decimal1Label2: string;
+    Decimal1Label3: string;
+    Decimal1Visibility: Visibility;
+    Decimal1DefaultValue: number;
+
+    // Decimal 2
+    Decimal2Label: string;
+    Decimal2Label2: string;
+    Decimal2Label3: string;
+    Decimal2Visibility: Visibility;
+    Decimal2DefaultValue: number;
+
+    // Int 1
+    Int1Label: string;
+    Int1Label2: string;
+    Int1Label3: string;
+    Int1Visibility: Visibility;
+    Int1DefaultValue: number;
+
+    // Int 2
+    Int2Label: string;
+    Int2Label2: string;
+    Int2Label3: string;
+    Int2Visibility: Visibility;
+    Int2DefaultValue: number;
+
     // Lookup 1
     Lookup1Label: string;
     Lookup1Label2: string;
     Lookup1Label3: string;
-    Lookup1Visibility: Visibility; // 0, 1, 2 (not visible, visible, visible and required)
+    Lookup1Visibility: Visibility;
     Lookup1DefaultValue: number;
     Lookup1DefinitionId: string;
 
@@ -195,21 +229,21 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup2DefaultValue: number;
     Lookup2DefinitionId: string;
 
-    //// Lookup 3
-    // Lookup3Label: string;
-    // Lookup3Label2: string;
-    // Lookup3Label3: string;
-    // Lookup3Visibility: Visibility;
-    // Lookup3DefaultValue: number;
-    // Lookup3DefinitionId: string;
+    // Lookup 3
+    Lookup3Label: string;
+    Lookup3Label2: string;
+    Lookup3Label3: string;
+    Lookup3Visibility: Visibility;
+    Lookup3DefaultValue: number;
+    Lookup3DefinitionId: string;
 
-    //// Lookup 4
-    // Lookup4Label: string;
-    // Lookup4Label2: string;
-    // Lookup4Label3: string;
-    // Lookup4Visibility: Visibility;
-    // Lookup4DefaultValue: number;
-    // Lookup4DefinitionId: string;
+    // Lookup 4
+    Lookup4Label: string;
+    Lookup4Label2: string;
+    Lookup4Label3: string;
+    Lookup4Visibility: Visibility;
+    Lookup4DefaultValue: number;
+    Lookup4DefinitionId: string;
 
     //// Lookup 5
     // Lookup5Label: string;
@@ -224,6 +258,20 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     DueDateLabel3: string;
     DueDateVisibility: Visibility;
     DueDateDefaultValue: string;
+
+    // Text 1
+    Text1Label: string;
+    Text1Label2: string;
+    Text1Label3: string;
+    Text1Visibility: Visibility;
+    Text1DefaultValue: string;
+
+    // Text 2
+    Text2Label: string;
+    Text2Label2: string;
+    Text2Label3: string;
+    Text2Visibility: Visibility;
+    Text2DefaultValue: string;
 }
 
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
