@@ -61,6 +61,7 @@ namespace Tellma.Entities
         public string CurrencyVisibility { get; set; }
         public string CountUnitVisibility { get; set; }
         public string MassUnitVisibility { get; set; }
+        public string MassVisibility { get; set; }
         public string VolumeUnitVisibility { get; set; }
         public string TimeUnitVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
