@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[ReportSelectDefinitions]
 (
 	[Id]						INT						 CONSTRAINT [PK_ReportSelectDefinitions] PRIMARY KEY IDENTITY,
+	[Index]						INT,
 	[ReportDefinitionId]		NVARCHAR (50)	NOT NULL CONSTRAINT [FK_ReportSelectDefinitions__DocumentId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Path]						NVARCHAR (255)	NOT NULL,
 	[Label]						NVARCHAR (255),

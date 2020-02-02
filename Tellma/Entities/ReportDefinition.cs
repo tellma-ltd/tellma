@@ -239,6 +239,8 @@ namespace Tellma.Entities
     public class ReportParameterDefinition : ReportParameterDefinitionForSave
     {
         public string ReportDefinitionId { get; set; }
+
+        public int? Index { get; set; }
     }
 
     public class ReportSelectDefinitionForSave : EntityWithKey<int>
@@ -269,6 +271,8 @@ namespace Tellma.Entities
     public class ReportSelectDefinition : ReportSelectDefinitionForSave
     {
         public string ReportDefinitionId { get; set; }
+
+        public int? Index { get; set; }
     }
 
     public abstract class ReportDimensionDefinition : EntityWithKey<int>
@@ -336,6 +340,8 @@ namespace Tellma.Entities
     public class ReportColumnDefinition : ReportColumnDefinitionForSave
     {
         public string ReportDefinitionId { get; set; }
+
+        public int? Index { get; set; }
     }
 
     public class ReportRowDefinitionForSave : ReportDimensionDefinition
@@ -346,6 +352,8 @@ namespace Tellma.Entities
     public class ReportRowDefinition : ReportRowDefinitionForSave
     {
         public string ReportDefinitionId { get; set; }
+
+        public int? Index { get; set; }
     }
 
     public class ReportMeasureDefinitionForSave : EntityWithKey<int>
@@ -395,5 +403,7 @@ namespace Tellma.Entities
     public class ReportMeasureDefinition : ReportMeasureDefinitionForSave
     {
         public string ReportDefinitionId { get; set; }
+
+        public int? Index { get; set; }
     }
 }

@@ -120,7 +120,7 @@ namespace Tellma.Controllers
             return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
-        protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
+        protected override Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
         {
             var definition = Definition();
 
@@ -146,6 +146,13 @@ namespace Tellma.Controllers
             //SetDefaultValue(entities, e => e.Lookup3Id, definition.Lookup3DefaultValue);
             //SetDefaultValue(entities, e => e.Lookup4Id, definition.Lookup4DefaultValue);
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
+
+            return Task.FromResult(entities);
+        }
+
+        protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
+        {
+            var definition = Definition();
 
             // Validate required stuff
             ValidateIfRequired(entities, e => e.Identifier, definition.IdentifierVisibility);
