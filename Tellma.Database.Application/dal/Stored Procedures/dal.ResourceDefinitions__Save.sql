@@ -30,7 +30,7 @@ SET NOCOUNT ON;
 			[CurrencyVisibility],
 			[CountUnitVisibility],
 			[MassUnitVisibility],
-			[MassVisibility]
+			[MassVisibility],
 			[VolumeUnitVisibility],
 			[TimeUnitVisibility],
 			-- [CustomsReferenceVisibility],

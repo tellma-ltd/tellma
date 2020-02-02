@@ -55,6 +55,7 @@ BEGIN
 	SET
 		[CountUnitVisibility] = N'Optional',
 		[MassUnitVisibility] = N'Required',
+		[MassVisibility] = N'Required',
 		[DescriptionVisibility] = N'Optional',
 		[ReorderLevelVisibility] = N'Optional',
 		[EconomicOrderQuantityVisibility] = N'Optional',

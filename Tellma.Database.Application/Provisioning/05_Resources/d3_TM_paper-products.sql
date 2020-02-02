@@ -5,14 +5,15 @@ BEGIN
 	--N'Merchandise'
 		[AccountTypeId],[Name2],							[Name],								[Code],
 		[Lookup1Id],										[Lookup2Id],												
-		[MassUnitId],										[CountUnitId]) VALUES
+		[MassUnitId],										[CountUnitId],						[Mass]) VALUES
+		--[Text1],											[Text2]) VALUES
 	(0, @Merchandise,	N'رول جريدة أبيض فنلندي ستورا',	N'Newspaper Roll White Finnish Estora',	N'2504-66011',
 		[dbo].[fn_Lookup](N'paper-origins', N'Finnish'),	[dbo].[fn_Lookup](N'paper-groups', N'Newspaper Roll paper'),
-		dbo.fn_UnitName__Id(N'mt'),							NULL),
+		dbo.fn_UnitName__Id(N'mt'),							NULL,								1000000),
 
 	(1,	@Merchandise,	N'مكربن أولى أبيض - فونكس',		N'Carbonless Coated Paper White Phoenix',N'0200-01231',
 		[dbo].[fn_Lookup](N'paper-origins', N'Thai'),		[dbo].[fn_Lookup](N'paper-groups', N'Carbonless Coated paper'),
-		dbo.fn_UnitName__Id(N'mt'),							dbo.fn_UnitName__Id(N'pkt'))
+		dbo.fn_UnitName__Id(N'mt'),							dbo.fn_UnitName__Id(N'pkt'),		19600)
 		
 	;
 
