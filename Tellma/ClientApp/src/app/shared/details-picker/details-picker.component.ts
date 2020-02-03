@@ -380,9 +380,13 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   public get queryFilter(): string {
     // IF this is a definitioned API and the definition id is ambigious
     // then we add the definitions to the filter
-    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault && !!this.definitionIds && this.definitionIds.length > 0) {
+    if (this.isDefinitioned &&
+      !this.definitionIdsSingleOrDefault &&
+      !!this.definitionIds &&
+      this.definitionIds.filter(e => !!e).length > 0) {
 
       const definitionfilter = this.definitionIds
+        .filter(e => !!e)
         .map(e => `DefinitionId eq '${e.replace('\'', '\'\'')}'`)
         .reduce((e1, e2) => `${e1} or ${e2}`);
 
