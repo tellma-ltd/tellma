@@ -328,12 +328,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     // If the api is definitioned, and definitionIds was not supplied, this method
     // Returns the full list of definitionIds form the definitions
     if (this.isDefinitioned) { // Definitioned API
-      if (!this.definitionIds || this.definitionIds.length === 0) { // The definitionId were not specified
+      if (!this.definitionIds || this.definitionIds.filter(e => !!e).length === 0) { // The definitionId were not specified
         return this.entityDescriptor().definitionIds;
       }
     }
 
-    return this.definitionIds;
+    return this.definitionIds.filter(e => !!e);
   }
 
   private get definitionIdsSingleOrDefault() {
