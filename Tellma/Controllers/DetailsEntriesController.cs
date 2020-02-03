@@ -37,11 +37,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            return new ParameteredRepository<DetailsEntry>(_repo,
-                ("@CountUnitId", GetInt("CountUnitId", false)),
-                ("@MassUnitId", GetInt("MassUnitId", false)),
-                ("@VolumeUnitId", GetInt("VolumeUnitId", false))
-            );
+            return _repo;
         }
 
         private int? GetInt(string key, bool isRequired)

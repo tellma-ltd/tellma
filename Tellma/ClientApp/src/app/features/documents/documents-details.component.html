@@ -144,7 +144,7 @@
                         </t-restricted>
                         <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
                             (ngModelChange)="update.call(null, item)"
-                            additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,ResponsibilityCenter/Name,ResponsibilityCenter/Name2,ResponsibilityCenter/Name3,HasNotedAmount,HasNotedDate,HasAgent,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/CountUnit/Name,Resource/CountUnit/Name2,Resource/CountUnit/Name3,Resource/MassUnit/Name,Resource/MassUnit/Name2,Resource/MassUnit/Name3,Resource/VolumeUnit/Name,Resource/VolumeUnit/Name2,Resource/VolumeUnit/Name3,Resource/TimeUnit/Name,Resource/TimeUnit/Name2,Resource/TimeUnit/Name3">
+                            additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,ResponsibilityCenter/Name,ResponsibilityCenter/Name2,ResponsibilityCenter/Name3,HasNotedAmount,HasNotedDate,HasAgent,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/CountUnit/Name,Resource/CountUnit/Name2,Resource/CountUnit/Name3,Resource/MassUnit/Name,Resource/MassUnit/Name2,Resource/MassUnit/Name3,Resource/VolumeUnit/Name,Resource/VolumeUnit/Name2,Resource/VolumeUnit/Name3,Resource/TimeUnit/Name,Resource/TimeUnit/Name2,Resource/TimeUnit/Name3,Resource/Count,Resource/Mass,Resource/Volume,Resource/Time">
                         </t-accounts-picker>
                     </t-form-group>
                 </ng-template>
@@ -156,7 +156,9 @@
                 <ng-template #row_ResponsibilityCenter let-item="item" let-entry="item.Entries[0]"
                     let-index="originalIndex" let-update="update">
                     <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ResponsibilityCenterId">
-                        {{ ws.getMultilingualValue('ResponsibilityCenter', entry.ResponsibilityCenterId, 'Name') }}
+                        <t-view-link link="../../../responsibility-centers" [itemId]="entry.ResponsibilityCenterId">
+                            {{ ws.getMultilingualValue('ResponsibilityCenter', entry.ResponsibilityCenterId, 'Name') }}
+                        </t-view-link>
                     </t-restricted>
                     <ng-container *ngIf="isEdit">
                         <t-responsibility-centers-picker style="min-width: 150px;"
@@ -296,7 +298,7 @@
                             <ng-container *ngIf="isEdit">
                                 <t-resources-picker style="min-width: 150px;" *ngIf="!readonlyResource(entry)"
                                     [(ngModel)]="entry.ResourceId" (ngModelChange)="update.call(null, item);"
-                                    additionalSelect="CountUnit/Name,CountUnit/Name2,CountUnit/Name3,MassUnit/Name,MassUnit/Name2,MassUnit/Name3,VolumeUnit/Name,VolumeUnit/Name2,VolumeUnit/Name3,TimeUnit/Name,TimeUnit/Name2,TimeUnit/Name3"
+                                    additionalSelect="Count,Mass,Volume,Time,CountUnit/Name,CountUnit/Name2,CountUnit/Name3,MassUnit/Name,MassUnit/Name2,MassUnit/Name3,VolumeUnit/Name,VolumeUnit/Name2,VolumeUnit/Name3,TimeUnit/Name,TimeUnit/Name2,TimeUnit/Name3"
                                     [filter]="filterResource(entry)" required>
                                 </t-resources-picker>
                                 <t-restricted *ngIf="readonlyResource(entry)"
@@ -306,8 +308,40 @@
                             </ng-container>
                         </t-form-group-dynamic>
 
+                        <!-- Quantity + UnitId -->
+                        <ng-container *ngIf="showQuantityAndUnit(entry)">
+                            <t-form-group-dynamic class="border-left px-1" [label]="'Entry_Quantity' | translate"
+                                [serverErrors]="entry.serverErrors?.Quantity">
+                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Quantity">
+                                    {{ entry.Quantity | number:'1.0-4'}}
+                                </t-restricted>
+                                <t-decimal-editor *ngIf="isEdit" style="min-width: 100px;" [(ngModel)]="entry.Quantity"
+                                    [maxDecimalPlaces]="4" [minDecimalPlaces]="0"
+                                    (ngModelChange)="update.call(null, item);" [ngModelOptions]="{ updateOn: 'blur' }"
+                                    textAlignment="right" required>
+                                </t-decimal-editor>
+                            </t-form-group-dynamic>
+
+                            <t-form-group-dynamic class="px-1" [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
+                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.UnitId">
+                                    <!-- <t-view-link link="../../../measurement-units" [itemId]="entry.UnitId"> -->
+                                        {{ ws.getMultilingualValue('MeasurementUnit', entry.UnitId, 'Name') }}
+                                    <!-- </t-view-link> -->
+                                </t-restricted>
+                                <ng-container *ngIf="isEdit">
+                                    <t-restricted *ngIf="readonlyUnit(entry)" [metadata]="entry.EntityMetadata?.UnitId">
+                                        {{ ws.getMultilingualValue('MeasurementUnit', readonlyValueUnitId(entry), 'Name') }}
+                                    </t-restricted>
+                                    <t-measurement-units-picker *ngIf="!readonlyUnit(entry)" style="min-width: 150px;"
+                                        [(ngModel)]="entry.UnitId" (ngModelChange)="update.call(null, item);"
+                                        [filter]="filterUnitId(entry)">
+                                    </t-measurement-units-picker>
+                                </ng-container>
+                            </t-form-group-dynamic>
+                        </ng-container>
+
                         <!-- Count + CountUnitId -->
-                        <ng-container *ngIf="resource(entry)?.CountUnitId">
+                        <ng-container *ngIf="showCount(entry)">
                             <t-form-group-dynamic class="border-left px-1" [label]="'Entry_Count' | translate"
                                 [serverErrors]="entry.serverErrors?.Count">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Count">
@@ -332,7 +366,7 @@
                         </ng-container>
 
                         <!-- Mass + MassUnitId -->
-                        <ng-container *ngIf="resource(entry)?.MassUnitId">
+                        <ng-container *ngIf="showMass(entry)">
                             <t-form-group-dynamic class="border-left px-1" [label]="'Entry_Mass' | translate"
                                 [serverErrors]="entry.serverErrors?.Mass">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Mass">
@@ -357,7 +391,7 @@
                         </ng-container>
 
                         <!-- Volume + VolumeUnitId -->
-                        <ng-container *ngIf="resource(entry)?.VolumeUnitId">
+                        <ng-container *ngIf="showVolume(entry)">
                             <t-form-group-dynamic class="border-left px-1" [label]="'Entry_Volume' | translate"
                                 [serverErrors]="entry.serverErrors?.Volume">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Volume">
@@ -382,7 +416,7 @@
                         </ng-container>
 
                         <!-- Time + TimeUnitId -->
-                        <ng-container *ngIf="resource(entry)?.TimeUnitId">
+                        <ng-container *ngIf="showTime(entry)">
                             <t-form-group-dynamic class="border-left px-1" [label]="'Entry_Time' | translate"
                                 [serverErrors]="entry.serverErrors?.Time">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Time">
@@ -579,9 +613,10 @@
                                     <span>&nbsp;&nbsp;&nbsp;</span>
                                     <span *ngIf="!isEdit">{{ att.FileName }}</span>
                                     <t-form-group class="w-100" [serverErrors]="att?.serverErrors?.FileName">
-                                        <t-text-editor [(ngModel)]="att.FileName" [ngModelOptions]="{ updateOn: 'blur' }"
-                                        *ngIf="isEdit" [required]="true"></t-text-editor>
-                                    </t-form-group>                                    
+                                        <t-text-editor [(ngModel)]="att.FileName"
+                                            [ngModelOptions]="{ updateOn: 'blur' }" *ngIf="isEdit" [required]="true">
+                                        </t-text-editor>
+                                    </t-form-group>
                                 </div>
                             </div>
 
@@ -828,24 +863,24 @@
 
     <!-- header -->
     <div class="modal-header">
-      <h5 class="modal-title">
-        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
-      </h5>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-        <span aria-hidden="true">&times;</span>
-      </button>
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-  
+
     <!-- body -->
     <div class="modal-body">
-      {{ !!modalErrorMessageFunc ? modalErrorMessageFunc() : '' }}
+        {{ !!modalErrorMessageFunc ? modalErrorMessageFunc() : '' }}
     </div>
-  
+
     <!-- footer -->
     <div class="modal-footer">
-      <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
-        <fa-icon icon="times"></fa-icon>
-        &nbsp;{{ 'Dismiss' | translate }}
-      </button>
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
     </div>
-  </ng-template>
+</ng-template>

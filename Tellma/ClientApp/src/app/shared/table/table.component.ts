@@ -23,6 +23,8 @@ export class TableComponent implements OnInit {
   private _dataSourceCopy: EntityForSave[] = [];
   private _indexMap: number[] = [];
 
+  @Input()
+  itemSize = 31;
 
   @Input()
   onNewItem: (item: EntityForSave) => EntityForSave;
