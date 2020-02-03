@@ -47,35 +47,17 @@ namespace Tellma.Entities
         [Display(Name = "DetailsEntry_AlgebraicCount")]
         public decimal? AlgebraicCount { get; set; }
 
-        [Display(Name = "DetailsEntry_NormalizedCount")]
-        public decimal? NormalizedCount { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicNormalizedCount")]
-        public decimal? AlgebraicNormalizedCount { get; set; }
-
         [Display(Name = "Entry_Mass")]
         public decimal? Mass { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicMass")]
         public decimal? AlgebraicMass { get; set; }
 
-        [Display(Name = "DetailsEntry_NormalizedMass")]
-        public decimal? NormalizedMass { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicNormalizedMass")]
-        public decimal? AlgebraicNormalizedMass { get; set; }
-
         [Display(Name = "Entry_Volume")]
         public decimal? Volume { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicVolume")]
         public decimal? AlgebraicVolume { get; set; }
-
-        [Display(Name = "DetailsEntry_NormalizedVolume")]
-        public decimal? NormalizedVolume { get; set; }
-
-        [Display(Name = "DetailsEntry_AlgebraicNormalizedVolume")]
-        public decimal? AlgebraicNormalizedVolume { get; set; }
 
         [Display(Name = "Entry_Time")]
         public decimal? Time { get; set; }

@@ -343,15 +343,6 @@
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
     <value>代数货币价值</value>
   </data>
-  <data name="DetailsEntry_AlgebraicNormalizedCount" xml:space="preserve">
-    <value>代数标准化的计数</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicNormalizedMass" xml:space="preserve">
-    <value>代数规范化质量</value>
-  </data>
-  <data name="DetailsEntry_AlgebraicNormalizedVolume" xml:space="preserve">
-    <value>代数标准体积</value>
-  </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
     <value>代数时间</value>
   </data>
@@ -360,15 +351,6 @@
   </data>
   <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
     <value>代数卷</value>
-  </data>
-  <data name="DetailsEntry_NormalizedCount" xml:space="preserve">
-    <value>标准化的计数</value>
-  </data>
-  <data name="DetailsEntry_NormalizedMass" xml:space="preserve">
-    <value>规范化质量</value>
-  </data>
-  <data name="DetailsEntry_NormalizedVolume" xml:space="preserve">
-    <value>标准体积</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>禁用双因素认证（2FA）</value>

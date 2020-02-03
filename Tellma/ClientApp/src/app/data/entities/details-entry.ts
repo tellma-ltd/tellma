@@ -21,16 +21,10 @@ export interface DetailsEntry extends EntityWithKey {
     CurrencyId?: number;
     Count?: number;
     AlgebraicCount?: number;
-    NormalizedCount?: number;
-    AlgebraicNormalizedCount?: number;
     Mass?: number;
     AlgebraicMass?: number;
-    NormalizedMass?: number;
-    AlgebraicNormalizedMass?: number;
     Volume?: number;
     AlgebraicVolume?: number;
-    NormalizedVolume?: number;
-    AlgebraicNormalizedVolume?: number;
     Time?: number;
     AlgebraicTime?: number;
     Value?: number;
@@ -56,12 +50,11 @@ export function metadata_DetailsEntry(ws: TenantWorkspace, trx: TranslateService
             titlePlural: () => trx.instant('DetailsEntries'),
             select: [],
             apiEndpoint: 'details-entries',
-            parameters: [
-                // TODO
-                { key: 'CountUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_CountUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
-                { key: 'MassUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
-                { key: 'VolumeUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
-            ],
+            // parameters: [
+            //     { key: 'CountUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_CountUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
+            //     { key: 'MassUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
+            //     { key: 'VolumeUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
+            // ],
             screenUrl: 'details-entries', // TODO
             orderby: ['Id'],
             format: (item: EntityWithKey) => '',
@@ -98,16 +91,10 @@ export function metadata_DetailsEntry(ws: TenantWorkspace, trx: TranslateService
                 Currency: { control: 'navigation', label: () => trx.instant('Entry_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 Count: { control: 'number', label: () => trx.instant('Entry_Count'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AlgebraicCount: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                NormalizedCount: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                AlgebraicNormalizedCount: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedCount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Mass: { control: 'number', label: () => trx.instant('Entry_Mass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AlgebraicMass: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                NormalizedMass: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                AlgebraicNormalizedMass: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedMass'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Volume: { control: 'number', label: () => trx.instant('Entry_Volume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AlgebraicVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                NormalizedVolume: { control: 'number', label: () => trx.instant('DetailsEntry_NormalizedVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                AlgebraicNormalizedVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicNormalizedVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Time: { control: 'number', label: () => trx.instant('Entry_Time'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AlgebraicTime: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicTime'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Value: { control: 'number', label: () => trx.instant('Entry_Value'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
