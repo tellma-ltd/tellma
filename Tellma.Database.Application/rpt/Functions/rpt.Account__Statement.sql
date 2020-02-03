@@ -21,18 +21,14 @@ RETURN
 		[MonetaryValue],
 		[CurrencyId],
 		[Mass],
-		[MassUnitId],
 		[Volume],
-		[VolumeUnitId],
 		[Time],
-		[TimeUnitId],
 		[Count],
-		[CountUnitId],
 		[Value],
 		[Memo],
 		[ExternalReference],
 		[AdditionalReference]
-	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL)
+	FROM [rpt].[Entries](@fromDate, @toDate)
 	WHERE
 		(@AccountId					IS NULL	OR [AccountId]				= @AccountId)
 	AND (@ResponsibilityCenterId	IS NULL	OR [ResponsibilityCenterId] = @ResponsibilityCenterId)

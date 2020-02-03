@@ -1,10 +1,7 @@
 ﻿CREATE FUNCTION [rpt].[Entries] (
 -- This is actually only needed for SQL prototyping. map.EntriesDetails() is good enough for reporting.
 	@fromDate Date = '2000.01.01', 
-	@toDate Date = '2100.01.01',
-	@CountUnitId INT,
-	@MassUnitId INT,
-	@VolumeUnitId INT
+	@toDate Date = '2100.01.01'
 ) RETURNS TABLE
 AS
 RETURN
@@ -44,26 +41,16 @@ RETURN
 		E.[CurrencyId],
 
 		E.[Count],
-		E.[NormalizedCount],
 		E.[AlgebraicCount],
-		E.[AlgebraicNormalizedCount],
-		R.[CountUnitId],
 
 		E.[Mass],
-		E.[NormalizedMass],	
 		E.[AlgebraicMass],
-		E.[AlgebraicNormalizedMass],		
-		R.[MassUnitId],
 
 		E.[Volume],
 		E.[AlgebraicVolume],
-		E.[NormalizedVolume],
-		E.[AlgebraicNormalizedVolume],
-		R.[VolumeUnitId],
 
 		E.[Time],
 		E.[AlgebraicTime],
-		R.[TimeUnitId],
 
 		E.[Value],
 		E.[AlgebraicValue],
@@ -76,11 +63,10 @@ RETURN
 		E.[NotedAmount],
 		E.[NotedDate]
 	FROM
-		[map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId)  E
+		[map].[DetailsEntries]()  E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.Accounts A ON E.AccountId = A.Id
-		LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
 	WHERE
 		(@fromDate IS NULL OR D.[DocumentDate] >= @fromDate)
 	AND (@toDate IS NULL OR D.[DocumentDate] < DATEADD(DAY, 1, @toDate));

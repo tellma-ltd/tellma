@@ -18,7 +18,7 @@ BEGIN
 	)
 
 	SELECT [AT].[Code] AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]

@@ -5,12 +5,12 @@
 AS
 BEGIN
 	SELECT
-		A.[TaxIdentificationNumber] As [Employee TIN],
-		A.[Name] As [Employee Full Name],
+		AG.[TaxIdentificationNumber] As [Employee TIN],
+		AG.[Name] As [Employee Full Name],
 		J.[NotedAmount] As [Taxable Income], 
 		J.[MonetaryValue] As [Tax Withheld]
-	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
-	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
+	FROM [rpt].[Entries](@fromDate, @toDate) J
+	LEFT JOIN [dbo].[Agents] AG ON J.[NotedAgentId] = AG.Id
 	WHERE J.[AccountId] = @AccountId
 	AND J.Direction = -1;
 END;

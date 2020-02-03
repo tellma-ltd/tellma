@@ -1,10 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[FinishedGoods__TrialBalance]
 	@FromDate Date = '01.01.2020',
 	@ToDate Date = '01.01.2020',
-	@ResponsibilityCenterId INT = NULL,
-	@CountUnitId INT,
-	@MassUnitId INT,
-	@VolumeUnitId INT
+	@ResponsibilityCenterId INT = NULL
 AS
 -- WARNING: Useful only when all the FG accounts have HasResource = 1
 BEGIN
@@ -18,10 +15,7 @@ BEGIN
 			@ToDate,
 			@ResponsibilityCenterId,
 			NULL,
-			N'FinishedGoods', 
-			@CountUnitId,
-			@MassUnitId,
-			@VolumeUnitId
+			N'FinishedGoods'
 		)
 		GROUP BY ResourceId
 	)

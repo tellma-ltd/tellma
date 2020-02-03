@@ -15,12 +15,12 @@ BEGIN
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],
-		[AccountId], -SUM([Direction] * E.[Value]) AS ValueBalance, SUM([Direction] * E.[MonetaryValue]) AS FXBalance
-		FROM [rpt].[Entries](NULL, @DocumentDate, NULL, NULL, NULL) E
+		[AccountId], -SUM(E.[AlgebraicValue]) AS ValueBalance, SUM(E.[AlgebraicMonetaryValue]) AS FXBalance
+		FROM [rpt].[Entries](NULL, @DocumentDate) E
 		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		GROUP BY [AccountId]
-		HAVING SUM([Direction] * E.[Value]) * @Rate <> SUM([Direction] * E.[MonetaryValue])
+		HAVING SUM(E.[AlgebraicValue]) * @Rate <> SUM(E.[AlgebraicMonetaryValue])
 	),
 	GainLossEntry AS (
 		SELECT [AccountId], ABS(ValueBalance - FXBalance) AS [Value], SIGN(ValueBalance - FXBalance) AS [Direction]

@@ -17,6 +17,8 @@
 	--[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE,
 	[MonetaryValue]				DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[Quantity]					DECIMAL (19,4),
+	[UnitId]					INT,
 	[Count]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- CountUnit
 	[Mass]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume]					DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping

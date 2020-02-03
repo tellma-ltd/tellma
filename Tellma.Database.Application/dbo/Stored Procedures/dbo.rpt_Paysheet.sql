@@ -12,7 +12,7 @@ TODO: Check how to avoid having to pass the resources as input
 */
 BEGIN
 	SELECT
-		A.TaxIdentificationNumber As [Employee TIN]
+		AG.TaxIdentificationNumber As [Employee TIN]
 		--A.[Name] As [Employee Full Name],
 		--SUM(CASE 
 		--	WHEN (J.[AccountDefinitionId] = N'ShorttermEmployeeBenefitsAccruals' 
@@ -49,7 +49,7 @@ BEGIN
 		--	WHEN (J.[AccountDefinitionId] = N'ShorttermPensionContributionAccruals')
 		--	THEN J.Direction * J.[Value] Else 0 
 		--	END) AS [Pension Contribution 11%]
-	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
-	LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
-	GROUP BY A.TaxIdentificationNumber, A.[Name];
+	FROM [rpt].[Entries](@fromDate, @toDate) J
+	LEFT JOIN [dbo].[Agents] AG ON J.[NotedAgentId] = AG.Id
+	GROUP BY AG.TaxIdentificationNumber, AG.[Name];
 END

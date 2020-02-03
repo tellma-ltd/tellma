@@ -106,10 +106,36 @@ SET
 --	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
 	E.[Count]				=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.Resources R ON E.ResourceId = R.Id
+JOIN dbo.Resources R ON E.ResourceId = R.Id;
 
 -- Once E.Count is defined, 
 -- set the other measures, if the rate per unit is defined
+-- TODO: change the logic to something like 
+-- If UnitId is a mass unit, update the masses
+
+--WITH UnitRatios AS (
+--	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)
+--	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)) AS [Ratio]
+--	FROM dbo.MeasurementUnits
+--	WHERE UnitType = N'Count'
+--	UNION
+--	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
+--	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
+--	FROM dbo.MeasurementUnits
+--	WHERE UnitType = N'Mass'
+--	UNION
+--	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
+--	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
+--	FROM dbo.MeasurementUnits
+--	WHERE UnitType = N'Volume'
+--)
+--UPDATE E
+--SET		
+--	E.[Count] = E.[Quantity] * ISNULL(CR.[Ratio], 0),
+--	E.[Mass] = E.[Quantity] * ISNULL(MR.[Ratio], 0),
+--	E.[Volume] = E.[Quantity] * ISNULL(MR.[Ratio], 0)
+--FROM @PreprocessedEntries E;
+
 UPDATE E 
 SET
 	E.[MonetaryValue] = COALESCE(R.[MonetaryValue] * E.[Count], E.[MonetaryValue]),

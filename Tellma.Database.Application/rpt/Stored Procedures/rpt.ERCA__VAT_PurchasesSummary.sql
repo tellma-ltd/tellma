@@ -10,7 +10,7 @@ BEGIN
 		SUM(J.[Value]) AS VAT,
 		SUM(J.[NotedAmount]) AS [Taxable Amount],
 		J.[DocumentDate] As [Invoice Date]
-	FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
+	FROM [rpt].[Entries](@fromDate, @toDate) J
 	LEFT JOIN dbo.Agents AG ON AG.[Id] = J.[NotedAgentId]
 	WHERE
 		J.[AccountTypeId] = dbo.[fn_ATCode__Id]( N'ValueAddedTaxReceivables')

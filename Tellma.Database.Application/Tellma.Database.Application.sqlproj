@@ -483,7 +483,7 @@
     <Build Include="Mapping\SummaryEntries.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_VAlidate__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceDefinitions__Save.sql" />
     <Build Include="dbo\Functions\dbo.fn_AGCode__Id.sql" />

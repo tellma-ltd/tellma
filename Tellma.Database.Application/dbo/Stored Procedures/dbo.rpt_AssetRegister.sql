@@ -22,7 +22,7 @@ BEGIN
 			SUM(J.[Count]) AS [Count],
 			SUM(J.[Value]) AS [Value],
 			SUM(J.[Time]) AS [ServiceLife]
-		FROM [rpt].[Entries](NULL, @fromDate, NULL, NULL, NULL) J
+		FROM [rpt].[Entries](NULL, @fromDate) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
 		GROUP BY J.ResourceId
 	),
@@ -32,7 +32,7 @@ BEGIN
 			SUM(J.[Count]) AS [Count],
 			SUM(J.[Value]) AS [Value],
 			SUM(J.[Time]) AS [ServiceLife]
-		FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
+		FROM [rpt].[Entries](@fromDate, @toDate) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
 		GROUP BY J.ResourceId, J.[EntryTypeId]
 	),

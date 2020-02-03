@@ -1,9 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_Production__Actual_vs_Planned]
 	@FromDate Date,
-	@ToDate Date,
-	@CountUnitId INT,
-	@MassUnitId INT,
-	@VolumeUnitId INT
+	@ToDate Date
 	-- TODO: rewrite using summary entries
 AS
 BEGIN
@@ -13,23 +10,12 @@ BEGIN
 			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Code] = N'FinishedGoods')
 		) = 1
 	),
-	UnitConversionRates([Id], [ConversionRate]) AS (
-		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
-		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [ConversionRate]
-		FROM dbo.MeasurementUnits
-		WHERE UnitType = N'Mass'
-		UNION
-		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)
-		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId))
-		FROM dbo.MeasurementUnits
-		WHERE UnitType = N'Count'
-	),
 	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
 			R.[Lookup1Id], J.[AgentId],
-			SUM(J.Direction * J.[Mass]) AS [Mass],
-			SUM(J.Direction * J.[Count]) AS [Count]
-		FROM [rpt].[Entries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
+			SUM(J.[AlgebraicMass]) AS [Mass],
+			SUM(J.[AlgebraicCount]) AS [Count]
+		FROM [rpt].[Entries](@FromDate, @ToDate) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.Id
 		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
@@ -63,11 +49,9 @@ BEGIN
 	),
 	Planned([ResourceLookup1Id], [Mass], [Count])	AS (
 		SELECT ResourceLookup1Id, 
-		SUM([Mass] * ISNULL(MR.[ConversionRate], 0)) AS [Mass], 
-		SUM([Count] * ISNULL(CR.[ConversionRate], 0)) AS [Count]
+		SUM([Mass]) AS [Mass], 
+		SUM([Count]) AS [Count]
 		FROM PlannedDetails P
-		LEFT JOIN UnitConversionRates MR ON P.MassUnitId = MR.Id
-		LEFT JOIN UnitConversionRates CR ON P.CountUnitId = CR.Id
 		GROUP BY ResourceLookup1Id
 	)
 	SELECT RL.Id, RL.SortKey, RL.[Name],

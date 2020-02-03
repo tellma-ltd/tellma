@@ -17,10 +17,7 @@ RETURN
 			@ToDate, 
 			NULL, -- @ResponsibilityCenterId
 			NULL, -- @AgentDefinitionId
-			NULL, -- @AccountTypeCode
-			NULL, -- @CountUnitId
-			NULL, --@MassUnitId
-			NULL -- @VolumneId
+			NULL -- @AccountTypeCode
 		)
 		GROUP BY [LegacyClassificationId], AccountId
 	)

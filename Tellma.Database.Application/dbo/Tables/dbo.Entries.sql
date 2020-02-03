@@ -13,32 +13,21 @@
 	-- required when the resource classification is anything but Cash
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
 	--[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entries__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
-	
 	--[ResourceIdentifier]		NVARCHAR (10),
-	-- When resource is specified, and it has currency, it takes the resource currency. Otherwise, the user must specify it
-	-- Entry Type  is required only if NOT NULL
 	[EntryTypeId]		INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	-- Due Date is required only for certain resources, 
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
-
--- Revenues Account: The customer
--- COGS: The customer (could be unnamed)
--- Expense Accounts other than COS: The consumer.
-	-- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
-	-- Smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
-	-- called SegmentId in B10. When not needed, we use the entity itself.
--- Resource is defined as
---	The good/service sold for revenues and direct expenses
---	The good/service consumed for indirect expenses
---	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
-	--[Memo]						NVARCHAR (255),
 	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
--- Tracking additive measures, the data type is to be decided by AA
+-- Tracking additive measures
+	-- Quantity & Unit are the ones in which the transaction is held (purchase, sales, production)
+	[Quantity]					DECIMAL (19,4),
+	[UnitId]					INT CONSTRAINT [FK_Entries__UnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	-- The count, mass, volume are auto calculated from Quantity and Unit, and normalized to pc, gram, and milliliter
 	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
 	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
 	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
+
 	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 

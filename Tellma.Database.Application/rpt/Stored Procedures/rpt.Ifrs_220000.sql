@@ -16,7 +16,7 @@ BEGIN
 			[Value]
 	)
 	SELECT [AT].[Code] , SUM(E.[AlgebraicValue]) AS [Value]
-	FROM [map].[DetailsEntries] (NULL, NULL, NULL) E
+	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]

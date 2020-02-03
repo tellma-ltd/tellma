@@ -3,10 +3,7 @@
 	@toDate Date = '01.01.2019',
 	@ResponsibilityCenterId INT = NULL,
 	@AgentDefinitionId NVARCHAR(50) = NULL,
-	@AccountTypeCode NVARCHAR (255) = NULL,
-	@CountUnitId INT = NULL,
-	@MassUnitId INT = NULL,
-	@VolumeUnitId INT = NULL
+	@AccountTypeCode NVARCHAR (255) = NULL
 )
 RETURNS TABLE AS
 RETURN
@@ -33,7 +30,7 @@ RETURN
 			SUM(E.[AlgebraicVolume]) AS [Volume],
 			SUM(E.[AlgebraicTime]) AS [Time],
 			SUM(E.[AlgebraicValue]) AS [Opening]
-		FROM [map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId) E
+		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 
@@ -56,7 +53,7 @@ RETURN
 
 			SUM(CASE WHEN [Direction] > 0 THEN E.[Value] ELSE 0 END) AS [Debit],
 			SUM(CASE WHEN [Direction] < 0 THEN -E.[Value] ELSE 0 END) AS [Credit]
-		FROM [map].[DetailsEntries](@CountUnitId, @MassUnitId, @VolumeUnitId) E
+		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 

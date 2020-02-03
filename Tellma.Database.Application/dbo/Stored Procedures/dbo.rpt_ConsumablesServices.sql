@@ -8,7 +8,7 @@ BEGIN
 		SELECT
 			CO.[Id], CO.[Name], CO.[Name2], CO.[Name3], CO.[CostObjectType],
 			SUM(J.[Direction] * J.[Value]) AS [Expense]
-		FROM [rpt].[Entries](@fromDate, @toDate, NULL, NULL, NULL) J
+		FROM [rpt].[Entries](@fromDate, @toDate) J
 		JOIN dbo.[Agents] CO ON J.[AgentId] = CO.Id AND J.[AgentDefinitionId] = CO.[DefinitionId]
 		WHERE CO.[CostObjectType] IN (
 			N'CostUnit',

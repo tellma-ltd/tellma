@@ -7,11 +7,11 @@ AS
 			[ResourceId],
 			--[ResourceIdentifier],
 			[DueDate],
-			SUM([Count]) AS [Count],
-			SUM([Mass]) AS [Mass],
-			SUM([Volume]) As [Volume],
-			SUM([Value]) As [Value]
-	FROM [rpt].[Entries](NULL, @AsOfDate, NULL, NULL, NULL)
+			SUM([AlgebraicCount]) AS [Count],
+			SUM([AlgebraicMass]) AS [Mass],
+			SUM([AlgebraicVolume]) As [Volume],
+			SUM([AlgebraicValue]) As [Value]
+	FROM [rpt].[Entries](NULL, @AsOfDate)
 	WHERE [AccountTypeId] = dbo.[fn_ATCode__Id]('TotalInventories')
 	GROUP BY
 			[AccountId],

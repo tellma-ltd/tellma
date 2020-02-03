@@ -1,8 +1,5 @@
-﻿CREATE FUNCTION [dbo].[InventoriesFact] (
-	@CountUnitId INT,
-	@MassUnitId INT,
-	@VolumeUnitId INT
-) RETURNS TABLE
+﻿CREATE FUNCTION [dbo].[InventoriesFact] ()
+RETURNS TABLE
 AS
 RETURN
 -- TODO: rewrite to use JournalSummary instead
@@ -30,6 +27,6 @@ RETURN
 		R.[Lookup2Id]--,
 		--R.[Lookup3Id],
 		--R.[Lookup4Id]
-	FROM [rpt].[Entries](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
+	FROM [rpt].[Entries](NULL, NULL) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	WHERE J.[AccountTypeId] = dbo.[fn_ATCode__Id]('TotalInventories')
