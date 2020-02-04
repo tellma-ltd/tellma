@@ -1,7 +1,7 @@
 <t-details collection="ReportDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
     [masterCrumb]="'ReportDefinitions' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
-    [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive" theme="dark">
-
+    [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive" theme="dark"
+    [savePreprocessing]="savePreprocessing">
 </t-details>
 
 <!-- Details Crumb -->
@@ -122,6 +122,8 @@
                 </div>
             </div>
             <div class="flex-grow-1 overflow-auto">
+
+                <!-- Data Section -->
                 <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Data')">
                     &nbsp;
                     <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Data'))"
@@ -129,6 +131,8 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Data' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="dataSectionErrors(model)">
+                    </fa-icon>
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('Data')">
 
@@ -165,6 +169,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getRows(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(dim)">
+                                    </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></t-auto-label>&nbsp;<span
@@ -199,6 +206,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getColumns(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(dim)">
+                                    </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></t-auto-label>&nbsp;<span
@@ -233,6 +243,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getMeasures(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(dim)">
+                                    </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></t-auto-label>&nbsp;<span
@@ -285,6 +298,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let dim of getSelect(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(dim)">
+                                    </fa-icon>
                                     <span class="flex-grow-1 text-truncate">
                                         <t-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
                                             [path]="dim.Path"></t-auto-label>
@@ -307,19 +323,27 @@
                     </div>
 
                     <!-- Order By -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
+                    <div class="form-group" [class.d-none]="model.Type !== 'Details'"
+                        [class.is-invalid]="invalid(orderby, model.serverErrors?.OrderBy)">
                         <label class="small" for="orderby">{{ 'ReportDefinition_OrderBy' | translate }}</label>
                         <input class="form-control t-studio-input" id="orderby" type="text" [(ngModel)]="model.OrderBy"
                             (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
+                            autocomplete="off" #orderby="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: orderby, serverErrors: model.serverErrors?.OrderBy }">
+                        </ng-container>
                     </div>
 
                     <!-- Top -->
-                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
+                    <div class="form-group" [class.d-none]="model.Type !== 'Details'"
+                        [class.is-invalid]="invalid(top, model.serverErrors?.Top)">
                         <label class="small" for="top">{{ 'ReportDefinition_Top' | translate }}</label>
                         <input class="form-control t-studio-input" id="top" type="number" [(ngModel)]="model.Top"
                             (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
+                            autocomplete="off" #top="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: top, serverErrors: model.serverErrors?.Top }">
+                        </ng-container>
                     </div>
                 </div>
 
@@ -331,16 +355,21 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Filter' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="filterSectionErrors(model)">
+                    </fa-icon>
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('Filter')">
 
                     <!-- Filter -->
-                    <div class="form-group">
+                    <div class="form-group" [class.is-invalid]="invalid(filter, model.serverErrors?.Filter)">
                         <label class="small" for="filter">{{ 'ReportDefinition_Filter' | translate }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="4" id="filter" type="text"
                             [(ngModel)]="model.Filter" (ngModelChange)="onFilterChange(model)"
                             [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
-                            autocapitalize="off" spellcheck="false"></textarea>
+                            autocapitalize="off" spellcheck="false" #filter="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: filter, serverErrors: model.serverErrors?.Filter }">
+                        </ng-container>
                     </div>
 
                     <!-- Parameters -->
@@ -351,6 +380,9 @@
                             <div class="t-studio-drop-row t-draggable"
                                 *ngFor="let param of getParameters(model); let i = index;" cdkDrag>
                                 <div class="d-flex">
+                                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                                        *ngIf="weakEntityErrors(param)">
+                                    </fa-icon>
                                     <fa-icon icon="lock" *ngIf="!!getParameterDescriptor(param.Key, model)"
                                         title="{{ 'BuiltInParameter' | translate }}"></fa-icon>
                                     &nbsp;
@@ -380,18 +412,23 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Chart' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="chartSectionErrors(model)">
+                    </fa-icon>
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('Chart')" *ngIf="model.Type === 'Summary'">
 
                     <!-- Chart -->
-                    <div class="form-group">
+                    <div class="form-group" [class.is-invalid]="invalid(chart, model.serverErrors?.Chart)">
                         <label class="small" for="chart">{{ 'ReportDefinition_Chart' | translate }}</label>
                         <select class="form-control t-studio-input" id="chart" [ngModel]="model.Chart"
-                            (ngModelChange)="onChartChange($event, model)">
+                            (ngModelChange)="onChartChange($event, model)" #chart="ngModel">
                             <option value=""></option>
                             <option *ngFor="let chart of allCharts" value="{{chart.value}}">
                                 {{ chart.name() }}</option>
                         </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: chart, serverErrors: model.serverErrors?.Chart }">
+                        </ng-container>
                     </div>
 
                     <!-- Defaults to Chart -->
@@ -428,51 +465,73 @@
                     </div>
 
                     <!-- Title -->
-                    <div class="form-group">
+                    <div class="form-group" [class.is-invalid]="invalid(title, model.serverErrors?.Title)">
                         <label class="small" for="title">{{ ('Title' | translate) + ws.primaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="title" type="text" [(ngModel)]="model.Title"
                             (ngModelChange)="onDefinitionChange(model, 'Title')" [ngModelOptions]="{ updateOn: 'blur' }"
-                            autocomplete="off" />
+                            autocomplete="off" #title="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: title, serverErrors: model.serverErrors?.Title }">
+                        </ng-container>
                     </div>
 
                     <!-- Description -->
-                    <div class="form-group">
+                    <div class="form-group" [class.is-invalid]="invalid(description, model.serverErrors?.Description)">
                         <label class="small" for="desc">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc" type="text"
                             [(ngModel)]="model.Description" (ngModelChange)="onDefinitionChange(model, 'Description')"
-                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                            [ngModelOptions]="{ updateOn: 'blur' }" #description="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: description, serverErrors: model.serverErrors?.Description }">
+                        </ng-container>
                     </div>
 
                     <!-- Title2 -->
-                    <div class="form-group" *ngIf="ws.settings?.SecondaryLanguageId">
+                    <div class="form-group" [class.is-invalid]="invalid(title2, model.serverErrors?.Title2)"
+                        *ngIf="ws.settings?.SecondaryLanguageId">
                         <label class="small" for="title2">{{ ('Title' | translate) + ws.secondaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="title2" type="text" [(ngModel)]="model.Title2"
                             (ngModelChange)="onDefinitionChange(model, 'Title2')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #title2="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: title2, serverErrors: model.serverErrors?.Title2 }">
+                        </ng-container>
                     </div>
 
                     <!-- Description2 -->
-                    <div class="form-group" *ngIf="ws.settings?.SecondaryLanguageId">
+                    <div class="form-group" [class.is-invalid]="invalid(description2, model.serverErrors?.Description2)"
+                        *ngIf="ws.settings?.SecondaryLanguageId">
                         <label class="small" for="desc2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc2" type="text"
                             [(ngModel)]="model.Description2" (ngModelChange)="onDefinitionChange(model, 'Description2')"
-                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                            [ngModelOptions]="{ updateOn: 'blur' }" #description2="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: description2, serverErrors: model.serverErrors?.Description2 }">
+                        </ng-container>
                     </div>
 
                     <!-- Title3 -->
-                    <div class="form-group" *ngIf="ws.settings?.TernaryLanguageId">
+                    <div class="form-group" [class.is-invalid]="invalid(title3, model.serverErrors?.Title3)"
+                        *ngIf="ws.settings?.TernaryLanguageId">
                         <label class="small" for="title3">{{ ('Title' | translate) + ws.ternaryPostfix }}</label>
                         <input class="form-control t-studio-input" id="title3" type="text" [(ngModel)]="model.Title3"
                             (ngModelChange)="onDefinitionChange(model, 'Title3')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #title3="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: title3, serverErrors: model.serverErrors?.Title3 }">
+                        </ng-container>
                     </div>
 
                     <!-- Description3 -->
-                    <div class="form-group" *ngIf="ws.settings?.TernaryLanguageId">
+                    <div class="form-group" [class.is-invalid]="invalid(description3, model.serverErrors?.Description3)"
+                        *ngIf="ws.settings?.TernaryLanguageId">
                         <label class="small" for="desc3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
                         <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc3" type="text"
                             [(ngModel)]="model.Description3" (ngModelChange)="onDefinitionChange(model, 'Description3')"
-                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                            [ngModelOptions]="{ updateOn: 'blur' }" #description3="ngModel"></textarea>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: description3, serverErrors: model.serverErrors?.Description3 }">
+                        </ng-container>
                     </div>
                 </div>
 
@@ -484,13 +543,17 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'MainMenu' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="mainMenuSectionErrors(model)">
+                    </fa-icon>
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('MainMenu')">
 
                     <!-- Show In Main Menu -->
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="showInMainMenu"
-                            [(ngModel)]="model.ShowInMainMenu" (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
+                            [(ngModel)]="model.ShowInMainMenu"
+                            (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
                         <label class="custom-control-label"
                             for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' | translate }}</label>
                     </div>
@@ -592,11 +655,15 @@
     <div class="modal-body col t-less-dark t-text-whitish">
         <div class="row">
             <!-- Path -->
-            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature !== 'parameter'">
+            <div class="form-group col-12 col-sm-6" [class.is-invalid]="invalid(path, itemToEdit.serverErrors?.Path)"
+                *ngIf="itemToEditNature !== 'parameter'">
                 <label class="small" for="path">{{ 'ReportDefinition_Path' | translate }}</label>
                 <input class="form-control t-studio-input" id="path" type="text" [(ngModel)]="itemToEdit['Path']"
                     (ngModelChange)="itemToEditHasChanged = true; onPathChanged(itemToEdit, modelRef);"
-                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                    [ngModelOptions]="{ updateOn: 'blur' }" required autocomplete="off" #path="ngModel" />
+                <ng-container
+                    *ngTemplateOutlet="errorsTemplate;context: { control: path, serverErrors: itemToEdit.serverErrors?.Path }">
+                </ng-container>
             </div>
 
             <!-- Key -->

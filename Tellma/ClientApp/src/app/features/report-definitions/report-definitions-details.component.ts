@@ -754,19 +754,52 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return validationErrors(control, serverErrors, this.translate);
   }
 
-  public titleSectionErrors(model: ReportDefinition) {
-    if (!model.serverErrors) {
-      return false;
-    }
+  public weakEntityErrors(model: ReportRowDefinition | ReportColumnDefinition |
+    ReportMeasureDefinition | ReportSelectDefinition | ReportParameterDefinition) {
+    return !!model.serverErrors &&
+      Object.keys(model.serverErrors).some(key => areServerErrors(model.serverErrors[key]));
+  }
 
-    return areServerErrors(model.serverErrors.Id) ||
+  public dataSectionErrors(model: ReportDefinition) {
+    return (!!model.serverErrors && (
+      areServerErrors(model.serverErrors.Type) ||
+      areServerErrors(model.serverErrors.ShowColumnsTotal) ||
+      areServerErrors(model.serverErrors.ShowRowsTotal) ||
+      areServerErrors(model.serverErrors.OrderBy) ||
+      areServerErrors(model.serverErrors.Top)
+    )) ||
+      (!!model.Rows && model.Rows.some(e => this.weakEntityErrors(e))) ||
+      (!!model.Columns && model.Columns.some(e => this.weakEntityErrors(e))) ||
+      (!!model.Measures && model.Measures.some(e => this.weakEntityErrors(e))) ||
+      (!!model.Select && model.Select.some(e => this.weakEntityErrors(e)));
+  }
+
+  public filterSectionErrors(model: ReportDefinition) {
+    return (!!model.serverErrors && areServerErrors(model.serverErrors.Filter)) ||
+      (!!model.Parameters && model.Parameters.some(e => this.weakEntityErrors(e)));
+  }
+
+  public chartSectionErrors(model: ReportDefinition) {
+    return !!model.serverErrors && (areServerErrors(model.serverErrors.Chart) ||
+      areServerErrors(model.serverErrors.DefaultsToChart));
+  }
+
+  public titleSectionErrors(model: ReportDefinition) {
+    return !!model.serverErrors && (areServerErrors(model.serverErrors.Id) ||
       areServerErrors(model.serverErrors.Id) ||
       areServerErrors(model.serverErrors.Title) ||
       areServerErrors(model.serverErrors.Description) ||
       areServerErrors(model.serverErrors.Title2) ||
       areServerErrors(model.serverErrors.Description2) ||
       areServerErrors(model.serverErrors.Title3) ||
-      areServerErrors(model.serverErrors.Description3);
+      areServerErrors(model.serverErrors.Description3));
+  }
+
+  public mainMenuSectionErrors(model: ReportDefinition) {
+    return !!model.serverErrors && (areServerErrors(model.serverErrors.ShowInMainMenu) ||
+      areServerErrors(model.serverErrors.MainMenuSection) ||
+      areServerErrors(model.serverErrors.MainMenuIcon) ||
+      areServerErrors(model.serverErrors.MainMenuSortKey));
   }
 
   public get modifiers(): string[] {
@@ -794,6 +827,19 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     // This removes the modifier if the field isn't of type date
     if (!this.isDate(itemToEdit.Path, model)) {
       delete itemToEdit.Modifier;
+    }
+  }
+
+  public savePreprocessing(entity: ReportDefinition) {
+    // Server validation on hidden collections will be confusing to the user
+    if (entity.Type === 'Details') {
+      entity.Rows = [];
+      entity.Columns = [];
+      entity.Measures = [];
+    }
+
+    if (entity.Type === 'Summary') {
+      entity.Select = [];
     }
   }
 }

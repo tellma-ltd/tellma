@@ -63,7 +63,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   sidebarTemplate: TemplateRef<any>;
 
   @Input()
-  savePreprocessing: (mode: EntityForSave) => void;
+  savePreprocessing: (entity: EntityForSave) => void;
 
   @Input()
   actions: DropdownAction[] = [];
