@@ -163,7 +163,7 @@
                     <ng-container *ngIf="isEdit">
                         <t-responsibility-centers-picker style="min-width: 150px;"
                             *ngIf="!account(entry)?.ResponsibilityCenterId" [(ngModel)]="entry.ResponsibilityCenterId"
-                            (ngModelChange)="update.call(null, item);">
+                            (ngModelChange)="update.call(null, item);" filter="IsLeaf eq true">
                         </t-responsibility-centers-picker>
                         <t-restricted *ngIf="!!account(entry)?.ResponsibilityCenterId"
                             [metadata]="entry.EntityMetadata?.ResponsibilityCenterId">
