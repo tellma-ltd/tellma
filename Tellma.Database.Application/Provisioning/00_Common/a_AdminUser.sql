@@ -44,7 +44,7 @@ BEGIN
 END
 
 DECLARE @AdminUserId INT = (SELECT[Id] FROM dbo.[Users] WHERE [Email] = @DeployEmail);
---EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
+EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
 
 IF  NOT EXISTS(SELECT * FROM [dbo].[Roles] WHERE [Code] = N'All')
 BEGIN

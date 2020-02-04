@@ -1,8 +1,6 @@
 ﻿DECLARE @banks dbo.[AgentList];
+DECLARE @Bank_CBE INT, @Bank_AWB INT, @Bank_NIB INT, @Bank_RJB INT;
 
-BEGIN -- Cleanup & Declarations
-	DECLARE @Bank_CBE int, @Bank_AWB int,	@Bank_NIB int;
-END
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @banks([Index],
 		[Name],							[IsRelated], [Code]) VALUES
@@ -56,14 +54,9 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		Print 'Banks: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-	
-	IF @DebugEmployees = 1
-	SELECT A.[Code], A.[Name], A.[StartDate] AS 'Banking Since', A.[IsActive]
-	--RC.[Name] AS OperatingSegment
-	FROM dbo.fi_Agents(N'banks', NULL) A
-	--LEFT JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
 
 SELECT
 	@Bank_CBE= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Commercial Bank of Ethiopia'),
 	@Bank_AWB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Awash Bank'),
-	@Bank_NIB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB');
+	@Bank_NIB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB'),
+	@Bank_RJB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Code] = N'RJB');

@@ -14,11 +14,12 @@ SET NOCOUNT ON;
 	
 	 [✓] The DocumentDate is not after 1 day in the future
 	 [✓] The DocumentDate cannot be before archive date
-	 [✓] IF Resource == Functional currency THEN assert: Value == MonetaryValue
 
 	*/
 
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
+
+	-- TODO: validate that the ResponsibilityType is conformant with the AccountType
 
 	-- (FE Check) If CurrencyId = functional currency, the value must match the DECIMAL (19,4) amount
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
