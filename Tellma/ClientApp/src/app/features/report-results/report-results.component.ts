@@ -606,9 +606,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const args = { ...this.arguments } as ReportArguments;
 
     // Definition values override (the user should not be able to specify them anyways)
-    for (const p of this.definition.Parameters) {
-      if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
-        args[p.Key] = p.Value;
+    if (!!this.definition.Parameters) {
+      for (const p of this.definition.Parameters) {
+        if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
+          args[p.Key] = p.Value;
+        }
       }
     }
 
@@ -629,7 +631,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const lowerCaseDefs: { [key: string]: boolean } = {};
-    if (this.definition.Parameters) {
+    if (!!this.definition.Parameters) {
       for (const paramDef of this.definition.Parameters.filter(p => !!p.Key)) {
         lowerCaseDefs[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
       }
