@@ -136,6 +136,16 @@ JOIN dbo.Resources R ON E.ResourceId = R.Id;
 --	E.[Volume] = E.[Quantity] * ISNULL(MR.[Ratio], 0)
 --FROM @PreprocessedEntries E;
 
+-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
+UPDATE E
+SET E.[UnitId] = COALESCE(R.[CountUnitId], R.[MassUnitId], R.[VolumeUnitId], R.[TimeUnitId])
+FROM @PreprocessedEntries E
+JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
+WHERE IIF(R.[CountUnitId] IS NOT NULL, 1, 0) + 
+IIF(R.[MassUnitId] IS NOT NULL, 1, 0) + 
+IIF(R.[VolumeUnitId] IS NOT NULL, 1, 0) + 
+IIF(R.[TimeUnitId] IS NOT NULL, 1, 0) = 1 -- Only one is not null
+
 UPDATE E 
 SET
 	E.[MonetaryValue] = COALESCE(R.[MonetaryValue] * E.[Count], E.[MonetaryValue]),

@@ -532,6 +532,9 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
   </data>
+  <data name="Entry_Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
@@ -546,6 +549,9 @@
   </data>
   <data name="Entry_Time2" xml:space="preserve">
     <value>Time 2</value>
+  </data>
+  <data name="Entry_Unit" xml:space="preserve">
+    <value>Unit</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>Value</value>

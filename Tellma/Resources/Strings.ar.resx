@@ -532,6 +532,9 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>التاريخ المعني</value>
   </data>
+  <data name="Entry_Quantity" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
   </data>
@@ -546,6 +549,9 @@
   </data>
   <data name="Entry_Time2" xml:space="preserve">
     <value>الزمن 2</value>
+  </data>
+  <data name="Entry_Unit" xml:space="preserve">
+    <value>الوحدة</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>القيمة</value>

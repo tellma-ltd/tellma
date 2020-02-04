@@ -532,6 +532,9 @@
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
   </data>
+  <data name="Entry_Quantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
   </data>
@@ -546,6 +549,9 @@
   </data>
   <data name="Entry_Time2" xml:space="preserve">
     <value>时间2</value>
+  </data>
+  <data name="Entry_Unit" xml:space="preserve">
+    <value>单元</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>值</value>

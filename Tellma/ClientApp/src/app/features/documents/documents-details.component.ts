@@ -19,7 +19,8 @@ import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
-import { Attachment, AttachmentForSave } from '~/app/data/entities/attachment';
+import { Attachment } from '~/app/data/entities/attachment';
+import { MeasurementUnit } from '~/app/data/entities/measurement-unit';
 
 interface DocumentEventBase {
   time: string;
@@ -93,7 +94,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification']
+      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
     // Signatures
@@ -510,6 +511,104 @@ Document_State_Closed
     return this.translate.instant('Resource');
   }
 
+  // Quantity + Unit
+
+  public showQuantityAndUnit(entry: Entry): boolean {
+    const resource = this.resource(entry);
+    return !!resource && (!!resource.CountUnitId || !!resource.MassUnitId || !!resource.VolumeUnitId || !!resource.TimeUnitId);
+  }
+
+  public readonlyUnit(entry: Entry): boolean {
+    const resource = this.resource(entry);
+    return !!resource &&
+      ((!!resource.CountUnitId ? 1 : 0) +
+        (!!resource.MassUnitId ? 1 : 0) +
+        (!!resource.VolumeUnitId ? 1 : 0) +
+        (!!resource.TimeUnitId ? 1 : 0) === 1); // Exactly one is not null
+
+    //   resource.MassUnitId, resource.VolumeUnitId, resource.TimeUnitId]
+  }
+
+  public readonlyValueUnitId(entry: Entry): number {
+    const resource = this.resource(entry);
+    return !!resource.CountUnitId ? resource.CountUnitId :
+      !!resource.MassUnitId ? resource.MassUnitId :
+        !!resource.VolumeUnitId ? resource.VolumeUnitId :
+          !!resource.TimeUnitId ? resource.TimeUnitId : null;
+  }
+
+  public filterUnitId(entry: Entry): string {
+    const resource = this.resource(entry);
+    const filterAtoms = [];
+    if (!!resource.CountUnitId) {
+      filterAtoms.push(`Id eq ${resource.CountUnitId}`);
+    }
+    if (!!resource.MassUnitId) {
+      filterAtoms.push(`Id eq ${resource.MassUnitId}`);
+    }
+    if (!!resource.VolumeUnitId) {
+      filterAtoms.push(`Id eq ${resource.VolumeUnitId}`);
+    }
+    if (!!resource.TimeUnitId) {
+      filterAtoms.push(`Id eq ${resource.TimeUnitId}`);
+    }
+
+    return filterAtoms.join(' or ');
+  }
+
+  private unit(entry: Entry): MeasurementUnit {
+    const unitId = this.readonlyUnit(entry) ? this.readonlyValueUnitId(entry) : entry.UnitId;
+    return this.ws.get('MeasurementUnit', unitId) as MeasurementUnit;
+  }
+
+  // Count + CountUnitId
+
+  public showCount(entry: Entry) {
+    const resource = this.resource(entry);
+    const unit = this.unit(entry);
+
+    return !!unit &&
+      !!resource.CountUnitId &&
+      unit.Id !== resource.CountUnitId &&
+      (resource.Count === null || resource.Count === undefined);
+  }
+
+  // Mass + MassUnitId
+
+  public showMass(entry: Entry) {
+    const resource = this.resource(entry);
+    const unit = this.unit(entry);
+
+    return !!unit && !
+      !resource.MassUnitId &&
+      unit.Id !== resource.MassUnitId &&
+      (resource.Mass === null || resource.Mass === undefined);
+  }
+
+  // Volume + VolumeUnitId
+
+  public showVolume(entry: Entry) {
+    const resource = this.resource(entry);
+    const unit = this.unit(entry);
+
+    return !!unit && !
+      !resource.VolumeUnitId &&
+      unit.Id !== resource.VolumeUnitId &&
+      (resource.Volume === null || resource.Volume === undefined);
+  }
+
+  // Time + TimeUnitId
+
+  public showTime(entry: Entry) {
+    const resource = this.resource(entry);
+    const unit = this.unit(entry);
+
+    return !!unit && !
+      !resource.TimeUnitId &&
+      unit.Id !== resource.TimeUnitId &&
+      (resource.Time === null || resource.Time === undefined);
+  }
+
   // DueDate
 
   public showDueDate(entry: Entry): boolean {
@@ -677,10 +776,18 @@ Document_State_Closed
 
     // Make sure pending attachments don't exceed max file size
     model.Attachments = model.Attachments || [];
-    const sumOfAttachmentSizesPendingSave = model.Attachments.length === 0 ? 0 : model.Attachments
+    const sumOfAttachmentSizesPendingSave = model.Attachments
       .map(a => !!a.file ? a.file.size : 0)
-      .reduce((total, v) => total + v);
+      .reduce((total, v) => total + v, 0);
 
+    if (sumOfAttachmentSizesPendingSave + file.size > this._maxAttachmentSize) {
+      console.log(sumOfAttachmentSizesPendingSave);
+      this.showError(() => this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
+        {
+          size: fileSizeDisplay(this._maxAttachmentSize)
+        }));
+      return;
+    }
 
     getDataURL(file).pipe(
       takeUntil(this.notifyDestruct$),
