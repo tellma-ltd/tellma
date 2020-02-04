@@ -1,5 +1,5 @@
 ﻿	DECLARE @Suppliers dbo.[AgentList];
-	DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT;
+	DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT, @Stora INT, @Phoenix INT;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Suppliers
@@ -44,26 +44,22 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	;
 
 
-	EXEC [api].[Agents__Save]
-		@DefinitionId = N'suppliers',
-		@Entities = @Suppliers,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+EXEC [api].[Agents__Save]
+	@DefinitionId = N'suppliers',
+	@Entities = @Suppliers,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
-	SELECT
-		@BananIT = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Banan Information technologies, plc'),
-		@Regus = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Regus'),
-		@NocJimma = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Noc Jimma Ber Service Station'),
-		@Toyota =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Toyota, Ethiopia'),
-		@Amazon =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Amazon, Ethiopia');
-
-	IF @DebugSuppliers = 1
-		SELECT A.[Code], A.[Name], A.[StartDate] AS 'Supplier Since', A.[IsActive]
-		--AR.[SupplierRating], AR.[PaymentTerms], 
-		--RC.[Name] AS OperatingSegment
-		FROM dbo.fi_Agents(N'suppliers', NULL) A
-		--JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
+SELECT
+	@BananIT = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Banan Information technologies, plc'),
+	@Regus = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Regus'),
+	@NocJimma = (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Noc Jimma Ber Service Station'),
+	@Toyota =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Toyota, Ethiopia'),
+	@Amazon =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Amazon, Ethiopia'),
+	@Stora =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Stora Enso'),
+	@Phoenix =  (SELECT [Id] FROM [dbo].fi_Agents(N'suppliers', NULL) WHERE [Name] = N'Phoenix Pulp')
+	;

@@ -2,7 +2,7 @@
 IF @DB = N'100' -- ACME, USD, en/ar/zh playground
 BEGIN
 	SET @ShortCompanyName2 = N'أكمي إنترناشيونال';
-	SET @ShortCompanyName3= N'ACME国际'
+	SET @ShortCompanyName3= N'ACME国际';
 END
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
