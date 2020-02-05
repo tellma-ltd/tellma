@@ -6,7 +6,7 @@
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
         <t-measurement-units-details mode="popup" [initialText]="initialText" [idString]="idString"
-            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);">
+            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
         </t-measurement-units-details>
     </div>
 </ng-template>

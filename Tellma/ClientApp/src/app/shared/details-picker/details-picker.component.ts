@@ -9,7 +9,7 @@ import { catchError, debounceTime, map, switchMap, tap, exhaustMap, filter } fro
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
+import { addToWorkspace, Key, addSingleToWorkspace, computeSelectForDetailsPicker } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -167,7 +167,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
             skip: 0,
             expand: this.expand,
             filter: this.queryFilter,
-            select: this.computeSelect()
+            select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
@@ -196,28 +196,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateUI(this.chosenItem);
     }));
-  }
-
-  private computeSelect(): string {
-    const desc = this.entityDescriptor();
-
-    const resultPaths: { [key: string]: true } = {};
-
-    // Basic select
-    if (!!desc.select) {
-      desc.select.forEach(s => resultPaths[s] = true);
-    }
-
-    if (!!desc.definitionIds) {
-      resultPaths.DefinitionId = true;
-    }
-
-    // custom select
-    if (!!this.additionalSelect) {
-      this.additionalSelect.split(',').forEach(s => resultPaths[s] = true);
-    }
-
-    return Object.keys(resultPaths).join(',');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -257,7 +235,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private doFetchUnloadedItem(id: string | number) {
     return this.api.getById(id, {
       expand: this.expand,
-      select: this.computeSelect()
+      select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
     }).pipe(
       tap((response: GetByIdResponse) => {
         addSingleToWorkspace(response, this.workspace);

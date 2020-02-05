@@ -7,7 +7,8 @@
     let-definitionId="definitionId">
     <div class="modal-body">
         <t-agents-details mode="popup" [idString]="idString" [initialText]="initialText" [definitionId]="definitionId"
-            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);">
+            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);"
+            [additionalSelect]="additionalSelect">
         </t-agents-details>
     </div>
 </ng-template>

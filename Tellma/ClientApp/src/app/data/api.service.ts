@@ -645,6 +645,10 @@ export class ApiService {
           paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
         }
 
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
         paramsArray.push(`returnEntities=${!!args.returnEntities}`);
 
         const params: string = paramsArray.join('&');

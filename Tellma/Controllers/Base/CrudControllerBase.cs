@@ -456,6 +456,7 @@ return the entities
             {
                 // Parse arguments
                 var expand = ExpandExpression.Parse(args?.Expand);
+                var select = SelectExpression.Parse(args?.Select);
                 var returnEntities = args?.ReturnEntities ?? false;
 
                 // Trim all strings as a preprocessing step
@@ -488,7 +489,7 @@ return the entities
                 EntitiesResponse<TEntity> result = null;
                 if (returnEntities && ids != null)
                 {
-                    result = await GetByIdListAsync(ids.ToArray(), expand);
+                    result = await GetByIdListAsync(ids.ToArray(), expand, select);
                 }
 
                 await PostProcess(result);

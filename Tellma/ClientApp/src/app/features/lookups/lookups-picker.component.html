@@ -8,7 +8,7 @@
     let-definitionId="definitionId">
     <div class="modal-body">
         <t-lookups-details mode="popup" [initialText]="initialText" [idString]="idString" [definitionId]="definitionId"
-            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);">
+            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
         </t-lookups-details>
     </div>
 </ng-template>

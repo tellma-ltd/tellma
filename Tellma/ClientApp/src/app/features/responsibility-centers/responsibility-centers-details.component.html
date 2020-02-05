@@ -1,6 +1,6 @@
 <t-details collection="ResponsibilityCenter" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [masterCrumb]="'ResponsibilityCenters' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
-    [actions]="[
+    [additionalSelect]="additionalSelect" [masterCrumb]="'ResponsibilityCenters' | translate"
+    [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -16,7 +16,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
+        [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
         <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"

@@ -22,8 +22,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `AccountType,LegacyClassification,Currency,ResponsibilityCenter,
-  LegacyType,Agent,Resource/Currency,EntryType,
-  Resource/CountUnit,Resource/MassUnit,Resource/VolumeUnit,Resource/TimeUnit`;
+  LegacyType,Agent,Resource/Currency,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {

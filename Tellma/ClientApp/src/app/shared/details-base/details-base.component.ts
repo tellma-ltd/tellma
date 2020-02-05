@@ -21,6 +21,9 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   public idString: string | number;
 
   @Input()
+  public additionalSelect: string;
+
+  @Input()
   public initialText: string;
 
   @Output()

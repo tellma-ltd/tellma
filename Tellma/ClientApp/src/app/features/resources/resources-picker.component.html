@@ -8,7 +8,7 @@
     <div class="modal-body">
         <t-resources-details mode="popup" [idString]="idString" [initialText]="initialText"
             [definitionId]="definitionId" (cancel)="modal.close(false);"
-            (saved)="modal.close(true); update.call(null, $event);">
+            (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
         </t-resources-details>
     </div>
 </ng-template>
