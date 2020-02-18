@@ -1,0 +1,142 @@
+<t-details [expand]="expand" [idString]="idString" collection="AdminUser" [createFunc]="create" [cloneFunc]="clone"
+    [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="'AdminUsers' | translate"
+    [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [documentHeaderTemplate]="documentHeader" [actions]="[
+            { template: invite, action: onInvite, showAction: showInvite, canAction: canInvite, actionTooltip: inviteTooltip },
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+           ]">
+
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Name }}</span>
+</ng-template>
+
+<ng-template #documentHeader let-model="model" let-isEdit="isEdit">
+    <div class="w-100 t-document-header d-flex justify-content-end">
+        <t-restricted [metadata]="model?.EntityMetadata?.ExternalId">
+            <div class="t-flow-chart small">
+                <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
+                <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
+            </div>
+            <div class="small t-lone-state active d-none">
+                <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
+            </div>
+        </t-restricted>
+    </div>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <!-- Header Name -->
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2" [serverErrors]="model?.serverErrors?.Name">
+        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+
+        <t-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="'Name' | translate" required>
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- Email -->
+    <t-form-group class="t-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
+        <div *ngIf="!isEdit">{{ model?.Email }}</div>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" required email
+            [disabled]="!isNew"></t-text-editor>
+    </t-form-group>
+
+    <!-- Last Activity -->
+    <t-form-group class="t-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
+        <t-auto-cell collection="AdminUser" [entity]="model" path="LastAccess">
+        </t-auto-cell>
+    </t-form-group>
+
+    <!-- Is Active -->
+    <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+        <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+    </t-form-group>
+
+    <!-- Email Notice -->
+    <div class="col-12 alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">
+        <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
+    </div>
+
+    <ngb-tabset class="pt-3 pt-sm-4 w-100">
+
+        <!-- Permissions -->
+        <ngb-tab [disabled]="true">
+            <ng-template ngbTabTitle><span class="small">{{ 'User_Permissions' | translate }}<span
+                        *ngIf="model?.EntityMetadata?.Permissions == 2"> ({{ model?.Permissions.length | number
+          }})</span></span>
+                <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon
+                        icon="exclamation-triangle">
+                    </fa-icon>
+                </span>
+            </ng-template>
+            <ng-template ngbTabContent>
+                <t-restricted [metadata]="model?.EntityMetadata?.Permissions"
+                [class.p-4]="model?.EntityMetadata?.Permissions === 1">
+                <t-table [dataSource]="model?.Permissions" [isEdit]="isEdit"
+                  [columnPaths]="['View', 'Action', 'Criteria', 'Memo']" [columnTemplates]="{
+                    'View' : { headerTemplate : header_View, rowTemplate : row_View, weight : 1 },
+                    'Action' : { headerTemplate : header_Action, rowTemplate : row_Action, weight : 1 },
+                    'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
+                    'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+                  }">
+                </t-table>
+              </t-restricted>
+
+              <!-- View -->
+              <ng-template #header_View>{{ 'Permission_View' | translate }}</ng-template>
+              <ng-template #row_View let-item="item" let-index="originalIndex" let-update="update">
+                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.View">
+                  <div *ngIf="!isEdit">
+                    {{ permissionViewLookup(item.View) }}
+                  </div>
+                  <t-selector *ngIf="isEdit" [choices]="permissionViewChoices" [(ngModel)]="item.View" [required]="!item.PH"
+                    (ngModelChange)="update.call(null, item); onPermissionChanged(item);"></t-selector>
+                </t-form-group>
+              </ng-template>
+      
+              <!-- Action -->
+              <ng-template #header_Action>{{ 'Permission_Action' | translate }}</ng-template>
+              <ng-template #row_Action let-item="item" let-index="originalIndex" let-update="update">
+                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Action">
+                  <div *ngIf="!isEdit">{{ permissionActionLookup(item?.Action) | translate }}</div>
+                  <t-selector *ngIf="isEdit" [(ngModel)]="item.Action" [required]="!item.PH"
+                    (ngModelChange)="update.call(null, item); onPermissionChanged(item);"
+                    [ngModelOptions]="{ updateOn: 'blur' }" [choices]="permissionActionChoices(item)" [disabled]="!item.View">
+                  </t-selector>
+                </t-form-group>
+              </ng-template>
+      
+              <!-- Criteria -->
+              <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
+              <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
+                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Criteria">
+                  <div *ngIf="!isEdit">{{ item.Criteria }}</div>
+                  <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update.call(null, item)"
+                    [ngModelOptions]="{ updateOn: 'blur' }" [disabled]="disableCriteria(item)">
+                  </t-text-editor>
+                </t-form-group>
+              </ng-template>
+      
+              <!-- Memo -->
+              <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+              <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
+                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
+                  <div *ngIf="!isEdit">{{ item.Memo }}</div>
+                  <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
+                    [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+                </t-form-group>
+              </ng-template>
+            </ng-template>
+        </ngb-tab>
+    </ngb-tabset>
+</ng-template>
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+<ng-template #invite> {{ 'ResendInvitationEmail' | translate }} </ng-template>

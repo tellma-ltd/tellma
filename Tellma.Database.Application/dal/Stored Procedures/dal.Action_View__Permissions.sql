@@ -2,7 +2,7 @@
 	@Action NVARCHAR (255),
 	@View NVARCHAR (255)
 AS
--- When changing this, remember to also change [dal].[Action_ViewPrefix__Permissions] and [dal].[GetUserPermissions]
+-- When changing this, remember to also change [dal].[Action_ViewPrefix__Permissions] and [dal].[Permissions__Load]
 DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 SELECT [View], [Action], [Criteria], [Mask] FROM (
 

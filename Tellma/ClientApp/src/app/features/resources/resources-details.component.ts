@@ -62,7 +62,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   // UI Binding
 
   private get definition(): ResourceDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Resources[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Resources[this.definitionId] : null;
   }
 
   public get found(): boolean {
@@ -112,7 +112,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: Resource): void => {

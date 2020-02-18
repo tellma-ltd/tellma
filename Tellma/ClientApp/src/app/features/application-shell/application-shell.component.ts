@@ -125,11 +125,11 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   }
 
   get settings(): SettingsForClient {
-    return !!this.workspace.current ? this.workspace.current.settings : null;
+    return !!this.ws ? this.ws.settings : null;
   }
 
   get ws(): TenantWorkspace {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   get userName(): string {

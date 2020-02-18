@@ -1,4 +1,4 @@
-import { NgModule, Component, ApplicationRef } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';

@@ -15,10 +15,10 @@ export class LegacyTypesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.AccountType;
+    return this.ws.AccountType;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 }

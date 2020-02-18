@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Tellma.Controllers
 {
@@ -47,9 +48,9 @@ namespace Tellma.Controllers
 
                     // This indicates to the client to discard all cached information about this
                     // company since the user is no longer a member of it
-                    context.HttpContext.Response.Headers.Add("x-settings-version", Constants.Unauthorized);
-                    context.HttpContext.Response.Headers.Add("x-permissions-version", Constants.Unauthorized);
-                    context.HttpContext.Response.Headers.Add("x-user-settings-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-admin-settings-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-admin-permissions-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-admin-user-settings-version", Constants.Unauthorized);
 
                     return;
                 }
@@ -62,8 +63,9 @@ namespace Tellma.Controllers
                 if (userInfo.ExternalId == null)
                 {
                     using var trx = ControllerUtilities.CreateTransaction();
+
                     await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, externalId);
-                    await _adminRepo.GlobalUsers__SetExternalIdByUserId(userId, externalId);
+                    await _adminRepo.DirectoryUsers__SetExternalIdByEmail(externalEmail, externalId);
 
                     trx.Complete();
                 }
@@ -72,8 +74,8 @@ namespace Tellma.Controllers
                 {
                     // Note: we will assume that no identity provider can provider the same email twice with 
                     // two different external Ids, i.e. that no provider allows email recycling, so we won't handle this case now
-                    // It can only happen if the application is re-configured to a new identity provider, or if someone messed with
-                    // database directly
+                    // This can only happen if the application is re-configured to a new identity provider, or if someone messed with
+                    // the database directly
                     context.Result = new BadRequestObjectResult("The sign-in email already exists but with a different external Id");
                     return;
                 }
@@ -83,14 +85,45 @@ namespace Tellma.Controllers
                 {
                     using var trx = ControllerUtilities.CreateTransaction();
                     await _adminRepo.AdminUsers__SetEmailByUserId(userId, externalEmail);
-                    await _adminRepo.GlobalUsers__SetEmailByUserId(userId, externalEmail);
+                    await _adminRepo.DirectoryUsers__SetEmailByExternalId(externalId, externalEmail);
 
                     trx.Complete();
                 }
 
-
                 // (5) If any version headers are supplied: examine their freshness
-                // TODO: same pattern as TenantApiAttribute
+                {
+                    // Permissions
+                    var clientVersion = context.HttpContext.Request.Headers["X-Admin-Permissions-Version"].FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        var databaseVersion = userInfo.PermissionsVersion;
+                        context.HttpContext.Response.Headers.Add("x-admin-permissions-version",
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
+                    }
+                }
+
+                {
+                    // User Settings
+                    var clientVersion = context.HttpContext.Request.Headers["X-Admin-User-Settings-Version"].FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        var databaseVersion = userInfo.UserSettingsVersion;
+                        context.HttpContext.Response.Headers.Add("x-admin-user-settings-version",
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
+                    }
+                }
+
+                {
+                    // Settings
+                    var clientVersion = context.HttpContext.Request.Headers["X-Admin-Settings-Version"].FirstOrDefault();
+                    var adminInfo = new { SettingsVersion = clientVersion }; // await _adminRepo.GetAdminInfoAsync(); // TODO
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        var databaseVersion = adminInfo.SettingsVersion;
+                        context.HttpContext.Response.Headers.Add("x-settings-version",
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
+                    }
+                }
 
                 // Finally call the Action itself
                 await next();

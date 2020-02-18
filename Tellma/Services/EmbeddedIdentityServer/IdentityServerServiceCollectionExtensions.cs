@@ -35,7 +35,8 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             // Extract the configuration section of Identity Server into a strongly typed object that is easier to deal with
-            var config = configSection.Get<EmbeddedIdentityServerOptions>();
+            services.Configure<EmbeddedIdentityServerOptions>(configSection);
+            var config = configSection.Get<EmbeddedIdentityServerOptions>();            
 
             // Register the identity context
             string connString = config?.ConnectionString ?? throw new InvalidOperationException("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");

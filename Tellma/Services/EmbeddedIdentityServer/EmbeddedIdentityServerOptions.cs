@@ -4,7 +4,7 @@ namespace Tellma.Services.EmbeddedIdentityServer
 {
     /// <summary>
     /// Binds to all the configurations needed by the embedded instance of identity server.
-    /// This is following the options pattern recommended by microsoft: https://bit.ly/2GiJ19F
+    /// This is following the options pattern recommended by Microsoft: https://bit.ly/2GiJ19F
     /// </summary>
     public class EmbeddedIdentityServerOptions
     {

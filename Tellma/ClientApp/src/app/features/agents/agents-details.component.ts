@@ -74,7 +74,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   }
 
   private get definition(): AgentDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Agents[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Agents[this.definitionId] : null;
   }
 
   // UI Bindings
@@ -108,7 +108,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get masterCrumb(): string {

@@ -7,7 +7,7 @@ import { DataWithVersion } from './dto/data-with-version';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { retry, tap, map, catchError, finalize, concatMap } from 'rxjs/operators';
 import { ProgressOverlayService } from './progress-overlay.service';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '~/environments/environment';
 import { friendlify } from './util';
 import { TranslateService } from '@ngx-translate/core';

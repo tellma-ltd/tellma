@@ -26,10 +26,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
   _label: string;
   _errorMessage: string;
 
-  constructor(private ws: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
+  constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this._subscription = this.ws.stateChanged$.subscribe({
+    this._subscription = this.workspace.stateChanged$.subscribe({
       next: () => {
         this.recompute();
         this.cdr.markForCheck();
@@ -76,7 +76,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
         const labelArray = [];
 
-        let currentEntityDesc = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
+        let currentEntityDesc = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definition);
         let currentCollection = this.collection;
         let currentDefinition = this.definition;
         let currentPropDesc: PropDescriptor;
@@ -93,7 +93,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
             currentCollection = currentPropDesc.collection || currentPropDesc.type;
             currentDefinition = currentPropDesc.definition;
-            currentEntityDesc = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
+            currentEntityDesc = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
           } else if (i !== pathArray.length - 1) {
             throw new Error(

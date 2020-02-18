@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[AdminSettings] (
+	[SettingsVersion]				UNIQUEIDENTIFIER	NOT NULL,
+
+	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AdminSettings__CreatedById] REFERENCES [dbo].[AdminUsers] ([Id]),
+	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AdminSettings__ModifiedById] REFERENCES [dbo].[AdminUsers] ([Id])
+);

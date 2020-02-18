@@ -21,11 +21,11 @@ export class UsersMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.User;
+    return this.ws.User;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
@@ -46,7 +46,7 @@ export class UsersMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('roles', 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('users', 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

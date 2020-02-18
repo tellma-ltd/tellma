@@ -156,18 +156,6 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // // IFRS Notes
-      // {
-      //   path: 'ifrs-notes',
-      //   component: IfrsNotesMasterComponent,
-      //   canDeactivate: [SaveInProgressGuard]
-      // },
-      // {
-      //   path: 'ifrs-notes/:id',
-      //   component: IfrsNotesDetailsComponent,
-      //   canDeactivate: [UnsavedChangesGuard]
-      // },
-
       // Legacy Types
       {
         path: 'legacy-types',

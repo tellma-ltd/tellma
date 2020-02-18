@@ -24,11 +24,11 @@ export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.ResponsibilityCenter;
+    return this.ws.ResponsibilityCenter;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class AdminUserForSave : EntityWithKey<int>
+    public class AdminUserForSave<TPermission> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -18,11 +19,32 @@ namespace Tellma.Entities
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string Email { get; set; }
+
+        [Display(Name = "User_Permissions")]
+        [ForeignKey(nameof(AdminPermission.AdminUserId))]
+        public List<TPermission> Permissions { get; set; }
     }
 
-    public class AdminUser : AdminUserForSave
+    public class AdminUserForSave : AdminUserForSave<AdminPermissionForSave>
+    {
+
+    }
+
+    public class AdminUser : AdminUserForSave<AdminPermission>
     {
         public string ExternalId { get; set; }
+
+        [Display(Name = "State")]
+        [ChoiceList(new object[] { "New", "Confirmed" },
+            new string[] { "User_New", "User_Confirmed" })]
+        public string State { get; set; }
+
+        [Display(Name = "User_LastActivity")]
+        public DateTimeOffset? LastAccess { get; set; }
+
+        [Display(Name = "IsActive")]
+        [AlwaysAccessible]
+        public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }

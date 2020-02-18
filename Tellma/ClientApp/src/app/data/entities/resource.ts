@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
 import { EntityWithKey } from './base/entity-with-key';
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -60,7 +60,8 @@ let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
 let _definitionIds: string[];
 
-export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+    const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
         _settings = ws.settings;

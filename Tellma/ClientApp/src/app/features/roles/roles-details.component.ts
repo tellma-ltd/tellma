@@ -8,7 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
-import { VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
+import { APPLICATION_VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { metadata_LegacyType } from '~/app/data/entities/legacy-type';
@@ -194,7 +194,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   permissionsCount(model: Role): number | string {
@@ -233,8 +233,8 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       this._currentDefinition = this.ws.definitions;
 
       this._viewsDb = {};
-      for (const view of Object.keys(VIEWS_BUILT_IN)) {
-        const viewInfo = VIEWS_BUILT_IN[view];
+      for (const view of Object.keys(APPLICATION_VIEWS_BUILT_IN)) {
+        const viewInfo = APPLICATION_VIEWS_BUILT_IN[view];
         const concreteView: ConcreteViewInfo = {
           name: () => this.translate.instant(viewInfo.name),
           actions: {}
@@ -263,7 +263,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
       const lookups = this.ws.definitions.Lookups;
       for (const definitionId of Object.keys(lookups)) {
-        const entityDesc = metadata_Lookup(this.ws, this.translate, definitionId);
+        const entityDesc = metadata_Lookup(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
             name: entityDesc.titlePlural,
@@ -282,7 +282,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
       const agents = this.ws.definitions.Agents;
       for (const definitionId of Object.keys(agents)) {
-        const entityDesc = metadata_Agent(this.ws, this.translate, definitionId);
+        const entityDesc = metadata_Agent(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
             name: entityDesc.titlePlural,
@@ -301,7 +301,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
       const resources = this.ws.definitions.Resources;
       for (const definitionId of Object.keys(resources)) {
-        const entityDesc = metadata_Resource(this.ws, this.translate, definitionId);
+        const entityDesc = metadata_Resource(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
             name: entityDesc.titlePlural,
@@ -320,7 +320,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
       const documents = this.ws.definitions.Documents;
       for (const definitionId of Object.keys(documents)) {
-        const entityDesc = metadata_Document(this.ws, this.translate, definitionId);
+        const entityDesc = metadata_Document(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
             name: entityDesc.titlePlural,

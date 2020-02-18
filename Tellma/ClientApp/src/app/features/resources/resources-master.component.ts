@@ -60,15 +60,15 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public get c() {
-    return this.workspace.current.Resource;
+    return this.ws.Resource;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get definition(): ResourceDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Resources[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Resources[this.definitionId] : null;
   }
 
   public get found(): boolean {

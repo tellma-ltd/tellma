@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="d5a262ce-1794-4296-b8b3-0eb8e7d0f3f9" ChangeDateTime="02/15/2020 12:03:29">
+    <Property Name="ElementName" Value="[dal].[DirectoryUsers__SetEmailByUserId]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DirectoryUsers__SetEmailByExternalUserId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b631aab8-e82f-4d5e-a127-6f565387fda4" ChangeDateTime="02/15/2020 12:04:31">
+    <Property Name="ElementName" Value="[dal].[DirectoryUsers__SetEmailByExternalUserId]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DirectoryUsers__SetEmailByExternalId]" />
+  </Operation>
+</Operations>

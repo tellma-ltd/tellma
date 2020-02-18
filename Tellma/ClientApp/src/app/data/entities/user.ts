@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { EntityDescriptor } from './base/metadata';
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -32,7 +32,8 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_User(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_User(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+  const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
     const companyLanguages = [ws.settings.PrimaryLanguageId];

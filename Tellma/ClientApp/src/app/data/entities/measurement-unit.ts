@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
@@ -31,7 +31,8 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_MeasurementUnit(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+  const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
     _settings = ws.settings;

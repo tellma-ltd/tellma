@@ -161,9 +161,9 @@ namespace Tellma.Services.Sharding
                         var expiryTime = DateTimeOffset.Now.AddMinutes(GetCacheExpirationInMinutes());
                         _cache.Set(CacheKey(databaseId), shardConnString, expiryTime);
 
-                        // NOTE: Sharding routes is a type of data that is very frequently read, yet very rarely if never updated
-                        // so we have decided to rely only on cache expiry to keep the cache fresh (2h by default), so if you move a tenant
-                        // across shards, you need to wait those 2 hours before all caches are updated. This is the best compromise
+                        // NOTE: Shard connection string is a type of data that is very frequently read, yet very rarely if never updated
+                        // so we have decided to rely only on cache expiry to keep the cache fresh (2h by default), so if you change a tenant
+                        // database name or credentials, you need to wait those 2 hours before all caches are updated. This is the best compromise
                     }
                 }
                 finally

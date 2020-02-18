@@ -3,9 +3,6 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
-import { addToWorkspace } from '~/app/data/util';
-import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
@@ -60,15 +57,15 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public get c() {
-    return this.workspace.current.Document;
+    return this.ws.Document;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get definition(): DocumentDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Documents[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Documents[this.definitionId] : null;
   }
 
   public get found(): boolean {

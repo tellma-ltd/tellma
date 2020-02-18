@@ -258,6 +258,9 @@ namespace Tellma
                             "x-permissions-version",
                             "x-definitions-version",
                             "x-user-settings-version",
+                            "x-admin-settings-version",
+                            "x-admin-permissions-version",
+                            "x-admin-user-settings-version",
                             "x-global-settings-version"
                         );
                     });

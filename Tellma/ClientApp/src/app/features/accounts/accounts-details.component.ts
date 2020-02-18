@@ -62,11 +62,11 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get p(): { [prop: string]: PropDescriptor } {
-    return metadata_Account(this.ws, this.translate, null).properties;
+    return metadata_Account(this.workspace, this.translate, null).properties;
   }
 
   public onActivate = (model: Account): void => {
@@ -148,7 +148,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get choicesAgentDefinitionId(): SelectorChoice[] {
-    const entityDesc = metadata.Account(this.ws, this.translate, null);
+    const entityDesc = metadata.Account(this.workspace, this.translate, null);
     return getChoices(entityDesc.properties.AgentDefinitionId as ChoicePropDescriptor);
   }
 

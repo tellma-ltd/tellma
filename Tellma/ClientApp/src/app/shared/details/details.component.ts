@@ -248,7 +248,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, this.definition) : null;
   }
 
   get apiEndpoint(): string {

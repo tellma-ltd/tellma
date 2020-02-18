@@ -52,7 +52,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: AccountType): void => {
@@ -80,7 +80,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_AccountType(this.ws, this.translate, null);
+    const entityDesc = metadata_AccountType(this.workspace, this.translate, null);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 

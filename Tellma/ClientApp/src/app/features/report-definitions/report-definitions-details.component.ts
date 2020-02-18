@@ -159,12 +159,12 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public decimalPlacesLookup(value: any): string {
-    const descriptor = metadata_ReportDefinition(this.ws, this.translate, null).properties.E as ChoicePropDescriptor;
+    const descriptor = metadata_ReportDefinition(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get isNew(): boolean {
@@ -202,7 +202,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   private entityDescriptor(model: ReportDefinition): EntityDescriptor {
-    return !!model.Collection ? metadata[model.Collection](this.ws, this.translate, model.DefinitionId) : null;
+    return !!model.Collection ? metadata[model.Collection](this.workspace, this.translate, model.DefinitionId) : null;
   }
 
   private synchronizeFilter(model: ReportDefinition) {
@@ -295,20 +295,20 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get allCollections(): SelectorChoice[] {
-    return collectionsWithEndpoint(this.ws, this.translate);
+    return collectionsWithEndpoint(this.workspace, this.translate);
   }
 
   public showDefinitionIdSelector(model: ReportDefinition): boolean {
-    return !!model && !!model.Collection && !!metadata[model.Collection](this.ws, this.translate, null).definitionIds;
+    return !!model && !!model.Collection && !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;
   }
 
   public allDefinitionIds(model: ReportDefinition): SelectorChoice[] {
     if (!!model && !!model.Collection) {
       const func = metadata[model.Collection];
-      const desc = func(this.ws, this.translate, null);
+      const desc = func(this.workspace, this.translate, null);
       if (!!desc.definitionIds && !desc.definitionIdsArray) {
         desc.definitionIdsArray = desc.definitionIds
-          .map(defId => ({ value: defId, name: func(this.ws, this.translate, defId).titlePlural }));
+          .map(defId => ({ value: defId, name: func(this.workspace, this.translate, defId).titlePlural }));
       }
 
       return desc.definitionIdsArray;
@@ -318,17 +318,17 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get allCharts(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.ws, this.translate, null).properties.Chart as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.Chart as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuSections(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.ws, this.translate, null).properties.MainMenuSection as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.MainMenuSection as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuIcons(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.ws, this.translate, null).properties.MainMenuIcon as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
@@ -337,46 +337,9 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return model.Parameters;
   }
 
-  // public getBuiltInParameters(model: ReportDefinition): ReportBuiltInParameterDefinition[] {
-  //   if (!model.Collection) {
-  //     return [];
-  //   }
-
-  //   // Check for consistency with the entity metadata
-  //   const entityDesc = metadata[model.Collection](this.ws, this.translate, model.DefinitionId);
-  //   if (!entityDesc.parameters || entityDesc.parameters.length === 0) {
-  //     // Optimization for a very common case
-  //     model.BuiltInParameters = [];
-  //   } else {
-  //     model.BuiltInParameters = model.BuiltInParameters || []; // TARGET
-
-  //     // Synchronize TARGET with SOURCE
-  //     const sourceKeys: { [key: string]: ParameterDescriptor } = {};
-  //     entityDesc.parameters.forEach(p => sourceKeys[p.key] = p); // SOURCE
-
-  //     // If missing from SOURCE, remove from TARGET
-  //     model.BuiltInParameters = model.BuiltInParameters.filter(p => !!sourceKeys[p.Key]);
-
-  //     // Synchronize the matching items
-  //     model.BuiltInParameters.forEach(p => {
-  //       delete sourceKeys[p.Key];
-  //     });
-
-  //     // If present in SOURCE but not in TARGET, add to TARGET
-  //     for (const p of Object.keys(sourceKeys).map(key => sourceKeys[key])) {
-  //       model.BuiltInParameters.push({
-  //         Key: p.key,
-  //         Visibility: p.isRequired ? 'Required' : null
-  //       });
-  //     }
-  //   }
-
-  //   return model.BuiltInParameters;
-  // }
-
   public getParameterDescriptor(key: string, model?: ReportDefinition): ParameterDescriptor {
     model = model || this.modelRef;
-    const entityDesc = metadata[model.Collection](this.ws, this.translate, model.DefinitionId);
+    const entityDesc = metadata[model.Collection](this.workspace, this.translate, model.DefinitionId);
     const result = !!entityDesc.parameters ? entityDesc.parameters.find(e => e.key === key) : null;
     return result;
   }
@@ -488,7 +451,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
         try {
           const steps = measure.Path.split('/');
           const prop = steps.pop();
-          const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.ws, this.translate);
+          const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
           const propDesc = desc.properties[prop];
           if (isNumeric(propDesc) && measure.Path !== 'Id') {
             measure.Aggregation = 'sum';
@@ -641,7 +604,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       return [];
     }
 
-    const entityDesc = metadata[collection](this.ws, this.translate, definitionId);
+    const entityDesc = metadata[collection](this.workspace, this.translate, definitionId);
     const level = !!parent ? parent.level + 1 : 0;
     const parentPath = !!parent ? `${parent.path}/` : '';
     return Object.keys(entityDesc.properties).map(prop => ({
@@ -815,7 +778,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     try {
       const steps = path.split('/');
       const prop = steps.pop();
-      const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.ws, this.translate);
+      const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.workspace, this.translate);
       const propDesc = desc.properties[prop];
       return propDesc.control === 'date' || propDesc.control === 'datetime';
     } catch {

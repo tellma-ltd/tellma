@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { EntityDescriptor } from './base/metadata';
-import { TenantWorkspace } from '../workspace.service';
+import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { EntityForSave } from './base/entity-for-save';
@@ -23,7 +23,8 @@ export interface IfrsConcept extends EntityForSave {
 }
 
 const _label = ['', '2', '3'].map(pf => 'Label' + pf);
-export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsConceptInner(wss: WorkspaceService, trx: TranslateService, _subtype: string): EntityDescriptor {
+    const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     return {
         collection: 'IfrsConcept',

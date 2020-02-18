@@ -25,15 +25,15 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.MeasurementUnit;
+    return this.ws.MeasurementUnit;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public unitTypeLookup(value: string): string {
-    const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 

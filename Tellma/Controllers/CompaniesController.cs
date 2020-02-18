@@ -41,7 +41,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<IEnumerable<UserCompany>>> CompaniesForClient()
+        public async Task<ActionResult<CompaniesForClient>> CompaniesForClient()
         {
             try
             {
@@ -59,12 +59,15 @@ namespace Tellma.Controllers
             }
         }
 
-        private async Task<IEnumerable<UserCompany>> GetForClientImpl()
+        private async Task<CompaniesForClient> GetForClientImpl()
         {
-            var result = new List<UserCompany>();
+            var companies = new List<UserCompany>();
 
-            var databaseIds = await _repo.GetAccessibleDatabaseIds();
-            var globalUserInfo = await _repo.GetAdminUserInfoAsync();
+            var externalId = _externalUserAccessor.GetUserId();
+            var externalEmail = _externalUserAccessor.GetUserEmail();
+            var (databaseIds, isAdmin) = await _repo.GetAccessibleDatabaseIds(externalId, externalEmail);
+
+            // Confirm each database Id by checking the respective DB
             foreach (var databaseId in databaseIds)
             {
                 try
@@ -77,22 +80,33 @@ namespace Tellma.Controllers
                     if (userInfo.UserId != null)
                     {
                         var tenantInfo = await appRepo.GetTenantInfoAsync();
-                        result.Add(new UserCompany
+                        companies.Add(new UserCompany
                         {
                             Id = databaseId,
                             Name = tenantInfo.ShortCompanyName,
-                            Name2 = tenantInfo.ShortCompanyName2,
-                            Name3 = tenantInfo.ShortCompanyName3
+                            Name2 = string.IsNullOrWhiteSpace(tenantInfo.SecondaryLanguageId) ? null : tenantInfo.ShortCompanyName2,
+                            Name3 = string.IsNullOrWhiteSpace(tenantInfo.TernaryLanguageId) ? null : tenantInfo.ShortCompanyName3
                         });
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, UserId: {globalUserInfo?.UserId}, {ex.GetType().Name}: {ex.Message}");
+                    _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, User email: {_externalUserAccessor.GetUserEmail()}, {ex.GetType().Name}: {ex.Message}");
                 }
             }
+            
+            // Confirm isAdmin by checking with the admin DB
+            if (isAdmin)
+            {
+                var adminUserInfo = await _repo.GetAdminUserInfoAsync();
+                isAdmin = adminUserInfo?.UserId != null;
+            }
 
-            return result;
+            return new CompaniesForClient
+            {
+                IsAdmin = isAdmin,
+                Companies = companies,
+            };
         }
     }
 }

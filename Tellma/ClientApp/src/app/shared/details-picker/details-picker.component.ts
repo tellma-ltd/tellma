@@ -5,7 +5,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, map, switchMap, tap, exhaustMap, filter } from 'rxjs/operators';
+import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -91,7 +91,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   @Input()
   formatter: (item: any) => string = (item: any) => {
     const definition = this.definitionIdsSingleOrDefault;
-    return metadata[this.collection](this.workspace.current, this.translate, definition).format(item);
+    return metadata[this.collection](this.workspace, this.translate, definition).format(item);
   }
 
   ///////////////// Lifecycle Hooks
@@ -220,7 +220,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   entityDescriptor(definitionId?: string): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
   }
 
   apiEndpoint(definitionId: string): string {

@@ -39,7 +39,7 @@ export class LegacyClassificationsDetailsComponent extends DetailsBaseComponent 
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: LegacyClassification): void => {

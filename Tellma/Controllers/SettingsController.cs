@@ -137,11 +137,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                // Simply retrieves the cached settings, which were refreshed by ApiControllerAttribute
+                // Simply retrieves the cached settings, which were refreshed by ApplicationApiAttribute
                 var result = _settingsCache.GetCurrentSettingsIfCached();
                 if (result == null)
                 {
-                    throw new InvalidOperationException("The definitions were missing from the cache");
+                    throw new InvalidOperationException("The settings were missing from the cache");
                 }
 
                 return Ok(result);
@@ -161,7 +161,7 @@ namespace Tellma.Controllers
         public ActionResult Ping()
         {
             // If all you want is to check whether the cached versions of settings and permissions 
-            // are fresh you can use this API that only does that through the [LoadTenantInfo] filter
+            // are fresh you can use this API that only does that through the [ApplicationApi] filter
 
             return Ok();
         }

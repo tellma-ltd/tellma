@@ -3784,9 +3784,12 @@ namespace Tellma.Data
 
         public async Task<List<string>> Documents__Delete(IEnumerable<int> ids)
         {
-            // TODO
+            // Returns the list of File Ids to be deleted
+            var result = new List<string>();
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -3804,14 +3807,19 @@ namespace Tellma.Data
             // Execute
             try
             {
-                await cmd.ExecuteNonQueryAsync();
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    result.Add(reader.String(0));
+                }
             }
             catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
             {
                 throw new ForeignKeyViolationException();
             }
 
-            return null; // TODO
+            return result;
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
@@ -3862,7 +3870,6 @@ namespace Tellma.Data
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
-
 
         public async Task Documents_Open(List<int> ids, bool isActive)
         {

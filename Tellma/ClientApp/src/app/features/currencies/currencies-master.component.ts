@@ -6,8 +6,6 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { metadata_Currency } from '~/app/data/entities/currency';
 
 @Component({
   selector: 't-currencies-master',
@@ -26,11 +24,11 @@ export class CurrenciesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.Currency;
+    return this.ws.Currency;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -55,7 +55,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _pristineDocJson: string;
 
   // These are bound from UI
-  public modalErrorMessageFunc: () => string;
   public assigneeId: number;
   public comment: string;
   public picSize = 36;
@@ -81,9 +80,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
-
-  @ViewChild('errorModal', { static: true })
-  errorModal: TemplateRef<any>;
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
@@ -137,7 +133,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // UI Binding
 
   private get definition(): DocumentDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Documents[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Documents[this.definitionId] : null;
   }
 
   public get found(): boolean {
@@ -193,8 +189,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public get ws() {
-    return this.workspace.current;
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
   }
 
   public get masterCrumb(): string {
@@ -476,7 +472,7 @@ Document_State_Closed
     const account = this.account(entry);
     const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Agent(this.ws, this.translate, agentDefinitionId).titleSingular();
+    return metadata_Agent(this.workspace, this.translate, agentDefinitionId).titleSingular();
   }
 
   // ResourceId
@@ -767,10 +763,10 @@ Document_State_Closed
     const file = files[0];
     input.value = '';
     if (file.size > this._maxAttachmentSize) {
-      this.showError(() => this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
-        {
-          size: fileSizeDisplay(this._maxAttachmentSize)
-        }));
+      this.details.displayModalError(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
+      {
+        size: fileSizeDisplay(this._maxAttachmentSize)
+      }));
       return;
     }
 
@@ -781,8 +777,7 @@ Document_State_Closed
       .reduce((total, v) => total + v, 0);
 
     if (sumOfAttachmentSizesPendingSave + file.size > this._maxAttachmentSize) {
-      console.log(sumOfAttachmentSizesPendingSave);
-      this.showError(() => this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
+      this.details.displayModalError(this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
         {
           size: fileSizeDisplay(this._maxAttachmentSize)
         }));
@@ -840,7 +835,7 @@ Document_State_Closed
         }),
         catchError(friendlyError => {
           delete att.downloading;
-          this.showError(() => friendlyError.error);
+          this.details.displayModalError(friendlyError.error);
           return of(null);
         }),
         finalize(() => {
@@ -992,14 +987,5 @@ Document_State_Closed
     }
 
     return copy;
-  }
-
-  private showError(errorMessageFunc: () => string): void {
-    this.modalErrorMessageFunc = errorMessageFunc;
-    this.modalService.open(this.errorModal)
-      .result.then(
-        () => { },
-        (_: any) => { }
-      );
   }
 }

@@ -38,6 +38,15 @@ export class ErrorComponent implements OnInit {
           this._title = `Error_LoadingCompanySettings`;
           break;
 
+        case 'admin-unauthorized':
+          this._title = 'Unauthorized';
+          this._generalErrorMessage = `Error_UnauthorizedForAdmin`;
+          break;
+
+        case 'loading-admin-settings':
+          this._title = `Error_LoadingAdminSettings`;
+          break;
+
         case 'loading-global-settings':
           this._title = `Error_LoadingGlobalSettings`;
           break;

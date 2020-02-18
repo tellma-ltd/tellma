@@ -45,7 +45,7 @@ export class EntryTypesDetailsComponent extends DetailsBaseComponent {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: EntryType): void => {
@@ -73,7 +73,7 @@ export class EntryTypesDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_EntryType(this.ws, this.translate, null);
+    const entityDesc = metadata_EntryType(this.workspace, this.translate, null);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 }

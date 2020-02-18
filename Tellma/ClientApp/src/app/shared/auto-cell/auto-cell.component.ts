@@ -45,10 +45,10 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   _control: string;
 
   // Constructor and lifecycle hooks
-  constructor(private ws: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
+  constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this._subscription = this.ws.stateChanged$.subscribe({
+    this._subscription = this.workspace.stateChanged$.subscribe({
       next: () => {
         this.recompute();
         this.cdr.markForCheck();
@@ -103,7 +103,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
-        this._entityDescriptor = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
+        this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definition);
 
         if (pathArray.length === 0) {
           this._propDescriptor = null;
@@ -130,13 +130,13 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
                 currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
                 currentDefinition = this._propDescriptor.definition;
-                this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
+                this._entityDescriptor = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
                 if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
                   this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
 
                   const fkValue = this._value[this._propDescriptor.foreignKeyName];
-                  this._value = this.ws.current[currentCollection][fkValue];
+                  this._value = this.workspace.current[currentCollection][fkValue];
 
                 } else {
                   this._metavalue = 0;

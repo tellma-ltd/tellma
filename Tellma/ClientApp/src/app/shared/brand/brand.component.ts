@@ -8,4 +8,7 @@ export class BrandComponent {
 
   @Input()
   public scale = 1;
+
+  @Input()
+  public theme: 'light' | 'dark' = 'dark';
 }

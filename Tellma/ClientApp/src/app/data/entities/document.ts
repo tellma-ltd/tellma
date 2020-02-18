@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
 import { EntityWithKey } from './base/entity-with-key';
-import { TenantWorkspace } from '../workspace.service';
+import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -49,8 +49,8 @@ function getPrefix(ws: TenantWorkspace, definitionId: string) {
     return  !!def ? def.Prefix : '';
 }
 
-export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
-    // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
+export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+    const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
         _settings = ws.settings;

@@ -12,6 +12,11 @@ import {
   SETTINGS_PREFIX, PERMISSIONS_PREFIX, USER_SETTINGS_PREFIX, DEFINITIONS_PREFIX,
   handleFreshUserSettings, handleFreshSettings, handleFreshDefinitions
 } from './tenant-resolver.guard';
+import {
+  handleFreshPermissions as handleFreshAdminPermissions, handleFreshSettings as handleFreshAdminSettings,
+  handleFreshUserSettings as handleFreshAdminUserSettings, ADMIN_PERMISSIONS_PREFIX, ADMIN_SETTINGS_PREFIX,
+  ADMIN_USER_SETTINGS_PREFIX, versionStorageKey as adminVersionStorageKey, storageKey as adminStorageKey
+} from './admin-resolver.guard';
 import { Router } from '@angular/router';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { OAuthStorage } from 'angular-oauth2-oidc';
@@ -20,23 +25,47 @@ import { TranslateService } from '@ngx-translate/core';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { handleFreshGlobalSettings } from './global-resolver.guard';
 import { DefinitionsForClient } from './dto/definitions-for-client';
+import { AdminSettingsForClient } from './dto/admin-settings-for-client';
+import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
+import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
 export class RootHttpInterceptor implements HttpInterceptor {
 
+  // Global
   private notifyRefreshGlobalSettings$: Subject<void>;
+
+  // Admin Console
   private notifyRefreshSettings$: Subject<void>;
   private notifyRefreshDefinitions$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
   private notifyRefreshUserSettings$: Subject<void>;
+
+  // Application
+  private notifyRefreshAdminSettings$: Subject<void>;
+  private notifyRefreshAdminPermissions$: Subject<void>;
+  private notifyRefreshAdminUserSettings$: Subject<void>;
+
+  // Misc.
   private notifyPingAfterOneSecond$: Subject<void>;
   private cancellationToken$: Subject<void>;
+
+  // Global
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
+
+  // Admin Console
+  private adminSettingsApi: () => Observable<DataWithVersion<AdminSettingsForClient>>;
+  private adminPermissionsApi: () => Observable<DataWithVersion<AdminPermissionsForClient>>;
+  private adminUserSettingsApi: () => Observable<DataWithVersion<AdminUserSettingsForClient>>;
+
+  // Application
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
+
+  // Misc.
   private pingApi: () => Observable<void>;
 
   constructor(
@@ -47,11 +76,29 @@ export class RootHttpInterceptor implements HttpInterceptor {
     // Note: We use exhaustMap to prevent making another call while a call is in progress
     // https://www.learnrxjs.io/operators/transformation/exhaustmap.html
 
+    // Global
     this.notifyRefreshGlobalSettings$ = new Subject<void>();
     this.notifyRefreshGlobalSettings$.pipe(
       exhaustMap(() => this.doRefreshGlobalSettings())
     ).subscribe();
 
+    // Admin Console
+    this.notifyRefreshAdminSettings$ = new Subject<void>();
+    this.notifyRefreshAdminSettings$.pipe(
+      exhaustMap(() => this.doRefreshAdminSettings())
+    ).subscribe();
+
+    this.notifyRefreshAdminPermissions$ = new Subject<void>();
+    this.notifyRefreshAdminPermissions$.pipe(
+      exhaustMap(() => this.doRefreshAdminPermissions())
+    ).subscribe();
+
+    this.notifyRefreshAdminUserSettings$ = new Subject<void>();
+    this.notifyRefreshAdminUserSettings$.pipe(
+      exhaustMap(() => this.doRefreshAdminUserSettings())
+    ).subscribe();
+
+    // Application
     this.notifyRefreshSettings$ = new Subject<void>();
     this.notifyRefreshSettings$.pipe(
       exhaustMap(() => this.doRefreshSettings())
@@ -72,6 +119,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       exhaustMap(() => this.doRefreshUserSettings())
     ).subscribe();
 
+    // Misc.
     this.notifyPingAfterOneSecond$ = new Subject<void>();
     this.notifyPingAfterOneSecond$.pipe(
       exhaustMap(() => this.doPingAfterOneSecond())
@@ -79,38 +127,40 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     this.cancellationToken$ = new Subject<void>();
 
+    // Global
     this.globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$).getForClient;
+
+    // Admin Console
+    this.adminSettingsApi = this.api.adminSettingsApi(this.cancellationToken$).getForClient;
+    this.adminPermissionsApi = this.api.adminPermissionsApi(this.cancellationToken$).getForClient;
+    this.adminUserSettingsApi = this.api.adminUsersApi(this.cancellationToken$).getForClient;
+
+    // Application
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
+
+    // Misc.
     this.pingApi = this.api.pingApi(this.cancellationToken$).ping;
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
+    // Captured here for response interceptor
     const tenantId = this.workspace.ws.tenantId;
-    if (!req.url.endsWith('/appsettings.json') && !req.url.endsWith('/appsettings.development.json') && !req.url.endsWith('api/ping')) {
 
-      // we accumulate all the headers params in these objects
+    // Some APIs are left untouched
+    if (!req.url.endsWith('/appsettings.json') &&
+      !req.url.endsWith('/appsettings.development.json') &&
+      !req.url.endsWith('api/ping')) {
+
+      // we accumulate all the headers & params in these objects
       const headers: { [key: string]: string } = {};
       const params: { [key: string]: string } = {};
 
       // Today
       headers['X-Today'] = new Date().toISOString().split('T')[0];
-
-      // tenant ID
-      if (!!tenantId) {
-        // This piece of logic does not really belong to the root module and is
-        // specific to the application module, but moving it there is not worth
-        // the hassle now
-        headers['X-Tenant-Id'] = tenantId.toString();
-
-        // Even though API response caching is disabled with server headers, this is a last defense
-        // to absolutely guarantee that caching will never cause one tenant's data to show up while
-        // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
-        params['tenant-id'] = tenantId.toString();
-      }
 
       if (!!this.authStorage) {
         const accessToken = this.authStorage.getItem('access_token');
@@ -125,18 +175,50 @@ export class RootHttpInterceptor implements HttpInterceptor {
         params['ui-culture'] = culture;
       }
 
-      // the version refresh APIs should not include the version headers
+      // True if this is an API request to refresh the
       const isVersionRefreshRequest = req.url.endsWith('/client') || req.url.indexOf('/client/') !== -1;
-      if (!isVersionRefreshRequest) {
-        // tenant versions
-        const current = this.workspace.current;
-        if (!!current) {
-          headers['X-Settings-Version'] = current.settingsVersion || '???';
-          headers['X-Definitions-Version'] = current.definitionsVersion || '???';
-          headers['X-Permissions-Version'] = current.permissionsVersion || '???';
-          headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
+
+      // Workspace specific headers
+      if (this.workspace.isApp) {
+
+        // tenant ID
+        if (!!tenantId) {
+          // This piece of logic does not really belong to the root module and is
+          // specific to the application module, but moving it there is not worth
+          // the hassle now
+          headers['X-Tenant-Id'] = tenantId.toString();
+
+          // Even though API response caching is disabled with server headers, this is a last defense
+          // to absolutely guarantee that caching will never cause one tenant's data to show up while
+          // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
+          params['tenant-id'] = tenantId.toString();
         }
 
+        // the version refresh APIs should not include the version headers
+        if (!isVersionRefreshRequest) {
+          // tenant versions
+          const current = this.workspace.currentTenant;
+          if (!!current) {
+            headers['X-Settings-Version'] = current.settingsVersion || '???';
+            headers['X-Definitions-Version'] = current.definitionsVersion || '???';
+            headers['X-Permissions-Version'] = current.permissionsVersion || '???';
+            headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
+          }
+        }
+      } else if (this.workspace.isAdmin) {
+        // the version refresh APIs should not include the version headers
+        if (!isVersionRefreshRequest) {
+          // tenant versions
+          const admin = this.workspace.admin;
+          if (!!admin) {
+            headers['X-Admin-Settings-Version'] = admin.settingsVersion || '???';
+            headers['X-Admin-Permissions-Version'] = admin.permissionsVersion || '???';
+            headers['X-Admin-User-Settings-Version'] = admin.userSettingsVersion || '???';
+          }
+        }
+      }
+
+      if (!isVersionRefreshRequest) {
         // global versions
         if (!!this.workspace.globalSettingsVersion) {
           headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
@@ -196,7 +278,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     if (!!e && !!e.headers) {
 
-      // global versions
+      // Global
       {
         // global settings
         const v = e.headers.get('x-global-settings-version') as VersionStatus;
@@ -205,7 +287,54 @@ export class RootHttpInterceptor implements HttpInterceptor {
         }
       }
 
-      // tenant versions
+      // Admin Console
+      {
+        // admin settings
+        {
+          const v = e.headers.get('x-admin-settings-version') as VersionStatus;
+          if (v === 'Stale') {
+            this.refreshAdminSettings();
+          }
+
+          if (v === 'Unauthorized') {
+            // this means the user can no longer access the admin console
+            // (1) Delete the workspace of the admin console
+            delete this.workspace.ws.admin;
+
+            // (2) triggers a refresh next time the user navigates to "my companies"
+            this.workspace.ws.companiesStatus = null;
+
+            // (3) Delete from local storage everything related
+            this.storage.removeItem(adminStorageKey(ADMIN_SETTINGS_PREFIX));
+            this.storage.removeItem(adminVersionStorageKey(ADMIN_SETTINGS_PREFIX));
+            this.storage.removeItem(adminStorageKey(ADMIN_PERMISSIONS_PREFIX));
+            this.storage.removeItem(adminVersionStorageKey(ADMIN_PERMISSIONS_PREFIX));
+            this.storage.removeItem(adminStorageKey(ADMIN_USER_SETTINGS_PREFIX));
+            this.storage.removeItem(adminVersionStorageKey(ADMIN_USER_SETTINGS_PREFIX));
+
+            // (4) Take the user to unauthorized screen
+            this.router.navigate(['root', 'error', 'admin-unauthorized']);
+          }
+        }
+
+        // admin permissions
+        {
+          const v = e.headers.get('x-admin-permissions-version') as VersionStatus;
+          if (v === 'Stale') {
+            this.refreshAdminPermissions();
+          }
+        }
+
+        // admin user settings
+        {
+          const v = e.headers.get('x-admin-user-settings-version') as VersionStatus;
+          if (v === 'Stale') {
+            this.refreshAdminUserSettings();
+          }
+        }
+      }
+
+      // Application
       if (!!tenantId) {
         // settings
         {
@@ -219,10 +348,10 @@ export class RootHttpInterceptor implements HttpInterceptor {
             // (1) Delete the workspace of this tenant
             delete this.workspace.ws.tenants[tenantId];
 
-            // triggers a refresh next time the user navigates to "my companies"
+            // (2) triggers a refresh next time the user navigates to "my companies"
             this.workspace.ws.companiesStatus = null;
 
-            // (2) Delete from local storage everything related
+            // (3) Delete from local storage everything related
             this.storage.removeItem(storageKey(SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(storageKey(DEFINITIONS_PREFIX, tenantId));
@@ -232,7 +361,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(storageKey(USER_SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(USER_SETTINGS_PREFIX, tenantId));
 
-            // (3) Take the user to unauthorized screen
+            // (4) Take the user to unauthorized screen
             this.router.navigate(['root', 'error', 'unauthorized']);
           }
         }
@@ -265,6 +394,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
     }
   }
 
+  // Global
+
   private refreshGlobalSettings() {
     this.notifyRefreshGlobalSettings$.next();
   }
@@ -284,12 +415,102 @@ export class RootHttpInterceptor implements HttpInterceptor {
     return obs$;
   }
 
+  // Admin Console
+
+  private refreshAdminSettings() {
+    this.notifyRefreshAdminSettings$.next();
+  }
+
+  private doRefreshAdminSettings = () => {
+    if (!this.workspace.isAdmin) {
+      // It means the user switched to a company before
+      // the stale report came back
+      return of(null);
+    }
+
+    const current = this.workspace.admin;
+    const obs$ = this.adminSettingsApi().pipe(
+      tap(result => {
+        // Cache the admin settings and set them in the workspace
+        handleFreshAdminSettings(result, current, this.storage);
+      }),
+      catchError((err: { status: number, error: any }) => {
+        if (err.status === 403) {
+          // Delete all cached information
+          delete this.workspace.ws.admin;
+        } else {
+          return throwError(err);
+        }
+      }),
+      retry(2),
+      catchError(_ => of(null))
+    );
+
+    return obs$;
+  }
+
+  private refreshAdminPermissions() {
+    this.notifyRefreshAdminPermissions$.next();
+  }
+
+  private doRefreshAdminPermissions = () => {
+    if (!this.workspace.isAdmin) {
+      // It means the user switched to a company before
+      // the stale report came back
+      return of(null);
+    }
+
+    const current = this.workspace.admin;
+    const obs$ = this.adminPermissionsApi().pipe(
+      tap(result => {
+        // Cache the admin permissions and set them in the workspace
+        handleFreshAdminPermissions(result, current, this.storage);
+      }),
+      retry(2),
+      catchError(_ => of(null))
+    );
+
+    return obs$;
+  }
+
+  private refreshAdminUserSettings() {
+    this.notifyRefreshAdminUserSettings$.next();
+  }
+
+  private doRefreshAdminUserSettings = () => {
+    if (!this.workspace.isAdmin) {
+      // It means the user switched to a company before
+      // the stale report came back
+      return of(null);
+    }
+
+    const current = this.workspace.admin;
+    const obs$ = this.adminUserSettingsApi().pipe(
+      tap(result => {
+        // Cache the user settings and set them in the workspace
+        handleFreshAdminUserSettings(result, current, this.storage);
+      }),
+      retry(2),
+      catchError(_ => of(null))
+    );
+
+    return obs$;
+  }
+
+  // Application
+
   private refreshDefinitions() {
     this.notifyRefreshDefinitions$.next();
   }
 
   private doRefreshDefinitions = () => {
-    const current = this.workspace.current;
+    if (!this.workspace.isApp) {
+      // It means the user switched to admin console before
+      // the stale report came back
+      return of(null);
+    }
+
+    const current = this.workspace.currentTenant;
     const tenantId = this.workspace.ws.tenantId;
 
     const obs$ = this.definitionsApi().pipe(
@@ -317,8 +538,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
   }
 
   private doRefreshSettings = () => {
+    if (!this.workspace.isApp) {
+      // It means the user switched to admin console before
+      // the stale report came back
+      return of(null);
+    }
 
-    const current = this.workspace.current;
+    const current = this.workspace.currentTenant;
     const tenantId = this.workspace.ws.tenantId;
 
     const obs$ = this.settingsApi().pipe(
@@ -346,8 +572,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
   }
 
   private doRefreshPermissions = () => {
+    if (!this.workspace.isApp) {
+      // It means the user switched to admin console before
+      // the stale report came back
+      return of(null);
+    }
 
-    const current = this.workspace.current;
+    const current = this.workspace.currentTenant;
     const tenantId = this.workspace.ws.tenantId;
 
     const obs$ = this.permissionsApi().pipe(
@@ -367,8 +598,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
   }
 
   private doRefreshUserSettings = () => {
+    if (!this.workspace.isApp) {
+      // It means the user switched to admin console before
+      // the stale report came back
+      return of(null);
+    }
 
-    const current = this.workspace.current;
+    const current = this.workspace.currentTenant;
     const tenantId = this.workspace.ws.tenantId;
 
     const obs$ = this.userSettingsApi().pipe(
@@ -382,6 +618,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     return obs$;
   }
+
+  // Misc.
 
   private pingAfterOneSecond(): void {
     this.notifyPingAfterOneSecond$.next();

@@ -858,30 +858,3 @@
         </button>
     </div>
 </ng-template>
-
-<!-- Error Modal -->
-<ng-template #errorModal let-modal>
-
-    <!-- header -->
-    <div class="modal-header">
-        <h5 class="modal-title">
-            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
-        </h5>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <!-- body -->
-    <div class="modal-body">
-        {{ !!modalErrorMessageFunc ? modalErrorMessageFunc() : '' }}
-    </div>
-
-    <!-- footer -->
-    <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
-            <fa-icon icon="times"></fa-icon>
-            &nbsp;{{ 'Dismiss' | translate }}
-        </button>
-    </div>
-</ng-template>
