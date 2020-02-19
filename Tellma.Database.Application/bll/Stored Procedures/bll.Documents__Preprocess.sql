@@ -13,74 +13,17 @@ INSERT INTO @PreprocessedEntries SELECT * FROM @Entries;
 -- Copy information from Lines to Entries
 UPDATE E
 SET
-	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction]),
-	E.[CurrencyId] = (CASE WHEN LDE.CurrencySource = N'FunctionalCurrencyId' THEN dbo.fn_FunctionalCurrencyId() ELSE E.[CurrencyId] END)
---	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
+	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction])
 	-- TODO: fill with all the remaining defaults
 FROM @PreprocessedEntries E
 JOIN @Lines L ON E.[LineIndex] = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber];
 
-UPDATE E 
-SET E.ResponsibilityCenterId = L.ResponsibilityCenterId
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResponsibilityCenterSource = N'Line.ResponsibilityCenterId' -- AND E.ResponsibilityCenterId <> L.ResponsibilityCenterId;
-
-UPDATE E 
-SET E.AgentId = L.AgentId
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.AgentSource = N'Line.AgentId' --AND E.AgentId <> L.AgentId;
-
-UPDATE E 
-SET E.NotedAgentId = L.AgentId
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.NotedAgentSource = N'Line.AgentId' --AND E.NotedAgentId <> L.AgentId;
-
-UPDATE E 
-SET E.ResourceId = L.ResourceId
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResourceSource = N'Line.ResourceId' --AND E.ResourceId <> L.ResourceId;
-
-UPDATE E 
-SET E.CurrencyId = L.CurrencyId
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.CurrencySource = N'Line.CurrencyId' --AND E.CurrencyId <> L.CurrencyId;
-
--- Implemented using script
---UPDATE E 
---SET E.MonetaryValue = L.MonetaryValue
---FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
---JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
---WHERE LDE.MonetaryValueSource = N'Line.MonetaryValue' --AND E.MonetaryValue <> L.MonetaryValue;
-
---UPDATE E 
---SET E.[Value] = L.[Value]
---FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
---JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
---WHERE LDE.ValueSource = N'Line.Value' --AND E.[Value] <> L.[Value];
-
---UPDATE E 
---SET E.NotedAmount = L.MonetaryValue
---FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
---JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
---WHERE LDE.NotedAmountSource = N'Line.MonetaryValue' --AND E.NotedAmount <> L.MonetaryValue;
-
---UPDATE E 
---SET E.NotedAmount = L.[Value]
---FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
---JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
---WHERE LDE.NotedAmountSource = N'Line.Value' --AND E.NotedAmount <> L.[Value];
-
 -- When no resource or agent, set to NULL
 UPDATE E
 SET
 	E.[ResourceId] = (CASE WHEN A.[HasResource] = 0 THEN NULL ELSE E.[ResourceId] END),
-	E.[AgentId] = (CASE WHEN A.[HasAgent] = 0 THEN NULL ELSE E.[AgentId] END)
+	E.[AgentId] = (CASE WHEN A.[AgentDefinitionId] IS NULL THEN NULL ELSE E.[AgentId] END)
 FROM @PreprocessedEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id;
 
@@ -102,9 +45,9 @@ WHERE L.DefinitionId = N'ManualLine'
 -- set the count to one, if singleton
 UPDATE E 
 SET
-	E.[CurrencyId]			= COALESCE(R.[CurrencyId], E.[CurrencyId]),
+	E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
+	E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 --	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
-	E.[Count]				=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id;
 
@@ -137,23 +80,16 @@ JOIN dbo.Resources R ON E.ResourceId = R.Id;
 --FROM @PreprocessedEntries E;
 
 -- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
-UPDATE E
-SET E.[UnitId] = COALESCE(R.[CountUnitId], R.[MassUnitId], R.[VolumeUnitId], R.[TimeUnitId])
-FROM @PreprocessedEntries E
-JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
-WHERE IIF(R.[CountUnitId] IS NOT NULL, 1, 0) + 
-IIF(R.[MassUnitId] IS NOT NULL, 1, 0) + 
-IIF(R.[VolumeUnitId] IS NOT NULL, 1, 0) + 
-IIF(R.[TimeUnitId] IS NOT NULL, 1, 0) = 1 -- Only one is not null
+--UPDATE E
+--SET E.[UnitId] = COALESCE(R.[CountUnitId], R.[MassUnitId], R.[VolumeUnitId], R.[TimeUnitId])
+--FROM @PreprocessedEntries E
+--JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
+--WHERE IIF(R.[CountUnitId] IS NOT NULL, 1, 0) + 
+--IIF(R.[MassUnitId] IS NOT NULL, 1, 0) + 
+--IIF(R.[VolumeUnitId] IS NOT NULL, 1, 0) + 
+--IIF(R.[TimeUnitId] IS NOT NULL, 1, 0) = 1 -- Only one is not null
 
-UPDATE E 
-SET
-	E.[MonetaryValue] = COALESCE(R.[MonetaryValue] * E.[Count], E.[MonetaryValue]),
-	E.[Mass]		=	COALESCE(R.[Mass] * E.[Count], E.[Mass]),
-	E.[Volume]		=	COALESCE(R.[Volume] * E.[Count], E.[Volume]),
-	E.[Time]		=	COALESCE(R.[Time] * E.[Count], E.[Time])
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.Resources R ON E.ResourceId = R.Id
+
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
@@ -205,6 +141,7 @@ WITH ConformantAccounts AS (
 	AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 	AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
 --	AND (A.[Identifier] IS NULL				OR A.[Identifier] = E.[AccountIdentifier])
+-- AND A.IsCurrent = LDE.IsCurrent
 )
 -- If each E.Index has precisely one conformant account, then set to it
 -- If it has zero conformant account, then set to zero

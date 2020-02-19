@@ -1,0 +1,1 @@
+﻿DECLARE @Accounts dbo.AccountList

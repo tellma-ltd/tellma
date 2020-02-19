@@ -1,10 +1,59 @@
 ﻿CREATE PROCEDURE [api].[Paysheet__Prepare]
-@EmployeesIncomeTaxPayable INT
+@Entries EntryList READONLY
 AS
 BEGIN
--- Assuming payable accounts have been opened already
-	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[LineList], @Entries [dbo].EntryList;
-	DECLARE @SalariesAccrualsTaxableAccountDef NVARCHAR (50), @SalariesAccrualsNonTaxableAccountDef NVARCHAR (50), @EmployeesPayableAccountDef NVARCHAR (50);
+-- This is Payroll Tab for ET companies
+-- Overtime Tab
+--0 Dr. Overtime (Normal): 
+--1 Dr. Overtime (Evening)
+--2 Dr. Overtime (Holiday)
+--3		Cr. Employee OT Accrual
+-- Allocation Tab
+--1	Dr. Labor				Cost Entity
+--2		Cr. Labor			Cost Entity: 
+-- Uploaded: Employee Id, 
+-- Employee Id, Basic Salary, Transportation Allowance, Overtime, Penalties, Pension Contribution, Income Tax, Net Due
+--0 Dr. Basic
+--1 Dr. Transportation Allowance
+--2 Dr. Overtime Accrual
+--3 Dr. Others
+--5	 Cr. EIT
+--6	 Cr. 7% Pension Payable
+--7	 Cr. Net Due
+--8 Dr. Pension Contribution
+--9  Cr. 11% Pension Payable
+	SET NOCOUNT ON
+	DECLARE @ProcessedEntries EntryList;
+	-- Input: Wideline
+	-- Unpivot,For each employee, the resource/quantity he deserves.
+	-- Line 1
+	-- Ahmad, Salary (month), 1 
+	-- Ahmad, Allowance (month), 1 month
+	-- Ahmad, day overtime (hour), 17
+	-- Line 2
+	-- Yisak, Wage (hour), 20 ...
+	-- calculate the values, then pivot again.
+	INSERT INTO @ProcessedEntries
+	SELECT * FROM @Entries;
+	-----
+	UPDATE PE
+	SET
+		PE.[UnitId] = AR.[UnitId],
+		PE.[MonetaryValue] = AR.[Rate] * PE.[Quantity],
+		PE.[CurrencyId] = AR.[CurrencyId],
+		PE.[AccountId] = (
+			SELECT [Id] FROM dbo.Accounts
+			WHERE AccountTypeId = R.AccountTypeId
+			AND ([ResponsibilityCenterId] IS NULL OR [ResponsibilityCenterId] = PE.ResponsibilityCenterId)
+			AND ([AgentId] IS NULL OR [AgentId] = PE.[AgentId])
+			AND ([ResourceId] IS NULL OR [ResourceId] = PE.[ResourceId])
+			AND ([CurrencyId] IS NULL OR [CurrencyId] = PE.CurrencyId)
+		)
+	FROM @ProcessedEntries PE JOIN dbo.AgentRates AR ON PE.NotedAgentId = AR.[Id] AND PE.ResourceId = AR.ResourceId
+	JOIN dbo.Resources R ON PE.ResourceId = R.[Id]
+	-----
+	SELECT * FROM @Entries;
+
 	--WITH EmployeesAccruals([Index], [LineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId], A.[ResourceId]),

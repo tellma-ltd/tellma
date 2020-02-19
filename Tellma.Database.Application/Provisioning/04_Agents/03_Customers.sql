@@ -10,12 +10,14 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(3,			N'Customer4');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Customers
-	([Index],	[Name],									[StartDate]) VALUES
-	(0,			N'International African University',	NULL),
-	(1,			N'Mico poultry',						NULL),
-	(2,			N'Sabco',								NULL),
-	(3,			N'al-Washm',							NULL),
-	(4,			N'TAGI restaurants',					NULL);
+	([Index],	[Name]) VALUES
+	(0,			N'International African University'),
+	(1,			N'Mico poultry'),
+	(2,			N'Sabco'),
+	(3,			N'al-Washm'),
+	(4,			N'TAGI restaurants'),
+	(5,			N'It3aam')
+	;
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Customers
 	([Index],	[Name],						[StartDate], [TaxIdentificationNumber]) VALUES

@@ -58,10 +58,6 @@
 	--[CreditLine]				DECIMAL (19,4)				DEFAULT 0,
 --	employees
 	[JobId]						INT, -- FK to table Jobs
-	[BasicSalary]				DECIMAL (19,4),
-	[TransportationAllowance]	DECIMAL (19,4),
---	[HardshipAllowance]			DECIMAL (19,4),
-	[OvertimeRate]				DECIMAL (19,4),
 	[BankAccountNumber]			NVARCHAR (34),
 --	suppliers
 	--[SupplierRating]			INT,			-- user defined list

@@ -34,18 +34,25 @@ BEGIN
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @MotorVehicles dbo.ResourceList;
-	INSERT INTO @MotorVehicles ([Index],
-				[AccountTypeId],				[Name],	[AvailableSince],	[Lookup1Id],									[Identifier], [CountUnitId],				[Count]) VALUES
-	(0, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172',	dbo.fn_UnitName__Id(N'ea'), 1),--1
-	(1, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662',		dbo.fn_UnitName__Id(N'ea'), 1),--1
-	(2, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000',	dbo.fn_UnitName__Id(N'ea'), 1),
-	(3, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812',	dbo.fn_UnitName__Id(N'ea'), 1);
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	INSERT INTO @Resources ([Index],
+				[AccountTypeId],				[Name],			[AvailableSince],	[Lookup1Id],									[Identifier]) VALUES
+	(0, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172'),--1
+	(1, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662'),--1
+	(2, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000'),
+	(3, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812');
 	;
+	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+			[UnitId],					[Multiplier]) VALUES
+	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
+	(0, 1, dbo.fn_UnitName__Id(N'yr'),	1),
+	(0, 2, dbo.fn_UnitName__Id(N'yr'),	1),
+	(0, 3, dbo.fn_UnitName__Id(N'yr'),	1);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'motor-vehicles',
-		@Entities = @MotorVehicles,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -53,18 +60,4 @@ BEGIN
 		Print 'Inserting PPE (motor-vehicles): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-	IF @DebugResources = 1 
-	BEGIN
-		SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'motor-vehicles';
-
-		DECLARE @MotorVehiclesIds dbo.IdList;
-		INSERT INTO @MotorVehiclesIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'motor-vehicles';
-
-		SELECT [DefinitionId], [Id], [Classification], [Name] AS 'Vehcile', [Currency] AS 'Price In',--	[LengthUnit] AS 'Usage In',	
-		[AvailableSince] AS 'Production Date', [Lookup1] AS N'Make', [Identifier] AS 'Plate #'
-		FROM rpt.Resources(@MotorVehiclesIds);
-
-		--Select * from resources;
-	END
 END

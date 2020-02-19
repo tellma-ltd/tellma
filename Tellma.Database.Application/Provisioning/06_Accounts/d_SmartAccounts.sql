@@ -7,19 +7,7 @@ DECLARE @SA_VATInput INT, @SA_VATOutput INT, @SA_SalariesAdmin INT, @SA_Salaries
 DECLARE @SmartAccounts dbo.AccountList;
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-INSERT INTO @SmartAccounts([Index],
-	[AccountTypeId],				[LegacyTypeId],[LegacyClassificationId],	[Name],			[Code],		[AgentDefinitionId], [IsCurrent], [AgentId],			[ResourceId], [EntryTypeId], [CurrencyId], [ResponsibilityCenterId]) VALUES
-	(0,@CashAndCashEquivalents,		N'Cash',			@BankAndCash_AC,N'GM Fund/USD',		N'1011',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'USD',		@RC_ExecutiveOffice),
-	(1,@CashAndCashEquivalents,		N'Cash',			@BankAndCash_AC,N'GM Fund/SDG',		N'1012',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
-	--(2,@CashAndCashEquivalents	N'Cash',			@BankAndCash_AC,N'GM Fund',			N'1013',	N'custodies',			1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
-	(3,@CashAndCashEquivalents,		N'Cash',			@BankAndCash_AC,N'BOK -	SDG',		N'1021',	N'banks',				1,		dbo.fn_AGCode__Id(N'BOK'),	NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
-	(4,@TradeAndOtherReceivables,	N'OtherCurrentAssets',@Debtors_AC,	N'VAT Input',		N'1301',	N'tax-agencies',		1,		@VAT,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
-	(5,@TradeAndOtherReceivables,	N'AccountsReceivable',@Debtors_AC,	N'Trade Debtors/USD',N'1101',	N'customers',			1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice),
-	(6,@TradeAndOtherReceivables,	N'AccountsReceivable',@Debtors_AC,	N'Trade Debtors/SDG',N'1102',	N'customers',			1,		NULL,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
-	(7,@TradeAndOtherReceivables,	N'AccountsReceivable',@Debtors_AC,	N'Prepaid Salaries/USD',N'1201',N'employees',			1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice)
-	
-	;
-	--UPDATE @SmartAccounts SET HasAgent = 1;
+	Print N''
 END
 ELSE IF @DB IN (N'101', N'102', N'103', N'104') 
 BEGIN
@@ -30,7 +18,7 @@ INSERT INTO @SmartAccounts([Index],
 (0,@CashAndCashEquivalents,	N'Cash',			@BankAndCash_AC,		N'CBE - USD 2',	N'1111',	N'banks',				1,		@Bank_CBE,		NULL,			NULL,			NULL,				N'USD'),
 (1,@CashAndCashEquivalents,	N'Cash',			@BankAndCash_AC,		N'CBE - ETB 2',	N'1112',	N'banks',				1,		@Bank_CBE,		NULL,			NULL,			NULL,				N'ETB'),
 --(3,@InventoriesTotal,		N'Inventory',			@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
-(4,@InventoriesTotal,			N'Inventory',		@Inventories_AC,		N'RM Warehouse',N'1220',	N'custodies',		1,		@Warehouse_RM,	NULL,			NULL,			NULL,				N'ETB'),
+(4,@InventoriesTotal,		N'Inventory',		@Inventories_AC,		N'RM Warehouse',N'1220',	N'warehouses',		1,		@4WH_RM,		NULL,			NULL,			NULL,				N'ETB'),
 --(5,N'FixedAssets',		@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
 --(6,N'OtherCurrentAssets',	@Debtors_AC,				N'Prepaid Rental',					N'1401'),
 --(7,N'AccountsReceivable',	@Debtors_AC,				N'VAT Input',						N'1501'),
@@ -48,7 +36,7 @@ INSERT INTO @SmartAccounts([Index],
 --(21,N'CostofSales',		@Expenses_AC,				N'fuel - Production',				N'5103'),
 --(22,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
 --(23,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expenses',		N'cost-centers',	dbo.fn_ATCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
-(24,@EmployeeBenefitsExpense,	N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ETCode__Id('AdministrativeExpense'),	N'ETB');
+(24,@EmployeeBenefitsExpense,N'Expenses',		@Expenses_AC,			N'Overtime - Admin',N'5213',N'cost-centers',	1,	NULL,			NULL,			NULL,		dbo.fn_ETCode__Id('AdministrativeExpense'),	N'ETB');
 	--UPDATE @SmartAccounts SET HasAgent = 1;
 	UPDATE @SmartAccounts SET HasResource = 1 WHERE [Index] IN (4, 5, 19,20, 21, 22, 23, 24);
 END

@@ -14,5 +14,5 @@
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[PermissionsHistory]));
 GO
-CREATE INDEX [IX_Permissions__RoleId] ON [dbo].[Roles]([Id]);
+CREATE INDEX [IX_Permissions__RoleId] ON [dbo].[Permissions]([RoleId]);
 GO

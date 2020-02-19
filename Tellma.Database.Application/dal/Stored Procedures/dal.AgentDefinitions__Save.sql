@@ -19,10 +19,10 @@ SET NOCOUNT ON;
 			--[IsActive],
 
 			[JobVisibility],
-			[BasicSalaryVisibility],
-			[TransportationAllowanceVisibility],
-		--	[HardshipAllowanceVisibility],
-			[OvertimeRateVisibility],
+			[RatesVisibility],
+			[RatesLabel],
+			[RatesLabel2],
+			[RatesLabel3],
 			[BankAccountNumberVisibility],
 						
 			[MainMenuIcon],
@@ -47,11 +47,10 @@ SET NOCOUNT ON;
 			t.[StartDateLabel3]				= s.[StartDateLabel3],
 
 			t.[JobVisibility]				= s.[JobVisibility],
-			t.[BasicSalaryVisibility]		= s.[JobVisibility],
-			t.[TransportationAllowanceVisibility]
-											= s.[TransportationAllowanceVisibility],
-		--	[HardshipAllowanceVisibility]	= s.[HardshipAllowanceVisibility],
-			t.[OvertimeRateVisibility]		= s.[OvertimeRateVisibility],
+			t.[RatesVisibility]				= s.[RatesVisibility],
+			t.[RatesLabel]					= s.[RatesLabel],
+			t.[RatesLabel2]					= s.[RatesLabel2],
+			t.[RatesLabel3]					= s.[RatesLabel3],
 			t.[BankAccountNumberVisibility]	= s. [BankAccountNumberVisibility],
 			
 			t.[MainMenuIcon]				= s.[MainMenuIcon],
@@ -70,10 +69,10 @@ SET NOCOUNT ON;
 			--[IsActive],
 
 			[JobVisibility],
-			[BasicSalaryVisibility],
-			[TransportationAllowanceVisibility],
-		--	[HardshipAllowanceVisibility],
-			[OvertimeRateVisibility],
+			[RatesVisibility],
+			[RatesLabel],
+			[RatesLabel2],
+			[RatesLabel3],
 			[BankAccountNumberVisibility],
 		
 			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
@@ -88,10 +87,10 @@ SET NOCOUNT ON;
 			--s.[IsActive],
 
 			s.[JobVisibility],
-			s.[BasicSalaryVisibility],
-			s.[TransportationAllowanceVisibility],
-		--	s.[HardshipAllowanceVisibility],
-			s.[OvertimeRateVisibility],
+			s.[RatesVisibility],
+			s.[RatesLabel],
+			s.[RatesLabel2],
+			s.[RatesLabel3],
 			s.[BankAccountNumberVisibility],
 
 			s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey]);

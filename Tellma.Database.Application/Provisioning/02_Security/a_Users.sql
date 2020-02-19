@@ -42,12 +42,12 @@ IF @DB = N'104' -- Walia Steel, ETB, en/am
 
 IF @DB = N'105' -- Simpex, SAR, en/ar
 	INSERT INTO @Users
-	([Index],[Name],		[Name2],		[Email]) VALUES
-	(0,		N'Nazih Kalo',	N'نزيه كالو',	N'nazih.kalo@simpex.co.sa'),
-	(1,		N'Mahdi Mrad',	N'مهدي مراد',	N'mahdi.mrad@simpex.co.sa'),
-	(2,		N'Hisham',		N'هشام',		N'hisham@simpex.co.sa'),
-	(3,		N'Tareq',		N'طارق',		N'tareq@simpex.co.sa'),
-	(4,		N'Mazen',		N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
+	([Index],[Name],			[Name2],		[Email]) VALUES
+	(0,		N'Nazih Kalo',		N'نزيه كالو',	N'nazih.kalo@simpex.co.sa'),
+	(1,		N'Mahdi Mrad',		N'مهدي مراد',	N'mahdi.mrad@simpex.co.sa'),
+	(2,		N'Hisham Saqour',	N'هشام صقور',	N'hisham.saqour@simpex.co.sa'),
+	(3,		N'Tareq Fakhrani',	N'طارق فخراني',N'tareq.Fakhrani@simpex.co.sa'),
+	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
 EXEC [dal].[Users__Save]
 	@Entities = @Users

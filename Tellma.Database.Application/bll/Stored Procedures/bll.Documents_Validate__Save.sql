@@ -91,7 +91,7 @@ SET NOCOUNT ON;
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[AgentId] IS NULL)
-	AND (A.[HasAgent] = 1);
+	AND (A.[AgentDefinitionId] IS NOT NULL);
 
 	-- If Account HasResource = 1, then ResourceId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

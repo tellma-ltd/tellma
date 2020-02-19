@@ -7,7 +7,7 @@ DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxa
 
 DECLARE @BasicAccounts dbo.AccountList;
 
-IF @DB IN (N'101', N'102', N'103', N'104') 
+IF @DB IN (N'102', N'103', N'104') 
 BEGIN
 	INSERT INTO @BasicAccounts([Index],
 		[AccountTypeId],			[LegacyTypeId],			[LegacyClassificationId],	[Name],								[Code], [CurrencyId]) VALUES
@@ -49,8 +49,6 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-IF @DebugAccounts = 1
-	SELECT * FROM map.Accounts();
 
 SELECT @BA_CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1101';
 SELECT @BA_CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1102';

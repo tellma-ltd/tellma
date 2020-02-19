@@ -9,11 +9,8 @@
 	[ResourceId]				INT,
 	[CurrencyId]				NCHAR (3),
 	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
-	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
-	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	
+	[Quantity]					DECIMAL (19,4),
+	[UnitId]					INT,
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 
 -- Additional information to satisfy reporting requirements

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Save]
 	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[ResourceList] READONLY,
+	@ResourceUnits dbo.ResourceUnitList READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -120,5 +121,10 @@ SET NOCOUNT ON;
 		GROUP BY [Name3], [Identifier]
 		HAVING COUNT(*) > 1
 	);
+
+	-- TODO: Must have at least one unit
+	
+	-- TODO: if units have standard conversion rates, reject any attempt to change them
+	-- TODO: Add bll.Resources__Preprocess, to update the units with 
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

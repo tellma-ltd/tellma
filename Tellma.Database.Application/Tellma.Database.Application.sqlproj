@@ -92,6 +92,7 @@
     <Folder Include="Provisioning\05_Resources" />
     <Folder Include="Provisioning\06_Accounts" />
     <Folder Include="Provisioning\07_Entries" />
+    <Folder Include="Provisioning\01_Definitions\e_LineDefinitions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -179,7 +180,6 @@
     <Build Include="dbo\Tables\dbo.IfrsDisclosures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IfrsDisclosureDetailList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Tree__Organize.sql" />
-    <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineList.sql" />
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.VoucherBooklets.sql" />
@@ -190,7 +190,6 @@
     <Build Include="dbo\Tables\dbo.Plans.sql" />
     <Build Include="dbo\Tables\dbo.Lookups.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_Production__Actual_vs_Planned.sql" />
-    <Build Include="dbo\Functions\dbo.fn_MeasurementUnitRatio.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrderLines__Price.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrder__Discount.sql" />
@@ -310,8 +309,6 @@
     <Build Include="api\Stored Procedures\api.Lookups__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Lookups__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Action_ViewPrefix__Permissions.sql" />
-    <Build Include="bll\Functions\bll.fi_EmployeesIncomeTaxes.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AgentBalanceList.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
@@ -385,7 +382,6 @@
     <Build Include="Mapping\ResponsibilityCenters.sql" />
     <Build Include="Mapping\ResponsibilityCenters__AsQuery.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountIdentifier.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Save.sql" />
@@ -431,7 +427,6 @@
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
     <None Include="Provisioning\01_Definitions\a_LookupDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions.sql" />
     <None Include="Provisioning\01_Definitions\f_DocumentDefinitions.sql" />
     <None Include="Provisioning\02_Security\c_Workflows.sql" />
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
@@ -520,7 +515,6 @@
     <Build Include="Mapping\RequiredSignatures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
     <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.Test.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportParameterDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportSelectDefinitions.sql" />
@@ -543,6 +537,23 @@
     <Build Include="Mapping\ReportMeasureDefinitions.sql" />
     <Build Include="rpt\Functions\rpt.Entries.sql" />
     <Build Include="rpt\Stored Procedures\rpt.ERCA__VAT_PurchasesSummary.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceUnits.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceUnitList.sql" />
+    <Build Include="dbo\Tables\dbo.Registers.sql" />
+    <Build Include="dbo\Tables\dbo.GLAccounts.sql" />
+    <Build Include="dbo\Tables\dbo.SubAccounts.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentLineDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AgentRates.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentRateList.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\100.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\101.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\103.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\102.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\104.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\105.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\000.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions\999.sql" />
+    <None Include="Provisioning\04_Agents\09a_Warehouses.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -570,8 +581,12 @@
     <None Include="Provisioning\04_Agents\07_TaxAgencies.sql" />
     <None Include="105.Simpex.publish.xml" />
     <None Include="Provisioning\05_Resources\d3_TM_paper-products.sql" />
-    <None Include="Provisioning\06_Accounts\E5_Accounts.sql" />
+    <None Include="Provisioning\06_Accounts\105.sql" />
     <None Include="Tellma.Database.Application.publish.xml" />
+    <None Include="Provisioning\07_Entries\01E5_manual-journal-vouchers.sql" />
+    <None Include="Provisioning\06_Accounts\101.sql" />
+    <None Include="Provisioning\06_Accounts\000.sql" />
+    <None Include="Provisioning\06_Accounts\999.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

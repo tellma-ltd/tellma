@@ -1,4 +1,5 @@
 ﻿DECLARE @MeasurementUnits [dbo].MeasurementUnitList;
+DECLARE @WorkMonth INT, @Hour INT;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @MeasurementUnits ([Index],
@@ -138,10 +139,10 @@ INSERT INTO @MeasurementUnits ([Index],
 
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 INSERT INTO @MeasurementUnits ([Index],
-	[Name], [Name2],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
---(0, N'ea',	N'وحدة',	N'Count',	N'Each',		1,				1),
---(1, N'pcs', N'قطعة',	N'Count',	N'Pieces',		1,				1),
-(2, N'pkt',	N'رزمة',	N'Count',	N'Packet',		1,				1),
+	[Name],		[Name2],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
+(0, N'ea',		N'وحدة',	N'Count',	N'Each',		1,				1),
+--(1, N'pcs',		N'قطعة',	N'Count',	N'Pieces',	1,				1),
+(2, N'500pkt',	N'رزمة500',	N'Count',	N'Packet (500)',1,				500),
 
 --(3, N's',	N'ث',		N'Time',	N'second',		1,				1),
 --(4, N'min',	N'د',		N'Time',	N'minute',		1,				60),
@@ -178,5 +179,5 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-IF @DebugMeasurementUnits = 1
-	SELECT * FROM map.MeasurementUnits();
+SELECT @WorkMonth = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'wmo';
+SELECT @Hour = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'hr';

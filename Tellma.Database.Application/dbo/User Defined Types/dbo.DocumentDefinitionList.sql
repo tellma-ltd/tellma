@@ -14,9 +14,9 @@
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
-	[AgentDefinitionId]			NVARCHAR (50),
+	[AgentDefinitionList]		NVARCHAR (1024),
 
 	[MainMenuIcon]				NVARCHAR (50),
-	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu
+	[MainMenuSection]			NVARCHAR (50),	-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4)
 );

@@ -11,19 +11,11 @@
 	[DocumentText1]							NVARCHAR (255),
 	[DocumentText2]							NVARCHAR (255),
 	[Memo]									NVARCHAR (255),	
-	[MemoIsCommon]							BIT				DEFAULT 1
-	--[CustomerAccountId]						INT,
-	--[CustomerAccountIsCommon]				BIT				DEFAULT 1,
-	--[SupplierAccountId]						INT, 
-	--[SupplierAccountIsCommon]				BIT				DEFAULT 1,
-	--[EmployeeAccountId]						INT, 
-	--[EmployeeAccountIsCommon]				BIT				DEFAULT 1,
+	[MemoIsCommon]							BIT				DEFAULT 1,
+	[AgentId]								INT -- Definition is specified in DocumentDefinition.AgentDefinitionList
+
 	--[CurrencyId]							INT, 
 	--[CurrencyIsCommon]						BIT				DEFAULT 1,
-	--[SourceStockAccountId]					INT, 
-	--[SourceStockAccountIdIsCommon]			BIT				DEFAULT 1,
-	--[DestinationStockAccountId]				INT, 
-	--[DestinationStockAccountIdIsCommon]		BIT				DEFAULT 1,
 	--[InvoiceReference]						NVARCHAR (255),
 	--[InvoiceReferenceIsCommon]				BIT				DEFAULT 1,
 

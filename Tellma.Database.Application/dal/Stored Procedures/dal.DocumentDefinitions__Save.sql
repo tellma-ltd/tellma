@@ -17,16 +17,16 @@ WHEN MATCHED THEN
 		t.[TitlePlural3]		= s.[TitlePlural3],
 		t.[Prefix]				= s.[Prefix],
 		t.[CodeWidth]			= s.[CodeWidth],
-		t.[AgentDefinitionId]	= s.[AgentDefinitionId]
+		t.[AgentDefinitionList]	= s.[AgentDefinitionList]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
 		[Id], [IsOriginalDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-		[Prefix], [CodeWidth], [AgentDefinitionId]
+		[Prefix], [CodeWidth], [AgentDefinitionList]
 	) VALUES (
 		s.[Id], s.[IsOriginalDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-		s.[Prefix], s.[CodeWidth], s.[AgentDefinitionId]
+		s.[Prefix], s.[CodeWidth], s.[AgentDefinitionList]
 	);
 
 MERGE [dbo].[DocumentDefinitionLineDefinitions] AS t

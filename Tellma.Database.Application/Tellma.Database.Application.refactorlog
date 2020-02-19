@@ -41,4 +41,39 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ERCA__VAT_PurchasesSummary]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3138b408-eb76-46a1-89da-30e60d65928a" ChangeDateTime="02/14/2020 08:15:19">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitions].[AgentDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b22fe28b-a8c2-481b-a165-4e3789ec0fab" ChangeDateTime="02/14/2020 08:23:46">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitions].[ResourceTypeList]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityTypeList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b79bb62e-abad-4598-b63f-58e48394e200" ChangeDateTime="02/14/2020 08:24:28">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[ResourceTypeList]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityTypeList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d32ea647-8b1e-49be-a75f-cc7931abadb7" ChangeDateTime="02/16/2020 11:03:29">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[AgentDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f3e264ab-9a3c-43b3-a78d-a6de09b7d3d0" ChangeDateTime="02/17/2020 12:05:25">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[BasicSalaryVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RatesVisibility]" />
+  </Operation>
 </Operations>

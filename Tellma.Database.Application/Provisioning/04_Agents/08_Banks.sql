@@ -1,5 +1,4 @@
 ﻿DECLARE @banks dbo.[AgentList];
-DECLARE @Bank_CBE INT, @Bank_AWB INT, @Bank_NIB INT, @Bank_RJB INT;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @banks([Index],
@@ -55,7 +54,9 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
+DECLARE @Bank_CBE INT, @Bank_AWB INT, @Bank_NIB INT, @Bank_RJB INT, @Bank_BOK INT;
 SELECT
+	@Bank_BOK= (SELECT [Id] FROM [dbo].[Agents] WHERE [Code] = N'BOK'),
 	@Bank_CBE= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Commercial Bank of Ethiopia'),
 	@Bank_AWB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Awash Bank'),
 	@Bank_NIB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB'),

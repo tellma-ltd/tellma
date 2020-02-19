@@ -98,91 +98,92 @@ SET NOCOUNT ON;
 	-- TODO: No inactive Resource, No inactive User
 
 	-- Not allowed to cause negative balance in conservative accounts
-	DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
-		(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'NonFinancialAssets');
-	WITH
-	ConservativeAccounts AS (
-		SELECT [Id] FROM dbo.[Accounts] A
-		--TODO: use  Account Type instead, and limit to state COMPLETED
-		WHERE A.[LegacyTypeId] = N'OnHand'
-		AND A.[AccountTypeId] IN (
-			SELECT [Id] FROM dbo.[AccountTypes]
-			WHERE [Node].IsDescendantOf(@NonFinancialResourceClassificationNode) = 1
-		)
-	),
-	CurrentDocLines AS (
-		SELECT MAX(FE.[Index]) AS [Index],
-			E.AccountId,
-			E.ResourceId,
-			E.AgentId,
-			E.DueDate,
-			--E.[AccountIdentifier],
-			--E.[ResourceIdentifier],
-			SUM(E.[Direction] * E.[Count]) AS [Count],
-			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
-			SUM(E.[Direction] * E.[Volume]) AS [Volume] 
+	--DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
+	--	(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'NonFinancialAssets');
+	--WITH
+	--ConservativeAccounts AS (
+	--	SELECT [Id] FROM dbo.[Accounts] A
+	--	--TODO: use  Account Type instead, and limit to state COMPLETED
+	--	WHERE A.[LegacyTypeId] = N'OnHand'
+	--	AND A.[AccountTypeId] IN (
+	--		SELECT [Id] FROM dbo.[AccountTypes]
+	--		WHERE [Node].IsDescendantOf(@NonFinancialResourceClassificationNode) = 1
+	--	)
+	--),
+	--CurrentDocLines AS (
+	--	SELECT MAX(FE.[Index]) AS [Index],
+	--		E.AccountId,
+	--		E.ResourceId,
+	--		E.AgentId,
+	--		E.DueDate,
+	--		--E.[AccountIdentifier],
+	--		--E.[ResourceIdentifier],
+	--		SUM(E.[Direction] * E.[Count]) AS [Count],
+	--		SUM(E.[Direction] * E.[Mass]) AS [Mass], 
+	--		SUM(E.[Direction] * E.[Volume]) AS [Volume] 
 			
-		FROM @Ids FE
-		JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
-		WHERE E.AccountId IN (SELECT [Id] FROM ConservativeAccounts)
-		GROUP BY
-			E.AccountId,
-			E.ResourceId,
-			E.AgentId,
-			E.DueDate--,
-			--E.[AccountIdentifier],
-			--E.[ResourceIdentifier]
-		HAVING
-			SUM(E.[Direction] * E.[Mass]) < 0
-		OR	SUM(E.[Direction] * E.[Volume]) < 0
-		OR	SUM(E.[Direction] * E.[Count]) < 0
-	),
-	ReviewedDocLines AS (
-		SELECT
-			E.AccountId,
-			E.ResourceId,
-			E.AgentId,
-			E.DueDate,
-			--E.[AccountIdentifier],
-			--E.[ResourceIdentifier],
-			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
-			SUM(E.[Direction] * E.[Volume]) AS [Volume], 
-			SUM(E.[Direction] * E.[Count]) AS [Count]
-		FROM dbo.Entries E JOIN dbo.Lines L ON L.[Id] = E.[LineId] JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-		JOIN CurrentDocLines C ON E.AccountId = C.AccountId 
-		GROUP BY
-			E.AccountId,
-			E.ResourceId,
-			E.AgentId,
-			E.[DueDate]
-			--E.[AccountIdentifier],
-			--E.[ResourceIdentifier]
-	),
-	OffendingEntries AS (
-		SELECT C.[Index], C.AccountId, (C.[Mass] + P.[Mass]) AS [Mass]
-		FROM CurrentDocLines C
-		JOIN ReviewedDocLines P ON
-			C.AccountId = P.AccountId
-		AND (C.ResourceId = P.ResourceId)
-		AND (C.AgentId = P.AgentId)
-		AND (C.[DueDate] = P.[DueDate] OR (C.[DueDate] IS NULL AND P.[DueDate] IS NULL))
-		--AND (C.[AccountIdentifier] = P.[AccountIdentifier] OR (C.[AccountIdentifier] IS NULL AND P.[AccountIdentifier] IS NULL))
-		--AND (C.[ResourceIdentifier] = P.[ResourceIdentifier] OR (C.[ResourceIdentifier] IS NULL AND P.[ResourceIdentifier] IS NULL))
-		WHERE
-			(C.[Count] + P.[Count]) < 0
-		OR	(C.[Mass] + P.[Mass]) < 0
-		OR	(C.[Volume] + P.[Volume]) < 0
-	)
-	-- TODO: to be rewritten for each unit of measure.
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP (@Top)
-		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheResource0Account1Shortage2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource], 
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account],
-		D.[Mass] -- 
-	FROM OffendingEntries D
-	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
-	JOIN dbo.Resources R ON A.ResourceId = R.Id
+	--	FROM @Ids FE
+	--	-- TODO: change to map.DetailsEntries
+	--	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
+	--	WHERE E.AccountId IN (SELECT [Id] FROM ConservativeAccounts)
+	--	GROUP BY
+	--		E.AccountId,
+	--		E.ResourceId,
+	--		E.AgentId,
+	--		E.DueDate--,
+	--		--E.[AccountIdentifier],
+	--		--E.[ResourceIdentifier]
+	--	HAVING
+	--		SUM(E.[Direction] * E.[Mass]) < 0
+	--	OR	SUM(E.[Direction] * E.[Volume]) < 0
+	--	OR	SUM(E.[Direction] * E.[Count]) < 0
+	--),
+	--ReviewedDocLines AS (
+	--	SELECT
+	--		E.AccountId,
+	--		E.ResourceId,
+	--		E.AgentId,
+	--		E.DueDate,
+	--		--E.[AccountIdentifier],
+	--		--E.[ResourceIdentifier],
+	--		SUM(E.[Direction] * E.[Mass]) AS [Mass], 
+	--		SUM(E.[Direction] * E.[Volume]) AS [Volume], 
+	--		SUM(E.[Direction] * E.[Count]) AS [Count]
+	--	FROM dbo.Entries E JOIN dbo.Lines L ON L.[Id] = E.[LineId] JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
+	--	JOIN CurrentDocLines C ON E.AccountId = C.AccountId 
+	--	GROUP BY
+	--		E.AccountId,
+	--		E.ResourceId,
+	--		E.AgentId,
+	--		E.[DueDate]
+	--		--E.[AccountIdentifier],
+	--		--E.[ResourceIdentifier]
+	--),
+	--OffendingEntries AS (
+	--	SELECT C.[Index], C.AccountId, (C.[Mass] + P.[Mass]) AS [Mass]
+	--	FROM CurrentDocLines C
+	--	JOIN ReviewedDocLines P ON
+	--		C.AccountId = P.AccountId
+	--	AND (C.ResourceId = P.ResourceId)
+	--	AND (C.AgentId = P.AgentId)
+	--	AND (C.[DueDate] = P.[DueDate] OR (C.[DueDate] IS NULL AND P.[DueDate] IS NULL))
+	--	--AND (C.[AccountIdentifier] = P.[AccountIdentifier] OR (C.[AccountIdentifier] IS NULL AND P.[AccountIdentifier] IS NULL))
+	--	--AND (C.[ResourceIdentifier] = P.[ResourceIdentifier] OR (C.[ResourceIdentifier] IS NULL AND P.[ResourceIdentifier] IS NULL))
+	--	WHERE
+	--		(C.[Count] + P.[Count]) < 0
+	--	OR	(C.[Mass] + P.[Mass]) < 0
+	--	OR	(C.[Volume] + P.[Volume]) < 0
+	--)
+	---- TODO: to be rewritten for each unit of measure.
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	--SELECT TOP (@Top)
+	--	'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
+	--	N'Error_TheResource0Account1Shortage2',
+	--	dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource], 
+	--	dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account],
+	--	D.[Mass] -- 
+	--FROM OffendingEntries D
+	--JOIN dbo.[Accounts] A ON D.AccountId = A.Id
+	--JOIN dbo.Resources R ON A.ResourceId = R.Id
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -9,7 +9,8 @@
 	[TitlePlural]						NVARCHAR (255) NOT NULL,
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[AgentDefinitionId]					NVARCHAR (50)	CONSTRAINT [FK_LineDefinitions__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
+	[AgentDefinitionList]				NVARCHAR (1024),
+	[ResponsibilityTypeList]			NVARCHAR (1024),
 --	[AccountTypeCode]		NVARCHAR (255),
 	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX), -- to store SQL code that populates the line

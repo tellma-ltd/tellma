@@ -7,21 +7,15 @@ RETURN
 	SELECT 	R.[DefinitionId], R.[Id], 
 	RC.[Name] AS [Classification], R.[Name], R.[IsActive], R.[Code],
 		R.[MonetaryValue], C.[Name] AS [Currency],
-		[Mass], MM.[Name] AS [MassUnit], [Volume], MV.[Name] AS [VolumeUnit],
-		[Time], MT.[Name] AS [TimeUnit], [Count], MC.[Name] AS [CountUnit],
 		R.[AvailableSince], R.[AvailableTill], R.[Identifier],--		R.Text1,
-		LK1.[Name] AS Lookup1, LK2.[Name] AS Lookup2--, LK3.[Name] AS Lookup3, LK4.[Name] AS Lookup4, LK5.[Name] AS Lookup5
+		LK1.[Name] AS Lookup1, LK2.[Name] AS Lookup2, LK3.[Name] AS Lookup3, LK4.[Name] AS Lookup4--, LK5.[Name] AS Lookup5
 	FROM dbo.Resources R
 	JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.[Id]
 	LEFT JOIN dbo.Currencies C ON R.CurrencyId = C.[Id]
-	LEFT JOIN dbo.MeasurementUnits MC ON R.[CountUnitId] = MC.[Id]
-	LEFT JOIN dbo.MeasurementUnits MM ON R.[MassUnitId] = MM.[Id]
-	LEFT JOIN dbo.MeasurementUnits MV ON R.[VolumeUnitId] = MV.[Id]
-	LEFT JOIN dbo.MeasurementUnits MT ON R.[TimeUnitId] = MT.[Id]
 	LEFT JOIN dbo.Lookups LK1 ON R.Lookup1Id = LK1.Id
 	LEFT JOIN dbo.Lookups LK2 ON R.Lookup2Id = LK2.Id
-	--LEFT JOIN dbo.Lookups LK3 ON R.Lookup3Id = LK3.Id
-	--LEFT JOIN dbo.Lookups LK4 ON R.Lookup4Id = LK4.Id
+	LEFT JOIN dbo.Lookups LK3 ON R.Lookup3Id = LK3.Id
+	LEFT JOIN dbo.Lookups LK4 ON R.Lookup4Id = LK4.Id
 	--LEFT JOIN dbo.Lookups LK5 ON R.Lookup5Id = LK5.Id
 	WHERE R.[Id] IN (SELECT [Id] FROM @Ids)
 	;

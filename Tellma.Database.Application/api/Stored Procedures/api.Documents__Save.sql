@@ -47,11 +47,11 @@ BEGIN
 	END
 
 	INSERT INTO @AllLines(	   
-		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
+		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
 	FROM @Lines
 	UNION
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value], [Memo]
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
 	FROM @PreprocessedWideLines
 
 	INSERT INTO @AllEntries SELECT * FROM @Entries;
@@ -65,6 +65,16 @@ BEGIN
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
+
+	-- If Agent Id in Documents is not Null, then propagate it to the entries where the Agent Definition is compatible
+	UPDATE PE
+	SET AgentId = D.AgentId
+	FROM @PreprocessedEntries PE
+	JOIN @Lines L ON PE.[LineIndex] = L.[Index]
+	JOIN @Documents D ON L.DocumentIndex = D.[Index]
+	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
+	JOIN dbo.Agents AG ON D.AgentId = AG.Id
+	WHERE LDE.AgentDefinitionList LIKE N'%' + AG.DefinitionId +'%'
 			
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]

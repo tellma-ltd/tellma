@@ -29,14 +29,13 @@ BEGIN
 		(4,N'debtors',		N'Debtor',		N'Debtors'),
 --		(5,N'owners',		N'Owner',		N'Owners'),
 		(6,N'suppliers',	N'Supplier',	N'Suppliers'),
-		(7,N'tax-agencies',	N'Tax Agency',	N'Tax Agencies'),
+		--(7,N'tax-agencies',	N'Tax Agency',	N'Tax Agencies'),
 		(8,N'banks',		N'Bank',		N'Banks'),
 		(9,N'custodies',	N'Custody',		N'Custodies')	;
 
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],			[TitleSingular], [TitlePlural],	[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-		(10,N'employees',	N'Employee',N'Employees',	N'Required',	 N'Required',			  N'Required',							N'Required');
-
+		[Id],				[TitleSingular],	[TitlePlural],	[JobVisibility]) VALUES
+		(10,N'employees',	N'Employee',		N'Employees',	N'Optional');
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	BEGIN
@@ -45,19 +44,17 @@ BEGIN
 		(0,N'cost-units',	N'Cost Unit',	N'Cost Units',  NULL),
 		(1,N'cost-centers',	N'Cost Center',	N'Cost Centers',  NULL),
 		(2,N'creditors',	N'Creditor',	N'Creditors',  NULL),
-		(3,N'customers',	N'Customer',	N'Customers',  N'Visible'),
+		(3,N'customers',	N'Customer',	N'Customers',  N'Optional'),
 		(4,N'debtors',		N'Debtor',		N'Debtors',  NULL),
 --		(5,N'owners',		N'Owner',		N'Owners',  NULL),
-		(6,N'suppliers',	N'Supplier',	N'Suppliers',  N'Visible'),
+		(6,N'suppliers',	N'Supplier',	N'Suppliers',  N'Optional'),
 		(7,N'tax-agencies',	N'Tax Agency',	N'Tax Agencies',  NULL),
 		(8,N'banks',		N'Bank',		N'Banks',  NULL),
 		(9,N'custodies',	N'Custody',		N'Custodies',  NULL);
 
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],			[TitleSingular], [TitlePlural],	[TaxIdentificationNumberVisibility],
-		[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-		(10,N'employees',	N'Employee',N'Employees',	N'Visible',
-		N'Required',	 N'Required',			  N'Required',							N'Required');
+		[Id],				[TitleSingular],[TitlePlural],	[TaxIdentificationNumberVisibility],	[JobVisibility]) VALUES
+		(10,N'employees',	N'Employee',	N'Employees',	N'Optional',							N'Required');
 	END
 	ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh car service
 	BEGIN
@@ -76,9 +73,9 @@ BEGIN
 
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2],[TaxIdentificationNumberVisibility],
-		[JobVisibility],	[BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'雇员',			N'Employees',	N'雇员',		N'Visible',		
-		N'Visible',			N'Required',			  N'Required',							N'Required');
+		[JobVisibility]) VALUES
+		(10,N'employees',	N'Employee',	N'雇员',			N'Employees',	N'雇员',		N'Optional',
+		N'Optional');
 	END
 	ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am manyfacturing and sales
 	BEGIN
@@ -97,29 +94,29 @@ BEGIN
 
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2], [TaxIdentificationNumberVisibility],
-		[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',N'Visible',		
-		N'Required',	 N'Required',			  N'Required',							N'Required');
-
+		[JobVisibility]) VALUES
+		(10,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',N'Optional',		
+		N'Required');
 	END
 	ELSE IF @DB = N'105' -- Simpex, SAR, en/ar trading
 	BEGIN
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],				[TitleSingular],[TitleSingular2],	[TitlePlural],	[TitlePlural2]) VALUES
-		(0,N'cost-units',	N'Cost Unit',	N'وحدة التكلفة',	N'Cost Units',	N'وحدات التكلفة'),
-		(1,N'cost-centers',	N'Cost Center',	N'مركز التكلفة',	N'Cost Centers',N'مراكز التكلفة'),
-		(2,N'creditors',	N'Creditor',	N'الدائن',			N'Creditors',	N'الدائنون'),
-		(3,N'customers',	N'Customer',	N'الزبون',			N'Customers',	N'الزبائن'),
-		(4,N'debtors',		N'Debtor',		N'المدين',			N'Debtors',		N'المدينون'),
+		[Id],				[TitleSingular],[TitleSingular2],	[TitlePlural],	[TitlePlural2],[MainMenuSection]) VALUES
+		(0,N'cost-units',	N'Cost Unit',	N'وحدة التكلفة',	N'Cost Units',	N'وحدات التكلفة', N'Financials'),
+		(1,N'cost-centers',	N'Cost Center',	N'مركز التكلفة',	N'Cost Centers',N'مراكز التكلفة', N'Financials'),
+		(2,N'creditors',	N'Creditor',	N'الدائن',			N'Creditors',	N'الدائنون', N'Financials'),
+		(3,N'customers',	N'Customer',	N'الزبون',			N'Customers',	N'الزبائن', N'Financials'),
+		(4,N'debtors',		N'Debtor',		N'المدين',			N'Debtors',		N'المدينون', N'Financials'),
 	--	(5,N'owners',		N'Owner',		N'المالك',			N'Owners',		N'المالكون'),
-		(6,N'suppliers',	N'Supplier',	N'المورد',			N'Suppliers',	N'الموردون'),
-		(7,N'tax-agencies',	N'Tax Agency',	N'الإدارة الضريبية',N'Tax Agencies',N'الإدارات الضريبية'),
-		(8,N'banks',		N'Bank',		N'البنك',			N'Banks',		N'البنوك'),
-		(9,N'custodies',	N'Custody',		N'الخزنة',			N'Custodies',	N'الخزائن')	
+		(6,N'suppliers',	N'Supplier',	N'المورد',			N'Suppliers',	N'الموردون', N'Financials'),
+	--	(7,N'tax-agencies',	N'Tax Agency',	N'الإدارة الضريبية',N'Tax Agencies',N'الإدارات الضريبية', N'Financials'),
+		(8,N'banks',		N'Bank',		N'البنك',			N'Banks',		N'البنوك', N'Financials'),
+		(9,N'custodies',	N'Custody',		N'الخزنة',			N'Custodies',	N'الخزائن', N'Financials'),	
+		(10,N'warehouses',	N'Warehouse',	N'المخزن',			N'Warehouses',	N'المخازن', N'Financials')
 		;
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2],	[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Required',	 N'Required',			  N'Required',							N'Required');
+		[Id],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2],	[JobVisibility]) VALUES
+		(11,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Required');
 	END
 END
 

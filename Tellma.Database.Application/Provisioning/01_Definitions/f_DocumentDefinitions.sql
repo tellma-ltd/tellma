@@ -88,7 +88,8 @@ BEGIN
 	(0,0,	N'ManualLine',		1),
 	(0,1,	N'CashPayment',		1),
 	(1,1,	N'ManualLine',		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(2,1,	N'PurchaseInvoice',	1),
+	(3,1,	N'GoodsReceiptNote',0), 
 	(0,2,	N'PettyCashPayment',1);
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar

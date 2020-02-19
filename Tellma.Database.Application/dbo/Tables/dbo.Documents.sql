@@ -24,9 +24,10 @@
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				DEFAULT 1,
-	--[AgentId]						INT,
+	-- If Agent Id is specified, it is automatically copied to all tabs using the same agent definition, and they become read only
+	[AgentId]						INT, -- Definition is specified in DocumentDefinition.AgentDefinitionList
 	--[CurrencyId]					INT, 
-	--[InvoiceReference]				NVARCHAR (50),
+	--[InvoiceReference]			NVARCHAR (50),
 	-- Transaction specific, to record the acquisition or loss of goods and services
 	-- Orders that are not negotiables, are assumed to happen, and hence are journalized, even we are verifying it later.
 	-- an easy way to define a recurrent document	

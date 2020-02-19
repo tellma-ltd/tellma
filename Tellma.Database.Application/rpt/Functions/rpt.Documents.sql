@@ -25,9 +25,7 @@ RETURN
 			CAST(DLE.[Value] AS DECIMAL (19,4)) AS [Value],
 			-- TODO: Add other unittypes
 			CAST(DLE.[MonetaryValue] AS DECIMAL (19,4)) AS [MonetaryValue],
-			C.[Name] AS Currency,
-			CAST(DLE.[Mass] AS DECIMAL (19,4)) AS [Mass],
-			MUM.[Name] AS [MassUnit]
+			C.[Name] AS Currency
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
@@ -38,7 +36,6 @@ RETURN
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
 		JOIN dbo.Currencies C ON DLE.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
 	)
 	SELECT 
@@ -53,6 +50,6 @@ RETURN
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
 		[EntryNumber], [Account], [EntryTypeId],[Resource],
-		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
+		[Direction], [Value], [MonetaryValue], [Currency]
 	FROM Docs;
 GO

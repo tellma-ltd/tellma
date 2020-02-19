@@ -11,22 +11,23 @@ IF (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE [IsActive] = 1 AND 
 UPDATE @ProcessedEntities
 SET [ResponsibilityCenterId] = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 
--- If AccountType.IsPersonal = 0, set IsRelated and HasAgent to 0
+-- If AccountType.IsPersonal = 0, set IsRelated to 0
 UPDATE A
-SET A.[IsRelated] = 0, [HasAgent] = 0
+SET A.[IsRelated] = 0
 FROM @ProcessedEntities A JOIN [AccountTypes] T ON A.[AccountTypeId] = T.Id
 WHERE T.[IsPersonal] = 0;
 
--- If HasAgent = 0, Set AgentId and AgentDefinitionId to NULL (This depends on the previous step)
+-- If AgentDefinitionId IS NULL, Set AgentId to Null  (This depends on the previous step)
 UPDATE @ProcessedEntities
-SET [AgentId] = NULL, [AgentDefinitionId] = NULL
-WHERE [HasAgent] = 0;
+SET [AgentId] = NULL
+WHERE [AgentDefinitionId] IS NULL
 
 -- If AgentId is set, then AgentDefinitionId is auto determined
-UPDATE A
-SET A.[AgentDefinitionId] = AG.[DefinitionId]
-FROM @ProcessedEntities A JOIN [dbo].[Agents] AG ON A.[AgentId] = AG.[Id]
-WHERE A.[AgentId] IS NOT NULL;
+-- This needs to be set in front end.
+--UPDATE A
+--SET A.[AgentDefinitionId] = AG.[DefinitionId]
+--FROM @ProcessedEntities A JOIN [dbo].[Agents] AG ON A.[AgentId] = AG.[Id]
+--WHERE A.[AgentId] IS NOT NULL;
 
 -- If AccountType.IsReal = 0, set HasResource to 0
 UPDATE A
@@ -34,7 +35,7 @@ SET [HasResource] = 0
 FROM @ProcessedEntities A JOIN [AccountTypes] T ON A.[AccountTypeId] = T.Id
 WHERE T.[IsReal] = 0;
 
--- If HasResource = 0, Set AgentId and AgentDefinitionId to NULL (This depends on the previous step)
+-- If HasResource = 0, Set ResourceId to NULL (This depends on the previous step)
 UPDATE @ProcessedEntities
 SET [ResourceId] = NULL
 WHERE [HasResource] = 0;

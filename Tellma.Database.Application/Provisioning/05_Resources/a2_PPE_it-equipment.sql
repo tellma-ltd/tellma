@@ -58,16 +58,23 @@ BEGIN
 		GOTO Err_Label;
 	END;		
 
-	DECLARE @ITEquipment dbo.ResourceList;
-	INSERT INTO @ITEquipment ([Index],
-		[AccountTypeId],							[Name],			[TimeUnitId],				[Identifier], [Lookup1Id],											[Lookup2Id]) VALUES
-	(0,dbo.fn_ATCode__Id(N'ServersExtension'),	N'Dell ML 200',	dbo.fn_UnitName__Id(N'Yr'),	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
-	(1,dbo.fn_ATCode__Id(N'PrintersExtension'),	N'HP Deskject',	dbo.fn_UnitName__Id(N'Yr'),	N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
-	(2,dbo.fn_ATCode__Id(N'RoutersExtension'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	INSERT INTO @Resources ([Index],
+		[AccountTypeId],							[Name],			[Identifier],	[Lookup1Id],											[Lookup2Id]) VALUES
+	(0,dbo.fn_ATCode__Id(N'ServersExtension'),	N'Dell ML 200',		N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
+	(1,dbo.fn_ATCode__Id(N'PrintersExtension'),	N'HP Deskject',		N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
+	(2,dbo.fn_ATCode__Id(N'RoutersExtension'),	N'ASUS Router',		N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
+	
+	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+			[UnitId],					[Multiplier]) VALUES
+	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
+	(0, 1, dbo.fn_UnitName__Id(N'yr'),	1),
+	(0, 2, dbo.fn_UnitName__Id(N'yr'),	1);
 	
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'it-equipment',
-		@Entities = @ITEquipment,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -75,16 +82,4 @@ BEGIN
 		Print 'Inserting PPE (it-equipment): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-	IF @DebugResources = 1 
-	BEGIN
-		SELECT  N'it-equipment' AS [Resource Definition]
-
-		DECLARE @ITEquipmentIds dbo.IdList;
-		INSERT INTO @ITEquipmentIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'it-equipment';
-
-		SELECT [Classification], [Name] AS 'IT Equipment', [TimeUnit] AS 'Usage In',
-			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System'
-		FROM rpt.Resources(@ITEquipmentIds);
-	END
 END

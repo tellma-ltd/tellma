@@ -42,20 +42,36 @@ BEGIN
 		GOTO Err_Label;
 	END;												
 
-	DECLARE @SteelProducts dbo.ResourceList;
-	INSERT INTO @SteelProducts ([Index],
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	INSERT INTO @Resources ([Index],
 	--N'FinishedGoods'
-		[AccountTypeId],			[Name],				[Code],				[MassUnitId],				[CountUnitId]) VALUES
-	(0,	dbo.fn_ATCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(1, dbo.fn_ATCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(2, dbo.fn_ATCode__Id(N'RHS'),	 N'RHS-120x80x2.8',	N'RHS120x80x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(3, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(4, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(5, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
+		[AccountTypeId],			[Name],				[Code]) VALUES
+	(0,	dbo.fn_ATCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0'),
+	(1, dbo.fn_ATCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8'),
+	(2, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-120x80x2.8',	N'RHS120x80x2.8'),
+	(3, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8'),
+	(4, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1'),
+	(5, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2');
+
+	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+			[UnitId],					[Multiplier]) VALUES
+	(0, 0, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 0, dbo.fn_UnitName__Id(N'kg'),	22.12),
+	(0, 1, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 1, dbo.fn_UnitName__Id(N'kg'),	110.68),
+	(0, 2, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 2, dbo.fn_UnitName__Id(N'kg'),	51.195),
+	(0, 3, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 3, dbo.fn_UnitName__Id(N'kg'),	12.01),
+	(0, 4, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 4, dbo.fn_UnitName__Id(N'kg'),	7.66),
+	(0, 5, dbo.fn_UnitName__Id(N'pcs'),	1),
+	(1, 5, dbo.fn_UnitName__Id(N'kg'),	8.82);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'steel-products',
-		@Entities = @SteelProducts,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -63,14 +79,4 @@ BEGIN
 		Print 'Inserting steel products: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-	IF @DebugResources = 1 
-	BEGIN
-		SELECT N'steel-products' AS [Resource Definition]
-		DECLARE @SteelProductsIds dbo.IdList;
-		INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'steel-products';
-
-		SELECT [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
-		FROM rpt.Resources(@SteelProductsIds);
-	END
 END

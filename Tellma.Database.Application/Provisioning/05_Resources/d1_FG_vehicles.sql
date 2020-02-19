@@ -44,32 +44,31 @@ BEGIN
 		GOTO Err_Label;
 	END;	
 
-	DECLARE @SKDs [dbo].ResourceList;
-	INSERT INTO @SKDs ([Index], 
-		[AccountTypeId],				[Identifier],	[Name],											[Lookup1Id]) VALUES
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	INSERT INTO @Resources ([Index],
+		[AccountTypeId],					[Identifier],	[Name],											[Lookup1Id]) VALUES
 		-- N'Vehicles'
-	(0, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'101',			N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
-	(1, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'102',			N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),
-	(2, dbo.fn_ATCode__Id(N'FGSedanExtension'),N'199',			N'Fake',										NULL),--1
-	(3, dbo.fn_ATCode__Id(N'FGSedanExtension'),N'201',			N'Toyota Yaris 2018 White/White/Leather',		dbo.fn_Lookup(N'body-colors', N'White'));--1
+	(0, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'101',		N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
+	(1, dbo.fn_ATCode__Id(N'FGCarsExtension'),	N'102',		N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),
+	(2, dbo.fn_ATCode__Id(N'FGSedanExtension'),	N'199',		N'Fake',										NULL),--1
+	(3, dbo.fn_ATCode__Id(N'FGSedanExtension'),	N'201',		N'Toyota Yaris 2018 White/White/Leather',		dbo.fn_Lookup(N'body-colors', N'White'));--1
+
+	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
+			[UnitId],					[Multiplier]) VALUES
+	(0, 0, dbo.fn_UnitName__Id(N'ea'),	1),
+	(0, 1, dbo.fn_UnitName__Id(N'ea'),	1),
+	(0, 2, dbo.fn_UnitName__Id(N'ea'),	1),
+	(0, 3, dbo.fn_UnitName__Id(N'ea'),	1);
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'skds',
-		@Entities = @SKDs,
+		@Entities = @Resources,
+		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Inserting SKDs: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-	IF @DebugResources = 1 
-	BEGIN
-		SELECT N'skds' AS [Resource Definition]
-		DECLARE @SKDIds dbo.IdList;
-		INSERT INTO @SKDIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'skds';
-
-		SELECT [Classification], [Name] AS 'SKD', Lookup1 AS 'Body Color'
-		FROM rpt.Resources(@SKDIds);
-	END
 END

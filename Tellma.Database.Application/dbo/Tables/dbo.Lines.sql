@@ -19,11 +19,9 @@
 
 	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
 -- Tracking additive measures, the data type is to be decided by AA
-	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
-	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	
+	[Quantity]					DECIMAL (19,4),
+	[UnitId]					INT CONSTRAINT [FK_Lines__UnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
+
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- Additional information to satisfy reporting requirements
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports

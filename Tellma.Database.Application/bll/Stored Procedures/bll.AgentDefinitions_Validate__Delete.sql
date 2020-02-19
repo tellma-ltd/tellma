@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 		N'Error_TheAgentDefinitionIsUsedInLineDefinition0',
 		dbo.fn_Localize(LD.[TitleSingular], LD.[TitleSingular2], LD.[TitleSingular3]) AS [LineDefinition]
 	FROM @Ids FE
-	JOIN dbo.LineDefinitions LD ON LD.[AgentDefinitionId] = FE.[Id]
+	JOIN dbo.LineDefinitions LD ON LD.[AgentDefinitionList] = FE.[Id]
 
 	-- Check that AgentDefinitionId is not used
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

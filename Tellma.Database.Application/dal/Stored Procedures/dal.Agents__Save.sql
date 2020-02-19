@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Agents__Save]
 	@DefinitionId NVARCHAR (50),
 	@Entities [AgentList] READONLY,
+	@AgentRates [AgentRateList] READONLY,
 	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@ReturnIds BIT = 0
 AS
@@ -29,9 +30,6 @@ SET NOCOUNT ON;
 				[StartDate],
 				--[CreditLine],
 				[JobId],
-				[BasicSalary],
-				[TransportationAllowance],
-				[OvertimeRate],
 				[BankAccountNumber],
 				[CostObjectType],
 				[UserId]
@@ -88,9 +86,6 @@ SET NOCOUNT ON;
 				t.[StartDate]				= s.[StartDate],
 				--[CreditLine],
 				t.[JobId]					= s.[JobId],
-				t.[BasicSalary]				= s.[BasicSalary],
-				t.[TransportationAllowance] = s.[TransportationAllowance],
-				t.[OvertimeRate]			= s.[OvertimeRate],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
 				t.[CostObjectType]			= s.[CostObjectType],
 				t.[UserId]					= s.[UserId],
@@ -111,9 +106,6 @@ SET NOCOUNT ON;
 				[StartDate],
 				--[CreditLine],
 				[JobId],
-				[BasicSalary],
-				[TransportationAllowance],
-				[OvertimeRate],
 				[BankAccountNumber],
 				[CostObjectType],
 				[UserId]
@@ -130,15 +122,14 @@ SET NOCOUNT ON;
 				s.[StartDate],
 				--[CreditLine],
 				s.[JobId],
-				s.[BasicSalary],
-				s.[TransportationAllowance],
-				s.[OvertimeRate],
 				s.[BankAccountNumber],
 				s.[CostObjectType],
 				s.[UserId]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+
+
 
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
 	UPDATE A --dbo.Agents

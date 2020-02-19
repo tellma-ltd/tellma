@@ -1,48 +1,92 @@
-﻿	DECLARE @employees dbo.[AgentList];
-	DECLARE @MohamadAkra int, @AhmadAkra int, @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
-			@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
-			@MesfinWolde int;
+﻿	DECLARE @employees dbo.[AgentList], @AgentRates dbo.AgentRateList;
+
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
-	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1',	7000,			1750,						0),
-	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2',	7000,			0,							0);
+	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1'),
+	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary]) VALUES
-	(0,			N'Ahmad Abdussalam','2017.10.01',	N'E1',	7000),
-	(1,			N'Omar al-Sammani',	'2017.10.01',	N'E2',	7000);
+	([Index],	[Name],				[Code]) VALUES
+	(0,			N'Ahmad Habashi',	N'E1'),
+	(1,			N'Ahmad Abdussalam',N'E2'),
+	(101,		N'Abu Ammar',		N'E101'),
+	(102,		N'Mohamad Ali',		N'E102'),
+	(103,		N'elAmin elTayeb',	N'E103')
+	;
+
+	INSERT INTO @AgentRates([Index], [HeaderIndex],
+	[ResourceId],					[UnitId],	[CurrencyId],	[Rate]) VALUES
+	(0,0,@BasicSalary,				@WorkMonth, N'SDG',			3500),
+	(0,1,@HourlyWage,				@Hour,		N'USD',			5.5);
+END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
-	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1',	7000,			1750,						0),
-	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2',	7000,			0,							0),
-	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E3',	4700,			0,							28.25);
+	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	(0,			N'Mohamad Akra',	'2017.10.01',	N'E01'),
+	(1,			N'Ahmad Akra',		'2017.10.01',	N'E02'),
+	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E04'),
+	(3,			N'Abrham Tenker',	'2020.09.01',	N'E05');
+
+	INSERT INTO @AgentRates([Index], [HeaderIndex],
+	[ResourceId],					[UnitId],	[CurrencyId],	[Rate]) VALUES
+	(0,0,@BasicSalary,				@WorkMonth, N'ETB',			7000),
+	(1,0,@TransportationAllowance,	@WorkMonth, N'ETB',			1750),
+	(0,1,@BasicSalary,				@WorkMonth, N'ETB',			7000),
+	(0,2,@BasicSalary,				@WorkMonth, N'ETB',			4700),
+	(1,2,@DataPackage,				@WorkMonth, N'ETB',			300),
+	(2,2,@DayOvertime,				@Hour,		N'ETB',			28.25),
+	(3,2,@NightOvertime,			@Hour,		N'ETB',			33.5),
+	(4,2,@RestOvertime,				@Hour,		N'ETB',			45.19),
+	(5,2,@HolidayOvertime,			@Hour,		N'ETB',			56.5),
+	(0,3,@BasicSalary,				@WorkMonth, N'ETB',			10200),
+	(1,3,@TransportationAllowance,	@WorkMonth, N'ETB',			1000),
+	(2,3,@MealAllowance,			@WorkMonth, N'ETB',			1000);
+END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
-	(0,			N'Salman',			'2017.10.01',	N'E1',	7000,			1750,						0);
+	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	(0,			N'Salman',			'2017.10.01',	N'E1');
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
-	(1,			N'Badege Kebede',	'2019.09.01',	N'E1',	30000,			0,							0),
-	(2,			N'Tizita Nigussie',	'2019.09.01',	N'E2',	8000,			0,							0),
-	(3,			N'Ashenafi Fantahun','2019.09.01',	N'E3',	15000,			0,							0),
-	(4,			N'Mesfin Wolde',	'2019.09.01',	N'E4',	4700,			0,							0),
-	(5,			N'Zewdinesh Hora',	'2019.09.01',	N'E5',	4700,			0,							28.25),
-	(6,			N'Tigist Negash',	'2019.09.01',	N'E6',	4700,			0,							28.25),
-	(7,			N'Mestawet G/Egziyabhare','2019.09.01',N'E7',4700,			0,							28.25),
-	(8,			N'Ayelech Hora',	'2019.09.01',	N'E8',	4700,			0,							0);
+	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	(1,			N'Badege Kebede',	'2019.09.01',	N'E1'),
+	(2,			N'Tizita Nigussie',	'2019.09.01',	N'E2'),
+	(3,			N'Ashenafi Fantahun','2019.09.01',	N'E3'),
+	(4,			N'Mesfin Wolde',	'2019.09.01',	N'E4'),
+	(5,			N'Zewdinesh Hora',	'2019.09.01',	N'E5'),
+	(6,			N'Tigist Negash',	'2019.09.01',	N'E6'),
+	(7,			N'Mestawet G/Egziyabhare','2019.09.01',N'E7'),
+	(8,			N'Ayelech Hora',	'2019.09.01',	N'E8');
+
+	INSERT INTO @AgentRates
+	([Index], [HeaderIndex], [ResourceId], [UnitId], [CurrencyId], [Rate]) VALUES
+	(0,			1,			@BasicSalary,	@WorkMonth, N'ETB',		30000),
+	(0,			2,			@BasicSalary,	@WorkMonth, N'ETB',		8000),
+	(0,			3,			@BasicSalary,	@WorkMonth, N'ETB',		15000),
+	(0,			4,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
+	(0,			5,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
+	(1,			5,			@DayOvertime,	@Hour,		N'ETB',		28.25),
+	(0,			6,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
+	(1,			6,			@DayOvertime,	@Hour,		N'ETB',		28.25),
+	(0,			7,			@BasicSalary,	@WorkMonth, N'ETB',		4700),
+	(1,			7,			@DayOvertime,	@Hour,		N'ETB',		28.25),	
+	(0,			8,			@BasicSalary,	@WorkMonth, N'ETB',		4700)
+	;
+END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],		[Name2],	[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate]) VALUES
-	(0,			N'Salman',	N'سلمان',	'2017.10.01',	N'E1',	7000,			1750,						0),
-	(1,			N'Tareq',	N'طارق',	'2017.10.01',	N'E2',	7000,			0,							0),
-	(2,			N'Hisham',	N'هشام',	'2019.09.01',	N'E3',	4700,			0,							28.25);
+	([Index],	[Name],		[Name2],	[StartDate],	[Code]) VALUES
+	(0,			N'Salman',	N'سلمان',	'2017.10.01',	N'E1'),
+	(1,			N'Tareq',	N'طارق',	'2017.10.01',	N'E2'),
+	(2,			N'Hisham',	N'هشام',	'2019.09.01',	N'E3');
 
-
-
+	END
 	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'employees',
@@ -55,7 +99,17 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
+	DECLARE @Abu_Ammar INT, @M_Ali INT, @el_Amin INT;
+	DECLARE @MohamadAkra int, @AhmadAkra int;
+	
+	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
+		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
+		@MesfinWolde int;
+
 	SELECT 
+		@Abu_Ammar = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Abu Ammar'), 
+		@M_Ali = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Mohamad Ali'), 
+		@el_Amin = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'elAmin elTayeb'), 
 		@MohamadAkra = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Mohamad Akra'), 
 		@AhmadAkra = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Ahmad Akra'), 
 		@BadegeKebede = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 
@@ -82,9 +136,3 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	--	WHEN [Id] = @RC_SalesBole		THEN @Ashenafi
 	--	ELSE  NULL
 	--END;
-
-	IF @DebugEmployees = 1
-		SELECT A.[Code], A.[Name], A.[StartDate] AS 'Employee Since', A.[IsActive],
-		A.[BasicSalary], A.[TransportationAllowance], A.[OvertimeRate] AS 'Day Overtime Rate'--, RC.[Name] AS OperatingSegment
-		FROM dbo.fi_Agents(N'employees', NULL) A
-		--JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;

@@ -12,14 +12,6 @@
 
 	[CurrencyId]					NCHAR (3),
 	[MonetaryValue]					Decimal (19,4), -- such as when dealing with a check, or when the unit price is fixed (rare)
-	[CountUnitId]					INT,
-	[Count]							Decimal (19,4)		DEFAULT 1, -- if count is not null, this value is forced in Entries
-	[MassUnitId]					INT,
-	[Mass]							Decimal (19,4), -- makes sense when Identifier is not null, so we are referring to a specific instance, or when every unit has the same mass
-	[VolumeUnitId]					INT,
-	[Volume]						Decimal (19,4),
-	[TimeUnitId]					INT,
-	[Time]							Decimal (19,4), -- when resource refers to a service, which is time based, and where the time is recorded here
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),

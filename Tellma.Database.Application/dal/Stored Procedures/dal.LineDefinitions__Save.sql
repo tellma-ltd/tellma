@@ -22,6 +22,8 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[AgentDefinitionList],
+			[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[Script]
 		FROM @Entities 
@@ -38,6 +40,8 @@ SET NOCOUNT ON;
 			t.[TitlePlural]					= s.[TitlePlural],
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
+			t.[AgentDefinitionList]			= s.[AgentDefinitionList],
+			t.[ResponsibilityTypeList]			= s.[ResponsibilityTypeList],
 			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
@@ -53,6 +57,8 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
+			[AgentDefinitionList],
+			[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[Script]
 		)
@@ -67,6 +73,8 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
+			s.[AgentDefinitionList],
+			s.[ResponsibilityTypeList],
 			s.[AllowSelectiveSigning],
 			s.[Script]
 		);
@@ -111,10 +119,11 @@ SET NOCOUNT ON;
 			LDE.[Direction]	,
 			LDE.[AccountTypeParentCode]	,
 			LDE.[AgentDefinitionList],
-			LDE.[ResponsibilityCenterSource],
-			LDE.[AgentSource],
-			LDE.[ResourceSource],
-			LDE.[CurrencySource],
+			LDE.[ResponsibilityTypeList],
+			--LDE.[ResponsibilityCenterSource],
+			--LDE.[AgentSource],
+			--LDE.[ResourceSource],
+			--LDE.[CurrencySource],
 			--LDE.[MonetaryValueSource],
 			--LDE.[CountSource],
 			--LDE.[MassSource],
@@ -122,8 +131,8 @@ SET NOCOUNT ON;
 			--LDE.[TimeSource],
 			--LDE.[ValueSource],
 			LDE.[EntryTypeCode],
-			LDE.[NotedAgentDefinitionId],
-			LDE.[NotedAgentSource]
+			LDE.[NotedAgentDefinitionId]
+			--LDE.[NotedAgentSource]
 			--LDE.[NotedAmountSource]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -135,10 +144,11 @@ SET NOCOUNT ON;
 		t.[Direction]					= s.[Direction],
 		t.[AccountTypeParentCode]		= s.[AccountTypeParentCode],
 		t.[AgentDefinitionList]			= s.[AgentDefinitionList],
-		t.[ResponsibilityCenterSource]	= s.[ResponsibilityCenterSource],
-		t.[AgentSource]					= s.[AgentSource],
-		t.[ResourceSource]				= s.[ResourceSource],
-		t.[CurrencySource]				= s.[CurrencySource],
+		t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
+		--t.[ResponsibilityCenterSource]	= s.[ResponsibilityCenterSource],
+		--t.[AgentSource]					= s.[AgentSource],
+		--t.[ResourceSource]				= s.[ResourceSource],
+		--t.[CurrencySource]				= s.[CurrencySource],
 		--t.[MonetaryValueSource]			= s.[MonetaryValueSource],
 		--t.[CountSource]					= s.[CountSource],
 		--t.[MassSource]					= s.[MassSource],
@@ -146,8 +156,8 @@ SET NOCOUNT ON;
 		--t.[TimeSource]					= s.[TimeSource],
 		--t.[ValueSource]					= s.[ValueSource],
 		t.[EntryTypeCode]				= s.[EntryTypeCode],
-		t.[NotedAgentDefinitionId]		= s.[NotedAgentDefinitionId],
-		t.[NotedAgentSource]			= s.[NotedAgentSource]
+		t.[NotedAgentDefinitionId]		= s.[NotedAgentDefinitionId]
+		--t.[NotedAgentSource]			= s.[NotedAgentSource]
 		--t.[NotedAmountSource]			= s.[NotedAmountSource]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
@@ -158,10 +168,11 @@ WHEN NOT MATCHED BY TARGET THEN
 		[Direction],
 		[AccountTypeParentCode]	,
 		[AgentDefinitionList],
-		[ResponsibilityCenterSource],
-		[AgentSource],
-		[ResourceSource],
-		[CurrencySource],
+		[ResponsibilityTypeList],
+		--[ResponsibilityCenterSource],
+		--[AgentSource],
+		--[ResourceSource],
+		--[CurrencySource],
 		--[MonetaryValueSource],
 		--[CountSource],
 		--[MassSource],
@@ -169,8 +180,8 @@ WHEN NOT MATCHED BY TARGET THEN
 		--[TimeSource],
 		--[ValueSource],
 		[EntryTypeCode],
-		[NotedAgentDefinitionId],
-		[NotedAgentSource]
+		[NotedAgentDefinitionId]
+		--[NotedAgentSource]
 		--[NotedAmountSource]
 	)
     VALUES (
@@ -179,10 +190,11 @@ WHEN NOT MATCHED BY TARGET THEN
 		s.[Direction],
 		s.[AccountTypeParentCode],
 		s.[AgentDefinitionList],
-		s.[ResponsibilityCenterSource],
-		s.[AgentSource],
-		s.[ResourceSource],
-		s.[CurrencySource],
+		s.[ResponsibilityTypeList],
+		--s.[ResponsibilityCenterSource],
+		--s.[AgentSource],
+		--s.[ResourceSource],
+		--s.[CurrencySource],
 		--s.[MonetaryValueSource],
 		--s.[CountSource],
 		--s.[MassSource],
@@ -190,8 +202,8 @@ WHEN NOT MATCHED BY TARGET THEN
 		--s.[TimeSource],
 		--s.[ValueSource],
 		s.[EntryTypeCode],
-		s.[NotedAgentDefinitionId],
-		s.[NotedAgentSource]
+		s.[NotedAgentDefinitionId]
+		--s.[NotedAgentSource]
 		--s.[NotedAmountSource]
 	);
 

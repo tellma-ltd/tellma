@@ -144,7 +144,8 @@ BEGIN
 	INSERT INTO @Lookups([Index],
 	[Name],				[Name2]) VALUES
 	(0,	N'Thai',		N'نايلاندي'),
-	(1,	N'Finnish',		N'فنلندي')	;
+	(1,	N'Finnish',		N'فنلندي'),
+	(2, N'German',		N'ألماني');
 
 	EXEC [api].Lookups__Save
 	@DefinitionId = @DefinitionId,
@@ -156,7 +157,8 @@ BEGIN
 	INSERT INTO @Lookups([Index],
 	[Name],							[Name2]) VALUES
 	(0,	N'Carbonless Coated paper',	N'ورق مكربن صفائح'),
-	(1,	N'Newspaper Roll paper',	N'رول ورق جريدة')	;
+	(1,	N'Newspaper Roll paper',	N'رول ورق جريدة'),
+	(2,	N'Coated Paper Glazed',		N'ورق لامع صفائح');
 
 	EXEC [api].Lookups__Save
 	@DefinitionId = @DefinitionId,
@@ -167,7 +169,7 @@ BEGIN
 	SET @DefinitionId = N'paper-types'
 	INSERT INTO @Lookups([Index],
 	[Name],						[Name2]) VALUES
-	(0,	N'Commercial paper',	N'ورق تجاري'),
+	(0,	N'Commercial',			N'ورق تجاري'),
 	(1,	N'Newspaper',			N'ورق جريدة')	;
 
 END

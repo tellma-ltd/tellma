@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Agents_Validate__Save]
 	@DefinitionId NVARCHAR (50),
 	@Entities [AgentList] READONLY,
+	@AgentRates [AgentRateList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

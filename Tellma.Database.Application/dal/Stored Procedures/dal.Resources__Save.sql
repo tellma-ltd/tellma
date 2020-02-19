@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
 	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[ResourceList] READONLY,
+	@ResourceUnits dbo.ResourceUnitList READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -24,17 +25,8 @@ SET NOCOUNT ON;
 				[Name3],
 				[Identifier],
 				[Code], 
-
 				[CurrencyId],
 				[MonetaryValue],
-				[CountUnitId],
-				[Count],
-				[MassUnitId],
-				[Mass],
-				[VolumeUnitId],
-				[Volume],
-				[TimeUnitId], 
-				[Time],
 				[Description],
 				[Description2],
 				[Description3],
@@ -85,15 +77,6 @@ SET NOCOUNT ON;
 				t.[Code]					= s.[Code],
 				t.[CurrencyId]				= s.[CurrencyId],
 				t.[MonetaryValue]			= s.[MonetaryValue],
-				t.[CountUnitId]				= s.[CountUnitId],
-				t.[Count]					= s.[Count],
-				t.[MassUnitId]				= s.[MassUnitId],
-				t.[Mass]					= s.[Mass],
-				t.[VolumeUnitId]			= s.[VolumeUnitId],
-				t.[Volume]					= s.[Volume],
-				t.[TimeUnitId]				= s.[TimeUnitId],
-				t.[Time]					= s.[Time],
-
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
@@ -133,14 +116,6 @@ SET NOCOUNT ON;
 			INSERT (--[OperatingSegmentId], 
 				[DefinitionId], [AccountTypeId], [Name], [Name2], [Name3], [Identifier], [Code], [CurrencyId],
 				[MonetaryValue],
-				[CountUnitId],
-				[Count],
-				[MassUnitId],
-				[Mass],
-				[VolumeUnitId],
-				[Volume],
-				[TimeUnitId], 
-				[Time],
 				[Description],
 				[Description2],
 				[Description3],
@@ -179,14 +154,6 @@ SET NOCOUNT ON;
 			VALUES (--s.[OperatingSegmentId], 
 				s.[DefinitionId], s.[AccountTypeId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
 				s.[MonetaryValue],
-				s.[CountUnitId],
-				s.[Count],
-				s.[MassUnitId],
-				s.[Mass],
-				s.[VolumeUnitId],
-				s.[Volume],
-				s.[TimeUnitId], 
-				s.[Time],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
@@ -224,6 +191,40 @@ SET NOCOUNT ON;
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+
+	WITH BU AS (
+		SELECT * FROM dbo.ResourceUnits RU
+		WHERE RU.ResourceId IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BU AS t
+	USING (
+		SELECT
+			RU.[Id],
+			I.[Id] AS [ResourceId],
+			RU.[UnitId],
+			RU.[Multiplier]
+		FROM @ResourceUnits RU
+		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[ResourceId]				= s.[ResourceId],
+			t.[UnitId]					= s.[UnitId],
+			t.[Multiplier]				= s.[Multiplier],
+			t.[ModifiedAt]				= @Now,
+			t.[ModifiedById]			= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT (
+			[ResourceId],
+			[UnitId],
+			[Multiplier]
+		) VALUES (
+			s.[ResourceId],
+			s.[UnitId],
+			s.[Multiplier]
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

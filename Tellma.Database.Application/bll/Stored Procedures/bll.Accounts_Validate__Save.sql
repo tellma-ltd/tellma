@@ -62,7 +62,7 @@ SET NOCOUNT ON;
 	--FROM @Entities FE 
 	--JOIN [dbo].[Agents] AG ON AG.[Id] = FE.[AgentId]
 	--LEFT JOIN dbo.[AgentDefinitions] AD ON AD.[Id] = FE.[AgentDefinitionId]
-	--WHERE (FE.[HasAgent] = 1)
+	--WHERE (FE.[AgentDefinition] IS NOT NULL)
 	----AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
 	--AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
 
@@ -121,17 +121,16 @@ SET NOCOUNT ON;
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	WHERE L.[State] > 0
 	AND (
-		FE.HasAgent					<> A.[HasAgent]					OR
-		FE.HasResource				<> A.[HasResource]					OR
-		--FE.[ResponsibilityCenterId] <> A.[ResponsibilityCenterId]	OR
-		FE.[LegacyTypeId]				<> A.[LegacyTypeId]				OR
-		FE.[AgentDefinitionId]		<> A.[AgentDefinitionId]		OR
-		FE.[AccountTypeId]			<> A.[AccountTypeId] OR
-		FE.[IsCurrent]				<> A.[IsCurrent]				--OR
-		--FE.[AgentId]				<> A.[AgentId]					OR
-		--FE.[ResourceId]				<> A.[ResourceId]				OR
-		--FE.[Identifier]				<> A.[Identifier]				OR
-		--FE.[EntryTypeId]	<> A.[EntryTypeId]
+		FE.HasResource						<> A.[HasResource]						OR
+		--FE.[ResponsibilityCenterId]		<> A.[ResponsibilityCenterId]			OR
+		ISNULL(FE.[LegacyTypeId], N'')		<> ISNULL(A.[LegacyTypeId], N'')		OR
+		ISNULL(FE.[AgentDefinitionId],N'')	<> ISNULL(A.[AgentDefinitionId], N'')	OR
+		FE.[AccountTypeId]					<> A.[AccountTypeId]					OR
+		FE.[IsCurrent]						<> A.[IsCurrent]				--		OR
+		--FE.[AgentId]						<> A.[AgentId]							OR
+		--FE.[ResourceId]					<> A.[ResourceId]						OR
+		--FE.[Identifier]					<> A.[Identifier]						OR
+		--FE.[EntryTypeId]					<> A.[EntryTypeId]
 	)
 
 	-- Setting the responsibility center for smart accounts to given one (whether it was null or null)

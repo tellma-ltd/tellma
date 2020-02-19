@@ -19,10 +19,10 @@
 	[IsActive]							BIT				NOT NULL DEFAULT 1,
 
 	[JobVisibility]						NVARCHAR (50), -- None, Visible, Required
-	[BasicSalaryVisibility]				NVARCHAR (50),
-	[TransportationAllowanceVisibility]	NVARCHAR (50),
---	[HardshipAllowanceVisibility]		NVARCHAR (50),
-	[OvertimeRateVisibility]			NVARCHAR (50),
+	[RatesVisibility]					NVARCHAR (50),
+	[RatesLabel]						NVARCHAR (50),
+	[RatesLabel2]						NVARCHAR (50),
+	[RatesLabel3]						NVARCHAR (50),
 	[BankAccountNumberVisibility]		NVARCHAR (50),
 
 	[MainMenuIcon]						NVARCHAR (50),

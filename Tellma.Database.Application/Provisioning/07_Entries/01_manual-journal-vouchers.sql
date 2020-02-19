@@ -1,7 +1,7 @@
 ﻿DECLARE @D [dbo].[DocumentList], @L [dbo].LineList, @E [dbo].EntryList, @DIds dbo.IdList;
 
 --DECLARE @date1 date = '2017.02.01', @date2 date = '2022.02.01', @date3 datetime = '2023.02.01';
-IF @DB IN (N'101', N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
+IF @DB IN (N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN -- Inserting
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo]) VALUES
@@ -85,7 +85,7 @@ BEGIN -- Inserting
 	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000,	N'C-14209',			N'FS010102',			@Toyota,		600000),
 	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,	N'C-14209',			NULL,					NULL,			NULL),	
 	(9, 9, 2,1,+1,@VATInput,	NULL, 						90000,	N'C-14209',			N'FS010102',			@Toyota,		600000),
-	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					1380000,	N'C-14209',			NULL,					NULL,			NULL),
+	(10,10,2,1,-1,@SA_ToyotaAccount,NULL,					1380000,N'C-14209',			NULL,					NULL,			NULL),
 
 	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				600000,	NULL,				NULL,					NULL,			NULL),
 	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		600000,	NULL,				NULL,					NULL,			NULL),	

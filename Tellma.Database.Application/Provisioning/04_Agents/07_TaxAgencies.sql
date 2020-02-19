@@ -39,12 +39,12 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(2,		N'Employee Income Tax Dept'),
 	(3,		N'Employee Pension Dept'),
 	(4,		N'WT Dept');
-ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
-	INSERT INTO @TaxAgencies
-	([Index], [Name], [Name2]) VALUES
-	(0,		N'VAT Dept', N'القيمة المضافة'),
-	(1,		N'Zakat Dept', N'ديوان الزكاة'),
-	(2,		N'Employee Income Tax Dept', N'رسوم العمالة');
+--ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
+--	INSERT INTO @TaxAgencies
+--	([Index], [Name], [Name2]) VALUES
+--	(0,		N'VAT Dept', N'القيمة المضافة'),
+--	(1,		N'Zakat Dept', N'ديوان الزكاة'),
+--	(2,		N'Employee Income Tax Dept', N'رسوم العمالة');
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'tax-agencies',

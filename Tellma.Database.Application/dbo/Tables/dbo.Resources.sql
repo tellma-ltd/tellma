@@ -20,18 +20,10 @@ CREATE TABLE [dbo].[Resources] (
 	-- Unique within a definition - when no null - property that is language independent, --	Tag #, Coil #, Check #, LC #
 	[Code]							NVARCHAR (255),
 
-	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Count]							Decimal (19,4)		DEFAULT 1,
 	-- Currency Id is needed in case the resource has a monetary value like a check. 
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	CONSTRAINT [CK_Resources__Id_CurrencyId] UNIQUE ([Id], [CurrencyId]),
 	[MonetaryValue]					Decimal (19,4), -- if [MonetaryValue] is not null, this value is forced in Entries
-	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Mass]							Decimal (19,4),
-	[VolumeUnitId]					INT					CONSTRAINT [FK_Resources__VolumeUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Volume]						Decimal (19,4),
-	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Time]							Decimal (19,4),
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),

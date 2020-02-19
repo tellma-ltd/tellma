@@ -24,6 +24,7 @@ BEGIN
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
+				[AgentId],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
@@ -36,18 +37,19 @@ BEGIN
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
 				t.[MemoIsCommon]			= s.[MemoIsCommon],
+				t.[AgentId]					= s.[AgentId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId], [SerialNumber], 
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
-				[Memo], [MemoIsCommon]
+				[Memo], [MemoIsCommon], [AgentId]
 			)
 			VALUES (
 				@DefinitionId, s.[SerialNumber],
 				s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
-				s.[Memo], s.[MemoIsCommon]
+				s.[Memo], s.[MemoIsCommon], s.[AgentId]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -72,10 +74,8 @@ BEGIN
 				L.[ResourceId],
 				L.[CurrencyId],
 				L.[MonetaryValue],
-				L.[Count],
-				L.[Mass],
-				L.[Volume],
-				L.[Time],
+				L.[Quantity],
+				L.[UnitId],
 				L.[Value],
 				L.[Memo]
 			FROM @Lines L
@@ -89,10 +89,8 @@ BEGIN
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[MonetaryValue]		= s.[MonetaryValue],
-				t.[Count]				= s.[Count],
-				t.[Mass]				= s.[Mass],
-				t.[Volume]				= s.[Volume],
-				t.[Time]				= s.[Time],
+				t.[Quantity]			= s.[Quantity],
+				t.[UnitId]				= s.[UnitId],
 				t.[Value]				= s.[Value],
 				t.[Memo]				= s.[Memo],
 				t.[ModifiedAt]			= @Now,
@@ -104,10 +102,8 @@ BEGIN
 				[ResourceId],
 				[CurrencyId],
 				[MonetaryValue],
-				[Count],
-				[Mass],
-				[Volume],
-				[Time],
+				[Quantity],
+				[UnitId],
 				[Value],
 				[Memo]
 			)
@@ -117,10 +113,8 @@ BEGIN
 				s.[ResourceId],
 				s.[CurrencyId],
 				s.[MonetaryValue],
-				s.[Count],
-				s.[Mass],
-				s.[Volume],
-				s.[Time],
+				s.[Quantity],
+				s.[UnitId],
 				s.[Value],
 				s.[Memo]
 			)
@@ -140,7 +134,7 @@ BEGIN
 			E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
-			E.[DueDate], E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
+			E.[DueDate], E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
 			E.[Time1], E.[Time2],
 			E.[ExternalReference],
 			E.[AdditionalReference],
@@ -167,10 +161,6 @@ BEGIN
 			t.[MonetaryValue]			= s.[MonetaryValue],
 			t.[Quantity]				= s.[Quantity],
 			t.[UnitId]					= s.[UnitId],
-			t.[Count]					= s.[Count],
-			t.[Mass]					= s.[Mass],
-			t.[Volume]					= s.[Volume],
-			t.[Time]					= s.[Time],
 			t.[Value]					= s.[Value],
 			t.[Time1]					= s.[Time1],
 			t.[Time2]					= s.[Time2],	
@@ -186,7 +176,7 @@ BEGIN
 		INSERT ([LineId], [EntryNumber], [Direction], [AccountId], [CurrencyId],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[EntryTypeId], --[BatchCode], 
-			[DueDate], [MonetaryValue], [Quantity], [UnitId], [Count], [Mass], [Volume], [Time], [Value],
+			[DueDate], [MonetaryValue], [Quantity], [UnitId], [Value],
 			[Time1], [Time2],
 			[ExternalReference],
 			[AdditionalReference],
@@ -198,7 +188,7 @@ BEGIN
 		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[EntryTypeId], --[BatchCode], 
-			s.[DueDate], s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
+			s.[DueDate], s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
 			s.[Time1], s.[Time2],
 			s.[ExternalReference],
 			s.[AdditionalReference],

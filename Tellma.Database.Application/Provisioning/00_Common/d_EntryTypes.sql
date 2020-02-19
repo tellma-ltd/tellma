@@ -206,6 +206,7 @@ DECLARE @ProceedsFromIssuingShares	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHE
 DECLARE @IssueOfEquity				INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
 DECLARE @InternalCashTransferExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
 DECLARE @InventoryPurchaseExtension	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
+DECLARE @InternalInventoryTransferExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InternalInventoryTransferExtension');
 DECLARE @PPEAdditions			INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
 DECLARE @InvReclassifiedAsPPE	INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
 DECLARE @COS	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'CostOfSales' );

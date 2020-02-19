@@ -21,10 +21,12 @@
 
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
 	[AgentDefinitionList]		NVARCHAR (1024),
-	[ResponsibilityCenterSource]NVARCHAR (50),
-	[AgentSource]				NVARCHAR (50),
-	[ResourceSource]			NVARCHAR (50),
-	[CurrencySource]			NVARCHAR (50),
+	[ResponsibilityTypeList]	NVARCHAR (1024),
+
+	--[ResponsibilityCenterSource]NVARCHAR (50),
+	--[AgentSource]				NVARCHAR (50),
+	--[ResourceSource]			NVARCHAR (50),
+	--[CurrencySource]			NVARCHAR (50),
 
 --	[MonetaryValueSource]		NVARCHAR (50),
 ---- Tracking additive measures, the data type is to be decided by AA
@@ -35,8 +37,8 @@
 	
 --	[ValueSource]				NVARCHAR (50),
 	[EntryTypeCode]				NVARCHAR (255),
-	[NotedAgentDefinitionId]	NVARCHAR (50),	
-	[QuantitySource]			NVARCHAR (50),
-	[NotedAgentSource]			NVARCHAR (50)
+	[NotedAgentDefinitionId]	NVARCHAR (50)
+	--[QuantitySource]			NVARCHAR (50),
+	--[NotedAgentSource]			NVARCHAR (50)
 	--[NotedAmountSource]			NVARCHAR (50)
 )

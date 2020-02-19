@@ -11,9 +11,11 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(4,		N'Amazon',								'2019.05.09',	N'67075123');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Suppliers
-	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
-	(0,		N'Tellma',								'2020.01.01',	NULL),
-	(1,		N'Microsoft',							'2020.01.01',	NULL);
+	([Index], [Name]) VALUES
+	(0,		N'Tellma'),
+	(1,		N'Salanco'),
+	(2,		N'Canar'),
+	(3,		N'Car Rental');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Suppliers
 	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES

@@ -8,11 +8,9 @@
 	[CurrencyId]				NCHAR (3),
 	[AgentId]					INT,
 	[ResourceId]				INT,
-	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
-	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
-	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
-	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[MonetaryValue]				DECIMAL (19,4),
+	[Quantity]					DECIMAL (19,4),
+	[UnitId]					INT,
 	
 	[Value]						DECIMAL (19,4),
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
@@ -28,10 +26,8 @@
 	[EntryTypeId0]				INT,
 	[DueDate0]					DATE,
 	[MonetaryValue0]			DECIMAL (19,4),
-	[Count0]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
-	[Mass0]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume0]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Time0]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Quantity0]					DECIMAL (19,4),
+	[UnitId0]					INT,
 	[Value0]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
 	[Time10]					TIME (0),	-- from time
 	[Time20]					TIME (0),	-- to time
@@ -52,10 +48,8 @@
 	[EntryTypeId1]				INT,
 	[DueDate1]					DATE,
 	[MonetaryValue1]			DECIMAL (19,4),
-	[Count1]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
-	[Mass1]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume1]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Time1]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Quantity1]					DECIMAL (19,4),
+	[UnitId1]					INT,
 	[Value1]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
 	[Time11]					TIME (0),	-- from time
 	[Time21]					TIME (0),	-- to time
@@ -76,10 +70,8 @@
 	[EntryTypeId2]				INT,
 	[DueDate2]					DATE,
 	[MonetaryValue2]			DECIMAL (19,4),
-	[Count2]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
-	[Mass2]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume2]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Time2]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Quantity2]					DECIMAL (19,4),
+	[UnitId2]					INT,
 	[Value2]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
 	[RelatedDate2]				DATE,
 	[Time12]					TIME (0),	-- from time

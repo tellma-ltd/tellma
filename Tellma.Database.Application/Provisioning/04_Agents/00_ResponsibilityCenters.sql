@@ -29,11 +29,12 @@ SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	[ShortCompanyName3],N'',	N'In
 FROM dbo.Settings
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
-INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-			[Name],				[Code], [ResponsibilityType], [ParentIndex])
-SELECT 0,1,[ShortCompanyName],	N'',	N'Investment',			NULL
-FROM dbo.Settings
-
+BEGIN
+	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
+				[Name],				[Code], [ResponsibilityType], [ParentIndex])
+	SELECT 0,1,[ShortCompanyName],	N'',	N'Investment',			NULL
+	FROM dbo.Settings
+END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 			[Name],				[Code], [ResponsibilityType], [ParentIndex])
@@ -108,7 +109,9 @@ BEGIN
 END;
 
 DECLARE @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
-		@RC_SalesAG INT, @RC_SalesBole INT;
+		@RC_SalesAG INT, @RC_SalesBole INT, @RC_Inv INT;
+
+SELECT @RC_Inv = [Id] FROM dbo.ResponsibilityCenters WHERE [IsLeaf] = 1 AND [ResponsibilityType] = N'Investment';
 
 SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE [Name] Like N'%Exec%';
 SELECT @RC_SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
