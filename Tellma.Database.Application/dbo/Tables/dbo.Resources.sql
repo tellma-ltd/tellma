@@ -4,7 +4,7 @@
 CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of "real" Account Types.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	[DefinitionId]					NVARCHAR (50)		NOT NULL,
+	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_ResourceDefinitions] REFERENCES dbo.ResourceDefinitions([Id]),
 	-- TODO: to make sure we only use sensible account types, we add a field called
 	-- IsResourceClassification		BIT		DEFAULT 1, and add referential integrity.
 	[AccountTypeId]					INT					NOT NULL,

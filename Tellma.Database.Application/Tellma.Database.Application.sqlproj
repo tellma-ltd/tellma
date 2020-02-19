@@ -440,7 +440,7 @@
     <None Include="Provisioning\04_Agents\09_Custodies.sql" />
     <None Include="Provisioning\04_Agents\05_Owners.sql" />
     <None Include="Provisioning\05_Resources\a1_PPE_motor-vehicles.sql" />
-    <None Include="Provisioning\05_Resources\a2_PPE_it-equipment.sql" />
+    <None Include="Provisioning\05_Resources\a2_PPE_computer-equipment.sql" />
     <None Include="Provisioning\05_Resources\a3_PPE_machineries.sql" />
     <None Include="Provisioning\05_Resources\a4_PPE_general-fixed-assets.sql" />
     <None Include="Provisioning\05_Resources\b_Inventories_raw-materials.sql" />

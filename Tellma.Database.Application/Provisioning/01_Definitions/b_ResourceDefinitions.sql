@@ -1,5 +1,6 @@
 ﻿DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 
+
 IF @DB = N'100'
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
@@ -16,14 +17,27 @@ BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'computer-equipment',				N'Computer equipment',					N'Computer equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
 	(2,N'intangible-assets',				N'Intangible assets',					N'Intangible asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense')),
+	(6,N'employee-benefits-expenses',		N'Employee benefits expenses',			N'Employee benefits expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'));
+
+	UPDATE @ResourceDefinitions
+	SET 
+		[Lookup1Visibility]		= N'Optional',
+		[Lookup1Label]			= N'Manufacturer',
+		[Lookup1DefinitionId]	= N'it-equipment-manufacturers',
+		[Lookup2Visibility]		= N'Optional',
+		[Lookup2Label]			= N'Operating System',
+		[Lookup2DefinitionId]	= N'operating-systems'
+	WHERE [Id] = N'computer-equipment';
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'computer-equipment',				N'Computer equipment',					N'Computer equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
 	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
 END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
@@ -53,9 +67,6 @@ BEGIN
 
 	UPDATE @ResourceDefinitions
 	SET
-		[CountUnitVisibility] = N'Optional',
-		[MassUnitVisibility] = N'Required',
-		[MassVisibility] = N'Required',
 		[DescriptionVisibility] = N'Optional',
 		[ReorderLevelVisibility] = N'Optional',
 		[EconomicOrderQuantityVisibility] = N'Optional',

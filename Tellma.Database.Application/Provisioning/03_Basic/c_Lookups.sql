@@ -26,7 +26,8 @@ BEGIN
 	(0,	N'Dell'),
 	(1,	N'HP'),
 	(2,	N'Apple'),
-	(3,	N'Microsoft');
+	(3,	N'Microsoft'),
+	(4, N'Lenovo');
 
 
 	EXEC [api].Lookups__Save
@@ -44,7 +45,6 @@ BEGIN
 	SET @DefinitionId = N'operating-systems'
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
-	(0,	N'Windows XP'),
 	(1,	N'Windows 10'),
 	(2,	N'Windows Server 2017'),
 	(3,	N'iOS 13');

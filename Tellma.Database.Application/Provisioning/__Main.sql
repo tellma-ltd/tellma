@@ -48,7 +48,7 @@ END
 :r .\03_Basic\c_Lookups.sql
 		
 :r .\05_Resources\a1_PPE_motor-vehicles.sql
-:r .\05_Resources\a2_PPE_it-equipment.sql
+:r .\05_Resources\a2_PPE_computer-equipment.sql
 :r .\05_Resources\a3_PPE_machineries.sql
 :r .\05_Resources\a4_PPE_general-fixed-assets.sql
 :r .\05_Resources\b_Inventories_raw-materials.sql
