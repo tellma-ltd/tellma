@@ -1,5 +1,6 @@
 ﻿DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 
+
 IF @DB = N'100'
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
@@ -15,9 +16,10 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
 	(2,N'intangible-assets',				N'Intangible assets',					N'Intangible asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense')),
+	(6,N'employee-benefits-expenses',		N'Employee benefits expenses',			N'Employee benefits expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'));
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -53,9 +55,6 @@ BEGIN
 
 	UPDATE @ResourceDefinitions
 	SET
-		[CountUnitVisibility] = N'Optional',
-		[MassUnitVisibility] = N'Required',
-		[MassVisibility] = N'Required',
 		[DescriptionVisibility] = N'Optional',
 		[ReorderLevelVisibility] = N'Optional',
 		[EconomicOrderQuantityVisibility] = N'Optional',

@@ -28,7 +28,7 @@
 	(0, 10, dbo.fn_UnitName__Id(N'wmo'),	1);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = N'general-items',
+		@DefinitionId = N'employee-benefits-expenses',
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

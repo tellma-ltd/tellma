@@ -3,7 +3,6 @@ BEGIN
 	INSERT INTO @Accounts([Index],[IsCurrent],[HasResource],[IsSmart],--[Code],
 			[AccountTypeId],			[Name],					[CurrencyId],	[ResponsibilityCenterId], [EntryTypeId], [AgentDefinitionId],	[AgentId],	[ResourceId]) VALUES
 
-
 	(0,1,0,0,@CashAndCashEquivalents,	N'Petty Cash',			NULL,			@RC_Inv,					NULL,			N'custodies',		@GMSafe,	NULL),
 	(1,1,0,0,@CashAndCashEquivalents,	N'Bank Of Khartoum',	N'SDG',			@RC_Inv,					NULL,			N'banks',			@Bank_BOK,	NULL),
 	(2,1,0,1,@TradeReceivables,			N'Tier-3 A/R - SDG',	N'SDG',			@RC_Inv,					NULL,			N't3-customers',	NULL,		NULL),

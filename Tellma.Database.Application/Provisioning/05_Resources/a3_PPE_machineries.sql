@@ -2,8 +2,8 @@
 BEGIN
 	DELETE FROM @ResourceDefinitions;
 	INSERT INTO @ResourceDefinitions (
-		[Id],			[TitlePlural],	[TitleSingular],[TimeUnitVisibility], [CurrencyVisibility]) VALUES 
-	(	N'machineries',	N'Machineries',	N'Machinery',	 N'Required',			N'Optional');
+		[Id],			[TitlePlural],	[TitleSingular],[CurrencyVisibility]) VALUES 
+	(	N'machineries',	N'Machineries',	N'Machinery',	 N'Optional');
 
 	EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,

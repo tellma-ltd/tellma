@@ -5,13 +5,13 @@ BEGIN
 	DELETE FROM @ResourceDefinitions;
 	INSERT INTO @ResourceDefinitions (
 		[Id],			[TitlePlural],		[TitleSingular],
-		[TimeUnitVisibility], [CurrencyVisibility],
+		[CurrencyVisibility],
 		[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
 		[Lookup2Visibility], [Lookup2Label], [Lookup2DefinitionId]
 	) VALUES (
 		N'it-equipment',	N'IT Equipment',	N'IT Equipment',
 --		N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
-		N'Required', N'Optional',
+		N'Optional',
 		N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
 		N'Optional', N'Operating System', N'operating-systems'
 	);
