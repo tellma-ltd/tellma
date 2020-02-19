@@ -44,29 +44,29 @@ namespace Tellma.Entities
         [Display(Name = "Resource_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 
-        [Display(Name = "Resource_CountUnit")]
-        public int? CountUnitId { get; set; }
+        //[Display(Name = "Resource_CountUnit")]
+        //public int? CountUnitId { get; set; }
 
-        [Display(Name = "Resource_Count")]
-        public decimal? Count { get; set; }
+        //[Display(Name = "Resource_Count")]
+        //public decimal? Count { get; set; }
 
-        [Display(Name = "Resource_MassUnit")]
-        public int? MassUnitId { get; set; }
+        //[Display(Name = "Resource_MassUnit")]
+        //public int? MassUnitId { get; set; }
 
-        [Display(Name = "Resource_Mass")]
-        public decimal? Mass { get; set; }
+        //[Display(Name = "Resource_Mass")]
+        //public decimal? Mass { get; set; }
 
-        [Display(Name = "Resource_VolumeUnit")]
-        public int? VolumeUnitId { get; set; }
+        //[Display(Name = "Resource_VolumeUnit")]
+        //public int? VolumeUnitId { get; set; }
 
-        [Display(Name = "Resource_Volume")]
-        public decimal? Volume { get; set; }
+        //[Display(Name = "Resource_Volume")]
+        //public decimal? Volume { get; set; }
 
-        [Display(Name = "Resource_TimeUnit")]
-        public int? TimeUnitId { get; set; }
+        //[Display(Name = "Resource_TimeUnit")]
+        //public int? TimeUnitId { get; set; }
 
-        [Display(Name = "Resource_Time")]
-        public decimal? Time { get; set; }
+        //[Display(Name = "Resource_Time")]
+        //public decimal? Time { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
@@ -171,21 +171,21 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
 
-        [Display(Name = "Resource_MassUnit")]
-        [ForeignKey(nameof(MassUnitId))]
-        public MeasurementUnit MassUnit { get; set; }
+        //[Display(Name = "Resource_MassUnit")]
+        //[ForeignKey(nameof(MassUnitId))]
+        //public MeasurementUnit MassUnit { get; set; }
 
-        [Display(Name = "Resource_VolumeUnit")]
-        [ForeignKey(nameof(VolumeUnitId))]
-        public MeasurementUnit VolumeUnit { get; set; }
+        //[Display(Name = "Resource_VolumeUnit")]
+        //[ForeignKey(nameof(VolumeUnitId))]
+        //public MeasurementUnit VolumeUnit { get; set; }
 
-        [Display(Name = "Resource_TimeUnit")]
-        [ForeignKey(nameof(TimeUnitId))]
-        public MeasurementUnit TimeUnit { get; set; }
+        //[Display(Name = "Resource_TimeUnit")]
+        //[ForeignKey(nameof(TimeUnitId))]
+        //public MeasurementUnit TimeUnit { get; set; }
 
-        [Display(Name = "Resource_CountUnit")]
-        [ForeignKey(nameof(CountUnitId))]
-        public MeasurementUnit CountUnit { get; set; }
+        //[Display(Name = "Resource_CountUnit")]
+        //[ForeignKey(nameof(CountUnitId))]
+        //public MeasurementUnit CountUnit { get; set; }
 
         [Display(Name = "Resource_Lookup1")]
         [ForeignKey(nameof(Lookup1Id))]

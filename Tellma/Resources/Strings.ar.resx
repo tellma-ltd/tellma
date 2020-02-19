@@ -181,9 +181,6 @@
   <data name="Agent_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
   </data>
-  <data name="Agent_BasicSalary" xml:space="preserve">
-    <value>الراتب الأساسي</value>
-  </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
   </data>
@@ -199,8 +196,8 @@
   <data name="Agent_Job" xml:space="preserve">
     <value>الوظيفة</value>
   </data>
-  <data name="Agent_OvertimeRate" xml:space="preserve">
-    <value>أجر العمل الإضافي</value>
+  <data name="Agent_Rates" xml:space="preserve">
+    <value>المعدلات</value>
   </data>
   <data name="Agent_StartDate" xml:space="preserve">
     <value>تاريخ البدأ</value>
@@ -211,11 +208,20 @@
   <data name="Agent_Title" xml:space="preserve">
     <value>اللقب</value>
   </data>
-  <data name="Agent_TransportationAllowance" xml:space="preserve">
-    <value>علاوة الترحيل</value>
-  </data>
   <data name="Agent_User" xml:space="preserve">
     <value>المستخدم</value>
+  </data>
+  <data name="AgentRate_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="AgentRate_Rate" xml:space="preserve">
+    <value>المعدل</value>
+  </data>
+  <data name="AgentRate_Resource" xml:space="preserve">
+    <value>المورد</value>
+  </data>
+  <data name="AgentRate_Unit" xml:space="preserve">
+    <value>الوحدة</value>
   </data>
   <data name="Agents" xml:space="preserve">
     <value>ذمم</value>

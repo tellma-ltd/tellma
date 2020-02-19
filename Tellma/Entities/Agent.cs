@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class AgentForSave : EntityWithKey<int>, IEntityWithImageForSave
+    public class AgentForSave<TAgentRate> : EntityWithKey<int>, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -43,15 +44,6 @@ namespace Tellma.Entities
         [Display(Name = "Agent_Job")]
         public int? JobId { get; set; }
 
-        [Display(Name = "Agent_BasicSalary")]
-        public decimal? BasicSalary { get; set; }
-
-        [Display(Name = "Agent_TransportationAllowance")]
-        public decimal? TransportationAllowance { get; set; }
-
-        [Display(Name = "Agent_OvertimeRate")]
-        public decimal? OvertimeRate { get; set; }
-
         [Display(Name = "Agent_BankAccountNumber")]
         [StringLength(34, ErrorMessage = nameof(StringLengthAttribute))]
         public string BankAccountNumber { get; set; }
@@ -64,9 +56,18 @@ namespace Tellma.Entities
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
+
+        [Display(Name = "Agent_Rates")]
+        [ForeignKey(nameof(AgentRate.AgentId))]
+        public List<TAgentRate> Rates { get; set; }
     }
 
-    public class Agent : AgentForSave, IEntityWithImage
+    public class AgentForSave : AgentForSave<AgentRateForSave>
+    {
+
+    }
+
+    public class Agent : AgentForSave<AgentRate>, IEntityWithImage
     {
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }

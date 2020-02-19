@@ -3,3 +3,5 @@
 AS
 	DELETE FROM [dbo].[Currencies] 
 	WHERE Id IN (SELECT Id FROM @Ids);
+
+	UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

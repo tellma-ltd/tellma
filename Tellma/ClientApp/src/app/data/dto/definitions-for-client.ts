@@ -286,8 +286,9 @@ export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClie
     StartDateLabel2?: string;
     StartDateLabel3?: string;
     JobVisibility?: string;
-    BasicSalaryVisibility?: string;
-    TransportationAllowanceVisibility?: string;
-    OvertimeRateVisibility?: string;
+    RatesVisibility?: string;
+    RatesLabel?: string;
+    RatesLabel2?: string;
+    RatesLabel3?: string;
     BankAccountNumberVisibility?: string;
 }

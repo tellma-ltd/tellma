@@ -30,3 +30,5 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [E])
 		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[E]);
+
+	UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

@@ -8,6 +8,8 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { AgentRateForSave } from '~/app/data/entities/agent-rate';
+import { Currency } from '~/app/data/entities/currency';
 
 @Component({
   selector: 't-agents-details',
@@ -30,7 +32,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this._definitionId;
   }
 
-  public expand = 'User';
+  public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
 
   create = () => {
     const result: AgentForSave = {};
@@ -145,35 +147,43 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this.definition.JobVisibility === 'Required';
   }
 
-  public get BasicSalary_isVisible(): boolean {
-    return !!this.definition.BasicSalaryVisibility;
-  }
-
-  public get BasicSalary_isRequired(): boolean {
-    return this.definition.BasicSalaryVisibility === 'Required';
-  }
-
-  public get TransportationAllowance_isVisible(): boolean {
-    return !!this.definition.TransportationAllowanceVisibility;
-  }
-
-  public get TransportationAllowance_isRequired(): boolean {
-    return this.definition.TransportationAllowanceVisibility === 'Required';
-  }
-
-  public get OvertimeRate_isVisible(): boolean {
-    return !!this.definition.OvertimeRateVisibility;
-  }
-
-  public get OvertimeRate_isRequired(): boolean {
-    return this.definition.OvertimeRateVisibility === 'Required';
-  }
-
   public get BankAccountNumber_isVisible(): boolean {
     return !!this.definition.BankAccountNumberVisibility;
   }
 
   public get BankAccountNumber_isRequired(): boolean {
     return this.definition.BankAccountNumberVisibility === 'Required';
+  }
+
+  public get Rates_isVisible(): boolean {
+    return !!this.definition.RatesVisibility;
+  }
+
+  public get Rates_label(): string {
+    return !!this.definition.RatesLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'RatesLabel') :
+      this.translate.instant('Agent_Rates');
+  }
+
+  public Rates_count(model: AgentForSave): number {
+    return !!model && !!model.Rates ? model.Rates.length : 0;
+  }
+
+  public Rates_showError(model: AgentForSave): boolean {
+    return !!model && !!model.Rates && model.Rates.some(e => !!e.serverErrors);
+  }
+
+  public Rate_minDecimalPlaces(line: AgentRateForSave): number {
+    const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
+    return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public Rate_maxDecimalPlaces(line: AgentRateForSave): number {
+    const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
+    return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public Rate_format(line: AgentRateForSave): string {
+    return `1.${this.Rate_minDecimalPlaces(line)}-${this.Rate_maxDecimalPlaces(line)}`;
   }
 }

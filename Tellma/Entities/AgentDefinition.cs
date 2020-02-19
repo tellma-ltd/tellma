@@ -63,9 +63,10 @@ namespace Tellma.Entities
         public string StartDateLabel2 { get; set; }
         public string StartDateLabel3 { get; set; }
         public string JobVisibility { get; set; }
-        public string BasicSalaryVisibility { get; set; }
-        public string TransportationAllowanceVisibility { get; set; }
-        public string OvertimeRateVisibility { get; set; }
+        public string RatesVisibility { get; set; }
+        public string RatesLabel { get; set; }
+        public string RatesLabel2 { get; set; }
+        public string RatesLabel3 { get; set; }
         public string BankAccountNumberVisibility { get; set; }
     }
 

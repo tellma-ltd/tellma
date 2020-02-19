@@ -6,8 +6,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { AgentRateForSave, AgentRate } from './agent-rate';
 
-export interface AgentForSave extends EntityWithKey {
+export interface AgentForSave<TAgentRate = AgentRateForSave> extends EntityWithKey {
 
   Name?: string;
   Name2?: string;
@@ -17,15 +18,13 @@ export interface AgentForSave extends EntityWithKey {
   TaxIdentificationNumber?: string;
   StartDate?: string;
   JobId?: number;
-  BasicSalary?: number;
-  TransportationAllowance?: number;
-  OvertimeRate?: number;
   BankAccountNumber?: number;
   UserId?: number;
   Image?: string;
+  Rates?: TAgentRate[];
 }
 
-export interface Agent extends AgentForSave {
+export interface Agent extends AgentForSave<AgentRate> {
   DefinitionId?: string;
   ImageId?: string;
   IsActive?: boolean;
@@ -81,9 +80,6 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
         StartDate: { control: 'date', label: () => trx.instant('Agent_StartDate') },
         JobId: { control: 'number', label: () => `${trx.instant('Agent_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        BasicSalary: { control: 'number', label: () => trx.instant('Agent_BasicSalary'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        TransportationAllowance: { control: 'number', label: () => trx.instant('Agent_TransportationAllowance'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        OvertimeRate: { control: 'number', label: () => trx.instant('Agent_OvertimeRate'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
         BankAccountNumber: { control: 'text', label: () => trx.instant('Agent_BankAccountNumber') },
         UserId: { control: 'number', label: () => `${trx.instant('Agent_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'UserId' },

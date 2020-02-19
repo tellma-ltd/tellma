@@ -34,8 +34,8 @@ BEGIN
 		(9,N'custodies',	N'Custody',		N'Custodies')	;
 
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],				[TitleSingular],	[TitlePlural],	[JobVisibility]) VALUES
-		(10,N'employees',	N'Employee',		N'Employees',	N'Optional');
+		[Id],				[TitleSingular],	[TitlePlural],	[JobVisibility], [RatesVisibility], [RatesLabel]) VALUES
+		(10,N'employees',	N'Employee',		N'Employees',	N'Optional',	N'Optional', N'Remuneration');
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	BEGIN

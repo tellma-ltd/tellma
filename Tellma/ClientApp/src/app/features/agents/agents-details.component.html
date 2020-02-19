@@ -1,6 +1,6 @@
 <t-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create"
-  [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb"
-  [documentTemplate]="document" [actions]="[
+  [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString" [masterCrumb]=masterCrumb
+  [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -22,7 +22,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+  <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2"
+    [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
     <t-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
@@ -98,39 +99,6 @@
     </t-date-picker>
   </t-form-group>
 
-  <!-- Basic Salary -->
-  <t-form-group class="t-form-group" *ngIf="BasicSalary_isVisible" [label]="'Agent_BasicSalary' | translate"
-    [serverErrors]="model?.serverErrors?.BasicSalary">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BasicSalary">
-      <div>{{ model?.BasicSalary | number:'1.2-2' }}</div>
-    </t-restricted>
-    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BasicSalary" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="BasicSalary_isRequired">
-    </t-decimal-editor>
-  </t-form-group>
-
-  <!-- Transportation Allowance -->
-  <t-form-group class="t-form-group" *ngIf="TransportationAllowance_isVisible"
-    [label]="'Agent_TransportationAllowance' | translate" [serverErrors]="model?.serverErrors?.TransportationAllowance">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TransportationAllowance">
-      <div>{{ model?.TransportationAllowance | number:'1.2-2' }}</div>
-    </t-restricted>
-    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.TransportationAllowance" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="TransportationAllowance_isRequired">
-    </t-decimal-editor>
-  </t-form-group>
-
-  <!-- Overtime Rate -->
-  <t-form-group class="t-form-group" *ngIf="OvertimeRate_isVisible" [label]="'Agent_OvertimeRate' | translate"
-    [serverErrors]="model?.serverErrors?.OvertimeRate">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OvertimeRate">
-      <div>{{ model?.OvertimeRate | number:'1.2-2' }}</div>
-    </t-restricted>
-    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.OvertimeRate" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="OvertimeRate_isRequired">
-    </t-decimal-editor>
-  </t-form-group>
-
   <!-- Bank Account Number -->
   <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Agent_BankAccountNumber' | translate"
     [serverErrors]="model?.serverErrors?.BankAccountNumber">
@@ -143,8 +111,7 @@
   </t-form-group>
 
   <!-- User -->
-  <t-form-group class="t-form-group" [label]="'Agent_User' | translate"
-    [serverErrors]="model?.serverErrors?.UserId">
+  <t-form-group class="t-form-group" [label]="'Agent_User' | translate" [serverErrors]="model?.serverErrors?.UserId">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.User">
       <t-view-link *ngIf="!isEdit" link="../../../users" [itemId]="model?.UserId">
         <t-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="User">
@@ -171,6 +138,86 @@
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </t-form-group>
+
+
+
+  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+
+    <!-- Rates -->
+    <ngb-tab *ngIf="Rates_isVisible">
+      <ng-template ngbTabTitle><span class="small">{{ Rates_label }}<span *ngIf="model?.EntityMetadata?.Rates == 2"> ({{ Rates_count(model) | number
+          }})</span></span>
+        <span *ngIf="Rates_showError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
+          </fa-icon></span>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <t-restricted [metadata]="model?.EntityMetadata?.Rates" [class.p-4]="model?.EntityMetadata?.Rates === 1">
+          <t-table [dataSource]="model?.Rates" [isEdit]="isEdit"
+            [columnPaths]="['Resource', 'Unit', 'Rate', 'Currency']" [columnTemplates]="{
+              'Resource' : { headerTemplate : header_Resource, rowTemplate : row_Resource, weight : 2 },
+              'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
+              'Rate' : { headerTemplate : header_Rate, rowTemplate : row_Rate, weight : 1 },
+              'Currency' : { headerTemplate : header_Currency, rowTemplate : row_Currency, weight : 1 }
+            }">
+          </t-table>
+        </t-restricted>
+
+        <!-- Resource -->
+        <ng-template #header_Resource>{{ 'AgentRate_Resource' | translate }}</ng-template>
+        <ng-template #row_Resource let-item="item" let-index="originalIndex" let-update="update">
+          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.ResourceId">
+            <div *ngIf="!isEdit">
+              {{ ws.getMultilingualValue('Resource', item.ResourceId, 'Name') }}
+            </div>
+            <t-resources-picker *ngIf="isEdit" [(ngModel)]="item.ResourceId" (ngModelChange)="update.call(null, item);">
+            </t-resources-picker>
+          </t-form-group>
+        </ng-template>
+
+        <!-- Unit -->
+        <ng-template #header_Unit>{{ 'AgentRate_Unit' | translate }}</ng-template>
+        <ng-template #row_Unit let-item="item" let-index="originalIndex" let-update="update">
+          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
+            <div *ngIf="!isEdit">
+              {{ ws.getMultilingualValue('MeasurementUnit', item.UnitId, 'Name') }}
+            </div>
+            <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
+              (ngModelChange)="update.call(null, item);">
+            </t-measurement-units-picker>
+          </t-form-group>
+        </ng-template>
+
+        <!-- Rate -->
+        <ng-template #header_Rate>{{ 'AgentRate_Rate' | translate }}</ng-template>
+        <ng-template #row_Rate let-item="item" let-index="originalIndex" let-update="update">
+          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Rate">
+            <div *ngIf="!isEdit" style="float:right;">{{ item.Rate | number:Rate_format(item) }}</div>
+            <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Rate" (ngModelChange)="update.call(null, item)"
+              [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="Rate_minDecimalPlaces(item)"
+              [maxDecimalPlaces]="Rate_maxDecimalPlaces(item)" textAlignment="right">
+            </t-decimal-editor>
+          </t-form-group>
+        </ng-template>
+
+
+        <!-- Currency -->
+        <ng-template #header_Currency>{{ 'AgentRate_Currency' | translate }}</ng-template>
+        <ng-template #row_Currency let-item="item" let-index="originalIndex" let-update="update">
+          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.CurrencyId">
+            <div *ngIf="!isEdit">
+              {{ ws.getMultilingualValue('Currency', item.CurrencyId, 'Name') }}
+            </div>
+            <t-currencies-picker *ngIf="isEdit" [(ngModel)]="item.CurrencyId" (ngModelChange)="update.call(null, item);"
+              additionalSelect="E">
+            </t-currencies-picker>
+          </t-form-group>
+        </ng-template>
+
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+
+
 </ng-template>
 
 <!-- Actions -->

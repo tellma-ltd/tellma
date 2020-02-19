@@ -220,6 +220,9 @@ namespace Tellma.Data
                 case nameof(Agent):
                     return "[map].[Agents]()";
 
+                case nameof(AgentRate):
+                    return "[map].[AgentRates]()";
+
                 case nameof(MeasurementUnit):
                     return "[map].[MeasurementUnits]()";
 
@@ -1055,16 +1058,25 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[AgentList]",
+                TypeName = $"[dbo].[{nameof(Agent)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable agentRatesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rates);
+            var agentRatesTvp = new SqlParameter("@AgentRates", agentRatesTable)
+            {
+                TypeName = $"[dbo].[{nameof(AgentRate)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(agentRatesTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -1090,6 +1102,13 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable agentRatesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Rates);
+                var agentRatesTvp = new SqlParameter("@AgentRates", agentRatesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AgentRate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
                 var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
                 {
@@ -1099,6 +1118,7 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(agentRatesTvp);
                 cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
