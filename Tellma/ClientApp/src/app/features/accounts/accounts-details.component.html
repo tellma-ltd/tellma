@@ -1,6 +1,6 @@
-<t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
-    [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
-    [documentTemplate]="document" [actions]="[
+<t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
             { template: deactivate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
            ]">
@@ -83,7 +83,8 @@
                             <t-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
                             </t-auto-cell>
                         </t-view-link>
-                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId" filter="IsLeaf eq true">
+                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId"
+                            filter="IsLeaf eq true">
                         </t-responsibility-centers-picker>
                     </t-form-group>
 
@@ -140,7 +141,8 @@
                             </t-auto-cell>
                         </t-view-link>
                         <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
-                            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3" [filter]="filterResource(model)">
+                            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3"
+                            [filter]="filterResource(model)">
                         </t-resources-picker>
                     </t-form-group>
 
@@ -166,26 +168,13 @@
                     <!-- Is Related -->
                     <t-form-group class="t-form-group" *ngIf="showIsRelated(model)"
                         [label]="'Account_IsRelated' | translate" [serverErrors]="model?.serverErrors?.IsRelated">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
+                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsRelated">
                             {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
                         </t-restricted>
                         <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
                             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated"
                                 id="isRelated">
                             <label class="custom-control-label t-pointer" for="isRelated">&zwnj;</label>
-                        </div>
-                    </t-form-group>
-
-                    <!-- Has Agent -->
-                    <t-form-group class="t-form-group" *ngIf="showHasAgent(model)"
-                        [label]="'Account_HasAgent' | translate" [serverErrors]="model?.serverErrors?.HasAgent">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAgent">
-                            {{ (model?.HasAgent ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasAgent"
-                                id="hasAgent">
-                            <label class="custom-control-label t-pointer" for="hasAgent">&zwnj;</label>
                         </div>
                     </t-form-group>
 

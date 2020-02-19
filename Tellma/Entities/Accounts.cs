@@ -53,9 +53,6 @@ namespace Tellma.Entities
         [Display(Name = "Account_HasResource")]
         public bool? HasResource { get; set; }
 
-        [Display(Name = "Account_HasAgent")]
-        public bool? HasAgent { get; set; }
-
         [Display(Name = "Account_IsRelated")]
         public bool? IsRelated { get; set; }
 

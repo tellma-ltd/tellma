@@ -487,17 +487,17 @@ namespace Tellma.Data.Queries
                         if (!segments.ContainsKey(fullPath))
                         {
                             QueryInternal flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
-
-                            flatQuery.Select = new SelectExpression
-                            {
-                                new SelectAtom
-                                {
-                                    Path = subPath.SkipLast(1).ToArray(),
-                                    Property = null
-                                }
-                            };
-
                             segments[fullPath] = flatQuery;
+                        }
+
+                        if (previousFullPath != null)
+                        {
+                            var flatQuery = segments[previousFullPath];
+                            if (subPath.Count >= 2) // If there is more than just the collection property, then we add a select
+                            {
+                                flatQuery.Select ??= new SelectExpression();
+                                flatQuery.Select.Add(new SelectAtom { Path = subPath.SkipLast(1).ToArray() });
+                            }
                         }
 
                         previousFullPath = fullPath;
@@ -505,8 +505,10 @@ namespace Tellma.Data.Queries
 
                     // The last segment is turned into a select atom and added to the select property
                     {
-                        var (fullPath, subPath, _) = pathSegments.Last();
-                        segments[previousFullPath].Select.Add(new SelectAtom
+                        var (_, subPath, _) = pathSegments.Last();
+                        var flatQuery = segments[previousFullPath];
+                        flatQuery.Select ??= new SelectExpression();
+                        flatQuery.Select.Add(new SelectAtom
                         {
                             Path = subPath.ToArray(),
                             Property = selectAtom.Property

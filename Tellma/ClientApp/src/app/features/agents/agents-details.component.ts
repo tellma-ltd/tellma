@@ -51,6 +51,27 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return result;
   }
 
+  clone = (item: Agent): Agent => {
+
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as Agent;
+      clone.Id = null;
+
+      if (!!clone.Rates) {
+        clone.Rates.forEach(e => {
+          e.Id = null;
+          delete e.AgentId;
+        });
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  }
+
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
     private translate: TranslateService, private route: ActivatedRoute) {

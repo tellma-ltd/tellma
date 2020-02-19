@@ -32,7 +32,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `AccountType,Currency,CountUnit,MassUnit,VolumeUnit,TimeUnit,Lookup1,Lookup2`;
+  public expand = `AccountType,Currency,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -84,14 +84,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     result.Identifier = defs.IdentifierDefaultValue;
     result.CurrencyId = defs.CurrencyDefaultValue;
     result.MonetaryValue = defs.MonetaryValueDefaultValue;
-    result.CountUnitId = defs.CountUnitDefaultValue;
-    result.Count = defs.CountDefaultValue;
-    result.MassUnitId = defs.MassUnitDefaultValue;
-    result.Mass = defs.MassDefaultValue;
-    result.VolumeUnitId = defs.VolumeUnitDefaultValue;
-    result.Volume = defs.VolumeDefaultValue;
-    result.TimeUnitId = defs.TimeUnitDefaultValue;
-    result.Time = defs.TimeDefaultValue;
     result.ReorderLevel = defs.ReorderLevelDefaultValue;
     result.EconomicOrderQuantity = defs.EconomicOrderQuantityDefaultValue;
     result.AvailableSince = defs.AvailableSinceDefaultValue;
@@ -107,8 +99,30 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     // result.Lookup5Id = defs.Lookup5DefaultValue;
     result.Text1 = defs.Text1DefaultValue;
     result.Text2 = defs.Text2DefaultValue;
+    result.Units = [];
 
     return result;
+  }
+
+  clone = (item: Resource): Resource => {
+
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as Resource;
+      clone.Id = null;
+
+      if (!!clone.Units) {
+        clone.Units.forEach(e => {
+          e.Id = null;
+          delete e.ResourceId;
+        });
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   public get ws() {
@@ -190,117 +204,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
 
-  public get CountUnit_isVisible(): boolean {
-    return !!this.definition.CountUnitVisibility;
-  }
-
-  public get CountUnit_isRequired(): boolean {
-    return this.definition.CountUnitVisibility === 'Required';
-  }
-
-  public get CountUnit_label(): string {
-    return !!this.definition.CountUnitLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'CountUnitLabel') :
-      this.translate.instant('Resource_CountUnit');
-  }
-
-  public get Count_isVisible(): boolean {
-    return !!this.definition.CountVisibility;
-  }
-
-  public get Count_isRequired(): boolean {
-    return this.definition.CountVisibility === 'Required';
-  }
-
-  public get Count_label(): string {
-    return !!this.definition.CountLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'CountLabel') :
-      this.translate.instant('Resource_Count');
-  }
-
-  public get MassUnit_isVisible(): boolean {
-    return !!this.definition.MassUnitVisibility;
-  }
-
-  public get MassUnit_isRequired(): boolean {
-    return this.definition.MassUnitVisibility === 'Required';
-  }
-
-  public get MassUnit_label(): string {
-    return !!this.definition.MassUnitLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'MassUnitLabel') :
-      this.translate.instant('Resource_MassUnit');
-  }
-
-  public get Mass_isVisible(): boolean {
-    return !!this.definition.MassVisibility;
-  }
-
-  public get Mass_isRequired(): boolean {
-    return this.definition.MassVisibility === 'Required';
-  }
-
-  public get Mass_label(): string {
-    return !!this.definition.MassLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'MassLabel') :
-      this.translate.instant('Resource_Mass');
-  }
-
-  public get VolumeUnit_isVisible(): boolean {
-    return !!this.definition.VolumeUnitVisibility;
-  }
-
-  public get VolumeUnit_isRequired(): boolean {
-    return this.definition.VolumeUnitVisibility === 'Required';
-  }
-
-  public get VolumeUnit_label(): string {
-    return !!this.definition.VolumeUnitLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'VolumeUnitLabel') :
-      this.translate.instant('Resource_VolumeUnit');
-  }
-
-  public get Volume_isVisible(): boolean {
-    return !!this.definition.VolumeVisibility;
-  }
-
-  public get Volume_isRequired(): boolean {
-    return this.definition.VolumeVisibility === 'Required';
-  }
-
-  public get Volume_label(): string {
-    return !!this.definition.VolumeLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'VolumeLabel') :
-      this.translate.instant('Resource_Volume');
-  }
-
-  public get TimeUnit_isVisible(): boolean {
-    return !!this.definition.TimeUnitVisibility;
-  }
-
-  public get TimeUnit_isRequired(): boolean {
-    return this.definition.TimeUnitVisibility === 'Required';
-  }
-
-  public get TimeUnit_label(): string {
-    return !!this.definition.TimeUnitLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'TimeUnitLabel') :
-      this.translate.instant('Resource_TimeUnit');
-  }
-
-  public get Time_isVisible(): boolean {
-    return !!this.definition.TimeVisibility;
-  }
-
-  public get Time_isRequired(): boolean {
-    return this.definition.TimeVisibility === 'Required';
-  }
-
-  public get Time_label(): string {
-    return !!this.definition.TimeLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'TimeLabel') :
-      this.translate.instant('Resource_Time');
-  }
 
   public get Description_isVisible(): boolean {
     return !!this.definition.DescriptionVisibility;
@@ -512,5 +415,13 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.Text2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Text2Label') :
       this.translate.instant('Resource_Text2');
+  }
+
+  public Units_count(model: ResourceForSave): number {
+    return !!model && !!model.Units ? model.Units.length : 0;
+  }
+
+  public Units_showError(model: ResourceForSave): boolean {
+    return !!model && !!model.Units && model.Units.some(e => !!e.serverErrors);
   }
 }

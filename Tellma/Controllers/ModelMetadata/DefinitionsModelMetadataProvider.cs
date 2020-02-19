@@ -94,51 +94,7 @@ namespace Tellma.Controllers
                         case nameof(Resource.MonetaryValue):
                             displayMetadata = LocalizeResourceProperty(
                                 e => e.MonetaryValueVisibility, e => e.MonetaryValueLabel, e => e.MonetaryValueLabel2, e => e.MonetaryValueLabel3, defaultName);
-                            break;
-
-                        //case nameof(Resource.CountUnit):
-                        //case nameof(Resource.CountUnitId):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.CountUnitVisibility, e => e.CountUnitLabel, e => e.CountUnitLabel2, e => e.CountUnitLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.Count):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.CountVisibility, e => e.CountLabel, e => e.CountLabel2, e => e.CountLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.MassUnit):
-                        //case nameof(Resource.MassUnitId):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.MassUnitVisibility, e => e.MassUnitLabel, e => e.MassUnitLabel2, e => e.MassUnitLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.Mass):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.MassVisibility, e => e.MassLabel, e => e.MassLabel2, e => e.MassLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.VolumeUnit):
-                        //case nameof(Resource.VolumeUnitId):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.VolumeUnitVisibility, e => e.VolumeUnitLabel, e => e.VolumeUnitLabel2, e => e.VolumeUnitLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.Volume):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.VolumeVisibility, e => e.VolumeLabel, e => e.VolumeLabel2, e => e.VolumeLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.TimeUnit):
-                        //case nameof(Resource.TimeUnitId):
-                        //    displayMetadata = LocalizeResourceProperty
-                        //        (e => e.TimeUnitVisibility, e => e.TimeUnitLabel, e => e.TimeUnitLabel2, e => e.TimeUnitLabel3, defaultName);
-                        //    break;
-
-                        //case nameof(Resource.Time):
-                        //    displayMetadata = LocalizeResourceProperty(
-                        //        e => e.TimeVisibility, e => e.TimeLabel, e => e.TimeLabel2, e => e.TimeLabel3, defaultName);
-                        //    break;
+                            break; 
 
                         case nameof(Resource.AvailableSince):
                             displayMetadata = LocalizeResourceProperty(

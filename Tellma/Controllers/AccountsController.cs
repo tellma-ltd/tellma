@@ -127,7 +127,6 @@ namespace Tellma.Controllers
             {
                 result.IsCurrent ??= false;
                 result.HasResource ??= false;
-                result.HasAgent ??= false;
                 result.IsRelated ??= false;
                 result.HasExternalReference ??= false;
                 result.HasAdditionalReference ??= false;

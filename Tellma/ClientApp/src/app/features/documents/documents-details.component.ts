@@ -83,14 +83,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
-    ['Currency', /* 'Resource/Currency', */ 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType', 'AccountType', 'ResponsibilityCenter']
-      // , 'Resource/ResourceClassification', 'ResourceClassification']
+    ['Currency', /* 'Resource/Currency', */ 'Resource/Units', 'Agent',
+    'EntryType', 'AccountType', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification', 'ResourceClassification']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
-    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
-      'Resource/TimeUnit', 'Agent', 'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
+    ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
+    'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
     // Signatures
@@ -455,7 +454,7 @@ Document_State_Closed
 
   public showAgent(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.HasAgent;
+    return !!account && !!account.AgentDefinitionId;
   }
 
   public readonlyAgent(entry: Entry): boolean {
@@ -511,98 +510,31 @@ Document_State_Closed
 
   public showQuantityAndUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
-    return !!resource && (!!resource.CountUnitId || !!resource.MassUnitId || !!resource.VolumeUnitId || !!resource.TimeUnitId);
+    return !!resource && !!resource.Units && resource.Units.length > 0;
   }
 
   public readonlyUnit(entry: Entry): boolean {
     const resource = this.resource(entry);
-    return !!resource &&
-      ((!!resource.CountUnitId ? 1 : 0) +
-        (!!resource.MassUnitId ? 1 : 0) +
-        (!!resource.VolumeUnitId ? 1 : 0) +
-        (!!resource.TimeUnitId ? 1 : 0) === 1); // Exactly one is not null
-
-    //   resource.MassUnitId, resource.VolumeUnitId, resource.TimeUnitId]
+    return !!resource && !!resource.Units && resource.Units.length === 1;
   }
 
   public readonlyValueUnitId(entry: Entry): number {
     const resource = this.resource(entry);
-    return !!resource.CountUnitId ? resource.CountUnitId :
-      !!resource.MassUnitId ? resource.MassUnitId :
-        !!resource.VolumeUnitId ? resource.VolumeUnitId :
-          !!resource.TimeUnitId ? resource.TimeUnitId : null;
+    return !!resource && !!resource.Units && !!resource.Units[0] ? resource.Units[0].UnitId : null;
   }
 
   public filterUnitId(entry: Entry): string {
     const resource = this.resource(entry);
-    const filterAtoms = [];
-    if (!!resource.CountUnitId) {
-      filterAtoms.push(`Id eq ${resource.CountUnitId}`);
-    }
-    if (!!resource.MassUnitId) {
-      filterAtoms.push(`Id eq ${resource.MassUnitId}`);
-    }
-    if (!!resource.VolumeUnitId) {
-      filterAtoms.push(`Id eq ${resource.VolumeUnitId}`);
-    }
-    if (!!resource.TimeUnitId) {
-      filterAtoms.push(`Id eq ${resource.TimeUnitId}`);
+    if (!!resource && !!resource.Units) {
+      return resource.Units.map(e => `Id eq ${e.UnitId}`).join(' or ');
     }
 
-    return filterAtoms.join(' or ');
+    return null;
   }
 
   private unit(entry: Entry): MeasurementUnit {
     const unitId = this.readonlyUnit(entry) ? this.readonlyValueUnitId(entry) : entry.UnitId;
     return this.ws.get('MeasurementUnit', unitId) as MeasurementUnit;
-  }
-
-  // Count + CountUnitId
-
-  public showCount(entry: Entry) {
-    const resource = this.resource(entry);
-    const unit = this.unit(entry);
-
-    return !!unit &&
-      !!resource.CountUnitId &&
-      unit.Id !== resource.CountUnitId &&
-      (resource.Count === null || resource.Count === undefined);
-  }
-
-  // Mass + MassUnitId
-
-  public showMass(entry: Entry) {
-    const resource = this.resource(entry);
-    const unit = this.unit(entry);
-
-    return !!unit && !
-      !resource.MassUnitId &&
-      unit.Id !== resource.MassUnitId &&
-      (resource.Mass === null || resource.Mass === undefined);
-  }
-
-  // Volume + VolumeUnitId
-
-  public showVolume(entry: Entry) {
-    const resource = this.resource(entry);
-    const unit = this.unit(entry);
-
-    return !!unit && !
-      !resource.VolumeUnitId &&
-      unit.Id !== resource.VolumeUnitId &&
-      (resource.Volume === null || resource.Volume === undefined);
-  }
-
-  // Time + TimeUnitId
-
-  public showTime(entry: Entry) {
-    const resource = this.resource(entry);
-    const unit = this.unit(entry);
-
-    return !!unit && !
-      !resource.TimeUnitId &&
-      unit.Id !== resource.TimeUnitId &&
-      (resource.Time === null || resource.Time === undefined);
   }
 
   // DueDate

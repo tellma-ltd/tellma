@@ -6,8 +6,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 
-export interface ResourceForSave extends EntityWithKey {
+export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityWithKey {
     AccountTypeId?: number;
     Name?: string;
     Name2?: string;
@@ -16,14 +17,6 @@ export interface ResourceForSave extends EntityWithKey {
     Code?: string;
     CurrencyId?: string;
     MonetaryValue?: number;
-    CountUnitId?: number;
-    Count?: number;
-    MassUnitId?: number;
-    Mass?: number;
-    VolumeUnitId?: number;
-    Volume?: number;
-    TimeUnitId?: number;
-    Time?: number;
     Description?: string;
     Description2?: string;
     Description3?: string;
@@ -42,9 +35,10 @@ export interface ResourceForSave extends EntityWithKey {
     // Lookup5Id?: number;
     Text1?: string;
     Text2?: string;
+    Units?: TResourceUnit[];
 }
 
-export interface Resource extends ResourceForSave {
+export interface Resource extends ResourceForSave<ResourceUnit> {
     DefinitionId?: string;
     IsActive?: boolean;
     CreatedAt?: string;
@@ -103,18 +97,6 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Resource_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Resource_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                CountUnitId: { control: 'number', label: () => `${trx.instant('Resource_CountUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CountUnit: { control: 'navigation', label: () => trx.instant('Resource_CountUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' },
-                Count: { control: 'number', label: () => trx.instant('Resource_Count'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                MassUnitId: { control: 'number', label: () => `${trx.instant('Resource_MassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MassUnit: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'MeasurementUnit', foreignKeyName: 'MassUnitId' },
-                Mass: { control: 'number', label: () => trx.instant('Resource_Mass'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                VolumeUnitId: { control: 'number', label: () => `${trx.instant('Resource_VolumeUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                VolumeUnit: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'MeasurementUnit', foreignKeyName: 'VolumeUnitId' },
-                Volume: { control: 'number', label: () => trx.instant('Resource_Volume'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                TimeUnitId: { control: 'number', label: () => `${trx.instant('Resource_TimeUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TimeUnit: { control: 'navigation', label: () => trx.instant('Resource_TimeUnit'), type: 'MeasurementUnit', foreignKeyName: 'TimeUnitId' },
-                Time: { control: 'number', label: () => trx.instant('Resource_Time'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
@@ -183,7 +165,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility + Label
-            for (const propName of ['Identifier', 'MonetaryValue', 'Count', 'Mass', 'Volume', 'Time', 'AvailableSince', 'AvailableTill', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
+            for (const propName of ['Identifier', 'MonetaryValue', 'AvailableSince', 'AvailableTill', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {
@@ -194,7 +176,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'CountUnit', 'MassUnit', 'VolumeUnit', 'TimeUnit']) {
+            for (const propName of ['Currency']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];
