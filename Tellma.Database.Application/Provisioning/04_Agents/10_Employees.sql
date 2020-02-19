@@ -91,6 +91,7 @@ BEGIN
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'employees',
 		@Entities = @employees,
+		@AgentRates = @AgentRates,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
