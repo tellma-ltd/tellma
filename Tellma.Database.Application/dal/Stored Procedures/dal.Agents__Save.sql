@@ -129,7 +129,44 @@ SET NOCOUNT ON;
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
-
+	WITH AR AS (
+		SELECT * FROM dbo.AgentRates
+		WHERE AgentId IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO AR AS t
+	USING (
+		SELECT
+			AR.[Id],
+			I.[Id] AS [AgentId],
+			AR.[ResourceId],
+			AR.[UnitId],
+			AR.[Rate],
+			AR.[CurrencyId]
+		FROM @AgentRates AR
+		JOIN @IndexedIds I ON AR.[HeaderIndex] = I.[Index]
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[ResourceId]			= s.[ResourceId],
+			t.[UnitId]				= s.[UnitId],
+			t.[Rate]				= s.[Rate],
+			t.[CurrencyId]			= s.[CurrencyId]
+	WHEN NOT MATCHED THEN
+		INSERT (
+			[AgentId],
+			[ResourceId],
+			[UnitId],
+			[Rate],
+			[CurrencyId]
+		) VALUES (
+			s.[AgentId],
+			s.[ResourceId],
+			s.[UnitId],
+			s.[Rate],
+			s.[CurrencyId]
+		)
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
 	UPDATE A --dbo.Agents
