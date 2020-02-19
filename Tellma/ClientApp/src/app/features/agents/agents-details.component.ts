@@ -44,6 +44,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
       result.Name3 = this.initialText;
     }
     result.IsRelated = false;
+    result.Rates = [];
 
     // TODO Set defaults from definition
 
@@ -153,6 +154,10 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public get BankAccountNumber_isRequired(): boolean {
     return this.definition.BankAccountNumberVisibility === 'Required';
+  }
+
+  public get Tabs_isVisible(): boolean {
+    return this.Rates_isVisible; // More tabs may be added
   }
 
   public get Rates_isVisible(): boolean {

@@ -141,7 +141,7 @@
 
 
 
-  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+  <ngb-tabset *ngIf="Tabs_isVisible" class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
 
     <!-- Rates -->
     <ngb-tab *ngIf="Rates_isVisible">
@@ -191,10 +191,10 @@
         <ng-template #header_Rate>{{ 'AgentRate_Rate' | translate }}</ng-template>
         <ng-template #row_Rate let-item="item" let-index="originalIndex" let-update="update">
           <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Rate">
-            <div *ngIf="!isEdit" style="float:right;">{{ item.Rate | number:Rate_format(item) }}</div>
+            <div *ngIf="!isEdit">{{ item.Rate | number:Rate_format(item) }}</div>
             <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Rate" (ngModelChange)="update.call(null, item)"
               [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="Rate_minDecimalPlaces(item)"
-              [maxDecimalPlaces]="Rate_maxDecimalPlaces(item)" textAlignment="right">
+              [maxDecimalPlaces]="Rate_maxDecimalPlaces(item)">
             </t-decimal-editor>
           </t-form-group>
         </ng-template>
