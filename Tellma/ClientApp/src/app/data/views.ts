@@ -11,7 +11,8 @@ export interface ActionInfo {
     criteria: boolean;
 }
 
-export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' | 'ResendInvitationEmail' | 'UpdateState' | 'All';
+export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' |
+    'ResendInvitationEmail' | 'ResetPassword' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };
@@ -25,13 +26,39 @@ export const ACTIONS: { [action: string]: string } = {
     'IsActive': 'Permission_IsActive',
     'IsDeprecated': 'Permission_IsDeprecated',
     'ResendInvitationEmail': 'ResendInvitationEmail',
+    'ResetPassword': 'ResetPassword',
     'All': 'View_All',
 };
 
+export const ADMIN_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
+    'all': {
+        name: 'View_All',
+        actions: [
+            li('Read', false)
+        ]
+    },
+    'admin-users': {
+        name: 'AdminUsers',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('IsActive'),
+            li('ResendInvitationEmail')
+        ]
+    },
+    'identity-server-users': {
+        name: 'IdentityServerUsers',
+        read: true,
+        actions: [
+            li('ResetPassword'),
+        ]
+    }
+};
 
 // IMPORTANT: This mimmicks another C# structure on the server, it is important
 // to keep them in sync
-export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
+export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
     'all': {
         name: 'View_All',
         actions: [
@@ -62,6 +89,7 @@ export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         update: true,
         delete: true,
         actions: [
+            li('IsActive'),
             li('ResendInvitationEmail')
         ]
     },

@@ -503,7 +503,7 @@ namespace Tellma.Controllers
             // with the usual workloads, customers with more than 200 users are rare anyways
 
             // Step (1) enlist the app repo
-            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by admin trx scope later
+            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by identity or admin trx scope later
 
             // Step (2): If Embedded Identity Server is enabled, create any emails that don't already exist there
             var usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
@@ -576,7 +576,7 @@ namespace Tellma.Controllers
             _adminRepo.EnlistTransaction(Transaction.Current);
             var oldEmails = new List<string>(); // Emails are readonly after the first save
             var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
-            await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
+            await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, tenantId);
 
             // Step (8): Send the invitation emails
             if (usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
@@ -670,7 +670,7 @@ namespace Tellma.Controllers
                 var newEmails = new List<string>();
                 var tenantId = _tenantIdAccessor.GetTenantId();
 
-                await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
+                await _adminRepo.DirectoryUsers__Save(newEmails, oldEmails, tenantId);
 
                 appTrx.Complete();
                 adminTrx.Complete();

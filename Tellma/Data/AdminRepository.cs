@@ -15,7 +15,8 @@ using System.Transactions;
 
 namespace Tellma.Data
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", 
+        Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class AdminRepository : IRepository, IDisposable
     {
         private readonly IExternalUserAccessor _externalUserAccessor;
@@ -61,7 +62,10 @@ namespace Tellma.Data
             {
                 _conn = new SqlConnection(_connectionString);
                 await _conn.OpenAsync();
+            }
 
+            if (_userInfo == null)
+            {
                 // Always call OnConnect SP as soon as you create the connection
                 var externalUserId = _externalUserAccessor.GetUserId();
                 var externalEmail = _externalUserAccessor.GetUserEmail();
@@ -77,6 +81,25 @@ namespace Tellma.Data
             return _conn;
         }
 
+        /// <summary>
+        /// Initializes the connection if it is not already initialized, this version does
+        /// not invoke <see cref="OnConnect(string, string, string, string)"/>, it is used
+        /// to retrieve metadata from the admin database such as the accessible database Id
+        /// </summary>
+        /// <returns>The connection string that was initialized</returns>
+        private async Task<SqlConnection> GetDirectoryConnectionAsync()
+        {
+            if (_conn == null)
+            {
+                _conn = new SqlConnection(_connectionString);
+                await _conn.OpenAsync();
+            }
+
+            // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
+            // every time it is requested, otherwise commands will be executed outside the boundaries of the transaction
+            _conn.EnlistInTransaction(transactionOverride: _transactionOverride);
+            return _conn;
+        }
 
         /// <summary>
         /// Loads a <see cref="AdminUserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
@@ -101,6 +124,8 @@ namespace Tellma.Data
 
         #region Queries
 
+        public Query<AdminUser> AdminUsers => Query<AdminUser>();
+
         public Query<T> Query<T>() where T : Entity
         {
             return new Query<T>(GetFactory());
@@ -116,29 +141,25 @@ namespace Tellma.Data
             async Task<QueryArguments> Factory()
             {
                 var conn = await GetConnectionAsync();
-                var sources = GetSources();
                 var userInfo = await GetAdminUserInfoAsync();
                 var userId = userInfo.UserId ?? 0;
                 var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, sources, userId, userToday, _localizer);
+                return new QueryArguments(conn, Sources, userId, userToday, _localizer);
             }
 
             return Factory;
         }
 
-        private static Func<Type, string> GetSources()
+        private static string Sources(Type t)
         {
-            return (t) =>
+            return t.Name switch
             {
-                return t.Name switch
-                {
-                    nameof(AdminUser) => "[dbo].[GlobalUsers]",
-                    nameof(SqlDatabase) => "[dbo].[SqlDatabases]",
-                    nameof(SqlServer) => "[dbo].[SqlServers]",
-                    nameof(GlobalUserMembership) => "[dbo].[GlobalUserMemberships]",
-                    _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries"),
-                };
+                nameof(AdminUser) => "[map].[AdminUsers]()",
+                nameof(AdminPermission) => "[map].[AdminPermissions]()",
+                nameof(SqlDatabase) => "[map].[SqlDatabases]()",
+                nameof(SqlServer) => "[map].[SqlServers]()",
+                _ => throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries"),
             };
         }
 
@@ -152,7 +173,6 @@ namespace Tellma.Data
 
             using (SqlCommand cmd = _conn.CreateCommand()) // Use the private field _conn to avoid infinite recursion
             {
-
                 // Parameters
                 cmd.Parameters.Add("@ExternalUserId", externalUserId);
                 cmd.Parameters.Add("@UserEmail", userEmail);
@@ -175,6 +195,8 @@ namespace Tellma.Data
                         UserId = reader.Int32(i++),
                         ExternalId = reader.String(i++),
                         Email = reader.String(i++),
+                        PermissionsVersion = reader.Guid(i++)?.ToString(),
+                        UserSettingsVersion = reader.Guid(i++)?.ToString(),
                     };
                 }
                 else
@@ -186,11 +208,173 @@ namespace Tellma.Data
             return result;
         }
 
+        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view)
+        {
+            var result = new List<AbstractPermission>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("@Action", action);
+                cmd.Parameters.Add("@View", view);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new AbstractPermission
+                    {
+                        View = reader.GetString(i++),
+                        Action = reader.GetString(i++),
+                        Criteria = reader.String(i++)
+                    });
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load()
+        {
+            Guid version;
+            var user = new AdminUser();
+            var customSettings = new List<(string, string)>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                // User Settings
+                if (await reader.ReadAsync())
+                {
+                    int i = 0;
+
+                    user.Id = reader.GetInt32(i++);
+                    user.Name = reader.String(i++);
+
+                    version = reader.GetGuid(i++);
+                }
+                else
+                {
+                    // Developer mistake
+                    throw new InvalidOperationException("No settings for client were found");
+                }
+
+                // Custom settings
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    string key = reader.GetString(0);
+                    string val = reader.GetString(1);
+
+                    customSettings.Add((key, val));
+                }
+            }
+
+            return (version, user, customSettings);
+        }
+
+        public async Task<AdminSettings> Settings__Load()
+        {
+            // Returns 
+            // (1) the settings with the functional currency expanded
+
+            AdminSettings settings = new AdminSettings();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var props = typeof(AdminSettings).GetMappedProperties();
+                    foreach (var prop in props)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(settings, propValue);
+                    }
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new Exception($"AdminSettings was not returned from SP {nameof(Settings__Load)}");
+                }
+            }
+
+            return settings;
+        }
+
+        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
+        {
+            Guid version;
+            var permissions = new List<AbstractPermission>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                // Load the version
+                if (await reader.ReadAsync())
+                {
+                    version = reader.GetGuid(0);
+                }
+                else
+                {
+                    version = Guid.Empty;
+                }
+
+                // Load the permissions
+                await reader.NextResultAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    permissions.Add(new AbstractPermission
+                    {
+                        View = reader.String(i++),
+                        Action = reader.String(i++),
+                        Criteria = reader.String(i++)
+                    });
+                }
+            }
+
+            return (version, permissions);
+        }
+
+        #endregion
+
+        #region Directory Stuff
+
         public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId)
         {
             DatabaseConnectionInfo result = null;
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -220,67 +404,61 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<IEnumerable<int>> GetAccessibleDatabaseIds()
+        public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email)
         {
-            var result = new List<int>();
+            var databaseIds = new List<int>();
+            var isAdmin = false;
 
-            var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
+            var conn = await GetDirectoryConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("ExternalId", externalId);
+            cmd.Parameters.Add("Email", email);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
+
+            // Execute and Load
+            using var reader = await cmd.ExecuteReaderAsync();
+
+            // First the DB Ids
+            while (await reader.ReadAsync())
             {
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
-
-                // Execute and Load
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    result.Add(reader.GetInt32(0));
-                }
+                databaseIds.Add(reader.GetInt32(0));
             }
 
-            return result;
+            // Then Is Admin
+            await reader.NextResultAsync();
+            if (await reader.ReadAsync())
+            {
+                isAdmin = reader.GetBoolean(0);
+            }
+
+            return (databaseIds, isAdmin);
         }
 
-        #endregion
-
-        #region GlobalUsers
-
-        public async Task GlobalUsers__SetExternalIdByUserId(int userId, string externalId)
+        public async Task DirectoryUsers__SetEmailByExternalId(string externalId, string email)
         {
-            var conn = await GetConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
-            cmd.Parameters.Add("UserId", userId);
             cmd.Parameters.Add("ExternalId", externalId);
+            cmd.Parameters.Add("Email", email);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByUserId)}]";
+            cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__SetEmailByExternalId)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task GlobalUsers__SetEmailByUserId(int userId, string externalEmail)
+        public async Task DirectoryUsers__SetExternalIdByEmail(string email, string externalId)
         {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            cmd.Parameters.Add("UserId", userId);
-            cmd.Parameters.Add("ExternalEmail", externalEmail);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetEmailByUserId)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public async Task GlobalUsers__SetExternalIdByEmail(string email, string externalId)
-        {
-            var conn = await GetConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
             cmd.Parameters.Add("Email", email);
@@ -288,17 +466,17 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByEmail)}]";
+            cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__SetExternalIdByEmail)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<string>> GlobalUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
+        public async Task<IEnumerable<string>> DirectoryUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
         {
             var result = new List<string>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -323,7 +501,7 @@ namespace Tellma.Data
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(DirectoryUsers__Save)}]";
 
                 // Execute and load
                 if (returnEmailsForCreation)
@@ -346,6 +524,22 @@ namespace Tellma.Data
         #endregion
 
         #region AdminUsers
+
+        public async Task AdminUsers__SaveSettings(string key, string value)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("Key", key);
+            cmd.Parameters.Add("Value", value);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__SaveSettings)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
 
         public async Task AdminUsers__CreateAdmin(string email, string fullName, string password, string adminServerDescription = null)
         {
@@ -395,6 +589,167 @@ namespace Tellma.Data
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetExternalIdByUserId)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> AdminUsers_Validate__Save(List<AdminUserForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(AdminUser)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            DataTable permissionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Permissions);
+            var permissionsTvp = new SqlParameter("@Permissions", permissionsTable)
+            {
+                TypeName = $"[dbo].[{nameof(AdminPermission)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(permissionsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AdminUsers_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> AdminUsers__Save(List<AdminUserForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AdminUser)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable permissionsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Permissions);
+                var permissionsTvp = new SqlParameter("@Permissions", permissionsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(AdminPermission)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(permissionsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(AdminUsers__Save)}]";
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new IndexedId
+                    {
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task<IEnumerable<ValidationError>> AdminUsers_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(AdminUsers_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task AdminUsers__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__Delete)}]";
+
+            // Execute
+            try
+            {
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
+
+        public async Task AdminUsers__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(AdminUsers__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();

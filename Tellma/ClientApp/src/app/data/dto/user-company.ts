@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class UserCompany {
+export interface UserCompany {
     Id: number;
     Name: string;
     Name2: string;

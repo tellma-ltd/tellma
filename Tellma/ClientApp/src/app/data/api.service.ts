@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
 import { ActivateArguments } from './dto/activate-arguments';
 import { EntityForSave } from './entities/base/entity-for-save';
@@ -27,7 +27,6 @@ import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
-import { LegacyType } from './entities/legacy-type';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
@@ -39,8 +38,6 @@ import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
 import { GetAggregateResponse } from './dto/get-aggregate-response';
-import { UpdateStateArguments } from './dto/update-state-arguments';
-import { ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { friendlify } from './util';
 import { EntryType } from './entities/entry-type';
@@ -49,6 +46,14 @@ import { SignArguments } from './dto/sign-arguments';
 import { AssignArguments } from './dto/assign-arguments';
 import { MyUserForSave } from './dto/my-user';
 import { AccountType } from './entities/account-type';
+import { AdminUser } from './entities/admin-user';
+import { AdminSettingsForClient } from './dto/admin-settings-for-client';
+import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
+import { MyAdminUserForSave } from './dto/my-admin-user';
+import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
+import { CompaniesForClient } from './dto/companies-for-client';
+import { IdentityServerUser } from './entities/identity-server-user';
+import { ResetPasswordArgs } from './dto/reset-password-args';
 
 
 @Injectable({
@@ -60,6 +65,208 @@ export class ApiService {
 
   // Will abstract away standard API calls for CRUD operations
   constructor(public http: HttpClient, public trx: TranslateService) { }
+
+  // Admin
+
+  public adminUsersApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<AdminUser>('admin-users', cancellationToken$),
+      deactivate: this.deactivateFactory<AdminUser>('admin-users', cancellationToken$),
+      getForClient: () => {
+        const url = appsettings.apiAddress + `api/admin-users/client`;
+        const obs$ = this.http.get<DataWithVersion<AdminUserSettingsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveForClient: (key: string, value: string) => {
+        const keyParam = `key=${encodeURIComponent(key)}`;
+        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
+        const url = appsettings.apiAddress + `api/admin-users/client?` + keyParam + valueParam;
+        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, null).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      invite: (id: number | string) => {
+        this.showRotator = true;
+        const url = appsettings.apiAddress + `api/admin-users/invite?id=${id}`;
+        const obs$ = this.http.put(url, null).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+      getMyUser: () => {
+        const url = appsettings.apiAddress + `api/admin-users/me`;
+        const obs$ = this.http.get<GetByIdResponse<AdminUser>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveMyUser: (entity: MyAdminUserForSave) => {
+        this.showRotator = true;
+        const url = appsettings.apiAddress + `api/admin-users/me`;
+
+        const obs$ = this.http.post<GetByIdResponse<AdminUser>>(url, entity, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
+    };
+  }
+
+  public identityServerUsersApi(cancellationToken$: Observable<void>) {
+    return {
+      resetPassword: (args: ResetPasswordArgs) => {
+        args = args || {};
+        const url = appsettings.apiAddress + `api/identity-server-users/reset-password`;
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<IdentityServerUser>>(url, args, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
+    };
+  }
+
+  public adminSettingsApi(cancellationToken$: Observable<void>) {
+    // TODO: Keep or remove?
+    return {
+      // get: (args: GetByIdArguments) => {
+      //   args = args || {};
+      //   const paramsArray: string[] = [];
+
+      //   if (!!args.expand) {
+      //     paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+      //   }
+
+      //   const params: string = paramsArray.join('&');
+      //   const url = appsettings.apiAddress + `api/admin-settings?${params}`;
+
+      //   const obs$ = this.http.get<GetEntityResponse<AdminSettings>>(url).pipe(
+      //     catchError(error => {
+      //       const friendlyError = friendlify(error, this.trx);
+      //       return throwError(friendlyError);
+      //     }),
+      //     takeUntil(cancellationToken$)
+      //   );
+
+      //   return obs$;
+      // },
+
+      getForClient: () => {
+        const url = appsettings.apiAddress + `api/admin-settings/client`;
+        const obs$ = this.http.get<DataWithVersion<AdminSettingsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      ping: () => {
+        const url = appsettings.apiAddress + `api/admin-settings/ping`;
+        const obs$ = this.http.get(url).pipe(
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      // save: (entity: AdminSettings, args: SaveArguments) => {
+      //   this.showRotator = true;
+      //   args = args || {};
+      //   const paramsArray: string[] = [];
+
+      //   if (!!args.expand) {
+      //     paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+      //   }
+
+      //   const params: string = paramsArray.join('&');
+      //   const url = appsettings.apiAddress + `api/admin-settings?${params}`;
+
+      //   const obs$ = this.http.post<SaveAdminSettingsResponse>(url, entity, {
+      //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      //   }).pipe(
+      //     tap(() => this.showRotator = false),
+      //     catchError((error) => {
+      //       this.showRotator = false;
+      //       const friendlyError = friendlify(error, this.trx);
+      //       return throwError(friendlyError);
+      //     }),
+      //     takeUntil(cancellationToken$),
+      //     finalize(() => this.showRotator = false)
+      //   );
+
+      //   return obs$;
+      // }
+    };
+  }
+
+  public adminPermissionsApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: () => {
+        const url = appsettings.apiAddress + `api/admin-permissions/client`;
+        const obs$ = this.http.get<DataWithVersion<AdminPermissionsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  // Application
 
   public measurementUnitsApi(cancellationToken$: Observable<void>) {
     return {
@@ -344,7 +551,7 @@ export class ApiService {
     return {
       getForClient: () => {
         const url = appsettings.apiAddress + `api/companies/client`;
-        const obs$ = this.http.get<UserCompany[]>(url).pipe(
+        const obs$ = this.http.get<CompaniesForClient>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -643,6 +850,10 @@ export class ApiService {
 
         if (!!args.expand) {
           paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
         }
 
         paramsArray.push(`returnEntities=${!!args.returnEntities}`);

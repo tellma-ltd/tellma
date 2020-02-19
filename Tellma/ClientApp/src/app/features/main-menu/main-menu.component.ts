@@ -5,7 +5,7 @@ import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
-import { DefinitionsForClient, MasterDetailsDefinitionForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
@@ -127,15 +127,16 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   _currentCulture: string;
 
   public initializeMainMenu(): MenuSectionInfo[] {
-    if (this._definitions !== this.workspace.current.definitions ||
-      this._settings !== this.workspace.current.settings ||
+    const ws = this.workspace.currentTenant;
+    if (this._definitions !== ws.definitions ||
+      this._settings !== ws.settings ||
       this._currentCulture !== this.workspace.ws.culture ||
-      this._permissions !== this.workspace.current.permissions) {
+      this._permissions !== ws.permissions) {
 
-      this._definitions = this.workspace.current.definitions;
-      this._settings = this.workspace.current.settings;
+      this._definitions = ws.definitions;
+      this._settings = ws.settings;
       this._currentCulture = this.workspace.ws.culture;
-      this._permissions = this.workspace.current.permissions;
+      this._permissions = ws.permissions;
 
       // Clone the main menu base and add to the clone
       const menu = JSON.parse(JSON.stringify(this.mainMenuBase)) as { [section: string]: MenuSectionInfo };
@@ -148,10 +149,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       // add custom screens from definitions
-      this.addDefinitions(menu, this.workspace.current.definitions.Lookups, 'lookups');
-      this.addDefinitions(menu, this.workspace.current.definitions.Agents, 'agents');
-      this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
-      this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
+      this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
+      this.addDefinitions(menu, ws.definitions.Agents, 'agents');
+      this.addDefinitions(menu, ws.definitions.Resources, 'resources');
+      this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
       this.addReportDefinitions(menu);
 
@@ -167,7 +168,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
-    const ws = this.workspace.current;
+    const ws = this.workspace.currentTenant;
     const definitions = ws.definitions.Reports;
     if (!!definitions) {
       const canViewAgents = Object.keys(ws.definitions.Agents).some(v => this.canView(`agents/${v}`));
@@ -201,12 +202,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
               canView = canViewDocuments;
               break;
             default:
-              const view = metadata[definition.Collection](ws, this.translate, definition.DefinitionId).apiEndpoint;
+              const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
               canView = this.canView(view);
               break;
           }
         } else {
-          const view = metadata[definition.Collection](ws, this.translate, definition.DefinitionId).apiEndpoint;
+          const view = metadata[definition.Collection](this.workspace, this.translate, definition.DefinitionId).apiEndpoint;
           canView = this.canView(view);
         }
 
@@ -239,7 +240,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     url: string, titleFunc?: (def: DefinitionForClient) => string) {
     if (!!definitions) {
 
-      titleFunc = titleFunc || (d => this.workspace.current.getMultilingualValueImmediate(d, 'TitlePlural')
+      titleFunc = titleFunc || (d => this.workspace.currentTenant.getMultilingualValueImmediate(d, 'TitlePlural')
         || this.translate.instant('Untitled'));
       for (const definitionId of Object.keys(definitions).filter(e => this.canView(`${url}/${e}`))) {
 
@@ -600,6 +601,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public canView(view: string) {
-    return this.workspace.current.canRead(view);
+    return this.workspace.currentTenant.canRead(view);
   }
 }

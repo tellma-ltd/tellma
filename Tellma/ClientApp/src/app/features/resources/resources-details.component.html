@@ -1,6 +1,6 @@
 <t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
-    [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
-    [documentTemplate]="document" [actions]="[
+    [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb"
+    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -303,8 +303,9 @@
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
             <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | number:'1.0-4' }}</div>
         </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity"
+            [ngModelOptions]="{ updateOn: 'blur' }" [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0"
+            [maxDecimalPlaces]="4">
         </t-decimal-editor>
     </t-form-group>
 

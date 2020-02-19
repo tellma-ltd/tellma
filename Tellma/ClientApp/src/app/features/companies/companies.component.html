@@ -1,8 +1,9 @@
 <div class="container p-2 px-sm-5 py-4">
-
   <div class="row">
-    <div class="t-page-title col-12">
+    <div class="t-page-title col-12 d-flex justify-content-between align-items-baseline">
       {{ 'MyCompanies' | translate }}
+      <a *ngIf="isAdmin" class="btn btn-primary btn-sm d-flex" [routerLink]="['/admin', 'console', 'main-menu']">
+        {{ 'AdminConsole' | translate }}</a>
     </div>
 
     <!-- Search Bar -->
@@ -64,23 +65,13 @@
       {{ errorMessage }}
     </div>
 
-    <nav class="sr-only" aria-label="Page navigation example">
-      <ul class="pagination justify-content-center">
-        <li class="page-item"><a class="page-link" href="#">{{ 'Previous' | translate }}</a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">{{ 'Next' | translate }}</a></li>
-      </ul>
-    </nav>
-
-    <div class="py-2 d-flex justify-content-center sr-only2" *ngIf="true">
+    <div class="py-2 d-flex justify-content-center" *ngIf="true">
       <button class="btn btn-primary btn-sm" (click)="onRefresh()">
         {{ 'Refresh' | translate }}
       </button>
       <div class="d-inline d-flex align-items-center mx-2">
-          {{ from | number }} - {{ to | number }} / {{ total | number }}
-        </div>
+        {{ from | number }} - {{ to | number }} / {{ total | number }}
+      </div>
       <button class="btn btn-primary btn-sm" (click)="onPrevPage()"
         [disabled]="!canPrevPage">{{ 'Previous' | translate }}</button>
 

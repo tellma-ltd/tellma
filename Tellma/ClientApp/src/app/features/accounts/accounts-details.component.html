@@ -1,4 +1,4 @@
-<t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
+<t-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
@@ -83,7 +83,7 @@
                             <t-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
                             </t-auto-cell>
                         </t-view-link>
-                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId">
+                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId" filter="IsLeaf eq true">
                         </t-responsibility-centers-picker>
                     </t-form-group>
 

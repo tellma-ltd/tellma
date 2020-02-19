@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
 import { addToWorkspace } from '~/app/data/util';
@@ -27,8 +27,8 @@ export class IfrsNotesDetailsComponent extends DetailsBaseComponent {
     return IfrsConcept_IfrsType[value];
   }
 
-  public get ws() {
-    return this.workspace.current;
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: IfrsNote): void => {

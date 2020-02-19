@@ -1,6 +1,6 @@
 <t-details [expand]="expand" collection="Role" [createFunc]="create" [cloneFunc]="clone" [mode]="mode"
-  [idString]="idString" [masterCrumb]="'Roles' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
-  [actions]="[
+  [additionalSelect]="additionalSelect" [idString]="idString" [masterCrumb]="'Roles' | translate"
+  [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -119,8 +119,9 @@
           <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Action">
             <div *ngIf="!isEdit">{{ permissionActionLookup(item?.Action) | translate }}</div>
             <t-selector *ngIf="isEdit" [(ngModel)]="item.Action" [required]="!item.PH"
-              (ngModelChange)="update.call(null, item); onPermissionChanged(item);" [ngModelOptions]="{ updateOn: 'blur' }"
-              [choices]="permissionActionChoices(item)" [disabled]="!item.View"></t-selector>
+              (ngModelChange)="update.call(null, item); onPermissionChanged(item);"
+              [ngModelOptions]="{ updateOn: 'blur' }" [choices]="permissionActionChoices(item)" [disabled]="!item.View">
+            </t-selector>
           </t-form-group>
         </ng-template>
 
@@ -180,7 +181,8 @@
             <t-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.UserId">
               {{ getMultilingualValue(ws.User[item.UserId], 'Name', ws) }}
             </t-view-link>
-            <t-users-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update.call(null, item)" [showRoles]="false">
+            <t-users-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update.call(null, item)"
+              [showRoles]="false">
             </t-users-picker>
           </t-form-group>
         </ng-template>

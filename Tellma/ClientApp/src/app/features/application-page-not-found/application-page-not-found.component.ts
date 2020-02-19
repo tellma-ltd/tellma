@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceService } from '~/app/data/workspace.service';
 
@@ -6,12 +6,10 @@ import { WorkspaceService } from '~/app/data/workspace.service';
   selector: 't-application-page-not-found',
   templateUrl: './application-page-not-found.component.html'
 })
-export class ApplicationPageNotFoundComponent implements OnInit {
+export class ApplicationPageNotFoundComponent {
 
   constructor(private router: Router, private workspace: WorkspaceService) { }
 
-  ngOnInit() {
-  }
 
   public onHome() {
     const tenantId = this.workspace.ws.tenantId;

@@ -1,9 +1,9 @@
-<t-details collection="LegacyClassification" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
+<t-details collection="LegacyClassification" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="'LegacyClassifications' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
     [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
             { template: deprecate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
-           ]">
+           ]" >
 </t-details>
 
 <!-- Details Crumb -->

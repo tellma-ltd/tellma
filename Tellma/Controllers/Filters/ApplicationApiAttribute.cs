@@ -1,6 +1,4 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Data;
-using Tellma.Entities;
+﻿using Tellma.Data;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.Identity;
 using Tellma.Services.MultiTenancy;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -101,7 +98,7 @@ namespace Tellma.Controllers
                     // Update external Id in the central Admin database too (To avoid an awkward situation
                     // where a user exists on the tenant but not on the Admin db, if they change their email in between)
                     var adminRepo = _serviceProvider.GetRequiredService<AdminRepository>();
-                    await adminRepo.GlobalUsers__SetExternalIdByEmail(externalEmail, externalId);
+                    await adminRepo.DirectoryUsers__SetExternalIdByEmail(externalEmail, externalId);
                 }
 
                 else if (userInfo.ExternalId != externalId)
@@ -120,7 +117,7 @@ namespace Tellma.Controllers
                     await _appRepo.Users__SetEmailByUserId(userId, externalEmail);
                 }
 
-                // (5) Set the tenant info in the context, to make accessible for model metadata providers
+                // (5) Set the tenant info in the context, to make it accessible for model metadata providers
                 var tenantInfo = await _appRepo.GetTenantInfoAsync();
                 _tenantInfoAccessor.SetInfo(tenantId, tenantInfo);
 

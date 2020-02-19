@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
@@ -46,7 +46,7 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
   get decimalPlacesChoices(): SelectorChoice[] {
 
     if (!this._decimalPlacesChoices) {
-      const desc = metadata_Currency(this.ws, this.translate, null).properties.E as ChoicePropDescriptor;
+      const desc = metadata_Currency(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
       this._decimalPlacesChoices = getChoices(desc);
     }
 
@@ -54,12 +54,12 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
   }
 
   public decimalPlacesLookup(value: any): string {
-    const descriptor = metadata_Currency(this.ws, this.translate, null).properties.E as ChoicePropDescriptor;
+    const descriptor = metadata_Currency(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
-  public get ws() {
-    return this.workspace.current;
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: Currency): void => {

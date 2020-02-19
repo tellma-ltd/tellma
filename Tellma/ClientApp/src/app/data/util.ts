@@ -5,6 +5,7 @@ import { EntityWithKey } from './entities/base/entity-with-key';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
+import { EntityDescriptor } from './entities/base/metadata';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -275,4 +276,25 @@ export function fileSizeDisplay(fileSize: number) {
       unitIndex++;
   }
   return (unitIndex ? fileSize.toFixed(1) + ' ' : fileSize) + ' KMGTPEZY'[unitIndex] + 'B';
+}
+
+export function computeSelectForDetailsPicker(desc: EntityDescriptor, additionalSelect: string): string {
+  // Computes the select parameter for details picker and the details screen in popup mode
+  const resultPaths: { [key: string]: true } = {};
+
+  // Basic select
+  if (!!desc.select) {
+    desc.select.forEach(s => resultPaths[s] = true);
+  }
+
+  if (!!desc.definitionIds) {
+    resultPaths.DefinitionId = true;
+  }
+
+  // custom select
+  if (!!additionalSelect) {
+    additionalSelect.split(',').forEach(s => resultPaths[s] = true);
+  }
+
+  return Object.keys(resultPaths).join(',');
 }

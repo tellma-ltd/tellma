@@ -227,7 +227,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     const coll = this.definition.Collection;
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
   }
 
   get apiEndpoint(): string {
@@ -351,7 +351,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const prop = steps.pop();
       const collection = this.definition.Collection;
       const definitionId = this.definition.DefinitionId;
-      const ws = this.workspace.current;
+      const ws = this.workspace;
       const trx = this.translate;
       const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
       const propDesc = entityDesc.properties[prop];
@@ -386,7 +386,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           break;
       }
 
-      const label = () => !!measureDef.Label ? this.workspace.current.getMultilingualValueImmediate(measureDef, 'Label') :
+      const label = () => !!measureDef.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(measureDef, 'Label') :
         this.translate.instant('DefaultAggregationMeasure', {
           aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
           measure: desc.label()
@@ -412,7 +412,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // Without a modifier, the property descriptor comes from the metadata
       const collection = this.definition.Collection;
       const definitionId = this.definition.DefinitionId;
-      const ws = this.workspace.current;
+      const ws = this.workspace;
       const trx = this.translate;
       const steps = path.split('/');
       const prop = steps[steps.length - 1];
@@ -439,7 +439,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         modifier,
         propDesc,
         autoExpand: dim.AutoExpand,
-        label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
+        label: () => !!dim.Label ? this.workspace.currentTenant.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
       };
 
       // This is a nav property, add a few extra things to allow for
@@ -501,7 +501,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.definitionId, this.workspace.current, this.translate);
+          this.definitionId, this.workspace, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
       } catch {
@@ -541,7 +541,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       // get the description of the entity hosting the property
       const currentDesc = entityDescriptorImpl(path.slice(0, -1), collection,
-        definitionId, this.workspace.current, this.translate);
+        definitionId, this.workspace, this.translate);
 
       const propDesc = currentDesc.properties[property];
       if (!!propDesc && propDesc.control === 'navigation') {
@@ -549,7 +549,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         addAtom(`${stringPath}/Id`);
 
         const desc = entityDescriptorImpl(path, collection, definitionId,
-          this.workspace.current, this.translate);
+          this.workspace, this.translate);
 
         // This is to ensure that ordering of select columns is done in the correct order
         desc.orderby.forEach(o => {
@@ -606,9 +606,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const args = { ...this.arguments } as ReportArguments;
 
     // Definition values override (the user should not be able to specify them anyways)
-    for (const p of this.definition.Parameters) {
-      if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
-        args[p.Key] = p.Value;
+    if (!!this.definition.Parameters) {
+      for (const p of this.definition.Parameters) {
+        if (p.Visibility === 'None' && p.Value !== null && p.Value !== undefined) {
+          args[p.Key] = p.Value;
+        }
       }
     }
 
@@ -629,7 +631,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const lowerCaseDefs: { [key: string]: boolean } = {};
-    if (this.definition.Parameters) {
+    if (!!this.definition.Parameters) {
       for (const paramDef of this.definition.Parameters.filter(p => !!p.Key)) {
         lowerCaseDefs[paramDef.Key.toLowerCase()] = paramDef.Visibility === 'Required';
       }
@@ -678,7 +680,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               exp.path,
               this.definition.Collection,
               this.definition.DefinitionId,
-              this.workspace.current,
+              this.workspace,
               this.translate);
 
             const propDesc = entityDesc.properties[exp.property];
@@ -1549,7 +1551,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.numberOfDimensions === 2;
   }
 
-
   /////////////////// Details
 
   public get collection(): string {
@@ -1569,7 +1570,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public selectLabel(s: ReportSelectDefinitionForClient) {
-    return this.workspace.current.getMultilingualValueImmediate(s, 'Label');
+    return this.workspace.currentTenant.getMultilingualValueImmediate(s, 'Label');
   }
 
   public onFlatSelect(entity: Entity): void {

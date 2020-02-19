@@ -1,5 +1,5 @@
 <t-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create"
-  [expand]="expand" [mode]="mode" [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb"
+  [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }

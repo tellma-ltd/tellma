@@ -48,21 +48,21 @@ export class ResponsibilityCentersDetailsComponent extends DetailsBaseComponent 
 
   get responsibilityTypeChoices(): SelectorChoice[] {
 
-    const descriptor = metadata_ResponsibilityCenter(this.ws, this.translate, null)
+    const descriptor = metadata_ResponsibilityCenter(this.workspace, this.translate, null)
       .properties.ResponsibilityType as ChoicePropDescriptor;
 
     return getChoices(descriptor);
   }
 
   public responsibilityTypeLookup(value: string): string {
-    const descriptor = metadata_ResponsibilityCenter(this.ws, this.translate, null)
+    const descriptor = metadata_ResponsibilityCenter(this.workspace, this.translate, null)
       .properties.ResponsibilityType as ChoicePropDescriptor;
 
     return descriptor.format(value);
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: ResponsibilityCenter): void => {

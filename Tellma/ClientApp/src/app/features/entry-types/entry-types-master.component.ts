@@ -31,11 +31,11 @@ export class EntryTypesMasterComponent extends MasterBaseComponent {
   // UI Binding
 
   public get c() {
-    return this.workspace.current.EntryType;
+    return this.ws.EntryType;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.entryTypesApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(

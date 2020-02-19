@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { IfrsConcept, metadata_IfrsConceptInner } from './ifrs-concept';
 
@@ -25,11 +25,12 @@ export const IfrsConcept_IfrsType = {
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_IfrsNote(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+  const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
     _settings = ws.settings;
-    _cache = metadata_IfrsConceptInner(ws, trx, definitionId);
+    _cache = metadata_IfrsConceptInner(wss, trx, definitionId);
     _cache.collection = 'IfrsNote';
     _cache.apiEndpoint = 'ifrs-notes';
     _cache.screenUrl = 'ifrs-notes';

@@ -24,11 +24,11 @@ export class LegacyClassificationsMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.LegacyClassification;
+    return this.ws.LegacyClassification;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

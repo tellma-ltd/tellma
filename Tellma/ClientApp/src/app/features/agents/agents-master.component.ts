@@ -58,15 +58,15 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   }
 
   public get c() {
-    return this.workspace.current.Agent;
+    return this.workspace.currentTenant.Agent;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get definition(): AgentDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Agents[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Agents[this.definitionId] : null;
   }
 
   public get found(): boolean {

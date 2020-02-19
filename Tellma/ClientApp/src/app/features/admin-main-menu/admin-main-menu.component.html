@@ -1,0 +1,16 @@
+<div class="container py-4 px-5">
+    <div class="t-menu-section"><span>{{ 'AdminConsole' | translate }}</span></div>
+
+    <div class="t-cyan">
+        <a class="t-menu-item btn m-1" [class.d-none]="!canView('admin-users')"
+            *ngFor="let item of mainMenuItems; let i = index;" [routerLink]="item.link">
+            <div class="pt-4 pb-1 t-menu-item-icon">
+                <fa-icon [icon]="item.icon"></fa-icon>
+            </div>
+            <div class="px-2 t-menu-item-label">
+                {{ item.label() }}
+            </div>
+        </a>
+
+    </div>
+</div>

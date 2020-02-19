@@ -19,6 +19,14 @@ namespace Tellma.Data
         }
 
         /// <summary>
+        /// Syntactic sugar for <see cref="AdminRepository.Action_View__Permissions(string, string)"/>
+        /// </summary>
+        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this AdminRepository repo, string action, string view)
+        {
+            return await repo.Action_View__Permissions(action, view);
+        }
+
+        /// <summary>
         /// Syntactic sugar for <see cref="ApplicationRepository.Action_ViewPrefix__Permissions(string, string)"/>
         /// </summary>
         public static async Task<IEnumerable<AbstractPermission>> GenericUserPermissions(this ApplicationRepository repo, string action, string prefix)

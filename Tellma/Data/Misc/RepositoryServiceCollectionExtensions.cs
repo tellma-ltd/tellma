@@ -29,7 +29,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.ConnectionString = connectionString;
             });
 
-            return services.AddScoped<AdminRepository>();
+            return services.AddScoped<AdminRepository>()
+                .AddScoped<IdentityRepository>();
         }
 
         /// <summary>

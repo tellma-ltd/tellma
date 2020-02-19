@@ -34,7 +34,7 @@ namespace Tellma.Services.Email
             string conclusion = localizer["InvitationEmailConclusion"];
             string signature = localizer["InvitationEmailSignature0", appName];
 
-            return MakeEmail($@"
+            string mainContent = $@"
         <p style=""font-weight: bold;font-size: 120%;"">
             {greeting}
         </p>
@@ -52,7 +52,9 @@ namespace Tellma.Services.Email
             <br>
             {signature}
         </p>
-", culture);
+";
+
+            return MakeEmail(mainContent, culture);
         }
 
         public string MakeEmail(string mainContent, CultureInfo culture = null)

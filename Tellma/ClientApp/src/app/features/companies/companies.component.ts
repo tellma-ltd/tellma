@@ -69,7 +69,8 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     this.resetPage();
     ws.companiesStatus = MasterStatus.loading;
     this.crud.getForClient().subscribe(e => {
-      ws.companies = e;
+      ws.companies = e.Companies;
+      ws.isAdmin = e.IsAdmin;
       ws.companiesStatus = MasterStatus.loaded;
       this.workspace.notifyStateChanged();
     }, friendlyError => {
@@ -124,6 +125,10 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   }
 
   // UI Bindings
+
+  public get isAdmin() {
+    return this.workspace.ws.isAdmin;
+  }
 
   public get filteredCompanies() {
     const ws = this.workspace.ws;

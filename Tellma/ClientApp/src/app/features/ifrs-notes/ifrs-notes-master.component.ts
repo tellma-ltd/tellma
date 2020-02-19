@@ -24,11 +24,11 @@ export class IfrsNotesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.IfrsNote;
+    return this.ws.IfrsNote;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public ifrsTypeLookup(value: string): string {

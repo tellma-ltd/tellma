@@ -74,7 +74,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.Reports[definitionId]) {
+        if (!definitionId || !this.workspace.currentTenant.definitions.Reports[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
         }
 
@@ -150,7 +150,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   get definition(): ReportDefinitionForClient {
     return this.isScreenMode ?
-      this.workspace.current.definitions.Reports[this.definitionId] :
+      this.workspace.currentTenant.definitions.Reports[this.definitionId] :
       this.previewDefinition;
   }
 
@@ -161,7 +161,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
     const coll = this.definition.Collection;
     const definitionId = this.definition.DefinitionId;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
   }
 
   get apiEndpoint(): string {
@@ -171,11 +171,11 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get state(): ReportStore {
 
-    if (!this.workspace.current.reportState[this.stateKey]) {
-      this.workspace.current.reportState[this.stateKey] = new ReportStore();
+    if (!this.workspace.currentTenant.reportState[this.stateKey]) {
+      this.workspace.currentTenant.reportState[this.stateKey] = new ReportStore();
     }
 
-    return this.workspace.current.reportState[this.stateKey];
+    return this.workspace.currentTenant.reportState[this.stateKey];
   }
 
   private urlStateChange(): void {
@@ -208,7 +208,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   // UI Bindings
 
   get title(): string {
-    const title = this.workspace.current.getMultilingualValueImmediate(this.definition, 'Title');
+    const title = this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Title');
     return title; // this.isScreenMode ? title : `${title} (${this.translate.instant('Preview')})`;
   }
 
@@ -248,7 +248,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             atom.path,
             this.definition.Collection,
             this.definition.DefinitionId,
-            this.workspace.current,
+            this.workspace,
             this.translate);
 
           // This block's purpose is to auto-calculate the property descriptor of this atom
@@ -314,7 +314,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           } else {
             const paramInfo = defaultParams[keyLower];
             if (!!paramInfo) {
-              paramInfo.label = !!p.Label ? () => this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
+              paramInfo.label = !!p.Label ? () => this.workspace.currentTenant.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
               paramInfo.isRequired = p.Visibility === 'Required';
               this._currentParameters.push(paramInfo);
               delete defaultParams[keyLower];
@@ -489,7 +489,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get description(): string {
-    return this.workspace.current.getMultilingualValueImmediate(this.definition, 'Description');
+    return this.workspace.currentTenant.getMultilingualValueImmediate(this.definition, 'Description');
   }
 
   public get disableRefresh(): boolean {

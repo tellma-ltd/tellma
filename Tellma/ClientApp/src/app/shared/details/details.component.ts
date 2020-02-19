@@ -12,7 +12,7 @@ import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
-import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
+import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
@@ -63,7 +63,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   sidebarTemplate: TemplateRef<any>;
 
   @Input()
-  savePreprocessing: (mode: EntityForSave) => void;
+  savePreprocessing: (entity: EntityForSave) => void;
 
   @Input()
   actions: DropdownAction[] = [];
@@ -89,6 +89,9 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   @Input()
   idString: string;
+
+  @Input()
+  additionalSelect: string; // Loaded in popup mode
 
   @Input()
   theme: 'light' | 'dark' = 'light';
@@ -245,7 +248,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, this.definition) : null;
   }
 
   get apiEndpoint(): string {
@@ -649,7 +652,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   onSave(): void {
     // if it's new the user expects a save to happen even if there is no red asterisk
     if (!this.isDirty && !this.isNew) {
-      if (this.mode === 'popup') {
+      if (this.isPopupMode) {
         // In popup mode, just notify the outside world that a save has happened
         this.saved.emit(this._editModel.Id);
 
@@ -675,7 +678,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       }
 
       // prepare the save observable
-      this.crud.save([this._editModel], { expand: this.expand, returnEntities: true }).subscribe(
+      const select = this.isPopupMode ? computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect) : null;
+      this.crud.save([this._editModel], { select, expand: this.expand, returnEntities: true }).subscribe(
         (response: EntitiesResponse) => {
 
           // If we're updating, copy the old entity
@@ -696,7 +700,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
             this.globalState.update(oldEntity, entityWs);
           }
 
-          if (this.mode === 'popup') {
+          if (this.isPopupMode) {
             // in popup mode, just notify the outside world that a save has happened
             this.onEdit(); // to replace the edit mode with the one from the server
             this.saved.emit(s.detailsId);

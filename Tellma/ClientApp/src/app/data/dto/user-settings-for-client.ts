@@ -1,7 +1,4 @@
 // tslint:disable:variable-name
-export class UserSettingsForClientForSave {
-}
-
 export class UserSettingsForClient {
   UserId: number;
   ImageId: string;

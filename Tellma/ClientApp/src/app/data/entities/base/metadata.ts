@@ -1,5 +1,5 @@
 import { metadata_MeasurementUnit } from '../measurement-unit';
-import { TenantWorkspace } from '../../workspace.service';
+import { TenantWorkspace, AdminWorkspace, WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
@@ -22,8 +22,16 @@ import { metadata_Document } from '../document';
 import { metadata_SummaryEntry } from '../summary-entry';
 import { metadata_DetailsEntry } from '../details-entry';
 import { metadata_Line } from '../line';
+import { metadata_AdminUser } from '../admin-user';
+import { metadata_IdentityServerUser } from '../identity-server-user';
 
-export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
+export const metadata: {
+    [collection: string]: (
+        ws: WorkspaceService,
+        trx: TranslateService,
+        definitionId?: string) => EntityDescriptor
+} = {
+    // Application
     MeasurementUnit: metadata_MeasurementUnit,
     User: metadata_User,
     Agent: metadata_Agent,
@@ -39,10 +47,14 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     ReportDefinition: metadata_ReportDefinition,
     ResponsibilityCenter: metadata_ResponsibilityCenter,
     EntryType: metadata_EntryType,
-    SummaryEntry: metadata_SummaryEntry,
-    DetailsEntry: metadata_DetailsEntry,
-    Line: metadata_Line,
     Document: metadata_Document,
+    Line: metadata_Line,
+    DetailsEntry: metadata_DetailsEntry,
+    SummaryEntry: metadata_SummaryEntry,
+
+    // Admin
+    AdminUser: metadata_AdminUser,
+    IdentityServerUser: metadata_IdentityServerUser,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
@@ -50,7 +62,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 
 let _collections: SelectorChoice[];
 
-export function collectionsWithEndpoint(ws: TenantWorkspace, trx: TranslateService): SelectorChoice[] {
+export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService): SelectorChoice[] {
     if (!_collections) {
         _collections = Object.keys(metadata)
             .filter(key => !!metadata[key](ws, trx, null).apiEndpoint)
@@ -273,13 +285,13 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseDefinition: string,
-    ws: TenantWorkspace, trx: TranslateService): EntityDescriptor {
+    wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
 
     if (!baseCollection) {
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
-    let currentEntityDesc = metadata[baseCollection](ws, trx, baseDefinition);
+    let currentEntityDesc = metadata[baseCollection](wss, trx, baseDefinition);
 
     for (const step of pathArray) {
         const propDesc = currentEntityDesc.properties[step];
@@ -295,7 +307,7 @@ export function entityDescriptorImpl(
             const coll = propDesc.collection || propDesc.type;
             const definition = propDesc.definition;
 
-            currentEntityDesc = metadata[coll](ws, trx, definition);
+            currentEntityDesc = metadata[coll](wss, trx, definition);
         }
     }
 

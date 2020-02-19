@@ -1,7 +1,7 @@
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -40,7 +40,8 @@ export interface DetailsEntry extends EntityWithKey {
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_DetailsEntry(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+    const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
         _settings = ws.settings;

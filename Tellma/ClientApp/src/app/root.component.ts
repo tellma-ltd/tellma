@@ -3,13 +3,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
-import { Router, NavigationEnd, Params, ActivatedRoute } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { interval, concat } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
-import { appsettings } from './data/global-resolver.guard';
 import { DOCUMENT } from '@angular/common';
 
 @Component({

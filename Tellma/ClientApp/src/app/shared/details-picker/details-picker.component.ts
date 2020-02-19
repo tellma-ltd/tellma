@@ -5,11 +5,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, map, switchMap, tap, exhaustMap, filter } from 'rxjs/operators';
+import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
+import { addToWorkspace, Key, addSingleToWorkspace, computeSelectForDetailsPicker } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -91,7 +91,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   @Input()
   formatter: (item: any) => string = (item: any) => {
     const definition = this.definitionIdsSingleOrDefault;
-    return metadata[this.collection](this.workspace.current, this.translate, definition).format(item);
+    return metadata[this.collection](this.workspace, this.translate, definition).format(item);
   }
 
   ///////////////// Lifecycle Hooks
@@ -167,7 +167,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
             skip: 0,
             expand: this.expand,
             filter: this.queryFilter,
-            select: this.computeSelect()
+            select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
@@ -198,28 +198,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     }));
   }
 
-  private computeSelect(): string {
-    const desc = this.entityDescriptor();
-
-    const resultPaths: { [key: string]: true } = {};
-
-    // Basic select
-    if (!!desc.select) {
-      desc.select.forEach(s => resultPaths[s] = true);
-    }
-
-    if (!!desc.definitionIds) {
-      resultPaths.DefinitionId = true;
-    }
-
-    // custom select
-    if (!!this.additionalSelect) {
-      this.additionalSelect.split(',').forEach(s => resultPaths[s] = true);
-    }
-
-    return Object.keys(resultPaths).join(',');
-  }
-
   ngOnChanges(changes: SimpleChanges) {
     // the combination of these properties define a new details picker
     const screenDefProperties = [changes.definitions, changes.collection];
@@ -242,7 +220,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   entityDescriptor(definitionId?: string): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
   }
 
   apiEndpoint(definitionId: string): string {
@@ -257,7 +235,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private doFetchUnloadedItem(id: string | number) {
     return this.api.getById(id, {
       expand: this.expand,
-      select: this.computeSelect()
+      select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
     }).pipe(
       tap((response: GetByIdResponse) => {
         addSingleToWorkspace(response, this.workspace);

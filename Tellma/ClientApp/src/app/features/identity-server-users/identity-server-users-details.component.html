@@ -1,0 +1,95 @@
+<t-details [expand]="expand" [idString]="idString" collection="IdentityServerUser" [mode]="mode"
+    [additionalSelect]="additionalSelect" [showCreateButton]="false" [showDeleteButton]="false" [showEditButton]="false"
+    [masterCrumb]="'IdentityServerUsers' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+    [actions]="[
+            { template: resetPassword, action: onResetPassword, showAction: showResetPassword, canAction: canResetPassword, actionTooltip: resetPasswordTooltip }
+           ]">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ model?.Email }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- Email -->
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+        <h2 class="font-weight-normal">{{ model?.Email }}</h2>
+    </t-form-group>
+
+    <!-- Email Confirmed -->
+    <t-form-group class="t-form-group" [label]="'IdentityServerUser_EmailConfirmed' | translate">
+        <div>{{ (model.EmailConfirmed === true ? 'Yes' : model.EmailConfirmed === false ? 'No' : '') | translate }}
+        </div>
+    </t-form-group>
+
+    <!-- Password Set -->
+    <t-form-group class="t-form-group" [label]="'IdentityServerUser_PasswordSet' | translate">
+        <div>{{ (model.PasswordSet === true ? 'Yes' : model.PasswordSet === false ? 'No' : '') | translate }}
+        </div>
+    </t-form-group>
+
+    <!-- Two-Factor Enabled -->
+    <t-form-group class="t-form-group" [label]="'IdentityServerUser_TwoFactorEnabled' | translate">
+        <div>{{ (model.TwoFactorEnabled === true ? 'Yes' : model.TwoFactorEnabled === false ? 'No' : '') | translate }}
+        </div>
+    </t-form-group>
+
+    <!-- Lockout End -->
+    <t-form-group class="t-form-group" [label]="'IdentityServerUser_LockoutEnd' | translate">
+        <t-auto-cell collection="IdentityServerUser" [entity]="model" path="LockoutEnd">
+        </t-auto-cell>
+    </t-form-group>
+</ng-template>
+
+<!-- Actions -->
+<ng-template #resetPassword> {{ 'ResetPassword' | translate }} </ng-template>
+
+
+<!-- Password Reset Modal -->
+<ng-template #resetPasswordModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'ResetPassword' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+
+        <!-- Email -->
+        <t-form-group class="t-form-group" [label]="'User_Email' | translate" [serverErrors]="null">
+            <div>{{ modelRef?.Email }}</div>
+        </t-form-group>
+
+        <!-- New Password -->
+        <t-form-group class="t-form-group" [label]="'NewPassword' | translate" [serverErrors]="null">
+            <t-text-editor [(ngModel)]="newPassword" [type]="passwordFieldType" required [focusIf]="true">
+            </t-text-editor>
+            <label class="btn btn-sm text-primary t-pointer mx-1" title="{{ 'ShowHidePassword' | translate }}"
+                (click)="togglePasswordVisibility()">
+                <fa-icon [icon]="isPasswordShown ? 'eye-slash' : 'eye'"></fa-icon>
+            </label>
+        </t-form-group>
+
+        <!-- Error Message -->
+        <t-error-message *ngIf="!!resetPasswordError"> {{ resetPasswordError }} </t-error-message>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="resetPasswordClick(modal)" [disabled]="!newPassword">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'ResetPassword' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()">
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

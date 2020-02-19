@@ -21,7 +21,7 @@ export class LookupsImportComponent implements OnInit {
 
       const definitionId = params.get('definitionId');
 
-      if (!definitionId || !this.workspace.current.definitions.Lookups[definitionId]) {
+      if (!definitionId || !this.ws.definitions.Lookups[definitionId]) {
         this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
       }
 
@@ -32,12 +32,12 @@ export class LookupsImportComponent implements OnInit {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Lookups[definitionId];
+    const definition = this.ws.definitions.Lookups[definitionId];
     if (!definition) {
       this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
     }

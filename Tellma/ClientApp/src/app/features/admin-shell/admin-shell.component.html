@@ -1,0 +1,125 @@
+<div class="d-flex flex-column h-100">
+    <!-- <t-warning-message>The license has expired. The system will become read-only in <b>22 days.</b></t-warning-message> -->
+    <!-- <t-error-message>The system is readonly, please renew your license</t-error-message> -->
+    <nav class="navbar navbar-light shadow-sm border-bottom bg-white navbar-expand-sm p-0 align-items-sm-stretch">
+        <a class="t-brand-link t-navbar-button d-flex align-items-baseline" routerLink="main-menu" [title]="'Home' | translate">
+        <t-brand theme="light" [scale]="1.0"></t-brand>
+        </a>
+        <div class="mx-2 d-flex">
+            <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+                *ngIf="nav.showBack">
+                <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
+            </button>
+            &nbsp;
+            <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onForward();"
+                [disabled]="!nav.canForward" *ngIf="nav.showForward">
+                <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
+            </button>
+        </div>
+        <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
+            <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
+                <!-- <li class="nav-item">
+                    <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+                        routerLink="./admin-users" (click)="onCollapse()">
+                        {{ 'AdminUsers' | translate }}
+                    </a>
+                </li> -->
+            </ol>
+
+            <ol class="nav navbar-nav p-0">
+                <li class="nav-item" ngbDropdown container="">
+                    <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow" ngbDropdownToggle>
+                        <span class="px-2">{{ userName }}</span>
+                    </button>
+                    <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+                        [class.dropdown-menu-right]="!isRtl">
+
+                        <button type="button" class="dropdown-item btn-light" routerLink="/root/companies"
+                            (click)="onCollapse()">
+                            {{ 'MyCompanies' | translate }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light" routerLink="/root/welcome"
+                            (click)="onCollapse()">
+                            {{ 'WelcomePage' | translate }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light"
+                            (click)="onMySystemAccount();onCollapse()">
+                            {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light"
+                            (click)="onMyAdminAccount();onCollapse()">
+                            {{ 'MyAdminAccount' | translate }}
+                        </button>
+                        <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
+                            {{ 'SignOut' | translate }}
+                        </button>
+                        <!-- Company languages -->
+                        <hr />
+                        <ng-container *ngFor="let lang of activeLanguages">
+                            <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage"
+                                (click)="onSetLanguage(lang);onCollapse()">
+                                {{ languageName(lang) }}
+                            </button>
+                        </ng-container>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </nav>
+    <main class="t-rest-of-screen container-fluid">
+        <router-outlet></router-outlet>
+    </main>
+</div>
+
+<!-- My Account Modal -->
+<ng-template #myAccountModal let-modal>
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'MyAdminAccount' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body p-0 bg-white">
+        <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5" *ngIf="isMyUserLoaded">
+            <!-- Header Name -->
+            <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+                <h2 class="font-weight-normal">{{ myEmail }}</h2>
+            </t-form-group>
+
+            <!-- Name -->
+            <t-form-group class="t-form-group" [label]="'Name' | translate"
+                [serverErrors]="myUser?.serverErrors?.Name">
+                <t-text-editor [(ngModel)]="myUser.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+                </t-text-editor>
+            </t-form-group>
+        </div>
+        <t-error-message *ngIf="isMyUserLoaded && !!saveErrorMessage">
+            {{ saveErrorMessage }}
+        </t-error-message>
+        <t-error-message *ngIf="isMyUserError">
+            {{ errorMessage }}
+        </t-error-message>
+        <div *ngIf="isMyUserLoading" class="d-flex justify-content-center py-2">
+            <t-spinner [scale]="2">
+            </t-spinner>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="onSave(modal)" [disabled]="!canSave">
+            <fa-icon icon="save"></fa-icon>
+            &nbsp;{{ 'Save' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

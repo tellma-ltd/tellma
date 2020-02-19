@@ -1,5 +1,5 @@
 <t-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create"
-    [cloneFunc]="clone" [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
+    [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
     [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
     [documentHeaderTemplate]="documentHeader" [actions]="[
         { template: sign, action: onSign, showAction: showSign, canAction: canSign, actionTooltip: signTooltip }
@@ -163,7 +163,7 @@
                     <ng-container *ngIf="isEdit">
                         <t-responsibility-centers-picker style="min-width: 150px;"
                             *ngIf="!account(entry)?.ResponsibilityCenterId" [(ngModel)]="entry.ResponsibilityCenterId"
-                            (ngModelChange)="update.call(null, item);">
+                            (ngModelChange)="update.call(null, item);" filter="IsLeaf eq true">
                         </t-responsibility-centers-picker>
                         <t-restricted *ngIf="!!account(entry)?.ResponsibilityCenterId"
                             [metadata]="entry.EntityMetadata?.ResponsibilityCenterId">
@@ -322,10 +322,11 @@
                                 </t-decimal-editor>
                             </t-form-group-dynamic>
 
-                            <t-form-group-dynamic class="px-1" [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
+                            <t-form-group-dynamic class="px-1" [label]="'Entry_Unit' | translate"
+                                [serverErrors]="entry.serverErrors?.UnitId">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.UnitId">
                                     <!-- <t-view-link link="../../../measurement-units" [itemId]="entry.UnitId"> -->
-                                        {{ ws.getMultilingualValue('MeasurementUnit', entry.UnitId, 'Name') }}
+                                    {{ ws.getMultilingualValue('MeasurementUnit', entry.UnitId, 'Name') }}
                                     <!-- </t-view-link> -->
                                 </t-restricted>
                                 <ng-container *ngIf="isEdit">
@@ -854,33 +855,6 @@
         <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
             &nbsp;{{ 'Cancel' | translate }}
-        </button>
-    </div>
-</ng-template>
-
-<!-- Error Modal -->
-<ng-template #errorModal let-modal>
-
-    <!-- header -->
-    <div class="modal-header">
-        <h5 class="modal-title">
-            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
-        </h5>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <!-- body -->
-    <div class="modal-body">
-        {{ !!modalErrorMessageFunc ? modalErrorMessageFunc() : '' }}
-    </div>
-
-    <!-- footer -->
-    <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
-            <fa-icon icon="times"></fa-icon>
-            &nbsp;{{ 'Dismiss' | translate }}
         </button>
     </div>
 </ng-template>

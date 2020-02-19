@@ -17,6 +17,9 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   @Input()
   focusIf: boolean;
 
+  @Input()
+  type = 'text';
+
   @HostBinding('class.w-100')
   w100 = true;
 

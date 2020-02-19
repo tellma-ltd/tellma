@@ -46,15 +46,6 @@
 
 	-- The date before which data is frozen.
 	[ArchiveDate]					DATE				NOT NULL DEFAULT ('1900.01.01'),
-	[ResourceLookup1Label]			NVARCHAR (50),
-	[ResourceLookup1Label2]			NVARCHAR (50),
-	[ResourceLookup1Label3]			NVARCHAR (50),
-	[ResourceLookup1sLabel]			NVARCHAR (50),
-	[ResourceLookup1sLabel2]		NVARCHAR (50),
-	[ResourceLookup1sLabel3]		NVARCHAR (50),
-
-	[ResourceLookup2Label]			NVARCHAR (50),
-	[ResourceLookup3Label]			NVARCHAR (50),
 
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__CreatedById] REFERENCES [dbo].[Users] ([Id]),

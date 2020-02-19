@@ -12,14 +12,20 @@ AS
     DECLARE 
         @UserId INT, 
         @ExternalId NVARCHAR(450), 
-        @Email NVARCHAR(255);
+        @Email NVARCHAR(255),
+        @PermissionsVersion UNIQUEIDENTIFIER,
+        @UserSettingsVersion UNIQUEIDENTIFIER;
 
     SELECT
         @UserId = [Id],
         @ExternalId = [ExternalId],
-        @Email = [Email]
-    FROM [dbo].[GlobalUsers] 
-    WHERE [ExternalId] = @ExternalUserId OR [Email] = @UserEmail;
+        @Email = [Email],
+        @PermissionsVersion = [PermissionsVersion],
+        @UserSettingsVersion = [UserSettingsVersion]
+    FROM [dbo].[AdminUsers] 
+    WHERE [IsActive] = 1 AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
+            
+    UPDATE [dbo].[AdminUsers] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
 
     -- Set the User Id
     EXEC [sys].[sp_set_session_context] @key = N'UserId', @value = @UserId;
@@ -29,4 +35,6 @@ AS
 		-- Global User Info
         @UserId AS [UserId], 
         @ExternalId AS [ExternalId], 
-        @Email AS [Email]
+        @Email AS [Email],
+        @PermissionsVersion AS [PermissionsVersion],
+        @UserSettingsVersion AS [UserSettingsVersion]

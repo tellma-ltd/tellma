@@ -166,19 +166,19 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   ////////// UI Bindings
 
   get primaryPostfix(): string {
-    return this.workspace.current.primaryPostfix;
+    return this.workspace.currentTenant.primaryPostfix;
   }
 
   get secondaryPostfix(): string {
-    return this.workspace.current.secondaryPostfix;
+    return this.workspace.currentTenant.secondaryPostfix;
   }
 
   get ternaryPostfix(): string {
-    return this.workspace.current.ternaryPostfix;
+    return this.workspace.currentTenant.ternaryPostfix;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   get errorMessage() {
@@ -254,7 +254,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get canEditPermissions(): boolean {
 
-    return this.workspace.current.canUpdate('settings', null);
+    return this.workspace.currentTenant.canUpdate('settings', null);
   }
 
   get canEdit(): boolean {
@@ -310,7 +310,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
           // Update the cache with fresh versions
           if (!!response.SettingsForClient) {
             handleFreshSettings(response.SettingsForClient,
-              this.workspace.ws.tenantId, this.workspace.current, this.storage);
+              this.workspace.ws.tenantId, this.workspace.currentTenant, this.storage);
           }
 
           // in screen mode always close the edit view

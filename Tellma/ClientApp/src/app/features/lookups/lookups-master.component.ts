@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
@@ -55,15 +55,15 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
   }
 
   public get c() {
-    return this.workspace.current.Lookup;
+    return this.ws.Lookup;
   }
 
-  public get ws() {
-    return this.workspace.current;
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
   }
 
   public get definition(): LookupDefinitionForClient {
-    return !!this.definitionId ? this.workspace.current.definitions.Lookups[this.definitionId] : null;
+    return !!this.definitionId ? this.ws.definitions.Lookups[this.definitionId] : null;
   }
 
   public get found(): boolean {

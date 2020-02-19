@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
-import { TenantWorkspace } from '../workspace.service';
+import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
@@ -30,7 +30,8 @@ let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
 let _definitionIds: string[];
 
-export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+    const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
         _settings = ws.settings;

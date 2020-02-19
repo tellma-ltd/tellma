@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { EntityWithKey } from './base/entity-with-key';
-import { TenantWorkspace } from '../workspace.service';
+import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -23,7 +23,8 @@ export interface VoucherBooklet extends VoucherBookletForSave {
 let _voucherBookletSettings: SettingsForClient;
 let _voucherBookletCache: EntityDescriptor;
 
-export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateService, _subtype: string): EntityDescriptor {
+  const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _voucherBookletSettings) {
     _voucherBookletSettings = ws.settings;

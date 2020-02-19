@@ -133,7 +133,7 @@ export class TenantResolverGuard implements CanActivate {
         this.workspace.setTenantId(tenantId);
 
         // take a concrete reference just in case it changes
-        const current = this.workspace.current;
+        const current = this.workspace.currentTenant;
 
         // check settings
         const getSettingsFromStorage = () => {

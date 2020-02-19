@@ -8,8 +8,8 @@
 	[ImageId]				NVARCHAR (50),
 	[PreferredLanguage]		NCHAR (2),
 	[LastAccess]			DATETIMEOFFSET(7),
-	[PermissionsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT ('aafc6590-cadf-45fe-8c4a-045f4d6f73b1'),
-	[UserSettingsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT ('aafc6590-cadf-45fe-8c4a-045f4d6f73b2'),
+	[PermissionsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
+	[UserSettingsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 
 	-- Delete
 	-- End Delete

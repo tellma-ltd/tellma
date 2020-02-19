@@ -3,7 +3,7 @@ import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { MeasurementUnit, MeasurementUnitForSave, metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
@@ -43,7 +43,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   get unitTypeChoices(): SelectorChoice[] {
 
     if (!this._unitTypeChoices) {
-      const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+      const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
       this._unitTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
@@ -55,12 +55,12 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
       return '';
     }
 
-    const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
-  public get ws() {
-    return this.workspace.current;
+  public get ws(): TenantWorkspace {
+    return this.workspace.currentTenant;
   }
 
   public onActivate = (model: MeasurementUnit): void => {

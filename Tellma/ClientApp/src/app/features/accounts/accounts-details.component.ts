@@ -22,8 +22,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `AccountType,LegacyClassification,Currency,ResponsibilityCenter,
-  LegacyType,Agent,Resource/Currency,EntryType,
-  Resource/CountUnit,Resource/MassUnit,Resource/VolumeUnit,Resource/TimeUnit`;
+  LegacyType,Agent,Resource/Currency,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -63,11 +62,11 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   public get p(): { [prop: string]: PropDescriptor } {
-    return metadata_Account(this.ws, this.translate, null).properties;
+    return metadata_Account(this.workspace, this.translate, null).properties;
   }
 
   public onActivate = (model: Account): void => {
@@ -149,7 +148,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get choicesAgentDefinitionId(): SelectorChoice[] {
-    const entityDesc = metadata.Account(this.ws, this.translate, null);
+    const entityDesc = metadata.Account(this.workspace, this.translate, null);
     return getChoices(entityDesc.properties.AgentDefinitionId as ChoicePropDescriptor);
   }
 

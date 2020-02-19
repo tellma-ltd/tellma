@@ -60,6 +60,8 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="map" />
+    <Folder Include="map\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AspNetRoles.sql" />
@@ -69,6 +71,8 @@
     <Build Include="dbo\Tables\AspNetUserLogins.sql" />
     <Build Include="dbo\Tables\AspNetUserRoles.sql" />
     <Build Include="dbo\Tables\AspNetUserTokens.sql" />
+    <Build Include="map\map.sql" />
+    <Build Include="map\Functions\IdentityServerUsers.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Dev.publish.xml" />

@@ -131,7 +131,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 
   showRolesError(model: User) {

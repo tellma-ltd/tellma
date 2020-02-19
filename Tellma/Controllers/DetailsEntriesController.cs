@@ -40,29 +40,6 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        private int? GetInt(string key, bool isRequired)
-        {
-            int? value = null;
-            if (Request.Query.ContainsKey(key))
-            {
-                string dateString = Request.Query[key].FirstOrDefault();
-                try
-                {
-                    value = int.Parse(dateString);
-                }
-                catch
-                {
-                    throw new BadRequestException($"Failed to convert {key}: '{dateString}' to a valid DateTime value");
-                }
-            }
-            else if (isRequired)
-            {
-                throw new BadRequestException($"The parameter {key} is required");
-            }
-
-            return value;
-        }
-
         protected override Query<DetailsEntry> Search(Query<DetailsEntry> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             return query;

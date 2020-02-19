@@ -30,6 +30,23 @@ import { Document } from './entities/document';
 import { isSpecified } from './util';
 import { DetailsEntry } from './entities/details-entry';
 import { Line } from './entities/line';
+import { AdminSettingsForClient } from './dto/admin-settings-for-client';
+import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
+import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
+import { AdminUser } from './entities/admin-user';
+import { IdentityServerUser } from './entities/identity-server-user';
+
+enum WhichWorkspace {
+  /**
+   * Application workspace (For a specific tenant)
+   */
+  app = 1,
+
+  /**
+   * Admin console workspace
+   */
+  admin = 2
+}
 
 export enum MasterStatus {
 
@@ -175,20 +192,104 @@ const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
 };
 
 // Represents a collection of savable entities, indexed by their IDs
-export class EntityWorkspace<T extends EntityWithKey> {
+export interface EntityWorkspace<T extends EntityWithKey> {
   [id: string]: T;
 }
 
+export abstract class SpecificWorkspace {
+
+  permissions: PermissionsForClient | AdminPermissionsForClient;
+  permissionsVersion: string;
+
+  public canRead(view: string) {
+    if (!view) {
+      return false;
+    }
+
+    const viewPerms = this.permissions[view];
+    const allPerms = this.permissions.all;
+    return (!!viewPerms || !!allPerms);
+  }
+
+  public canCreate(view: string) {
+    return this.canDo(view, 'Update', null);
+  }
+
+  public canUpdate(view: string, createdById: string | number) {
+    return this.canDo(view, 'Update', createdById);
+  }
+
+  public canDo(view: string, action: Action, createdById: string | number) {
+
+    if (!view) {
+      return false;
+    }
+
+    const viewPerms = this.permissions[view];
+    const allPerms = this.permissions.all;
+    // const userId = this.userSettings.UserId;
+    // (userId === createdById) ||
+    return (!!viewPerms && (viewPerms[action] || viewPerms.All))
+      || (!!allPerms && (allPerms[action] || allPerms.All));
+  }
+}
+
+export class AdminWorkspace extends SpecificWorkspace {
+  settings: AdminSettingsForClient;
+  settingsVersion: string;
+
+  userSettings: AdminUserSettingsForClient;
+  userSettingsVersion: string;
+
+  /**
+   * Keeps the state of every master-details pair in screen mode
+   */
+  mdState: { [key: string]: MasterDetailsStore };
+
+  AdminUser: EntityWorkspace<AdminUser>;
+  IdentityServerUser: EntityWorkspace<IdentityServerUser>;
+
+  constructor(private workspaceService: WorkspaceService) {
+    super();
+    this.reset();
+  }
+
+  public reset() {
+
+    this.mdState = {};
+
+    this.AdminUser = {};
+    this.IdentityServerUser = {};
+
+    this.notifyStateChanged();
+  }
+
+  notifyStateChanged() {
+    this.workspaceService.notifyStateChanged();
+  }
+
+  ////// the methods below provide easy access to the global tenant values
+  get(collection: string, id: number | string) {
+    if (!id) {
+      return null;
+    }
+
+    if (!this[collection]) {
+      // Developer error
+      console.error(`Collection '${collection}' doesn't exist in the workspace`);
+    }
+
+    return this[collection][id];
+  }
+}
+
 // This contains all the state that is specific to a particular tenant
-export class TenantWorkspace {
+export class TenantWorkspace extends SpecificWorkspace {
 
   ////// Globals
   // cannot navigate to any tenant screen until these global values are initialized via a router guard
   settings: SettingsForClient;
   settingsVersion: string;
-
-  permissions: PermissionsForClient;
-  permissionsVersion: string;
 
   userSettings: UserSettingsForClient;
   userSettingsVersion: string;
@@ -196,8 +297,14 @@ export class TenantWorkspace {
   definitions: DefinitionsForClient;
   definitionsVersion: string;
 
-  // Keeps the state of every master-details pair in screen mode
+  /**
+   * Keeps the state of every master-details pair in screen mode
+   */
   mdState: { [key: string]: MasterDetailsStore };
+
+  /**
+   * Keeps the state of every report widget
+   */
   reportState: { [key: string]: ReportStore };
 
   MeasurementUnit: EntityWorkspace<MeasurementUnit>;
@@ -220,6 +327,7 @@ export class TenantWorkspace {
   DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
+    super();
     this.reset();
   }
 
@@ -228,24 +336,24 @@ export class TenantWorkspace {
     this.mdState = {};
     this.reportState = {};
 
-    this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
-    this.Role = new EntityWorkspace<Role>();
-    this.User = new EntityWorkspace<User>();
-    this.Agent = new EntityWorkspace<Agent>();
-    this.IfrsNote = new EntityWorkspace<IfrsNote>();
-    this.LegacyType = new EntityWorkspace<LegacyType>();
-    this.Lookup = new EntityWorkspace<Lookup>();
-    this.Currency = new EntityWorkspace<Currency>();
-    this.Resource = new EntityWorkspace<Resource>();
-    this.LegacyClassification = new EntityWorkspace<LegacyClassification>();
-    this.AccountType = new EntityWorkspace<AccountType>();
-    this.Account = new EntityWorkspace<Account>();
-    this.ReportDefinition = new EntityWorkspace<ReportDefinition>();
-    this.ResponsibilityCenter = new EntityWorkspace<ResponsibilityCenter>();
-    this.EntryType = new EntityWorkspace<EntryType>();
-    this.Document = new EntityWorkspace<Document>();
-    this.Line = new EntityWorkspace<Line>();
-    this.DetailsEntry = new EntityWorkspace<DetailsEntry>();
+    this.MeasurementUnit = {};
+    this.Role = {};
+    this.User = {};
+    this.Agent = {};
+    this.IfrsNote = {};
+    this.LegacyType = {};
+    this.Lookup = {};
+    this.Currency = {};
+    this.Resource = {};
+    this.LegacyClassification = {};
+    this.AccountType = {};
+    this.Account = {};
+    this.ReportDefinition = {};
+    this.ResponsibilityCenter = {};
+    this.EntryType = {};
+    this.Document = {};
+    this.Line = {};
+    this.DetailsEntry = {};
 
     this.notifyStateChanged();
   }
@@ -351,38 +459,6 @@ export class TenantWorkspace {
 
     return null;
   }
-
-  public canRead(view: string) {
-    if (!view) {
-      return false;
-    }
-
-    const viewPerms = this.permissions[view];
-    const allPerms = this.permissions.all;
-    return (!!viewPerms || !!allPerms);
-  }
-
-  public canCreate(view: string) {
-    return this.canDo(view, 'Update', null);
-  }
-
-  public canUpdate(view: string, createdById: string | number) {
-    return this.canDo(view, 'Update', createdById);
-  }
-
-  public canDo(view: string, action: Action, createdById: string | number) {
-
-    if (!view) {
-      return false;
-    }
-
-    const viewPerms = this.permissions[view];
-    const allPerms = this.permissions.all;
-    // const userId = this.userSettings.UserId;
-    // (userId === createdById) ||
-    return (!!viewPerms && (viewPerms[action] || viewPerms.All))
-      || (!!allPerms && (allPerms[action] || allPerms.All));
-  }
 }
 
 // This contains the application state during a particular user session
@@ -397,10 +473,15 @@ export class Workspace {
   // The user's companies
   companiesStatus: MasterStatus;
   companies: UserCompany[];
+  isAdmin: boolean; // whether the user is permitted in the admin console
+
+  which: WhichWorkspace;
 
   // Current tenantID selected by the user
   tenantId: number;
   tenants: { [tenantId: number]: TenantWorkspace };
+
+  admin: AdminWorkspace;
 
   constructor() {
     this.tenants = {};
@@ -892,8 +973,26 @@ export class WorkspaceService {
   }
 
   // Syntactic sugar for current tenant workspace
-  public get current(): TenantWorkspace {
+  public get current(): TenantWorkspace | AdminWorkspace {
 
+    if (this.isApp) {
+      return this.currentTenant;
+    } else if (this.isAdmin) {
+      return this.admin;
+    } else {
+      throw new Error(`Unsupported workspace ${this.ws.which}`);
+    }
+  }
+
+  public get admin(): AdminWorkspace {
+    if (!this.ws.admin) {
+      this.ws.admin = new AdminWorkspace(this);
+    }
+
+    return this.ws.admin;
+  }
+
+  public get currentTenant(): TenantWorkspace {
     const tenantId = this.ws.tenantId;
     if (!!tenantId) {
       if (!this.ws.tenants[tenantId]) {
@@ -913,12 +1012,27 @@ export class WorkspaceService {
     this.notifyStateChanged();
   }
 
-
   setTenantId(tenantId: number) {
-    if (this.ws.tenantId !== tenantId) {
+    if (this.ws.tenantId !== tenantId || this.ws.which !== WhichWorkspace.app) {
       this.ws.tenantId = tenantId;
+      this.ws.which = WhichWorkspace.app;
       this.notifyStateChanged();
     }
+  }
+
+  setAdmin() {
+    if (this.ws.which !== WhichWorkspace.admin) {
+      this.ws.which = WhichWorkspace.admin;
+      this.notifyStateChanged();
+    }
+  }
+
+  get isApp(): boolean {
+    return this.ws.which === WhichWorkspace.app;
+  }
+
+  get isAdmin(): boolean {
+    return this.ws.which === WhichWorkspace.admin;
   }
 
   notifyStateChanged() {

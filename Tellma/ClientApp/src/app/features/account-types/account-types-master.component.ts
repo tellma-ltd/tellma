@@ -33,11 +33,11 @@ export class AccountTypesMasterComponent extends MasterBaseComponent {
   // UI Binding
 
   public get c() {
-    return this.workspace.current.AccountType;
+    return this.workspace.currentTenant.AccountType;
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.accountTypesApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(

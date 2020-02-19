@@ -23,9 +23,9 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
 import { SelectorChoice } from '../selector/selector.component';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 
 enum SearchView {
   tiles = 'tiles',
@@ -146,7 +146,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
-  private notifySaveSettingsOnServer$ = new Subject<{ key: string, value: string }>();
   private _formatChoices: SelectorChoice[];
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
@@ -171,7 +170,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal, private storage: StorageService) {
+    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal, private storage: StorageService,
+    private customUserSettings: CustomUserSettingsService) {
   }
 
   ngOnInit() {
@@ -191,10 +191,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this._subscriptions = new Subscription();
     this._subscriptions.add(allSignals.pipe(
       switchMap(() => this.doFetch())
-    ).subscribe());
-
-    this._subscriptions.add(this.notifySaveSettingsOnServer$.pipe(
-      switchMap(args => this.doSaveSettingsOnServer(args.key, args.value))
     ).subscribe());
 
     this._subscriptions.add(this.workspace.stateChanged$.subscribe({
@@ -599,7 +595,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, this.definition) : null;
   }
 
   get apiEndpoint(): string {
@@ -643,7 +639,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.definition, this.workspace.current, this.translate);
+          this.definition, this.workspace, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
       } catch {
@@ -673,11 +669,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get selectFromUserSettings(): string {
-    return this.customSettings[this.selectKey];
+    return this.customUserSettings.get(this.selectKey);
   }
 
   private saveSelectToUserSettings(select: string) {
-    this.saveToUserSettings(this.selectKey, select);
+    this.customUserSettings.save(this.selectKey, select);
   }
 
   private get parentIdsKey(): string {
@@ -706,59 +702,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.storage.setItem(this.parentIdsKey, stringIds);
   }
 
-  private get customSettings() {
-    const settings = this.workspace.current.userSettings;
-    settings.CustomSettings = settings.CustomSettings || {};
-    return settings.CustomSettings;
-  }
-
-  private saveToUserSettings(key: string, value: string) {
-    const settings = this.workspace.current.userSettings;
-    if (!settings.CustomSettings) {
-      settings.CustomSettings = {};
-    }
-
-    if (!!value) {
-      settings.CustomSettings[key] = value;
-    } else if (settings.CustomSettings[key]) {
-      delete settings.CustomSettings[key];
-    }
-
-    // switch map ensures that only the last save is persisted in the workspace
-    this.notifySaveSettingsOnServer$.next({ key, value });
-  }
-
-  private doSaveSettingsOnServer(key: string, value: string): Observable<any> {
-    return this.api.usersApi(this.notifyDestruct$).saveForClient(key, value)
-      .pipe(
-        tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage))
-      );
-  }
-
-  // private get levelKey(): string {
-  //   return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/level`;
-  // }
-
-  // private get levelFromUserSettings(): number {
-  //   const settings = this.workspace.current.userSettings;
-  //   settings.CustomSettings = settings.CustomSettings || {};
-  //   return parseInt(settings.CustomSettings[this.levelKey], null);
-  // }
-
-  // private saveLevel(level: number) {
-
-  //   const levelString = !!level ? level + '' : null;
-
-  //   // Save the new value with the server, to be used again afterwards
-  //   const settings = this.workspace.current.userSettings;
-  //   if (!settings.CustomSettings) {
-  //     settings.CustomSettings = {};
-  //   }
-  //   settings.CustomSettings[this.levelKey] = levelString;
-  //   this.api.usersApi(this.notifyDestruct$).saveForClient(this.levelKey, levelString)
-  //     .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
-  //     .subscribe();
-  // }
 
   ////////////// UI Bindings below
 
@@ -824,7 +767,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         try {
           const entityDesc = entityDescriptorImpl(result.split('/'),
-            this.collection, this.definition, this.workspace.current, this.translate);
+            this.collection, this.definition, this.workspace, this.translate);
 
           if (!!entityDesc) {
             result = entityDesc.orderby.map(e => `${result}/${e}`).join(',');

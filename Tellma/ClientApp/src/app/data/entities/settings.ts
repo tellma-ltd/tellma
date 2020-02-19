@@ -17,6 +17,8 @@ export class SettingsForSave extends Entity {
 export class Settings extends SettingsForSave {
     DefinitionsVersion: string;
     SettingsVersion: string;
+    CreatedAt: string;
+    CreatedById: number | string;
     ModifiedAt: string;
     ModifiedById: number | string;
 }

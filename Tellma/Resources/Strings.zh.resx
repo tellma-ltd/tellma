@@ -169,6 +169,12 @@
   <data name="Administration" xml:space="preserve">
     <value>管理</value>
   </data>
+  <data name="AdminUser" xml:space="preserve">
+    <value>管理员用户</value>
+  </data>
+  <data name="AdminUsers" xml:space="preserve">
+    <value>管理员用户</value>
+  </data>
   <data name="Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
@@ -808,6 +814,24 @@
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>电子邮件 '{0}' 是无效的。</value>
   </data>
+  <data name="IdentityServerUser" xml:space="preserve">
+    <value>身份服务器的用户</value>
+  </data>
+  <data name="IdentityServerUser_EmailConfirmed" xml:space="preserve">
+    <value>电子邮件确认</value>
+  </data>
+  <data name="IdentityServerUser_LockoutEnd" xml:space="preserve">
+    <value>锁定结束</value>
+  </data>
+  <data name="IdentityServerUser_PasswordSet" xml:space="preserve">
+    <value>密码设置</value>
+  </data>
+  <data name="IdentityServerUser_TwoFactorEnabled" xml:space="preserve">
+    <value>双因素启用</value>
+  </data>
+  <data name="IdentityServerUsers" xml:space="preserve">
+    <value>身份服务器的用户</value>
+  </data>
   <data name="IfrsConcepts_Documentation" xml:space="preserve">
     <value>文档</value>
   </data>
@@ -1372,6 +1396,9 @@
   <data name="ResetMyPassword" xml:space="preserve">
     <value>重置我的密码</value>
   </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>重设密码</value>
+  </data>
   <data name="ResetPasswordConfirmation" xml:space="preserve">
     <value>重置密码确认</value>
   </data>
@@ -1788,6 +1815,9 @@
   </data>
   <data name="User_New" xml:space="preserve">
     <value>邀请</value>
+  </data>
+  <data name="User_Permissions" xml:space="preserve">
+    <value>权限</value>
   </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
     <value>首选语言</value>
