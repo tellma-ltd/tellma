@@ -56,39 +56,17 @@ JOIN dbo.Resources R ON E.ResourceId = R.Id;
 -- TODO: change the logic to something like 
 -- If UnitId is a mass unit, update the masses
 
---WITH UnitRatios AS (
---	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)
---	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)) AS [Ratio]
---	FROM dbo.MeasurementUnits
---	WHERE UnitType = N'Count'
---	UNION
---	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
---	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
---	FROM dbo.MeasurementUnits
---	WHERE UnitType = N'Mass'
---	UNION
---	SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
---	/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
---	FROM dbo.MeasurementUnits
---	WHERE UnitType = N'Volume'
---)
---UPDATE E
---SET		
---	E.[Count] = E.[Quantity] * ISNULL(CR.[Ratio], 0),
---	E.[Mass] = E.[Quantity] * ISNULL(MR.[Ratio], 0),
---	E.[Volume] = E.[Quantity] * ISNULL(MR.[Ratio], 0)
---FROM @PreprocessedEntries E;
-
 -- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
---UPDATE E
---SET E.[UnitId] = COALESCE(R.[CountUnitId], R.[MassUnitId], R.[VolumeUnitId], R.[TimeUnitId])
---FROM @PreprocessedEntries E
---JOIN [dbo].[Resources] R ON E.[ResourceId] = R.[Id]
---WHERE IIF(R.[CountUnitId] IS NOT NULL, 1, 0) + 
---IIF(R.[MassUnitId] IS NOT NULL, 1, 0) + 
---IIF(R.[VolumeUnitId] IS NOT NULL, 1, 0) + 
---IIF(R.[TimeUnitId] IS NOT NULL, 1, 0) = 1 -- Only one is not null
-
+WITH RU AS (
+	SELECT [ResourceId], MIN(UnitId) AS UnitId
+	FROM dbo.ResourceUnits
+	GROUP BY [ResourceId]
+	HAVING COUNT(*) = 1
+)
+UPDATE E
+SET E.[UnitId] = RU.UnitId
+FROM @PreprocessedEntries E
+JOIN RU ON E.ResourceId = RU.ResourceId
 
 
 -- for financial amounts in functional currency, the value is known

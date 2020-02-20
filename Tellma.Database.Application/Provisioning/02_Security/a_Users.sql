@@ -3,8 +3,8 @@
 IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Users
 	([Index],	[Name],				[Email]) VALUES
-	(0,			N'Jiad Akra',		N'jiad.akra@banan-it.com'),
-	(1,			N'elAmin alTayyib',	N'elAmin.alTayyib@banan-it.com'),
+	(0,			N'Jiad Akra',		N'jiad.akra@gmail.com'),
+	(1,			N'elAmin alTayyib',	N'amtaam@gmail.com'),
 	(2,			N'Mohamad Akra',	N'mohamad.akra@banan-it.com');
 
 IF @DB = N'102' -- Banan ET, ETB, en
