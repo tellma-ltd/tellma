@@ -373,6 +373,9 @@
   <data name="Document" xml:space="preserve">
     <value>文献</value>
   </data>
+  <data name="Document_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>在分配</value>
   </data>
@@ -496,9 +499,6 @@
   <data name="Entry_ContractType" xml:space="preserve">
     <value>合同类型</value>
   </data>
-  <data name="Entry_Count" xml:space="preserve">
-    <value>计数</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
@@ -522,9 +522,6 @@
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>线</value>
-  </data>
-  <data name="Entry_Mass" xml:space="preserve">
-    <value>块</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
@@ -550,9 +547,6 @@
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>责任中心</value>
   </data>
-  <data name="Entry_Time" xml:space="preserve">
-    <value>时间</value>
-  </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>时间1</value>
   </data>
@@ -564,9 +558,6 @@
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>值</value>
-  </data>
-  <data name="Entry_Volume" xml:space="preserve">
-    <value>体积</value>
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>进入分类</value>
@@ -946,8 +937,14 @@
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>量</value>
   </data>
+  <data name="Line_Quantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="Line_Unit" xml:space="preserve">
+    <value>单元</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>行</value>

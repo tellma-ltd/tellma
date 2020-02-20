@@ -373,6 +373,9 @@
   <data name="Document" xml:space="preserve">
     <value>مستند</value>
   </data>
+  <data name="Document_Agent" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>زمن الإرسال</value>
   </data>
@@ -496,9 +499,6 @@
   <data name="Entry_ContractType" xml:space="preserve">
     <value>نوع العقد</value>
   </data>
-  <data name="Entry_Count" xml:space="preserve">
-    <value>العدد</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
@@ -522,9 +522,6 @@
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>السطر</value>
-  </data>
-  <data name="Entry_Mass" xml:space="preserve">
-    <value>الكتلة</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>المبلغ النقدي</value>
@@ -550,9 +547,6 @@
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>مركز المسؤولية</value>
   </data>
-  <data name="Entry_Time" xml:space="preserve">
-    <value>المدة</value>
-  </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>الزمن 1</value>
   </data>
@@ -564,9 +558,6 @@
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>القيمة</value>
-  </data>
-  <data name="Entry_Volume" xml:space="preserve">
-    <value>الحجم</value>
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
@@ -946,8 +937,14 @@
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>المبلغ النقدي</value>
   </data>
+  <data name="Line_Quantity" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>المورد</value>
+  </data>
+  <data name="Line_Unit" xml:space="preserve">
+    <value>الوحدة</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>أسطر</value>

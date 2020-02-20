@@ -29,6 +29,13 @@ namespace Tellma.Entities
 
         [Display(Name = "Line_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
+
+        [Display(Name = "Line_Quantity")]
+        public decimal? Quantity { get; set; }
+
+        [Display(Name = "Line_Unit")]
+        public int? UnitId { get; set; }
+
         public decimal? Value { get; set; } // TODO: Display
 
         // END HIDDEN
@@ -107,6 +114,10 @@ namespace Tellma.Entities
         [Display(Name = "Line_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
+
+        [Display(Name = "Line_Unit")]
+        [ForeignKey(nameof(UnitId))]
+        public MeasurementUnit Unit { get; set; }
 
         [Display(Name = "Line_Agent")]
         [ForeignKey(nameof(AgentId))]

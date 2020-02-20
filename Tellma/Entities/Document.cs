@@ -48,6 +48,9 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
+        [Display(Name = "Document_Agent")]
+        public int? AgentId { get; set; }
+
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
 

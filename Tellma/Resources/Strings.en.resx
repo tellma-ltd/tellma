@@ -373,6 +373,9 @@
   <data name="Document" xml:space="preserve">
     <value>Document</value>
   </data>
+  <data name="Document_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>Assigned At</value>
   </data>
@@ -496,9 +499,6 @@
   <data name="Entry_ContractType" xml:space="preserve">
     <value>Contract Type</value>
   </data>
-  <data name="Entry_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
   <data name="Entry_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -522,9 +522,6 @@
   </data>
   <data name="Entry_Line" xml:space="preserve">
     <value>Line</value>
-  </data>
-  <data name="Entry_Mass" xml:space="preserve">
-    <value>Mass</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
@@ -550,9 +547,6 @@
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>Responsibility Center</value>
   </data>
-  <data name="Entry_Time" xml:space="preserve">
-    <value>Period</value>
-  </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>Time 1</value>
   </data>
@@ -564,9 +558,6 @@
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>Value</value>
-  </data>
-  <data name="Entry_Volume" xml:space="preserve">
-    <value>Volume</value>
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>Entry Type</value>
@@ -946,8 +937,14 @@
   <data name="Line_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
   </data>
+  <data name="Line_Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
   <data name="Line_Resource" xml:space="preserve">
     <value>Resource</value>
+  </data>
+  <data name="Line_Unit" xml:space="preserve">
+    <value>Unit</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>Lines</value>
