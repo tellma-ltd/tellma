@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create" [cloneFunc]="clone"
     [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -116,102 +116,6 @@
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
             [maxDecimalPlaces]="MonetaryValue_decimals(model)">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- Count Unit -->
-    <t-form-group *ngIf="CountUnit_isVisible" class="t-form-group" [label]="CountUnit_label"
-        [serverErrors]="model?.serverErrors?.CountUnitId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CountUnit">
-            <t-view-link link="../../../measurement-units" [itemId]="model?.CountUnitId">
-                {{ ws.getMultilingualValue('MeasurementUnit', model.CountUnitId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.CountUnitId" filter="UnitType eq 'Count'"
-            [required]="CountUnit_isRequired">
-        </t-measurement-units-picker>
-    </t-form-group>
-
-    <!-- Count -->
-    <t-form-group *ngIf="Count_isVisible" class="t-form-group" [label]="Count_label"
-        [serverErrors]="model?.serverErrors?.Count">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Count">
-            <div>{{ model?.Count | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Count" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Count_isRequired" [maxDecimalPlaces]="4">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- Mass Unit -->
-    <t-form-group *ngIf="MassUnit_isVisible" class="t-form-group" [label]="MassUnit_label"
-        [serverErrors]="model?.serverErrors?.MassUnitId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MassUnit">
-            <t-view-link link="../../../measurement-units" [itemId]="model?.MassUnitId">
-                {{ ws.getMultilingualValue('MeasurementUnit', model.MassUnitId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
-            [required]="MassUnit_isRequired">
-        </t-measurement-units-picker>
-    </t-form-group>
-
-    <!-- Mass -->
-    <t-form-group *ngIf="Mass_isVisible" class="t-form-group" [label]="Mass_label"
-        [serverErrors]="model?.serverErrors?.Mass">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Mass">
-            <div>{{ model?.Mass | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Mass" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Mass_isRequired" [maxDecimalPlaces]="4">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- Volume Unit -->
-    <t-form-group *ngIf="VolumeUnit_isVisible" class="t-form-group" [label]="VolumeUnit_label"
-        [serverErrors]="model?.serverErrors?.VolumeUnitId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.VolumeUnit">
-            <t-view-link link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
-                {{ ws.getMultilingualValue('MeasurementUnit', model.VolumeUnitId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
-            [required]="VolumeUnit_isRequired">
-        </t-measurement-units-picker>
-    </t-form-group>
-
-    <!-- Volume -->
-    <t-form-group *ngIf="Volume_isVisible" class="t-form-group" [label]="Volume_label"
-        [serverErrors]="model?.serverErrors?.Volume">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Volume">
-            <div>{{ model?.Volume | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Volume" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Volume_isRequired" [maxDecimalPlaces]="4">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- Time Unit -->
-    <t-form-group *ngIf="TimeUnit_isVisible" class="t-form-group" [label]="TimeUnit_label"
-        [serverErrors]="model?.serverErrors?.TimeUnitId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TimeUnit">
-            <t-view-link link="../../../measurement-units" [itemId]="model?.TimeUnitId">
-                {{ ws.getMultilingualValue('MeasurementUnit', model.TimeUnitId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
-            [required]="TimeUnit_isRequired">
-        </t-measurement-units-picker>
-    </t-form-group>
-
-    <!-- Time -->
-    <t-form-group *ngIf="Time_isVisible" class="t-form-group" [label]="Time_label"
-        [serverErrors]="model?.serverErrors?.Time">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time">
-            <div>{{ model?.Time | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Time" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Time_isRequired" [maxDecimalPlaces]="4">
         </t-decimal-editor>
     </t-form-group>
 
@@ -432,6 +336,56 @@
     <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
         {{ (model?.IsActive ? 'Yes' : 'No') | translate }}
     </t-form-group>
+
+    <!-- Tabs -->
+    <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+
+        <!-- Units -->
+        <ngb-tab>
+            <ng-template ngbTabTitle><span class="small">{{ 'Resource_Units' | translate }}<span
+                        *ngIf="model?.EntityMetadata?.Units == 2"> ({{ Units_count(model) | number
+          }})</span></span>
+                <span *ngIf="Units_showError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
+                    </fa-icon></span>
+            </ng-template>
+            <ng-template ngbTabContent>
+                <t-restricted [metadata]="model?.EntityMetadata?.Units"
+                    [class.p-4]="model?.EntityMetadata?.Units === 1">
+                    <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit', 'Multiplier']"
+                        [columnTemplates]="{
+              'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
+              'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
+            }">
+                    </t-table>
+                </t-restricted>
+
+                <!-- Unit -->
+                <ng-template #header_Unit>{{ 'ResourceUnit_Unit' | translate }}</ng-template>
+                <ng-template #row_Unit let-item="item" let-index="originalIndex" let-update="update">
+                    <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
+                        <div *ngIf="!isEdit">
+                            {{ ws.getMultilingualValue('MeasurementUnit', item.UnitId, 'Name') }}
+                        </div>
+                        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
+                            (ngModelChange)="update.call(null, item);">
+                        </t-measurement-units-picker>
+                    </t-form-group>
+                </ng-template>
+
+                <!-- Multiplier -->
+                <ng-template #header_Multiplier>{{ 'ResourceUnit_Multiplier' | translate }}</ng-template>
+                <ng-template #row_Multiplier let-item="item" let-index="originalIndex" let-update="update">
+                    <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Multiplier">
+                        <div *ngIf="!isEdit">{{ item.Multiplier | number }}</div>
+                        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Multiplier"
+                            (ngModelChange)="update.call(null, item)" [ngModelOptions]="{ updateOn: 'blur' }"
+                            [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
+                        </t-decimal-editor>
+                    </t-form-group>
+                </ng-template>
+            </ng-template>
+        </ngb-tab>
+    </ngb-tabset>
 </ng-template>
 
 <!-- Actions -->

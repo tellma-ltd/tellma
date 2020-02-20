@@ -117,54 +117,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     MonetaryValueVisibility: Visibility;
     MonetaryValueDefaultValue: number;
 
-    CountUnitLabel: string;
-    CountUnitLabel2: string;
-    CountUnitLabel3: string;
-    CountUnitVisibility: Visibility;
-    CountUnitDefaultValue: number;
-
-    CountLabel: string;
-    CountLabel2: string;
-    CountLabel3: string;
-    CountVisibility: Visibility;
-    CountDefaultValue: number;
-
-    MassUnitLabel: string;
-    MassUnitLabel2: string;
-    MassUnitLabel3: string;
-    MassUnitVisibility: Visibility;
-    MassUnitDefaultValue: number;
-
-    MassLabel: string;
-    MassLabel2: string;
-    MassLabel3: string;
-    MassVisibility: Visibility;
-    MassDefaultValue: number;
-
-    VolumeUnitLabel: string;
-    VolumeUnitLabel2: string;
-    VolumeUnitLabel3: string;
-    VolumeUnitVisibility: Visibility;
-    VolumeUnitDefaultValue: number;
-
-    VolumeLabel: string;
-    VolumeLabel2: string;
-    VolumeLabel3: string;
-    VolumeVisibility: Visibility;
-    VolumeDefaultValue: number;
-
-    TimeUnitLabel: string;
-    TimeUnitLabel2: string;
-    TimeUnitLabel3: string;
-    TimeUnitVisibility: Visibility;
-    TimeUnitDefaultValue: number;
-
-    TimeLabel: string;
-    TimeLabel2: string;
-    TimeLabel3: string;
-    TimeVisibility: Visibility;
-    TimeDefaultValue: number;
-
     DescriptionVisibility: Visibility;
 
     ReorderLevelVisibility: string;

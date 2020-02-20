@@ -85,9 +85,6 @@
   <data name="Account_HasAdditionalReference" xml:space="preserve">
     <value>مرتبط بمرجع إضافي</value>
   </data>
-  <data name="Account_HasAgent" xml:space="preserve">
-    <value>مرتبط بذمة</value>
-  </data>
   <data name="Account_HasExternalReference" xml:space="preserve">
     <value>مرتبط بمرجع خارجي</value>
   </data>
@@ -218,7 +215,7 @@
     <value>المعدل</value>
   </data>
   <data name="AgentRate_Resource" xml:space="preserve">
-    <value>المورد</value>
+    <value>البيان</value>
   </data>
   <data name="AgentRate_Unit" xml:space="preserve">
     <value>الوحدة</value>
@@ -1432,12 +1429,6 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>متاح إلى</value>
   </data>
-  <data name="Resource_Count" xml:space="preserve">
-    <value>العدد</value>
-  </data>
-  <data name="Resource_CountUnit" xml:space="preserve">
-    <value>وحدة قياس العدد</value>
-  </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
@@ -1474,12 +1465,6 @@
   <data name="Resource_Lookup5" xml:space="preserve">
     <value>الصفة 5</value>
   </data>
-  <data name="Resource_Mass" xml:space="preserve">
-    <value>الوزن</value>
-  </data>
-  <data name="Resource_MassUnit" xml:space="preserve">
-    <value>وحدة قياس الوزن</value>
-  </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>القيمة النقدية</value>
   </data>
@@ -1492,20 +1477,17 @@
   <data name="Resource_Text2" xml:space="preserve">
     <value>الصفة النصية 2</value>
   </data>
-  <data name="Resource_Time" xml:space="preserve">
-    <value>الزمن</value>
-  </data>
-  <data name="Resource_TimeUnit" xml:space="preserve">
-    <value>وحدة قياس الزمن</value>
-  </data>
-  <data name="Resource_Volume" xml:space="preserve">
-    <value>الحجم</value>
-  </data>
-  <data name="Resource_VolumeUnit" xml:space="preserve">
-    <value>وحدة قياس الحجم</value>
+  <data name="Resource_Units" xml:space="preserve">
+    <value>وحدات القياس</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>موارد</value>
+  </data>
+  <data name="ResourceUnit_Multiplier" xml:space="preserve">
+    <value>المعامل</value>
+  </data>
+  <data name="ResourceUnit_Unit" xml:space="preserve">
+    <value>الوحدة</value>
   </data>
   <data name="ResponsibilityCenter" xml:space="preserve">
     <value>مركز مسؤولية</value>

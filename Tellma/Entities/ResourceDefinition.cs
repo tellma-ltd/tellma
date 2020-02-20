@@ -59,11 +59,6 @@ namespace Tellma.Entities
         public string IdentifierLabel3 { get; set; }
         public string IdentifierVisibility { get; set; }
         public string CurrencyVisibility { get; set; }
-        public string CountUnitVisibility { get; set; }
-        public string MassUnitVisibility { get; set; }
-        public string MassVisibility { get; set; }
-        public string VolumeUnitVisibility { get; set; }
-        public string TimeUnitVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
         public string ReorderLevelVisibility { get; set; }
         public string EconomicOrderQuantityVisibility { get; set; }

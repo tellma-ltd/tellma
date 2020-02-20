@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create" [cloneFunc]="clone"
   [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString" [masterCrumb]=masterCrumb
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -139,8 +139,7 @@
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </t-form-group>
 
-
-
+  <!-- Tabs -->
   <ngb-tabset *ngIf="Tabs_isVisible" class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
 
     <!-- Rates -->
@@ -216,7 +215,6 @@
       </ng-template>
     </ngb-tab>
   </ngb-tabset>
-
 
 </ng-template>
 

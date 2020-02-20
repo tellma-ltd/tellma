@@ -45,18 +45,6 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
-        [Display(Name = "Entry_Count")]
-        public decimal? Count { get; set; }
-
-        [Display(Name = "Entry_Mass")]
-        public decimal? Mass { get; set; }
-
-        [Display(Name = "Entry_Volume")]
-        public decimal? Volume { get; set; }
-
-        [Display(Name = "Entry_Time")]
-        public decimal? Time { get; set; }
-
         [Display(Name = "Entry_Value")]
         public decimal? Value { get; set; }
 

@@ -49,7 +49,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
     result.IsCurrent = false;
     result.HasResource = false;
-    result.HasAgent = false;
     result.IsRelated = false;
     result.HasExternalReference = false;
     result.HasAdditionalReference = false;
@@ -124,7 +123,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal && model.HasAgent;
+    return accountType.IsPersonal;
   }
 
   public readonlyAgentDefinitionId(model: AccountForSave): boolean {
@@ -171,16 +170,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return !!model.AccountTypeId && accountType.IsReal;
   }
 
-  // HasAgent
-  public showHasAgent(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal;
-  }
-
   // IsRelated
   public showIsRelated(model: AccountForSave): boolean {
     if (!model || !model.AccountTypeId) {
@@ -198,7 +187,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal && model.HasAgent;
+    return accountType.IsPersonal;
   }
 
   // Resource

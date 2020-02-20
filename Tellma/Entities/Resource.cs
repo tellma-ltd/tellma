@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class ResourceForSave : EntityWithKey<int>
+    public class ResourceForSave<TResourceUnit> : EntityWithKey<int>
     {
         [Display(Name = "Resource_AccountType")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -43,30 +44,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Resource_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
-
-        //[Display(Name = "Resource_CountUnit")]
-        //public int? CountUnitId { get; set; }
-
-        //[Display(Name = "Resource_Count")]
-        //public decimal? Count { get; set; }
-
-        //[Display(Name = "Resource_MassUnit")]
-        //public int? MassUnitId { get; set; }
-
-        //[Display(Name = "Resource_Mass")]
-        //public decimal? Mass { get; set; }
-
-        //[Display(Name = "Resource_VolumeUnit")]
-        //public int? VolumeUnitId { get; set; }
-
-        //[Display(Name = "Resource_Volume")]
-        //public decimal? Volume { get; set; }
-
-        //[Display(Name = "Resource_TimeUnit")]
-        //public int? TimeUnitId { get; set; }
-
-        //[Display(Name = "Resource_Time")]
-        //public decimal? Time { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
@@ -127,12 +104,20 @@ namespace Tellma.Entities
         public string Text1 { get; set; }
 
         [Display(Name = "Resource_Text2")]
-
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string Text2 { get; set; }
+
+        [Display(Name = "Resource_Units")]
+        [ForeignKey(nameof(ResourceUnit.ResourceId))]
+        public List<TResourceUnit> Units { get; set; }
     }
 
-    public class Resource : ResourceForSave
+    public class ResourceForSave : ResourceForSave<ResourceUnitForSave>
+    {
+
+    }
+
+    public class Resource : ResourceForSave<ResourceUnit>
     {
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }

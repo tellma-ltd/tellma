@@ -15,10 +15,6 @@ export interface EntryForSave extends EntityWithKey {
     MonetaryValue?: number;
     Quantity?: number;
     UnitId?: number;
-    Count?: number;
-    Mass?: number;
-    Volume?: number;
-    Time?: number;
     Value?: number;
     Time1?: string;
     Time2?: string;

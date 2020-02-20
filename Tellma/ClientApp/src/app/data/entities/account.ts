@@ -19,7 +19,6 @@ export interface AccountForSave extends EntityWithKey {
     LegacyTypeId?: string;
     AgentDefinitionId?: string;
     HasResource?: boolean;
-    HasAgent?: boolean;
     IsRelated?: boolean;
     HasExternalReference?: boolean;
     HasAdditionalReference?: boolean;
@@ -89,7 +88,6 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _
                 },
 
                 HasResource: { control: 'boolean', label: () => trx.instant('Account_HasResource') },
-                HasAgent: { control: 'boolean', label: () => trx.instant('Account_HasAgent') },
                 IsRelated: { control: 'boolean', label: () => trx.instant('Account_IsRelated') },
                 HasExternalReference: { control: 'boolean', label: () => trx.instant('Account_HasExternalReference') },
                 HasAdditionalReference: { control: 'boolean', label: () => trx.instant('Account_HasAdditionalReference') },

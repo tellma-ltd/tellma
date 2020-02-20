@@ -29,10 +29,6 @@ namespace Tellma.Entities
 
         [Display(Name = "Line_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
-        public decimal? Count { get; set; } // TODO: Display
-        public decimal? Mass { get; set; } // TODO: Display
-        public decimal? Volume { get; set; } // TODO: Display
-        public decimal? Time { get; set; } // TODO: Display
         public decimal? Value { get; set; } // TODO: Display
 
         // END HIDDEN

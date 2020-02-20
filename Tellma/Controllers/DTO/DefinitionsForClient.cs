@@ -152,54 +152,6 @@ namespace Tellma.Controllers.Dto
         public string MonetaryValueVisibility { get; set; }
         public int? MonetaryValueDefaultValue { get; set; }
 
-        public string CountUnitLabel { get; set; }
-        public string CountUnitLabel2 { get; set; }
-        public string CountUnitLabel3 { get; set; }
-        public string CountUnitVisibility { get; set; } // Yes
-        public int? CountUnitDefaultValue { get; set; }
-
-        public string CountLabel { get; set; }
-        public string CountLabel2 { get; set; }
-        public string CountLabel3 { get; set; }
-        public string CountVisibility { get; set; }
-        public int? CountDefaultValue { get; set; }
-
-        public string MassUnitLabel { get; set; }
-        public string MassUnitLabel2 { get; set; }
-        public string MassUnitLabel3 { get; set; }
-        public string MassUnitVisibility { get; set; } // Yes
-        public int? MassUnitDefaultValue { get; set; }
-
-        public string MassLabel { get; set; }
-        public string MassLabel2 { get; set; }
-        public string MassLabel3 { get; set; }
-        public string MassVisibility { get; set; } // Yes
-        public int? MassDefaultValue { get; set; }
-
-        public string VolumeUnitLabel { get; set; }
-        public string VolumeUnitLabel2 { get; set; }
-        public string VolumeUnitLabel3 { get; set; }
-        public string VolumeUnitVisibility { get; set; } // Yes
-        public int? VolumeUnitDefaultValue { get; set; }
-
-        public string VolumeLabel { get; set; }
-        public string VolumeLabel2 { get; set; }
-        public string VolumeLabel3 { get; set; }
-        public string VolumeVisibility { get; set; }
-        public int? VolumeDefaultValue { get; set; }
-
-        public string TimeUnitLabel { get; set; }
-        public string TimeUnitLabel2 { get; set; }
-        public string TimeUnitLabel3 { get; set; }
-        public string TimeUnitVisibility { get; set; } // Yes
-        public int? TimeUnitDefaultValue { get; set; }
-
-        public string TimeLabel { get; set; }
-        public string TimeLabel2 { get; set; }
-        public string TimeLabel3 { get; set; }
-        public string TimeVisibility { get; set; }
-        public int? TimeDefaultValue { get; set; }
-
         public string DescriptionVisibility { get; set; } // Yes
 
         public string ReorderLevelVisibility { get; set; } // Yes

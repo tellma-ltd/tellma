@@ -247,6 +247,9 @@ namespace Tellma.Data
                 case nameof(Resource):
                     return "[map].[Resources]()";
 
+                case nameof(ResourceUnit):
+                    return "[map].[ResourceUnits]()";
+
                 case nameof(LegacyClassification):
                     return "[map].[LegacyClassifications]()";
 
@@ -2131,6 +2134,7 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
@@ -2139,8 +2143,16 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable unitsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Units);
+            var unitsTvp = new SqlParameter("@ResourceUnits", unitsTable)
+            {
+                TypeName = $"[dbo].[{nameof(ResourceUnit)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(unitsTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -2165,8 +2177,16 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable unitsTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Units);
+                var unitsTvp = new SqlParameter("@ResourceUnits", unitsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ResourceUnit)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(unitsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
