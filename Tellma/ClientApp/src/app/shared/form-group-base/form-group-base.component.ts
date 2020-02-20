@@ -100,7 +100,8 @@ export class FormGroupBaseComponent {
   }
 
   get popoverPlacement(): string {
-    return this.isRtl ? 'bottom-left' : 'bottom-right';
+    // return this.isRtl ? 'bottom-right' : 'bottom-left';
+    return 'bottom';
   }
 
 }

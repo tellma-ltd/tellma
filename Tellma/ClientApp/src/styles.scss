@@ -1549,3 +1549,7 @@ h1.t-report-measure:hover {
 .is-invalid .t-studio-input {
   border-color: lightpink !important;
 }
+
+.small input, .t-large input, .small button, .t-large button {
+  font-size: 100%!important;
+}

@@ -256,7 +256,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public columnPaths(model: DocumentForSave): string[] {
-    const paths = ['AccountId', 'Debit', 'Credit', 'Dynamic'];
+    const paths = ['AccountId', 'Debit', 'Credit'];
 
     if (this.ws.settings.IsMultiResponsibilityCenter) {
       paths.splice(1, 0, 'ResponsibilityCenter');
@@ -509,8 +509,9 @@ Document_State_Closed
   // Quantity + Unit
 
   public showQuantityAndUnit(entry: Entry): boolean {
+    const account = this.account(entry);
     const resource = this.resource(entry);
-    return !!resource && !!resource.Units && resource.Units.length > 0;
+    return !!account && !!resource && !!resource.Units && resource.Units.length > 0;
   }
 
   public readonlyUnit(entry: Entry): boolean {

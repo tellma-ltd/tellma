@@ -14,7 +14,6 @@ export class TableComponent implements OnInit {
 
   private MAX_VISIBLE_ROWS = 9;
   private HEADER_HEIGHT = 41;
-  private ROW_HEIGHT = 31;
   private PH = 'PH';
 
   private _isEdit = false;
@@ -217,7 +216,7 @@ export class TableComponent implements OnInit {
 
   get tableHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
-    const rowHeight = this.ROW_HEIGHT;
+    const rowHeight = this.itemSize;
     const maxVisibleRows = this.MAX_VISIBLE_ROWS;
     const actualRows = Math.max(this.dataSourceCopy.length, 3);
     const visibleRows = Math.min(maxVisibleRows, actualRows);
@@ -227,7 +226,7 @@ export class TableComponent implements OnInit {
 
   get tableMaxHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
-    const rowHeight = this.ROW_HEIGHT;
+    const rowHeight = this.itemSize;
     const maxVisibleRows = this.MAX_VISIBLE_ROWS;
     const height = headerHeight + maxVisibleRows * rowHeight;
     return (height + 1) + 'px';

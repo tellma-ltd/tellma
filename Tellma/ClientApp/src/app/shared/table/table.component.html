@@ -21,7 +21,7 @@
       <!-- Body -->
       <tbody>
         <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
-          <tr style="height:31px">
+          <tr [style.height.px]="itemSize">
             <td class="text-muted">
               <div class="text-center">
                 <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>
