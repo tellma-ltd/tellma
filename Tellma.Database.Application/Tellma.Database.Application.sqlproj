@@ -556,6 +556,7 @@
     <None Include="Provisioning\05_Agents\09a_Warehouses.sql" />
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="Mapping\AgentRates.sql" />
+    <Build Include="Mapping\ResourceUnits.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
