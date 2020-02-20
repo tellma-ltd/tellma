@@ -253,7 +253,10 @@ DECLARE @TradeReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] 
 DECLARE @Prepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Prepayments');
 
 DECLARE @ValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ValueAddedTaxReceivables'); 
+
 DECLARE @TradeAndOtherPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherPayables'); 
+
+DECLARE @ValueAddedTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ValueAddedTaxPayables'); 
 DECLARE @IssuedCapital INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IssuedCapital'); 
 DECLARE @RetainedEarnings INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'RetainedEarnings');
 DECLARE @Merchandise INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Merchandise');

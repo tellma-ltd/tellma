@@ -43,8 +43,14 @@ BEGIN
 	(37,1,0,1,@TradeAndOtherPayables,	N'Dividends Payables',	N'USD',			@RC_Inv,					NULL,			N'partners',		NULL,		NULL),
 	(38,1,0,0,@TradeAndOtherPayables,	N'Borrowings from M/A',	N'USD',			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
 
-	(39,1,0,0,@TradeAndOtherPayables,	N'M/A Payables',		NULL,			@RC_Inv,					NULL,			NULL,		NULL,		NULL),
-	(40,1,0,0,@TradeAndOtherPayables,	N'M/A Payables',		NULL,			@RC_Inv,					NULL,			NULL,		NULL,		NULL);
+	(39,1,0,1,@TradeAndOtherPayables,	N'Unearned Revenues - T3',NULL,			@RC_Inv,					NULL,			N't3-customers',	NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Unearned Revenues - T2',NULL,			@RC_Inv,					NULL,			N't2-customers',	NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Employee Pensions',	NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Zakat',				NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
+	(40,1,0,1,@ValueAddedTaxPayables,	N'VAT Output',			NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Income Tax',			NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Employee Income Tax',	NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL),
+	(40,1,0,1,@TradeAndOtherPayables,	N'Employees Stamp Tax',	NULL,			@RC_Inv,					NULL,			NULL,				NULL,		NULL);
 
 	UPDATE @Accounts SET HasResource = 1 WHERE [Index] = 0;
 END
