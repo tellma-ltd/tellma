@@ -1,4 +1,6 @@
-﻿	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+﻿IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
 		[AccountTypeId],						[Name],			[Identifier]) VALUES
 	(0, dbo.fn_ATCode__Id(N'OfficeEquipment'),	N'Office Chair',N'MA'),
@@ -20,3 +22,4 @@
 		Print 'Inserting PPE (fixed-assets): ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
+END

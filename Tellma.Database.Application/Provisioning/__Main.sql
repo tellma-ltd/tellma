@@ -13,8 +13,6 @@
 	-- Because there is no way to pass the NULL value to 
 	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
-
-	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 END
 
 :r .\00_Common\__Declarations.sql
@@ -46,30 +44,33 @@ END
 :r .\03_Basic\a_Currencies.sql
 :r .\03_Basic\b_MeasurementUnits.sql
 :r .\03_Basic\c_Lookups.sql
-		
-:r .\05_Resources\a1_PPE_motor-vehicles.sql
-:r .\05_Resources\a2_PPE_computer-equipment.sql
-:r .\05_Resources\a3_PPE_machineries.sql
-:r .\05_Resources\a4_PPE_general-fixed-assets.sql
-:r .\05_Resources\b_Inventories_raw-materials.sql
-:r .\05_Resources\d1_FG_vehicles.sql
-:r .\05_Resources\d2_FG_steel-products.sql
-:r .\05_Resources\d3_TM_paper-products.sql
---:r .\05_Resources\e1_CCE_received-checks.sql
-:r .\05_Resources\h_PL_employee-benefits.sql
 
-:r .\04_Agents\00_ResponsibilityCenters.sql
-:r .\04_Agents\01_CostObjects.sql
-:r .\04_Agents\02_Creditors.sql
-:r .\04_Agents\03_Customers.sql
-:r .\04_Agents\04_Debtors.sql
---:r .\04_Agents\05_Owners.sql
-:r .\04_Agents\06_Suppliers.sql
---:r .\04_Agents\07_TaxAgencies.sql
-:r .\04_Agents\08_Banks.sql
-:r .\04_Agents\09_Custodies.sql
-:r .\04_Agents\09a_Warehouses.sql
-:r .\04_Agents\10_Employees.sql
+:r .\04_Resources\101_employee-benefits.sql
+:r .\04_Resources\101_property-plant-and-equipment.sql
+:r .\04_Resources\102_employee-benefits.sql
+:r .\04_Resources\102_property-plant-and-equipment.sql
+:r .\04_Resources\104_finished_goods.sql
+:r .\04_Resources\104_raw-materials.sql
+:r .\04_Resources\105_merchandise.sql
+
+:r .\04_Resources\a1_PPE_motor-vehicles.sql
+:r .\04_Resources\a3_PPE_machineries.sql
+
+:r .\04_Resources\d1_FG_vehicles.sql
+--:r .\04_Resources\e1_CCE_received-checks.sql
+
+:r .\05_Agents\00_ResponsibilityCenters.sql
+:r .\05_Agents\01_CostObjects.sql
+:r .\05_Agents\02_Creditors.sql
+:r .\05_Agents\03_Customers.sql
+:r .\05_Agents\04_Debtors.sql
+:r .\05_Agents\05_Partners.sql
+:r .\05_Agents\06_Suppliers.sql
+--:r .\05_Agents\07_TaxAgencies.sql
+:r .\05_Agents\08_Banks.sql
+:r .\05_Agents\09_Custodies.sql
+:r .\05_Agents\09a_Warehouses.sql
+:r .\05_Agents\10_Employees.sql
 
 :r .\06_Accounts\a_LegacyTypes.sql
 :r .\06_Accounts\b_LegacyClassifications.sql

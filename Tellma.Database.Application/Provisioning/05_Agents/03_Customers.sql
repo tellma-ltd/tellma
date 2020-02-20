@@ -63,10 +63,3 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		@Paint = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Best Paint Industry'),
 		@Plastic = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
 		@Lifan = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
-
-	IF @DebugCustomers = 1
-		SELECT A.[Code], A.[Name], A.[StartDate] AS 'Customer Since', A.[IsActive]
-		--A.[CustomerRating], A.[BillingAddress], A.[ShippingAddress], A.[CreditLine],
-		--RC.[Name] AS OperatingSegment
-		FROM dbo.fi_Agents(N'customers', NULL) A
-		--JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;

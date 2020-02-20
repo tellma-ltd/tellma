@@ -27,7 +27,7 @@ BEGIN
 		(2,N'creditors',	N'Creditor',	N'Creditors'),
 		(3,N'customers',	N'Customer',	N'Customers'),
 		(4,N'debtors',		N'Debtor',		N'Debtors'),
---		(5,N'owners',		N'Owner',		N'Owners'),
+		(5,N'partners',		N'Partner',		N'Partners'),
 		(6,N'suppliers',	N'Supplier',	N'Suppliers'),
 		--(7,N'tax-agencies',	N'Tax Agency',	N'Tax Agencies'),
 		(8,N'banks',		N'Bank',		N'Banks'),

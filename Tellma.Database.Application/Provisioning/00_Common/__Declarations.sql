@@ -22,3 +22,8 @@
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
 	DECLARE @PId INT ;
+
+	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
+
+	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
+	DECLARE @DayOvertime INT, @NightOvertime INT, @RestOvertime INT, @HolidayOvertime INT;

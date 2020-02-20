@@ -1,37 +1,41 @@
 ﻿
-DECLARE @Owners dbo.[AgentList];
+DECLARE @Partners dbo.[AgentList];
 IF @DB = N'100' -- ACME, USD, en/ar/zh
-	INSERT INTO @Owners
+	INSERT INTO @Partners
 	([Index], [Name]) VALUES
 	(0,		N'Tom Hurton'),
 	(1,		N'Jeff Bezos'),
 	(2,		N'Warren Buffet');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
-	Print N''
+	INSERT INTO @Partners
+	([Index], [Name]) VALUES
+	(0,		N'Mohamad Akra'),
+	(1,		N'elAmin alTayeb'),
+	(2,		N'Abdullah Ulber');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	INSERT INTO @Owners
+	INSERT INTO @Partners
 	([Index], [Name]) VALUES
 	(0,		N'Mohamad Akra'),
 	(1,		N'Ahmad Akra');
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	Print N''
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
-	INSERT INTO @Owners
+	INSERT INTO @Partners
 	([Index], [Name]) VALUES
 	(0,		N'Sisay Tesfaye');
 
 EXEC [api].[Agents__Save]
-	@DefinitionId = N'owners',
-	@Entities = @Owners,
+	@DefinitionId = N'partners',
+	@Entities = @Partners,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Owners: Inserting: ' + @ValidationErrorsJson
+	Print 'partners: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 
-	 /*
+/*
 BEGIN -- Users
 	IF NOT EXISTS(SELECT * FROM [dbo].[Users])
 	INSERT INTO [dbo].[Users]([Id], [Name], [AgentId]) VALUES

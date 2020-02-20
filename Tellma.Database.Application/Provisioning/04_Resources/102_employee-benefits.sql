@@ -1,4 +1,6 @@
-﻿	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+﻿IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
 						[AccountTypeId],					[Name]) VALUES
 	(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
@@ -38,9 +40,6 @@
 		Print 'Inserting employee benefits: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
-
-	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
-	DECLARE @DayOvertime INT, @NightOvertime INT, @RestOvertime INT, @HolidayOvertime INT;
 	
 	SELECT @BasicSalary = [Id] FROM dbo.Resources WHERE [Name] = N'Basic';
 	SELECT @TransportationAllowance = [Id] FROM dbo.Resources WHERE [Name] = N'Transportation Allowance';
@@ -52,3 +51,4 @@
 	SELECT @NightOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Night Overtime';
 	SELECT @RestOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Rest Overtime';
 	SELECT @HolidayOvertime = [Id] FROM dbo.Resources WHERE [Name] = N'Holiday Overtime';
+END
