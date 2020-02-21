@@ -4,10 +4,15 @@ DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
 
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
+
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	--(N'ManualLine',	N'Reviewed');
-	(0, N'ManualLine',		+4);
+	(0, N'ManualLine',		+3),
+	(1, N'ManualLine',		+4);
+
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
+	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'CMPT' UNION
+	SELECT 0, 1, [Id] FROM dbo.Roles WHERE [Code] = N'GM';
 
 END
 IF @DB = N'102' -- Banan ET, ETB, en
@@ -96,5 +101,3 @@ USING (
 	WHEN NOT MATCHED THEN
 	INSERT ([WorkflowId], [RoleId], [Criteria], [ProxyRoleId])
 	VALUES (s.[WorkflowId], s.[RoleId], s.[Criteria], s.[ProxyRoleId]);
-			
-

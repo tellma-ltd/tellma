@@ -54,6 +54,7 @@
 	[Identifier]					NVARCHAR (10),
 -- Entry Property
 	[EntryTypeId]					INT					CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES dbo.[EntryTypes],
+	[SmartKey]				NCHAR (3),
 	[IsDeprecated]					BIT					NOT NULL DEFAULT 0,
 	-- Audit details
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

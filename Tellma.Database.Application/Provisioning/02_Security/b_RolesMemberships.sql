@@ -12,8 +12,8 @@ BEGIN
 	;
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
-	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@banan-it.com'	UNION
-	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'elAmin.alTayyib@banan-it.com'	UNION
+	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@gmail.com'	UNION
+	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'amtaam@gmail.com'	UNION
 	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mohamad.akra@banan-it.com'
 
 	INSERT INTO @Permissions
@@ -37,7 +37,7 @@ BEGIN
 
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
-	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@banan-it.com'		UNION
+	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@gmail.com'			UNION
 	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mohamad.akra@banan-it.com'	UNION
 	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'wendylulu99@gmail.com'		UNION
 	SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'ahmad.akra@banan-it.com'		UNION

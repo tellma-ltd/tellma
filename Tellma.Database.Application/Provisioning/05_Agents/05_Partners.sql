@@ -35,6 +35,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
+DECLARE @PartnerMA INT = (SELECT [Id] FROM dbo.Agents WHERE DefinitionId = N'partners' AND [Name] = N'Mohamad Akra');
 /*
 BEGIN -- Users
 	IF NOT EXISTS(SELECT * FROM [dbo].[Users])

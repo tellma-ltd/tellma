@@ -21,10 +21,10 @@ BEGIN
 	(16,1,0,@TradeAndOtherPayables,		N'OtherCurrentLiabilities',	@Liabilities_AC,		N'Emp Inc Tax payable',	N'رسوم وافدين مستحقة ',N'2602', N'SAR',		@RC5_Exec,				NULL,			N'employees',		NULL,		NULL),
 	(17,0,0,@IssuedCapital,				N'EquityDoesntClose',		@Equity_AC,				N'Capital',				N'رأس المال المدفوع',	N'3101', N'SAR',		@RC5_Exec,				NULL,			NULL,				NULL,		NULL),
 	(18,1,1,@Revenue,						N'Income',					@Revenue_AC,			N'Sales',				N'المبيعات',			N'3102', N'SAR',		NULL,					NULL,			N'cost-units',		NULL,		NULL),
-	(19,1,1,@RawMaterialsAndConsumablesUsed,N'CostofSales',			@Expenses_AC,			N'Cost Of Sales',		N'تكلفة المبيعات',		N'5101', N'SAR',		NULL,					@COS,			N'cost-units',		NULL,		NULL),
-	(20,1,1,@OtherExpenseByNature,		N'Expenses',				@Expenses_AC,			N'fuel - S&D',			N'وقود - تسويق ومبيعات',N'5102', N'SAR',		NULL,					@SND,			N'cost-centers',	NULL,		NULL),
+	(19,1,1,@RawMaterialsAndConsumablesUsed,N'CostofSales',			@Expenses_AC,			N'Cost Of Sales',		N'تكلفة المبيعات',		N'5101', N'SAR',		NULL,					@CostOfSales,			N'cost-units',		NULL,		NULL),
+	(20,1,1,@OtherExpenseByNature,		N'Expenses',				@Expenses_AC,			N'fuel - S&D',			N'وقود - تسويق ومبيعات',N'5102', N'SAR',		NULL,					@DistributionCosts,			N'cost-centers',	NULL,		NULL),
 	(21,1,1,@OtherExpenseByNature,		N'Expenses',				@Expenses_AC,			N'fuel - admin'	,		N'وقود - إداري',		N'5103', N'SAR',		NULL,					@ADM,			N'cost-centers',	NULL,		NULL),
-	(22,1,1,@WagesAndSalaries,			N'Expenses',				@Expenses_AC,			N'Salaries - S&D',		N'مرتبات - تسويق ومبيعات',N'5201', N'SAR',		NULL,					@SND,			N'cost-centers',	NULL,		NULL),
+	(22,1,1,@WagesAndSalaries,			N'Expenses',				@Expenses_AC,			N'Salaries - S&D',		N'مرتبات - تسويق ومبيعات',N'5201', N'SAR',		NULL,					@DistributionCosts,			N'cost-centers',	NULL,		NULL),
 	(23,1,0,@WagesAndSalaries,			N'Expenses',				@Expenses_AC,			N'Salaries - Admin',	N'مرتبات - إدارية',	N'5202', N'SAR',		NULL,					@ADM,			N'cost-centers',	NULL,		NULL),
 	(24,1,0,@OtherExpenseByNature,		N'Expenses',				@Expenses_AC,			N'Consultancies',		N'استشارات',			N'5203', N'SAR',		NULL,					@ADM,			N'cost-centers',	NULL,		NULL);
 END;

@@ -201,15 +201,21 @@ BEGIN
 END;									
 
 UPDATE dbo.[EntryTypes] SET IsSystem = 1;
-	
+
+DECLARE @PaymentsToSuppliersForGoodsAndServices INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices' );
 DECLARE @ProceedsFromIssuingShares	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
 DECLARE @IssueOfEquity				INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
 DECLARE @InternalCashTransferExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
+DECLARE @ProceedsFromBorrowingsClassifiedAsFinancingActivities	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromBorrowingsClassifiedAsFinancingActivities' );
+
+
+
 DECLARE @InventoryPurchaseExtension	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
 DECLARE @InternalInventoryTransferExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InternalInventoryTransferExtension');
+
 DECLARE @PPEAdditions			INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
 DECLARE @InvReclassifiedAsPPE	INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
-DECLARE @COS	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'CostOfSales' );
-DECLARE @SND	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DistributionCosts' );
-DECLARE @ADM	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdministrativeExpense' );
+DECLARE @CostOfSales INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'CostOfSales' );
+DECLARE @DistributionCosts	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DistributionCosts' );
+DECLARE @AdministrativeExpense	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdministrativeExpense' );
 DECLARE @OEF	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'OtherExpenseByFunction' );
