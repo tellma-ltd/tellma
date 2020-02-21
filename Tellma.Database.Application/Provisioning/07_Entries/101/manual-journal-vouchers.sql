@@ -51,8 +51,8 @@ BEGIN -- Inserting
 	(0, 0, 5,0,+1,@1Meals,		@AdministrativeExpense, 							@1Overhead,	@SDG,			1380,				25.09),--
 	(0, 1, 5,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			1380,				25.09),
 
-	(0, 0, 6,0,+1,@1GMFund,		@AdministrativeExpense, 							@1Overhead,	@SDG,			111000,				2000),--
-	(0, 1, 6,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@USD,			2000,				2000);
+	(0, 0, 6,0,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
+	(0, 1, 6,0,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000);
 	
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journal-vouchers',
