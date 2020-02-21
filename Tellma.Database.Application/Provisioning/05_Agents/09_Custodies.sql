@@ -6,7 +6,8 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Custodies
 	([Index],	[Name]) VALUES
-	(0,			N'GM Safe');
+	(0,			N'GM Safe'),
+	(1,			N'KSA Safe');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodies
 	([Index], [Name]) VALUES
@@ -32,3 +33,4 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	END;
 
 	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'GM Safe');
+	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'KSA Safe');

@@ -32,5 +32,6 @@
 	[CurrencyId]					NCHAR (3),
 	[Identifier]					NVARCHAR (10),
 -- Entry Property
-	[EntryTypeId]					INT
+	[EntryTypeId]					INT,
+	[SmartKey]				NCHAR (3)
 );

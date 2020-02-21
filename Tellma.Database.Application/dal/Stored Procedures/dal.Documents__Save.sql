@@ -8,7 +8,7 @@
 	@ReturnResult NVARCHAR(MAX) = NULL OUTPUT
 AS
 BEGIN
-	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList], @DeletedFileIds [dbo].[StringList];
+	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexIdWithHeaderList], @DeletedFileIds [dbo].[StringList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -58,8 +58,8 @@ BEGIN
 		SELECT * FROM dbo.[Lines]
 		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)
 	)
-	INSERT INTO @LinesIndexedIds([Index], [Id])
-	SELECT x.[Index], x.[Id]
+	INSERT INTO @LinesIndexedIds([Index], [HeaderId], [Id])
+	SELECT x.[Index], x.[DocumentId], x.[Id]
 	FROM
 	(
 		MERGE INTO BL AS t
@@ -120,7 +120,7 @@ BEGIN
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
-		OUTPUT s.[Index], inserted.[Id] 
+		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
 	) AS x
 	WHERE [Index] IS NOT NULL;
 
@@ -144,7 +144,7 @@ BEGIN
 			E.[NotedDate]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
-		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index]
+		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET

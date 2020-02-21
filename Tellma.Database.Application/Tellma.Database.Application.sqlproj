@@ -93,6 +93,7 @@
     <Folder Include="Provisioning\06_Accounts" />
     <Folder Include="Provisioning\07_Entries" />
     <Folder Include="Provisioning\01_Definitions\e_LineDefinitions" />
+    <Folder Include="Provisioning\07_Entries\101" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -449,8 +450,6 @@
     <None Include="Provisioning\04_Resources\e1_CCE_received-checks.sql" />
     <None Include="Provisioning\04_Resources\101_employee-benefits.sql" />
     <None Include="Provisioning\06_Accounts\b_LegacyClassifications.sql" />
-    <None Include="Provisioning\06_Accounts\c_BasicAccounts.sql" />
-    <None Include="Provisioning\06_Accounts\d_SmartAccounts.sql" />
     <None Include="Provisioning\07_Entries\01_manual-journal-vouchers.sql" />
     <None Include="Provisioning\07_Entries\02_cash-payment-vouchers.sql" />
     <None Include="Provisioning\07_Entries\03_petty-cash-vouchers.sql" />
@@ -557,6 +556,8 @@
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="Mapping\AgentRates.sql" />
     <Build Include="Mapping\ResourceUnits.sql" />
+    <None Include="Provisioning\00_Common\e101_AccountTypes.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexIdWithHeaderList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -590,6 +591,7 @@
     <None Include="Provisioning\06_Accounts\101.sql" />
     <None Include="Provisioning\06_Accounts\000.sql" />
     <None Include="Provisioning\06_Accounts\999.sql" />
+    <None Include="Provisioning\07_Entries\101\manual-journal-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

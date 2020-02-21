@@ -22,8 +22,7 @@ BEGIN
 	BEGIN
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],				[TitleSingular],[TitlePlural]) VALUES
-		(0,N'cost-units',	N'Cost Unit',	N'Cost Units'),
-		(1,N'cost-centers',	N'Cost Center',	N'Cost Centers'),
+		(0,N'cost-objects',	N'Cost Object',	N'Cost Objects'),
 		(2,N'creditors',	N'Creditor',	N'Creditors'),
 		(3,N'customers',	N'Customer',	N'Customers'),
 		(4,N'debtors',		N'Debtor',		N'Debtors'),

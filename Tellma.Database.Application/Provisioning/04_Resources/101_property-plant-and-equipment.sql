@@ -5,7 +5,7 @@ BEGIN
 	INSERT INTO @Resources ([Index],
 		[AccountTypeId],	[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
 	(0,@ComputerEquipment,N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Microsoft'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(1,@ComputerEquipment,N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
+	(1,@ComputerEquipment,N'Lenovo Laptop',						N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
 	(2,@ComputerEquipment,N'Lenovo Ideapad S145',				N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
 	(3,@ComputerEquipment,N'Abdulrahman Used Laptop',			N'100022312',	NULL,														dbo.fn_Lookup(N'operating-systems', N'Windows 10'));
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],

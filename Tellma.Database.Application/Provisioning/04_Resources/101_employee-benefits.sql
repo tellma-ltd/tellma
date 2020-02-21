@@ -2,9 +2,9 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-						[AccountTypeId],					[Name]) VALUES
-	(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
-	(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)');
+		[AccountTypeId],				[Name]) VALUES
+	(0,	@EmployeeBenefitsExpense,		N'Basic'),
+	(1, @EmployeeBenefitsExpense,		N'Labor (hourly)');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],						[Multiplier]) VALUES

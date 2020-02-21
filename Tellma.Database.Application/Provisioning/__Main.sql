@@ -20,7 +20,7 @@ END
 :r .\00_Common\b_FunctionalCurrency.sql
 :r .\00_Common\c_Settings.sql
 :r .\00_Common\d_EntryTypes.sql
-:r .\00_Common\e_AccountTypes.sql
+:r .\00_Common\e101_AccountTypes.sql
 
 :r .\01_Definitions\a_LookupDefinitions.sql
 :r .\01_Definitions\b_ResourceDefinitions.sql
@@ -74,16 +74,14 @@ END
 
 :r .\06_Accounts\a_LegacyTypes.sql
 :r .\06_Accounts\b_LegacyClassifications.sql
-:r .\06_Accounts\c_BasicAccounts.sql
-:r .\06_Accounts\d_SmartAccounts.sql
 :r .\06_Accounts\000.sql
 :r .\06_Accounts\101.sql
-:r .\06_Accounts\105.sql
+--:r .\06_Accounts\105.sql
 :r .\06_Accounts\999.sql
 
-:r .\07_Entries\01_manual-journal-vouchers.sql
-:r .\07_Entries\01E5_manual-journal-vouchers.sql
-:r .\07_Entries\02_cash-payment-vouchers.sql
+:r .\07_Entries\101\manual-journal-vouchers.sql
+--:r .\07_Entries\01E5_manual-journal-vouchers.sql
+--:r .\07_Entries\02_cash-payment-vouchers.sql
 
 RETURN;
 ERR_LABEL:

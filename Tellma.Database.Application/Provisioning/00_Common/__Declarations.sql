@@ -27,3 +27,7 @@
 
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
 	DECLARE @DayOvertime INT, @NightOvertime INT, @RestOvertime INT, @HolidayOvertime INT;
+
+	DECLARE @SDG NCHAR (3) = N'SDG', @USD NCHAR (3) = N'USD', @SAR NCHAR (3) = N'SAR';
+
+	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList;
