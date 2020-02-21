@@ -12,7 +12,7 @@ export class TableComponent implements OnInit {
   // with Excel-like editing experience, and virtual scrolling built in so it can handle 100s of
   // thousands of rows.
 
-  private MAX_VISIBLE_ROWS = 9;
+  // private MAX_VISIBLE_ROWS = 9;
   private HEADER_HEIGHT = 41;
   private PH = 'PH';
 
@@ -214,10 +214,14 @@ export class TableComponent implements OnInit {
     return this._indexMap[index];
   }
 
+  get maxVisibleRows(): number {
+    return Math.ceil(9 * 30 / this.itemSize);
+  }
+
   get tableHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
-    const maxVisibleRows = this.MAX_VISIBLE_ROWS;
+    const maxVisibleRows = this.maxVisibleRows;
     const actualRows = Math.max(this.dataSourceCopy.length, 3);
     const visibleRows = Math.min(maxVisibleRows, actualRows);
     const height = headerHeight + visibleRows * rowHeight;
@@ -227,7 +231,7 @@ export class TableComponent implements OnInit {
   get tableMaxHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
-    const maxVisibleRows = this.MAX_VISIBLE_ROWS;
+    const maxVisibleRows = this.maxVisibleRows;
     const height = headerHeight + maxVisibleRows * rowHeight;
     return (height + 1) + 'px';
   }

@@ -6,7 +6,6 @@ import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontaweso
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import {ScrollingModule as ExperimentalScrollingModule} from '@angular/cdk-experimental/scrolling';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {
@@ -135,7 +134,6 @@ import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-g
     RouterModule.forChild([]),
     HttpClientModule,
     ScrollingModule,
-    ExperimentalScrollingModule,
     DragDropModule,
     NgbDropdownModule,
     NgbModalModule,
@@ -150,7 +148,6 @@ import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-g
     CommonModule,
     HttpClientModule,
     ScrollingModule,
-    ExperimentalScrollingModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbCollapseModule,
