@@ -2,7 +2,7 @@
 (
 	[Id]						INT						 CONSTRAINT [PK_ReportDimensionDefinitions] PRIMARY KEY IDENTITY,
 	[Index]						INT,
-	[ReportDefinitionId]		NVARCHAR (50)	NOT NULL CONSTRAINT [FK_ReportDimensionDefinitions__DocumentId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
+	[ReportDefinitionId]		NVARCHAR (50)	NOT NULL CONSTRAINT [FK_ReportDimensionDefinitions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Discriminator]				NVARCHAR (50)   NOT NULL, -- N'Row', N'Column'
 	[Path]						NVARCHAR (255)	NOT NULL,
 	[Modifier]					NVARCHAR (50), -- N'year', N'quarter', N'month' etc...

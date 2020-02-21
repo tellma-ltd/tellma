@@ -16,20 +16,17 @@ BEGIN -- Inserting
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			0,				N'ManualLine'),
-	(1,			0,				N'ManualLine'),
-	(0,			1,				N'ManualLine'),
-	(1,			1,				N'ManualLine'),
-	(0,			2,				N'ManualLine'),
-	(1,			2,				N'ManualLine'),
-	(0,			3,				N'ManualLine'),
-	(1,			3,				N'ManualLine'),
-	(0,			4,				N'ManualLine'),
-	(1,			4,				N'ManualLine'),
-	(0,			5,				N'ManualLine'),
-	(1,			5,				N'ManualLine'),
-	(0,			6,				N'ManualLine'),
-	(1,			6,				N'ManualLine');
+	(0,			0,				N'ManualLine'),(1,			0,				N'ManualLine'),
+	(0,			1,				N'ManualLine'),(1,			1,				N'ManualLine'),
+	(0,			2,				N'ManualLine'),(1,			2,				N'ManualLine'),
+	(0,			3,				N'ManualLine'),(1,			3,				N'ManualLine'),
+	(0,			4,				N'ManualLine'),(1,			4,				N'ManualLine'),
+	(0,			5,				N'ManualLine'),(1,			5,				N'ManualLine'),
+	(0,			6,				N'ManualLine'),(1,			6,				N'ManualLine'),
+	(0,			7,				N'ManualLine'),(1,			7,				N'ManualLine'),
+	(0,			8,				N'ManualLine'),(1,			8,				N'ManualLine'),
+	(0,			9,				N'ManualLine'),(1,			9,				N'ManualLine'),
+	(0,			10,				N'ManualLine'),(1,			10,				N'ManualLine'),(2,			10,				N'ManualLine');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
@@ -52,8 +49,21 @@ BEGIN -- Inserting
 	(0, 1, 5,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			1380,				25.09),
 
 	(0, 0, 6,0,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
-	(0, 1, 6,0,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000);
+	(0, 1, 6,0,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
+
+	(0, 0, 7,0,+1,@1Internet,	@AdministrativeExpense, 							@1Overhead,	@SDG,			250,				4.55),--
+	(0, 1, 7,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			250,				4.55),
+
+	(0, 0, 8,0,+1,@1Maintenance,@AdministrativeExpense, 							@1Overhead,	@SDG,			50,					0.91),--
+	(0, 1, 8,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			50,					0.91),
+
+	(0, 0, 9,0,+1,@1Utilities,	@AdministrativeExpense, 							@1Overhead,	@SDG,			2500,				45.45),--
+	(0, 1, 9,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			2500,				45.45),
 	
+	(0, 0, 10,0,+1,@1EITax,		NULL, 												NULL,		@SDG,			15843.78,			379.99),--
+	(0, 1, 10,0,+1,@1EStax,		NULL,												NULL,		@SDG,			58,					1.23),
+	(0, 2, 10,0,-1,@1BOK,		@PaymentsToAndOnBehalfOfEmployees,					NULL,		@SDG,			15901.4,			381.22);
+
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journal-vouchers',
 		@Documents = @D, @Lines = @L, @Entries = @E,

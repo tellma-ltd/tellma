@@ -83,6 +83,37 @@ END
 --:r .\07_Entries\01E5_manual-journal-vouchers.sql
 --:r .\07_Entries\02_cash-payment-vouchers.sql
 
+INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
+(N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 12',0,1,0),
+(N'281dba1b-7e3d-4497-b396-877ba91087c8',N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',0,1,0),
+(N'5aeec2a2-3008-4c62-8559-16896c17cc3f',N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate <= @Date and Account/AccountType/Node DescOf 33',0,1,0),
+(N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',N'Statement of cash flow - Direct Method',N'Summary',N'DetailsEntry',N'Account/AccountType/Code = ''CashAndCashEquivalents'' and EntryType/Code <> ''InternalCashTransferExtension''',0,1,0);
+
+SET IDENTITY_INSERT dbo.ReportDimensionDefinitions ON
+INSERT INTO dbo.ReportDimensionDefinitions(Id, [Index], ReportDefinitionId, Discriminator, [Path], OrderDirection, AutoExpand) VALUES
+(1,	0,	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',	N'Row',	N'EntryType',	NULL, 1),
+(2,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Row',	N'Account',	NULL, 1),
+(3,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Column',	N'Direction', N'desc', 1),
+(4,	0,	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'Row',	N'Account',	NULL, 1),
+(5,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'Row',	N'Account',	NULL, 1);
+SET IDENTITY_INSERT dbo.ReportDimensionDefinitions OFF
+
+SET IDENTITY_INSERT dbo.ReportMeasureDefinitions ON
+INSERT INTO dbo.ReportMeasureDefinitions(Id, [Index], ReportDefinitionId, [Path], Label, Aggregation) VALUES
+(1,	0,	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',	N'AlgebraicValue', N'Changes', 'sum'),
+(2,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'MonetaryValue', NULL, 'sum'),
+(3,	0,	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'AlgebraicValue', N'Balance', 'sum'),
+(4,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'AlgebraicValue', N'Change', 'sum');
+SET IDENTITY_INSERT dbo.ReportMeasureDefinitions OFF
+
+SET IDENTITY_INSERT dbo.ReportParameterDefinitions ON
+INSERT INTO dbo.ReportParameterDefinitions([Id], [Index], ReportDefinitionId, [Key], Visibility) VALUES
+(1,	0	,N'281dba1b-7e3d-4497-b396-877ba91087c8'	,N'Currency' ,N'Required'),
+(2,	0	,N'5aeec2a2-3008-4c62-8559-16896c17cc3f'	,N'Date' ,N'Optional'),
+(3,	0	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'toDate' ,N'Optional'),
+(4,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,N'Optional');
+SET IDENTITY_INSERT dbo.ReportParameterDefinitions OFF
+
 RETURN;
 ERR_LABEL:
 	SELECT * FROM OpenJson(@ValidationErrorsJson)
