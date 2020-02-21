@@ -40,6 +40,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             screenUrl: 'admin-users',
             orderby: ['Name'],
             format: (item: AdminUserForSave) => item.Name,
+            isAdmin: true,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: () => trx.instant('Name') },

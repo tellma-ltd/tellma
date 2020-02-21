@@ -65,7 +65,10 @@ let _collections: SelectorChoice[];
 export function collectionsWithEndpoint(ws: WorkspaceService, trx: TranslateService): SelectorChoice[] {
     if (!_collections) {
         _collections = Object.keys(metadata)
-            .filter(key => !!metadata[key](ws, trx, null).apiEndpoint)
+            .filter(key => {
+                const meta = metadata[key](ws, trx, null);
+                return !!meta && !meta.isAdmin && !!meta.apiEndpoint;
+            })
             .map(key => ({
                 value: key,
                 name: metadata[key](ws, trx, null).titlePlural
@@ -146,6 +149,11 @@ export interface EntityDescriptor {
      * Used for caching the list of definitions
      */
     definitionIdsArray?: SelectorChoice[];
+
+    /**
+     * True for entities that belong to the admin workspace
+     */
+    isAdmin?: boolean;
 }
 
 export interface ParameterDescriptor {
