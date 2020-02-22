@@ -13,6 +13,8 @@ SET NOCOUNT ON;
 	-- Conservation of mass
 	-- conservation of volume
 
+	-- Cannot move to state 4, if there is a null account
+
 	-- If signing on behalf of User
 	IF (@OnBehalfOfuserId IS NOT NULL) AND (@OnBehalfOfuserId <> @UserId)
 	BEGIN
@@ -67,8 +69,8 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
-		CAST(L.[State] AS NVARCHAR(50)),
-		CAST(@ToState AS NVARCHAR(50))		
+		dbo.fn_StateId__State(L.[State]) AS FromState,
+		dbo.fn_StateId__State(@ToState) AS ToState
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	LEFT JOIN dbo.WorkflowsView W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
@@ -83,6 +85,16 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE D.[State] = 5 --<> 'Closed'
+
+	-- No Null account when moving to state 4
+	IF @ToState = 4 -- reviewed
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
+		N'Error_TheAccountIsNull'
+	FROM @Ids FE
+	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
+	WHERE E.AccountId IS NULL
 
 	-- No deprecated account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

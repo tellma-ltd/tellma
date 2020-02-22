@@ -591,7 +591,8 @@
     <None Include="Provisioning\06_Accounts\101.sql" />
     <None Include="Provisioning\06_Accounts\000.sql" />
     <None Include="Provisioning\06_Accounts\999.sql" />
-    <None Include="Provisioning\07_Entries\101\manual-journal-vouchers.sql" />
+    <None Include="Provisioning\07_Entries\101\a01_manual-journal-vouchers.sql" />
+    <None Include="Provisioning\07_Entries\101\b01_cash-payment-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

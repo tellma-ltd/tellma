@@ -6,7 +6,7 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	IF @AssigneeId IS NULL
 		RAISERROR(N'Assignee is required', 16, 1)
@@ -33,7 +33,8 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 		
-	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+	DECLARE @Ids [dbo].[IdList]; INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids, @AssigneeId = @AssigneeId, @Comment = @Comment;
 END;

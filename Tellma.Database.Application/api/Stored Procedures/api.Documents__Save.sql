@@ -9,6 +9,7 @@
 AS
 BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	DECLARE @AllLines dbo.[LineList];
 	DECLARE @AllEntries dbo.EntryList;
@@ -25,11 +26,24 @@ BEGIN
 	SELECT @LineDefinitionId = MIN([DefinitionId])
 	FROM @WideLines WL
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = WL.[DefinitionId]
-	WHERE LD.[Script] IS NOT NULL;
+	--WHERE LD.[Script] IS NOT NULL;
 	
 	WHILE @LineDefinitionId IS NOT NULL
 	BEGIN
-		SELECT @Script = [Script] FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
+		Declare @PreScript NVARCHAR(MAX) =N'
+		SET NOCOUNT ON
+		DECLARE @ProcessedWideLines WideLineList;
+
+		INSERT INTO @ProcessedWideLines
+		SELECT * FROM @WideLines;
+		------
+		'
+		DECLARE @PostScript NVARCHAR(MAX) = N'
+		-----
+		SELECT * FROM @ProcessedWideLines;
+		';
+		SELECT @Script = @PreScript + ISNULL([Script],N'') + @PostScript
+		FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
 
 		DECLARE @WL dbo.[WideLineList]; DELETE FROM @WL;
 		INSERT INTO @WL SELECT * FROM @WideLines WHERE [DefinitionId] = @LineDefinitionId;
@@ -70,7 +84,7 @@ BEGIN
 	UPDATE PE
 	SET AgentId = D.AgentId
 	FROM @PreprocessedEntries PE
-	JOIN @Lines L ON PE.[LineIndex] = L.[Index]
+	JOIN @Lines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
 	JOIN dbo.Agents AG ON D.AgentId = AG.Id
@@ -94,13 +108,13 @@ BEGIN
 		RETURN;
 
 	DECLARE @ReturnResult NVARCHAR (MAX);
-	--INSERT INTO @DocumentsIndexedIds
+	
 	EXEC [dal].[Documents__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @PreprocessedEntries,
-		@ReturnIds = 1,
+		@ReturnIds = @ReturnIds,
 		@ReturnResult = @ReturnResult OUTPUT;
 
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
@@ -118,7 +132,9 @@ BEGIN
 	SELECT Id FROM @DocumentsIndexedIds
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
 
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @C int = (Select count(*) From @NewDocumentsIds)
+	Print N'New Docs Count = ' + Cast(@C as nvarchar(10))
+
 	EXEC [dal].[Documents__Assign]
 		@Ids = @NewDocumentsIds,
 		@AssigneeId = @UserId,

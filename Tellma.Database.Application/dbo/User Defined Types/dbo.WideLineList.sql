@@ -1,8 +1,8 @@
 ﻿CREATE TYPE [dbo].[WideLineList] AS TABLE (
-	[Index]						INT				PRIMARY KEY,
-	[DocumentIndex]				INT				NOT NULL,
+	[Index]						INT	,
+	[DocumentIndex]				INT				INDEX IX_WideLineList_DocumentIndex ([DocumentIndex]),
+	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
-	
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
 	[ResponsibilityCenterId]	INT,
 	[CurrencyId]				NCHAR (3),
@@ -13,8 +13,7 @@
 	[UnitId]					INT,
 	
 	[Value]						DECIMAL (19,4),
-	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
-
+	[Memo]						NVARCHAR (255),
 	
 	[Direction0]				SMALLINT,
 	[AgentId0]					INT,
@@ -28,7 +27,7 @@
 	[MonetaryValue0]			DECIMAL (19,4),
 	[Quantity0]					DECIMAL (19,4),
 	[UnitId0]					INT,
-	[Value0]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
+	[Value0]					DECIMAL (19,4),-- equivalent in functional currency		
 	[Time10]					TIME (0),	-- from time
 	[Time20]					TIME (0),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
@@ -50,7 +49,7 @@
 	[MonetaryValue1]			DECIMAL (19,4),
 	[Quantity1]					DECIMAL (19,4),
 	[UnitId1]					INT,
-	[Value1]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency		
+	[Value1]					DECIMAL (19,4),-- equivalent in functional currency		
 	[Time11]					TIME (0),	-- from time
 	[Time21]					TIME (0),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
@@ -72,7 +71,7 @@
 	[MonetaryValue2]			DECIMAL (19,4),
 	[Quantity2]					DECIMAL (19,4),
 	[UnitId2]					INT,
-	[Value2]					DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
+	[Value2]					DECIMAL (19,4),-- equivalent in functional currency
 	[RelatedDate2]				DATE,
 	[Time12]					TIME (0),	-- from time
 	[Time22]					TIME (0),	-- to time

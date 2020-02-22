@@ -233,14 +233,13 @@ BEGIN
 		OUTPUT INSERTED.[FileId] AS [InsertedFileId], DELETED.[FileId] AS [DeletedFileId]
 	) AS x
 	WHERE x.[InsertedFileId] IS NULL
+		
+	SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
 
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;
 	
 	-- Return the document Ids if requested
 	IF (@ReturnIds = 1) 
-	BEGIN
-		SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
 		SELECT * FROM @DocumentsIndexedIds;
-	END
 END;

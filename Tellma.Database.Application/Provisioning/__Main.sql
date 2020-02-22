@@ -79,7 +79,8 @@ END
 --:r .\06_Accounts\105.sql
 :r .\06_Accounts\999.sql
 
-:r .\07_Entries\101\manual-journal-vouchers.sql
+:r .\07_Entries\101\a01_manual-journal-vouchers.sql
+:r .\07_Entries\101\b01_cash-payment-vouchers.sql
 --:r .\07_Entries\01E5_manual-journal-vouchers.sql
 --:r .\07_Entries\02_cash-payment-vouchers.sql
 

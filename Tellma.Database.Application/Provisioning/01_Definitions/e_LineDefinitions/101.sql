@@ -24,11 +24,11 @@ INSERT @LineDefinitions([Index],
 
 UPDATE @LineDefinitions
 SET [Script] = N'
-	SET NOCOUNT ON
-	DECLARE @ProcessedWideLines WideLineList;
+	--SET NOCOUNT ON
+	--DECLARE @ProcessedWideLines WideLineList;
 
-	INSERT INTO @ProcessedWideLines
-	SELECT * FROM @WideLines;
+	--INSERT INTO @ProcessedWideLines
+	--SELECT * FROM @WideLines;
 	-----
 	UPDATE @ProcessedWideLines
 	SET
@@ -42,7 +42,7 @@ SET [Script] = N'
 		[MonetaryValue1] = [NotedAmount0],
 		[MonetaryValue2] = [NotedAmount0] + [MonetaryAmount0]
 	-----
-	SELECT * FROM @ProcessedWideLines;'
+	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
@@ -82,14 +82,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 																										[IsReadOnlyFromStateId]) VALUES
 (0,2,0,		N'Line.Memo',						N'Memo',					N'البيان',					1,2),
 (1,2,1,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',					1,2),
-(2,2,2,		N'Entry[0].MonetaryValue',			N'Pay Amount',				N'المبلغ',					1,2), 
-(3,2,3,		N'Entry[0].NotedAgentName',			N'Beneficiary',				N'المستفيد',				3,4),
-(4,2,4,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',					1,4),
-(5,2,5,		N'Entry[0].AgentId',				N'Bank/Cashier',			N'البنك/الخزنة',			3,4),
-(6,2,6,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييز الحساب',			3,4),
-(7,2,7,		N'Entry[0].ExternalReference',		N'Check #/Receipt #',		N'رقم الشيك/رقم الإيصال',	3,4),
-(8,2,8,		N'Entry[0].NotedDate'	,			N'Check Date',				N'تاريخ الشيك',				3,4),
-(9,2,9,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4)
+(2,2,2,		N'Entry[0].MonetaryValue',			N'Pay Amount',				N'المبلغ',					1,2),
+(3,2,3,		N'Entry[0].Value',					N'Equiv Amt ($)',			N'($) المعادل',				4,4), 
+(4,2,4,		N'Entry[0].NotedAgentName',			N'Beneficiary',				N'المستفيد',				3,4),
+(5,2,5,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',					1,4),
+(6,2,6,		N'Entry[0].AgentId',				N'Bank/Cashier',			N'البنك/الخزنة',			3,4),
+(7,2,7,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييز الحساب',			3,4),
+(8,2,8,		N'Entry[0].ExternalReference',		N'Check #/Receipt #',		N'رقم الشيك/رقم الإيصال',	3,4),
+(9,2,9,		N'Entry[0].NotedDate'	,			N'Check Date',				N'تاريخ الشيك',				3,4),
+(10,2,10,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4)
 ;
 
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],

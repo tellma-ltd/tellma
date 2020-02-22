@@ -68,9 +68,4 @@ BEGIN
 		GOTO Err_Label;
 	END;
 
-	IF @DebugCashPaymentVouchers = 1
-	BEGIN
-			INSERT INTO @D_CPVIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
-			EXEC [rpt].[Docs__UI] @D_CPVIds;
-	END
 END

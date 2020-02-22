@@ -30,4 +30,4 @@
 
 	DECLARE @SDG NCHAR (3) = N'SDG', @USD NCHAR (3) = N'USD', @SAR NCHAR (3) = N'SAR';
 
-	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList;
+	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList, @WL dbo.WideLineList;

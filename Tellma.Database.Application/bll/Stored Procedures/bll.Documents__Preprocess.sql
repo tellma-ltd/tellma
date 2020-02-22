@@ -10,13 +10,13 @@ DECLARE @FunctionalCurrencyId NCHAR(3) = CONVERT(NCHAR(3), SESSION_CONTEXT(N'Fun
 DECLARE @PreprocessedEntries [dbo].EntryList;
 INSERT INTO @PreprocessedEntries SELECT * FROM @Entries;
 
--- Copy information from Lines to Entries
+-- Copy information from Line definitions to Entries
 UPDATE E
 SET
 	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction])
 	-- TODO: fill with all the remaining defaults
 FROM @PreprocessedEntries E
-JOIN @Lines L ON E.[LineIndex] = L.[Index]
+JOIN @Lines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber];
 
 -- When no resource or agent, set to NULL
@@ -36,10 +36,10 @@ SET
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 --	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+FROM @PreprocessedEntries E
+JOIN @Lines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine'
-
 
 -- for all lines, Get currency and identifier from Resources if available.
 -- set the count to one, if singleton
@@ -48,11 +48,10 @@ SET
 	E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 	E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 --	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
-FROM @PreprocessedEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
+FROM @PreprocessedEntries E
+JOIN @Lines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 JOIN dbo.Resources R ON E.ResourceId = R.Id;
 
--- Once E.Count is defined, 
--- set the other measures, if the rate per unit is defined
 -- TODO: change the logic to something like 
 -- If UnitId is a mass unit, update the masses
 
@@ -68,18 +67,17 @@ SET E.[UnitId] = RU.UnitId
 FROM @PreprocessedEntries E
 JOIN RU ON E.ResourceId = RU.ResourceId
 
-
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET -- to allow flexibility, we can either enter value and get monetary value or vice versa
-	E.[MonetaryValue]	= COALESCE(E.[MonetaryValue], E.[Value]),
-	E.[Value]			= COALESCE(E.[Value], E.[MonetaryValue])
+	[Value]			= [MonetaryValue]
 FROM @PreprocessedEntries E
-JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
-	E.[CurrencyId] = @FunctionalCurrencyId
-	AND (E.[Value] IS NULL OR E.[MonetaryValue] IS NULL);
+	[CurrencyId] = @FunctionalCurrencyId
+	AND (
+		[Value] IS NULL OR 
+		[Value] IS NOT NULL AND [Value] <> [MonetaryValue]
+	);
 
 --WITH NetVariances AS (
 --	SELECT L.[Index],  L.DefinitionId, SUM(E.[Direction] * E.[Value]) AS Net
@@ -101,9 +99,9 @@ WHERE
 --WHERE LDE.ValueSource = N'Balance' AND E.CurrencyId = dbo.fn_FunctionalCurrencyId();
 
 WITH ConformantAccounts AS (
-	SELECT A.[Id] AS AccountId, E.[Index]
+	SELECT MIN(A.[Id]) AS AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 	FROM @PreprocessedEntries E
-	JOIN @Lines L ON E.LineIndex = L.[Index]
+	JOIN @Lines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 	JOIN dbo.Accounts A ON A.AccountTypeId IN (
 		SELECT [Id] FROM AccountTypes 
@@ -118,21 +116,20 @@ WITH ConformantAccounts AS (
 	AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
 	AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 	AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
---	AND (A.[Identifier] IS NULL				OR A.[Identifier] = E.[AccountIdentifier])
+	--AND (A.[Identifier] IS NULL				OR A.[Identifier] = E.[AccountIdentifier])
 -- AND A.IsCurrent = LDE.IsCurrent
+-- AND LDE.SmartKey IS NULL OR LDE.SmartKey = A.SmartKey
+	WHERE L.DefinitionId <> N'ManualLine'
+	AND A.IsDeprecated = 0
+	GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]
 )
 -- If each E.Index has precisely one conformant account, then set to it
 -- If it has zero conformant account, then set to zero
 -- if it has multiple conformant account, then set it to null, unless E.AccountId is already one of them 
 UPDATE E
-SET E.AccountId = (
-	SELECT MIN(AccountId) FROM ConformantAccounts 
-	WHERE AccountId = E.AccountId
-)
+SET E.AccountId = CA.AccountId
 FROM @PreprocessedEntries E
-JOIN @Lines L ON E.LineIndex = L.[Index]
-WHERE L.DefinitionId <> N'ManualLine'
-
+JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex]
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 
 --SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], A.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])

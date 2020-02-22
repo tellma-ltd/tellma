@@ -16,6 +16,16 @@ SET NOCOUNT ON;
 	 [✓] The DocumentDate cannot be before archive date
 
 	*/
+	--[C# Validation]
+	-- For functional currency, the monetary value must be equal to value
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Value' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheMonetaryValueDoesNotMatchValue'
+	FROM @Entries E
+	WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
+	AND (ISNULL([MonetaryValue],0) <> ISNULL([Value],0))
 
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
 
@@ -103,5 +113,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[ResourceId] IS NULL)
 	AND (A.[HasResource] = 1);
+
+
 	
 	SELECT TOP (@Top) * FROM @ValidationErrors;

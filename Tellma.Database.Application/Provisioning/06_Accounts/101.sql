@@ -50,7 +50,7 @@ BEGIN
 	(42,1,0,N'ZKT',	@TradeAndOtherPayables,		N'Zakat',					@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
 	(43,1,0,N'VAT',	@TradeAndOtherPayables,		N'VAT Output',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
 --	(44,1,0,NULL,	@TradeAndOtherPayables,		N'Income Tax',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(45,1,0,N'EIT',	@TradeAndOtherPayables,		N'Employee Income Tax',		@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
+	(45,1,0,N'EIT',	@TradeAndOtherPayables,		N'Employees Income Tax',	@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
 	(46,1,0,N'EST',	@TradeAndOtherPayables,		N'Employees Stamp Tax',		@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
 
 	-- Profit/Loss Accounts
@@ -82,7 +82,6 @@ BEGIN
 	(88,1,0,NULL,	@EmployeeBenefitsExpense,	N'Allowances & Bonuses',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(76,1,0,NULL,	@EmployeeBenefitsExpense,	N'Employee Meals',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 
-		
 	(71,1,0,NULL,	@OtherExpenseByNature,		N'Stationery & Grocery',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(74,1,0,NULL,	@OtherExpenseByNature,		N'Gov fees',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 
@@ -138,7 +137,7 @@ BEGIN
 	(99,1,0,1,@OtherExpenseByNature,	N'Gain (loss) on disposal',	NULL,		@RC_Inv,					NULL,			N'cost-objects',	NULL);
 */
 
-	UPDATE @Accounts SET HasResource = 1 WHERE [Index] IN (0, 50, 51);
+	UPDATE @Accounts SET HasResource = 1 WHERE [Index] IN (0);
 
 	EXEC [api].[Accounts__Save]
 		@Entities = @Accounts,
@@ -160,9 +159,9 @@ BEGIN
 	DECLARE @1Maintenance INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Maintenance');
 	DECLARE @1Utilities INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Utilities');
 	DECLARE @1Internet INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Internet & Tel');
-	DECLARE @1EITax INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employee Income Tax');
-	DECLARE @1EStax INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employee Stamp Tax');
-	--DECLARE @1GMFund INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employee Income Tax');
-	--DECLARE @1GMFund INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employee Income Tax');
+	DECLARE @1EITax INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employees Income Tax');
+	DECLARE @1EStax INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employees Stamp Tax');
+	DECLARE @1T2ARUSD INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Tier-2 A/R - USD');
+	DECLARE @1Revenues INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Revenues');
 	--DECLARE @1GMFund INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Employee Income Tax');
 END
