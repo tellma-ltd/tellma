@@ -6,7 +6,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-    SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheAccountClassification0IsUsedInAccount1', 
 		[dbo].[fn_Localize](LC.[Name], LC.[Name2], LC.[Name3]) AS LegacyClassificationName,

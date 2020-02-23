@@ -5,7 +5,8 @@
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
--- TODO: Add Top(@To)
+-- TODO: Add Top(@Top)
+-- TODO: make sure the account type does not contradict the definition
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

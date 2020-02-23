@@ -26,7 +26,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be already in the back end
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
@@ -38,7 +38,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
@@ -50,4 +50,5 @@ SET NOCOUNT ON;
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

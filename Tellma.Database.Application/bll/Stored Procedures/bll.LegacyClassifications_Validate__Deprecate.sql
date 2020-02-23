@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 	--	OR	SUM(DLE.[Direction] * DLE.[Mass]) <> 0
 	--)
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	--SELECT
+	--	SELECT TOP (@Top)
 	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 	--	N'Error_TheAccountClassificationHasBalance0InResource1Agent2',
 	--	[Value] AS Argument0, [Resource] AS [Argument1], [Agent] AS [Argument2]

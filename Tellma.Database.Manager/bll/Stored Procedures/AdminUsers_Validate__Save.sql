@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+    SELECT DISTINCT TOP(@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsUsed',
 		FE.[Email] AS Argument0
@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+    SELECT DISTINCT TOP(@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsDuplicated',
 		[Email]

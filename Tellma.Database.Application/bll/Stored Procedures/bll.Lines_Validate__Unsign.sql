@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	-- Cannot unsign the lines unless the document state is ACTIVE
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsIn0State',
 		CAST(BE.[State] AS NVARCHAR(50))

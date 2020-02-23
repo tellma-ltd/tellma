@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	-- Id must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheCode0IsDuplicated',
 		[Id]

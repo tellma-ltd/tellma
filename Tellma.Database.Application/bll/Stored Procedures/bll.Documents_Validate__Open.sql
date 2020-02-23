@@ -10,7 +10,7 @@ SET NOCOUNT ON;
 
 	-- TODO: Might be useful to define a separate archive date for each operating segment
 INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
 		N'Error_FallsinArchivedPeriod'
 	FROM @Ids FE

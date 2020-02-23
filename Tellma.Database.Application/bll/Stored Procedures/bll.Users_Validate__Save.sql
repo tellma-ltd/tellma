@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsUsed',
 		FE.[Email] AS Argument0
@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 
 	-- Email must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Email',
 		N'Error_TheEmail0IsDuplicated',
 		[Email]
@@ -37,9 +37,10 @@ SET NOCOUNT ON;
 
 	-- No non existing roles
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 
-	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
-				CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheRole0IsNonExistent' As [ErrorName],
-				P.[RoleId] AS Argument1
+	SELECT TOP (@Top)
+		'[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
+		CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheRole0IsNonExistent' As [ErrorName],
+		P.[RoleId] AS Argument1
 	FROM @Roles P
 	WHERE P.RoleId NOT IN (
 		SELECT [Id] FROM dbo.[Roles]

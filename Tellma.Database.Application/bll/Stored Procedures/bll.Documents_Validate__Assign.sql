@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	-- Can only assign while in (Active) state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsIn0State',
 		-- TODO: localize state name

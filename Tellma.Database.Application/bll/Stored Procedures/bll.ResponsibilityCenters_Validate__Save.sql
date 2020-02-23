@@ -6,7 +6,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-    SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-    SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code
@@ -33,7 +33,7 @@ SET NOCOUNT ON;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
@@ -48,7 +48,7 @@ SET NOCOUNT ON;
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT 
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsUsed',
 		FE.[Name]
@@ -58,7 +58,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
@@ -68,7 +68,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
@@ -78,7 +78,7 @@ SET NOCOUNT ON;
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsDuplicated',
 		[Name]
@@ -92,7 +92,7 @@ SET NOCOUNT ON;
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsDuplicated',
 		[Name2]
@@ -107,7 +107,7 @@ SET NOCOUNT ON;
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsDuplicated',
 		[Name3]
@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 
 	-- Parent Responsibility Center must be active
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
 		N'Error_TheParentResponsibilityCenter0IsInactive',
 		FE.ParentId
