@@ -39,7 +39,7 @@ WSI
 	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResponsibilityCenters__ModifiedById] REFERENCES [dbo].[Users] ([Id]),
 	
 	-- Pure SQL properties and computed properties
-	[Node]					HIERARCHYID			NOT NULL,
+	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_ResponsibilityCenters__Node] UNIQUE CLUSTERED,
 	[ParentNode]			AS [Node].GetAncestor(1),	
 );
 GO

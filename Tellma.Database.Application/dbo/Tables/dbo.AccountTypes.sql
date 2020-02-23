@@ -8,7 +8,7 @@
 	[Description]			NVARCHAR (1024),
 	[Description2]			NVARCHAR (1024),
 	[Description3]			NVARCHAR (1024),
-	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_AccountTypes__Node] UNIQUE CLUSTERED,
+	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
 	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
 	[IsCurrent]				BIT,
 	[IsReal]				BIT					NOT NULL DEFAULT 0,

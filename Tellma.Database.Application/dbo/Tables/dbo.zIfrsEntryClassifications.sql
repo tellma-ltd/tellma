@@ -2,7 +2,7 @@
 	-- To generate financial statements: Cash flow - direct, Changes of Equity
 	-- However, it can also be used to generate several other notes as well such as PPE, Intangible, Biological, Expenses by function
 	[Id]						NVARCHAR (255)		PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsEntryClassifications__IfrsConcepts]	REFERENCES [dbo].[IfrsConcepts] ([Id]),
-	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [CK_IfrsEntryClassifications__Node] UNIQUE INDEX [IX_IfrsEntryClassifications__Node] CLUSTERED,
+	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UX_IfrsEntryClassifications__Node] UNIQUE CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
 	[IsActive]					BIT					NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors
 	[IsLeaf]					BIT					NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors

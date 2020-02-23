@@ -5,7 +5,7 @@
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[Node]					HIERARCHYID			NOT NULL,
+	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [UX_EntryTypes__Node] UNIQUE CLUSTERED,
 	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[ForDebit]				BIT					NOT NULL DEFAULT 1,
@@ -19,7 +19,4 @@
 	
 	[ParentNode]			AS [Node].GetAncestor(1),
 );
-GO
-CREATE UNIQUE CLUSTERED INDEX [IX_EntryTypes__Node]
-	ON [dbo].[EntryTypes]([Node]);
 GO

@@ -5,6 +5,7 @@
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
+-- TODO: Add Top(@To)
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -122,8 +123,14 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- TODO: Must have at least one unit
-	
+	-- Must have at least one unit
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheResource0HasNoUnits'
+	FROM @Entities FE 
+	WHERE ([Index] NOT IN (SELECT HeaderIndex FROM @ResourceUnits));
+
 	-- TODO: if units have standard conversion rates, reject any attempt to change them
 	-- TODO: Add bll.Resources__Preprocess, to update the units with 
 
