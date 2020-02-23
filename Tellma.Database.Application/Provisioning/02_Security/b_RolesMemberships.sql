@@ -140,5 +140,8 @@ EXEC dal.Roles__Save
 	@Entities = @Roles,
 	@Members = @Members,
 	@Permissions = @Permissions
-IF @DebugRoles = 1
-	SELECT * FROM map.Roles();
+
+DECLARE @1GeneralManager INT, @1Comptroller INT, @1Reader INT;
+SELECT @1Comptroller = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller'
+SELECT @1GeneralManager = [Id] FROM dbo.Roles WHERE [Name] = N'General Manager'
+SELECT @1Reader = [Id] FROM dbo.Roles WHERE [Name] = N'Reader';

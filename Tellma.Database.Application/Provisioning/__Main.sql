@@ -81,22 +81,33 @@ END
 
 :r .\07_Entries\101\a01_manual-journal-vouchers.sql
 :r .\07_Entries\101\b01_cash-payment-vouchers.sql
---:r .\07_Entries\01E5_manual-journal-vouchers.sql
---:r .\07_Entries\02_cash-payment-vouchers.sql
 
-INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
-(N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 12',0,1,0),
-(N'281dba1b-7e3d-4497-b396-877ba91087c8',N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',0,1,0),
-(N'5aeec2a2-3008-4c62-8559-16896c17cc3f',N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate <= @Date and Account/AccountType/Node DescOf 33',0,1,0),
-(N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',N'Statement of cash flow - Direct Method',N'Summary',N'DetailsEntry',N'Account/AccountType/Code = ''CashAndCashEquivalents'' and EntryType/Code <> ''InternalCashTransferExtension''',0,1,0);
+
+INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], [OrderBy], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
+(N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 12',NULL,0,1,0),
+(N'281dba1b-7e3d-4497-b396-877ba91087c8',N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',NULL,0,1,0),
+(N'5aeec2a2-3008-4c62-8559-16896c17cc3f',N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate <= @Date and Account/AccountType/Node DescOf 33',NULL,0,1,0),
+(N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',N'Statement of cash flow - Direct Method',N'Summary',N'DetailsEntry',N'Account/AccountType/Code = ''CashAndCashEquivalents'' and EntryType/Code <> ''InternalCashTransferExtension''',NULL,0,1,0),
+(N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',N'Trial Balance', N'Summary',N'DetailsEntry',NULL, NULL,0,	1,	0),
+(N'30d3f1d2-d168-4414-a933-305e99a71269',N'Trial Balance By State', N'Summary',N'DetailsEntry',NULL, NULL,0,	1,	0),
+(N'9ce0a0e3-772d-406a-8aef-46684b757eac',N'Journal', N'Details',N'DetailsEntry',N'Line/Document/DefinitionId = ''cash-payment-vouchers'' and Line/Document/DocumentDate >= @FromDate and Line/Document/DocumentDate <= @ToDate  And Line/Document/State = @DocumentState And Line/State = @LineState And  AccountId = @AccountId And CurrencyId = @Currency', N'Line/Document/DocumentDate, Line/Document/Id,,Direction desc', NULL,	NULL,	0),
 
 SET IDENTITY_INSERT dbo.ReportDimensionDefinitions ON
 INSERT INTO dbo.ReportDimensionDefinitions(Id, [Index], ReportDefinitionId, Discriminator, [Path], OrderDirection, AutoExpand) VALUES
-(1,	0,	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',	N'Row',	N'EntryType',	NULL, 1),
-(2,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Row',	N'Account',	NULL, 1),
-(3,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Column',	N'Direction', N'desc', 1),
-(4,	0,	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'Row',	N'Account',	NULL, 1),
-(5,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'Row',	N'Account',	NULL, 1);
+(1,	0,	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',	N'Row',		N'EntryType',	NULL, 1),
+(2,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Row',		N'Account',		NULL, 1),
+(3,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Column',	N'Direction',	N'desc', 1),
+(4,	0,	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'Row',		N'Account',		NULL, 1),
+(5,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'Row',		N'Account',		NULL, 1),
+(6,	0,	N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',	N'Row',		N'Account',		NULL, 1),
+(7,	1,	N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',	N'Column',	N'Direction',	N'desc', 1),
+(8,	0,	N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',	N'Column',	N'CurrencyId',	NULL, 1),
+(9,	0,	N'30d3f1d2-d168-4414-a933-305e99a71269',	N'Row',		N'Account',		NULL, 1),
+(10,0,	N'30d3f1d2-d168-4414-a933-305e99a71269',	N'Column',	N'Line/State',	NULL, 1),
+(11,1,	N'30d3f1d2-d168-4414-a933-305e99a71269',	N'Column',	N'Direction',	N'desc', 1),
+(9,	0,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Row',		N'Account',		NULL, 1),
+(10,0,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Column',	N'Direction',	N'desc', 1),
+(11,1,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Column',	N'CurrencyId',	NULL, 1);
 SET IDENTITY_INSERT dbo.ReportDimensionDefinitions OFF
 
 SET IDENTITY_INSERT dbo.ReportMeasureDefinitions ON
@@ -104,16 +115,37 @@ INSERT INTO dbo.ReportMeasureDefinitions(Id, [Index], ReportDefinitionId, [Path]
 (1,	0,	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',	N'AlgebraicValue', N'Changes', 'sum'),
 (2,	0,	N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'MonetaryValue', NULL, 'sum'),
 (3,	0,	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'AlgebraicValue', N'Balance', 'sum'),
-(4,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'AlgebraicValue', N'Change', 'sum');
+(4,	0,	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'AlgebraicValue', N'Change', 'sum'),
+(5,	0,	N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',	N'MonetaryValue', NULL, 'sum'),
+(6,	0,	N'30d3f1d2-d168-4414-a933-305e99a71269',	N'Value', NULL, 'sum');
 SET IDENTITY_INSERT dbo.ReportMeasureDefinitions OFF
 
 SET IDENTITY_INSERT dbo.ReportParameterDefinitions ON
-INSERT INTO dbo.ReportParameterDefinitions([Id], [Index], ReportDefinitionId, [Key], Visibility) VALUES
-(1,	0	,N'281dba1b-7e3d-4497-b396-877ba91087c8'	,N'Currency' ,N'Required'),
-(2,	0	,N'5aeec2a2-3008-4c62-8559-16896c17cc3f'	,N'Date' ,N'Optional'),
-(3,	0	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'toDate' ,N'Optional'),
-(4,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,N'Optional');
+INSERT INTO dbo.ReportParameterDefinitions([Id], [Index], ReportDefinitionId, [Key], [Label], Visibility) VALUES
+(1,	0	,N'281dba1b-7e3d-4497-b396-877ba91087c8'	,N'Currency' ,NULL,N'Required'),
+(2,	0	,N'5aeec2a2-3008-4c62-8559-16896c17cc3f'	,N'Date' ,NULL,N'Optional'),
+(3,	0	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'toDate' ,NULL,N'Optional'),
+(4,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,NULL,N'Optional'),
+(5,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'ToDate' ,N'To Date',N'Optional'),
+(6,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,N'From Date',N'Optional'),
+(7,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'DocumentState' ,N'Document State',N'Optional'),
+(8,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'LineState' ,N'Line State',N'Optional'),
+(9,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'Currency' ,NULL,N'Optional'),
+(10,1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'AccountId' ,NULL,N'Optional');
 SET IDENTITY_INSERT dbo.ReportParameterDefinitions OFF
+
+--SET IDENTITY_INSERT dbo.ReportSelectDefinitions ON
+--INSERT INTO dbo.ReportSelectDefinitions([Id], [Index], ReportDefinitionId, [Path]) VALUES
+--1	0	9ce0a0e3-772d-406a-8aef-46684b757eac	Line/Document/DocumentDate
+--2	1	9ce0a0e3-772d-406a-8aef-46684b757eac	Line/Document/State
+--3	2	9ce0a0e3-772d-406a-8aef-46684b757eac	Line/Document/SerialNumber
+--4	3	9ce0a0e3-772d-406a-8aef-46684b757eac	Line/State
+--5	4	9ce0a0e3-772d-406a-8aef-46684b757eac	Account
+--6	5	9ce0a0e3-772d-406a-8aef-46684b757eac	CurrencyId
+--7	6	9ce0a0e3-772d-406a-8aef-46684b757eac	Direction
+--8	7	9ce0a0e3-772d-406a-8aef-46684b757eac	MonetaryValue
+--9	8	9ce0a0e3-772d-406a-8aef-46684b757eac	Value
+--SET IDENTITY_INSERT dbo.ReportSelectDefinitions OFF
 
 RETURN;
 ERR_LABEL:

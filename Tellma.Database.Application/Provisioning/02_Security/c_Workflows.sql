@@ -4,15 +4,25 @@ DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
 
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
 	(0, N'ManualLine',		+3),
 	(1, N'ManualLine',		+4);
 
-	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
-	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'CMPT' UNION
-	SELECT 0, 1, [Id] FROM dbo.Roles WHERE [Code] = N'GM';
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId]) VALUES
+	(0, 0, @1Comptroller),
+	(0, 1, @1GeneralManager);
+
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(2, N'CashPayment',		+1),
+	(3, N'CashPayment',		+3),
+	(4, N'CashPayment',		+4);
+
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId]) VALUES
+--	(0, 2, @1Reader),
+	(0, 3, @1GeneralManager),
+	(0, 4, @1Comptroller);
 
 END
 IF @DB = N'102' -- Banan ET, ETB, en

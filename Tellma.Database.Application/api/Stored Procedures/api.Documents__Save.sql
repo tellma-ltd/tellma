@@ -126,14 +126,17 @@ BEGIN
 		[Id] INT '$.Id'
 	);
 
+	-- if we added/deleted draft lines, the document state should change
+	DECLARE @DocIds dbo.IdList;
+	INSERT INTO @DocIds([Id])
+	SELECT [Id] FROM @DocumentsIndexedIds;
+	EXEC dal.Documents_State__Refresh @DocIds;
+
 	---- Assign the new ones to self
 	DECLARE @NewDocumentsIds dbo.IdList;
 	INSERT INTO @NewDocumentsIds([Id])
 	SELECT Id FROM @DocumentsIndexedIds
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
-
-	DECLARE @C int = (Select count(*) From @NewDocumentsIds)
-	Print N'New Docs Count = ' + Cast(@C as nvarchar(10))
 
 	EXEC [dal].[Documents__Assign]
 		@Ids = @NewDocumentsIds,

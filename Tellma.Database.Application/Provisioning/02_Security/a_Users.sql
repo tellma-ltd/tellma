@@ -51,3 +51,8 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	;
 EXEC [dal].[Users__Save]
 	@Entities = @Users
+
+DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT
+SELECT @Jiad_akra = [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@gmail.com';
+SELECT @amtaam = [Id] FROM dbo.Users WHERE [Email] = N'amtaam@gmail.com';
+SELECT @mohamad_akra = [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@banan-it.com';

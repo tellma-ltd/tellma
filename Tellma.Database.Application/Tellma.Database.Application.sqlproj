@@ -560,6 +560,7 @@
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithHeaderList.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__DeleteWithDescendants.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines__Pivot.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -595,6 +596,7 @@
     <None Include="Provisioning\06_Accounts\999.sql" />
     <None Include="Provisioning\07_Entries\101\a01_manual-journal-vouchers.sql" />
     <None Include="Provisioning\07_Entries\101\b01_cash-payment-vouchers.sql" />
+    <None Include="Provisioning\07_Entries\101\c01_petty-cash-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
