@@ -60,7 +60,7 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
                 State: {
                     control: 'state',
                     label: () => trx.instant('State'),
-                    choices: [0, -1, 1, -2, 2, -3, 3, -4, 4, 5],
+                    choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
                     format: (c: number) => {
                         switch (c) {
                             case 0: return trx.instant('Document_State_Draft');

@@ -34,7 +34,7 @@ namespace Tellma.Data.Queries
         private string _fromSql;
         private string _preSql;
         private SqlParameter[] _parameters;
-        private List<(string ParamName, object Value)> _additionalParameters;
+        private List<SqlParameter> _additionalParameters;
 
         /// <summary>
         /// Creates a new instance of <see cref="Query"/>
@@ -246,12 +246,12 @@ namespace Tellma.Data.Queries
         /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
         /// must be supplied this method must be supplied through this method before loading any data
         /// </summary>
-        public Query<T> AdditionalParameters(params (string ParamName, object Value)[] parameters)
+        public Query<T> AdditionalParameters(params SqlParameter[] parameters)
         {
             var clone = Clone();
             if (clone._additionalParameters == null)
             {
-                clone._additionalParameters = new List<(string ParamName, object Value)>();
+                clone._additionalParameters = new List<SqlParameter>();
             }
 
             clone._additionalParameters.AddRange(parameters);           
@@ -307,13 +307,9 @@ namespace Tellma.Data.Queries
 
             if (_additionalParameters != null)
             {
-                foreach (var (paramName, value) in _additionalParameters)
+                foreach (var additionalParameter in _additionalParameters)
                 {
-                    ps.AddParameter(new SqlParameter
-                    {
-                        ParameterName = paramName,
-                        Value = value ?? DBNull.Value
-                    });
+                    ps.AddParameter(additionalParameter);
                 }
             }
 
@@ -587,13 +583,9 @@ namespace Tellma.Data.Queries
 
             if (_additionalParameters != null)
             {
-                foreach (var (paramName, value) in _additionalParameters)
+                foreach (var additionalParameter in _additionalParameters)
                 {
-                    ps.AddParameter(new SqlParameter
-                    {
-                        ParameterName = paramName,
-                        Value = value ?? DBNull.Value
-                    });
+                    ps.AddParameter(additionalParameter);
                 }
             }
 
@@ -712,13 +704,9 @@ namespace Tellma.Data.Queries
 
             if (_additionalParameters != null)
             {
-                foreach (var (paramName, value) in _additionalParameters)
+                foreach (var additionalParameter in _additionalParameters)
                 {
-                    ps.AddParameter(new SqlParameter
-                    {
-                        ParameterName = paramName,
-                        Value = value ?? DBNull.Value
-                    });
+                    ps.AddParameter(additionalParameter);
                 }
             }
 

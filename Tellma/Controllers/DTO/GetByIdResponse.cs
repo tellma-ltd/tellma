@@ -5,6 +5,8 @@ namespace Tellma.Controllers.Dto
 {
     public class GetByIdResponse<TEntity> where TEntity : Entity
     {
+        public Dictionary<string, object> Extras { get; set; }
+
         public TEntity Result { get; set; }
 
         public string CollectionName { get; set; }

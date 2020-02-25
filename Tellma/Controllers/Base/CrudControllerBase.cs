@@ -490,9 +490,8 @@ return the entities
                 if (returnEntities && ids != null)
                 {
                     result = await GetByIdListAsync(ids.ToArray(), expand, select);
+                    await PostProcessSaveResponse(result);
                 }
-
-                await PostProcess(result);
 
                 // Commit and return
                 await OnSaveCompleted();
@@ -506,7 +505,9 @@ return the entities
             }
         }
 
-        // Optional preprocessing of entities before they are validated and saved
+        /// <summary>
+        /// Optional preprocessing of entities before they are validated and saved
+        /// </summary>
         protected virtual Task<List<TEntityForSave>> SavePreprocessAsync(List<TEntityForSave> entities)
         {
             return Task.FromResult(entities);
@@ -541,7 +542,7 @@ return the entities
         /// <summary>
         /// Gives an opportunity for inheriting controllers to post process the result before it is served
         /// </summary>
-        protected virtual Task PostProcess(EntitiesResponse<TEntity> result)
+        protected virtual Task PostProcessSaveResponse(EntitiesResponse<TEntity> result)
         {
             return Task.CompletedTask;
         }

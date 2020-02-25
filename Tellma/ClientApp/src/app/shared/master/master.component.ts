@@ -447,7 +447,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       tap((response: EntitiesResponse) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
-        s.bag = response.Bag;
+        s.extras = response.Extras;
         s.collectionName = response.CollectionName;
 
         // add to the relevant collection depending on mode
@@ -815,10 +815,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.state.total;
   }
 
-  get bag(): any {
-    return this.state.bag;
-  }
-
   onFirstPage() {
     this.state.skip = 0;
     this.fetch();
@@ -921,17 +917,24 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onTreeMode() {
-    if (this.state.displayMode !== MasterDisplayMode.tree) {
-      this.state.displayMode = MasterDisplayMode.tree;
-      this.state.orderby = null;
+    const s = this.state;
+    if (!s.isTreeMode) {
+      s.displayMode = MasterDisplayMode.tree;
+
+      // Remove any order by
+      s.orderby = null;
+      this.exportSkip = 0;
+      s.skip = 0;
+
       this.fetch();
       this.urlStateChange();
     }
   }
 
   onFlatMode() {
-    if (this.state.displayMode !== MasterDisplayMode.flat) {
-      this.state.displayMode = MasterDisplayMode.flat;
+    const s = this.state;
+    if (s.isTreeMode) {
+      s.displayMode = MasterDisplayMode.flat;
       this.fetch();
       this.urlStateChange();
     }

@@ -146,6 +146,9 @@ namespace Tellma.Controllers
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
 
+            // Get any controller-specific extras
+            var extras = await GetExtras(result);
+
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(result, expand);
 
@@ -159,7 +162,8 @@ namespace Tellma.Controllers
 
                 Result = result,
                 RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity))
+                CollectionName = GetCollectionName(typeof(TEntity)),
+                Extras = extras
             };
         }
 
@@ -221,6 +225,16 @@ namespace Tellma.Controllers
                 Result = result,
                 RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
             };
+        }
+
+        /// <summary>
+        /// Gives controllers the chance to include custom data with all GET responses
+        /// </summary>
+        /// <param name="result">The unflattenned, untrimmed response to the GET request</param>
+        /// <returns>An optional dictionary containing any extra information and an optional set of related entities</returns>
+        protected virtual Task<Dictionary<string, object>> GetExtras(IEnumerable<TEntity> result)
+        {
+            return Task.FromResult<Dictionary<string, object>>(null);
         }
         
         /// <summary>
@@ -421,12 +435,12 @@ namespace Tellma.Controllers
         /// <summary>
         /// Takes a list of <see cref="Entity"/>s, and for every entity it inspects the navigation properties, if a navigation property
         /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
-        /// "relatedEntities" collection, this has several advantages:
+        /// "relatedEntities" hash set, this has several advantages:
         /// 1 - JSON.NET will not have to deal with circular references
         /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
         /// 3 - It makes it easier for clients to store and track entities in a central workspace
         /// </summary>
-        /// <returns>A dictionary mapping every strong type name to a collection of entities of that type</returns>
+        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
         protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, ExpandExpression expand)
         {
             // If the result is empty, nothing to do
@@ -511,7 +525,7 @@ namespace Tellma.Controllers
             // Return the result
             return relatedEntities
                 .GroupBy(e => e.GetType().GetRootType().Name)
-                .ToDictionary(g => g.Key, g => g.AsEnumerable());
+                .ToDictionary(g => g.Key, g => g.AsEnumerable()); ;
         }
 
         /// <summary>

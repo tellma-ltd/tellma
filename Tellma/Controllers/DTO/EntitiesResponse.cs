@@ -8,7 +8,7 @@ namespace Tellma.Controllers.Dto
     /// </summary>
     public class EntitiesResponse<TEntity> where TEntity : Entity
     {
-        public Dictionary<string, object> Bag { get; set; }
+        public Dictionary<string, object> Extras { get; set; }
 
         public IEnumerable<TEntity> Result { get; set; }
 

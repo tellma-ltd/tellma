@@ -641,9 +641,8 @@ Document_State_Closed
       return null;
     }
 
-    const debitCreditFilter = entry.Direction === 1 ? ' and ForDebit eq true' : entry.Direction === -1 ? ' and ForCredit eq true' : '';
     const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
-    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId} ${debitCreditFilter}`;
+    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
   }
 
   // External Reference

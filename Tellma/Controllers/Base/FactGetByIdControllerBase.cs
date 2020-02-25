@@ -87,15 +87,19 @@ namespace Tellma.Controllers
             var singleton = new List<TEntity> { result };
             await ApplyReadPermissionsMask(singleton, query, permissions, GetDefaultMask());
 
+            // Get any controller-specific extras
+            var extras = await GetExtras(singleton);
+
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(singleton, expand);
 
-            // Return
+            // Prepare response
             return new GetByIdResponse<TEntity>
             {
                 Result = result,
                 CollectionName = GetCollectionName(typeof(TEntity)),
-                RelatedEntities = relatedEntities
+                RelatedEntities = relatedEntities,
+                Extras = extras,
             };
         }
 
@@ -151,6 +155,9 @@ namespace Tellma.Controllers
             var defaultMask = GetDefaultMask();
             await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
 
+            // Get any controller-specific extras
+            var extras = await GetExtras(result);
+
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(result, expand);
 
@@ -159,7 +166,8 @@ namespace Tellma.Controllers
             {
                 Result = result,
                 RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity))
+                CollectionName = GetCollectionName(typeof(TEntity)),
+                Extras = extras,
             };
         }
     }

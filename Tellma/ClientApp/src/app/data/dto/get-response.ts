@@ -3,7 +3,7 @@ import { EntityWithKey } from '../entities/base/entity-with-key';
 import { Entity } from '../entities/base/entity';
 
 export class EntitiesResponse<TEntity extends Entity = EntityWithKey> {
-  Bag: { [key: string]: any; };
+  Extras: { [key: string]: any; };
   Result: TEntity[];
   CollectionName: string;
   RelatedEntities: { [key: string]: EntityWithKey[]; };

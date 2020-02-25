@@ -121,8 +121,6 @@ namespace Tellma.Controllers
             entities.ForEach(entity =>
             {
                 entity.IsAssignable ??= true;
-                entity.ForCredit ??= true;
-                entity.ForDebit ??= true;
             });
 
             return Task.FromResult(entities);

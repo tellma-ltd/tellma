@@ -94,7 +94,33 @@ namespace Tellma.Controllers
                     _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, User email: {_externalUserAccessor.GetUserEmail()}, {ex.GetType().Name}: {ex.Message}");
                 }
             }
-            
+
+            //companies.Add(new UserCompany
+            //{
+            //    Id = 101,
+            //    Name = "Jenna and Co.",
+            //});
+
+            //companies.Add(new UserCompany
+            //{
+            //    Id = 102,
+            //    Name = "Wang Ltd.",
+            //    Name2 = "旺有限公司"
+            //});
+
+            //companies.Add(new UserCompany
+            //{
+            //    Id = 103,
+            //    Name = "Nova Investments",
+            //});
+
+            //companies.Add(new UserCompany
+            //{
+            //    Id = 103,
+            //    Name = "Ibdaa Media",
+            //    Name2 = "الإبداع للإنتاج الفني"
+            //});
+
             // Confirm isAdmin by checking with the admin DB
             if (isAdmin)
             {

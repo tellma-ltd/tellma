@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Data.SqlClient;
 
 namespace Tellma.Controllers
 {
@@ -58,7 +59,6 @@ namespace Tellma.Controllers
             _modelMetadataProvider = modelMetadataProvider;
             _tenantInfoAccessor = tenantInfoAccessor;
         }
-
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
         public async Task<ActionResult> GetAttachment(int docId, int attachmentId)
@@ -202,6 +202,54 @@ namespace Tellma.Controllers
         protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions);
+        }
+
+        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<Document> result)
+        {
+            var includeRequiredSignature = Request.Query["includeRequiredSignatures"].FirstOrDefault()?.ToString()?.ToLower() == "true";
+            if (includeRequiredSignature)
+            {
+                // LineIds parameter
+                var lineIds = result.SelectMany(doc => (doc.Lines ?? new List<Line>()).Select(line => new { line.Id }));
+                if (!lineIds.Any())
+                {
+                    return await base.GetExtras(result);
+                }
+
+                var lineIdsTable = RepositoryUtilities.DataTable(lineIds);
+                var lineIdsTvp = new SqlParameter("@LineIds", lineIdsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = System.Data.SqlDbType.Structured
+                };
+
+                // LinesSatisfyingCriteria parameter
+                var linesSatisfyingCriteria = new List<int>().Select(x => new { Id = 0, Criteria = "" }); // TODO
+                var linesSatisfyingCriteriaTable = RepositoryUtilities.DataTable(linesSatisfyingCriteria);
+                var linesSatisfyingCriteriaTvp = new SqlParameter("@LinesSatisfyingCriteria", linesSatisfyingCriteriaTable)
+                {
+                    TypeName = $"[dbo].[IdWithCriteriaList]",
+                    SqlDbType = System.Data.SqlDbType.Structured
+                };
+
+                var query = _repo.Query<RequiredSignature>()
+                    .AdditionalParameters(lineIdsTvp, linesSatisfyingCriteriaTvp)
+                    .Expand("Role,SignedBy,OnBehalfOfUser,ProxyRole")
+                    .OrderBy(nameof(RequiredSignature.LineId));
+
+                var requiredSignatures = await query.ToListAsync();
+                var relatedEntities = FlattenAndTrim(requiredSignatures, null);
+
+                return new Dictionary<string, object>
+                {
+                    ["RequiredSignatures"] = requiredSignatures,
+                    ["RequiredSignaturesRelatedEntities"] = relatedEntities
+                };
+            } 
+            else
+            {
+                return await base.GetExtras(result);
+            }
         }
 
         protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> entities)

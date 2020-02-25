@@ -132,7 +132,7 @@ namespace Tellma.Controllers.Utilities
                 .GroupBy(e => e.GetId())
                 .Where(g => g.Count() > 1);
 
-            if(duplicateIds.Any())
+            if (duplicateIds.Any())
             {
                 // Hash the entities' indices for performance
                 Dictionary<TEntity, int> indices = entities.ToIndexDictionary();
@@ -156,7 +156,7 @@ namespace Tellma.Controllers.Utilities
         /// </summary>
         public static object[] ToFormatArguments(this ValidationError @this)
         {
-            object Parse(string str)
+            static object Parse(string str)
             {
                 // TODO Implement properly
                 if (string.IsNullOrWhiteSpace(str))

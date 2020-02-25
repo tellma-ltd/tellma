@@ -40,14 +40,6 @@ namespace Tellma.Entities
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
-
-        [Display(Name = "EntryType_ForDebit")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        public bool? ForDebit { get; set; }
-
-        [Display(Name = "EntryType_ForCredit")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        public bool? ForCredit { get; set; }
     }
 
     public class EntryType : EntryTypeForSave, ITreeEntity<int>

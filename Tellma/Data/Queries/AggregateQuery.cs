@@ -22,7 +22,7 @@ namespace Tellma.Data.Queries
         private int? _top;
         private List<FilterExpression> _filterConditions;
         private AggregateSelectExpression _select;
-        private List<(string ParamName, object Value)> _additionalParameters;
+        private List<SqlParameter> _additionalParameters;
 
         /// <summary>
         /// Creates an instance of <see cref="AggregateQuery{T}"/>
@@ -99,12 +99,12 @@ namespace Tellma.Data.Queries
         /// If the Query is for a parametered fact table such as <see cref="SummaryEntry"/>, the parameters
         /// must be supplied this method must be supplied through this method before loading any data
         /// </summary>
-        public AggregateQuery<T> AdditionalParameters(params (string ParamName, object Value)[] parameters)
+        public AggregateQuery<T> AdditionalParameters(params SqlParameter[] parameters)
         {
             var clone = Clone();
             if (clone._additionalParameters == null)
             {
-                clone._additionalParameters = new List<(string ParamName, object Value)>();
+                clone._additionalParameters = new List<SqlParameter>();
             }
 
             clone._additionalParameters.AddRange(parameters);
@@ -217,13 +217,9 @@ namespace Tellma.Data.Queries
 
             if (_additionalParameters != null)
             {
-                foreach (var (paramName, value) in _additionalParameters)
+                foreach (var additionalParameter in _additionalParameters)
                 {
-                    ps.AddParameter(new SqlParameter
-                    {
-                        ParameterName = paramName,
-                        Value = value ?? DBNull.Value
-                    });
+                    ps.AddParameter(additionalParameter);
                 }
             }
 

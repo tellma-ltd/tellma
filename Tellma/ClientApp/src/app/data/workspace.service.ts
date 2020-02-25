@@ -678,7 +678,7 @@ export class MasterDetailsStore {
   customFilter: string = null;
 
   collectionName: string;
-  bag: { [key: string]: any; };
+  extras: { [key: string]: any; };
   flatIds: (string | number)[] = []; // in flat mode
   treeNodes: NodeInfo[] = []; // in tree mode
   masterStatus: MasterStatus;

@@ -23,7 +23,7 @@ RETURN (
 		WHERE L.Id IN (SELECT [Id] FROM @LineIds) AND (WS.[Criteria] IS NOT NULL)
 	)
 	SELECT RS.[LineId], RS.[ToState], RS.RoleId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
-		IIF(RM.RoleId IS NULL, 0, 1) AS CanSign, RS.ProxyRoleId, IIF(RM2.RoleId IS NULL, 0, 1) AS CanSignOnBehalf
+		CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign, RS.ProxyRoleId, CAST(IIF(RM2.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf
 	FROM ApplicableSignatures RS
 	LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RoleId = LS.RoleId AND RS.ToState = LS.ToState AND LS.RevokedAt IS NOT NULL
 	LEFT JOIN (

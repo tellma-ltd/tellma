@@ -39,8 +39,6 @@ export class EntryTypesDetailsComponent extends DetailsBaseComponent {
     }
 
     result.IsAssignable = true;
-    result.ForDebit = true;
-    result.ForCredit = true;
     return result;
   }
 

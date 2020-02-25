@@ -15,8 +15,8 @@ SELECT * FROM [dbo].[ResourceDefinitions]
 
 -- Get the report definitions
 SELECT * FROM [map].[ReportDefinitions]()
-SELECT * FROM [map].[ReportParameterDefinitions]()
-SELECT * FROM [map].[ReportSelectDefinitions]()
-SELECT * FROM [map].[ReportRowDefinitions]()
-SELECT * FROM [map].[ReportColumnDefinitions]()
-SELECT * FROM [map].[ReportMeasureDefinitions]()
+SELECT * FROM [map].[ReportParameterDefinitions]() ORDER BY [Index]
+SELECT * FROM [map].[ReportSelectDefinitions]() ORDER BY [Index]
+SELECT * FROM [map].[ReportRowDefinitions]() ORDER BY [Index]
+SELECT * FROM [map].[ReportColumnDefinitions]() ORDER BY [Index]
+SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index]

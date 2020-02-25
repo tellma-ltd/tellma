@@ -3,6 +3,7 @@ using Tellma.Data.Queries;
 using Tellma.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -15,12 +16,12 @@ namespace Tellma.Controllers.Utilities
     public class ParameteredRepository<TParametered> : IRepository where TParametered : Entity
     {
         private readonly IRepository _repo;
-        private readonly (string ParamName, object Value)[] _additionalParameters;
+        private readonly SqlParameter[] _additionalParameters;
 
         public ParameteredRepository(IRepository repo, params (string ParamName, object Value)[] additionalParameters)
         {
             _repo = repo;
-            _additionalParameters = additionalParameters.ToArray();
+            _additionalParameters = additionalParameters.Select(p => new SqlParameter(p.ParamName, p.Value)).ToArray();
         }
 
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity

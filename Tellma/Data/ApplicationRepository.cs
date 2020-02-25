@@ -306,6 +306,9 @@ namespace Tellma.Data
 
                 // Fact tables
 
+                case nameof(RequiredSignature):
+                    return "[map].[RequiredSignatures](@LineIds, @LinesSatisfyingCriteria)";
+
                 case nameof(DetailsEntry):
                     return "[map].[DetailsEntries]()";
 
@@ -704,7 +707,7 @@ namespace Tellma.Data
 
                 // Next load agent definitions
                 var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
-                
+
                 await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {

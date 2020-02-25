@@ -14,8 +14,6 @@ export interface EntryTypeForSave extends EntityForSave {
   Code?: string;
   EntryDefinitionId?: string;
   IsAssignable?: boolean;
-  ForDebit?: boolean;
-  ForCredit?: boolean;
 }
 
 export interface EntryType extends EntryTypeForSave {
@@ -62,8 +60,6 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService,
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
-        ForDebit: { control: 'boolean', label: () => trx.instant('EntryType_ForDebit') },
-        ForCredit: { control: 'boolean', label: () => trx.instant('EntryType_ForCredit') },
 
         // tree stuff
         ParentId: {
