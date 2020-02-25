@@ -11,8 +11,6 @@ RETURN (
 		E.[Name3], 
 		E.[Code],
 		E.[IsAssignable],
-		E.[ForDebit],
-		E.[ForCredit],
 		CAST(1 AS BIT) AS IsActive,
 		NULL As [Level],
 		CAST(0 AS INT) As [ChildCount], 

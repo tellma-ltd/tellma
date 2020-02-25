@@ -1,4 +1,8 @@
-﻿IF @DB = N'101' -- Banan SD, USD, en
+﻿-- for account types parent code, we use the IAS 1 level. 
+-- together with that, we use:
+-- AccountTagId, Currency, Responsibility Center, IsCurrent, Resource.AccountType, AgentDefinitionList to figure out the account
+-- 
+IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitlePlural]) VALUES
@@ -11,7 +15,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,0,2,		N'Entry[0].Value',	N'Debit',		3,4), -- see special case
 (3,0,3,		N'Entry[0].Value',	N'Credit',		3,4),
 (4,0,5,		N'Entry[0].Dynamic',N'Properties',	3,4);
-
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
@@ -21,7 +24,6 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES
 (1,N'PurchaseInvoice',	N'Purchase Invoice',	N'فاتورة مشتريات',	N'Purchase Invoices',	N'فواتير مشتريات');
-
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -44,13 +46,11 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
-
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],[AccountTypeParentCode],					[AgentDefinitionList],	[ResponsibilityTypeList]) VALUES
-(0,1,0,+1,	N'ValueAddedTaxPayables',					NULL,					N'Investment'),
-(1,1,1,+1,	N'Accruals',								N'suppliers',			NULL),
-(2,1,2,-1,	N'TradeAndOtherPayablesToTradeSuppliers',	NULL,					NULL);
-
+[Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'),
+(1,1,1,+1,	N'Accruals',				N'SACR'),
+(2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
 																						[IsReadOnlyFromStateId]) VALUES
@@ -63,20 +63,14 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,1,6,	N'Entry[0].MonetaryValue',		N'VAT',					N'القيمة المضافة',		1,4),
 (7,1,7,	N'Entry[2].MonetaryValue',		N'Total',				N'المبلغ بعد الضريبة',	1,1),
 (8,1,8,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
-(9,1,9,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',0,4)
-;
-
--- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
--- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
+(9,1,9,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',0,4);
 
 INSERT @LineDefinitions([Index],
 [Id],				[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
 2,N'CashPayment',	N'Payment',		N'الدفعية',			N'Payments',	N'الدفعيات');
-
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,employees',		N'Investment');
-
+[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,2,0,	-1,		N'CashAndCashEquivalents',	NULL); -- in some cases, we may use: cash/bank,CCRD, ...
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],					[Label2],					[IsRequiredForStateId],
 																										[IsReadOnlyFromStateId]) VALUES
@@ -90,9 +84,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,2,7,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييز الحساب',			3,4),
 (8,2,8,		N'Entry[0].ExternalReference',		N'Check #/Receipt #',		N'رقم الشيك/رقم الإيصال',	3,4),
 (9,2,9,		N'Entry[0].NotedDate'	,			N'Check Date',				N'تاريخ الشيك',				3,4),
-(10,2,10,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4)
-;
-
+(10,2,10,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
@@ -101,10 +93,9 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
 3,N'PettyCashPayment',	N'Petty Cash Payment',	N'دفعية نثرية',		N'Petty Cash Payments',	N'دفعيات النثرية');
-
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-(0,3,0,-1,		N'CashAndCashEquivalents',	N'custodies',			N'Investment');
+[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],					[Label2],			[IsRequiredForStateId],
 																								[IsReadOnlyFromStateId]) VALUES
@@ -116,12 +107,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,3,5,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',			4,4),
 (6,3,6,		N'Entry[0].AgentId',				N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
 (7,3,7,		N'Entry[0].ExternalReference',		N'Receipt #',				N'رقم الإيصال',		3,4),
-(8,3,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);
-
+(8,3,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);  
 -- GRIV
 INSERT @LineDefinitions([Index],
-[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
-6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers',			N'Investment');
+[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
+6,N'GoodsReceiptIssue',	N'Goods Receipt/Issue',	N'استلام مستخدم',	N'Goods Receipt/Issue',	N'استلامات مستخدمين');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	SET NOCOUNT ON
@@ -139,12 +129,9 @@ SET [Script] = N'
 	-----
 	SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 4;
-
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-(0,6,0,+1,		N'OtherInventories',		NULL,					NULL), -- We may need to add GRIV Inventory underneath, or instead
-(1,6,1,-1,		N'Accruals',				NULL,					NULL); -- we need functionality to fill one tab based on info in the other tab
-
+[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR'); -- We may need to add GRIV Inventory underneath, or instead
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],				[Label2],				[IsRequiredForStateId],
 																								[IsReadOnlyFromStateId]) VALUES
@@ -157,5 +144,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,5,6,		N'Entry[0].CurrencyId',				N'Currency',			N'العملة',				4,4),
 (7,5,7,		N'Entry[0].MonetaryAmount',			N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
 (8,5,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4);
+
+INSERT @LineDefinitions([Index],
+[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],		[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
+7,N'DomesticSubscriptions',	N'Domestic Subscription',	N'اشتراك محلي',		N'Domestic Subscriptions',	N'اشتراكات محلية',	NULL,					N'Investment');
+
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,7,0,+1,		N'TradeAndOtherReceivables',N'TPBL'), 
+(1,7,1,-1,		N'Revenue',					NULL);
+
 
 END

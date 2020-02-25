@@ -3,7 +3,7 @@ BEGIN
 	INSERT INTO @Accounts([Index],[IsCurrent],[HasResource],[SmartKey],--[Code],
 					[AccountTypeId],			[Name],						[CurrencyId],	[ResponsibilityCenterId], [EntryTypeId], [AgentDefinitionId],	[AgentId]) VALUES
 	-- Assets Accounts
-	(0,1,0,N'PPE',	@PropertyPlantAndEquipment,	N'Property, plant and equipment',NULL,		@RC_Inv,					NULL,			N'employees',		NULL),
+	(0,1,0,N'PPE',	@PropertyPlantAndEquipment,	N'Property, plant and equipment',@USD,		@RC_Inv,					NULL,			N'employees',		NULL),
 
 	(1,1,0,NULL,	@CashAndCashEquivalents,	N'GM Fund',					NULL,			@RC_Inv,					NULL,			N'custodies',		@GMSafe),
 	(2,1,0,NULL,	@CashAndCashEquivalents,	N'KSA Fund',				NULL,			@RC_Inv,					NULL,			N'custodies',		@KSASafe),

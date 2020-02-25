@@ -43,28 +43,50 @@ BEGIN
 		-----
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 1;
-	-- Source = -1 (n/a), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
-	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Noted in Line, 7:
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],[AccountTypeParentCode],					[AgentDefinitionList],	[ResponsibilityTypeList]) VALUES
-	(0,1,0,+1,	N'ValueAddedTaxPayables',					NULL,					N'Investment'),
-	(1,1,1,+1,	N'Accruals',								N'suppliers',			NULL),
-	(2,1,2,-1,	N'TradeAndOtherPayablesToTradeSuppliers',	NULL,					NULL);
 
-	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
-																							[IsReadOnlyFromStateId]) VALUES
-	(0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
-	(1,1,1,	N'Entry[0].NotedDate',			N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
-	(2,1,2,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		3,5), 
-	(3,1,3,	N'Entry[1].AgentId',			N'Supplier',			N'المورد',				3,4),
-	(4,1,4,	N'Entry[0].CurrencyId',			N'Currency',			N'العملة',				1,4),
-	(5,1,5,	N'Entry[0].NotedAmount',		N'Price Excl. VAT',		N'المبلغ قبل الضريية',	1,4),
-	(6,1,6,	N'Entry[0].MonetaryValue',		N'VAT',					N'القيمة المضافة',		1,4),
-	(7,1,7,	N'Entry[2].MonetaryValue',		N'Total',				N'المبلغ بعد الضريبة',	1,1),
-	(8,1,8,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
-	(9,1,9,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',0,4)
-	;
+INSERT @LineDefinitions([Index],
+[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES
+(1,N'PurchaseInvoice',	N'Purchase Invoice',	N'فاتورة مشتريات',	N'Purchase Invoices',	N'فواتير مشتريات');
+UPDATE @LineDefinitions
+SET [Script] = N'
+	--SET NOCOUNT ON
+	--DECLARE @ProcessedWideLines WideLineList;
+
+	--INSERT INTO @ProcessedWideLines
+	--SELECT * FROM @WideLines;
+	-----
+	UPDATE @ProcessedWideLines
+	SET
+		[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
+		[ResponsibilityCenterId2] = [ResponsibilityCenterId0],
+		[AgentId2]	= [AgentId1],
+		[CurrencyId1] = [CurrencyId0],
+		[CurrencyId2] = [CurrencyId0],
+		[NotedAgentSource0] = [AgentId1],
+		[AccountIdentifier1] = [ExternalReference0],
+		[MonetaryValue1] = [NotedAmount0],
+		[MonetaryValue2] = [NotedAmount0] + [MonetaryAmount0]
+	-----
+	--SELECT * FROM @ProcessedWideLines;'
+WHERE [Index] = 1;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+[Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'),
+(1,1,1,+1,	N'Accruals',				N'SACR'),
+(2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+[SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
+																						[IsReadOnlyFromStateId]) VALUES
+(0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
+(1,1,1,	N'Entry[0].NotedDate',			N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
+(2,1,2,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		3,5), 
+(3,1,3,	N'Entry[1].AgentId',			N'Supplier',			N'المورد',				3,4),
+(4,1,4,	N'Entry[0].CurrencyId',			N'Currency',			N'العملة',				1,4),
+(5,1,5,	N'Entry[0].NotedAmount',		N'Price Excl. VAT',		N'المبلغ قبل الضريية',	1,4),
+(6,1,6,	N'Entry[0].MonetaryValue',		N'VAT',					N'القيمة المضافة',		1,4),
+(7,1,7,	N'Entry[2].MonetaryValue',		N'Total',				N'المبلغ بعد الضريبة',	1,1),
+(8,1,8,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
+(9,1,9,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',0,4);
 
 	-- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 	-- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
@@ -89,8 +111,8 @@ BEGIN
 	WHERE [Index] = 2;
 
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-	(0,2,0,	-1,		N'CashAndCashEquivalents',	N'banks,employees',		N'Investment');
+	[Direction],	[AccountTypeParentCode]) VALUES
+	(0,2,0,	-1,		N'CashAndCashEquivalents');
 
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[ColumnName],						[Label],					[Label2],					[IsRequiredForStateId],
@@ -137,8 +159,8 @@ BEGIN
 	--	SELECT * FROM @ProcessedWideLines;'
 	--WHERE [Index] = 3;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-	(0,3,0,-1,		N'CashAndCashEquivalents',	N'employees',			N'Investment');
+	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+	(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[ColumnName],						[Label],					[Label2],			[IsRequiredForStateId],
 																									[IsReadOnlyFromStateId]) VALUES
@@ -175,9 +197,9 @@ BEGIN
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 4;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],	[AccountTypeParentCode],					[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-	(0,4,0,+1,		N'WithholdingTaxPayablesExtension',			NULL,					N'Investment'),
-	(1,4,1,-1,		N'TradeAndOtherPayablesToTradeSuppliers',	N'suppliers',			NULL);
+	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+	(0,4,0,+1,		N'TradeAndOtherPayables',	N'WHTX'),
+	(1,4,1,-1,		N'TradeAndOtherPayables',	N'TPBL');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[ColumnName],						[Label],					[Label2],				[IsRequiredForStateId],
 																										[IsReadOnlyFromStateId]) VALUES
@@ -210,11 +232,11 @@ BEGIN
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'
-	WHERE [Index] = 4;
+	WHERE [Index] = 5;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-	(0,5,0,+1,		N'InventoriesTotal',		NULL,					N'Investment'),
-	(1,5,1,-1,		N'Accruals',				NULL,					NULL);
+	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+	(0,5,0,+1,		N'TotalInventories',		N'STCK'),
+	(1,5,1,-1,		N'TradeAndOtherPayables',	N'SACR');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[ColumnName],						[Label],				[Label2],				[IsRequiredForStateId],
 																									[IsReadOnlyFromStateId]) VALUES
@@ -248,10 +270,8 @@ BEGIN
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'
-	WHERE [Index] = 4;
+	WHERE [Index] = 6;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-	[Direction],	[AccountTypeParentCode],	[AgentDefinitionList], [ResponsibilityTypeList]) VALUES
-	(0,6,0,+1,		N'OtherInventories',		NULL,					NULL), -- We may need to add GRIV Inventory underneath, or instead
-	(1,6,1,-1,		N'Accruals',				NULL,					NULL); -- we need functionality to fill one tab based on info in the other tab
-
+	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
+	(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR'); -- we need functionality to fill one tab based on info in the other tab
 END

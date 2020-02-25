@@ -41,7 +41,7 @@ SET NOCOUNT ON;
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
 			t.[AgentDefinitionList]			= s.[AgentDefinitionList],
-			t.[ResponsibilityTypeList]			= s.[ResponsibilityTypeList],
+			t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
 			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
@@ -118,47 +118,19 @@ SET NOCOUNT ON;
 			LDE.[EntryNumber],
 			LDE.[Direction]	,
 			LDE.[AccountTypeParentCode]	,
-			LDE.[AgentDefinitionList],
-			LDE.[ResponsibilityTypeList],
-			--LDE.[ResponsibilityCenterSource],
-			--LDE.[AgentSource],
-			--LDE.[ResourceSource],
-			--LDE.[CurrencySource],
-			--LDE.[MonetaryValueSource],
-			--LDE.[CountSource],
-			--LDE.[MassSource],
-			--LDE.[VolumeSource],
-			--LDE.[TimeSource],
-			--LDE.[ValueSource],
-			LDE.[EntryTypeCode],
-			LDE.[NotedAgentDefinitionId]
-			--LDE.[NotedAgentSource]
-			--LDE.[NotedAmountSource]
+			LDE.[AccountTagId],
+			LDE.[EntryTypeCode]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 	UPDATE SET
-		t.[EntryNumber]					= s.[EntryNumber],
-		t.[Direction]					= s.[Direction],
-		t.[AccountTypeParentCode]		= s.[AccountTypeParentCode],
-		t.[AgentDefinitionList]			= s.[AgentDefinitionList],
-		t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
-		--t.[ResponsibilityCenterSource]	= s.[ResponsibilityCenterSource],
-		--t.[AgentSource]					= s.[AgentSource],
-		--t.[ResourceSource]				= s.[ResourceSource],
-		--t.[CurrencySource]				= s.[CurrencySource],
-		--t.[MonetaryValueSource]			= s.[MonetaryValueSource],
-		--t.[CountSource]					= s.[CountSource],
-		--t.[MassSource]					= s.[MassSource],
-		--t.[VolumeSource]				= s.[VolumeSource],
-		--t.[TimeSource]					= s.[TimeSource],
-		--t.[ValueSource]					= s.[ValueSource],
-		t.[EntryTypeCode]				= s.[EntryTypeCode],
-		t.[NotedAgentDefinitionId]		= s.[NotedAgentDefinitionId]
-		--t.[NotedAgentSource]			= s.[NotedAgentSource]
-		--t.[NotedAmountSource]			= s.[NotedAmountSource]
+		t.[EntryNumber]				= s.[EntryNumber],
+		t.[Direction]				= s.[Direction],
+		t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
+		t.[AccountTagId]			= s.[AccountTagId],
+		t.[EntryTypeCode]			= s.[EntryTypeCode]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
@@ -167,44 +139,16 @@ WHEN NOT MATCHED BY TARGET THEN
 		[EntryNumber],
 		[Direction],
 		[AccountTypeParentCode]	,
-		[AgentDefinitionList],
-		[ResponsibilityTypeList],
-		--[ResponsibilityCenterSource],
-		--[AgentSource],
-		--[ResourceSource],
-		--[CurrencySource],
-		--[MonetaryValueSource],
-		--[CountSource],
-		--[MassSource],
-		--[VolumeSource],
-		--[TimeSource],
-		--[ValueSource],
-		[EntryTypeCode],
-		[NotedAgentDefinitionId]
-		--[NotedAgentSource]
-		--[NotedAmountSource]
+		[AccountTagId],
+		[EntryTypeCode]
 	)
     VALUES (
 		s.[LineDefinitionId],
 		s.[EntryNumber],
 		s.[Direction],
 		s.[AccountTypeParentCode],
-		s.[AgentDefinitionList],
-		s.[ResponsibilityTypeList],
-		--s.[ResponsibilityCenterSource],
-		--s.[AgentSource],
-		--s.[ResourceSource],
-		--s.[CurrencySource],
-		--s.[MonetaryValueSource],
-		--s.[CountSource],
-		--s.[MassSource],
-		--s.[VolumeSource],
-		--s.[TimeSource],
-		--s.[ValueSource],
-		s.[EntryTypeCode],
-		s.[NotedAgentDefinitionId]
-		--s.[NotedAgentSource]
-		--s.[NotedAmountSource]
+		s.[AccountTagId],
+		s.[EntryTypeCode]
 	);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t

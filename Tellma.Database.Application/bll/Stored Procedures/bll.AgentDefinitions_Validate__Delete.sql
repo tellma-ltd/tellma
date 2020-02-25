@@ -30,7 +30,7 @@ SET NOCOUNT ON;
 		N'Error_TheAgentDefinitionIsUsedInLineDefinition0',
 		dbo.fn_Localize(LD.[TitleSingular], LD.[TitleSingular2], LD.[TitleSingular3]) AS [LineDefinition]
 	FROM @Ids FE
-	JOIN dbo.LineDefinitionEntries LDE ON LDE.[AgentDefinitionList] LIKE N'%' + FE.[Id] + N'%'
+	JOIN dbo.LineDefinitionEntries LDE ON LDE.[AccountTagId] LIKE N'%' + FE.[Id] + N'%'
 	JOIN dbo.LineDefinitions LD ON LD.[Id] = LDE.[LineDefinitionId]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

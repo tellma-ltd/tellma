@@ -7,7 +7,5 @@
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),
 	[Code]				NVARCHAR (255)	NOT NULL UNIQUE,
-	[IsAssignable]		BIT,
-	[ForDebit]			BIT				NOT NULL DEFAULT 1,
-	[ForCredit]			BIT				NOT NULL DEFAULT 1
+	[IsAssignable]		BIT
 );

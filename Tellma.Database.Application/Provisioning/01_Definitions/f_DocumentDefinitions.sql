@@ -31,15 +31,20 @@ BEGIN
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
+	(3,	N'cash-receipt-vouchers',	N'Cash Receipt Voucher',	N'ورقة قبض نقدي',	N'Cash Receipt Vouchers',	N'أوراق قبض نقدية',	N'CRV'),
+	(4,	N'sales-vouchers',			N'Sales Voucher',			N'ورقة مبيعات',		N'Sales Vouchers',			N'أوراق مبيعات',		N'SV');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	N'ManualLine',		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);
+			[LineDefinitionId],		[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',			1),
+	(0,1,	N'CashPayment',			1),
+	(1,1,	N'ManualLine',			1),
+	(2,1,	N'PurchaseInvoice',		0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',	1),
+	(0,3,	N'CashReceipt',			1),
+	(0,4,	N'DomesticSales',		1), -- with VAT
+	(1,4,	N'InternationalSales',	1); -- without VAT
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
