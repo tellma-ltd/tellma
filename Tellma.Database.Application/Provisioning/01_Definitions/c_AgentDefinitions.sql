@@ -23,8 +23,9 @@ BEGIN
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],				[TitleSingular],[TitlePlural]) VALUES
 		(0,N'cost-objects',	N'Cost Object',	N'Cost Objects'),
-		(2,N'creditors',	N'Creditor',	N'Creditors'),
-		(3,N'customers',	N'Customer',	N'Customers'),
+		(1,N'creditors',	N'Creditor',	N'Creditors'),
+		(2,N't2-customers',	N'Tier-2 Customer',	N'Tier-2 Customers'),
+		(3,N't3-customers',	N'Tier-3 Customer',	N'Tier-3 Customers'),
 		(4,N'debtors',		N'Debtor',		N'Debtors'),
 		(5,N'partners',		N'Partner',		N'Partners'),
 		(6,N'suppliers',	N'Supplier',	N'Suppliers'),

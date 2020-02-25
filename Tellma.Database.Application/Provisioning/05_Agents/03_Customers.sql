@@ -9,6 +9,7 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(2,			N'Customer3'),
 	(3,			N'Customer4');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
 	INSERT INTO @Customers
 	([Index],	[Name]) VALUES
 	(0,			N'International African University'),
@@ -18,6 +19,11 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 	(4,			N'TAGI restaurants'),
 	(5,			N'It3aam')
 	;
+	EXEC [api].[Agents__Save]
+		@DefinitionId = N't2-customers',
+		@Entities = @Customers,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Customers
 	([Index],	[Name],						[StartDate], [TaxIdentificationNumber]) VALUES
@@ -45,13 +51,9 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(0,			N'Riyadh Printshop',		N'مطبعة الرياض'),
 	(1,			N'Pro Print',				N'الطباعة الاحترافية'),
 	(2,			N'Zeej printing services',	N'خدمات زيج للطباعة'),
-	(3,			N'Afan Printing & Packaging',N'آفان للطباعة والتغليف')
-	;
+	(3,			N'Afan Printing & Packaging',N'آفان للطباعة والتغليف')	;
 
-	EXEC [api].[Agents__Save]
-		@DefinitionId = N'customers',
-		@Entities = @Customers,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
@@ -64,5 +66,5 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		@Plastic = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
 		@Lifan = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
 
-	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'It3aam');
-	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'al-Washm');
+	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].fi_Agents(N't2-customers', NULL) WHERE [Name] = N'It3aam');
+	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].fi_Agents(N't2-customers', NULL) WHERE [Name] = N'al-Washm');

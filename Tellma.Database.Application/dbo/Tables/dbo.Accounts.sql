@@ -17,7 +17,7 @@
 
 	[LegacyTypeId]					NVARCHAR (50)		CONSTRAINT [CK_Accounts__LegacyType] REFERENCES dbo.[LegacyTypes]([Id]),
 -- Major properties: NULL means it is not defined.
-	[AgentDefinitionId]				NVARCHAR (50),
+	[AgentDefinitionId]				NVARCHAR (50)		CONSTRAINT [FK_Accounts__AgentDefinitionId] REFERENCES [dbo].[AgentDefinitions] ([Id]),
 	--[HasAgent]						BIT				NOT NULL DEFAULT 0,
 	--CONSTRAINT [CK_Accounts_AgentDefinitionId_HasAgent] CHECK([HasAgent] = 0 OR [AgentDefinitionId] IS NOT NULL),
 	[HasResource]					BIT				NOT NULL DEFAULT 0,
