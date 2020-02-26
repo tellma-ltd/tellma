@@ -147,7 +147,8 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 1, -- N'Requested',
 		@OnBehalfOfuserId = @mohamad_akra,
-		@RoleId = @1Reader, -- we allow selecting the role manually,
+		@RuleType = N'Public',
+		@RoleId = NULL,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -177,6 +178,7 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 3, -- N'Completed',
 		@OnBehalfOfuserId = @amtaam,
+		@RuleType = N'ByRole',
 		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -207,6 +209,7 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 4, -- N'Reviewed',
 		@OnBehalfOfuserId = @jiad_akra,
+		@RuleType = N'ByRole',
 		@RoleId = @1Comptroller, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -329,6 +332,7 @@ BEGIN -- Inserting
 		@IndexedIds = @LinesIndexedIds,
 		@ToState = 3, -- completed
 		@OnBehalfOfuserId = @jiad_akra, -- we allow selecting the user manually, when entering from an external source document
+		@RuleType = N'ByRole',
 		@RoleId = @1Comptroller, -- we allow selecting the role manually, 
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

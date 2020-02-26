@@ -4,6 +4,7 @@
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]			INT				NOT NULL DEFAULT 0,
 	-- All roles are needed to get to next positive state, one is enough to get to negative state
+	[RuleType]		NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' CHECK ([RuleType] IN (N'ByRole', N'Public')),
 	[RoleId]		INT,
 	[Criteria]		NVARCHAR(1024), -- when evaluated to true, the role signature becomes required
 	[ProxyRoleId]	INT			-- If a transition has a proxy role, an agent with that proxy role can sign on behalf.

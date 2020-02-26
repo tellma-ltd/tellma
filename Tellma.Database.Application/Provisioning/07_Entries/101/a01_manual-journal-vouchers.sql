@@ -3,10 +3,8 @@ BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo]) VALUES
-	(1,			'2019.01.01',	N'KSA ACCA Annual Fees'),
 	(2,			'2019.01.02',	N'Received 10,000 USD from MA - Dec'),
 	(3,			'2019.01.02',	N'Yahoo Business Mail Subscription Jan 2019'),
-
 	(6,			'2019.01.05',	N'Sold USD'),
 	(7,			'2019.01.05',	N'Charged phone for PR and Marketing'),
 	(8,			'2019.01.05',	N'Garden maintenance'),
@@ -27,7 +25,6 @@ BEGIN -- Inserting
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			1,				N'ManualLine'),(1,			1,				N'ManualLine'),
 	(0,			2,				N'ManualLine'),(1,			2,				N'ManualLine'),
 	(0,			3,				N'ManualLine'),(1,			3,				N'ManualLine'),
 	(0,			6,				N'ManualLine'),(1,			6,				N'ManualLine'),
@@ -40,9 +37,6 @@ BEGIN -- Inserting
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
-
-	(0, 0, 1,0,+1,@1Education,	@AdministrativeExpense, 							@1Overhead,	@SAR,			513,				136.8),--
-	(0, 1, 1,0,-1,@1KSAFund,	@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SAR,			513,				136.8),
 
 	(0, 0, 2,0,+1,@1GMFund,		@ProceedsFromBorrowingsClassifiedAsFinancingActivities,NULL,	@USD,			10000,				10000),--
 	(0, 1, 2,0,-1,@1MAPayable,	NULL,												NULL,		NULL,			10000,				10000),
@@ -94,6 +88,7 @@ BEGIN -- Inserting
 			@IndexedIds = @DocsIndexedIds,
 			@ToState = 3, -- N'Completed',
 			@OnBehalfOfuserId = @Jiad_akra,
+			@RuleType = N'ByRole',
 			@RoleId = @1Comptroller, -- we allow selecting the role manually,
 			@SignedAt = @Now,
 			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -119,6 +114,7 @@ BEGIN -- Inserting
 			@IndexedIds = @DocsIndexedIds,
 			@ToState = 4, -- N'Completed',
 			@OnBehalfOfuserId = @amtaam,
+			@RuleType = N'ByRole',
 			@RoleId = @1GeneralManager, -- we allow selecting the role manually,
 			@SignedAt = @Now,
 			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

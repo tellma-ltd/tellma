@@ -3,10 +3,10 @@
 IF @DB = N'100' -- ACME, USD, en/ar/zh		
 	INSERT INTO @CostObjects
 	([Index],	[Name]) VALUES
-	(0,			N'Creditor1'),
-	(1,			N'Creditor2'),
-	(2,			N'Creditor3'),
-	(3,			N'Creditor4');
+	(0,			N'Cost Object 1'),
+	(1,			N'Cost Object 2'),
+	(2,			N'Cost Object 3'),
+	(3,			N'Cost Object 4');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 -- TODO: Add IsCostEntity to table Agents
 BEGIN

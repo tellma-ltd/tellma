@@ -438,7 +438,7 @@
     <None Include="Provisioning\05_Agents\03_Customers.sql" />
     <None Include="Provisioning\05_Agents\10_Employees.sql" />
     <None Include="Provisioning\05_Agents\08_Banks.sql" />
-    <None Include="Provisioning\05_Agents\09_Custodies.sql" />
+    <None Include="Provisioning\05_Agents\09_Custodians.sql" />
     <None Include="Provisioning\05_Agents\05_Partners.sql" />
     <None Include="Provisioning\04_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Provisioning\04_Resources\101_property-plant-and-equipment.sql" />

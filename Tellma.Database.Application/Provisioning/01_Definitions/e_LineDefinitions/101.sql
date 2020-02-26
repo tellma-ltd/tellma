@@ -47,10 +47,10 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
-(0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'),
-(1,1,1,+1,	N'Accruals',				N'SACR'),
-(2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
+[Direction],[AccountTypeParentCode],	[AccountTagId], [AgentDefinitionId]) VALUES
+(0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'	,		NULL),
+(1,1,1,+1,	N'Accruals',				N'SACR',		N'suppliers'),
+(2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL',		NULL);-- <== AgentDefinitionId is irrelevant here
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
 																						[IsReadOnlyFromStateId]) VALUES
@@ -69,8 +69,8 @@ INSERT @LineDefinitions([Index],
 [Id],				[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
 2,N'CashPayment',	N'Payment',		N'الدفعية',			N'Payments',	N'الدفعيات');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-(0,2,0,	-1,		N'CashAndCashEquivalents',	NULL); -- in some cases, we may use: cash/bank,CCRD, ...
+[Direction],	[AccountTypeParentCode],	[AccountTagId], [AgentDefinitionId]) VALUES
+(0,2,0,	-1,		N'CashAndCashEquivalents',	NULL,			N'cash-custodians');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],					[Label2],					[IsRequiredForStateId],
 																										[IsReadOnlyFromStateId]) VALUES
@@ -94,8 +94,8 @@ INSERT @LineDefinitions([Index],
 [Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
 3,N'PettyCashPayment',	N'Petty Cash Payment',	N'دفعية نثرية',		N'Petty Cash Payments',	N'دفعيات النثرية');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
+[Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
+(0,3,0,-1,	N'CashAndCashEquivalents',	N'CASH');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],					[Label2],			[IsRequiredForStateId],
 																								[IsReadOnlyFromStateId]) VALUES
@@ -103,11 +103,13 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,3,1,		N'Line.Memo',						N'Memo',					N'البيان',			1,4),
 (2,3,2,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',			1,2), 
 (3,3,3,		N'Entry[0].MonetaryValue',			N'Pay Amount',				N'المبلغ',			1,2), 
-(4,3,4,		N'Entry[0].NotedAgentName',			N'Beneficiary',				N'المستفيد',		1,2),
-(5,3,5,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',			4,4),
-(6,3,6,		N'Entry[0].AgentId',				N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
-(7,3,7,		N'Entry[0].ExternalReference',		N'Receipt #',				N'رقم الإيصال',		3,4),
-(8,3,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);  
+(4,3,4,		N'Entry[0].Value',					N'Equiv Amt ($)',			N'($) المعادل',		4,4), 
+(5,3,5,		N'Entry[0].NotedAgentName',			N'Beneficiary',				N'المستفيد',		1,2),
+(6,3,6,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',			4,4),
+(7,3,7,		N'Entry[0].AgentId',				N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
+(8,3,8,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييزالعهدة',	3,4),
+(9,3,9,		N'Entry[0].ExternalReference',		N'Receipt #',				N'رقم الإيصال',		3,4),
+(10,3,10,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);  
 -- GRIV
 INSERT @LineDefinitions([Index],
 [Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
@@ -128,22 +130,22 @@ SET [Script] = N'
 		[CurrencyId1]				= [CurrencyId0]
 	-----
 	SELECT * FROM @ProcessedWideLines;'
-WHERE [Index] = 4;
+WHERE [Index] = 6;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR'); -- We may need to add GRIV Inventory underneath, or instead
+[Direction],	[AccountTypeParentCode],	[AgentDefinitionId], [AccountTagId]) VALUES
+(0,6,0,-1,		N'TradeAndOtherPayables',	N'suppliers',		N'SACR'); -- We may need to add GRIV Inventory underneath, or instead
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[ColumnName],						[Label],				[Label2],				[IsRequiredForStateId],
 																								[IsReadOnlyFromStateId]) VALUES
-(0,5,0,		N'Line.Memo',						N'Memo',				N'البيان',				1,5), 
-(1,5,1,		N'Entry[1].AgentId',				N'Supplier',			N'المورد',				3,4),
-(2,5,2,		N'Entry[0].AgentId',				N'Beneficiary',			N'المستفيد',			3,4),
-(3,5,3,		N'Entry[0].ResourceId',				N'Item',				N'الصنف',				1,4),
-(4,5,4,		N'Entry[0].Quantity',				N'Quantity',			N'الكمية',				1,4),
-(5,5,5,		N'Entry[0].UnitId',					N'Unit',				N'الوحدة',				1,4),
-(6,5,6,		N'Entry[0].CurrencyId',				N'Currency',			N'العملة',				4,4),
-(7,5,7,		N'Entry[0].MonetaryAmount',			N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
-(8,5,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4);
+(0,6,0,		N'Line.Memo',						N'Memo',				N'البيان',				1,5), 
+(1,6,1,		N'Entry[1].AgentId',				N'Supplier',			N'المورد',				3,4),
+(2,6,2,		N'Entry[0].AgentId',				N'Beneficiary',			N'المستفيد',			3,4),
+(3,6,3,		N'Entry[0].ResourceId',				N'Item',				N'الصنف',				1,4),
+(4,6,4,		N'Entry[0].Quantity',				N'Quantity',			N'الكمية',				1,4),
+(5,6,5,		N'Entry[0].UnitId',					N'Unit',				N'الوحدة',				1,4),
+(6,6,6,		N'Entry[0].CurrencyId',				N'Currency',			N'العملة',				4,4),
+(7,6,7,		N'Entry[0].MonetaryAmount',			N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
+(8,6,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4);
 
 INSERT @LineDefinitions([Index],
 [Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],		[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
@@ -153,6 +155,4 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 (0,7,0,+1,		N'TradeAndOtherReceivables',N'TPBL'), 
 (1,7,1,-1,		N'Revenue',					NULL);
-
-
 END

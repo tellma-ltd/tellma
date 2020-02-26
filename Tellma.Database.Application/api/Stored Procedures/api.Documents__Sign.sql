@@ -4,6 +4,7 @@
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
 	@OnBehalfOfuserId INT = NULL, -- we allow selecting the user manually, when entering from an external source document
+	@RuleType NVARCHAR (50),
 	@RoleId INT = NULL, -- we allow selecting the role manually, 
 	@SignedAt DATETIMEOFFSET(7) = NULL,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -55,6 +56,7 @@ SET NOCOUNT ON;
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @Lines,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@ToState = @ToState;
 
@@ -75,6 +77,7 @@ SET NOCOUNT ON;
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
+		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt
 

@@ -68,7 +68,7 @@ END
 :r .\05_Agents\06_Suppliers.sql
 --:r .\05_Agents\07_TaxAgencies.sql
 :r .\05_Agents\08_Banks.sql
-:r .\05_Agents\09_Custodies.sql
+:r .\05_Agents\09_Custodians.sql
 :r .\05_Agents\09a_Warehouses.sql
 :r .\05_Agents\10_Employees.sql
 

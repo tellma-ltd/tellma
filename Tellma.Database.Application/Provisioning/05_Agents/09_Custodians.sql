@@ -1,29 +1,33 @@
-﻿	DECLARE @Custodies dbo.[AgentList];
-
+﻿	DECLARE @Custodians dbo.[AgentList];
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	Print N''
 ELSE IF @DB = N'101' -- Banan SD, USD, en
-	INSERT INTO @Custodies
+	INSERT INTO @Custodians
 	([Index],	[Name]) VALUES
-	(0,			N'GM Safe'),
-	(1,			N'KSA Safe');
+	(0,			N'elAmin Attayyib'),
+	(1,			N'Ahmad Abdussalam'),
+	(2,			N'Bank of Khartoum');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-	INSERT INTO @Custodies
+	INSERT INTO @Custodians
 	([Index], [Name]) VALUES
-	(0,		N'GM Petty Cash');
+	(0,		N'Mohamad Akra'),
+	(1,		N'Wondewsen Semaneh'),
+	(2,		N'Loay Bayazid'),
+	(3,		N'Abu Bakr al-Hadi')
+	;
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	Print N''
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
-	INSERT INTO @Custodies
+	INSERT INTO @Custodians
 	([Index], [Name]) VALUES
 	(0,		N'Cashier');
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 
 	EXEC [api].[Agents__Save]
-		@DefinitionId = N'custodies',
-		@Entities = @Custodies,
+		@DefinitionId = N'cash-custodians',
+		@Entities = @Custodians,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -32,5 +36,5 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
-	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'GM Safe');
-	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'KSA Safe');
+	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'elAmin Attayyib');
+	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'Ahmad Abdussalam');

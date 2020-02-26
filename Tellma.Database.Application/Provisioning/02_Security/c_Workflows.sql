@@ -9,9 +9,9 @@ BEGIN
 	(0, N'ManualLine',		+3),
 	(1, N'ManualLine',		+4);
 
-	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId]) VALUES
-	(0, 0, @1Comptroller),
-	(0, 1, @1GeneralManager);
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RuleType], [RoleId]) VALUES
+	(0, 0, N'ByRole', @1Comptroller),
+	(0, 1, N'ByRole', @1GeneralManager);
 
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
@@ -19,10 +19,10 @@ BEGIN
 	(3, N'CashPayment',		+3),
 	(4, N'CashPayment',		+4);
 
-	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId]) VALUES
---	(0, 2, @1Reader),
-	(0, 3, @1GeneralManager),
-	(0, 4, @1Comptroller);
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RuleType], [RoleId]) VALUES
+	(0, 2, N'Public',  NULL),
+	(0, 3, N'ByRole', @1GeneralManager),
+	(0, 4, N'ByRole', @1Comptroller);
 
 END
 IF @DB = N'102' -- Banan ET, ETB, en
@@ -96,6 +96,7 @@ USING (
 	SELECT
 		WS.[Id], 
 		W.[Id] AS [WorkflowId],
+		WS.[RuleType],
 		WS.[RoleId],
 		WS.[Criteria],
 		WS.[ProxyRoleId]
@@ -104,10 +105,11 @@ USING (
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
+			t.[RuleType]	= s.[RuleType],
 			t.[RoleId]		= s.[RoleId],	
 			t.[Criteria]	= s.[Criteria],	
 			t.[ProxyRoleId]	= s.[ProxyRoleId],
 			t.[SavedById]	= @AdminUserId
 	WHEN NOT MATCHED THEN
-	INSERT ([WorkflowId], [RoleId], [Criteria], [ProxyRoleId])
-	VALUES (s.[WorkflowId], s.[RoleId], s.[Criteria], s.[ProxyRoleId]);
+	INSERT ([WorkflowId], [RuleType], [RoleId], [Criteria], [ProxyRoleId])
+	VALUES (s.[WorkflowId], [RuleType], s.[RoleId], s.[Criteria], s.[ProxyRoleId]);

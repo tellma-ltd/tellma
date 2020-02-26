@@ -6,6 +6,6 @@
 	[Direction]					SMALLINT			NOT NULL,
 	[AccountTypeParentCode]		NVARCHAR (255),
 	[AccountTagId]				NCHAR (4), -- TODO: NOT NULL CONSTRAINT [FK_LineDefinitionEntries_AccountTagId] REFERENCES [dbo].[AccountTags] ([Id]),([Id], AccountTypeId, Name, Name2, Name3)
-	[ResponsibilityTypeList]	NVARCHAR (1024),
-	[EntryTypeCode]				NVARCHAR (255)
+	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_LineDefinitionEntries_AgentDefinitions] REFERENCES [dbo].[AgentDefinitions] ([Id]),
+	[EntryTypeCode]				NVARCHAR (255)		
 );

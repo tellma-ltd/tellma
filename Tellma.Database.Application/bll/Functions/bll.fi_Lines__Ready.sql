@@ -27,21 +27,21 @@ RETURNS TABLE AS RETURN
 	--	AND (WS.[Criteria] IS NOT NULL)
 	--),
 	WITH RequiredSignaturesForState AS (
-		SELECT [LineId], RoleId
+		SELECT [LineId], [RuleType], [RoleId]
 		FROM map.RequiredSignatures(@Ids, @LinesSatisfyingCriteria)
 		WHERE ToState = @ToState
 	),
 	AvailableSignaturesForState AS (
-		SELECT [LineId], RoleId
+		SELECT [LineId], [RuleType], [RoleId]
 		FROM dbo.[LineSignatures]
 		WHERE ToState = @ToState
 		AND RevokedById IS NULL
 	),
 	LinesWithMissingSignaturesForState AS (
-		SELECT LineId, RoleId
+		SELECT [LineId], [RuleType], [RoleId]
 		FROM RequiredSignaturesForState
 		EXCEPT
-		SELECT [LineId], RoleId
+		SELECT [LineId], [RuleType], [RoleId]
 		FROM AvailableSignaturesForState
 	)
 	SELECT [Id]

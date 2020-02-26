@@ -1,5 +1,4 @@
-﻿CREATE TYPE [dbo].[LineDefinitionEntryList] AS TABLE
-(
+﻿CREATE TYPE [dbo].[LineDefinitionEntryList] AS TABLE (
 	[Index]						INT,
 	[HeaderIndex]				INT,
 	PRIMARY KEY ([Index], [HeaderIndex]),
@@ -8,5 +7,6 @@
 	[Direction]					SMALLINT,
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
 	[AccountTagId]				NCHAR (4),
+	[AgentDefinitionId]			NVARCHAR (50),
 	[EntryTypeCode]				NVARCHAR (255)
 );

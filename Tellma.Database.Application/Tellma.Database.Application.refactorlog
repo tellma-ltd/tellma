@@ -83,4 +83,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AccountTagId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c756025e-9be0-4244-becb-2a3e2ace19f0" ChangeDateTime="02/25/2020 11:47:20">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[ResponsibilityTypeList]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentDefinitionId]" />
+  </Operation>
 </Operations>

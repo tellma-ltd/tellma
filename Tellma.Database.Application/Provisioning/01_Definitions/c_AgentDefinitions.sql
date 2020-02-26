@@ -31,7 +31,7 @@ BEGIN
 		(6,N'suppliers',	N'Supplier',	N'Suppliers'),
 		--(7,N'tax-agencies',	N'Tax Agency',	N'Tax Agencies'),
 		(8,N'banks',		N'Bank',		N'Banks'),
-		(9,N'custodies',	N'Custody',		N'Custodies')	;
+		(9,N'cash-custodians',	N'Cash Custodian',	N'Cash Custodians')	;
 
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],				[TitleSingular],	[TitlePlural],	[JobVisibility], [RatesVisibility], [RatesLabel]) VALUES

@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Sign]
 	@Ids dbo.[IndexedIdList] READONLY,
 	@OnBehalfOfuserId INT,
-	@RoleId INT,
+	@RuleType NVARCHAR (50),
+	@RoleId INT = NULL,
 	@ToState SMALLINT,
 	@Top INT = 10
 AS
@@ -30,7 +31,7 @@ SET NOCOUNT ON;
 			FROM dbo.[Lines] L
 			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-			WHERE W.ToState = @ToState AND WS.[ProxyRoleId] IS NULL
+			WHERE W.ToState = @ToState AND WS.RuleType = @RuleType AND WS.[ProxyRoleId] IS NULL
 		);
 
 		-- if there is a proxy role, then User must have this role
@@ -47,6 +48,7 @@ SET NOCOUNT ON;
 			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState
+			AND WS.RuleType = @RuleType
 			AND WS.[ProxyRoleId] NOT IN (
 				SELECT [RoleId] FROM dbo.RoleMemberships
 				WHERE [UserId] = @UserId
