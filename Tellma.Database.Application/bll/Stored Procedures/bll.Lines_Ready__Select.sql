@@ -11,7 +11,7 @@ RequiredSignatures AS (
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
 	WHERE DL.[Id] IN (SELECT [Id] FROM @LinesIds)
 	AND W.[ToState] = @ToState
-	AND WS.[Criteria] IS NULL
+	AND WS.[PredicateType] IS NULL
 	--AND WS.[RevokedById] IS NULL
 	--AND W.[RevokedById] IS NULL
 	UNION

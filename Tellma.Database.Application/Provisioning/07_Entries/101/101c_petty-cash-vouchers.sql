@@ -21,26 +21,26 @@ BEGIN -- Inserting
 --(7,3,7,		N'Entry[0].ExternalReference',		N'Receipt #',				N'رقم الإيصال',		3,4),
 --(8,3,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);  
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 1, @DefinitionId = N'PettyCashPayment';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @USD,
-		[MonetaryValue0] = 1282.8,
-		[NotedAgentName0] = N'Mohammed Kamil',
-		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'121109',
+		[MonetaryValue0] = 136.8,
+		[NotedAgentName0] = N'ACCA',
+		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
+		[AgentId0] = @KSASafe,
+		[ExternalReference0] = N'10142',
 		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
-	WHERE [DocumentIndex] = 21 AND [Index] = 0;
+	WHERE [DocumentIndex] = 1 AND [Index] = 0;
 
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'cash-payment-vouchers',
+		@DefinitionId = N'petty-cash-vouchers',
 		@Documents = @D, @WideLines = @WL, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment Voucher: Insert: ' + @ValidationErrorsJson
+		Print 'Petty Cash Voucher: Insert: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 

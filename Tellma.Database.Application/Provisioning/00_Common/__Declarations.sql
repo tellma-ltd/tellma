@@ -32,3 +32,8 @@
 
 	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList, @WL dbo.WideLineList;
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
+	DECLARE @Accounts dbo.AccountList;
+	DECLARE @LineDefinitions dbo.LineDefinitionList;
+	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
+	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
+	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];

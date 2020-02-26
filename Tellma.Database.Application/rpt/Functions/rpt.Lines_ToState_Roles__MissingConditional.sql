@@ -20,8 +20,8 @@ RETURN
 		--END
 		-- IF FromState is negative we need to unsign the line first
 		AND W.[FromState] = DL.[State]
-		AND WS.Criteria IS NOT NULL
-		AND bll.[fn_Line_Criteria__Satisfied](DL.[Id], WS.Criteria) = 1 -- signatures
+		AND WS.[PredicateType] IS NOT NULL
+		AND bll.[fn_Line_Criteria__Satisfied](DL.[Id], WS.[PredicateType]) = 1 -- signatures
 		AND DL.[Id] IN (SELECT [Id] FROM @DocLinesIds)
 		AND WS.[RoleId] IN (SELECT [Id] FROM @Roles)
 	)

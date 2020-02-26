@@ -90,4 +90,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AgentDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c8292441-fa59-4fb8-9f0a-2aa2664dccb8" ChangeDateTime="02/26/2020 11:43:32">
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[Criteria]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkflowSignatures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PredicateType]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="65be6633-9666-4280-a269-7cdad9fad789" ChangeDateTime="02/26/2020 12:56:35">
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[EntryNumber]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkflowSignatures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RuleTypeEntryNumber]" />
+  </Operation>
 </Operations>

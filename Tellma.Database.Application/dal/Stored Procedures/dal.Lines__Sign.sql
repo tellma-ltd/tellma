@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Lines__Sign]
 	@Ids dbo.[IdList] READONLY,
-	@ToState SMALLINT, -- NVARCHAR(30),
+	@ToState SMALLINT,
 	@ReasonId INT,
 	@ReasonDetails	NVARCHAR(1024),
 	@OnBehalfOfuserId INT,

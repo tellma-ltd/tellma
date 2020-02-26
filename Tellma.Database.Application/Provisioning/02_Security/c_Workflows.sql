@@ -13,17 +13,43 @@ BEGIN
 	(0, 0, N'ByRole', @1Comptroller),
 	(0, 1, N'ByRole', @1GeneralManager);
 
+	--INSERT INTO @Workflows([Index],
+	--[LineDefinitionId], ToState) Values
+	--(2, N'CashPayment',		+1),
+	--(3, N'CashPayment',		+3),
+	--(4, N'CashPayment',		+4);
+
+	--INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RuleType], [RoleId]) VALUES
+	--(0, 2, N'Public',  NULL),
+	--(0, 3, N'ByRole', @1GeneralManager),
+	--(0, 4, N'ByRole', @1Comptroller);
+
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
 	(2, N'CashPayment',		+1),
-	(3, N'CashPayment',		+3),
-	(4, N'CashPayment',		+4);
+	(3, N'CashPayment',		+2),
+	(4, N'CashPayment',		+3),
+	(5, N'CashPayment',		+4);
 
-	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RuleType], [RoleId]) VALUES
-	(0, 2, N'Public',  NULL),
-	(0, 3, N'ByRole', @1GeneralManager),
-	(0, 4, N'ByRole', @1Comptroller);
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
+	[RuleType],				[RoleId],			[RuleTypeEntryNumber]) VALUES
+	(0, 2, N'Public',		NULL,				NULL), -- anyone can request
+	(0, 3, N'ByRole',		@1GeneralManager,	NULL), -- GM only can approve
+	(0, 4, N'ByAgent',		NULL,				0), -- Agent0/UserId, Agent0/Manager/userId, custodian only can complete
+	(0, 5, N'ByRole',		@1Comptroller,		NULL); -- Comptroller only can review
 
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId],		ToState) Values
+	(6, N'PettyCashPayment',+2),
+	(7, N'PettyCashPayment',+3),
+	(8, N'PettyCashPayment',+4);
+
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
+	[RuleType],			[RoleId],			[RuleTypeEntryNumber],	[PredicateType],[PredicateTypeEntryNumber], [Value]) VALUES
+	(0, 6, N'ByRole',	@1GeneralManager,	NULL,					N'ValueAtLeast',0,							500),
+	(0, 7, N'ByAgent',	NULL,				0,						NULL,			NULL,						NULL), -- Agent0: Cash custodian
+	(0, 8, N'ByRole',	@1Comptroller,		NULL,					NULL,			NULL,						NULL);
+	
 END
 IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -97,19 +123,27 @@ USING (
 		WS.[Id], 
 		W.[Id] AS [WorkflowId],
 		WS.[RuleType],
+		WS.[RuleTypeEntryNumber],
 		WS.[RoleId],
-		WS.[Criteria],
+		WS.[Userid],
+		WS.[PredicateType],
+		WS.[PredicateTypeEntryNumber],
+		WS.[Value],
 		WS.[ProxyRoleId]
 	FROM @WorkflowSignatures WS
 	JOIN @IndexedIds W ON WS.[HeaderIndex] = W.[Index]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED THEN
-		UPDATE SET
-			t.[RuleType]	= s.[RuleType],
-			t.[RoleId]		= s.[RoleId],	
-			t.[Criteria]	= s.[Criteria],	
-			t.[ProxyRoleId]	= s.[ProxyRoleId],
-			t.[SavedById]	= @AdminUserId
-	WHEN NOT MATCHED THEN
-	INSERT ([WorkflowId], [RuleType], [RoleId], [Criteria], [ProxyRoleId])
-	VALUES (s.[WorkflowId], [RuleType], s.[RoleId], s.[Criteria], s.[ProxyRoleId]);
+WHEN MATCHED THEN
+	UPDATE SET
+		t.[RuleType]				= s.[RuleType],
+		t.[RuleTypeEntryNumber]		= s.[RuleTypeEntryNumber],
+		t.[RoleId]					= s.[RoleId],
+		t.[Userid]					= s.[Userid],
+		t.[PredicateType]			= s.[PredicateType],
+		t.[PredicateTypeEntryNumber]=s.[PredicateTypeEntryNumber],
+		t.[Value]					= s.[Value],
+		t.[ProxyRoleId]				= s.[ProxyRoleId],
+		t.[SavedById]				= CONVERT(INT, SESSION_CONTEXT(N'UserId'))
+WHEN NOT MATCHED THEN
+	INSERT ([WorkflowId], [RuleType], [RuleTypeEntryNumber],		[RoleId], [Userid],		[PredicateType], [PredicateTypeEntryNumber], [Value], [ProxyRoleId])
+	VALUES (s.[WorkflowId], s.[RuleType], s.[RuleTypeEntryNumber], s.[RoleId], s.[Userid], s.[PredicateType], s.[PredicateTypeEntryNumber], s.[Value], s.[ProxyRoleId]);

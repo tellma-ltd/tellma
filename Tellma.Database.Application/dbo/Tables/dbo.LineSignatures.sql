@@ -14,7 +14,7 @@
 	-- For a source document, ActorId is the userId. Else, it is editable.
 	[OnBehalfOfUserId]		INT					CONSTRAINT [FK_LineSignatures__OnBehalfOfUserId] REFERENCES [dbo].[Users] ([Id]),
 	-- Role Id is selected from a choice list of the actor's roles of the actor that are compatible with workflow
-	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' CHECK ([RuleType] IN (N'ByRole', N'Public')),
+	[RuleType]				NVARCHAR (50)		NOT NULL DEFAULT N'ByRole' REFERENCES dbo.[RuleTypes] ([RuleType]),
 	[RoleId]				INT					CONSTRAINT [FK_LineSignatures__RoleId] REFERENCES [dbo].[Roles] ([Id]),
 	CONSTRAINT [CK_LineSignatures__RuleType_RoleId] CHECK([RuleType] <> N'ByRole' OR [RoleId] IS NOT NULL),
 

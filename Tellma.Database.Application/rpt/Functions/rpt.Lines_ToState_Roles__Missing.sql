@@ -20,7 +20,7 @@ RETURN
 		--END
 		-- IF FromState is negative we need to unsign the line first
 		AND W.[FromState] = DL.[State]
-		AND WS.[Criteria] IS NULL
+		AND WS.[PredicateType] IS NULL
 		AND DL.[Id] IN (SELECT [Id] FROM @DocLinesIds)
 		AND WS.[RoleId] IN (SELECT [Id] FROM @Roles)
 	) T

@@ -4,10 +4,10 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	Print N''
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Custodians
-	([Index],	[Name]) VALUES
-	(0,			N'elAmin Attayyib'),
-	(1,			N'Ahmad Abdussalam'),
-	(2,			N'Bank of Khartoum');
+	([Index],	[Name],				[UserId]) VALUES
+	(0,			N'elAmin Attayyib', @amtaam),
+	(1,			N'Ahmad Abdussalam', NULL),
+	(2,			N'Bank of Khartoum', NULL);
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodians
 	([Index], [Name]) VALUES

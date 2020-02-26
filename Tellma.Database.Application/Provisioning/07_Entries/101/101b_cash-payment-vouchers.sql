@@ -172,11 +172,11 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 1;
 
-	-- Approving and paying
+	-- Approving
 	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
-		@ToState = 3, -- N'Completed',
+		@ToState = 2, -- N'Approved',
 		@OnBehalfOfuserId = @amtaam,
 		@RuleType = N'ByRole',
 		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
@@ -184,7 +184,23 @@ BEGIN -- Inserting
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment Lines Signing: Authorizing and paying' + @ValidationErrorsJson
+		Print 'Cash Payment Lines Signing: Authorizing' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
+
+	-- Executing
+	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;		
+	EXEC [api].[Documents__Sign]
+		@IndexedIds = @DocsIndexedIds,
+		@ToState = 3, -- N'Completed',
+		@OnBehalfOfuserId = @amtaam,
+		@RuleType = N'ByAgent',
+		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
+		@SignedAt = @Now,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Cash Payment Lines Signing: Executing' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
