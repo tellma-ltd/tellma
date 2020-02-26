@@ -29,7 +29,7 @@ RETURN (
 	LEFT JOIN (
 		SELECT RoleId FROM dbo.RoleMemberships
 		WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
-	) RM ON LS.RoleId = RM.RoleId
+	) RM ON RS.RoleId = RM.RoleId
 	LEFT JOIN (
 		SELECT RoleId FROM dbo.RoleMemberships
 		WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
@@ -38,7 +38,7 @@ RETURN (
 	UNION
 	SELECT
 		RS.[LineId], RS.[ToState], RS.RuleType, NULL, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
-		1 AS CanSign, RS.ProxyRoleId, 1 AS CanSignOnBehalf
+		CAST(1 AS BIT) AS CanSign, RS.ProxyRoleId, CAST(1 AS BIT) AS CanSignOnBehalf
 		FROM ApplicableSignatures RS
 		LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = LS.ToState AND LS.RevokedAt IS NOT NULL
 	WHERE RS.RuleType = N'Public'

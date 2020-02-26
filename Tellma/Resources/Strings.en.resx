@@ -421,9 +421,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
   </data>
-  <data name="Document_Signatures" xml:space="preserve">
-    <value>Signatures</value>
-  </data>
   <data name="Document_State" xml:space="preserve">
     <value>State</value>
   </data>
@@ -561,12 +558,6 @@
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>Entry Type</value>
-  </data>
-  <data name="EntryType_ForCredit" xml:space="preserve">
-    <value>For Credit</value>
-  </data>
-  <data name="EntryType_ForDebit" xml:space="preserve">
-    <value>For Debit</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>Entry Types</value>

@@ -222,9 +222,10 @@ export class TableComponent implements OnInit {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
-    const actualRows = Math.max(this.dataSourceCopy.length, 3);
+    const actualRows = this.dataSourceCopy.length;
     const visibleRows = Math.min(maxVisibleRows, actualRows);
-    const height = headerHeight + visibleRows * rowHeight;
+    const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
+    const height = headerHeight + visibleRows * rowHeight + placeHolderRows * 31;
     return (height + 10) + 'px';
   }
 

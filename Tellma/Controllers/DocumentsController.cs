@@ -81,7 +81,7 @@ namespace Tellma.Controllers
                     var fileBytes = await _blobService.LoadBlob(blobName);
 
                     // Get the content type
-                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}" ;
+                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
                     var contentType = ContentType(fileName);
 
                     // Return the file
@@ -156,14 +156,31 @@ namespace Tellma.Controllers
 
                 // Execute and return
                 using var trx = ControllerUtilities.CreateTransaction();
-                // TODO: Validate sign
 
+                // Validate
+                var errors = await _repo.Lines_Validate__Sign(
+                    ids,
+                    args.OnBehalfOfUserId,
+                    args.RuleType,
+                    args.RoleId,
+                    args.ToState,
+                    top: 10
+                    );
+
+                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+                if (!ModelState.IsValid)
+                {
+                    throw new UnprocessableEntityException(ModelState);
+                }
+
+                // Sign
                 var documentIds = await _repo.Lines__Sign(
                     ids,
                     args.ToState,
                     args.ReasonId,
                     args.ReasonDetails,
                     args.OnBehalfOfUserId,
+                    args.RuleType,
                     args.RoleId,
                     args.SignedAt ?? DateTimeOffset.Now);
 
@@ -239,13 +256,26 @@ namespace Tellma.Controllers
 
                 var requiredSignatures = await query.ToListAsync();
                 var relatedEntities = FlattenAndTrim(requiredSignatures, null);
+                requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
+
+                // Delete this
+                //var now = DateTimeOffset.Now;
+                //var me = await _repo.Users.Filter("Id eq me").FirstOrDefaultAsync();
+                //me.CreatedBy = null;
+                //me.ModifiedBy = null;
+                //relatedEntities["User"] = new List<User> { me };
+                //requiredSignatures = lineIds.SelectMany(id => new List<RequiredSignature>
+                //    {
+                //        new RequiredSignature { LineId = id.Id, RoleId = 3, ToState = 3, SignedAt = now, CanSign = false, SignedById = _repo.GetUserInfo().UserId },
+                //        new RequiredSignature { LineId = id.Id, RoleId = 2, ToState = 3, CanSign = true },
+                //    }).ToList();
 
                 return new Dictionary<string, object>
                 {
                     ["RequiredSignatures"] = requiredSignatures,
                     ["RequiredSignaturesRelatedEntities"] = relatedEntities
                 };
-            } 
+            }
             else
             {
                 return await base.GetExtras(result);

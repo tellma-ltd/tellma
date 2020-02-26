@@ -421,9 +421,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p. </value>
   </data>
-  <data name="Document_Signatures" xml:space="preserve">
-    <value>签名</value>
-  </data>
   <data name="Document_State" xml:space="preserve">
     <value>州</value>
   </data>
@@ -561,12 +558,6 @@
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>进入分类</value>
-  </data>
-  <data name="EntryType_ForCredit" xml:space="preserve">
-    <value>对于信用</value>
-  </data>
-  <data name="EntryType_ForDebit" xml:space="preserve">
-    <value>对于借记卡</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>进入分类</value>

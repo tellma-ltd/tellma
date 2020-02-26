@@ -2,8 +2,8 @@
     [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
     [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
-        { template: sign, action: onSign, showAction: showSign, canAction: canSign, actionTooltip: signTooltip }
-    ]" [sidebarTemplate]="sidebar" [registerPristineFunc]="registerPristineFunc" [isDirtyFunc]="isDirtyFunc">
+    ]" [sidebarTemplate]="sidebar" [registerPristineFunc]="registerPristineFunc" [isDirtyFunc]="isDirtyFunc"
+    [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras">
 
 </t-details>
 
@@ -60,7 +60,7 @@
 
 
 <!-- Edit/View Template -->
-<ng-template #document let-model="model" let-isEdit="isEdit">
+<ng-template #document let-model="model" let-extras="extras" let-isEdit="isEdit">
 
     <!-- Serial Number -->
     <t-form-group class="col-12 mb-2 mb-sm-4">
@@ -192,7 +192,7 @@
                                 <t-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
                                     {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
                                 </t-restricted>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -219,7 +219,7 @@
                                         {{ ws.getMultilingualValue('Agent', readonlyValueAgentId(entry), 'Name') }}
                                     </t-restricted>
                                 </ng-container>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -247,7 +247,7 @@
                                         {{ ws.getMultilingualValue('Resource', readonlyValueResourceId(entry), 'Name') }}
                                     </t-restricted>
                                 </ng-container>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -262,7 +262,7 @@
                                     [minDecimalPlaces]="0" (ngModelChange)="update.call(null, item);"
                                     [ngModelOptions]="{ updateOn: 'blur' }" required>
                                 </t-decimal-editor>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                             <t-form-group-dynamic [label]="'Entry_Unit' | translate"
                                 [serverErrors]="entry.serverErrors?.UnitId">
@@ -279,7 +279,7 @@
                                         (ngModelChange)="update.call(null, item);" [filter]="filterUnitId(entry)">
                                     </t-measurement-units-picker>
                                 </ng-container>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -294,7 +294,7 @@
                                     (ngModelChange)="update.call(null, item);" [ngModelOptions]="{ updateOn: 'blur' }"
                                     [required]="requireDueDate(entry)">
                                 </t-date-picker>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -325,7 +325,7 @@
                                         </div>
                                     </t-restricted>
                                 </ng-container>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -343,7 +343,7 @@
                                 <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.ExternalReference"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-text-editor>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -361,7 +361,7 @@
                                 <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.AdditionalReference"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-text-editor>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -381,7 +381,7 @@
                                 <t-agents-picker *ngIf="isEdit" [(ngModel)]="entry.NotedAgentId"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-agents-picker>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -399,7 +399,7 @@
                                 <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.NotedAgentName"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-text-editor>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -418,7 +418,7 @@
                                     [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="entry.NotedAmount"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-decimal-editor>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -436,7 +436,7 @@
                                 <t-date-picker *ngIf="isEdit" [(ngModel)]="entry.NotedDate"
                                     (ngModelChange)="update.call(null, item);">
                                 </t-date-picker>
-                            &nbsp;&nbsp;
+                                &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>
 
@@ -506,6 +506,63 @@
                         </t-decimal-editor>
                     </t-form-group-dynamic>
                 </ng-template>
+
+                <div class="col-12 mt-3">
+                    <span class="small font-weight-bold">Signatures</span>
+                </div>
+                <div class="d-flex" *ngIf="requiredSignaturesForManualJV(model, extras)?.length > 0">
+
+                    <div class="col-12 col-md-6 px-2 px-md-5 mt-3"
+                        *ngFor="let signature of requiredSignaturesForManualJV(model, extras)">
+                        <div class="border-bottom d-flex pb-1">
+                            <ng-container *ngIf="!!signature.SignedById">
+                                <div class="d-flex align-items-center justify-content">
+                                    <t-image [src]="'users/' + signature.SignedById + '/image'"
+                                        [imageId]="ws.get('User', signature.SignedById)?.ImageId" [size]="36"
+                                        shape="circle">
+                                    </t-image>
+                                </div>
+                                <div class="p-2 text-truncate d-flex flex-column">
+                                    <span>
+                                        <t-view-link link="../../../users" [itemId]="signature.SignedById">
+                                            {{ ws.getMultilingualValue('User', signature.SignedById, 'Name') }}
+                                        </t-view-link>
+                                        <span *ngIf="!!signature?.OnBehalfOfUserId">
+                                            {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
+                                                [itemId]="signature.OnBehalfOfUserId">
+                                                {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
+                                            </t-view-link></span>
+                                            &nbsp;
+                                        <span class="text-success">
+                                            <fa-icon icon="thumbs-up"></fa-icon>&nbsp;
+                                            <span class="font-weight-bold">Approved</span>
+
+                                        </span>
+                                    </span>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="!signature.SignedById && signature.CanSign">
+                                <button class="btn btn-success" (click)="onSignYes(signature)">
+                                    <fa-icon icon="thumbs-up"></fa-icon>&nbsp;&nbsp;Approve
+                                </button>
+                                &nbsp;
+                                <button class="btn btn-danger" (click)="onSignNo(signature)">
+                                    <fa-icon icon="thumbs-down"></fa-icon>&nbsp;&nbsp;Reject
+                                </button>
+                            </ng-container>
+                        </div>
+                        <div class="px-2 small pt-1">
+                            <t-view-link link="../../../roles" [itemId]="signature.RoleId">
+                                {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                            </t-view-link>
+                            &nbsp;
+                            <span class="text-muted">
+                                {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
             </ng-template>
         </ngb-tab>
         <ngb-tab>
@@ -579,7 +636,7 @@
     <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" />
 
     <!-- Signatures -->
-    <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
+    <!-- <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
         <span class="small font-weight-bold">{{ 'Document_Signatures' | translate }}:</span>
         <div class="row px-2 px-md-3 px-xl-5">
             <ng-container *ngFor="let signature of model?.Signatures">
@@ -613,7 +670,7 @@
                 </div>
             </ng-container>
         </div>
-    </div>
+    </div> -->
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">
@@ -729,52 +786,5 @@
 </ng-template>
 
 <!-- Actions -->
-<ng-template #sign> {{ 'Sign' | translate }} </ng-template>
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
-
-
-<!-- Sign Modal -->
-<ng-template #signModal let-modal>
-
-    <!-- header -->
-    <div class="modal-header">
-        <h5 class="modal-title"> {{ 'Sign' | translate }} </h5>
-        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
-    <!-- body -->
-    <div class="modal-body">
-        <!-- To State -->
-        <t-form-group class="t-form-group" [label]="'Document_State' | translate" [serverErrors]="null">
-            <t-selector [(ngModel)]="toState" [choices]="stateChoices" required>
-            </t-selector>
-        </t-form-group>
-
-        <!-- User -->
-        <t-form-group class="t-form-group" [label]="'Signature_OnBehalfOfUser' | translate" [serverErrors]="null">
-            <t-users-picker [(ngModel)]="onBehalfOfUserId" [showCreate]="false">
-            </t-users-picker>
-        </t-form-group>
-
-        <!-- Role -->
-        <t-form-group class="t-form-group" [label]="'Signature_Role' | translate" [serverErrors]="null">
-            <t-roles-picker [(ngModel)]="roleId" required [showCreate]="false">
-            </t-roles-picker>
-        </t-form-group>
-    </div>
-
-    <!-- footer -->
-    <div class="modal-footer">
-        <button class="btn btn-primary" (click)="modal.close()" [disabled]="!canConfirmSign">
-            <fa-icon icon="check"></fa-icon>
-            &nbsp;{{ 'Sign' | translate }}
-        </button>
-        <button class="btn btn-light text-primary t-white-button" (click)="modal.dismiss()" ngbAutofocus>
-            <fa-icon icon="times"></fa-icon>
-            &nbsp;{{ 'Cancel' | translate }}
-        </button>
-    </div>
-</ng-template>

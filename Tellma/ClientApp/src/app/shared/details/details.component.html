@@ -15,7 +15,7 @@
           <ng-container *ngIf="(!showSpinner); else loading">
             <ng-container *ngIf="(!isNew); else new">
               <ng-container *ngIf="!showErrorMessage">
-                <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel }">
+                <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel, extras: extras }">
                 </ng-container>
               </ng-container>
             </ng-container>
@@ -151,7 +151,7 @@
         <li class="breadcrumb-item">
           <ng-container *ngIf="(!showSpinner); else loading">
             <ng-container *ngIf="(!isNew); else new">
-              <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel }">
+              <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel, extras: extras }">
               </ng-container>
             </ng-container>
           </ng-container>
@@ -179,11 +179,11 @@
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
         <div class="border bg-white w-100 t-paper">
           <div class="border-bottom" *ngIf="documentHeaderTemplate">
-            <ng-container *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, isEdit: isEdit }">
+            <ng-container *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
             </ng-container>
           </div>
           <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
-            <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit }">
+            <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
             </ng-container>
 
             <!-- Errors -->
@@ -198,7 +198,7 @@
 
       <!-- Full screen content -->
       <ng-container *ngIf="showDocument && fullScreenLayout">
-        <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit }">
+        <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
         </ng-container>
       </ng-container>
 
@@ -220,7 +220,7 @@
     <!-- Sidebar -->
     <div *ngIf="showSidebar" class="t-sidebar bg-white">
       <div class="bg-white">
-        <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, isEdit: isEdit }">
+        <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
         </ng-container>
       </div>
     </div>

@@ -280,9 +280,6 @@ namespace Tellma.Data
                 case nameof(Attachment):
                     return "[map].[Attachments]()";
 
-                case nameof(DocumentSignature):
-                    return "[map].[DocumentSignatures]()";
-
                 case nameof(DocumentAssignment):
                     return "[map].[DocumentAssignmentsHistory]()";
 
@@ -3713,7 +3710,7 @@ namespace Tellma.Data
             return (sortedResult.ToList(), deletedFileIds);
         }
 
-        public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? agentId, int? roleId, short toState, int top)
+        public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? onBehalfOfUserId, string ruleType, int? roleId, short toState, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3726,7 +3723,8 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@AgentId", agentId);
+            cmd.Parameters.Add("@OnBehalfOfuserId", onBehalfOfUserId);
+            cmd.Parameters.Add("@RuleType", ruleType);
             cmd.Parameters.Add("@RoleId", roleId);
             cmd.Parameters.Add("@ToState", toState);
             cmd.Parameters.Add("@Top", top);
@@ -3739,7 +3737,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<IEnumerable<int>> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, int? roleId, DateTimeOffset? signedAt)
+        public async Task<IEnumerable<int>> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt)
         {
             var result = new List<int>();
 
@@ -3759,6 +3757,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReasonId", reasonId);
                 cmd.Parameters.Add("@ReasonDetails", reasonDetails);
                 cmd.Parameters.Add("@OnBehalfOfUserId", onBehalfOfUserId);
+                cmd.Parameters.Add("@RuleType", ruleType);
                 cmd.Parameters.Add("@RoleId", roleId);
                 cmd.Parameters.Add("@SignedAt", signedAt);
 

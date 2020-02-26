@@ -7,6 +7,7 @@ namespace Tellma.Entities
     {
         public int LineId { get; set; }
         public int ToState { get; set; }
+        public string RuleType { get; set; }
         public int? RoleId { get; set; }
         public int? SignedById { get; set; }
         public DateTimeOffset? SignedAt { get; set; }
@@ -16,7 +17,6 @@ namespace Tellma.Entities
         public bool CanSignOnBehalf { get; set; }
 
         // For Query
-        // Role,SignedBy,OnBehalfOfUser,ProxyRole
 
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }

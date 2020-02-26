@@ -9,7 +9,7 @@ import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/
 import { LineForSave } from '~/app/data/entities/line';
 import { Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
-import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay } from '~/app/data/util';
+import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
@@ -21,6 +21,8 @@ import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
 import { MeasurementUnit } from '~/app/data/entities/measurement-unit';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
+import { RequiredSignature } from '~/app/data/entities/required-signature';
 
 interface DocumentEventBase {
   time: string;
@@ -54,17 +56,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
 
+  // Required signature stuff
+  private _requiredSignaturesDetailed: RequiredSignature[];
+  private _requiredSignaturesLineIds: number[];
+  private _requiredSignaturesSummary: RequiredSignature[];
+  private _requiredSignaturesLineIdsHash: HashTable;
+  private _requiredSignatureProps = [
+    'ToState', 'RuleType', 'RoleId', 'SignedById', 'SignedAt',
+    'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf'];
+
   // These are bound from UI
   public assigneeId: number;
   public comment: string;
   public picSize = 36;
 
-  public toState: number;
-  public reasonId: number;
-  public reasonDetails: string;
-  public onBehalfOfUserId: number;
-  public roleId: number;
-  public signedAt: string = null;
 
   @Input()
   public set definitionId(t: string) {
@@ -84,17 +89,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
     ['Currency', /* 'Resource/Currency', */ 'Resource/Units', 'Agent',
-    'EntryType', 'AccountType', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification', 'ResourceClassification']
+      'EntryType', 'AccountType', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification', 'ResourceClassification']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
-    'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
+      'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
-    // Signatures
-    ['OnBehalfOfUser', 'Role', 'CreatedBy']
-      .map(prop => `Signatures/${prop}`).join(',') + ',' +
+    // // Signatures
+    // ['OnBehalfOfUser', 'Role', 'CreatedBy']
+    //   .map(prop => `Signatures/${prop}`).join(',') + ',' +
 
     // Attachments
     ['CreatedBy', 'ModifiedBy']
@@ -172,7 +177,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       clone.Attachments = [];
       clone.AssignmentsHistory = [];
-      clone.Signatures = [];
 
       delete clone.AssigneeId;
       delete clone.CreatedById;
@@ -358,79 +362,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get marginRight(): number {
     return this.workspace.ws.isRtl ? 36 : 0;
   }
-
-  public onSign = (model: Document): void => {
-    if (!!model && !!model.Id) {
-      this.modalService.open(this.signModal)
-        .result.then(
-          () => this.onConfirmSign(model),
-          (_: any) => { }
-        );
-    }
-  }
-
-  public onConfirmSign = (model: Document): void => {
-    const lineIds = model.Lines.map(l => l.Id);
-    this.documentsApi.sign(lineIds, {
-      returnEntities: true,
-      expand: this.expand,
-      onBehalfOfUserId: this.onBehalfOfUserId,
-      toState: this.toState,
-      roleId: this.roleId,
-      reasonDetails: this.reasonDetails,
-      reasonId: this.reasonId,
-      signedAt: this.signedAt
-    }).pipe(
-      tap(res => addToWorkspace(res, this.workspace)),
-      catchError(friendlyError => {
-        this.details.handleActionError(friendlyError); return of(null);
-      })
-    ).subscribe();
-  }
-
-  public get canConfirmSign() {
-    return !!this.roleId && this.toState;
-  }
-
-  get stateChoices(): SelectorChoice[] {
-
-    if (!this._stateChoices) {
-      /*
-Document_State_Draft
-Document_State_Void
-Document_State_Requested
-Document_State_Rejected
-Document_State_Authorized
-Document_State_Failed
-Document_State_Completed
-Document_State_Invalid
-Document_State_Reviewed
-Document_State_Closed
-      */
-
-      this._stateChoices = [
-        { value: 0, name: () => this.translate.instant('Document_State_Draft') },
-        { value: -1, name: () => this.translate.instant('Document_State_Void') },
-        { value: 1, name: () => this.translate.instant('Document_State_Requested') },
-        { value: -2, name: () => this.translate.instant('Document_State_Rejected') },
-        { value: 2, name: () => this.translate.instant('Document_State_Authorized') },
-        { value: -3, name: () => this.translate.instant('Document_State_Failed') },
-        { value: 3, name: () => this.translate.instant('Document_State_Completed') },
-        { value: -4, name: () => this.translate.instant('Document_State_Invalid') },
-        { value: 4, name: () => this.translate.instant('Document_State_Reviewed') },
-        //    { value: 5,  name: () => this.translate.instant('Document_State_Closed') },
-      ];
-    }
-
-    return this._stateChoices;
-  }
-
-  public showSign = (model: Document) => true; // !!model && !model.IsActive;
-
-  public canSign = (model: Document) => true; // this.ws.canDo(this.definitionId, 'IsActive', model.Id);
-
-  public signTooltip = (model: Document) => ''; // this.canActivateDeactivateItem(model) ? '' :
-  // this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public account(entry: Entry): AccountForSave {
     return this.ws.get('Account', entry.AccountId) as AccountForSave;
@@ -696,9 +627,9 @@ Document_State_Closed
     input.value = '';
     if (file.size > this._maxAttachmentSize) {
       this.details.displayModalError(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
-      {
-        size: fileSizeDisplay(this._maxAttachmentSize)
-      }));
+        {
+          size: fileSizeDisplay(this._maxAttachmentSize)
+        }));
       return;
     }
 
@@ -907,7 +838,6 @@ Document_State_Closed
     // and therefore need not be compared for dirty checking
     const copy = { ...doc } as Document;
     delete copy.AssignmentsHistory;
-    delete copy.Signatures;
     if (!!doc.Attachments) {
       copy.Attachments = doc.Attachments.map(att => {
         const attCopy = { ...att } as Attachment;
@@ -920,4 +850,154 @@ Document_State_Closed
 
     return copy;
   }
+
+  public get extraParams(): { [key: string]: any } {
+    return { includeRequiredSignatures: true };
+  }
+
+  public handleFreshExtras(extras: { [key: string]: any }) {
+    if (!!extras) {
+      const relatedEntities = extras.RequiredSignaturesRelatedEntities as ({ [key: string]: EntityWithKey[] });
+      if (!!relatedEntities) {
+        mergeEntitiesInWorkspace(relatedEntities, this.workspace);
+      }
+    }
+  }
+
+  public requiredSignaturesForManualJV(
+    model: Document, extras: { [key: string]: any }): RequiredSignature[] {
+
+      const lineIds = model.Lines.map(l => l.Id as number).filter(id => !!id);
+      return this.requiredSignaturesSummaryInner(lineIds, extras);
+  }
+
+  public requiredSignaturesSummaryInner(
+    lineIds: number[],
+    extras: { [key: string]: any }
+  ): RequiredSignature[] {
+
+    if (!lineIds || !extras || !extras.RequiredSignatures) {
+      return [];
+    }
+
+    // This function implements a "group by" algorithm of required signatures
+    const requiredSignaturesDetailed = extras.RequiredSignatures as RequiredSignature[];
+    if (requiredSignaturesDetailed !== this._requiredSignaturesDetailed || lineIds !== this._requiredSignaturesLineIds) {
+      this._requiredSignaturesDetailed = requiredSignaturesDetailed;
+      this._requiredSignaturesLineIds = lineIds;
+
+      // Put all included line IDs in a hash table for quick lookup
+      const includedLineIds: { [id: number]: true } = {};
+      for (const lineId of lineIds) {
+        includedLineIds[lineId] = true;
+      }
+
+      const lineIdsHash: HashTable = {};
+      const result: RequiredSignature[] = [];
+      for (const signature of requiredSignaturesDetailed.filter(e => includedLineIds[e.LineId])) {
+        let currentHash = lineIdsHash;
+        let newGroup = false;
+        for (const prop of this._requiredSignatureProps) {
+          const value = signature[prop];
+
+          if (value === null || value === undefined) {
+            // for null or undefined values, use the "undefined" property
+            if (!currentHash.undefined) {
+              currentHash.undefined = {};
+              newGroup = true;
+            }
+
+            currentHash = currentHash.undefined;
+          } else {
+            // for defined values, use the "values" property
+            if (!currentHash.values) {
+              currentHash.values = {};
+            }
+
+            if (currentHash.values[value] === undefined) {
+              currentHash.values[value] = {};
+              newGroup = true;
+            }
+
+            currentHash = currentHash.values[value];
+          }
+        }
+
+        if (!currentHash.lineIds) {
+          currentHash.lineIds = [signature.LineId];
+        } else {
+          currentHash.lineIds.push(signature.LineId);
+        }
+
+        if (newGroup) {
+          // The signature clone will represent this group
+          const clone = { ...signature } as RequiredSignature;
+          delete clone.LineId;
+          result.push(clone);
+        }
+      }
+
+      this._requiredSignaturesLineIdsHash = lineIdsHash;
+      this._requiredSignaturesSummary = result;
+    }
+
+    return this._requiredSignaturesSummary;
+  }
+
+  private lineIds(requiredSignature: RequiredSignature): number[] {
+    if (!requiredSignature) {
+      return [];
+    }
+
+    let currentHash: HashTable = this._requiredSignaturesLineIdsHash;
+    for (const prop of this._requiredSignatureProps) {
+      const value = requiredSignature[prop];
+      if (value === null || value === undefined) {
+        currentHash = currentHash.undefined;
+      } else {
+        currentHash = currentHash.values[value];
+      }
+    }
+
+    return currentHash.lineIds;
+  }
+
+  public onSignYes(signature: RequiredSignature): void {
+    this.onSign(signature, true);
+  }
+
+  public onSignNo(signature: RequiredSignature): void {
+    this.onSign(signature, false);
+  }
+
+  private onSign(signature: RequiredSignature, yes: boolean): void {
+    const lineIds = this.lineIds(signature);
+    this.documentsApi.sign(lineIds, {
+      returnEntities: true,
+      expand: this.expand,
+      select: undefined,
+      onBehalfOfUserId: signature.OnBehalfOfUserId,
+      toState: yes ? signature.ToState : -signature.ToState,
+      roleId: signature.RoleId,
+      ruleType: signature.RuleType,
+      reasonDetails: null,
+      reasonId: null,
+      signedAt: null,
+    }).pipe(
+      tap(res => addToWorkspace(res, this.workspace)),
+      catchError(friendlyError => {
+        this.details.handleActionError(friendlyError); return of(null);
+      })
+    ).subscribe();
+  }
+}
+
+/**
+ * Hashes one dimension of an aggregate result for the pivot table
+ */
+interface HashTable {
+  values?: { [value: string]: HashTable };
+  undefined?: HashTable;
+
+  lineIds?: number[];
 }

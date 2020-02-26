@@ -146,10 +146,6 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        [Display(Name = "Document_Signatures")]
-        [ForeignKey(nameof(DocumentSignature.DocumentId))]
-        public List<DocumentSignature> Signatures { get; set; }
-
         [Display(Name = "Document_AssignmentsHistory")]
         [ForeignKey(nameof(DocumentAssignment.DocumentId))]
         public List<DocumentAssignment> AssignmentsHistory { get; set; }

@@ -421,9 +421,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
-  <data name="Document_Signatures" xml:space="preserve">
-    <value>التوقيعات</value>
-  </data>
   <data name="Document_State" xml:space="preserve">
     <value>حالة القيد</value>
   </data>
@@ -561,12 +558,6 @@
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
-  </data>
-  <data name="EntryType_ForCredit" xml:space="preserve">
-    <value>للدائن</value>
-  </data>
-  <data name="EntryType_ForDebit" xml:space="preserve">
-    <value>للمدين</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>تصنيفات الأسطر</value>

@@ -94,6 +94,12 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   additionalSelect: string; // Loaded in popup mode
 
   @Input()
+  extraParams: { [key: string]: any };
+
+  @Input()
+  handleFreshExtras: (extras: { [key: string]: any }) => void;
+
+  @Input()
   theme: 'light' | 'dark' = 'light';
 
   @Output()
@@ -326,11 +332,15 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
         const id = isCloning ? cloneId : this.idString;
 
         // server call
-        return this.crud.getById(id, { expand: this.expand }).pipe(
+        return this.crud.getById(id, { expand: this.expand }, this.extraParams).pipe(
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
             this.state.detailsId = addSingleToWorkspace(response, this.workspace);
+            this.state.extras = response.Extras;
+            if (!!this.handleFreshExtras) {
+              this.handleFreshExtras(response.Extras);
+            }
 
             if (isCloning) {
               // call the same method again but this time the cloned
@@ -478,6 +488,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   get activeModel(): EntityForSave {
     return this.isEdit ? this._editModel : this.viewModel;
+  }
+
+  get extras(): { [key: string]: any } {
+    return this.state.extras;
   }
 
   get showSpinner(): boolean {
@@ -691,6 +705,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
           // update the workspace with the entity from the server
           const s = this.state;
           s.detailsId = addToWorkspace(response, this.workspace)[0];
+          s.extras = response.Extras;
+          if (!!this.handleFreshExtras) {
+            this.handleFreshExtras(response.Extras);
+          }
 
           // IF it's a new entity add it to the global state, (not the local one even if inside a popup)
           const entityWs = this.workspace.current[response.CollectionName];

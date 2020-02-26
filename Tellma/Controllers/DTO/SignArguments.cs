@@ -14,6 +14,9 @@ namespace Tellma.Controllers.Dto
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public short ToState { get; set; }
 
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        public string RuleType { get; set; }
+
         /// <summary>
         /// The reason for the signature
         /// </summary>

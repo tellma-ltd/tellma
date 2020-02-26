@@ -7,7 +7,6 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
-import { DocumentSignature } from './document-signature';
 import { DocumentAssignment } from './document-assignment';
 import { AttachmentForSave, Attachment } from './attachment';
 
@@ -34,7 +33,6 @@ export interface Document extends DocumentForSave<Line, Attachment> {
     CreatedById?: number;
     ModifiedAt?: string;
     ModifiedById?: number;
-    Signatures?: DocumentSignature[];
     AssignmentsHistory?: DocumentAssignment[];
 }
 

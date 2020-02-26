@@ -399,6 +399,10 @@ export class ApiService {
           paramsArray.push(`onBehalfOfUserId=${encodeURIComponent(args.onBehalfOfUserId)}`);
         }
 
+        if (!!args.ruleType) {
+          paramsArray.push(`ruleType=${encodeURIComponent(args.ruleType)}`);
+        }
+
         if (!!args.roleId) {
           paramsArray.push(`roleId=${encodeURIComponent(args.roleId)}`);
         }
@@ -743,7 +747,7 @@ export class ApiService {
         return obs$;
       },
 
-      getById: (id: number | string, args: GetByIdArguments) => {
+      getById: (id: number | string, args: GetByIdArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -753,6 +757,16 @@ export class ApiService {
 
         if (!!args.select) {
           paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
         }
 
         const params: string = paramsArray.join('&');
@@ -805,7 +819,7 @@ export class ApiService {
         return obs$;
       },
 
-      getChildrenOf: (args: GetChildrenArguments) => {
+      getChildrenOf: (args: GetChildrenArguments, extras?: { [key: string]: any }) => {
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -829,6 +843,16 @@ export class ApiService {
           });
         }
 
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
+
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/children-of?${params}`;
 
@@ -843,7 +867,7 @@ export class ApiService {
         return obs$;
       },
 
-      save: (entities: TEntityForSave[], args: SaveArguments) => {
+      save: (entities: TEntityForSave[], args: SaveArguments, extras?: { [key: string]: any }) => {
         this.showRotator = true;
         args = args || {};
         const paramsArray: string[] = [];
@@ -857,6 +881,16 @@ export class ApiService {
         }
 
         paramsArray.push(`returnEntities=${!!args.returnEntities}`);
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
