@@ -56,6 +56,37 @@ SET NOCOUNT ON;
 		);
 	END
 
+	-- TODO: verify that the signing UserId fulfills one of the required signature
+	--DECLARE @LineIds IdList;
+	--INSERT INTO @LineIds([Id]) SELECT [Id] FROM @Ids;
+	--IF NOT EXISTS (
+	--	SELECT * FROM map.RequiredSignatures(@LineIds)
+	--	WHERE RuleType = @RuleType
+	--	AND SignedById IS NULL
+	--	AND (
+	--		@RuleType IN (N'ByUser', N'ByAgent') AND UserId = @OnBehalfOfuserId OR
+	--		@RuleType = N'ByRole' AND RoleId = @RoleId OR
+	--		@RuleType = N'Public'
+	--	)		
+	--)
+	--RAISERROR(N'Error_CannotSign', 16, 1)
+
+	-- cannot sign a line by Agent, if Agent/UserId is null
+	IF @RuleType = N'ByAgent'
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT DISTINCT
+		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAgent0HasNoUserId',
+		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS AgentName
+	FROM @Ids FE
+	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
+	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
+	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
+	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
+	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
+	WHERE WS.RuleType = N'ByAgent' AND WS.RuleTypeEntryNumber  = E.EntryNumber
+	AND AG.UserId IS NULL
+
 	-- Cannot sign a line with no Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT
@@ -64,19 +95,6 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
-
-	-- verify that the line definition has a workflow transition from its current state to @ToState
-	-- TOTO: use localized state names instead
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_NoDirectTransitionFromState0ToState1',
-		dbo.fn_StateId__State(L.[State]) AS FromState,
-		dbo.fn_StateId__State(@ToState) AS ToState
-	FROM @Ids FE
-	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
-	LEFT JOIN dbo.WorkflowsView W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
-	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is open.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

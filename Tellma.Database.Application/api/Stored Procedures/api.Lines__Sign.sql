@@ -64,7 +64,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Lines__Sign]
+	EXEC [dal].[Lines__SignAndRefresh]
 		@Ids = @Ids,
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
@@ -73,17 +73,4 @@ SET NOCOUNT ON;
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt
-
-	-- Determine which of the selected Lines are reacdy for state change
-	DECLARE @ReadyIds dbo.IdList;
-	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
-
-	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
-
-	DECLARE @DocIds dbo.IdList;
-	INSERT INTO @DocIds([Id])
-	SELECT DISTINCT DocumentId FROM dbo.Lines
-	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds);
-
-	EXEC dal.Documents_State__Refresh @DocIds;
 END;

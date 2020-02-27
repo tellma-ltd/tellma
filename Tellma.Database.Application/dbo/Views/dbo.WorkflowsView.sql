@@ -7,7 +7,7 @@ SELECT
 	(
 		SELECT ISNULL(MAX([ToState]),0)
 		FROM dbo.Workflows
-		WHERE [LineDefinitionId] = W.[LineDefinitionId] AND [TOState] < W.[ToState]
+		WHERE [LineDefinitionId] = W.[LineDefinitionId] AND [ToState] < W.[ToState]
 	) AS [FromState],
 	[ToState],
 	[SavedById]

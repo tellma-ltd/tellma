@@ -44,7 +44,24 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
+	DELETE FROM @DocsIndexedIds;
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 0;
+	-- Executing
+	--EXEC [api].[Documents__Sign]
+	--	@IndexedIds = @DocsIndexedIds,
+	--	@ToState = 3, -- N'completed',
+	--	@OnBehalfOfuserId = @mohamad_akra,
+	--	@RuleType = N'ByAgent',
+	--	@RoleId = NULL,
+	--	@SignedAt = @Now,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Cash Payment Lines Signing: Completing' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
 	--(0, 0, 1,0,+1,@1Education,	@AdministrativeExpense, 							@1Overhead,	@SAR,			513,				136.8),--
-	--(0, 1, 1,0,-1,@1KSAFund,	@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SAR,			513,				136.8),
 
 END
