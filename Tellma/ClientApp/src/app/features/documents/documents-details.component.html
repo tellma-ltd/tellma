@@ -18,16 +18,20 @@
     <span>{{ formatSerial(model?.SerialNumber) }}</span>
 </ng-template>
 
-<ng-template #documentHeader let-model="model" let-isEdit="isEdit">
+<ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
     <div class="w-100 t-document-header d-flex justify-content-end">
         <t-restricted [metadata]="model?.EntityMetadata?.State">
             <!-- Positive state in wide screen -->
             <div class="t-flow-chart small d-none d-md-block" *ngIf="!model?.State || model.State > 0">
                 <div [class.active]="!model?.State"><span>{{'Document_State_Draft' | translate}}</span></div>
-                <div [class.active]="model?.State === 1"><span>{{'Document_State_Requested' | translate}}</span></div>
-                <div [class.active]="model?.State === 2"><span>{{'Document_State_Authorized' | translate}}</span></div>
-                <div [class.active]="model?.State === 3"><span>{{'Document_State_Completed' | translate}}</span></div>
-                <div [class.active]="model?.State === 4"><span>{{'Document_State_Reviewed' | translate}}</span></div>
+                <div [class.active]="model?.State === 1" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
+                    <span>{{'Document_State_Requested' | translate}}</span></div>
+                <div [class.active]="model?.State === 2" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
+                    <span>{{'Document_State_Authorized' | translate}}</span></div>
+                <div [class.active]="model?.State === 3" *ngIf="showState(model, extras?.RequiredSignatures, 3)">
+                    <span>{{'Document_State_Completed' | translate}}</span></div>
+                <div [class.active]="model?.State === 4" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
+                    <span>{{'Document_State_Reviewed' | translate}}</span></div>
                 <div [class.active]="model?.State === 5"><span>{{'Document_State_Closed' | translate}}</span></div>
             </div>
             <div class="small t-lone-state active d-none d-md-block" *ngIf="!!model?.State && model.State < 0">
@@ -507,14 +511,18 @@
                     </t-form-group-dynamic>
                 </ng-template>
 
-                <div class="col-12 mt-3">
-                    <span class="small font-weight-bold">Signatures</span>
-                </div>
-                <div class="d-flex" *ngIf="requiredSignaturesForManualJV(model, extras)?.length > 0">
+                <div class="row mx-0" *ngIf="requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
+                    <div class="col-12 mt-3">
+                        <span class="small font-weight-bold">Signatures</span>
+                    </div>
+                    <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3"
+                        *ngFor="let signature of requiredSignaturesForLineDef(model, 'ManualLine', extras)">
+                        <div class="border-bottom d-flex align-items-stretch p-2 bg-light">
 
-                    <div class="col-12 col-md-6 px-2 px-md-5 mt-3"
-                        *ngFor="let signature of requiredSignaturesForManualJV(model, extras)">
-                        <div class="border-bottom d-flex pb-1">
+                            <!-- just to keep the height when the parent div is empty-->
+                            <div style="height: 37px;"></div>
+
+                            <!-- Signature exists -->
                             <ng-container *ngIf="!!signature.SignedById">
                                 <div class="d-flex align-items-center justify-content">
                                     <t-image [src]="'users/' + signature.SignedById + '/image'"
@@ -522,47 +530,92 @@
                                         shape="circle">
                                     </t-image>
                                 </div>
-                                <div class="p-2 text-truncate d-flex flex-column">
+                                <div class="p-2 flex-grow-1 text-truncate d-flex flex-column">
                                     <span>
                                         <t-view-link link="../../../users" [itemId]="signature.SignedById">
                                             {{ ws.getMultilingualValue('User', signature.SignedById, 'Name') }}
                                         </t-view-link>
-                                        <span *ngIf="!!signature?.OnBehalfOfUserId">
+                                        <span
+                                            *ngIf="!!signature.OnBehalfOfUserId && signature.SignedById !== signature.OnBehalfOfUserId">
                                             {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
                                                 [itemId]="signature.OnBehalfOfUserId">
                                                 {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
                                             </t-view-link></span>
-                                            &nbsp;
-                                        <span class="text-success">
-                                            <fa-icon icon="thumbs-up"></fa-icon>&nbsp;
-                                            <span class="font-weight-bold">Approved</span>
-
-                                        </span>
                                     </span>
                                 </div>
+
+                                <div class="d-flex align-items-center px-2 font-weight-bold"
+                                    [class.text-success]="signature.ToState > 0"
+                                    [class.text-danger]="signature.ToState < 0"
+                                    [class.t-positive-stamp]="signature.ToState > 0"
+                                    [class.t-negative-stamp]="signature.ToState < 0">
+                                    <fa-icon [icon]="actionIcon(signature.ToState)"></fa-icon>
+                                    <span>&nbsp;&nbsp;{{ actionDisplay(signature.ToState) }}</span>
+                                </div>
                             </ng-container>
+
+                            <!-- No signature but can sign -->
                             <ng-container *ngIf="!signature.SignedById && signature.CanSign">
-                                <button class="btn btn-success" (click)="onSignYes(signature)">
-                                    <fa-icon icon="thumbs-up"></fa-icon>&nbsp;&nbsp;Approve
+                                <!-- <div class="flex-grow-1">
+
+                                </div> -->
+                                <!-- <div class="d-flex align-items-center justify-content" style="opacity: 50%">
+                                    <t-image [src]="'users/' + ws.userSettings.UserId + '/image'"
+                                        [imageId]="ws.userSettings.ImageId" [size]="36" shape="circle">
+                                    </t-image>
+                                </div>
+                                <div class="p-2 flex-grow-1 text-truncate d-flex flex-column" style="opacity: 40%">
+                                    <span>
+                                        <span>
+                                            {{ ws.getMultilingualValueImmediate(ws.userSettings, 'Name') }}
+                                        </span>
+                                    </span>
+                                </div> -->
+                                <button class="btn btn-danger px-2 w-50" (click)="onSignNo(signature)">
+                                    <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
+                                    <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
+                                </button>&nbsp;
+                                <button class="btn btn-success px-2 w-50" (click)="onSignYes(signature)">
+                                    <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
+                                    <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
                                 </button>
-                                &nbsp;
-                                <button class="btn btn-danger" (click)="onSignNo(signature)">
-                                    <fa-icon icon="thumbs-down"></fa-icon>&nbsp;&nbsp;Reject
-                                </button>
+                            </ng-container>
+
+                            <!-- No signature and cannot sign -->
+                            <ng-container *ngIf="!signature.SignedById && !signature.CanSign">
+
                             </ng-container>
                         </div>
-                        <div class="px-2 small pt-1">
-                            <t-view-link link="../../../roles" [itemId]="signature.RoleId">
-                                {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
-                            </t-view-link>
-                            &nbsp;
-                            <span class="text-muted">
-                                {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }}
-                            </span>
+
+                        <!-- Footer: type of signature and signing time -->
+                        <div class="px-2 small p-1 d-flex justify-content-between">
+                            <div class="text-truncate" *ngIf="signature.RuleType === 'ByRole'; else todo">
+                                <span>
+                                    {{ signatureTypeDisplay(signature) }}
+                                    <t-view-link link="../../../roles" [itemId]="signature.RoleId">
+                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                    </t-view-link>
+                                </span>
+                            </div>
+                            <ng-template #todo>
+                                <div class="text-danger">
+                                    <span>TODO: implement rule type {{ signature.RuleType }}</span>
+                                </div>
+                            </ng-template>
+                            <div>
+                                <span class="text-muted" *ngIf="signature.SignedAt">
+                                    &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                                </span>
+                                <!-- <div class="d-flex align-items-center" *ngIf="canUnsign(signature)"> -->
+                                    <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
+                                        (click)="onDeleteSignature(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px">
+                                        <fa-icon icon="trash" [title]="'Delete' | translate"></fa-icon>
+                                    </button>
+                                <!-- </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </ng-template>
         </ngb-tab>
         <ngb-tab>
@@ -785,6 +838,31 @@
     </div>
 </ng-template>
 
-<!-- Actions -->
-<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
-<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+<!-- Confirmation Modal -->
+<ng-template #confirmModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ confirmationMessage }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-danger" (click)="modal.close(true)">
+      <fa-icon icon="check"></fa-icon>
+      &nbsp;{{ 'Yes' | translate }}
+    </button>
+    <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'No' | translate }}
+    </button>
+  </div>
+</ng-template>

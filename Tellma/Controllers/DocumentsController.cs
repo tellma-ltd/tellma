@@ -154,17 +154,21 @@ namespace Tellma.Controllers
                 // TODO: Check user permissions
                 // await CheckActionPermissions("IsActive", idsArray);
 
+                // C# Validation 
+                // TODO
+
                 // Execute and return
                 using var trx = ControllerUtilities.CreateTransaction();
 
                 // Validate
+                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
                 var errors = await _repo.Lines_Validate__Sign(
                     ids,
                     args.OnBehalfOfUserId,
                     args.RuleType,
                     args.RoleId,
                     args.ToState,
-                    top: 10
+                    top: remainingErrorCount
                     );
 
                 ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
@@ -174,7 +178,7 @@ namespace Tellma.Controllers
                 }
 
                 // Sign
-                var documentIds = await _repo.Lines__Sign(
+                var documentIds = await _repo.Lines__SignAndRefresh(
                     ids,
                     args.ToState,
                     args.ReasonId,
@@ -182,7 +186,56 @@ namespace Tellma.Controllers
                     args.OnBehalfOfUserId,
                     args.RuleType,
                     args.RoleId,
-                    args.SignedAt ?? DateTimeOffset.Now);
+                    args.SignedAt ?? DateTimeOffset.Now,
+                    returnIds: true);
+
+                if (args.ReturnEntities ?? false)
+                {
+                    var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
+
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
+                }
+            }
+            , _logger);
+        }
+
+        [HttpPut("unsign-lines")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> UnsignLines([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Parse parameters
+                var selectExp = SelectExpression.Parse(args.Select);
+                var expandExp = ExpandExpression.Parse(args.Expand);
+                var idsArray = ids.ToArray();
+
+                // TODO: Check user permissions
+                // await CheckActionPermissions("IsActive", idsArray);
+
+                // C# Validation 
+                // TODO
+
+                // Execute and return
+                using var trx = ControllerUtilities.CreateTransaction();
+
+                // Validate
+                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+                var errors = await _repo.Lines_Validate__Unsign(ids, top: remainingErrorCount);
+                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+
+                if (!ModelState.IsValid)
+                {
+                    throw new UnprocessableEntityException(ModelState);
+                }
+
+                // Sign
+                var documentIds = await _repo.Lines__UnsignAndRefresh(ids, returnIds: true);
 
                 if (args.ReturnEntities ?? false)
                 {
@@ -240,17 +293,8 @@ namespace Tellma.Controllers
                     SqlDbType = System.Data.SqlDbType.Structured
                 };
 
-                // LinesSatisfyingCriteria parameter
-                var linesSatisfyingCriteria = new List<int>().Select(x => new { Id = 0, Criteria = "" }); // TODO
-                var linesSatisfyingCriteriaTable = RepositoryUtilities.DataTable(linesSatisfyingCriteria);
-                var linesSatisfyingCriteriaTvp = new SqlParameter("@LinesSatisfyingCriteria", linesSatisfyingCriteriaTable)
-                {
-                    TypeName = $"[dbo].[IdWithCriteriaList]",
-                    SqlDbType = System.Data.SqlDbType.Structured
-                };
-
                 var query = _repo.Query<RequiredSignature>()
-                    .AdditionalParameters(lineIdsTvp, linesSatisfyingCriteriaTvp)
+                    .AdditionalParameters(lineIdsTvp)
                     .Expand("Role,SignedBy,OnBehalfOfUser,ProxyRole")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
