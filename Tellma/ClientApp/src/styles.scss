@@ -10,7 +10,7 @@ $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
 
-$primary: #17a2b8; // Classy cyan
+$primary: #17a2b8; // Classy teal
 $secondary: #6c757d;
 $dark-primary: #008784;
 $info: #007bff; // Bright blue
@@ -1552,4 +1552,21 @@ h1.t-report-measure:hover {
 
 .small input, .t-large input, .small button, .t-large button {
   font-size: 100%!important;
+}
+
+// Signature stamps
+%t-stamp {
+  border-width: 4px;
+  border-style: solid;
+  //transform: rotate(-20deg)
+}
+
+.t-positive-stamp {
+  @extend %t-stamp;
+  border-color: $success;
+}
+
+.t-negative-stamp {
+  @extend %t-stamp;
+  border-color: $danger;
 }

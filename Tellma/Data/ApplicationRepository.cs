@@ -304,7 +304,7 @@ namespace Tellma.Data
                 // Fact tables
 
                 case nameof(RequiredSignature):
-                    return "[map].[RequiredSignatures](@LineIds, @LinesSatisfyingCriteria)";
+                    return "[map].[RequiredSignatures](@LineIds)";
 
                 case nameof(DetailsEntry):
                     return "[map].[DetailsEntries]()";
@@ -3737,7 +3737,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<IEnumerable<int>> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt)
+        public async Task<IEnumerable<int>> Lines__SignAndRefresh(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, string ruleType, int? roleId, DateTimeOffset? signedAt, bool returnIds)
         {
             var result = new List<int>();
 
@@ -3763,7 +3763,62 @@ namespace Tellma.Data
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Lines__Sign)}]";
+                cmd.CommandText = $"[dal].[{nameof(Lines__SignAndRefresh)}]";
+
+                // Execute                    
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    result.Add(reader.GetInt32(0));
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ValidationError>> Lines_Validate__Unsign(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Lines_Validate__Unsign)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<IEnumerable<int>> Lines__UnsignAndRefresh(IEnumerable<int> ids, bool returnIds)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Lines__UnsignAndRefresh)}]";
 
                 // Execute                    
                 using var reader = await cmd.ExecuteReaderAsync();

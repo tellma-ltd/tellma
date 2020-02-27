@@ -693,7 +693,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
       // prepare the save observable
       const select = this.isPopupMode ? computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect) : null;
-      this.crud.save([this._editModel], { select, expand: this.expand, returnEntities: true }).subscribe(
+      this.crud.save([this._editModel], { select, expand: this.expand, returnEntities: true }, this.extraParams).subscribe(
         (response: EntitiesResponse) => {
 
           // If we're updating, copy the old entity

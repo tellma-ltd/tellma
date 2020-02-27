@@ -25,7 +25,6 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
-import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
@@ -54,6 +53,7 @@ import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { CompaniesForClient } from './dto/companies-for-client';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { ResetPasswordArgs } from './dto/reset-password-args';
+import { ActionArguments } from './action-arguments';
 
 
 @Injectable({
@@ -342,7 +342,7 @@ export class ApiService {
     return {
       activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
       deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
-      assign: (ids: (string | number)[], args: AssignArguments) => {
+      assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
         const paramsArray: string[] = [
           `assigneeId=${encodeURIComponent(args.assigneeId)}`
         ];
@@ -361,6 +361,16 @@ export class ApiService {
 
         if (!!args.select) {
           paramsArray.push(`select=${args.select}`);
+        }
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
         }
 
         const params: string = paramsArray.join('&');
@@ -382,7 +392,7 @@ export class ApiService {
 
         return obs$;
       },
-      sign: (ids: (string | number)[], args: SignArguments) => {
+      sign: (ids: (string | number)[], args: SignArguments, extras?: { [key: string]: any }) => {
         const paramsArray: string[] = [
           `toState=${encodeURIComponent(args.toState)}`
         ];
@@ -423,8 +433,63 @@ export class ApiService {
           paramsArray.push(`select=${args.select}`);
         }
 
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
+
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/sign-lines?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+      unsign: (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
+        const paramsArray: string[] = [
+        ];
+
+        if (!!args.returnEntities) {
+          paramsArray.push(`returnEntities=${args.returnEntities}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${args.expand}`);
+        }
+
+        if (!!args.select) {
+          paramsArray.push(`select=${args.select}`);
+        }
+
+        if (!!extras) {
+          Object.keys(extras).forEach(key => {
+            const value = extras[key];
+            if (value !== undefined && value !== null) {
+              const valueString = value.toString();
+              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+            }
+          });
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/unsign-lines?${params}`;
 
         this.showRotator = true;
         const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {

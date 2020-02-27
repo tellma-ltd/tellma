@@ -13,7 +13,6 @@ import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitie
 import { tap, catchError, finalize, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -52,7 +51,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _definitionId: string;
   private _currentDoc: Document;
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
-  private _stateChoices: SelectorChoice[];
   private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
 
@@ -64,6 +62,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignatureProps = [
     'ToState', 'RuleType', 'RoleId', 'SignedById', 'SignedAt',
     'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf'];
+
+  private _requiredSignaturesForLineDefModel: Document;
+  private _requiredSignaturesForLineDefLineDef: string;
+  private _requiredSignaturesForLineDefLineIds: number[];
+
 
   // These are bound from UI
   public assigneeId: number;
@@ -83,8 +86,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  @ViewChild('signModal', { static: true })
-  signModal: TemplateRef<any>;
+  @ViewChild('confirmModal', { static: true })
+  confirmModal: TemplateRef<any>;
+
+  public confirmationMessage: string;
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
@@ -343,8 +348,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         expand: this.expand,
         assigneeId: this.assigneeId,
         comment: this.comment
-      }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+      }, { includeRequiredSignatures: true }).pipe(
+        tap(res => {
+          addToWorkspace(res, this.workspace);
+          this.details.state.extras = res.Extras;
+          this.handleFreshExtras(res.Extras);
+        })
       ).subscribe({ error: this.details.handleActionError });
 
     }
@@ -863,12 +872,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     }
   }
+  public requiredSignaturesForLineDef(
+    model: Document, lineDef: string, extras: { [key: string]: any }): RequiredSignature[] {
+    if (this._requiredSignaturesForLineDefModel !== model ||
+      this._requiredSignaturesForLineDefLineDef !== lineDef) {
+      this._requiredSignaturesForLineDefModel = model;
+      this._requiredSignaturesForLineDefLineDef = lineDef;
+      this._requiredSignaturesForLineDefLineIds = model.Lines
+        .filter(l => !!l.Id && l.DefinitionId === lineDef)
+        .map(l => l.Id as number);
+    }
 
-  public requiredSignaturesForManualJV(
-    model: Document, extras: { [key: string]: any }): RequiredSignature[] {
-
-      const lineIds = model.Lines.map(l => l.Id as number).filter(id => !!id);
-      return this.requiredSignaturesSummaryInner(lineIds, extras);
+    return this.requiredSignaturesSummaryInner(this._requiredSignaturesForLineDefLineIds, extras);
   }
 
   public requiredSignaturesSummaryInner(
@@ -938,7 +953,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       this._requiredSignaturesLineIdsHash = lineIdsHash;
-      this._requiredSignaturesSummary = result;
+      this._requiredSignaturesSummary = result.sort((a, b) => {
+        // Order by to state
+        let diff = Math.abs(a.ToState) - Math.abs(b.ToState);
+
+        // Then by rule type
+        if (diff === 0) {
+          const aRT = a.RuleType || '0';
+          const bRT = b.RuleType || '0';
+          diff = aRT > bRT ? 1 : aRT < bRT ? -1 : 0;
+        }
+
+        // Then by role ID
+        if (diff === 0) {
+          diff = (a.RoleId || 0) - (b.RoleId || 0);
+        }
+
+        // Return result
+        return diff;
+      });
     }
 
     return this._requiredSignaturesSummary;
@@ -983,12 +1016,128 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       reasonDetails: null,
       reasonId: null,
       signedAt: null,
-    }).pipe(
-      tap(res => addToWorkspace(res, this.workspace)),
+    }, { includeRequiredSignatures: true }).pipe(
+      tap(res => {
+        addToWorkspace(res, this.workspace);
+        this.details.state.extras = res.Extras;
+        this.handleFreshExtras(res.Extras);
+      }),
       catchError(friendlyError => {
         this.details.handleActionError(friendlyError); return of(null);
       })
     ).subscribe();
+  }
+
+  public onDeleteSignature(signature: RequiredSignature) {
+    this.confirmationMessage = this.translate.instant('AreYouSureYouWantToDeleteYourSignature');
+    const modalRef = this.modalService.open(this.confirmModal);
+    modalRef.result.then(
+      (confirmed: boolean) => {
+        if (confirmed) {
+          this.documentsApi.unsign(this.lineIds(signature), {
+            returnEntities: true,
+            expand: this.expand,
+            select: undefined
+          }, { includeRequiredSignatures: true }).pipe(
+            tap(res => {
+              addToWorkspace(res, this.workspace);
+              this.details.state.extras = res.Extras;
+              this.handleFreshExtras(res.Extras);
+            }),
+            catchError(friendlyError => {
+              this.details.handleActionError(friendlyError); return of(null);
+            })
+          ).subscribe();
+        }
+      },
+      _ => { }
+    );
+  }
+
+  public canUnsign(signature: RequiredSignature) {
+    return !!signature.SignedById && signature.SignedById === this.ws.userSettings.UserId;
+  }
+
+  public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
+    if (!model || !model.Id) {
+      return false;
+    }
+
+    if (model.State === state) {
+      return true;
+    }
+
+    return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
+  }
+
+  public positiveActionDisplay(toState: number): string {
+    // Used for button
+    return this.actionDisplay(Math.abs(toState));
+  }
+
+  public positiveActionIcon(toState: number): string {
+    // Used for button
+    return this.actionIcon(Math.abs(toState));
+  }
+
+  public negativeActionDisplay(toState: number): string {
+    // Used for button
+    return this.actionDisplay(-Math.abs(toState));
+  }
+
+  public negativeActionIcon(toState: number): string {
+    // Used for button
+    return this.actionIcon(-Math.abs(toState));
+  }
+
+  public actionIcon(toState: number): string {
+    // Used for stamp
+    switch (toState) {
+      case 1: return 'arrow-right';
+      case 2: return 'thumbs-up';
+      case 3: return 'check';
+      case 4: return 'check';
+
+      case -1: return 'times';
+      case -2: return 'thumbs-down';
+      case -3: return 'times';
+      case -4: return 'times';
+      default: return '';
+    }
+  }
+
+  public actionDisplay(toState: number): string {
+    // Used for stamp
+    switch (toState) {
+      case 1: return this.translate.instant('Request');
+      case 2: return this.translate.instant('Approve');
+      case 3: return this.translate.instant('Complete');
+      case 4: return this.translate.instant('Review');
+
+      case -1: return this.translate.instant('Void');
+      case -2: return this.translate.instant('Reject');
+      case -3: return this.translate.instant('Fail');
+      case -4: return this.translate.instant('Invalid');
+      default: return '';
+    }
+  }
+
+  public signatureTypeDisplay(signature: RequiredSignature) {
+    // Used for the test below
+    switch (Math.abs(signature.ToState)) {
+      case 1: return this.translate.instant('RequestedBy');
+      case 2: return this.translate.instant('ApprovedBy');
+      case 3: return this.translate.instant('CompletedBy');
+      case 4: return this.translate.instant('ReviewedBy');
+    }
+  }
+
+  public get meName() {
+    return this.ws.getMultilingualValueImmediate(this.ws.userSettings, 'Name');
+  }
+
+  public get meImageId() {
+    return this.ws.userSettings.ImageId;
   }
 }
 
