@@ -7,4 +7,4 @@ INSERT INTO dbo.RuleTypes([RuleType]) VALUES
 
 IF NOT EXISTS (SELECT * FROM dbo.PredicateTypes)
 INSERT INTO dbo.PredicateTypes([PredicateType]) VALUES
-(N'ValueAtLeast');
+(N'ValueGreaterOrEqual');

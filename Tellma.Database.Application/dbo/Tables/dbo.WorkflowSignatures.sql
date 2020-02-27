@@ -12,7 +12,7 @@
 	[PredicateType]			NVARCHAR(50)		REFERENCES dbo.PredicateTypes([PredicateType]),
 	[PredicateTypeEntryNumber]	INT				CONSTRAINT [FK_WorkflowSignatures__PredicateTypeEntryNumber_Value] CHECK([PredicateTypeEntryNumber] >= 0),
 	[Value]					DECIMAL (19,4),
-	CONSTRAINT [CK_WorkflowSignatures__PredicateType_PredicateTypeEntryNumber] CHECK ([PredicateType] IS NULL OR [PredicateType] <> N'ValueAtLeast' OR [PredicateTypeEntryNumber] IS NOT NULL AND [Value] IS NOT NULL),
+	CONSTRAINT [CK_WorkflowSignatures__PredicateType_PredicateTypeEntryNumber] CHECK ([PredicateType] IS NULL OR [PredicateType] <> N'ValueGreaterOrEqual' OR [PredicateTypeEntryNumber] IS NOT NULL AND [Value] IS NOT NULL),
 	[ProxyRoleId]			INT,			-- If a transition has a proxy role, an agent with that proxy role can sign on behalf.
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',
 	[SavedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_WorkflowSignatures__SavedById] REFERENCES [dbo].[Users] ([Id]),

@@ -112,7 +112,7 @@ BEGIN -- Inserting
 
 		EXEC [api].[Documents__Sign]
 			@IndexedIds = @DocsIndexedIds,
-			@ToState = 4, -- N'Completed',
+			@ToState = -4, -- N'Reviewed', failed
 			@OnBehalfOfuserId = @amtaam,
 			@RuleType = N'ByRole',
 			@RoleId = @1GeneralManager, -- we allow selecting the role manually,

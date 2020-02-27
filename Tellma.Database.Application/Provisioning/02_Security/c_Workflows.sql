@@ -46,7 +46,7 @@ BEGIN
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
 	[RuleType],			[RoleId],			[RuleTypeEntryNumber],	[PredicateType],[PredicateTypeEntryNumber], [Value]) VALUES
-	(0, 6, N'ByRole',	@1GeneralManager,	NULL,					N'ValueAtLeast',0,							500),
+	(0, 6, N'ByRole',	@1GeneralManager,	NULL,					N'ValueGreaterOrEqual',0,							500),
 	(0, 7, N'ByAgent',	NULL,				0,						NULL,			NULL,						NULL), -- Agent0: Cash custodian
 	(0, 8, N'ByRole',	@1Comptroller,		NULL,					NULL,			NULL,						NULL);
 	
