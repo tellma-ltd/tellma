@@ -17,6 +17,7 @@ BEGIN
 		SELECT Max([SignedAt]) FROM dbo.[LineSignatures]
 		WHERE [LineId] IN (SELECT [Id] FROM @Ids)
 	)
+	AND [LineId] IN (SELECT [Id] FROM @Ids)
 	AND [OnBehalfOfUserId] = @UserId;
 
 	WITH NewLineStates AS

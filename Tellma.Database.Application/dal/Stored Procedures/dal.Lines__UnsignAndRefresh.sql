@@ -20,5 +20,5 @@ AS
 
 	EXEC dal.Documents_State__Refresh @DocIds;
 
-	IF @Returnids = 1
+	IF @ReturnIds = 1
 		SELECT [Id] FROM @DocIds;
