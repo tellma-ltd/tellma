@@ -511,7 +511,7 @@
                     </t-form-group-dynamic>
                 </ng-template>
 
-                <div class="row mx-0" *ngIf="requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
+                <div class="row mx-0" *ngIf="!isEdit && requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
                     <div class="col-12 mt-3">
                         <span class="small font-weight-bold">Signatures</span>
                     </div>
@@ -574,7 +574,7 @@
                                 <button class="btn btn-danger px-2 w-50" (click)="onSignNo(signature)">
                                     <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
                                     <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
-                                </button>&nbsp;
+                                </button>&nbsp;&nbsp;
                                 <button class="btn btn-success px-2 w-50" (click)="onSignYes(signature)">
                                     <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
                                     <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
@@ -607,10 +607,11 @@
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
                                 </span>
                                 <!-- <div class="d-flex align-items-center" *ngIf="canUnsign(signature)"> -->
-                                    <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
-                                        (click)="onDeleteSignature(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px">
-                                        <fa-icon icon="trash" [title]="'Delete' | translate"></fa-icon>
-                                    </button>
+                                <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
+                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
+                                    style="margin-top:-4px">
+                                    <fa-icon icon="trash" [title]="'Delete' | translate"></fa-icon>
+                                </button>
                                 <!-- </div> -->
                             </div>
                         </div>
@@ -841,28 +842,57 @@
 <!-- Confirmation Modal -->
 <ng-template #confirmModal let-modal>
 
-  <!-- header -->
-  <div class="modal-header">
-    <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 
-  <!-- body -->
-  <div class="modal-body">
-    {{ confirmationMessage }}
-  </div>
+    <!-- body -->
+    <div class="modal-body">
+        {{ confirmationMessage }}
+    </div>
 
-  <!-- footer -->
-  <div class="modal-footer">
-    <button class="btn btn-danger" (click)="modal.close(true)">
-      <fa-icon icon="check"></fa-icon>
-      &nbsp;{{ 'Yes' | translate }}
-    </button>
-    <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
-      <fa-icon icon="times"></fa-icon>
-      &nbsp;{{ 'No' | translate }}
-    </button>
-  </div>
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-danger" (click)="modal.close(true)">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Yes' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'No' | translate }}
+        </button>
+    </div>
+</ng-template>
+
+<!-- Negative Signature Modal -->
+<ng-template #negativeSignatureModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ confirmationMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-danger" (click)="modal.close(true)">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Yes' | translate }}
+        </button>
+        <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'No' | translate }}
+        </button>
+    </div>
 </ng-template>

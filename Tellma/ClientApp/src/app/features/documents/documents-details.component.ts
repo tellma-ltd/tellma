@@ -1028,7 +1028,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     ).subscribe();
   }
 
-  public onDeleteSignature(signature: RequiredSignature) {
+  public onUnsign(signature: RequiredSignature) {
     this.confirmationMessage = this.translate.instant('AreYouSureYouWantToDeleteYourSignature');
     const modalRef = this.modalService.open(this.confirmModal);
     modalRef.result.then(
@@ -1045,7 +1045,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               this.handleFreshExtras(res.Extras);
             }),
             catchError(friendlyError => {
-              this.details.handleActionError(friendlyError); return of(null);
+              this.details.handleActionError(friendlyError);
+              return of(null);
             })
           ).subscribe();
         }

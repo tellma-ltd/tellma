@@ -149,6 +149,7 @@ namespace Tellma.Controllers
                 // Parse parameters
                 var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var returnIds = args.ReturnEntities ?? false;
                 var idsArray = ids.ToArray();
 
                 // TODO: Check user permissions
@@ -187,9 +188,9 @@ namespace Tellma.Controllers
                     args.RuleType,
                     args.RoleId,
                     args.SignedAt ?? DateTimeOffset.Now,
-                    returnIds: true);
+                    returnIds: returnIds);
 
-                if (args.ReturnEntities ?? false)
+                if (returnIds)
                 {
                     var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
 
@@ -213,6 +214,7 @@ namespace Tellma.Controllers
                 // Parse parameters
                 var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var returnIds = args.ReturnEntities ?? false;
                 var idsArray = ids.ToArray();
 
                 // TODO: Check user permissions
@@ -234,10 +236,9 @@ namespace Tellma.Controllers
                     throw new UnprocessableEntityException(ModelState);
                 }
 
-                // Sign
-                var documentIds = await _repo.Lines__UnsignAndRefresh(ids, returnIds: true);
-
-                if (args.ReturnEntities ?? false)
+                // Unsign
+                var documentIds = await _repo.Lines__UnsignAndRefresh(ids, returnIds: returnIds);
+                if (returnIds)
                 {
                     var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
 

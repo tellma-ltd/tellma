@@ -3760,6 +3760,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@RuleType", ruleType);
                 cmd.Parameters.Add("@RoleId", roleId);
                 cmd.Parameters.Add("@SignedAt", signedAt);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -3815,6 +3816,7 @@ namespace Tellma.Data
                 };
 
                 cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
