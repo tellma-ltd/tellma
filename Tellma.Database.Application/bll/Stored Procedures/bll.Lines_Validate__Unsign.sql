@@ -17,4 +17,6 @@ SET NOCOUNT ON;
 	--WHERE (BE.[State] <> N'Active');
 	WHERE (BE.[State] = 5);
 
+	-- TODO: cannot unsign unless it was part of the last transition
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

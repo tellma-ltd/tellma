@@ -16,6 +16,8 @@ SET NOCOUNT ON;
 
 	-- Cannot move to state 4, if there is a null account
 
+	-- Cannot sign a current state, unless all states > abs (current state) are positive and signed.
+
 	-- If signing on behalf of User
 	IF (@OnBehalfOfuserId IS NOT NULL) AND (@OnBehalfOfuserId <> @UserId)
 	BEGIN
