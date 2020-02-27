@@ -561,6 +561,7 @@
     <Build Include="dbo\Tables\dbo.RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines__SignAndRefresh.sql" />
     <Build Include="dbo\Tables\dbo.PredicateTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.Lines__UnsignAndRefresh.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
