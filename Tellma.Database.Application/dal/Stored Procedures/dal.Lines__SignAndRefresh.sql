@@ -6,7 +6,8 @@
 	@OnBehalfOfuserId INT,
 	@RuleType NVARCHAR (50),
 	@RoleId INT,
-	@SignedAt DATETIMEOFFSET(7)
+	@SignedAt DATETIMEOFFSET(7),
+	@ReturnIds BIT = 0
 AS
 	EXEC [dal].[Lines__Sign]
 		@Ids = @Ids,
@@ -30,3 +31,6 @@ AS
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
 	EXEC dal.Documents_State__Refresh @DocIds;
+
+	IF @ReturnIds = 1
+		SELECT [Id] FROM @DocIds;
