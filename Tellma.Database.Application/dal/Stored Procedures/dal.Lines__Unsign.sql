@@ -37,6 +37,6 @@ BEGIN
 		GROUP BY LineId
 	)
 	UPDATE L
-	SET L.[State] = NL.ToState
-	FROM Lines L JOIN NewLineStates NL ON L.[Id] = NL.[LineId]
+	SET L.[State] = ISNULL(NL.ToState, 0)
+	FROM Lines L LEFT JOIN FinalLineStates NL ON L.[Id] = NL.[LineId]
 END;
