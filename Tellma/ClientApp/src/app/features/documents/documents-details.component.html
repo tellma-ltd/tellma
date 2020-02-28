@@ -138,7 +138,7 @@
                 <ng-template #header_AccountId>{{ 'Entry_Account' | translate }}</ng-template>
                 <ng-template #row_AccountId let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
-                    <div class="t-large2">
+                    <div>
                         <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
                             <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
                             <t-restricted [metadata]="entry.EntityMetadata?.AccountId">
@@ -553,9 +553,9 @@
                                         [class.text-danger]="signature.ToState < 0"
                                         [class.t-positive-stamp]="signature.ToState > 0"
                                         [class.t-negative-stamp]="signature.ToState < 0">
-                                        <span>{{ actionDisplay(signature.ToState) }}</span>
+                                        <span
+                                            style="vertical-align: text-bottom;">{{ actionDisplay(signature.ToState) }}</span>
                                     </div>
-
                                 </div>
                                 <!-- Reason if any -->
                                 <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
@@ -588,40 +588,33 @@
 
                         <!-- Footer: type of signature and signing time -->
                         <div class="px-2 small p-1 d-flex justify-content-between">
-                            <ng-container [ngSwitch]="signature.RuleType">
-                                <div class="text-truncate" *ngSwitchCase="'ByRole'">
-                                    <span>
-                                        {{ requiredSignatureDisplay(signature) }}
-                                        <t-view-link link="../../../roles" [itemId]="signature.RoleId">
-                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
-                                        </t-view-link>
-                                    </span>
-                                </div>
-                                <div class="text-truncate" *ngSwitchCase="'ByAgent'">
-                                    <span>
-                                        {{ requiredSignatureDisplay(signature) }}
-                                        <t-view-link link="../../../users" [itemId]="signature.UserId">
-                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
-                                        </t-view-link>
-                                    </span>
-                                </div>
-                                <div class="text-truncate" *ngSwitchCase="'ByUser'">
-                                    <span>
-                                        {{ requiredSignatureDisplay(signature) }}
-                                        <t-view-link link="../../../users" [itemId]="signature.UserId">
-                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
-                                        </t-view-link>
-                                    </span>
-                                </div>
-                                <div class="text-truncate" *ngSwitchCase="'Public'">
-                                    <span>
-                                        {{ requiredSignatoryDisplay(signature) }}
-                                    </span>
-                                </div>
-                                <div class="text-danger text-truncate" *ngSwitchDefault>
-                                    <span>TODO: rule type {{ signature.RuleType }}</span>
-                                </div>
-                            </ng-container>
+                            <div class="text-truncate" [ngSwitch]="signature.RuleType">
+                                <span>
+                                    <!-- Action -->
+                                    <span
+                                        *ngIf="signature.RuleType !== 'Public'">{{ requiredSignatureDisplay(signature) }}</span>
+                                    <span
+                                        *ngIf="signature.RuleType === 'Public'">{{ requiredSignatoryDisplay(signature) }}</span>
+
+                                    <!-- Who's signing -->
+                                    <t-view-link *ngIf="signature.RuleType === 'ByRole'" link="../../../roles"
+                                        [itemId]="signature.RoleId">
+                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                    </t-view-link>
+                                    <t-view-link
+                                        *ngIf="signature.RuleType === 'ByAgent' || signature.RuleType === 'ByUser'"
+                                        link="../../../users" [itemId]="signature.UserId">
+                                        {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                    </t-view-link>
+
+                                    <!-- # of lines -->
+                                    <!-- <span *ngIf="lineIds(signature).length != model?.Lines?.length">
+                                        ({{ lineIds(signature).length | number }} line(s))</span> -->
+
+                                    <span
+                                        *ngIf="lineIds(signature).length != model?.Lines?.length">({{ 'Count0Lines' | translate: { '0': (lineIds(signature).length | number) } }})</span>
+                                </span>
+                            </div>
                             <div>
                                 <span class="text-muted" *ngIf="signature.SignedAt">
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}

@@ -87,6 +87,7 @@
   "ConfirmNewPassword": "تأكيد كلمة المرور الجديدة",
   "Connect": "دخول",
   "CopyrightNoticeClient": "تلما لتقنية المعلومات © {{year}} جميع الحقوق محفوظة",
+  "Count0Lines": "عدد {{0}} أسطر",
   "Create": "إنشاء",
   "CreatedAt": "زمن الإنشاء",
   "CreatedBy": "الإنشاء من قبل",
