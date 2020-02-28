@@ -31,7 +31,7 @@ RETURN (
 		)
 	)
 	SELECT RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState, RS.RuleType, RS.RoleId, RS.UserId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
-		CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign, RS.ProxyRoleId, CAST(IIF(RM2.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf
+		CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign, RS.ProxyRoleId, CAST(IIF(RM2.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf, LS.ReasonId, LS.ReasonDetails
 	FROM ApplicableSignatures RS
 	LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 	LEFT JOIN (
@@ -47,7 +47,8 @@ RETURN (
 	SELECT RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState, RS.RuleType, RS.RoleId, RS.UserId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 		CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
 		RS.ProxyRoleId,
-		CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf
+		CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
+		LS.ReasonId, LS.ReasonDetails
 	FROM ApplicableSignatures RS
 	LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.UserId = LS.OnBehalfOfUserId AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 	LEFT JOIN (
@@ -60,7 +61,8 @@ RETURN (
 		RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState, RS.RuleType, RS.RoleId, RS.UserId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 		CAST(1 AS BIT) AS CanSign,
 		RS.ProxyRoleId,
-		CAST(1 AS BIT) AS CanSignOnBehalf
+		CAST(1 AS BIT) AS CanSignOnBehalf,
+		LS.ReasonId, LS.ReasonDetails
 		FROM ApplicableSignatures RS
 		LEFT JOIN dbo.LineSignatures LS ON RS.[LineId] = LS.LineId AND RS.RuleType = LS.RuleType AND RS.ToState = ABS(LS.ToState) AND LS.RevokedAt IS NULL
 	WHERE RS.RuleType = N'Public'

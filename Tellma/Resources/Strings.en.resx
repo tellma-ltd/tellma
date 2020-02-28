@@ -1642,6 +1642,12 @@
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>On Behalf Of</value>
   </data>
+  <data name="Signature_Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="Signature_ReasonDetails" xml:space="preserve">
+    <value>Reason Details</value>
+  </data>
   <data name="Signature_Role" xml:space="preserve">
     <value>Role</value>
   </data>

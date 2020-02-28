@@ -525,13 +525,15 @@
 
                             <!-- Signature exists -->
                             <ng-container *ngIf="!!signature.SignedById">
+                                <!-- Profile Picture -->
                                 <div class="d-flex align-items-center justify-content">
                                     <t-image [src]="'users/' + signature.SignedById + '/image'"
                                         [imageId]="ws.get('User', signature.SignedById)?.ImageId" [size]="36"
                                         shape="circle">
                                     </t-image>
                                 </div>
-                                <div class="p-2 flex-grow-1 text-truncate d-flex flex-column">
+                                <!-- User Name -->
+                                <div class="p-2 flex-grow-1 text-truncate d-flex align-items-center">
                                     <span>
                                         <t-view-link link="../../../users" [itemId]="signature.SignedById">
                                             {{ ws.getMultilingualValue('User', signature.SignedById, 'Name') }}
@@ -544,7 +546,7 @@
                                             </t-view-link></span>
                                     </span>
                                 </div>
-
+                                <!-- Stamp -->
                                 <div class="d-flex align-items-center">
                                     <div class="px-1 font-weight-bold t-large"
                                         [class.text-success]="signature.ToState > 0"
@@ -554,6 +556,15 @@
                                         <span>{{ actionDisplay(signature.ToState) }}</span>
                                     </div>
                                 </div>
+                                <!-- Reason if any -->
+                                <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
+                                    &nbsp;&nbsp;
+                                    <div class="text-danger small align-items-center" style="max-width: 150px;">
+                                        <span
+                                            class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
+                                        <span>{{ signature.ReasonDetails }}</span>
+                                    </div>
+                                </ng-container>
                             </ng-container>
 
                             <!-- No signature but can sign -->
@@ -615,7 +626,8 @@
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
                                 </span>
                                 <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
-                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px" [title]="'Delete' | translate">
+                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px"
+                                    [title]="'Delete' | translate">
                                     <fa-icon icon="trash"></fa-icon>
                                 </button>
                             </div>
@@ -878,7 +890,7 @@
 
     <!-- header -->
     <div class="modal-header">
-        <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+        <h5 class="modal-title"> {{ 'AdditionalInformation' | translate }} </h5>
         <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -886,18 +898,24 @@
 
     <!-- body -->
     <div class="modal-body">
-        {{ confirmationMessage }}
+        <!-- TODO: Reason -->
+
+        <!-- Reason Details -->
+        <t-form-group class="t-form-group" [label]="'Signature_ReasonDetails' | translate">
+            <t-text-editor [(ngModel)]="reasonDetails" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+        </t-form-group>
     </div>
 
     <!-- footer -->
     <div class="modal-footer">
         <button class="btn btn-danger" (click)="modal.close(true)">
             <fa-icon icon="check"></fa-icon>
-            &nbsp;{{ 'Yes' | translate }}
+            &nbsp;{{ 'Confirm' | translate }}
         </button>
         <button class="btn btn-light text-primary t-white-button" (click)="modal.close(false)" ngbAutofocus>
             <fa-icon icon="times"></fa-icon>
-            &nbsp;{{ 'No' | translate }}
+            &nbsp;{{ 'Cancel' | translate }}
         </button>
     </div>
 </ng-template>

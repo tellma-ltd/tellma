@@ -1642,6 +1642,12 @@
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>代表</value>
   </data>
+  <data name="Signature_Reason" xml:space="preserve">
+    <value>原因</value>
+  </data>
+  <data name="Signature_ReasonDetails" xml:space="preserve">
+    <value>详细原因</value>
+  </data>
   <data name="Signature_Role" xml:space="preserve">
     <value>角色</value>
   </data>

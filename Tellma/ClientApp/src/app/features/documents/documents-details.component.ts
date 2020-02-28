@@ -61,7 +61,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
     'ToState', 'RuleType', 'RoleId', 'SignedById', 'SignedAt',
-    'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf'];
+    'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
+    'ReasonId', 'ReasonDetails'];
 
   private _requiredSignaturesForLineDefModel: Document;
   private _requiredSignaturesForLineDefLineDef: string;
@@ -89,7 +90,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('confirmModal', { static: true })
   confirmModal: TemplateRef<any>;
 
+  @ViewChild('negativeSignatureModal', { static: true })
+  negativeSignatureModal: TemplateRef<any>;
+
   public confirmationMessage: string;
+  public signatureForNegativeModal: RequiredSignature;
+  public reasonDetails: string;
+  public reasonId: number;
 
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
@@ -1000,7 +1007,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onSignNo(signature: RequiredSignature): void {
-    this.onSign(signature, false);
+    this.signatureForNegativeModal = signature;
+    const modalRef = this.modalService.open(this.negativeSignatureModal);
+    modalRef.result.then(
+      (confirmed: boolean) => {
+        if (confirmed) {
+          this.onSign(signature, false);
+        }
+      },
+      _ => { }
+    );
   }
 
   private onSign(signature: RequiredSignature, yes: boolean): void {
@@ -1013,8 +1029,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       toState: yes ? signature.ToState : -signature.ToState,
       roleId: signature.RoleId,
       ruleType: signature.RuleType,
-      reasonDetails: null,
-      reasonId: null,
+      reasonDetails: yes ? null : this.reasonDetails,
+      reasonId: yes ? null : this.reasonId,
       signedAt: null,
     }, { includeRequiredSignatures: true }).pipe(
       tap(res => {
