@@ -412,7 +412,6 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="dbo\Functions\dbo.fn_ETCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
-    <Build Include="Mapping\DocumentSignatures.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionStateReasons.sql" />
     <Build Include="api\Stored Procedures\api.Document_Comment__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Document_Validate__Comment_Save.sql" />

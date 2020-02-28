@@ -555,11 +555,12 @@
                                         [class.t-negative-stamp]="signature.ToState < 0">
                                         <span>{{ actionDisplay(signature.ToState) }}</span>
                                     </div>
+
                                 </div>
                                 <!-- Reason if any -->
                                 <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
                                     &nbsp;&nbsp;
-                                    <div class="text-danger small align-items-center" style="max-width: 150px;">
+                                    <div class="text-danger small align-items-center" style="max-width: 120px;">
                                         <span
                                             class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
                                         <span>{{ signature.ReasonDetails }}</span>
