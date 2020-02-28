@@ -511,9 +511,10 @@
                     </t-form-group-dynamic>
                 </ng-template>
 
-                <div class="row mx-0" *ngIf="!isEdit && requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
+                <div class="row mx-0"
+                    *ngIf="!isEdit && requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
                     <div class="col-12 mt-3">
-                        <span class="small font-weight-bold">Signatures</span>
+                        <span class="small font-weight-bold">{{ 'Stamps' | translate }}</span>
                     </div>
                     <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3"
                         *ngFor="let signature of requiredSignaturesForLineDef(model, 'ManualLine', extras)">
@@ -544,33 +545,19 @@
                                     </span>
                                 </div>
 
-                                <div class="d-flex align-items-center px-1 font-weight-bold"
-                                    [class.text-success]="signature.ToState > 0"
-                                    [class.text-danger]="signature.ToState < 0"
-                                    [class.t-positive-stamp]="signature.ToState > 0"
-                                    [class.t-negative-stamp]="signature.ToState < 0">
-                                    <fa-icon [icon]="actionIcon(signature.ToState)"></fa-icon>
-                                    <span>&nbsp;&nbsp;{{ actionDisplay(signature.ToState) }}</span>
+                                <div class="d-flex align-items-center">
+                                    <div class="px-1 font-weight-bold t-large"
+                                        [class.text-success]="signature.ToState > 0"
+                                        [class.text-danger]="signature.ToState < 0"
+                                        [class.t-positive-stamp]="signature.ToState > 0"
+                                        [class.t-negative-stamp]="signature.ToState < 0">
+                                        <span>{{ actionDisplay(signature.ToState) }}</span>
+                                    </div>
                                 </div>
                             </ng-container>
 
                             <!-- No signature but can sign -->
                             <ng-container *ngIf="!signature.SignedById && signature.CanSign">
-                                <!-- <div class="flex-grow-1">
-
-                                </div> -->
-                                <!-- <div class="d-flex align-items-center justify-content" style="opacity: 50%">
-                                    <t-image [src]="'users/' + ws.userSettings.UserId + '/image'"
-                                        [imageId]="ws.userSettings.ImageId" [size]="36" shape="circle">
-                                    </t-image>
-                                </div>
-                                <div class="p-2 flex-grow-1 text-truncate d-flex flex-column" style="opacity: 40%">
-                                    <span>
-                                        <span>
-                                            {{ ws.getMultilingualValueImmediate(ws.userSettings, 'Name') }}
-                                        </span>
-                                    </span>
-                                </div> -->
                                 <button class="btn btn-danger px-2 w-50" (click)="onSignNo(signature)">
                                     <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
                                     <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
@@ -589,30 +576,48 @@
 
                         <!-- Footer: type of signature and signing time -->
                         <div class="px-2 small p-1 d-flex justify-content-between">
-                            <div class="text-truncate" *ngIf="signature.RuleType === 'ByRole'; else todo">
-                                <span>
-                                    {{ signatureTypeDisplay(signature) }}
-                                    <t-view-link link="../../../roles" [itemId]="signature.RoleId">
-                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
-                                    </t-view-link>
-                                </span>
-                            </div>
-                            <ng-template #todo>
-                                <div class="text-danger">
-                                    <span>TODO: implement rule type {{ signature.RuleType }}</span>
+                            <ng-container [ngSwitch]="signature.RuleType">
+                                <div class="text-truncate" *ngSwitchCase="'ByRole'">
+                                    <span>
+                                        {{ requiredSignatureDisplay(signature) }}
+                                        <t-view-link link="../../../roles" [itemId]="signature.RoleId">
+                                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
+                                        </t-view-link>
+                                    </span>
                                 </div>
-                            </ng-template>
+                                <div class="text-truncate" *ngSwitchCase="'ByAgent'">
+                                    <span>
+                                        {{ requiredSignatureDisplay(signature) }}
+                                        <t-view-link link="../../../users" [itemId]="signature.UserId">
+                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                        </t-view-link>
+                                    </span>
+                                </div>
+                                <div class="text-truncate" *ngSwitchCase="'ByUser'">
+                                    <span>
+                                        {{ requiredSignatureDisplay(signature) }}
+                                        <t-view-link link="../../../users" [itemId]="signature.UserId">
+                                            {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
+                                        </t-view-link>
+                                    </span>
+                                </div>
+                                <div class="text-truncate" *ngSwitchCase="'Public'">
+                                    <span>
+                                        {{ requiredSignatoryDisplay(signature) }}
+                                    </span>
+                                </div>
+                                <div class="text-danger text-truncate" *ngSwitchDefault>
+                                    <span>TODO: rule type {{ signature.RuleType }}</span>
+                                </div>
+                            </ng-container>
                             <div>
                                 <span class="text-muted" *ngIf="signature.SignedAt">
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
                                 </span>
-                                <!-- <div class="d-flex align-items-center" *ngIf="canUnsign(signature)"> -->
                                 <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
-                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
-                                    style="margin-top:-4px">
-                                    <fa-icon icon="trash" [title]="'Delete' | translate"></fa-icon>
+                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px" [title]="'Delete' | translate">
+                                    <fa-icon icon="trash"></fa-icon>
                                 </button>
-                                <!-- </div> -->
                             </div>
                         </div>
                     </div>

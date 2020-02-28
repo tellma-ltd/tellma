@@ -977,7 +977,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._requiredSignaturesSummary;
   }
 
-  private lineIds(requiredSignature: RequiredSignature): number[] {
+  public lineIds(requiredSignature: RequiredSignature): number[] {
     if (!requiredSignature) {
       return [];
     }
@@ -1091,7 +1091,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.actionIcon(-Math.abs(toState));
   }
 
-  public actionIcon(toState: number): string {
+  private actionIcon(toState: number): string {
     // Used for stamp
     switch (toState) {
       case 1: return 'arrow-right';
@@ -1110,35 +1110,37 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public actionDisplay(toState: number): string {
     // Used for stamp
     switch (toState) {
-      case 1: return this.translate.instant('Request');
-      case 2: return this.translate.instant('Approve');
-      case 3: return this.translate.instant('Complete');
-      case 4: return this.translate.instant('Review');
+      case 1: return this.translate.instant('Document_State_Requested');
+      case 2: return this.translate.instant('Document_State_Authorized');
+      case 3: return this.translate.instant('Document_State_Completed');
+      case 4: return this.translate.instant('Document_State_Reviewed');
 
-      case -1: return this.translate.instant('Void');
-      case -2: return this.translate.instant('Reject');
-      case -3: return this.translate.instant('Fail');
-      case -4: return this.translate.instant('Invalid');
+      case -1: return this.translate.instant('Document_State_Void');
+      case -2: return this.translate.instant('Document_State_Rejected');
+      case -3: return this.translate.instant('Document_State_Failed');
+      case -4: return this.translate.instant('Document_State_Invalid');
       default: return '';
     }
   }
 
-  public signatureTypeDisplay(signature: RequiredSignature) {
-    // Used for the test below
+  public requiredSignatureDisplay(signature: RequiredSignature) {
+    // Used for the footer of the stamp in all rule types except 'Public'
     switch (Math.abs(signature.ToState)) {
       case 1: return this.translate.instant('RequestedBy');
-      case 2: return this.translate.instant('ApprovedBy');
+      case 2: return this.translate.instant('AuthorizedBy');
       case 3: return this.translate.instant('CompletedBy');
       case 4: return this.translate.instant('ReviewedBy');
     }
   }
 
-  public get meName() {
-    return this.ws.getMultilingualValueImmediate(this.ws.userSettings, 'Name');
-  }
-
-  public get meImageId() {
-    return this.ws.userSettings.ImageId;
+  public requiredSignatoryDisplay(signature: RequiredSignature) {
+    // Used for the footer of the stamp for rule type 'Public'
+    switch (Math.abs(signature.ToState)) {
+      case 1: return this.translate.instant('Requester');
+      case 2: return this.translate.instant('Authorizer');
+      case 3: return this.translate.instant('Completer');
+      case 4: return this.translate.instant('Reviewer');
+    }
   }
 }
 

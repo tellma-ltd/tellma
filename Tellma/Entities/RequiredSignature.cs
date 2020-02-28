@@ -9,6 +9,7 @@ namespace Tellma.Entities
         public int ToState { get; set; }
         public string RuleType { get; set; }
         public int? RoleId { get; set; }
+        public int? UserId { get; set; }
         public int? SignedById { get; set; }
         public DateTimeOffset? SignedAt { get; set; }
         public int? OnBehalfOfUserId { get; set; }
@@ -20,6 +21,9 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
         [ForeignKey(nameof(SignedById))]
         public User SignedBy { get; set; }

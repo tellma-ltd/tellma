@@ -1556,9 +1556,16 @@ h1.t-report-measure:hover {
 
 // Signature stamps
 %t-stamp {
-  border-width: 0 0 5px 0;
+  // border-width: 0 0 5px 0;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  border-radius: 5px;
+  border-width: 2px;
   border-style: solid;
-  //transform: rotate(-20deg)
+  font-size: 1.2rem;
+  margin-top: -0.5rem;
+  margin-bottom: -0.5rem;
+  transform: rotate(-10deg)
 }
 
 .t-positive-stamp {
