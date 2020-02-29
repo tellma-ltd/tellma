@@ -1024,9 +1024,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.documentsApi.sign(lineIds, {
       returnEntities: true,
       expand: this.expand,
-      select: undefined,
       onBehalfOfUserId: signature.OnBehalfOfUserId,
-      toState: yes ? signature.ToState : -signature.ToState,
+      toState: yes ? Math.abs(signature.ToState) : -Math.abs(signature.ToState),
       roleId: signature.RoleId,
       ruleType: signature.RuleType,
       reasonDetails: yes ? null : this.reasonDetails,

@@ -514,7 +514,7 @@
                 <div class="row mx-0"
                     *ngIf="!isEdit && requiredSignaturesForLineDef(model, 'ManualLine', extras)?.length > 0">
                     <div class="col-12 mt-3">
-                        <span class="small font-weight-bold">{{ 'Stamps' | translate }}</span>
+                        <span class="small font-weight-bold">{{ 'Signatures' | translate }}</span>
                     </div>
                     <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3"
                         *ngFor="let signature of requiredSignaturesForLineDef(model, 'ManualLine', extras)">
@@ -547,10 +547,9 @@
                                     </span>
                                 </div>
                                 <!-- Stamp -->
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center" [class.text-success]="signature.ToState > 0"
+                                    [class.text-danger]="signature.ToState < 0">
                                     <div class="px-1 font-weight-bold t-large"
-                                        [class.text-success]="signature.ToState > 0"
-                                        [class.text-danger]="signature.ToState < 0"
                                         [class.t-positive-stamp]="signature.ToState > 0"
                                         [class.t-negative-stamp]="signature.ToState < 0">
                                         <span
@@ -893,12 +892,15 @@
     <!-- body -->
     <div class="modal-body">
         <!-- TODO: Reason -->
-
+        
         <!-- Reason Details -->
-        <t-form-group class="t-form-group" [label]="'Signature_ReasonDetails' | translate">
+        <div class="mt-1">
+            <div class="font-weight-bold small">
+                <span class="t-vertical-align-middle">{{ 'Signature_ReasonDetails' | translate }}</span>
+            </div>
             <t-text-editor [(ngModel)]="reasonDetails" [ngModelOptions]="{ updateOn: 'blur' }">
             </t-text-editor>
-        </t-form-group>
+        </div>
     </div>
 
     <!-- footer -->

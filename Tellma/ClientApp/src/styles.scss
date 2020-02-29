@@ -1565,7 +1565,8 @@ h1.t-report-measure:hover {
   font-size: 1.2rem;
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
-  transform: rotate(-10deg)
+  transform: rotate(-10deg);
+  // vertical-align: text-bottom;
 }
 
 .t-positive-stamp {

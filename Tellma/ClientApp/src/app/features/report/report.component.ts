@@ -1,8 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ReportView, modifiedPropDesc } from '../report-results/report-results.component';
-import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, TenantWorkspace } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE } from '~/app/data/workspace.service';
 import {
-  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl, EntityDescriptor, metadata, getChoices
+  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl,
+  EntityDescriptor, metadata, getChoices, NavigationPropDescriptor
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
@@ -119,8 +120,16 @@ export class ReportComponent implements OnInit, OnDestroy {
                 urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
                 break;
               case 'navigation':
-                // developer mistake
-                console.error(`Use of a navigation property for parameter @${p.key}`);
+                const navPropDesc = p.desc as NavigationPropDescriptor;
+                const collection = navPropDesc.type || navPropDesc.collection;
+                const metadataFn = metadata[collection];
+                if (!metadataFn) {
+                  // developer mistake
+                  console.error(`Collection @${navPropDesc.collection} was not found`);
+                }
+                const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
+                urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
+
                 break;
             }
           }
