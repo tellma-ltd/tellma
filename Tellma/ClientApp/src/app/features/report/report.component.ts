@@ -102,35 +102,39 @@ export class ReportComponent implements OnInit, OnDestroy {
           if (urlStringValue === null) {
             urlValue = null;
           } else {
-            switch (p.desc.control) {
-              case 'text':
-              case 'date':
-              case 'datetime':
-                urlValue = urlStringValue;
-                break;
-              case 'number':
-              case 'serial':
-                urlValue = +urlStringValue;
-                break;
-              case 'boolean':
-                urlValue = urlStringValue.toLowerCase() === 'true';
-                break;
-              case 'choice':
-              case 'state':
-                urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
-                break;
-              case 'navigation':
-                const navPropDesc = p.desc as NavigationPropDescriptor;
-                const collection = navPropDesc.type || navPropDesc.collection;
-                const metadataFn = metadata[collection];
-                if (!metadataFn) {
-                  // developer mistake
-                  console.error(`Collection @${navPropDesc.collection} was not found`);
-                }
-                const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
-                urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
+            try {
+              switch (p.desc.control) {
+                case 'text':
+                case 'date':
+                case 'datetime':
+                  urlValue = urlStringValue;
+                  break;
+                case 'number':
+                case 'serial':
+                  urlValue = +urlStringValue;
+                  break;
+                case 'boolean':
+                  urlValue = urlStringValue.toLowerCase() === 'true';
+                  break;
+                case 'choice':
+                case 'state':
+                  urlValue = (typeof p.desc.choices[0] === 'string') ? urlStringValue : +urlStringValue;
+                  break;
+                case 'navigation':
+                  const navPropDesc = p.desc as NavigationPropDescriptor;
+                  const collection = navPropDesc.type || navPropDesc.collection;
+                  const metadataFn = metadata[collection];
+                  if (!metadataFn) {
+                    // developer mistake
+                    console.error(`Collection @${navPropDesc.collection} was not found`);
+                  }
+                  const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
+                  urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;
 
-                break;
+                  break;
+              }
+            } catch (ex) {
+              console.error(ex);
             }
           }
 

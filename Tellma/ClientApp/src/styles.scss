@@ -1550,8 +1550,11 @@ h1.t-report-measure:hover {
   border-color: lightpink !important;
 }
 
-.small input, .t-large input, .small button, .t-large button {
-  font-size: 100%!important;
+.small input,
+.t-large input,
+.small button,
+.t-large button {
+  font-size: 100% !important;
 }
 
 // Signature stamps
@@ -1577,4 +1580,28 @@ h1.t-report-measure:hover {
 .t-negative-stamp {
   @extend %t-stamp;
   border-color: $danger;
+}
+
+.t-form-group-label, .t-form-group-content {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+// Next to each other on large screens
+@media (min-width: 993px) {
+  .t-form-group-label {
+    min-width: 125px;
+  }
+  
+  .t-form-group-content {
+    flex-grow: 1;
+  }
+}
+
+// Wrap around on smaller screens
+@media (max-width: 992px) {
+  .t-form-group-label, .t-form-group-content {
+    min-width: unset;
+    width: 100%;    
+  }
 }
