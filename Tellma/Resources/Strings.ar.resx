@@ -1642,6 +1642,12 @@
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>بالنيابة عن</value>
   </data>
+  <data name="Signature_Reason" xml:space="preserve">
+    <value>السبب</value>
+  </data>
+  <data name="Signature_ReasonDetails" xml:space="preserve">
+    <value>تفصيل السبب</value>
+  </data>
   <data name="Signature_Role" xml:space="preserve">
     <value>الدور</value>
   </data>

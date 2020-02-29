@@ -491,7 +491,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   get extras(): { [key: string]: any } {
-    return this.state.extras;
+    return this.isNew ? {} : this.state.extras;
   }
 
   get showSpinner(): boolean {

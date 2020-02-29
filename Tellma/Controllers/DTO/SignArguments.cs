@@ -20,11 +20,13 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// The reason for the signature
         /// </summary>
+        [Display(Name = "Signature_Reason")]
         public int? ReasonId { get; set; }
 
         /// <summary>
         /// An optional text comment
         /// </summary>
+        [Display(Name = "Signature_ReasonDetails")]
         public string ReasonDetails { get; set; }
 
         /// <summary>
@@ -41,6 +43,7 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// Optional, to specify the time of the signature manually
         /// </summary>
+        [Display(Name = "Signature_SignedAt")]
         public DateTimeOffset? SignedAt { get; set; }
     }
 }
