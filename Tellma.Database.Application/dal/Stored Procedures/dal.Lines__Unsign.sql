@@ -24,11 +24,18 @@ BEGIN
 	(
 		SELECT LineId, ToState
 		FROM map.RequiredSignatures(@Ids)
-		WHERE TOState > 0
-		EXCEPT 
-		SELECT LineId, ToState
-		FROM map.RequiredSignatures(@Ids)
-		WHERE SignedById is null
+		WHERE ToState < 0
+		UNION
+		(
+			-- consider the positive states only if there are no null signatures or other negative states
+			SELECT LineId, ToState
+			FROM map.RequiredSignatures(@Ids)
+			WHERE ToState > 0
+			EXCEPT 
+			SELECT LineId, ABS(ToState)
+			FROM map.RequiredSignatures(@Ids)
+			WHERE SignedById is null OR ToState < 0
+		)
 	),
 	FinalLineStates AS
 	(

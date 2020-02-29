@@ -27,7 +27,6 @@ SET NOCOUNT ON;
 	FROM dbo.Lines
 	WHERE [DocumentId] IN (SELECT [Id] FROM @IndexedIds)
 	
-	-- Validate that the user is not violating any business logic attempting to move the relevant lines to State @ToState
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @Lines,

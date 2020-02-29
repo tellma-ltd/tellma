@@ -3,15 +3,6 @@
 	@ReturnIds BIT = 0
 AS
 	EXEC [dal].[Lines__Unsign] @Ids = @Ids;
-	
-	-- get the lines whose state will change
-	DECLARE @TransitionedIds [dbo].[IdWithStateList];
-	/*
-	INSERT INTO @TransitionedIds([Id])
-	EXEC [dbo].[bll_Documents_State__Select]
-	*/
-	IF EXISTS(SELECT * FROM @TransitionedIds)
-		EXEC [dal].[Lines_State__Update] @Ids = @TransitionedIds
 
 	DECLARE @DocIds dbo.IdList;
 	INSERT INTO @DocIds([Id])

@@ -9,14 +9,53 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
+	-- Verify that the signing UserId fulfills one of the required signature
+	-- Corollary: Signatures are not repeated if signing twice in a row 
 	-- TODO:
 	-- Not allowed to cause negative fixed asset life among states >= completed, if neg is not allowed.
 	-- Conservation of mass
 	-- conservation of volume
+	-- No inactive Resource, No inactive User
 
-	-- Cannot move to state 4, if there is a null account
+	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
 
-	-- Cannot sign a current state, unless all states > abs (current state) are positive and signed.
+	IF @RoleId NOT IN (
+		SELECT RoleId FROM dbo.RoleMemberships 
+		WHERE [UserId] = @OnBehalfOfuserId
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	VALUES (
+		N'UserId',
+		N'Error_IncompatibleUser0Role1',
+		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId),
+		(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Roles WHERE [Id] = @RoleId)
+	);
+
+	DECLARE @LineIds IdList;
+	INSERT INTO @LineIds([Id]) SELECT [Id] FROM @Ids;
+
+	-- Cannot sign a current state, unless all states < abs (current state) are positive and signed.	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])		
+	SELECT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_Line0MustBeSignedForState1BeforeState2',
+			FE.Id AS LineId,
+			LastUnsignedState,
+			@ToState
+	FROM map.RequiredSignatures(@LineIds) RS
+	JOIN @Ids FE ON RS.LineId = FE.Id
+	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
+
+	-- Cannot sign a current state, if it is already signed negatively in a previous state.
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])		
+	SELECT TOP (@Top)
+			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+			N'Error_Line0IsAlreadyInState1',
+			FE.Id AS LineId,
+			LastNegativeState
+	FROM map.RequiredSignatures(@LineIds) RS
+	JOIN @Ids FE ON RS.LineId = FE.Id
+	WHERE LastNegativeState IS NOT NULL
 
 	-- If signing on behalf of User
 	IF (@OnBehalfOfuserId IS NOT NULL) AND (@OnBehalfOfuserId <> @UserId)
@@ -58,21 +97,6 @@ SET NOCOUNT ON;
 		);
 	END
 
-	-- TODO: verify that the signing UserId fulfills one of the required signature
-	--DECLARE @LineIds IdList;
-	--INSERT INTO @LineIds([Id]) SELECT [Id] FROM @Ids;
-	--IF NOT EXISTS (
-	--	SELECT * FROM map.RequiredSignatures(@LineIds)
-	--	WHERE RuleType = @RuleType
-	--	AND SignedById IS NULL
-	--	AND (
-	--		@RuleType IN (N'ByUser', N'ByAgent') AND UserId = @OnBehalfOfuserId OR
-	--		@RuleType = N'ByRole' AND RoleId = @RoleId OR
-	--		@RuleType = N'Public'
-	--	)		
-	--)
-	--RAISERROR(N'Error_CannotSign', 16, 1)
-
 	-- cannot sign a line by Agent, if Agent/UserId is null
 	IF @RuleType = N'ByAgent'
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -110,12 +134,13 @@ SET NOCOUNT ON;
 
 	-- No Null account when moving to state 4
 	IF @ToState = 4 -- reviewed
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheAccountIsNull'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountId',
+		N'Error_LineHasNullAccountInEntryNumber0',
+		E.EntryNumber
 	FROM @Ids FE
-	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
+	JOIN dbo.Entries E ON FE.[Id] = E.LineId
 	WHERE E.AccountId IS NULL
 
 	-- No deprecated account
@@ -128,8 +153,6 @@ SET NOCOUNT ON;
 	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
-
-	-- TODO: No inactive Resource, No inactive User
 
 	-- Not allowed to cause negative balance in conservative accounts
 	--DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
