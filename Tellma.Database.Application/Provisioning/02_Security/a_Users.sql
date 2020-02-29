@@ -5,7 +5,8 @@ IF @DB = N'101' -- Banan SD, USD, en
 	([Index],	[Name],				[Email]) VALUES
 	(0,			N'Jiad Akra',		N'jiad.akra@gmail.com'),
 	(1,			N'elAmin alTayyib',	N'amtaam@gmail.com'),
-	(2,			N'Mohamad Akra',	N'mohamad.akra@banan-it.com');
+	(2,			N'Mohamad Akra',	N'mohamad.akra@banan-it.com'),
+	(3,			N'Ahmad Abdussalam',N'Elhelalaby1@gmail.com');
 
 IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Users
@@ -52,7 +53,8 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 EXEC [dal].[Users__Save]
 	@Entities = @Users
 
-DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT
+DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT, @aasalam INT;
 SELECT @Jiad_akra = [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@gmail.com';
 SELECT @amtaam = [Id] FROM dbo.Users WHERE [Email] = N'amtaam@gmail.com';
 SELECT @mohamad_akra = [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@banan-it.com';
+SELECT @aasalam = [Id] FROM dbo.Users WHERE [Email] = N'Elhelalaby1@gmail.com';

@@ -6,7 +6,7 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Custodians
 	([Index],	[Name],				[UserId]) VALUES
 	(0,			N'elAmin Attayyib', @amtaam),
-	(1,			N'Ahmad Abdussalam', NULL),
+	(1,			N'Ahmad Abdussalam', @aasalam),
 	(2,			N'Bank of Khartoum', NULL);
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodians

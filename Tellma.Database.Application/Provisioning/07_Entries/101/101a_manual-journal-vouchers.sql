@@ -112,7 +112,7 @@ BEGIN -- Inserting
 
 		EXEC [api].[Documents__Sign]
 			@IndexedIds = @DocsIndexedIds,
-			@ToState = -4, -- N'Reviewed', failed
+			@ToState = 4, -- N'Reviewed'
 			@OnBehalfOfuserId = @amtaam,
 			@RuleType = N'ByRole',
 			@RoleId = @1GeneralManager, -- we allow selecting the role manually,
@@ -125,14 +125,14 @@ BEGIN -- Inserting
 			GOTO Err_Label;
 		END;
 
-		EXEC [api].[Documents__Close]
-			@IndexedIds = @DocsIndexedIds,
-			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		--EXEC [api].[Documents__Close]
+		--	@IndexedIds = @DocsIndexedIds,
+		--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-		IF @ValidationErrorsJson IS NOT NULL 
-		BEGIN
-			Print 'Documents closing: ' + @ValidationErrorsJson
-			GOTO Err_Label;
-		END;
+		--IF @ValidationErrorsJson IS NOT NULL 
+		--BEGIN
+		--	Print 'Documents closing: ' + @ValidationErrorsJson
+		--	GOTO Err_Label;
+		--END;
 	END
 END

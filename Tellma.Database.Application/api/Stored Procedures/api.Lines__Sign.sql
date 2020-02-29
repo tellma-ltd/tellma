@@ -18,10 +18,11 @@ BEGIN
 -- The system lists the missing roles signatures. This helps the user see if he can sign, and usign which role
 -- The system shows all the states (positive and negative) accessible from the current state
 -- The user selects the state he wants to move the lines to. By default, it is the min positive state
--- If the user is copying from another source document, the user can select the user to sign on behalf of
+-- In certain cases, the user can select the user to sign on behalf of
 -- The user selects the lines he wants to sign
 -- The system shows all the required signatures, and whether the current user can sign them, or on behalf
--- The user selects the signatures he wants to invoke
+-- The user selects the signatures he wants to invoke. for each line, it is the signature corresponding to the minimum state (in absolute)
+that has not been signed
 -- The system refreshes the document lines and the list of accessible states.
 -- The document can be closed provided that:
 	1) All the lines have reached their final states
@@ -35,15 +36,6 @@ BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 
-	IF @RoleId NOT IN (
-		SELECT RoleId FROM dbo.RoleMemberships 
-		WHERE [UserId] = @OnBehalfOfuserId
-	)
-	BEGIN
-		RAISERROR(N'Error_IncompatibleUserRole', 16, 1);
-		RETURN
-	END
-	
 	-- Validate that the user is not violating any business logic attempting to move the relevant lines to State @ToState
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__Sign]

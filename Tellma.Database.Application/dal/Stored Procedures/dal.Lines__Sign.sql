@@ -10,7 +10,7 @@
 AS
 BEGIN
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
--- TODO: make sure signatures are not repeated if signing two times in a row
+
 	INSERT INTO dbo.[LineSignatures] (
 		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId],			[RuleType], [RoleId], [SignedAt]
 	)
