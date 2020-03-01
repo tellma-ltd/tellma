@@ -2,7 +2,7 @@
 --	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
 	[Id]						INT				CONSTRAINT [PK_Entries] PRIMARY KEY IDENTITY,
 	[LineId]					INT				NOT NULL CONSTRAINT [FK_Entries__LineId] REFERENCES [dbo].[Lines] ([Id]) ON DELETE CASCADE,
-	[EntryNumber]				INT				NOT NULL DEFAULT 1,
+	[EntryNumber]				INT				NOT NULL DEFAULT 0,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),

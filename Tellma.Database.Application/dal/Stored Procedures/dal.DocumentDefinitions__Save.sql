@@ -32,6 +32,7 @@ WHEN NOT MATCHED BY TARGET THEN
 MERGE [dbo].[DocumentDefinitionLineDefinitions] AS t
 USING (
 	SELECT
+		DDLD.[Index],
 		DDLD.[Id],
 		DD.[Id] AS [DocumentDefinitionId],
 		DDLD.[LineDefinitionId],
@@ -42,6 +43,7 @@ USING (
 ON s.Id = t.Id
 WHEN MATCHED THEN
 	UPDATE SET
+		t.[Index]				= s.[Index],
 		t.[LineDefinitionId]	= s.[LineDefinitionId],
 		t.[IsVisibleByDefault]	= s.[IsVisibleByDefault],
 		t.[SavedById]			= @UserId
@@ -49,7 +51,7 @@ WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
-		[DocumentDefinitionId],		[LineDefinitionId], [IsVisibleByDefault]
+		[Index], [DocumentDefinitionId],		[LineDefinitionId], [IsVisibleByDefault]
 	) VALUES (
-		s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
+		[Index], s.[DocumentDefinitionId], s.[LineDefinitionId], s.[IsVisibleByDefault]
 	);

@@ -4,6 +4,7 @@
 	[DocumentDefinitionId]	NVARCHAR (50),
 	[LineDefinitionId]		NVARCHAR (50),
 	UNIQUE ([DocumentDefinitionId], [LineDefinitionId]),
+	[Index]					INT				NOT NULL,
 	[IsVisibleByDefault]	BIT,
 	[SavedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentDefinitionLineDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]				DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
