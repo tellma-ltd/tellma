@@ -28,7 +28,13 @@ SET NOCOUNT ON;
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
-	WHEN MATCHED 
+	WHEN MATCHED
+	-- TODO: reduce history table by excluding saves when the data did not change
+		--AND (
+		--t.[TitleSingular] <> s.[TitleSingular] OR	
+		--t.[TitlePlural] <> s.[TitlePlural] OR
+		--...
+		--)
 	THEN
 		UPDATE SET
 			t.[Description]					= s.[Description],
@@ -107,7 +113,8 @@ SET NOCOUNT ON;
 			t.[Label2]			= s.[Label2],
 			t.[Label3]			= s.[Label3],
 			t.[RequiredState]	= s.[RequiredState],
-			t.[ReadOnlyState]	= s.[ReadOnlyState]
+			t.[ReadOnlyState]	= s.[ReadOnlyState],
+			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
@@ -136,7 +143,8 @@ SET NOCOUNT ON;
 		t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
 		t.[AccountTagId]			= s.[AccountTagId],
 		t.[AgentDefinitionId]		= s.[AgentDefinitionId],
-		t.[EntryTypeCode]			= s.[EntryTypeCode]
+		t.[EntryTypeCode]			= s.[EntryTypeCode],
+		t.[SavedById]				= @UserId
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
@@ -164,10 +172,11 @@ WHEN NOT MATCHED BY TARGET THEN
 		SELECT
 			LDSR.[Id],
 			LD.[Id] AS [LineDefinitionId],
-			LDSR.[StateId],
+			LDSR.[State],
 			LDSR.[Name],
 			LDSR.[Name2],
-			LDSR.[Name3]
+			LDSR.[Name3],
+			LDSR.[IsActive]
 		FROM @LineDefinitionStateReasons LDSR
 		JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
 	)AS s
@@ -175,12 +184,14 @@ WHEN NOT MATCHED BY TARGET THEN
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[LineDefinitionId]= s.[LineDefinitionId],
-			t.[StateId]			= s.[StateId],
+			t.[State]			= s.[State],
 			t.[Name]			= s.[Name],
 			t.[Name2]			= s.[Name2],
-			t.[Name3]			= s.[Name3]
+			t.[Name3]			= s.[Name3],
+			t.[IsActive]		= s.[IsActive],
+			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[StateId], [Name],		[Name2], [Name3])
-		VALUES (s.[LineDefinitionId], s.[StateId], s.[Name], s.[Name2], s.[Name3]);
+		INSERT ([LineDefinitionId],		[State], [Name],		[Name2], [Name3], [IsActive])
+		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive]);

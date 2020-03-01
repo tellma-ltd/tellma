@@ -17,7 +17,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (3,0,	N'Entries',	N'Value',		0,			N'Credit',		3,4),
 (4,0,	N'Entries',	N'Dynamic',		0,			N'Properties',	3,4);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
-[StateId], [Name],					[Name2]) VALUES
+[State],	[Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
@@ -87,7 +87,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',				N'تاريخ الشيك',			3,4),
 (10,2,	N'Entries',	N'ResponsibilityCenterId',0,N'Responsibility Center',	N'مركز المسؤولية',		1,4);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
-[StateId], [Name],					[Name2]) VALUES
+[State],	[Name],					[Name2]) VALUES
 (0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
 (1,2,-3,	N'Other reasons',		N'أسباب أخرى');
 --PettyCashPayment
@@ -133,8 +133,8 @@ SET [Script] = N'
 	SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 6;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
-[Direction],	[AccountTypeParentCode],	[AgentDefinitionId], [AccountTagId]) VALUES
-(0,6,0,-1,		N'TradeAndOtherPayables',	N'suppliers',		N'SACR'); -- We may need to add GRIV Inventory underneath, or instead
+[Direction],	[AccountTypeParentCode],	[AccountTagId], [AgentDefinitionId] ) VALUES
+(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR',		N'suppliers'); -- We may need to add GRIV Inventory underneath, or instead
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState]) VALUES
