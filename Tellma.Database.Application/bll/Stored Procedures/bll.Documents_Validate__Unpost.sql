@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Documents_Validate__Open]
+﻿CREATE PROCEDURE [bll].[Documents_Validate__Unpost]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

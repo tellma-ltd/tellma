@@ -223,7 +223,7 @@ BEGIN -- Inserting
 	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
-		@ToState = 4, -- N'Reviewed',
+		@ToState = 4, -- N'Ready To Post',
 		@OnBehalfOfuserId = @jiad_akra,
 		@RuleType = N'ByRole',
 		@RoleId = @1Comptroller, -- we allow selecting the role manually,

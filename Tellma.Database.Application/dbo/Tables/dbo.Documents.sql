@@ -8,8 +8,9 @@
 	[DefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	[DocumentDate]					DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
-	[State]							SMALLINT		NOT NULL DEFAULT 0 CHECK ([State] BETWEEN -5 AND +5),
-	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[State]							SMALLINT		NOT NULL DEFAULT 0 CHECK ([State] BETWEEN -4 AND +4),
+	[PostingState]					SMALLINT		NOT NULL DEFAULT 0 CHECK ([PostingState] BETWEEN -1 AND +1),
+	[PostingStateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	-- When evidence type = source document
 	[VoucherBookletId]				INT, -- each range might be dedicated for a special purpose

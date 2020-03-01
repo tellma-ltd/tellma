@@ -42,7 +42,7 @@ SET NOCOUNT ON;
 			FE.Id AS LineId,
 			LastUnsignedState,
 			@ToState
-	FROM map.RequiredSignatures(@LineIds) RS
+	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
 
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 			N'Error_Line0IsAlreadyInState1',
 			FE.Id AS LineId,
 			LastNegativeState
-	FROM map.RequiredSignatures(@LineIds) RS
+	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE LastNegativeState IS NOT NULL
 

@@ -9,7 +9,7 @@ RETURNS TABLE AS RETURN
 (
 	WITH RequiredSignaturesForState AS (
 		SELECT [LineId], [RuleType], [RoleId]
-		FROM map.RequiredSignatures(@Ids)
+		FROM map.[LinesRequiredSignatures](@Ids)
 		WHERE ToState = @ToState
 	),
 	AvailableSignaturesForState AS (

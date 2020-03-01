@@ -113,7 +113,7 @@ BEGIN -- Inserting
 
 	--EXEC [api].[Lines__Sign]
 	--	@IndexedIds = @DocLinesIndexedIds,
-	--	@ToState = 4, -- N'Reviewed',
+	--	@ToState = 4, -- N'Ready To Post',
 	--	@AgentId = @MohamadAkra,
 	--	@RoleId = @Accountant, -- we allow selecting the role manually,
 	--	@SignedAt = @Now,
@@ -147,7 +147,7 @@ BEGIN -- Inserting
 	END
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
-		@ToState = 4, -- N'Reviewed',
+		@ToState = 4, -- N'Ready To Post',
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RoleId = @OnBehalfOfRoleId, -- we allow selecting the role manually,
 		@SignedAt = @Now,
@@ -163,7 +163,7 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
-	EXEC [api].[Documents__Close]
+	EXEC [api].[Documents__Post]
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

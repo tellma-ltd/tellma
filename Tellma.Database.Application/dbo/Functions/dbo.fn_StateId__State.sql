@@ -14,6 +14,6 @@ BEGIN
 		WHEN @StateId = -3		THEN N'Failed'
 		WHEN @StateId = +3		THEN N'Completed'
 		WHEN @StateId = -4		THEN N'Invalid'
-		WHEN @StateId = +4		THEN N'Reviewed'
+		WHEN @StateId = +4		THEN N'Ready To Post'
 	END
 END

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [map].[RequiredSignatures] (
+﻿CREATE FUNCTION [map].[LinesRequiredSignatures] (
 	@LineIds IdList READONLY
 )
 RETURNS TABLE

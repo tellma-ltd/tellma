@@ -4,8 +4,8 @@ BEGIN
 	[Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES
 	(0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],		[Label],		[Label2],		[IsRequiredForStateId],
-																	[IsReadOnlyFromStateId]) VALUES
+	[SortKey],	[ColumnName],		[Label],		[Label2],		[RequiredState],
+																	[ReadOnlyState]) VALUES
 	(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان',		5,4), -- only if it appears,
 	(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب',		3,4),
 	(2,0,2,		N'Entry[0].Value',	N'Debit',		N'مدين',		3,4), -- see special case
@@ -75,8 +75,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 (1,1,1,+1,	N'Accruals',				N'SACR'),
 (2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[ColumnName],				[Label],				[Label2],				[IsRequiredForStateId],
-																						[IsReadOnlyFromStateId]) VALUES
+[SortKey],	[ColumnName],				[Label],				[Label2],				[RequiredState],
+																						[ReadOnlyState]) VALUES
 (0,1,0,	N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
 (1,1,1,	N'Entry[0].NotedDate',			N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
 (2,1,2,	N'Entry[0].ExternalReference',	N'Invoice #',			N'رقم الفاتورة',		3,5), 
@@ -115,8 +115,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(0,2,0,	-1,		N'CashAndCashEquivalents');
 
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],						[Label],					[Label2],					[IsRequiredForStateId],
-																											[IsReadOnlyFromStateId]) VALUES
+	[SortKey],	[ColumnName],						[Label],					[Label2],					[RequiredState],
+																											[ReadOnlyState]) VALUES
 	(0,2,0,		N'Line.Memo',						N'Memo',					N'البيان',					1,2),
 	(1,2,1,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',					1,2),
 	(2,2,2,		N'Entry[0].MonetaryValue',			N'Pay Amount',				N'المبلغ',					1,2), 
@@ -162,8 +162,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 	(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],						[Label],					[Label2],			[IsRequiredForStateId],
-																									[IsReadOnlyFromStateId]) VALUES
+	[SortKey],	[ColumnName],						[Label],					[Label2],			[RequiredState],
+																									[ReadOnlyState]) VALUES
 	(0,3,0,		N'Entry[0].NotedDate',				N'Date',					N'التاريخ',			1,4), 
 	(1,3,1,		N'Line.Memo',						N'Memo',					N'البيان',			1,4),
 	(2,3,2,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',			1,2), 
@@ -201,8 +201,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(0,4,0,+1,		N'TradeAndOtherPayables',	N'WHTX'),
 	(1,4,1,-1,		N'TradeAndOtherPayables',	N'TPBL');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],						[Label],					[Label2],				[IsRequiredForStateId],
-																										[IsReadOnlyFromStateId]) VALUES
+	[SortKey],	[ColumnName],						[Label],					[Label2],				[RequiredState],
+																										[ReadOnlyState]) VALUES
 	(0,4,0,		N'Entry[0].NotedDate',				N'Date',					N'التاريخ',				1,4), 
 	(1,4,1,		N'Line.Memo',						N'Memo',					N'البيان',				1,4),
 	(2,4,2,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',				1,2), 
@@ -238,8 +238,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(0,5,0,+1,		N'TotalInventories',		N'STCK'),
 	(1,5,1,-1,		N'TradeAndOtherPayables',	N'SACR');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],						[Label],				[Label2],				[IsRequiredForStateId],
-																									[IsReadOnlyFromStateId]) VALUES
+	[SortKey],	[ColumnName],						[Label],				[Label2],				[RequiredState],
+																									[ReadOnlyState]) VALUES
 	(0,5,0,		N'Line.Memo',						N'Memo',				N'البيان',				1,5), 
 	(1,5,1,		N'Entry[0].AgentId',				N'Supplier',			N'المورد',				3,4),
 	(2,5,2,		N'Entry[0].NotedAgentId',			N'Beneficiary',			N'المستفيد',			3,4),

@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [api].[Documents__Close]
+﻿CREATE PROCEDURE [api].[Documents__Unpost]
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Documents_Validate__Close]
+	EXEC [bll].[Documents_Validate__Unpost]
 		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
@@ -18,10 +18,12 @@ AS
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	DECLARE @Ids [dbo].[IdList];
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Documents__Close] @Ids = @Ids;
+	EXEC [dal].[Documents_PostingState__Update] @Ids = @Ids, @PostingState = 0;
 
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = NULL
+		@AssigneeId = @UserId
 		;

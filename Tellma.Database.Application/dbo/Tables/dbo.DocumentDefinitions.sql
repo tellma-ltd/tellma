@@ -17,7 +17,7 @@
 	[TitlePlural2]				NVARCHAR (255),
 	[TitlePlural3]				NVARCHAR (255),
 
-	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
+--	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,

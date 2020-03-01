@@ -84,31 +84,35 @@ SET NOCOUNT ON;
 		SELECT
 			LDC.[Id],
 			LD.[Id] AS [LineDefinitionId],
-			LDC.[SortKey],
+			LDC.[Index],
+			LDC.[TableName],
 			LDC.[ColumnName],
+			LDC.[EntryNumber],
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
-			LDC.[IsRequiredForStateId],
-			LDC.[IsReadOnlyFromStateId]
+			LDC.[RequiredState],
+			LDC.[ReadOnlyState]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
-			t.[SortKey]					= s.[SortKey],
-			t.[ColumnName]				= s.[ColumnName],
-			t.[Label]					= s.[Label],
-			t.[Label2]					= s.[Label2],
-			t.[Label3]					= s.[Label3],
-			t.[IsRequiredForStateId]	= s.[IsRequiredForStateId],
-			t.[IsReadOnlyFromStateId]	= s.[IsReadOnlyFromStateId]
+			t.[Index]			= s.[Index],
+			t.[TableName]		= s.[TableName],
+			t.[ColumnName]		= s.[ColumnName],
+			t.[EntryNumber]		= s.[EntryNumber],
+			t.[Label]			= s.[Label],
+			t.[Label2]			= s.[Label2],
+			t.[Label3]			= s.[Label3],
+			t.[RequiredState]	= s.[RequiredState],
+			t.[ReadOnlyState]	= s.[ReadOnlyState]
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[SortKey],	[ColumnName],	[Label],	[Label2],	[Label3],	[IsRequiredForStateId], [IsReadOnlyFromStateId])
-		VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3], s.[IsRequiredForStateId], s.[IsReadOnlyFromStateId]);
+		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryNumber], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryNumber], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState]);
 
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (

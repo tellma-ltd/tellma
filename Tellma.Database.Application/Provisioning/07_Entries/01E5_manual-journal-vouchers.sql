@@ -111,7 +111,7 @@ BEGIN -- Inserting
 	END
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
-		@ToState = 4, -- N'Reviewed',
+		@ToState = 4, -- N'Ready To Post',
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RoleId = @OnBehalfOfRoleId, -- we allow selecting the role manually,
 		@SignedAt = @Now,

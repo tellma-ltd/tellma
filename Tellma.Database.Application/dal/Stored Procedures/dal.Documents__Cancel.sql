@@ -5,7 +5,7 @@ BEGIN
 	UPDATE dbo.Documents
 	SET
 		[State] = -5,
-		[StateAt] = SYSDATETIMEOFFSET()
+		[PostingStateAt] = SYSDATETIMEOFFSET()
 	Where [Id] IN (
 		SELECT [Id] FROM @Ids
 	);

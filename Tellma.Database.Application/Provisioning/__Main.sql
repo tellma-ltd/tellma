@@ -27,12 +27,12 @@ END
 :r .\01_Definitions\b_ResourceDefinitions.sql
 :r .\01_Definitions\c_AgentDefinitions.sql
 
-:r .\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql
+--:r .\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql
 :r .\01_Definitions\e_LineDefinitions\101_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\102_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\103_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql
+--:r .\01_Definitions\e_LineDefinitions\102_LineDefinitions.sql
+--:r .\01_Definitions\e_LineDefinitions\103_LineDefinitions.sql
+--:r .\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql
+--:r .\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql
 :r .\01_Definitions\e_LineDefinitions\999_LineDefinitions.sql
 
 :r .\01_Definitions\f_DocumentDefinitions.sql

@@ -104,4 +104,95 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[RuleTypeEntryNumber]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6b2b5db4-1b29-4883-aa15-985763cce193" ChangeDateTime="02/29/2020 03:45:18">
+    <Property Name="ElementName" Value="[map].[RequiredSignatures]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines__RequiredSignatures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="47e9a694-e66c-4bc4-a895-ed76f361bb5a" ChangeDateTime="02/29/2020 03:45:51">
+    <Property Name="ElementName" Value="[map].[Lines__RequiredSignatures]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LinesRequiredSignatures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="df255480-0fff-42ea-b314-b54268c10fe1" ChangeDateTime="02/29/2020 12:40:42">
+    <Property Name="ElementName" Value="[api].[Documents__Close]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Post]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a7f61cf4-2732-4c4a-a234-969963d5ef55" ChangeDateTime="02/29/2020 13:38:04">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Close]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Post]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c2045fc2-7145-49c5-95fd-eb9efb8e38ce" ChangeDateTime="02/29/2020 13:38:19">
+    <Property Name="ElementName" Value="[dal].[Documents__Close]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Post]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="233f9089-3c75-4e27-b1a7-4549e737fc6c" ChangeDateTime="02/29/2020 13:39:55">
+    <Property Name="ElementName" Value="[api].[Documents__Open]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Unpost]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6e672b17-dea0-4921-ba4e-2a58284d8508" ChangeDateTime="02/29/2020 13:40:09">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Open]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Unpost]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d234d0ed-2519-4c07-9dbe-54d883c36830" ChangeDateTime="03/01/2020 00:53:57">
+    <Property Name="ElementName" Value="[dbo].[Documents].[StateAt]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PostingStateAt]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3923b7d5-d448-4e17-a234-f5cb9feaecc2" ChangeDateTime="03/01/2020 03:28:09">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[SmartKey]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[TagId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="086eb6c0-8460-4a94-9036-7f74a33e7727" ChangeDateTime="03/01/2020 04:07:57">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[SortKey]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Index]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6e3157ef-035b-4f5e-bb9f-61b34be22882" ChangeDateTime="03/01/2020 04:11:31">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[RequiredState]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StateWhereRequired]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="069d305d-7fc5-4712-b013-f80beb4a121e" ChangeDateTime="03/01/2020 04:14:02">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[StateWhereRequired]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RequiredState]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="efced92b-e983-40bc-ace3-d8010ae182a3" ChangeDateTime="03/01/2020 04:14:33">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[ReadOnlyState]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ReadOnlyState]" />
+  </Operation>
 </Operations>

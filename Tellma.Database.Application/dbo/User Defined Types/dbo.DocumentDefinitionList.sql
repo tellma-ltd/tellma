@@ -11,7 +11,6 @@
 
 	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs
-	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
 	[AgentDefinitionList]		NVARCHAR (1024),

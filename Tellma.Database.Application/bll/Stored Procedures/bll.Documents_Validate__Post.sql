@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Documents_Validate__Close]
+﻿CREATE PROCEDURE [bll].[Documents_Validate__Post]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -20,37 +20,29 @@ SET NOCOUNT ON;
 	);
 
 	-- All lines must be in their final states.
-	WITH DocumentsLineDefinitions AS
-	(
-		SELECT DISTINCT DL.[DefinitionId] FROM 
-		dbo.[Lines] DL
-		JOIN @Ids D ON DL.DocumentId = D.[Id]
-	),
-	WorkflowsFinalStateIds AS
-	(
-		SELECT LineDefinitionId, MAX([dbo].[fn_State__StateId]([ToState])) AS FinalStateId
-		FROM dbo.Workflows
-		WHERE LineDefinitionId IN (SELECT [DefinitionId] FROM DocumentsLineDefinitions)
-		GROUP BY LineDefinitionId
-	),
-	WorkflowsFinalStates AS
-	(
-		SELECT LineDefinitionId, [dbo].[fn_StateId__State](FinalStateId) AS FinalState
-		FROM WorkflowsFinalStateIds
-	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
+		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(D.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_State0IsNotFinal',
-		dbo.fn_StateId__State(DL.[State])
+		dbo.fn_StateId__State(L.[State])
 	FROM @Ids D
-	JOIN dbo.[Lines] DL ON DL.[DocumentId] = D.[Id]
-	JOIN WorkflowsFinalStates WFS ON DL.[DefinitionId] = WFS.[LineDefinitionId]
-	--WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
-	WHERE DL.[State] >= 0 AND DL.[State] <> WFS.FinalState
+	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
+	--WHERE DL.[State] IN (N'Draft', N'Requested', N'Authorized', N'Completed')
+	WHERE L.[State] Between 0 AND 3
 
-	-- Cannot close a document with non-balanced (Reviewed) lines
+	-- Cannot post a document which does not have at lease one line that is (Ready To Post)
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentDoesNotHaveAnyReadyToPostLines'
+	FROM @Ids 
+	WHERE [Id] NOT IN (
+		SELECT DISTINCT [DocumentId] 
+		FROM dbo.[Lines]
+		WHERE [State] = 4
+	);
+	-- Cannot post a document with non-balanced (Ready to Post) lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
@@ -59,7 +51,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
 	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
-	WHERE L.[State] = +4 -- N'Reviewed'
+	WHERE L.[State] = +4 -- N'Ready To Post'
 	GROUP BY FE.[Index]
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 

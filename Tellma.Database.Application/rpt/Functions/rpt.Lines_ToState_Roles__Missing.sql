@@ -15,7 +15,7 @@ RETURN
 		--CASE
 		--	WHEN @ToState = N'Rejected'	THEN N'Authorized'
 		--	WHEN @ToState = N'Failed'	THEN N'Completed'
-		--	WHEN @ToState = N'Invalid'	THEN N'Reviewed'
+		--	WHEN @ToState = N'Invalid'	THEN N'Ready To Post'
 		--	ELSE @ToState
 		--END
 		-- IF FromState is negative we need to unsign the line first
