@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Tellma.Controllers.Dto
-{
+{    
     /// <summary>
     /// A structure that stores all definitions of a particular database
     /// </summary>
@@ -16,7 +16,7 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// Mapping from line type Id to line type
         /// </summary>
-        public Dictionary<string, LineTypeForClient> Lines { get; set; }
+        public Dictionary<string, LineDefinitionForClient> Lines { get; set; }
 
         /// <summary>
         /// Mapping from resource definition Id to resource definition
@@ -39,6 +39,8 @@ namespace Tellma.Controllers.Dto
         public Dictionary<string, ReportDefinitionForClient> Reports { get; set; }
     }
 
+    ///////////////////// Base Classes
+    
     public abstract class DefinitionForClient
     {
         public string MainMenuSection { get; set; }
@@ -55,6 +57,8 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
     }
+
+    ///////////////////// Report Definitions
 
     public class ReportDefinitionForClient : DefinitionForClient
     {
@@ -121,17 +125,71 @@ namespace Tellma.Controllers.Dto
         public string Aggregation { get; set; }
     }
 
+    ///////////////////// Document Definitions
+
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string Prefix { get; set; }
-        // TODO
+        public byte CodeWidth { get; set; }
+        public string AgentDefinitionList { get; set; }
+        public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
     }
 
-    public class LineTypeForClient // related entity for document definition
+    public class DocumentDefinitionLineDefinitionForClient
     {
-        // TODO
+        public string LineDefinitionId { get; set; }
+        public bool IsVisibleByDefault { get; set; }
     }
 
+    public class LineDefinitionForClient // related entity for document definition
+    {
+        public string TitleSingular { get; set; }
+        public string TitleSingular2 { get; set; }
+        public string TitleSingular3 { get; set; }
+        public string TitlePlural { get; set; }
+        public string TitlePlural2 { get; set; }
+        public string TitlePlural3 { get; set; }
+        public string AgentDefinitionList { get; set; }
+        public string ResponsibilityTypeList { get; set; }
+        public bool AllowSelectiveSigning { get; set; }
+        public List<LineDefinitionEntryForClient> Entries { get; set; }
+        public List<LineDefinitionColumnForClient> Columns { get; set; }
+        public List<LineDefinitionStateReasonForClient> StateReasons { get; set; }
+    }
+
+    public class LineDefinitionEntryForClient
+    {
+        public int EntryNumber { get; set; }
+        public short Direction { get; set; } // Is it needed??
+        public string AccountTypeParentCode { get; set; }
+        public string AccountTagId { get; set; } // Is it needed??
+        public string AgentDefinitionId { get; set; }
+        public string EntryTypeCode { get; set; }
+    }
+
+    public class LineDefinitionColumnForClient
+    {
+        public string TableName { get; set; }
+        public string ColumnName { get; set; }
+        public int EntryNumber { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public short? RequiredState { get; set; }
+        public short? ReadOnlyState { get; set; }
+    }
+
+    public class LineDefinitionStateReasonForClient
+    {
+        public short? State { get; set; }
+        public string Name { get; set; }
+        public string Name2 { get; set; }
+        public string Name3 { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    ///////////////////// Other Definitions
+    
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string IdentifierLabel { get; set; } // Yes
@@ -281,6 +339,8 @@ namespace Tellma.Controllers.Dto
     {
 
     }
+
+    ///////////////////// Supporting Classes
 
     public static class Visibility
     {

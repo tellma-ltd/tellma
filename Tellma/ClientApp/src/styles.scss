@@ -1582,11 +1582,6 @@ h1.t-report-measure:hover {
   border-color: $danger;
 }
 
-.t-form-group-label, .t-form-group-content {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
 // Next to each other on large screens
 @media (min-width: 993px) {
   .t-form-group-label {
@@ -1594,14 +1589,13 @@ h1.t-report-measure:hover {
   }
   
   .t-form-group-content {
-    flex-grow: 1;
+    width: calc(100% - 125px);
   }
 }
 
 // Wrap around on smaller screens
 @media (max-width: 992px) {
   .t-form-group-label, .t-form-group-content {
-    min-width: unset;
     width: 100%;    
   }
 }

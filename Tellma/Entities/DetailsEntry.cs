@@ -41,25 +41,25 @@ namespace Tellma.Entities
         [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Entry_Count")]
+        [Display(Name = "DetailsEntry_Count")]
         public decimal? Count { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicCount")]
         public decimal? AlgebraicCount { get; set; }
 
-        [Display(Name = "Entry_Mass")]
+        [Display(Name = "DetailsEntry_Mass")]
         public decimal? Mass { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicMass")]
         public decimal? AlgebraicMass { get; set; }
 
-        [Display(Name = "Entry_Volume")]
+        [Display(Name = "DetailsEntry_Volume")]
         public decimal? Volume { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicVolume")]
         public decimal? AlgebraicVolume { get; set; }
 
-        [Display(Name = "Entry_Time")]
+        [Display(Name = "DetailsEntry_Time")]
         public decimal? Time { get; set; }
 
         [Display(Name = "DetailsEntry_AlgebraicTime")]

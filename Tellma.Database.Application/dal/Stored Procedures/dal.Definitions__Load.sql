@@ -20,3 +20,13 @@ SELECT * FROM [map].[ReportSelectDefinitions]() ORDER BY [Index]
 SELECT * FROM [map].[ReportRowDefinitions]() ORDER BY [Index]
 SELECT * FROM [map].[ReportColumnDefinitions]() ORDER BY [Index]
 SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index]
+
+-- Get the document definitions
+SELECT * FROM [dbo].[DocumentDefinitions]
+SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index]
+
+-- Get the line definitions
+SELECT * FROM [dbo].[LineDefinitions]
+SELECT * FROM [dbo].[LineDefinitionEntries]
+SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index]
+SELECT * FROM [dbo].[LineDefinitionStateReasons]

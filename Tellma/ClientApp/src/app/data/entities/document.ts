@@ -75,7 +75,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             apiEndpoint: !!definitionId ? `documents/${definitionId}` : 'documents',
             screenUrl: !!definitionId ? `documents/${definitionId}` : 'documents',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, definitionId), 4) : `(${trx.instant('New')})`,
+            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), 4) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },

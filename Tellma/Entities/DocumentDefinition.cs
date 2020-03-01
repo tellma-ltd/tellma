@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    public class AgentDefinitionForSave : EntityWithKey<string>
+    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition> : EntityWithKey<string>
     {
+        public bool? IsOriginalDocument { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
@@ -36,6 +40,13 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
 
+
+        public string Prefix { get; set; }
+        public byte? CodeWidth { get; set; }
+        public string AgentDefinitionList { get; set; }
+
+
+
         [Display(Name = "MainMenuIcon")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
@@ -50,30 +61,17 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public decimal? MainMenuSortKey { get; set; }
 
-
-        // TODO: Add metadata
-
-        public string TaxIdentificationNumberVisibility { get; set; }
-        public string StartDateVisibility { get; set; }
-        public string StartDateLabel { get; set; }
-        public string StartDateLabel2 { get; set; }
-        public string StartDateLabel3 { get; set; }
-        public string JobVisibility { get; set; }
-        public string RatesVisibility { get; set; }
-        public string RatesLabel { get; set; }
-        public string RatesLabel2 { get; set; }
-        public string RatesLabel3 { get; set; }
-        public string BankAccountNumberVisibility { get; set; }
+        [ForeignKey(nameof(DocumentDefinitionLineDefinition.DocumentDefinitionId))]
+        public List<TDocumentDefinitionLineDefinition> LineDefinitions { get; set; }
     }
 
-    public class AgentDefinition : AgentDefinitionForSave
+    public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave>
     {
-        [Display(Name = "Definition_State")]
-        [ChoiceList(new object[] { "Draft", "Deployed", "Archived" },
-            new string[] { "Definition_State_Draft", "Definition_State_Deployed", "Definition_State_Archived" })]
-        [AlwaysAccessible]
-        public string State { get; set; }
 
+    }
+
+    public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition>
+    {
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 

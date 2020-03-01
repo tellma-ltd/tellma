@@ -45,7 +45,6 @@ import {
   faAsterisk,
   faCameraRetro,
   faUser,
-  faRulerCombined,
   faUsers,
   faCog,
   faTasks,
@@ -63,7 +62,8 @@ import {
   faInfoCircle,
   faTachometerAlt,
   faTools,
-  faCamera
+  faCamera,
+  faRuler
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -200,7 +200,7 @@ export class SharedModule {
       faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,
-      faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
+      faAsterisk, faCameraRetro, faUser, faRuler, faUsers, faCog,
       faTasks, faMale, faBuilding, faChartPie, faInfoCircle, faTools, faCamera,
 
       faBars,
