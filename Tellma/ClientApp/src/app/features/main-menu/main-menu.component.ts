@@ -41,10 +41,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
-    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', view: 'measurement-units', sortKey: 10 },
     // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 20 },
-    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
-    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
+    { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 10 },
+    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 30 },
+    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 40 },
+    { label: 'Currencies', icon: 'euro-sign', link: '../currencies', view: 'currencies', sortKey: 45 },
+    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', view: 'measurement-units', sortKey: 50 },
     { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
   ];
 

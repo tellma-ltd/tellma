@@ -1,17 +1,22 @@
 <div class="row" [ngbPopover]="invalid ? errorsPopover : null" container="body" [placement]="popoverPlacement"
   triggers="mouseenter:mouseleave">
-  <div class="font-weight-bold small col-12 col-lg-4 text-truncate" *ngIf="showLabel">
+  <!-- <div class="font-weight-bold small col-12 col-lg-4 text-truncate" *ngIf="showLabel">
     <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
   </div>
   <div class="col-12 d-flex form-group-container" [class.is-invalid]="invalid" [class.col-lg-8]="showLabel">
     <ng-content></ng-content>
-    <!-- <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="invalid" [ngbPopover]="errorsPopover"
-      container="body" [placement]="popoverPlacement" triggers="mouseenter:mouseleave"></fa-icon> -->
+  </div> -->
+
+  <div class="font-weight-bold small t-form-group-label" *ngIf="showLabel">
+    <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
+  </div>
+  <div class="d-flex form-group-container t-form-group-content" [class.is-invalid]="invalid">
+    <ng-content></ng-content>
   </div>
 </div>
 
 <ng-template #errorsPopover>
-  <div class="" style="width: 250px">
+  <div style="width: 250px">
     <p class="m-0 p-0" *ngFor="let error of errors">
       <fa-icon icon="exclamation-triangle" class="text-danger"></fa-icon>
       &nbsp;{{ error() }}

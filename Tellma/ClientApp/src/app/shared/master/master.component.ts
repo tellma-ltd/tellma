@@ -970,10 +970,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onImport() {
-    if (!this.canImport) {
-      return;
-    }
-    this.router.navigate(['.', 'import'], { relativeTo: this.route });
+    alert('To be implemented');
+
+    // if (!this.canImport) {
+    //   return;
+    // }
+    // this.router.navigate(['.', 'import'], { relativeTo: this.route });
   }
 
   private get missingDefinitionId(): boolean {
@@ -1163,7 +1165,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.exportPageSize;
   }
 
-  onExport() {
+  onExport(): void {
+    alert('To be implemented');
+  }
+
+  onExport2(): void {
     if (!this.canExport) {
       return;
     }

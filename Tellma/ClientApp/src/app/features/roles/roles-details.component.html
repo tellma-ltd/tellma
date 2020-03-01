@@ -92,7 +92,7 @@
         <t-restricted [metadata]="model?.EntityMetadata?.Permissions"
           [class.p-4]="model?.EntityMetadata?.Permissions === 1">
           <t-table [dataSource]="model?.Permissions" [isEdit]="isEdit"
-            [columnPaths]="['View', 'Action', 'Criteria', 'Mask', 'Memo']" [columnTemplates]="{
+            [columnPaths]="['View', 'Action', 'Criteria', 'Memo']" [columnTemplates]="{
               'View' : { headerTemplate : header_View, rowTemplate : row_View, weight : 1 },
               'Action' : { headerTemplate : header_Action, rowTemplate : row_Action, weight : 1 },
               'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },

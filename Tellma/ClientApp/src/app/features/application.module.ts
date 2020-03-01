@@ -76,6 +76,7 @@ import { EntryTypesDetailsComponent } from './entry-types/entry-types-details.co
 import { EntryTypesPickerComponent } from './entry-types/entry-types-picker.component';
 import { DocumentsMasterComponent } from './documents/documents-master.component';
 import { DocumentsDetailsComponent } from './documents/documents-details.component';
+import { DetailsEntriesComponent } from './details-entries/details-entries.component';
 
 const routes: Routes = [
   {
@@ -345,6 +346,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Details Entries: TODO
+      {
+        path: 'details-entries',
+        component: DetailsEntriesComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'details-entries/:id',
+        component: DetailsEntriesComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -441,6 +454,7 @@ const routes: Routes = [
     EntryTypesPickerComponent,
     DocumentsMasterComponent,
     DocumentsDetailsComponent,
+    DetailsEntriesComponent,
   ],
   imports: [
     SharedModule,
