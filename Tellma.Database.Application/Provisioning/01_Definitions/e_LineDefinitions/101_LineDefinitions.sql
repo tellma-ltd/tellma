@@ -4,14 +4,17 @@ BEGIN
 INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitlePlural]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments');
---INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
---		[TableName],[ColumnName],[EntryNumber],	[Label],		[RequiredState],
---																[ReadOnlyState]) VALUES
---(0,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4), -- only if it appears,
---(1,0,	N'Entries',	N'Account',		0,			N'Account',		3,4),
---(2,0,	N'Entries',	N'Value',		0,			N'Debit',		3,4), -- see special case
---(3,0,	N'Entries',	N'Value',		0,			N'Credit',		3,4),
---(4,0,	N'Entries',	N'Dynamic',		0,			N'Properties',	3,4);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+[Direction],[AccountTypeParentCode]) VALUES
+(0,0,0,+1,	N'StatementOfFinancialPositionAbstract');
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[TableName],[ColumnName],[EntryNumber],	[Label],		[RequiredState],
+																[ReadOnlyState]) VALUES
+(0,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4), -- only if it appears,
+(1,0,	N'Entries',	N'Account',		0,			N'Account',		3,4),
+(2,0,	N'Entries',	N'Value',		0,			N'Debit',		3,4), -- see special case
+(3,0,	N'Entries',	N'Value',		0,			N'Credit',		3,4),
+(4,0,	N'Entries',	N'Dynamic',		0,			N'Properties',	3,4);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
