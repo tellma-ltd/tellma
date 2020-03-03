@@ -54,7 +54,6 @@
 	[Identifier]					NVARCHAR (10),
 -- Entry Property
 	[EntryTypeId]					INT					CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES dbo.[EntryTypes],
-	[TagId]							NCHAR (4), -- TODO: NOT NULL CONSTRAINT [FK_LineDefinitionEntries_AccountTagId] REFERENCES [dbo].[AccountTags] ([Id]),([Id], AccountTypeId, Name, Name2, Name3)
 	[IsDeprecated]					BIT					NOT NULL DEFAULT 0,
 	-- Audit details
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

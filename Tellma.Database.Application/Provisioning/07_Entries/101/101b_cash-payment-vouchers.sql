@@ -35,6 +35,7 @@ BEGIN -- Inserting
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
+		[Memo] = N'Shawarma',
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 665,
 		[NotedAgentName0] = N'The family shawerma',

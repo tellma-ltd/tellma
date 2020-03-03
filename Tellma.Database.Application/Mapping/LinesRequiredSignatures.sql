@@ -8,7 +8,7 @@ RETURN (
 	(
 		SELECT L.Id As LineId, WS.RuleType, WS.[RuleTypeEntryNumber],  WS.RoleId, COALESCE(
 				WS.UserId,
-				(SELECT UserId FROM dbo.Agents WHERE AgentId IN (
+				(SELECT UserId FROM dbo.Agents WHERE [Id] IN (
 					SELECT AgentId FROM dbo.Entries WHERE LineId = L.Id AND EntryNumber = WS.[RuleTypeEntryNumber]
 					)
 				)

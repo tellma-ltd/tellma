@@ -27,6 +27,11 @@ SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index]
 
 -- Get the line definitions
 SELECT * FROM [dbo].[LineDefinitions]
-SELECT * FROM [dbo].[LineDefinitionEntries]
+
+SELECT LDE.*,
+(Select IsResourceClassification FROM dbo.AccountTypes WHERE [Code] = LDE.[AccountTypeParentCode]) AS IsResourceClassification,
+(Select [Id] FROM dbo.AccountTypes WHERE [Code] = LDE.[AccountTypeParentCode]) AS AccountTypeId
+FROM [dbo].[LineDefinitionEntries] LDE
+
 SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index]
 SELECT * FROM [dbo].[LineDefinitionStateReasons]
