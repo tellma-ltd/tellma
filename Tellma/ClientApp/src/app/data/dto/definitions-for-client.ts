@@ -1,4 +1,5 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
+import { LineState } from '../entities/line';
 
 // tslint:disable:variable-name
 export class DefinitionsForClient {
@@ -87,12 +88,57 @@ export interface ReportDimensionDefinitionForClient {
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     Prefix: string;
-    // TODO
+    CodeWidth: number;
+    AgentDefinitionList: string;
+    LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
+}
+
+export interface DocumentDefinitionLineDefinitionForClient {
+    LineDefinitionId: string;
+    IsVisibleByDefault: boolean;
 }
 
 export interface LineDefinitionForClient extends MasterDetailsDefinitionForClient {
-    // TODO
-    Bla: string;
+    TitleSingular: string;
+    TitleSingular2: string;
+    TitleSingular3: string;
+    TitlePlural: string;
+    TitlePlural2: string;
+    TitlePlural3: string;
+    AgentDefinitionList: string;
+    ResponsibilityTypeList: string;
+    AllowSelectiveSigning: boolean;
+    Entries: LineDefinitionEntryForClient[];
+    Columns: LineDefinitionColumnForClient[];
+    StateReasons: LineDefinitionStateReasonForClient[];
+}
+
+export interface LineDefinitionEntryForClient {
+    EntryNumber: number;
+    Direction: 1 | -1;
+    AccountTypeParentCode: string;
+    AccountTagId: string;
+    AgentDefinitionId: string;
+    EntryTypeCode: string;
+}
+
+export interface LineDefinitionColumnForClient {
+    TableName: 'Lines' | 'Entries';
+    ColumnName: string;
+    EntryNumber: number;
+    Label: string;
+    Label2: string;
+    Label3: string;
+    RequiredState?: number;
+    ReadOnlyState?: LineState;
+}
+
+export interface LineDefinitionStateReasonForClient {
+    State: number;
+    Name: string;
+    Name2: string;
+    Name3: string;
+    IsActive: boolean;
 }
 
 export type Visibility = 'None' | 'Optional' | 'Required';

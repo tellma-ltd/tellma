@@ -7,5 +7,4 @@ import { FormGroupBaseComponent } from '../form-group-base/form-group-base.compo
 })
 export class FormGroupDynamicComponent extends FormGroupBaseComponent {
 
-
 }

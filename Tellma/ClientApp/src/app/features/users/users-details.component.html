@@ -135,29 +135,29 @@
 
         <!-- RoleId -->
         <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
-        <ng-template #row_RoleId let-item="item" let-index="originalIndex" let-update="update">
-          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.RoleId">
+        <ng-template #row_RoleId let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.RoleId">
             <t-restricted [metadata]="item.EntityMetadata?.Role">
               <t-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{
               ws.getMultilingualValue('Role',
               item.RoleId, 'Name') }}</t-view-link>
             </t-restricted>
-            <t-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update.call(null, item)"
+            <t-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update.call(null, item)" [required]="!item.PH"
               [showMembers]="false">
             </t-roles-picker>
-          </t-form-group>
+          </t-form-group-cell>
         </ng-template>
 
         <!-- Memo -->
         <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-        <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
-          <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
+        <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
             <div *ngIf="!isEdit">
               <t-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</t-restricted>
             </div>
             <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
               [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-          </t-form-group>
+          </t-form-group-cell>
         </ng-template>
       </ng-template>
     </ngb-tab>

@@ -651,7 +651,6 @@ li.t-text-whitish:hover {
   resize: none;
 }
 
-table tr .t-input,
 .t-borderless-input .t-input {
   border-bottom-width: 0px;
 }
@@ -669,6 +668,7 @@ table tr .t-form-group {
 
 .is-invalid .t-input {
   border-color: $danger;
+  border-bottom-width: 1px;  
 }
 
 .is-invalid.t-input::placeholder,
@@ -678,6 +678,7 @@ table tr .t-form-group {
 }
 
 .is-invalid .t-input:focus {
+  border-bottom-width: 0px;  
   box-shadow: 0 2px $danger;
 }
 
@@ -1588,14 +1589,14 @@ h1.t-report-measure:hover {
     min-width: 125px;
   }
   
-  .t-form-group-content {
+  .t-labeled-form-group-content {
     width: calc(100% - 125px);
   }
 }
 
 // Wrap around on smaller screens
 @media (max-width: 992px) {
-  .t-form-group-label, .t-form-group-content {
+  .t-form-group-label, .t-labeled-form-group-content {
     width: 100%;    
   }
 }

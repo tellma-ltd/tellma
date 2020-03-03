@@ -9,10 +9,11 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
 import { DocumentAssignment } from './document-assignment';
 import { AttachmentForSave, Attachment } from './attachment';
+import { EntityForSave } from './base/entity-for-save';
 
 export type DocumentState = LineState | 5;
 
-export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityWithKey {
+export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     DocumentDate?: string;
     Memo?: string;
     MemoIsCommon?: boolean;
@@ -47,6 +48,11 @@ function getPrefix(ws: TenantWorkspace, definitionId: string) {
     return  !!def ? def.Prefix : '';
 }
 
+function getCodeWidth(ws: TenantWorkspace, definitionId: string) {
+    const def = ws.definitions.Documents[definitionId];
+    return  !!def ? def.CodeWidth : 4;
+}
+
 export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
@@ -75,7 +81,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             apiEndpoint: !!definitionId ? `documents/${definitionId}` : 'documents',
             screenUrl: !!definitionId ? `documents/${definitionId}` : 'documents',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), 4) : `(${trx.instant('New')})`,
+            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
@@ -85,7 +91,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
-                    format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), 4)
+                    format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
                 State: {
                     control: 'state',
@@ -154,7 +160,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
     return _cache[key];
 }
 
-export function serialNumber(serial: number, prefix: string, digits: number) {
+export function serialNumber(serial: number, prefix: string, codeWidth: number) {
 
     // Handle null and 0
     if (!serial) {
@@ -164,8 +170,8 @@ export function serialNumber(serial: number, prefix: string, digits: number) {
     let result = serial.toString();
 
     // Add a padding of zeros when needed
-    if (result.length < digits) {
-        result = '00000000000000000'.substring(0, digits - result.length) + result;
+    if (result.length < codeWidth) {
+        result = '00000000000000000'.substring(0, codeWidth - result.length) + result;
     }
 
     // Prepend the prefix

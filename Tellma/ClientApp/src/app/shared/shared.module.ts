@@ -95,6 +95,7 @@ import { PickerBaseComponent } from './picker-base/picker-base.component';
 import { FormGroupBaseComponent } from '../shared/form-group-base/form-group-base.component';
 import { FormGroupDynamicComponent } from '../shared/form-group-dynamic/form-group-dynamic.component';
 import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-group-settings.component';
+import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cell.component';
 
 @NgModule({
   declarations: [
@@ -125,6 +126,7 @@ import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-g
     FormGroupBaseComponent,
     FormGroupDynamicComponent,
     FormGroupSettingsComponent,
+    FormGroupCellComponent,
   ],
   imports: [
     CommonModule,
@@ -173,6 +175,7 @@ import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-g
     FormGroupComponent,
     FormGroupSettingsComponent,
     FormGroupDynamicComponent,
+    FormGroupCellComponent,
     SelectorComponent,
     DecimalEditorComponent,
     DetailsBaseComponent,

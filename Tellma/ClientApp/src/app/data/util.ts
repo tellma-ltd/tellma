@@ -52,10 +52,6 @@ export function mergeEntitiesInWorkspace(entities: { [key: string]: EntityWithKe
     for (const collectionName of collectionNames) {
       const collection = entities[collectionName];
       const wsCollection = workspace.current[collectionName];
-      if (!collection) {
-        // dev mistake
-        console.error(`Could not find collection '${collectionName}' in the response`);
-      }
       if (!wsCollection) {
         // dev mistake
         console.error(`Could not find collection '${collectionName}' in the workspace`);

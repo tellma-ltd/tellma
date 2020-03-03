@@ -89,47 +89,47 @@
 
               <!-- View -->
               <ng-template #header_View>{{ 'Permission_View' | translate }}</ng-template>
-              <ng-template #row_View let-item="item" let-index="originalIndex" let-update="update">
-                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.View">
+              <ng-template #row_View let-item="item" let-index="index" let-update="update">
+                <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.View">
                   <div *ngIf="!isEdit">
                     {{ permissionViewLookup(item.View) }}
                   </div>
                   <t-selector *ngIf="isEdit" [choices]="permissionViewChoices" [(ngModel)]="item.View" [required]="!item.PH"
                     (ngModelChange)="update.call(null, item); onPermissionChanged(item);"></t-selector>
-                </t-form-group>
+                </t-form-group-cell>
               </ng-template>
       
               <!-- Action -->
               <ng-template #header_Action>{{ 'Permission_Action' | translate }}</ng-template>
-              <ng-template #row_Action let-item="item" let-index="originalIndex" let-update="update">
-                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Action">
+              <ng-template #row_Action let-item="item" let-index="index" let-update="update">
+                <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Action">
                   <div *ngIf="!isEdit">{{ permissionActionLookup(item?.Action) | translate }}</div>
                   <t-selector *ngIf="isEdit" [(ngModel)]="item.Action" [required]="!item.PH"
                     (ngModelChange)="update.call(null, item); onPermissionChanged(item);"
                     [ngModelOptions]="{ updateOn: 'blur' }" [choices]="permissionActionChoices(item)" [disabled]="!item.View">
                   </t-selector>
-                </t-form-group>
+                </t-form-group-cell>
               </ng-template>
       
               <!-- Criteria -->
               <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
-              <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
-                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Criteria">
+              <ng-template #row_Criteria let-item="item" let-index="index" let-update="update">
+                <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Criteria">
                   <div *ngIf="!isEdit">{{ item.Criteria }}</div>
                   <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update.call(null, item)"
                     [ngModelOptions]="{ updateOn: 'blur' }" [disabled]="disableCriteria(item)">
                   </t-text-editor>
-                </t-form-group>
+                </t-form-group-cell>
               </ng-template>
       
               <!-- Memo -->
               <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-              <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
-                <t-form-group class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
+              <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+                <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
                   <div *ngIf="!isEdit">{{ item.Memo }}</div>
                   <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
                     [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-                </t-form-group>
+                </t-form-group-cell>
               </ng-template>
             </ng-template>
         </ngb-tab>

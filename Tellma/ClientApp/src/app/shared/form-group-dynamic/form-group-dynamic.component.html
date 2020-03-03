@@ -7,8 +7,6 @@
     <div class="d-flex flex-grow-1 form-group-container t-dynamic-container" [class.is-invalid]="invalid"
         [ngbPopover]="invalid ? errorsPopover : null" container="body" [placement]="popoverPlacement"
         triggers="mouseenter:mouseleave">
-        <!-- <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="invalid" [ngbPopover]="errorsPopover"
-            container="body" [placement]="popoverPlacement" triggers="mouseenter:mouseleave"></fa-icon> -->
         <ng-content></ng-content>
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
@@ -8,19 +8,16 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 })
 export class TableComponent implements OnInit {
 
-  // this is the crown jewel of our framework, a reusable minimum-configuration editable grid
+  // This is the crown jewel of our framework, a reusable minimum-configuration editable grid
   // with Excel-like editing experience, and virtual scrolling built in so it can handle 100s of
   // thousands of rows.
 
-  // private MAX_VISIBLE_ROWS = 9;
   private HEADER_HEIGHT = 41;
   private PH = 'PH';
 
   private _isEdit = false;
-  private _filter: (item: EntityForSave) => boolean;
   private _dataSource: EntityForSave[] = [];
   private _dataSourceCopy: EntityForSave[] = [];
-  private _indexMap: number[] = [];
 
   @Input()
   itemSize = 31;
@@ -29,11 +26,11 @@ export class TableComponent implements OnInit {
   onNewItem: (item: EntityForSave) => EntityForSave;
 
   @Input()
-  set isEdit(v: boolean) {
-    if (this._isEdit !== v) {
-      this._isEdit = v;
+  set isEdit(isEdit: boolean) {
+    if (this._isEdit !== isEdit) {
+      this._isEdit = isEdit;
 
-      if (v && this._dataSourceCopy) {
+      if (isEdit) {
         this.addPlaceholder(true);
       } else {
         this.removePlaceholder(true);
@@ -49,7 +46,13 @@ export class TableComponent implements OnInit {
   set dataSource(v: EntityForSave[]) {
     if (this._dataSource !== v) {
       this._dataSource = v;
-      this.cloneAndMap();
+      // Clone and add placeholder if necessary
+      if (!!v) {
+        this._dataSourceCopy = v.slice();
+        if (this.isEdit) {
+          this.addPlaceholder(false);
+        }
+      }
     }
   }
 
@@ -66,56 +69,30 @@ export class TableComponent implements OnInit {
       headerTemplate: TemplateRef<any>,
       rowTemplate: TemplateRef<any>,
       weight: number,
+      argument: any // Passed to the template as is
     }
   } = {};
 
-  @Input()
-  set filter(v: (item: EntityForSave) => boolean) {
-    if (this._filter !== v) {
-      this._filter = v;
-      this.cloneAndMap();
-    }
-  }
+  @Output()
+  insert = new EventEmitter<EntityForSave>();
 
-  get filter(): (item: EntityForSave) => boolean {
-    return this._filter;
-  }
+  @Output()
+  delete = new EventEmitter<EntityForSave>();
 
-  private cloneAndMap() {
-    // To implement filter in a performant way and to support virtual scrolling and line numbering
-    // we make a shallow copy of the provided data source together with an index map, and keep the
-    // source and the copy synchronized
-    this._dataSourceCopy = [];
-    this._indexMap = [];
-    if (!!this._dataSource) {
-      const filter = this._filter || ((_: any) => true);
-      for (let i = 0; i < this._dataSource.length; i++) {
-        const item = this._dataSource[i];
-        if (filter(item)) {
-          this._dataSourceCopy.push(item);
-          this._indexMap[this._dataSourceCopy.length - 1] = i;
-        }
+  private addPlaceholder(updateArrayRef: boolean): void {
+
+    if (!!this._dataSourceCopy) {
+      let placeholder: EntityForSave = {};
+      if (this.onNewItem) {
+        placeholder = this.onNewItem(placeholder);
       }
 
-      // This last item only to add a fake line to allow for add new line
-      if (this.isEdit) {
-        this.addPlaceholder(false);
+      placeholder[this.PH] = true;
+      this._dataSourceCopy.push(placeholder);
+
+      if (updateArrayRef) {
+        this._dataSourceCopy = this._dataSourceCopy.slice();
       }
-    }
-  }
-
-  private addPlaceholder(updateArray: boolean): void {
-
-    let placeholder: EntityForSave = { };
-    if (this.onNewItem) {
-      placeholder = this.onNewItem(placeholder);
-    }
-
-    placeholder[this.PH] = true;
-    this._dataSourceCopy.push(placeholder);
-
-    if (updateArray) {
-      this._dataSourceCopy = this._dataSourceCopy.slice();
     }
   }
 
@@ -147,22 +124,16 @@ export class TableComponent implements OnInit {
       // Placeholders don't do anything
     } else {
 
-      // remove from original
-      const originalIndex = this.mapIndex(index);
-      this._dataSource.splice(originalIndex, 1);
+      // Remove from original
+      this._dataSource.splice(index, 1);
 
-      // remove from copy
+      // Remove from copy
       const copyOfCopy = this._dataSourceCopy.slice();
       copyOfCopy.splice(index, 1);
       this._dataSourceCopy = copyOfCopy;
 
-      // update index map
-      this._indexMap.splice(index, 1);
-      for (let i = index; i < this._indexMap.length; i++) {
-        // This reduces all subsequent maps by
-        // one to account for the deleted item
-        this._indexMap[i]--;
-      }
+      // Tell the outside world that an item has been deleted
+      this.delete.emit(item);
     }
   }
 
@@ -175,11 +146,11 @@ export class TableComponent implements OnInit {
       // Add the item to the original array
       this._dataSource.push(item);
 
-      // add index map
-      this._indexMap[this._dataSourceCopy.length - 1] = this._dataSource.length - 1;
-
       // Add a new placeholder to replace the old one
       this.addPlaceholder(true);
+
+      // Tell the outside world that an item has been inserted
+      this.insert.emit(item);
     }
   }
 
@@ -208,10 +179,6 @@ export class TableComponent implements OnInit {
 
   get dataSourceCopy() {
     return this._dataSourceCopy;
-  }
-
-  public mapIndex(index: number) {
-    return this._indexMap[index];
   }
 
   get maxVisibleRows(): number {

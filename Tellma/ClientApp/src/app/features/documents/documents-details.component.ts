@@ -5,9 +5,12 @@ import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
-import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { LineForSave } from '~/app/data/entities/line';
-import { Entry } from '~/app/data/entities/entry';
+import {
+  DocumentDefinitionForClient, ResourceDefinitionForClient,
+  LineDefinitionColumnForClient, LineDefinitionEntryForClient
+} from '~/app/data/dto/definitions-for-client';
+import { LineForSave, Line } from '~/app/data/entities/line';
+import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, FriendlyError } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil } from 'rxjs/operators';
@@ -217,23 +220,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return `(${this.translate.instant('New')})`;
     }
     const def = this.definition;
-    return serialNumber(serial, def.Prefix, 4);
+    return serialNumber(serial, def.Prefix, def.CodeWidth || 4);
+  }
+
+  public get showSidebar(): boolean {
+    return this.isScreenMode && this.route.snapshot.paramMap.get('id') !== 'new';
   }
 
   // TODO
   isInactive(_: DocumentForSave) {
     return null;
-  }
-
-  showLineErrors(_: Document) {
-    return false;
-  }
-
-  onNewLine(item: LineForSave) {
-    item.DefinitionId = 'ManualLine';
-    item.Entries = [{}];
-    item.Entries[0].Direction = 1;
-    return item;
   }
 
   getDebit(entry: Entry): number {
@@ -269,20 +265,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get functional_format(): string {
     const decimals = this.functional_decimals;
     return `1.${decimals}-${decimals}`;
-  }
-
-  public columnPaths(model: DocumentForSave): string[] {
-    const paths = ['AccountId', 'Debit', 'Credit'];
-
-    if (this.ws.settings.IsMultiResponsibilityCenter) {
-      paths.splice(1, 0, 'ResponsibilityCenter');
-    }
-
-    if (!model.MemoIsCommon) {
-      paths.unshift('Memo');
-    }
-
-    return paths;
   }
 
   public get functionalPostfix(): string {
@@ -1158,6 +1140,250 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 4: return this.translate.instant('Reviewer');
     }
   }
+
+  /////////// New stuff
+
+  public onInsert(line: LineForSave, model: Document): void {
+    model.Lines.push(line);
+  }
+
+  public onDelete(line: LineForSave, model: Document): void {
+    const index = model.Lines.indexOf(line);
+    if (index > -1) {
+      model.Lines.splice(index, 1);
+    }
+  }
+
+  private _lineDefinitionIdsLines: LineForSave[];
+  private _lineDefinitionIds: string[];
+
+  public lineDefinitionIds(model: Document): string[] {
+    if (!model) {
+      return [];
+    }
+
+    if (this._lineDefinitionIdsLines !== model.Lines) {
+      this._lineDefinitionIdsLines = model.Lines;
+
+      const tracker: { [key: string]: true } = {};
+      const lineDefIdsFromDefinitions = this.ws.definitions.Documents[this.definitionId].LineDefinitions.map(e => e.LineDefinitionId);
+
+      for (const lineDefId of lineDefIdsFromDefinitions) {
+        tracker[lineDefId] = true;
+      }
+
+      if (!!model.Lines) {
+        for (const line of model.Lines) {
+          tracker[line.DefinitionId] = true;
+        }
+      }
+
+      this._lineDefinitionIds = Object.keys(tracker);
+    }
+
+    return this._lineDefinitionIds;
+  }
+
+  public tabTitle(lineDefId: string): string {
+    const def = this.ws.definitions.Lines[lineDefId];
+    return !!def ? this.ws.getMultilingualValueImmediate(def, 'TitlePlural') : lineDefId;
+  }
+
+  private _lines: { [key: string]: LineForSave[] };
+  private _linesModel: DocumentForSave;
+
+  public lines(lineDefId: string, model: Document): LineForSave[] {
+    if (!model) {
+      return [];
+    }
+
+    if (this._linesModel !== model) {
+      this._linesModel = model;
+      this._lines = {};
+
+      if (!!model.Lines) {
+        for (const line of model.Lines) {
+          if (!this._lines[line.DefinitionId]) {
+            this._lines[line.DefinitionId] = [];
+          }
+
+          this._lines[line.DefinitionId].push(line);
+        }
+      }
+    }
+
+    if (!this._lines[lineDefId]) {
+      this._lines[lineDefId] = [];
+    }
+
+    return this._lines[lineDefId];
+  }
+
+  public entries(lines: LineForSave[]): EntryForSave[] {
+    return [];
+  }
+
+  public showLineErrors(lineDefId: string, model: Document) {
+    return !!model && !!model.Lines &&
+      model.Lines.some(line => lineDefId === line.DefinitionId && !!line.serverErrors);
+  }
+
+  public columnPaths(lineDefId: string, model: DocumentForSave): string[] {
+    if (lineDefId === 'ManualLine') {
+      const paths = ['AccountId', 'Debit', 'Credit'];
+
+      if (this.ws.settings.IsMultiResponsibilityCenter) {
+        paths.splice(1, 0, 'ResponsibilityCenter');
+      }
+
+      if (!model.MemoIsCommon) {
+        paths.unshift('Memo');
+      }
+
+      return paths;
+    } else {
+      // All line definitions other than 'ManualLine'
+      const lineDef = this.ws.definitions.Lines[lineDefId];
+      return !!lineDef && !!lineDef.Columns ? lineDef.Columns.map((_, index) => index + '') : [];
+    }
+  }
+
+  private lineDefinition(lineDefId: string) {
+    const lineDef = !!lineDefId ? this.ws.definitions.Lines[lineDefId] : null;
+    return lineDef;
+  }
+
+  private columnDefinition(lineDefId: string, columnIndex: number): LineDefinitionColumnForClient {
+    const lineDef = this.lineDefinition(lineDefId);
+    return !!lineDef ? lineDef.Columns[columnIndex] : null;
+  }
+
+  private entryDefinition(lineDefId: string, columnIndex: number): LineDefinitionEntryForClient {
+    const lineDef = this.lineDefinition(lineDefId);
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return !!lineDef && !!lineDef.Entries && !!colDef ? lineDef.Entries[colDef.EntryNumber] : null;
+  }
+
+  public columnName(lineDefId: string, columnIndex: number): string {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return !!colDef ? colDef.ColumnName : null;
+  }
+
+  public columnLabel(lineDefId: string, columnIndex: number): string {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return this.ws.getMultilingualValueImmediate(colDef, 'Label');
+  }
+
+  private entity(def: LineDefinitionColumnForClient, line: LineForSave): LineForSave | EntryForSave {
+    let entity: LineForSave | EntryForSave;
+    if (!!def) {
+      if (def.TableName === 'Lines') {
+        entity = line;
+      } else if (def.TableName === 'Entries') {
+        if (!line.Entries[def.EntryNumber]) {
+          line.Entries[def.EntryNumber] = {};
+        }
+        entity = line.Entries[def.EntryNumber];
+      }
+    }
+
+    return entity;
+  }
+
+  public entry(lineDefId: string, columnIndex: number, line: LineForSave): EntryForSave {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    if (!!colDef && colDef.TableName === 'Entries') {
+      if (!line.Entries[colDef.EntryNumber]) {
+        line.Entries[colDef.EntryNumber] = {};
+      }
+
+      return line.Entries[colDef.EntryNumber];
+    }
+
+    return null;
+  }
+
+  public agentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.AgentDefinitionId ? [entryDef.AgentDefinitionId] : [];
+  }
+
+  public serverErrors(lineDefId: string, columnIndex: number, line: LineForSave) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entity = this.entity(colDef, line);
+    return !!entity && !!entity.serverErrors ? entity.serverErrors[colDef.ColumnName] : null;
+  }
+
+  public entityMetadata(lineDefId: string, columnIndex: number, line: LineForSave) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entity = this.entity(colDef, line);
+    return !!entity && !!entity.EntityMetadata ? entity.EntityMetadata[colDef.ColumnName] : null;
+  }
+
+  public getFieldValue(lineDefId: string, columnIndex: number, line: LineForSave): any {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entity = this.entity(colDef, line);
+    return !!entity ? entity[colDef.ColumnName] : null;
+  }
+
+  public setFieldValue(lineDefId: string, columnIndex: number, line: LineForSave, value: any): void {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    const entity = this.entity(colDef, line);
+    if (!!entity) {
+      entity[colDef.ColumnName] = value;
+    }
+  }
+
+  public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return !!colDef.ReadOnlyState && !!line.State && line.State >= colDef.ReadOnlyState;
+  }
+
+  public isRequired(lineDefId: string, columnIndex: number, line: Line) {
+    const colDef = this.columnDefinition(lineDefId, columnIndex);
+    return !!colDef.RequiredState && !!line.State && line.State >= colDef.RequiredState;
+  }
+
+  public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
+    return (item) => {
+      item.DefinitionId = lineDefId;
+      if (lineDefId === 'ManualLine') {
+        item.Entries = [{ Direction: 1 }];
+      } else {
+        // Add the specified number of entries
+        item.Entries = [];
+        const lineDef = this.lineDefinition(lineDefId);
+        if (!!lineDef) {
+          if (lineDef.Entries) {
+            for (const entryDef of lineDef.Entries) {
+              item.Entries[entryDef.EntryNumber] = { Direction: entryDef.Direction };
+            }
+          } else {
+            console.error(`Line definition ${lineDefId} is missing its Entries`);
+          }
+        } else {
+          console.error(`Missing line definition ${lineDefId}`);
+        }
+      }
+      return item;
+    };
+  }
+
+  public columnFloat(lineDefId: string, columnIndex: number): string {
+    if (this.workspace.ws.isRtl) {
+      return null;
+    }
+
+    const colName = this.columnName(lineDefId, columnIndex);
+    switch (colName) {
+      case 'MonetaryValue':
+      case 'Quantity':
+      case 'Value':
+        return 'right';
+      default:
+        return null;
+    }
+  }
 }
 
 /**
@@ -1180,7 +1406,7 @@ function formatServerError(friendlyError: FriendlyError, top: number = 10) {
   if (friendlyError.status === 422) {
     const validationErrors = friendlyError.error as { [key: string]: string[] };
     const keys = Object.keys(validationErrors);
-    const tracker: {[key: string]: true } = {};
+    const tracker: { [key: string]: true } = {};
     for (const key of keys) {
       for (const error of validationErrors[key]) {
         tracker[error] = true; // To show distinct errors

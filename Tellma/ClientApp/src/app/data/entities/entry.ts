@@ -1,8 +1,8 @@
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
-import { EntityWithKey } from './base/entity-with-key';
+import { EntityForSave } from './base/entity-for-save';
 
-export interface EntryForSave extends EntityWithKey {
+export interface EntryForSave extends EntityForSave {
     EntryNumber?: number;
     Direction?: 1 | -1;
     AccountId?: number;

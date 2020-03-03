@@ -6,10 +6,11 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
+import { EntityForSave } from './base/entity-for-save';
 
 export type LineState = 0 | -1 | 1 | -2 | 2 | -3 | 3 | -4 | 4;
 
-export interface LineForSave<TEntry = EntryForSave> extends EntityWithKey {
+export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: string;
     CurrencyId?: string;
     AgentId?: number;

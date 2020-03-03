@@ -7,11 +7,12 @@
         <tr style="height:41px">
           <th class="border-top-0 text-align-right text-muted t-line-number-th"> # </th>
           <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
-            <ng-container *ngTemplateOutlet="columnTemplates[path]?.headerTemplate"></ng-container>
+            <ng-container *ngTemplateOutlet="columnTemplates[path]?.headerTemplate; context: { argument: columnTemplates[path]?.argument }">
+            </ng-container>
           </th>
           <th class="border-top-0" style="width:1px">
-            <button class="btn btn-light btn-sm p-0 pl-1 pr-1" style="background:transparent;color:transparent;border-color: transparent"
-              disabled>
+            <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
+              style="background:transparent;color:transparent;border-color: transparent" disabled>
               <fa-icon icon="trash"></fa-icon>
             </button>
           </th>
@@ -30,13 +31,16 @@
             </td>
             <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">
               <ng-container>
-                <ng-container *ngTemplateOutlet="columnTemplates[path]?.rowTemplate;context: { item: item, index: i, originalIndex: mapIndex(i), update: onUpdateLine }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="columnTemplates[path]?.rowTemplate;context: { item: item, argument: columnTemplates[path]?.argument, index: i, update: onUpdateLine }">
+                </ng-container>
               </ng-container>
             </td>
             <td>
               <button class="btn btn-light text-primary t-white-button btn-sm p-0 pl-1 pr-1" (click)="onDeleteLine(i)"
                 *ngIf="isEdit">
-                <fa-icon icon="trash" [class.t-transparent]="item.PH" [title]="item.PH ? '' : ('Delete' | translate)"></fa-icon>
+                <fa-icon icon="trash" [class.t-transparent]="item.PH" [title]="item.PH ? '' : ('Delete' | translate)">
+                </fa-icon>
               </button>
             </td>
           </tr>
