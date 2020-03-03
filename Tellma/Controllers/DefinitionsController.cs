@@ -332,7 +332,6 @@ namespace Tellma.Controllers
                     Direction = e.Direction.Value,
                     AccountTypeParentCode = e.AccountTypeParentCode,
                     AgentDefinitionId = e.AgentDefinitionId,
-                    AccountTagId = e.AccountTagId,
                     EntryTypeCode = e.EntryTypeCode,
                 })?.ToList(),
 

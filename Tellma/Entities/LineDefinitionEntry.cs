@@ -11,8 +11,6 @@ namespace Tellma.Entities
 
         public string AccountTypeParentCode { get; set; }
 
-        public string AccountTagId { get; set; }
-
         public string AgentDefinitionId { get; set; }
 
         public string EntryTypeCode { get; set; }

@@ -162,7 +162,6 @@ namespace Tellma.Controllers.Dto
         public int EntryNumber { get; set; }
         public short Direction { get; set; } // Is it needed??
         public string AccountTypeParentCode { get; set; }
-        public string AccountTagId { get; set; } // Is it needed??
         public string AgentDefinitionId { get; set; }
         public string EntryTypeCode { get; set; }
     }

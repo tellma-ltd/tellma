@@ -117,7 +117,6 @@ export interface LineDefinitionEntryForClient {
     EntryNumber: number;
     Direction: 1 | -1;
     AccountTypeParentCode: string;
-    AccountTagId: string;
     AgentDefinitionId: string;
     EntryTypeCode: string;
 }
