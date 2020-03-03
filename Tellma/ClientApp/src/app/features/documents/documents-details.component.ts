@@ -1220,10 +1220,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._lines[lineDefId];
   }
 
-  public entries(lines: LineForSave[]): EntryForSave[] {
-    return [];
-  }
-
   public showLineErrors(lineDefId: string, model: Document) {
     return !!model && !!model.Lines &&
       model.Lines.some(line => lineDefId === line.DefinitionId && !!line.serverErrors);

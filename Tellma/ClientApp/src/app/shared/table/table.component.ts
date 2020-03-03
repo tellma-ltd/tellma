@@ -18,8 +18,6 @@ export class TableComponent implements OnInit, OnChanges {
   private HEADER_HEIGHT = 41;
   private PH = 'PH';
 
-  private _isEdit = false;
-  private _dataSource: EntityForSave[] = [];
   private _dataSourceCopy: EntityForSave[] = [];
 
   @Input()
@@ -132,7 +130,7 @@ export class TableComponent implements OnInit, OnChanges {
     } else {
 
       // Remove from original
-      this._dataSource.splice(index, 1);
+      this.dataSource.splice(index, 1);
 
       // Remove from copy
       const copyOfCopy = this._dataSourceCopy.slice();
@@ -151,7 +149,7 @@ export class TableComponent implements OnInit, OnChanges {
       delete item[this.PH];
 
       // Add the item to the original array
-      this._dataSource.push(item);
+      this.dataSource.push(item);
 
       // Add a new placeholder to replace the old one
       this.addPlaceholder(true);
