@@ -270,9 +270,29 @@ namespace Tellma.Controllers
             return _repo.Documents__AsQuery(DefinitionId, entities);
         }
 
+        private DocumentDefinitionForClient CurrentDefinition
+        {
+            get
+            {
+                DocumentDefinitionForClient result = null;
+                var definitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents;
+                if (definitions != null)
+                {
+                    definitions.TryGetValue(DefinitionId, value: out result);
+                }
+
+                return result;
+            }
+        }
+
         protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions);
+            var prefix = CurrentDefinition?.Prefix;
+            var map = new List<(string Prefix, string DefinitionId)>
+            {
+                (prefix, DefinitionId)
+            };
+            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, map);
         }
 
         protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<Document> result)
@@ -280,22 +300,22 @@ namespace Tellma.Controllers
             var includeRequiredSignature = Request.Query["includeRequiredSignatures"].FirstOrDefault()?.ToString()?.ToLower() == "true";
             if (includeRequiredSignature)
             {
-                // LineIds parameter
-                var lineIds = result.SelectMany(doc => (doc.Lines ?? new List<Line>()).Select(line => new { line.Id }));
-                if (!lineIds.Any())
+                // DocumentIds parameter
+                var docIds = result.Select(doc => new { doc.Id });
+                if (!docIds.Any())
                 {
                     return await base.GetExtras(result);
                 }
 
-                var lineIdsTable = RepositoryUtilities.DataTable(lineIds);
-                var lineIdsTvp = new SqlParameter("@LineIds", lineIdsTable)
+                var docIdsTable = RepositoryUtilities.DataTable(docIds);
+                var docIdsTvp = new SqlParameter("@DocumentIds", docIdsTable)
                 {
                     TypeName = $"[dbo].[IdList]",
                     SqlDbType = System.Data.SqlDbType.Structured
                 };
 
                 var query = _repo.Query<RequiredSignature>()
-                    .AdditionalParameters(lineIdsTvp)
+                    .AdditionalParameters(docIdsTvp)
                     .Expand("Role,SignedBy,OnBehalfOfUser,ProxyRole")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
@@ -598,13 +618,16 @@ namespace Tellma.Controllers
     public class DocumentsGenericController : FactWithIdControllerBase<Document, int>
     {
         private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _definitionsCache;
 
         public DocumentsGenericController(
             ILogger<DocumentsGenericController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+            ApplicationRepository repo,
+            IDefinitionsCache definitionsCache) : base(logger, localizer)
         {
             _repo = repo;
+            _definitionsCache = definitionsCache;
         }
 
         protected override IRepository GetRepository()
@@ -640,7 +663,13 @@ namespace Tellma.Controllers
 
         protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions);
+            // Get a map from all serial prefixes to definitionIds
+            var prefixMap = _definitionsCache.GetCurrentDefinitionsIfCached()?
+                .Data?.Documents? // Get document definitions for client from the cache
+                .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
+                new List<(string, string)>(); // Avoiding null reference exception at all cost
+            
+            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -654,28 +683,57 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        public static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, string DefinitionId)> prefixMap)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
+                // IF: the search starts with the serial prefix (case insensitive) then search the serial numbers exclusively 
+                var searchLower = search.Trim().ToLower();
+                var (prefix, definitionId) = prefixMap.FirstOrDefault(e =>
+                    !string.IsNullOrWhiteSpace(e.Prefix) &&
+                    searchLower.StartsWith(e.Prefix.ToLower()) &&
+                    searchLower.Length > e.Prefix.Length);
 
-                // TODO:
-                // IF the search starts with the serial prefix (case insensitive) then search the serial numbers exclusively 
-
-                // ELSE: search the memo etc normally
-                var memo = nameof(Document.Memo);
-                var serialNumber = nameof(Document.SerialNumber);
-                var filterString = $"{memo} {Ops.contains} '{search}'";
-
-                // If the search is a number, include the result with that serial number
-                if (int.TryParse(search.Trim(), out int searchNumber))
+                if (definitionId != null && int.TryParse(searchLower.Remove(0, prefix.Length), out int serial))
                 {
-                    filterString = $"{filterString} or {serialNumber} eq {searchNumber}";
+                    var serialNumberProp = nameof(Document.SerialNumber);
+                    var definitionIdProp = nameof(Document.DefinitionId);
+
+                    // Prepare the filter string
+                    var filterString = $"{serialNumberProp} eq {serial} and {definitionIdProp} eq '{definitionId}'";
+
+                    // Apply the filter
+                    query = query.Filter(filterString);
                 }
 
-                query = query.Filter(FilterExpression.Parse(filterString));
+                // ELSE: search the memo, posting date, etc normally
+                else
+                {
+                    search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                    var memoProp = nameof(Document.Memo);
+                    var serialNumberProp = nameof(Document.SerialNumber);
+                    var documentDateProp = nameof(Document.DocumentDate);
+
+                    // Prepare the filter string
+                    var filterString = $"{memoProp} {Ops.contains} '{search}'";
+
+                    // If the search is a number, include documents with that serial number
+                    if (int.TryParse(search.Trim(), out int searchNumber))
+                    {
+                        filterString = $"{filterString} or {serialNumberProp} eq {searchNumber}";
+                    }
+
+                    // If the search is a date, include documents with that date
+                    if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
+                    {
+                        filterString = $"{filterString} or {documentDateProp} eq {searchDate.ToString("yyyy-MM-dd")}";
+                    }
+
+                    // Apply the filter
+                    query = query.Filter(FilterExpression.Parse(filterString));
+                }
             }
 
             return query;

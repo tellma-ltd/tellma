@@ -304,7 +304,7 @@ namespace Tellma.Data
                 // Fact tables
 
                 case nameof(RequiredSignature):
-                    return "[map].[RequiredSignatures](@LineIds)";
+                    return "[map].[DocumentsRequiredSignatures](@DocumentIds)";
 
                 case nameof(DetailsEntry):
                     return "[map].[DetailsEntries]()";
@@ -656,13 +656,16 @@ namespace Tellma.Data
             return (version, permissions);
         }
 
-        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>, IEnumerable<ReportDefinition>)> Definitions__Load()
+        public async Task<(Guid, IEnumerable<LookupDefinition>,  IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>,
+            IEnumerable<ReportDefinition>,  IEnumerable<DocumentDefinition>, IEnumerable<LineDefinition>)> Definitions__Load()
         {
             Guid version;
-            List<LookupDefinition> lookupDefinitions = new List<LookupDefinition>();
-            List<AgentDefinition> agentDefinitions = new List<AgentDefinition>();
-            List<ResourceDefinition> resourceDefinitions = new List<ResourceDefinition>();
-            List<ReportDefinition> reportDefinitions = new List<ReportDefinition>();
+            var lookupDefinitions = new List<LookupDefinition>();
+            var agentDefinitions = new List<AgentDefinition>();
+            var resourceDefinitions = new List<ResourceDefinition>();
+            var reportDefinitions = new List<ReportDefinition>();
+            var documentDefinitions = new List<DocumentDefinition>();
+            var lineDefinitions = new List<LineDefinition>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -739,7 +742,6 @@ namespace Tellma.Data
 
                     resourceDefinitions.Add(entity);
                 }
-
 
                 // Next load report definitions
                 await reader.NextResultAsync();
@@ -862,9 +864,133 @@ namespace Tellma.Data
                 }
 
                 reportDefinitions = reportDefinitionsDic.Values.ToList();
+
+                // Next load document definitions
+                await reader.NextResultAsync();
+
+                var documentDefinitionsDic = new Dictionary<string, DocumentDefinition>();
+                var documentDefinitionProps = typeof(DocumentDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new DocumentDefinition();
+                    foreach (var prop in documentDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    documentDefinitionsDic[entity.Id] = entity;
+                }
+
+                // Document Definitions Line Definitions
+                var documentDefinitionLineDefinitionProps = typeof(DocumentDefinitionLineDefinition).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new DocumentDefinitionLineDefinition();
+                    foreach (var prop in documentDefinitionLineDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId];
+                    documentDefinition.LineDefinitions ??= new List<DocumentDefinitionLineDefinition>();
+                    documentDefinition.LineDefinitions.Add(entity);
+                }
+
+                documentDefinitions = documentDefinitionsDic.Values.ToList();
+
+                // Next load line definitions
+                await reader.NextResultAsync();
+
+                var lineDefinitionsDic = new Dictionary<string, LineDefinition>();
+                var lineDefinitionProps = typeof(LineDefinition).GetMappedProperties();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new LineDefinition();
+                    foreach (var prop in lineDefinitionProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    lineDefinitionsDic[entity.Id] = entity;
+                }
+
+                // line definition entries
+                var lineDefinitionEntryProps = typeof(LineDefinitionEntry).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new LineDefinitionEntry();
+                    foreach (var prop in lineDefinitionEntryProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    lineDefinition.Entries ??= new List<LineDefinitionEntry>();
+                    lineDefinition.Entries.Add(entity);
+                }
+
+                // line definition columns
+                var lineDefinitionColumnProps = typeof(LineDefinitionColumn).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new LineDefinitionColumn();
+                    foreach (var prop in lineDefinitionColumnProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    lineDefinition.Columns ??= new List<LineDefinitionColumn>();
+                    lineDefinition.Columns.Add(entity);
+                }
+
+                // line definition state reason
+                var lineDefinitionStateReasonProps = typeof(LineDefinitionStateReason).GetMappedProperties();
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    var entity = new LineDefinitionStateReason();
+                    foreach (var prop in lineDefinitionStateReasonProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    lineDefinition.StateReasons ??= new List<LineDefinitionStateReason>();
+                    lineDefinition.StateReasons.Add(entity);
+                }
+
+                lineDefinitions = lineDefinitionsDic.Values.ToList();
             }
 
-            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions, reportDefinitions);
+            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
         }
 
         #endregion

@@ -46,7 +46,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 30 },
     { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 40 },
     { label: 'Currencies', icon: 'euro-sign', link: '../currencies', view: 'currencies', sortKey: 45 },
-    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', view: 'measurement-units', sortKey: 50 },
+    { label: 'MeasurementUnits', icon: 'ruler', link: '../measurement-units', view: 'measurement-units', sortKey: 50 },
     { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
   ];
 
@@ -89,7 +89,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'roles', sortKey: 200
         },
         {
-          label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units',
+          label: 'MeasurementUnits', icon: 'ruler', link: '../measurement-units',
           view: 'measurement-units', sortKey: 300
         },
         {

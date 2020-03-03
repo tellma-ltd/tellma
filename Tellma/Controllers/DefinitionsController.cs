@@ -217,7 +217,7 @@ namespace Tellma.Controllers
                     Label3 = r.Label3,
                     AutoExpand = r.AutoExpand ?? false,
                     Modifier = r.Modifier,
-                    OrderDirection = r.OrderDirection, 
+                    OrderDirection = r.OrderDirection,
                 }).ToList(),
                 ShowRowsTotal = def.ShowRowsTotal ?? false,
 
@@ -286,9 +286,82 @@ namespace Tellma.Controllers
             };
         }
 
+        private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def)
+        {
+            return new DocumentDefinitionForClient
+            {
+                TitlePlural = def.TitlePlural,
+                TitlePlural2 = def.TitlePlural2,
+                TitlePlural3 = def.TitlePlural3,
+                TitleSingular = def.TitleSingular,
+                TitleSingular2 = def.TitleSingular2,
+                TitleSingular3 = def.TitleSingular3,
+
+                Prefix = def.Prefix,
+                CodeWidth = def.CodeWidth ?? 4,
+                AgentDefinitionList = def.AgentDefinitionList,
+                LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
+                {
+                    LineDefinitionId = d.LineDefinitionId,
+                    IsVisibleByDefault = d.IsVisibleByDefault ?? false
+                }).ToList(),
+
+                MainMenuIcon = def.MainMenuIcon,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
+                MainMenuSection = def.MainMenuSection,
+            };
+        }
+
+        private static LineDefinitionForClient MapLineDefinition(LineDefinition def)
+        {
+            return new LineDefinitionForClient
+            {
+                TitlePlural = def.TitlePlural,
+                TitlePlural2 = def.TitlePlural2,
+                TitlePlural3 = def.TitlePlural3,
+                TitleSingular = def.TitleSingular,
+                TitleSingular2 = def.TitleSingular2,
+                TitleSingular3 = def.TitleSingular3,
+
+                AgentDefinitionList = def.AgentDefinitionList,
+                AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
+                ResponsibilityTypeList = def.ResponsibilityTypeList,
+                Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
+                {
+                    EntryNumber = e.EntryNumber.Value,
+                    Direction = e.Direction.Value,
+                    AccountTypeParentCode = e.AccountTypeParentCode,
+                    AgentDefinitionId = e.AgentDefinitionId,
+                    AccountTagId = e.AccountTagId,
+                    EntryTypeCode = e.EntryTypeCode,
+                })?.ToList(),
+
+                Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
+                {
+                    TableName = c.TableName,
+                    ColumnName = c.ColumnName,
+                    EntryNumber = c.EntryNumber.Value,
+                    Label = c.Label,
+                    Label2 = c.Label2,
+                    Label3 = c.Label3,
+                    ReadOnlyState = c.ReadOnlyState,
+                    RequiredState = c.RequiredState,
+                })?.ToList(),
+
+                StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient
+                {
+                    State = r.State,
+                    Name = r.Name,
+                    Name2 = r.Name2,
+                    Name3 = r.Name3,
+                    IsActive = r.IsActive ?? false,
+                })?.ToList(),
+            };
+        }
+
         public static async Task<DataWithVersion<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo)
         {
-            var (version, lookupDefs, agentDefs, resourceDefs, reportDefs) = await repo.Definitions__Load();
+            var (version, lookupDefs, agentDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load();
 
             var result = new DefinitionsForClient
             {
@@ -300,34 +373,38 @@ namespace Tellma.Controllers
 
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
 
+                Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def)),
+
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def)),
+
                 // TODO: Load these from the database as well
 
-                Documents = new Dictionary<string, DocumentDefinitionForClient>
-                {
-                    ["manual-journal-vouchers"] = new DocumentDefinitionForClient
-                    {
-                        Prefix = "JV",
-                        TitlePlural = "Manual Journal Vouchers",
-                        TitlePlural2 = "قيود تسوية يدوية",
-                        TitlePlural3 = "手动日记帐凭单",
-                        TitleSingular = "Manual Journal Voucher",
-                        TitleSingular2 = "قيد تسوية يدوي",
-                        TitleSingular3 = "手动日记帐凭证",
-                        MainMenuIcon = "exchange-alt",
-                        MainMenuSection = "Financials",
-                        MainMenuSortKey = 50m,
+                //Documents = new Dictionary<string, DocumentDefinitionForClient>
+                //{
+                //    ["manual-journal-vouchers"] = new DocumentDefinitionForClient
+                //    {
+                //        Prefix = "JV",
+                //        TitlePlural = "Manual Journal Vouchers",
+                //        TitlePlural2 = "قيود تسوية يدوية",
+                //        TitlePlural3 = "手动日记帐凭单",
+                //        TitleSingular = "Manual Journal Voucher",
+                //        TitleSingular2 = "قيد تسوية يدوي",
+                //        TitleSingular3 = "手动日记帐凭证",
+                //        MainMenuIcon = "exchange-alt",
+                //        MainMenuSection = "Financials",
+                //        MainMenuSortKey = 50m,
 
-                        // TODO: implement mock
-                    }
-                },
+                //        // TODO: implement mock
+                //    }
+                //},
 
-                Lines = new Dictionary<string, LineTypeForClient>
-                {
-                    //["bla"] = new LineDefinitionForClient
-                    //{
-                    //    // TODO: implement mock
-                    //}
-                },
+                //Lines = new Dictionary<string, LineDefinitionForClient>
+                //{
+                //    //["bla"] = new LineDefinitionForClient
+                //    //{
+                //    //    // TODO: implement mock
+                //    //}
+                //},
             };
 
             return new DataWithVersion<DefinitionsForClient>

@@ -361,6 +361,18 @@
   <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
     <value>الحجم الجبري</value>
   </data>
+  <data name="DetailsEntry_Count" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="DetailsEntry_Mass" xml:space="preserve">
+    <value>الوزن</value>
+  </data>
+  <data name="DetailsEntry_Time" xml:space="preserve">
+    <value>الزمن</value>
+  </data>
+  <data name="DetailsEntry_Volume" xml:space="preserve">
+    <value>الحجم</value>
+  </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
     <value>تعطيل التوثيق مزدوج العوامل</value>
   </data>

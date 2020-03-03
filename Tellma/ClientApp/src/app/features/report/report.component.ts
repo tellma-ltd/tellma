@@ -370,7 +370,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onExport() {
-    alert('TODO');
+    alert('Not implemented yet, but stay tuned!');
   }
 
   public onRefresh() {
