@@ -26,7 +26,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.10.2",
     "@fortawesome/free-regular-svg-icons": "^5.10.2",
     "@fortawesome/free-solid-svg-icons": "^5.10.2",
-    "@ng-bootstrap/ng-bootstrap": "^5.1.5",
+    "@ng-bootstrap/ng-bootstrap": "^6.0.0",
     "@ngx-translate/core": "^11.0.1",
     "@swimlane/ngx-charts": "^13.0.2",
     "angular-oauth2-oidc": "^8.0.4",
