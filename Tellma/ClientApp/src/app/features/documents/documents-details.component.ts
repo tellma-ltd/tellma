@@ -1320,6 +1320,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         // if (!line.Entries[def.EntryNumber]) {
         //   line.Entries[def.EntryNumber] = {};
         // }
+
         entity = line.Entries[def.EntryNumber];
       }
     }

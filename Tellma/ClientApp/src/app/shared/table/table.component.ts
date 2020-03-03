@@ -1,4 +1,7 @@
-import { Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
+import {
+  Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy, Output,
+  EventEmitter, SimpleChanges, OnChanges
+} from '@angular/core';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 
 @Component({
@@ -6,7 +9,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
   templateUrl: './table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnChanges {
 
   // This is the crown jewel of our framework, a reusable minimum-configuration editable grid
   // with Excel-like editing experience, and virtual scrolling built in so it can handle 100s of
@@ -29,39 +32,10 @@ export class TableComponent implements OnInit {
   onNewItem: (item: EntityForSave) => EntityForSave;
 
   @Input()
-  set isEdit(isEdit: boolean) {
-    if (this._isEdit !== isEdit) {
-      this._isEdit = isEdit;
-
-      if (isEdit) {
-        this.addPlaceholder(true);
-      } else {
-        this.removePlaceholder(true);
-      }
-    }
-  }
-
-  get isEdit(): boolean {
-    return this._isEdit;
-  }
+  isEdit: boolean;
 
   @Input()
-  set dataSource(v: EntityForSave[]) {
-    if (this._dataSource !== v) {
-      this._dataSource = v;
-      // Clone and add placeholder if necessary
-      if (!!v) {
-        this._dataSourceCopy = v.slice();
-        if (this.isEdit) {
-          this.addPlaceholder(false);
-        }
-      }
-    }
-  }
-
-  get dataSource(): EntityForSave[] {
-    return this._dataSource;
-  }
+  dataSource: EntityForSave[];
 
   @Input()
   columnPaths: string[] = [];
@@ -81,6 +55,39 @@ export class TableComponent implements OnInit {
 
   @Output()
   delete = new EventEmitter<EntityForSave>();
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    let placeholderJustAdded = false;
+    if (changes.dataSource) {
+      const dataSource = changes.dataSource.currentValue as EntityForSave[];
+      if (!!dataSource) {
+        this._dataSourceCopy = dataSource.slice();
+        if (this.isEdit) {
+          this.addPlaceholder(false);
+          placeholderJustAdded = true;
+        }
+      } else {
+        this._dataSourceCopy = null;
+      }
+    }
+
+    if (changes.isEdit) {
+      const isEdit = changes.isEdit.currentValue as boolean;
+      if (isEdit) {
+        if (!placeholderJustAdded) {
+          this.addPlaceholder(true);
+        }
+      } else {
+        this.removePlaceholder(true);
+      }
+    }
+  }
 
   private addPlaceholder(updateArrayRef: boolean): void {
 
@@ -112,19 +119,15 @@ export class TableComponent implements OnInit {
     }
   }
 
-  constructor() { }
+  // UI Bindings
 
-  ngOnInit() {
-  }
-
-  trackBy(item: EntityForSave) {
+  public trackBy(item: EntityForSave) {
     return item.Id || item;
   }
 
-  onDeleteLine(index: number) {
+  public onDeleteLine(index: number) {
     const item = this._dataSourceCopy[index];
     if (item[this.PH]) {
-      console.log(item);
       // Placeholders don't do anything
     } else {
 
@@ -141,7 +144,7 @@ export class TableComponent implements OnInit {
     }
   }
 
-  onUpdateLine = (item: EntityForSave) => {
+  public onUpdateLine = (item: EntityForSave) => {
     if (!!item[this.PH]) {
       // This is the add-new placeholder which appears as an extra line in edit mode
       // mark it as a proper item by deleting the PH flag
@@ -158,7 +161,7 @@ export class TableComponent implements OnInit {
     }
   }
 
-  colWith(colPath: string) {
+  public colWith(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
     // Get the weight of this column
@@ -177,19 +180,19 @@ export class TableComponent implements OnInit {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  get visibleDataCount() {
+  public get visibleDataCount() {
     return !!this.dataSourceCopy ? this.dataSourceCopy.length : 0;
   }
 
-  get dataSourceCopy() {
+  public get dataSourceCopy() {
     return this._dataSourceCopy;
   }
 
-  get maxVisibleRows(): number {
+  public get maxVisibleRows(): number {
     return Math.ceil(9 * 30 / this.itemSize);
   }
 
-  get tableHeight(): string {
+  public get tableHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
@@ -200,7 +203,7 @@ export class TableComponent implements OnInit {
     return (height + 10) + 'px';
   }
 
-  get tableMaxHeight(): string {
+  public get tableMaxHeight(): string {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
