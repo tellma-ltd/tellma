@@ -23,6 +23,9 @@ export class TableComponent implements OnInit {
   itemSize = 31;
 
   @Input()
+  minWidth = 600; // min width before the table shows horiztonal scroll bar
+
+  @Input()
   onNewItem: (item: EntityForSave) => EntityForSave;
 
   @Input()
@@ -69,7 +72,7 @@ export class TableComponent implements OnInit {
       headerTemplate: TemplateRef<any>,
       rowTemplate: TemplateRef<any>,
       weight: number,
-      argument: any // Passed to the template as is
+      argument?: any // Passed to the template as is
     }
   } = {};
 
@@ -121,6 +124,7 @@ export class TableComponent implements OnInit {
   onDeleteLine(index: number) {
     const item = this._dataSourceCopy[index];
     if (item[this.PH]) {
+      console.log(item);
       // Placeholders don't do anything
     } else {
 

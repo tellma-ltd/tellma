@@ -57,7 +57,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
 
-  // Required signature stuff
+  // Caching for required signature functions
   private _requiredSignaturesDetailed: RequiredSignature[];
   private _requiredSignaturesLineIds: number[];
   private _requiredSignaturesSummary: RequiredSignature[];
@@ -68,9 +68,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     'ReasonId', 'ReasonDetails'];
 
   private _requiredSignaturesForLineDefModel: Document;
-  private _requiredSignaturesForLineDefLineDef: string;
+  private _requiredSignaturesForLineDefLineDefId: string;
   private _requiredSignaturesForLineDefLineIds: number[];
 
+  // Caching for other functions
+
+  private _lineDefinitionIdsLines: LineForSave[];
+  private _lineDefinitionIds: string[];
+
+  private _lines: { [key: string]: LineForSave[] };
+  private _linesModel: DocumentForSave;
 
   // These are bound from UI
   public assigneeId: number;
@@ -151,7 +158,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // UI Binding
 
-  private get definition(): DocumentDefinitionForClient {
+  public get definition(): DocumentDefinitionForClient {
     return !!this.definitionId ? this.ws.definitions.Documents[this.definitionId] : null;
   }
 
@@ -862,13 +869,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
   public requiredSignaturesForLineDef(
-    model: Document, lineDef: string, extras: { [key: string]: any }): RequiredSignature[] {
+    model: Document, lineDefId: string, extras: { [key: string]: any }): RequiredSignature[] {
     if (this._requiredSignaturesForLineDefModel !== model ||
-      this._requiredSignaturesForLineDefLineDef !== lineDef) {
+      this._requiredSignaturesForLineDefLineDefId !== lineDefId) {
       this._requiredSignaturesForLineDefModel = model;
-      this._requiredSignaturesForLineDefLineDef = lineDef;
+      this._requiredSignaturesForLineDefLineDefId = lineDefId;
       this._requiredSignaturesForLineDefLineIds = model.Lines
-        .filter(l => !!l.Id && l.DefinitionId === lineDef)
+        .filter(l => !!l.Id && l.DefinitionId === lineDefId)
         .map(l => l.Id as number);
     }
 
@@ -1154,9 +1161,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  private _lineDefinitionIdsLines: LineForSave[];
-  private _lineDefinitionIds: string[];
-
   public lineDefinitionIds(model: Document): string[] {
     if (!model) {
       return [];
@@ -1188,9 +1192,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const def = this.ws.definitions.Lines[lineDefId];
     return !!def ? this.ws.getMultilingualValueImmediate(def, 'TitlePlural') : lineDefId;
   }
-
-  private _lines: { [key: string]: LineForSave[] };
-  private _linesModel: DocumentForSave;
 
   public lines(lineDefId: string, model: Document): LineForSave[] {
     if (!model) {
@@ -1236,7 +1237,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         paths.splice(1, 0, 'ResponsibilityCenter');
       }
 
-      if (!model.MemoIsCommon) {
+      if (!model.MemoIsCommon || this.definitionId !== 'manual-journal-vouchers') {
         paths.unshift('Memo');
       }
 
@@ -1246,6 +1247,42 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const lineDef = this.ws.definitions.Lines[lineDefId];
       return !!lineDef && !!lineDef.Columns ? lineDef.Columns.map((_, index) => index + '') : [];
     }
+  }
+
+  public columnTemplates(lineDefId: string, model: DocumentForSave, header: TemplateRef<any>, row: TemplateRef<any>): {
+    [index: string]: {
+      headerTemplate: TemplateRef<any>,
+      rowTemplate: TemplateRef<any>,
+      weight: number,
+      argument: number
+    }
+  } {
+
+    const templates: {
+      [index: string]: {
+        headerTemplate: TemplateRef<any>,
+        rowTemplate: TemplateRef<any>,
+        weight: number,
+        argument: number
+      }
+    } = {};
+
+    // Add as many templates as there are columns
+    const columnCount = this.columnPaths(lineDefId, model).length;
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+      templates[colIndex + ''] = {
+        headerTemplate: header,
+        rowTemplate: row,
+        weight: 1,
+        argument: colIndex
+      };
+    }
+
+    return templates;
+  }
+
+  public tableMinWidth(lineDefId: string, model: DocumentForSave): number {
+    return this.columnPaths(lineDefId, model).length * 120; // Apprx. = the width of the table on a large screen divided by 7 fields
   }
 
   private lineDefinition(lineDefId: string) {
@@ -1280,9 +1317,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (def.TableName === 'Lines') {
         entity = line;
       } else if (def.TableName === 'Entries') {
-        if (!line.Entries[def.EntryNumber]) {
-          line.Entries[def.EntryNumber] = {};
-        }
+        // if (!line.Entries[def.EntryNumber]) {
+        //   line.Entries[def.EntryNumber] = {};
+        // }
         entity = line.Entries[def.EntryNumber];
       }
     }
@@ -1293,9 +1330,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public entry(lineDefId: string, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     if (!!colDef && colDef.TableName === 'Entries') {
-      if (!line.Entries[colDef.EntryNumber]) {
-        line.Entries[colDef.EntryNumber] = {};
-      }
+      // if (!line.Entries[colDef.EntryNumber]) {
+      //   line.Entries[colDef.EntryNumber] = {};
+      // }
 
       return line.Entries[colDef.EntryNumber];
     }
@@ -1306,6 +1343,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public agentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.AgentDefinitionId ? [entryDef.AgentDefinitionId] : [];
+  }
+
+  public resourcesFilter(lineDefId: string, columnIndex: number): string {
+    // TODO: if the AccountTypeParent.IsResourceClassification = false, no filter
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.AccountTypeParentCode ? `AccountType/Node descof ${entryDef.AccountTypeParentCode}` : null;
   }
 
   public serverErrors(lineDefId: string, columnIndex: number, line: LineForSave) {

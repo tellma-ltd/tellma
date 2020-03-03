@@ -3698,9 +3698,9 @@ namespace Tellma.Data
             var props = typeof(EntryForSave).GetMappedProperties();
             while (await reader.ReadAsync())
             {
-                var index = reader.GetInt32(2);
+                var index = reader.GetInt32(0);
                 var lineIndex = reader.GetInt32(1);
-                var documentIndex = reader.GetInt32(0);
+                var documentIndex = reader.GetInt32(2);
 
                 var entry = documents[documentIndex].Lines[lineIndex].Entries[index];
 
