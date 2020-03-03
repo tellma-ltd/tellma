@@ -28,8 +28,8 @@
 	[Quantity0]					DECIMAL (19,4),
 	[UnitId0]					INT,
 	[Value0]					DECIMAL (19,4),-- equivalent in functional currency		
-	[Time10]					TIME (0),	-- from time
-	[Time20]					TIME (0),	-- to time
+	[Time10]					DATETIME2 (2),	-- from time
+	[Time20]					DATETIME2 (2),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
 	[AdditionalReference0]		NVARCHAR (50),
 	[NotedAgentId0]				INT,
@@ -50,8 +50,8 @@
 	[Quantity1]					DECIMAL (19,4),
 	[UnitId1]					INT,
 	[Value1]					DECIMAL (19,4),-- equivalent in functional currency		
-	[Time11]					TIME (0),	-- from time
-	[Time21]					TIME (0),	-- to time
+	[Time11]					DATETIME2 (2),	-- from time
+	[Time21]					DATETIME2 (2),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
 	[AdditionalReference1]		NVARCHAR (51),
 	[NotedAgentId1]				INT,
@@ -73,8 +73,8 @@
 	[UnitId2]					INT,
 	[Value2]					DECIMAL (19,4),-- equivalent in functional currency
 	[RelatedDate2]				DATE,
-	[Time12]					TIME (0),	-- from time
-	[Time22]					TIME (0),	-- to time
+	[Time12]					DATETIME2 (2),	-- from time
+	[Time22]					DATETIME2 (2),	-- to time
 	[ExternalReference2]		NVARCHAR (52),
 	[AdditionalReference2]		NVARCHAR (52),
 	[NotedAgentId2]				INT,

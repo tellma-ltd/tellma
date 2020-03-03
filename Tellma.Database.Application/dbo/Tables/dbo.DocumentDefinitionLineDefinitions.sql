@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[DocumentDefinitionLineDefinitions]
 (
 	[Id]					INT				CONSTRAINT [PK_DocumentDefinitionLineDefinitions] PRIMARY KEY IDENTITY,
-	[DocumentDefinitionId]	NVARCHAR (50),
-	[LineDefinitionId]		NVARCHAR (50),
+	[DocumentDefinitionId]	NVARCHAR (50) CONSTRAINT [FK_DocumentDefinitionLineDefinitions_DocumentDefinitionId] REFERENCES dbo.DocumentDefinitions([Id]),
+	[LineDefinitionId]		NVARCHAR (50) CONSTRAINT [FK_DocumentDefinitionLineDefinitions_LineDefinitionId] REFERENCES dbo.LineDefinitions([Id]),
 	UNIQUE ([DocumentDefinitionId], [LineDefinitionId]),
 	[Index]					INT				NOT NULL,
 	[IsVisibleByDefault]	BIT,

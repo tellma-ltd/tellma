@@ -11,7 +11,6 @@
 	[TitlePlural3]						NVARCHAR (255),
 	[AgentDefinitionList]				NVARCHAR (1024),
 	[ResponsibilityTypeList]			NVARCHAR (1024),
---	[AccountTypeCode]		NVARCHAR (255),
 	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX), -- to store SQL code that populates the line
 	[SavedById]			INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitions__SavedById] REFERENCES [dbo].[Users] ([Id]),

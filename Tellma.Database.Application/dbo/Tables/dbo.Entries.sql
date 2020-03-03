@@ -25,8 +25,8 @@
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 
-	[Time1]						TIME (0),	-- from time
-	[Time2]						TIME (0),	-- to time
+	[Time1]						DATETIME2 (2),	-- from time
+	[Time2]						DATETIME2 (2),	-- to time
 
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),

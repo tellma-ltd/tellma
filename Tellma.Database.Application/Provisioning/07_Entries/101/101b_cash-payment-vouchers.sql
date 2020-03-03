@@ -19,64 +19,59 @@ BEGIN -- Inserting
 	--(26,		'2019.01.07',	N'Employees Dec 2018 Salaries Payment')
 	;
 
---(0,2,0,		N'Line.Memo',						N'Memo',					N'البيان',					1,2),
---(1,2,1,		N'Entry[0].CurrencyId',				N'Currency',				N'العملة',					1,2),
---(2,2,2,		N'Entry[0].MonetaryValue',			N'Pay Amount',				N'المبلغ',					1,2),
---(3,2,3,		N'Entry[0].Value',					N'Equiv Amt ($)',			N'($) المعادل',				4,4), 
---(4,2,4,		N'Entry[0].NotedAgentName',			N'Beneficiary',				N'المستفيد',				3,4),
---(5,2,5,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',					1,4),
---(6,2,6,		N'Entry[0].AgentId',				N'Bank/Cashier',			N'البنك/الخزنة',			3,4),
---(7,2,7,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييز الحساب',			3,4),
---(8,2,8,		N'Entry[0].ExternalReference',		N'Check #/Receipt #',		N'رقم الشيك/رقم الإيصال',	3,4),
---(9,2,9,		N'Entry[0].NotedDate'	,			N'Check Date',				N'تاريخ الشيك',				3,4),
---(10,2,10,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4)
+--(0,2,	N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
+--(1,2,	N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
+--(2,2,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',				N'المبلغ',				1,2),
+--(3,2,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',				N'المستفيد',			3,4),
+--(4,2,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',					N'الغرض',				4,4),
+--(5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',			N'البنك/الخزنة',		3,4),
+--(6,2,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',		N'رقم الشيك/الإيصال',	3,4),
+--(7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',				N'تاريخ الشيك',			5,5),
+--(8,2,	N'Entries',	N'Value',				0,	N'Equiv Amt ($)',			N'($) المعادل',			4,4);
 	-- Requesting
 	EXEC master.sys.sp_set_session_context 'UserId', @mohamad_akra;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 665,
-		[Value0] = 12.55,
 		[NotedAgentName0] = N'The family shawerma',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'49',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[Value0] = 12.55
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 500,
-		[Value0] = 9.09,
 		[NotedAgentName0] = N'هيثم عوض محمد',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'00540',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[Value0] = 9.09
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 1380,
-		[Value0] = 25.09,
 		[NotedAgentName0] = N'720مطاعم صابرين 660- شاورما العائلة',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'00540',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[Value0] = 25.09
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @USD,
@@ -84,12 +79,11 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'Mohammed Kamil',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'121109',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[ExternalReference0] = N'121109'
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @USD,
@@ -97,36 +91,33 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'Ahmad AbdusSalam',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'121110',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[ExternalReference0] = N'121110'
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 55000,
-		[Value0] = 1000,
 		[NotedAgentName0] = N'Former guards',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'121111',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[Value0] = 1000
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
 
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'CashPayment';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 1011,
-		[Value0] = 1000,
 		[NotedAgentName0] = N'Court',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'GV-123',
-		[ResponsibilityCenterId0] = (SELECT MIN([Id]) FROM dbo.ResponsibilityCenters WHERE IsActive = 1)
+		[Value0] = 1000
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
 	EXEC [api].[Documents__Save]

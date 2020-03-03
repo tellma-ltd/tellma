@@ -7,9 +7,9 @@ BEGIN
 	(1, @EmployeeBenefitsExpense,		N'Labor (hourly)');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
-			[UnitId],						[Multiplier]) VALUES
-	(0, 0, dbo.fn_UnitName__Id(N'wmo'),		1),
-	(0, 1, dbo.fn_UnitName__Id(N'hr'),		1);;
+			[UnitId],	[Multiplier]) VALUES
+	(0, 0, @WorkMonth,	1),
+	(0, 1, @Hour,		1);;
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = N'employee-benefits-expenses',
@@ -25,7 +25,7 @@ BEGIN
 
 	SELECT @BasicSalary = [Id] FROM dbo.Resources WHERE [Name] = N'Basic';
 	SELECT @TransportationAllowance = [Id] FROM dbo.Resources WHERE [Name] = N'Transportation Allowance';
-	SELECT @DataPackage = [Id] FROM dbo.Resources WHERE [Name] = N'Data package';
+	SELECT @DataPackage = [Id] FROM dbo.Resources WHERE [Name] = N'Data Package';
 	SELECT @MealAllowance = [Id] FROM dbo.Resources WHERE [Name] = N'Meal Allowance';
 	SELECT @HourlyWage = [Id] FROM dbo.Resources WHERE [Name] = N'Labor (hourly)';
 

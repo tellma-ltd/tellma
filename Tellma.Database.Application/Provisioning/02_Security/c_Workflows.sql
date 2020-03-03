@@ -15,10 +15,10 @@ BEGIN
 
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(2, N'CashPayment',	+1),-- Requested
-	(3, N'CashPayment',	+2),-- Authorized
-	(4, N'CashPayment',	+3),-- Completed
-	(5, N'CashPayment',	+4);-- Reviewed
+	(2, N'CashPaymentToSupplierAndPurchaseInvoiceVAT',	+1),-- Requested
+	(3, N'CashPaymentToSupplierAndPurchaseInvoiceVAT',	+2),-- Authorized
+	(4, N'CashPaymentToSupplierAndPurchaseInvoiceVAT',	+3),-- Completed
+	(5, N'CashPaymentToSupplierAndPurchaseInvoiceVAT',	+4);-- Reviewed
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
 	[RuleType],			[RoleId],	[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
@@ -28,16 +28,31 @@ BEGIN
 	(0, 5, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
 	INSERT INTO @Workflows([Index],
-	[LineDefinitionId],		ToState) Values
-	(6, N'PettyCashPayment',+2),
-	(7, N'PettyCashPayment',+3),
-	(8, N'PettyCashPayment',+4);
+	[LineDefinitionId], ToState) Values
+	(6, N'CashPaymentToOther',	+1),-- Requested
+	(7, N'CashPaymentToOther',	+2),-- Authorized
+	(8, N'CashPaymentToOther',	+3),-- Completed
+	(9, N'CashPaymentToOther',	+4);-- Reviewed
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	[RuleType],			[RoleId],	[RuleTypeEntryNumber],	[PredicateType],[PredicateTypeEntryNumber], [Value]) VALUES
-	(0, 6, N'ByRole',	@1GeneralManager,	NULL,			N'ValueGreaterOrEqual',0,					500),
-	(0, 7, N'ByAgent',	NULL,				0,				NULL,			NULL,						NULL), -- Agent0: Cash custodian
-	(0, 8, N'ByRole',	@1Comptroller,		NULL,			NULL,			NULL,						NULL);
+	[RuleType],			[RoleId],	[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
+	(0, 6, N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+	(0, 7, N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+	(0, 8, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+	(0, 9, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+
+
+	--INSERT INTO @Workflows([Index],
+	--[LineDefinitionId],		ToState) Values
+	--(6, N'PettyCashPayment',+2),
+	--(7, N'PettyCashPayment',+3),
+	--(8, N'PettyCashPayment',+4);
+
+	--INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
+	--[RuleType],			[RoleId],	[RuleTypeEntryNumber],	[PredicateType],[PredicateTypeEntryNumber], [Value]) VALUES
+	--(0, 6, N'ByRole',	@1GeneralManager,	NULL,			N'ValueGreaterOrEqual',0,					500),
+	--(0, 7, N'ByAgent',	NULL,				0,				NULL,			NULL,						NULL), -- Agent0: Cash custodian
+	--(0, 8, N'ByRole',	@1Comptroller,		NULL,			NULL,			NULL,						NULL);
 END
 IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

@@ -20,7 +20,7 @@ BEGIN
 	(5,			N'It3aam')
 	;
 	EXEC [api].[Agents__Save]
-		@DefinitionId = N't2-customers',
+		@DefinitionId = N'customers',
 		@Entities = @Customers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 END
@@ -66,5 +66,5 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		@Plastic = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Best Plastic Industry'),
 		@Lifan = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
 
-	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].fi_Agents(N't2-customers', NULL) WHERE [Name] = N'It3aam');
-	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].fi_Agents(N't2-customers', NULL) WHERE [Name] = N'al-Washm');
+	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'It3aam');
+	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'al-Washm');

@@ -1,5 +1,5 @@
 ﻿DECLARE @MeasurementUnits [dbo].MeasurementUnitList;
-DECLARE @WorkMonth INT, @Hour INT;
+
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @MeasurementUnits ([Index],
@@ -179,5 +179,8 @@ BEGIN
 	GOTO Err_Label;
 END;
 
+DECLARE @WorkMonth INT, @Hour INT, @Month INT, @Year INT;
 SELECT @WorkMonth = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'wmo';
+SELECT @Month = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'mo';
 SELECT @Hour = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'hr';
+SELECT @Year = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'yr';
