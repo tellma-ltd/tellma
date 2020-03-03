@@ -15,6 +15,6 @@ export class LegacyTypesDetailsComponent extends DetailsBaseComponent {
   }
 
   public get ws() {
-    return this.workspace.current;
+    return this.workspace.currentTenant;
   }
 }

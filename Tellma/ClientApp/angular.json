@@ -147,6 +147,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "tellma"
+    }
+  },
+  "defaultProject": "tellma",
+  "cli": {
+    "analytics": "11a283f4-ae09-458e-94b4-11ab21da5f0a"
+  }
 }

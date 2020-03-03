@@ -144,7 +144,7 @@
                         <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)">
                             <div class="text-truncate" [style.float]="columnFloat(lineDefId, columnIndex)"
                                 style="float:right;max-width: 200px;"
-                                [ngSwitch]="columnName(lineDefId, columnIndex, line)">
+                                [ngSwitch]="columnName(lineDefId, columnIndex)">
                                 <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                     [itemId]="getFieldValue(lineDefId, columnIndex, line)"
                                     [title]="ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name')">
@@ -214,7 +214,7 @@
                                 <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             </div>
                         </t-restricted>
-                        <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex, line)">
+                        <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-accounts-picker *ngSwitchCase="'AccountId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
