@@ -22,19 +22,28 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			[AgentDefinitionList],
-			[ResponsibilityTypeList],
+			--[AgentDefinitionList],
+			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
 	WHEN MATCHED
 	-- TODO: reduce history table by excluding saves when the data did not change
-		--AND (
-		--t.[TitleSingular] <> s.[TitleSingular] OR	
-		--t.[TitlePlural] <> s.[TitlePlural] OR
-		--...
-		--)
+	-- Completed for main table. Sill needed for weak entities.
+		AND (
+		t.[TitleSingular]				<> s.[TitleSingular] OR	
+		t.[TitlePlural]					<> s.[TitlePlural] OR
+		t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
+		ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
+		ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
+		ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
+		ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
+		ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
+		ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
+		ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
+		ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
+		)
 	THEN
 		UPDATE SET
 			t.[Description]					= s.[Description],
@@ -46,8 +55,8 @@ SET NOCOUNT ON;
 			t.[TitlePlural]					= s.[TitlePlural],
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
-			t.[AgentDefinitionList]			= s.[AgentDefinitionList],
-			t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
+			--t.[AgentDefinitionList]			= s.[AgentDefinitionList],
+			--t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
 			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
@@ -63,8 +72,8 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			[AgentDefinitionList],
-			[ResponsibilityTypeList],
+			--[AgentDefinitionList],
+			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[Script]
 		)
@@ -79,10 +88,52 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
-			s.[AgentDefinitionList],
-			s.[ResponsibilityTypeList],
+			--s.[AgentDefinitionList],
+			--s.[ResponsibilityTypeList],
 			s.[AllowSelectiveSigning],
 			s.[Script]
+		);
+
+	MERGE [dbo].[LineDefinitionEntries] AS t
+	USING (
+		SELECT
+			LDE.[Id],
+			LD.[Id] AS [LineDefinitionId],
+			LDE.[EntryNumber],
+			LDE.[Direction]	,
+			LDE.[AccountTypeParentCode]	,
+			LDE.[AgentDefinitionId],
+			LDE.[EntryTypeCode]
+		FROM @LineDefinitionEntries LDE
+		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
+	) AS s
+	ON s.[Id] = t.[Id]
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[EntryNumber]				= s.[EntryNumber],
+			t.[Direction]				= s.[Direction],
+			t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
+			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
+			t.[EntryTypeCode]			= s.[EntryTypeCode],
+			t.[SavedById]				= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[LineDefinitionId],
+			[EntryNumber],
+			[Direction],
+			[AccountTypeParentCode]	,
+			[AgentDefinitionId],
+			[EntryTypeCode]
+		)
+		VALUES (
+			s.[LineDefinitionId],
+			s.[EntryNumber],
+			s.[Direction],
+			s.[AccountTypeParentCode],
+			s.[AgentDefinitionId],
+			s.[EntryTypeCode]
 		);
 
 	MERGE [dbo].[LineDefinitionColumns] AS t
@@ -120,52 +171,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryNumber], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState])
 		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryNumber], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState]);
-
-	MERGE [dbo].[LineDefinitionEntries] AS t
-	USING (
-		SELECT
-			LDE.[Id],
-			LD.[Id] AS [LineDefinitionId],
-			LDE.[EntryNumber],
-			LDE.[Direction]	,
-			LDE.[AccountTypeParentCode]	,
-			LDE.[AccountTagId],
-			LDE.[AgentDefinitionId],
-			LDE.[EntryTypeCode]
-		FROM @LineDefinitionEntries LDE
-		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
-	) AS s
-	ON s.[Id] = t.[Id]
-	WHEN MATCHED THEN
-	UPDATE SET
-		t.[EntryNumber]				= s.[EntryNumber],
-		t.[Direction]				= s.[Direction],
-		t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
-		t.[AccountTagId]			= s.[AccountTagId],
-		t.[AgentDefinitionId]		= s.[AgentDefinitionId],
-		t.[EntryTypeCode]			= s.[EntryTypeCode],
-		t.[SavedById]				= @UserId
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-		[LineDefinitionId],
-		[EntryNumber],
-		[Direction],
-		[AccountTypeParentCode]	,
-		[AccountTagId],
-		[AgentDefinitionId],
-		[EntryTypeCode]
-	)
-    VALUES (
-		s.[LineDefinitionId],
-		s.[EntryNumber],
-		s.[Direction],
-		s.[AccountTypeParentCode],
-		s.[AccountTagId],
-		s.[AgentDefinitionId],
-		s.[EntryTypeCode]
-	);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (

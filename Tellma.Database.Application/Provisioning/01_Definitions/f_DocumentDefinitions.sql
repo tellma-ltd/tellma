@@ -15,36 +15,51 @@ BEGIN
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
+	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',		N'CRV'),
+	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',N'RRV');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	N'ManualLine',		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);
+			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',						1),
+	(0,1,	N'CashPayment',						1),
+	(1,1,	N'ManualLine',						1),
+	(2,1,	N'PurchaseInvoice',					0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',				1),
+	(0,3,	N'LeaseOutInvoiceAndIssueWithVAT',	1),
+	(1,3,	N'LeaseOutInvoiceAndIssueNoVAT',	1),
+	(2,3,	N'ManualLine',						0);
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(3,	N'cash-receipt-vouchers',	N'Cash Receipt Voucher',	N'ورقة قبض نقدي',	N'Cash Receipt Vouchers',	N'أوراق قبض نقدية',	N'CRV'),
-	(4,	N'sales-vouchers',			N'Sales Voucher',			N'ورقة مبيعات',		N'Sales Vouchers',			N'أوراق مبيعات',		N'SV');
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],				[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',		N'JV'),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'ورقة دفع نقدي',		N'Cash Payment Vouchers',		N'أوراق دفع نقدية',		N'CPV'),
+--	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',		N'ورقة دفع نثرية',		N'Petty Cash Vouchers',			N'أوراق دفع نثريات',		N'PCV'),
+	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',		N'CRV'),
+	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',N'RRV');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],		[IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',			1),
-	(0,1,	N'CashPayment',			1),
-	(1,1,	N'ManualLine',			1),
-	(2,1,	N'PurchaseInvoice',		0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',	1),
-	(0,3,	N'CashReceipt',			1),
-	(0,4,	N'DomesticSales',		1), -- with VAT
-	(1,4,	N'InternationalSales',	1); -- without VAT
+			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',						1),
+	-- cash-payment-vouchers
+	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',0), -- if goods were received, then fill a separate GRN/GRIV
+	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
+	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
+	(3,1,	N'ManualLine',						0),
+	---- petty-cash-vouchers, if we define max Value for a cash custodian, it can be merged with above
+	--(0,2,	N'PettyCashPaymentToSupplierAndPurchaseInvoiceVAT',0),
+	--(1,2,	N'PettyCashPaymentToOther',			1), -- for non-suppliers
+	--(2,2,	N'ManualLine',						0),
+	-- cash-receipt-vouchers
+	(0,3,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
+	(1,3,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
+	(2,3,	N'CashReceiptFromOther',			0), -- for non-customers
+	-- revenue-recognition-vouchers, for revenue recognition
+	(0,4,	N'LeaseOutIssue',					1), -- for tax visible customers
+	(1,4,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
+	(2,4,	N'ManualLine',						0);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

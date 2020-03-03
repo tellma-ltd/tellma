@@ -21,7 +21,7 @@ BEGIN
 	--EXEC bll.[WideLines__Preprocess] @WideLines;
 
 	DECLARE @LineDefinitionId NVARCHAR (50);
-	DECLARE @Script NVARCHAR (500);
+	DECLARE @Script NVARCHAR (MAX);
 
 	SELECT @LineDefinitionId = MIN([DefinitionId])
 	FROM @WideLines WL
@@ -88,7 +88,7 @@ BEGIN
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
 	JOIN dbo.Agents AG ON D.AgentId = AG.Id
-	WHERE LDE.[AccountTagId] LIKE N'%' + AG.DefinitionId +'%'
+	WHERE LDE.[AgentDefinitionId] LIKE N'%' + AG.DefinitionId +'%'
 			
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]

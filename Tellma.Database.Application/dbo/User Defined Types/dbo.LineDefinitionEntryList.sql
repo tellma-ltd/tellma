@@ -6,7 +6,6 @@
 	[EntryNumber]				INT		CHECK([EntryNumber] >= 0),
 	[Direction]					SMALLINT,
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
-	[AccountTagId]				NCHAR (4),
 	[AgentDefinitionId]			NVARCHAR (50),
 	[EntryTypeCode]				NVARCHAR (255)
 );

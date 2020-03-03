@@ -53,7 +53,7 @@ BEGIN
 			[NotedAgentSource0] = [AgentId1],
 			[AccountIdentifier1] = [ExternalReference0],
 			[MonetaryValue1] = [NotedAmount0],
-			[MonetaryValue2] = [NotedAmount0] + [MonetaryAmount0]
+			[MonetaryValue2] = [NotedAmount0] + [MonetaryValue0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 1;
@@ -79,7 +79,7 @@ SET [Script] = N'
 		[NotedAgentSource0] = [AgentId1],
 		[AccountIdentifier1] = [ExternalReference0],
 		[MonetaryValue1] = [NotedAmount0],
-		[MonetaryValue2] = [NotedAmount0] + [MonetaryAmount0]
+		[MonetaryValue2] = [NotedAmount0] + [MonetaryValue0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
@@ -205,7 +205,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		UPDATE @ProcessedWideLines
 		SET
 			[NotedAgentId0]				= [AgentId1],
-			[MonetaryAmount0]			= 0.02 * [NotedAmount0],
+			[MonetaryValue0]			= 0.02 * [NotedAmount0],
 			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
 			[ExternalReference1]		= [ExternalReference0],
 			[CurrencyId1]				= [CurrencyId0]
@@ -243,7 +243,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		UPDATE @ProcessedWideLines
 		SET
 			[NotedAgentId0]				= [AgentId1],
-			[MonetaryAmount1]			= [MonetaryAmount0],
+			[MonetaryValue1]			= [MonetaryValue0],
 			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
@@ -263,7 +263,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(4,6,4,		N'Entries', N'Quantity',			0,	N'Quantity',			N'الكمية',				1,4),
 	(5,6,5,		N'Entries', N'UnitId',				0,	N'Unit',				N'الوحدة',				1,4),
 	(6,6,6,		N'Entries', N'CurrencyId',			0,	N'Currency',			N'العملة',				4,4),
-	(7,6,7,		N'Entries', N'MonetaryAmount',		0,	N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
+	(7,6,7,		N'Entries', N'MonetaryValue',		0,	N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
 	(8,6,8,		N'Entries', N'ResponsibilityCenterId',0,N'Responsibility Center',N'مركز المسؤولية',	0,4);
 
 	-- GRIV
@@ -281,7 +281,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		UPDATE @ProcessedWideLines
 		SET
 			[NotedAgentId0]				= [AgentId1],
-			[MonetaryAmount1]			= [MonetaryAmount0],
+			[MonetaryValue1]			= [MonetaryValue0],
 			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----

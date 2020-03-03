@@ -45,8 +45,9 @@ END
 :r .\03_Basic\b_MeasurementUnits.sql
 :r .\03_Basic\c_Lookups.sql
 
-:r .\04_Resources\101_employee-benefits.sql
 :r .\04_Resources\101_property-plant-and-equipment.sql
+:r .\04_Resources\101_employee-benefits.sql
+:r .\04_Resources\101_services-expenses.sql
 :r .\04_Resources\102_employee-benefits.sql
 :r .\04_Resources\102_property-plant-and-equipment.sql
 :r .\04_Resources\104_finished_goods.sql
@@ -79,7 +80,8 @@ END
 
 :r .\07_Entries\101\101a_manual-journal-vouchers.sql
 :r .\07_Entries\101\101b_cash-payment-vouchers.sql
-:r .\07_Entries\101\101c_petty-cash-vouchers.sql
+--:r .\07_Entries\101\101c_petty-cash-vouchers.sql
+:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 
 INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], [OrderBy], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
 (N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 12',NULL,0,1,0),

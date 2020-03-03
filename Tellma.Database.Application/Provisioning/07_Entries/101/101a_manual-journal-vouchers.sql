@@ -10,8 +10,8 @@ BEGIN -- Inserting
 	(8,			'2019.01.05',	N'Garden maintenance'),
 	(9,			'2019.01.05',	N'Electricity'),
 	(10,		'2019.01.06',	N'Paid employees Income Tax for Feb-Dec 2018'),
-	(11,		'2019.01.06',	N'Received remaining amount of second Itaam Invoice'),
-	(12,		'2019.01.06',	N'Recognize Washim Revenue 6/1/19')
+	(11,		'2019.01.06',	N'Received remaining amount of second Itaam Invoice')
+
 	--(13,		'2019.01.06',	N'Sold USD and received in BOK'),
 	--(13,		'2019.01.06',	N'Employees Dec 2018 Salaries Payment'),
 	--(13,		'2019.01.06',	N'Received 58,451 AED from Mahara for period Jan 1, 2019 - Jun 30, 2019')
@@ -32,8 +32,7 @@ BEGIN -- Inserting
 	(0,			8,				N'ManualLine'),(1,			8,				N'ManualLine'),
 	(0,			9,				N'ManualLine'),(1,			9,				N'ManualLine'),
 	(0,			10,				N'ManualLine'),(1,			10,				N'ManualLine'),(2,			10,				N'ManualLine'),
-	(0,			11,				N'ManualLine'),(1,			11,				N'ManualLine'),
-	(0,			12,				N'ManualLine'),(1,			12,				N'ManualLine');
+	(0,			11,				N'ManualLine'),(1,			11,				N'ManualLine');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
@@ -61,10 +60,7 @@ BEGIN -- Inserting
 	(0, 2, 10,0,-1,@1BOK,		@PaymentsToAndOnBehalfOfEmployees,					NULL,		@SDG,			15901.4,			381.22),
 	
 	(0, 0, 11,0,+1,@1GMFund,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices, 	NULL,		@USD,			2500,				2500),--
-	(0, 1, 11,0,-1,@1T2ARUSD,	NULL,												@It3am,		NULL,			2500,				2500),
-	
-	(0, 0, 12,0,+1,@1T2ARUSD,	NULL, 												@Washm,		NULL,			4985,				4985),--
-	(0, 1, 12,0,-1,@1Revenues,	NULL,												@1Babylon,	@USD,			4985,				4985);
+	(0, 1, 11,0,-1,@1AR,		NULL,												@It3am,		@USD,			2500,				2500);
 
 	IF @DB = N'101' -- Banan SD, USD, en
 	BEGIN
