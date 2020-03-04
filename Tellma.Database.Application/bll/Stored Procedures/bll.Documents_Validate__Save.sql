@@ -20,8 +20,8 @@ SET NOCOUNT ON;
 	-- For functional currency, the monetary value must be equal to value
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Value' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].Value',
 		N'Error_TheMonetaryValueDoesNotMatchValue'
 	FROM @Entries E
 	WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
@@ -95,8 +95,8 @@ SET NOCOUNT ON;
 	-- If Account HasAgent = 1, then AgentId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].AgentId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].AgentId',
 		N'Error_TheAgentIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
@@ -106,14 +106,12 @@ SET NOCOUNT ON;
 	-- If Account HasResource = 1, then ResourceId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].ResourceId',
 		N'Error_TheResourceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[ResourceId] IS NULL)
 	AND (A.[HasResource] = 1);
 
-
-	
 	SELECT TOP (@Top) * FROM @ValidationErrors;
