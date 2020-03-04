@@ -533,7 +533,7 @@
     <value>السطر</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
-    <value>المبلغ النقدي</value>
+    <value>المبلغ</value>
   </data>
   <data name="Entry_NotedAgent" xml:space="preserve">
     <value>الذمة المعنية</value>
@@ -938,7 +938,7 @@
     <value>المستند</value>
   </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>المبلغ النقدي</value>
+    <value>المبلغ</value>
   </data>
   <data name="Line_Quantity" xml:space="preserve">
     <value>الكمية</value>

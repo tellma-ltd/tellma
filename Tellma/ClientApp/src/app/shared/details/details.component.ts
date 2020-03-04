@@ -102,6 +102,12 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   @Input()
   theme: 'light' | 'dark' = 'light';
 
+  // @Input()
+  // urlStateChange: Observable<void>; // Must be set only once
+
+  // @Input()
+  // urlState: () => Params;
+
   @Output()
   saved = new EventEmitter<number | string>();
 
@@ -117,7 +123,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   @ViewChild('unsavedChangesModal', { static: true })
   unsavedChangesModal: TemplateRef<any>;
 
-  private paramMapSubscription: Subscription;
+  private _subscriptions: Subscription;
   private _editModel: EntityForSave;
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
@@ -199,7 +205,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this.registerPristineFunc(null);
 
-    this.paramMapSubscription = this.route.paramMap.subscribe((params: ParamMap) => {
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
       if (this.isScreenMode && params.has('id')) {
@@ -216,7 +223,19 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
           }
         }
       }
-    });
+    }));
+
+    // // Hook the refresh event
+    // if (!!this.urlStateChange) {
+    //   this._subscriptions.add(this.urlStateChange.pipe(
+    //     tap(_ => {
+    //       if (!this.isEdit) {
+    //         const params: Params = this.urlState || { };
+    //         this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    //       }
+    //     }))
+    //     .subscribe());
+    // }
 
     // Fetch the data of the screen based on apiEndpoint and idString
     this.fetch();
@@ -226,8 +245,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     // cancel any backend operations
     this.notifyDestruct$.next();
 
-    if (!!this.paramMapSubscription) {
-      this.paramMapSubscription.unsubscribe();
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
     }
   }
 

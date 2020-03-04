@@ -686,6 +686,7 @@ export class MasterDetailsStore {
 
   detailsId: string | number;
   detailsStatus: DetailsStatus;
+  tab?: string; // details that have tabs may store the tab value here
 
   public get isTreeMode(): boolean {
     return this.displayMode === MasterDisplayMode.tree && (!this.orderby || this.orderby === 'Node');
