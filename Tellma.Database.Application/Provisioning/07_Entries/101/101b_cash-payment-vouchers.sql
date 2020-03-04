@@ -206,7 +206,7 @@ BEGIN -- Inserting
 	EXEC [api].[Documents__Assign] 
 		@IndexedIds = @DocsIndexedIds,
 		@AssigneeId = @jiad_akra,
-		@Comment = N'For your review',
+		@Comment = N'For your care',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
@@ -234,121 +234,121 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
-	INSERT INTO @D([Index], [Id], [DocumentDate], [Memo])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id],[DocumentDate], [Memo]
-	FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
+	--DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
+	--INSERT INTO @D([Index], [Id], [DocumentDate], [Memo])
+	--SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id],[DocumentDate], [Memo]
+	--FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
 
-	INSERT INTO @L([Index],	[DocumentIndex],
-		[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
-		[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, (SELECT [Index] FROM @D WHERE [Id] = L.[DocumentId]), 
-		[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
-		[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
-	FROM dbo.Lines L
-	WHERE DocumentId IN (SELECT [Id] FROM @D)
+	--INSERT INTO @L([Index],	[DocumentIndex],
+	--	[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
+	--	[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
+	--SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, (SELECT [Index] FROM @D WHERE [Id] = L.[DocumentId]), 
+	--	[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
+	--	[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
+	--FROM dbo.Lines L
+	--WHERE DocumentId IN (SELECT [Id] FROM @D)
 
-	INSERT INTO @E(
-		[Index],
-		[LineIndex],
-		[DocumentIndex],
-		[Id],
-		[Direction],
-		[AgentId],
-		[ResourceId],
-		[ResponsibilityCenterId],
-		--[AccountIdentifier],
-		--[ResourceIdentifier],
-		[CurrencyId],
-		[EntryTypeId],
-		[DueDate],
-		[MonetaryValue],
-		[Quantity],
-		[UnitId],
-		[Value],
-		[Time1],
-		[Time2],
-		[ExternalReference],
-		[AdditionalReference],
-		[NotedAgentId],
-		[NotedAgentName],
-		[NotedAmount],
-		[NotedDate])
-	SELECT
-		ROW_NUMBER() OVER(ORDER BY [Id]) - 1 AS [Index],
-		(SELECT [Index] FROM @L WHERE [Id] = E.[LineId]) AS [LineIndex],
-		(SELECT [Index] FROM @D WHERE [Id] IN (
-			SELECT [Id] FROM dbo.Lines WHERE [Index] = (
-				SELECT [Index] FROM @L WHERE [Id] = E.[LineId]
-			))) AS [DocumentIndex],
-		[Id],
-		[Direction],
-		[AgentId],
-		[ResourceId],
-		[ResponsibilityCenterId],
-		--[AccountIdentifier],
-		--[ResourceIdentifier],
-		[CurrencyId],
-		[EntryTypeId],
-		[DueDate],
-		[MonetaryValue],
-		[Quantity],
-		[UnitId],
-		[Value],
-		[Time1],
-		[Time2],
-		[ExternalReference],
-		[AdditionalReference],
-		[NotedAgentId],
-		[NotedAgentName],
-		[NotedAmount],
-		[NotedDate]
-	FROM dbo.Entries E
-	WHERE LineId IN (SELECT [Id] FROM @L)
+	--INSERT INTO @E(
+	--	[Index],
+	--	[LineIndex],
+	--	[DocumentIndex],
+	--	[Id],
+	--	[Direction],
+	--	[AgentId],
+	--	[ResourceId],
+	--	[ResponsibilityCenterId],
+	--	--[AccountIdentifier],
+	--	--[ResourceIdentifier],
+	--	[CurrencyId],
+	--	[EntryTypeId],
+	--	[DueDate],
+	--	[MonetaryValue],
+	--	[Quantity],
+	--	[UnitId],
+	--	[Value],
+	--	[Time1],
+	--	[Time2],
+	--	[ExternalReference],
+	--	[AdditionalReference],
+	--	[NotedAgentId],
+	--	[NotedAgentName],
+	--	[NotedAmount],
+	--	[NotedDate])
+	--SELECT
+	--	ROW_NUMBER() OVER(ORDER BY [Id]) - 1 AS [Index],
+	--	(SELECT [Index] FROM @L WHERE [Id] = E.[LineId]) AS [LineIndex],
+	--	(SELECT [Index] FROM @D WHERE [Id] IN (
+	--		SELECT [Id] FROM dbo.Lines WHERE [Index] = (
+	--			SELECT [Index] FROM @L WHERE [Id] = E.[LineId]
+	--		))) AS [DocumentIndex],
+	--	[Id],
+	--	[Direction],
+	--	[AgentId],
+	--	[ResourceId],
+	--	[ResponsibilityCenterId],
+	--	--[AccountIdentifier],
+	--	--[ResourceIdentifier],
+	--	[CurrencyId],
+	--	[EntryTypeId],
+	--	[DueDate],
+	--	[MonetaryValue],
+	--	[Quantity],
+	--	[UnitId],
+	--	[Value],
+	--	[Time1],
+	--	[Time2],
+	--	[ExternalReference],
+	--	[AdditionalReference],
+	--	[NotedAgentId],
+	--	[NotedAgentName],
+	--	[NotedAmount],
+	--	[NotedDate]
+	--FROM dbo.Entries E
+	--WHERE LineId IN (SELECT [Id] FROM @L)
 
-	INSERT INTO @WL
-	EXEC [bll].[Lines__Pivot] @Lines = @L, @Entries = @E
+	--INSERT INTO @WL
+	--EXEC [bll].[Lines__Pivot] @Lines = @L, @Entries = @E
 
-	-- Adding manual lines
-	DELETE FROM @L; DELETE FROM @E;
-	INSERT INTO @L([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(1, 0,				N'ManualLine'),
-	(1, 4,				N'ManualLine'),
-	(1, 5,				N'ManualLine');
+	---- Adding manual lines
+	--DELETE FROM @L; DELETE FROM @E;
+	--INSERT INTO @L([Index], [DocumentIndex], [DefinitionId]) VALUES
+	--(1, 0,				N'ManualLine'),
+	--(1, 4,				N'ManualLine'),
+	--(1, 5,				N'ManualLine');
 
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
-	(0, 1, 0,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
-	(0, 1, 4,0,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
-	(0, 1, 5,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
+	--INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	--			[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
+	--(0, 1, 0,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
+	--(0, 1, 4,0,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
+	--(0, 1, 5,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
 
-	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;
-	EXEC [api].[Documents__Save]
-		@DefinitionId = N'cash-payment-vouchers',
-		@Documents = @D, @Lines = @L, @Entries = @E,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Cash Payment voucher: manual Lines Saving: Draft' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
+	--EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;
+	--EXEC [api].[Documents__Save]
+	--	@DefinitionId = N'cash-payment-vouchers',
+	--	@Documents = @D, @Lines = @L, @Entries = @E,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	--IF @ValidationErrorsJson IS NOT NULL 
+	--BEGIN
+	--	Print 'Cash Payment voucher: manual Lines Saving: Draft' + @ValidationErrorsJson
+	--	GOTO Err_Label;
+	--END;
 
-	DELETE FROM @DocsIndexedIds;
-	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents
-	WHERE DefinitionId = N'cash-payment-vouchers' AND [State] = 0;
+	--DELETE FROM @DocsIndexedIds;
+	--INSERT INTO @DocsIndexedIds([Index], [Id])
+	--SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents
+	--WHERE DefinitionId = N'cash-payment-vouchers' AND [State] = 0;
 
-	DELETE FROM @LinesIndexedIds;
-	INSERT INTO @LinesIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Lines
-	WHERE DefinitionId = N'ManualLine' AND DocumentId IN (SELECT [Id] FROM @DocsIndexedIds)
+	--DELETE FROM @LinesIndexedIds;
+	--INSERT INTO @LinesIndexedIds([Index], [Id])
+	--SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Lines
+	--WHERE DefinitionId = N'ManualLine' AND DocumentId IN (SELECT [Id] FROM @DocsIndexedIds)
 
-	EXEC [api].[Lines__Sign]
-		@IndexedIds = @LinesIndexedIds,
-		@ToState = 3, -- completed
-		@OnBehalfOfuserId = @jiad_akra, -- we allow selecting the user manually, when entering from an external source document
-		@RuleType = N'ByRole',
-		@RoleId = @1Comptroller, -- we allow selecting the role manually, 
-		@SignedAt = @Now,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	--EXEC [api].[Lines__Sign]
+	--	@IndexedIds = @LinesIndexedIds,
+	--	@ToState = 3, -- completed
+	--	@OnBehalfOfuserId = @jiad_akra, -- we allow selecting the user manually, when entering from an external source document
+	--	@RuleType = N'ByRole',
+	--	@RoleId = @1Comptroller, -- we allow selecting the role manually, 
+	--	@SignedAt = @Now,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 END
