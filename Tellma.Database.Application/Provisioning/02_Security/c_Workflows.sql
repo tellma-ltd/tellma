@@ -6,12 +6,10 @@ IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(0, N'ManualLine',		+3),
-	(1, N'ManualLine',		+4);
+	(0, N'ManualLine',		+4);
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RuleType], [RoleId]) VALUES
-	(0, 0, N'ByRole', @1Comptroller),
-	(0, 1, N'ByRole', @1GeneralManager);
+	(0, 0, N'ByRole', @1Comptroller);
 
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
