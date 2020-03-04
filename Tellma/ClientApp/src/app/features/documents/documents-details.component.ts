@@ -1317,7 +1317,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public tableMinWidth(lineDefId: string, model: DocumentForSave): number {
-    return this.columnPaths(lineDefId, model).length * 120; // Apprx. = the width of the table on a large screen divided by 7 fields
+    return this.columnPaths(lineDefId, model).length * 135; // Apprx. = the width of the table on a large screen divided by 7 fields
   }
 
   private lineDefinition(lineDefId: string) {
@@ -1415,12 +1415,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.ReadOnlyState && !!line.State && line.State >= colDef.ReadOnlyState;
+    return !!colDef.ReadOnlyState && line.State >= colDef.ReadOnlyState;
   }
 
   public isRequired(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.RequiredState && !!line.State && line.State >= colDef.RequiredState;
+    return !!colDef.RequiredState && line.State >= colDef.RequiredState;
   }
 
   public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
