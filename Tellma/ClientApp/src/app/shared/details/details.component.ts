@@ -102,12 +102,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   @Input()
   theme: 'light' | 'dark' = 'light';
 
-  // @Input()
-  // urlStateChange: Observable<void>; // Must be set only once
-
-  // @Input()
-  // urlState: () => Params;
-
   @Output()
   saved = new EventEmitter<number | string>();
 
@@ -225,18 +219,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       }
     }));
 
-    // // Hook the refresh event
-    // if (!!this.urlStateChange) {
-    //   this._subscriptions.add(this.urlStateChange.pipe(
-    //     tap(_ => {
-    //       if (!this.isEdit) {
-    //         const params: Params = this.urlState || { };
-    //         this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
-    //       }
-    //     }))
-    //     .subscribe());
-    // }
-
     // Fetch the data of the screen based on apiEndpoint and idString
     this.fetch();
   }
@@ -285,8 +267,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     this.notifyFetch$.next(null);
   }
 
-  private get cloneId(): string {
-    return this.route.snapshot.paramMap.get('cloneId');
+  private getAndCleanCloneId(): string {
+    const cloneId = this.state.cloneId;
+    delete this.state.cloneId;
+    return cloneId;
   }
 
   private doFetch(): Observable<void> {
@@ -297,7 +281,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     const s = this.state;
 
     // calculate some logical values
-    const cloneId = this.cloneId;
+    const cloneId = this.getAndCleanCloneId();
     const isCloning = !!cloneId;
     const isNewNotClone = this.isNew && !isCloning;
     const isCloneOfAvailableItem = isCloning && !!this.workspace.current[this.collection][cloneId];
@@ -629,11 +613,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       return;
     }
 
-    const params: Params = {
-      cloneId: this.activeModel.Id.toString()
-    };
-
-    this.router.navigate(['..', 'new', params], { relativeTo: this.route });
+    this.state.cloneId = this.activeModel.Id.toString();
+    this.router.navigate(['..', 'new'], { relativeTo: this.route });
   }
 
   get canClone(): boolean {

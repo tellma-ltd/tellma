@@ -686,6 +686,8 @@ export class MasterDetailsStore {
 
   detailsId: string | number;
   detailsStatus: DetailsStatus;
+
+  cloneId?: string; // when cloning
   tab?: string; // details that have tabs may store the tab value here
 
   public get isTreeMode(): boolean {

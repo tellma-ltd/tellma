@@ -145,7 +145,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   ngOnInit() {
 
-    const handleFreshUrlState = (params: ParamMap) => {
+    const handleFreshStateFromUrl = (params: ParamMap) => {
       if (this.isScreenMode) {
         // Definitoin Id
         const definitionId = params.get('definitionId');
@@ -165,14 +165,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     };
 
-    handleFreshUrlState(this.route.snapshot.paramMap); // right now
-    this.route.paramMap.pipe(skip(1)).subscribe(handleFreshUrlState); // future changes
+    handleFreshStateFromUrl(this.route.snapshot.paramMap); // right now
+    this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl); // future changes
   }
 
   public onTabChange(newTabId: string, isEdit: boolean) {
     this.activeTab = newTabId;
 
-    if (!isEdit) {
+    if (this.isScreenMode && !isEdit) {
       // Capture the new tab id in the URL
       const params: Params = {
         tab: newTabId
