@@ -98,7 +98,7 @@
         </div>
     </t-form-group>    
 
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="activeTab" (activeIdChange)="tabChange($event)">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="activeTab" (activeIdChange)="onTabChange($event, isEdit)">
         <li *ngFor="let lineDefId of lineDefinitionIds(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
@@ -411,7 +411,7 @@
 
                         <!-- Monetary Value -->
                         <ng-container *ngIf="showMonetaryValue(entry)">
-                            <t-form-group-dynamic label="=" [serverErrors]="entry.serverErrors?.MonetaryValue">
+                            <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate" [serverErrors]="entry.serverErrors?.MonetaryValue">
                                 <!-- View -->
                                 <ng-container *ngIf="!isEdit">
                                     <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
@@ -428,10 +428,13 @@
                                     </t-decimal-editor>
                                 </ng-container>
                                 <!-- Readonly Currency -->
-                                &nbsp;
-                                <t-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
-                                    {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
-                                </t-restricted>
+                                <ng-container *ngIf="!showCurrency(entry)">
+                                    &nbsp;
+                                    <t-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
+                                        {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
+                                    </t-restricted>
+
+                                </ng-container>
                                 &nbsp;&nbsp;
                             </t-form-group-dynamic>
                         </ng-container>

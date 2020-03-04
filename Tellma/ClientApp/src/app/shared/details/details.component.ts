@@ -117,7 +117,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   @ViewChild('unsavedChangesModal', { static: true })
   unsavedChangesModal: TemplateRef<any>;
 
-  private paramMapSubscription: Subscription;
+  private _subscriptions: Subscription;
   private _editModel: EntityForSave;
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
@@ -199,7 +199,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this.registerPristineFunc(null);
 
-    this.paramMapSubscription = this.route.paramMap.subscribe((params: ParamMap) => {
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
       if (this.isScreenMode && params.has('id')) {
@@ -216,7 +217,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
           }
         }
       }
-    });
+    }));
 
     // Fetch the data of the screen based on apiEndpoint and idString
     this.fetch();
@@ -226,8 +227,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     // cancel any backend operations
     this.notifyDestruct$.next();
 
-    if (!!this.paramMapSubscription) {
-      this.paramMapSubscription.unsubscribe();
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
     }
   }
 
@@ -266,8 +267,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     this.notifyFetch$.next(null);
   }
 
-  private get cloneId(): string {
-    return this.route.snapshot.paramMap.get('cloneId');
+  private getAndCleanCloneId(): string {
+    const cloneId = this.state.cloneId;
+    delete this.state.cloneId;
+    return cloneId;
   }
 
   private doFetch(): Observable<void> {
@@ -278,7 +281,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     const s = this.state;
 
     // calculate some logical values
-    const cloneId = this.cloneId;
+    const cloneId = this.getAndCleanCloneId();
     const isCloning = !!cloneId;
     const isNewNotClone = this.isNew && !isCloning;
     const isCloneOfAvailableItem = isCloning && !!this.workspace.current[this.collection][cloneId];
@@ -610,11 +613,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       return;
     }
 
-    const params: Params = {
-      cloneId: this.activeModel.Id.toString()
-    };
-
-    this.router.navigate(['..', 'new', params], { relativeTo: this.route });
+    this.state.cloneId = this.activeModel.Id.toString();
+    this.router.navigate(['..', 'new'], { relativeTo: this.route });
   }
 
   get canClone(): boolean {

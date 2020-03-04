@@ -137,8 +137,8 @@
         <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
         <ng-template #row_RoleId let-item="item" let-index="index" let-update="update">
           <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.RoleId">
-            <t-restricted [metadata]="item.EntityMetadata?.Role">
-              <t-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{
+            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.Role">
+              <t-view-link link="../../roles" [itemId]="item?.RoleId">{{
               ws.getMultilingualValue('Role',
               item.RoleId, 'Name') }}</t-view-link>
             </t-restricted>

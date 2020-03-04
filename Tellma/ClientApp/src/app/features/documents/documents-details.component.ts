@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
@@ -13,7 +13,7 @@ import { LineForSave, Line } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, FriendlyError } from '~/app/data/util';
-import { tap, catchError, finalize, takeUntil } from 'rxjs/operators';
+import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
@@ -56,6 +56,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
   private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
+  private localState = new MasterDetailsStore();  // Used in popup mode
 
   // Caching for required signature functions
   private _requiredSignaturesDetailed: RequiredSignature[];
@@ -84,8 +85,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public comment: string;
   public picSize = 36;
 
-  public activeTab: string;
+  public get activeTab(): string {
+    return this.state.tab;
+  }
 
+  public set activeTab(v: string) {
+    if (this.state.tab !== v) {
+      this.state.tab = v;
+    }
+  }
 
   @Input()
   public set definitionId(t: string) {
@@ -136,29 +144,35 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params: ParamMap) => {
 
+    const handleFreshStateFromUrl = (params: ParamMap) => {
       if (this.isScreenMode) {
-
-        const activeTab = params.get('tab');
-        if (!!activeTab && this.activeTab !== activeTab) {
-          // this.state
-          this.activeTab = activeTab;
-        }
-
+        // Definitoin Id
         const definitionId = params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
         }
+
+        // Active tab
+        if (params.has('tab')) {
+          this.activeTab = params.get('tab');
+        } else {
+          if (!!this.activeTab) {
+            this.onTabChange(this.activeTab, false);
+          }
+        }
       }
-    });
+    };
+
+    handleFreshStateFromUrl(this.route.snapshot.paramMap); // right now
+    this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl); // future changes
   }
 
-  public tabChange(newTabId: string) {
-    if (this.activeTab !== newTabId) {
-      this.activeTab = newTabId;
+  public onTabChange(newTabId: string, isEdit: boolean) {
+    this.activeTab = newTabId;
 
+    if (this.isScreenMode && !isEdit) {
       // Capture the new tab id in the URL
       const params: Params = {
         tab: newTabId
@@ -166,6 +180,33 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
     }
+  }
+
+  public get state(): MasterDetailsStore {
+    // important to always reference the source, and not keep a local reference
+    // on some occasions the source can be reset and using a local reference can cause bugs
+    if (this.isPopupMode) {
+
+      // popups use a local store that vanishes when the popup is destroyed
+      if (!this.localState) {
+        this.localState = new MasterDetailsStore();
+      }
+
+      return this.localState;
+    } else {
+
+      // screen mode on the other hand use the global state
+      return this.globalState;
+    }
+  }
+
+  private get globalState(): MasterDetailsStore {
+    const key = 'documents/' + this.definitionId;
+    if (!this.workspace.current.mdState[key]) {
+      this.workspace.current.mdState[key] = new MasterDetailsStore();
+    }
+
+    return this.workspace.current.mdState[key];
   }
 
   get view(): string {
@@ -1276,7 +1317,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public tableMinWidth(lineDefId: string, model: DocumentForSave): number {
-    return this.columnPaths(lineDefId, model).length * 120; // Apprx. = the width of the table on a large screen divided by 7 fields
+    return this.columnPaths(lineDefId, model).length * 135; // Apprx. = the width of the table on a large screen divided by 7 fields
   }
 
   private lineDefinition(lineDefId: string) {
@@ -1374,12 +1415,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.ReadOnlyState && !!line.State && line.State >= colDef.ReadOnlyState;
+    return line.State >= colDef.ReadOnlyState;
   }
 
   public isRequired(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.RequiredState && !!line.State && line.State >= colDef.RequiredState;
+    return line.State >= colDef.RequiredState;
   }
 
   public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {

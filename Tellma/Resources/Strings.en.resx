@@ -533,7 +533,7 @@
     <value>Line</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
-    <value>Monetary Value</value>
+    <value>Amount</value>
   </data>
   <data name="Entry_NotedAgent" xml:space="preserve">
     <value>Noted Agent</value>
@@ -938,7 +938,7 @@
     <value>Document</value>
   </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>Monetary Value</value>
+    <value>Amount</value>
   </data>
   <data name="Line_Quantity" xml:space="preserve">
     <value>Quantity</value>
