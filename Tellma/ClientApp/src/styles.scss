@@ -268,6 +268,8 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 
 // these are buttons that only have an icon in them
 .t-white-button,
+.t-white-button:focus,
+.t-white-button.focus,
 .t-white-button.disabled,
 .t-white-button:disabled {
   background: transparent;

@@ -353,7 +353,14 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return this._viewsForSelector;
   }
 
-  permissionViewLookup(view: string): string {
-    return this.viewsDb[view].name();
+  permissionViewLookup: (view: string) => string = (view: string) => {
+    if (!view) {
+      return '';
+    } else if (!this.viewsDb[view]) {
+      console.error(`missing view ${view}`);
+      return '';
+    } else {
+      return this.viewsDb[view].name();
+    }
   }
 }

@@ -49,10 +49,10 @@ namespace Tellma.Entities
         public decimal? Value { get; set; }
 
         [Display(Name = "Entry_Time1")]
-        public TimeSpan? Time1 { get; set; }
+        public DateTime? Time1 { get; set; }
 
         [Display(Name = "Entry_Time2")]
-        public TimeSpan? Time2 { get; set; }
+        public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

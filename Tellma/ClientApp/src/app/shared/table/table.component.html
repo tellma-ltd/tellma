@@ -1,5 +1,5 @@
 <div style="overflow-y:hidden" [style.max-height]="tableHeight">
-  <cdk-virtual-scroll-viewport style="min-width: 600px" [itemSize]="itemSize" [style.height]="tableMaxHeight">
+  <cdk-virtual-scroll-viewport [style.min-width.px]="minWidth" [itemSize]="itemSize" [style.height]="tableMaxHeight">
     <table #t class="table table-sm table-striped mb-2 mb-sm-0 text-nowrap">
 
       <!-- Header -->

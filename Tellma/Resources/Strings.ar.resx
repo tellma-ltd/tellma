@@ -1109,13 +1109,13 @@
     <value>إذن</value>
   </data>
   <data name="Permission_Action" xml:space="preserve">
-    <value>نشاط</value>
+    <value>النشاط</value>
   </data>
   <data name="Permission_Create" xml:space="preserve">
     <value>إنشاء</value>
   </data>
   <data name="Permission_Criteria" xml:space="preserve">
-    <value>تقييد</value>
+    <value>التقييد</value>
   </data>
   <data name="Permission_Delete" xml:space="preserve">
     <value>حذف</value>
