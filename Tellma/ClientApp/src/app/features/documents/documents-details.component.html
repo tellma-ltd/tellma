@@ -96,19 +96,19 @@
             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.MemoIsCommon" id="memoIsCommon">
             <label class="custom-control-label t-pointer" for="memoIsCommon">&zwnj;</label>
         </div>
-    </t-form-group>
+    </t-form-group>    
 
-    <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
-        <ngb-tab *ngFor="let lineDefId of lineDefinitionIds(model)">
-            <ng-template ngbTabTitle>
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" (activeIdChange)="tabChange($event)">
+        <li *ngFor="let lineDefId of lineDefinitionIds(model)" [ngbNavItem]="lineDefId">
+            <a ngbNavLink>
                 <span
-                    class="small">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines == 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                    class="small t-slightly-bold">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines == 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
                 <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">&nbsp;<fa-icon
                         icon="exclamation-triangle">
                     </fa-icon>
                 </span>
-            </ng-template>
-            <ng-template ngbTabContent>
+            </a>
+            <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
 
@@ -143,8 +143,7 @@
                     <t-form-group-cell class="t-form-group" [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
                         <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)">
                             <div class="text-truncate" [style.float]="columnFloat(lineDefId, columnIndex)"
-                                style="float:right;max-width: 200px;"
-                                [ngSwitch]="columnName(lineDefId, columnIndex)">
+                                style="float:right;max-width: 200px;" [ngSwitch]="columnName(lineDefId, columnIndex)">
                                 <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                     [itemId]="getFieldValue(lineDefId, columnIndex, line)"
                                     [title]="ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name')">
@@ -186,7 +185,7 @@
                                 <span
                                     *ngSwitchCase="'Quantity'">{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
                                 <span
-                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
+                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('MeasurementUnit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
                                 <span
                                     *ngSwitchCase="'Value'">{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
                                 <span
@@ -203,8 +202,8 @@
                                     [title]="ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name')">
                                     {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                                 </t-view-link>
-                                <span
-                                    *ngSwitchCase="'NotedAgentName'" [title]="getFieldValue(lineDefId, columnIndex, line)">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                                <span *ngSwitchCase="'NotedAgentName'"
+                                    [title]="getFieldValue(lineDefId, columnIndex, line)">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                                 <span
                                     *ngSwitchCase="'NotedAmount'">{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                                 <span
@@ -863,12 +862,12 @@
                 </div>
 
             </ng-template>
-        </ngb-tab>
-        <ngb-tab>
-            <ng-template ngbTabTitle><span
-                    class="small">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
-            </ng-template>
-            <ng-template ngbTabContent>
+        </li>
+        <li [ngbNavItem]="'Attachment'">
+            <a ngbNavLink><span
+                class="small">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
+            </a>
+            <ng-template ngbNavContent>
                 <!-- No Attachments Message -->
                 <div class="p-3 font-italic font-weight-light2 text-muted"
                     *ngIf="!model?.Attachments?.length && !isEdit">
@@ -926,49 +925,15 @@
                 </div>
 
             </ng-template>
-        </ngb-tab>
+        </li>
 
-    </ngb-tabset>
+    </ul>
+    <div class="w-100" [ngbNavOutlet]="tabs">
+
+    </div>
 
     <!-- for the file dialog -->
     <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" />
-
-    <!-- Signatures -->
-    <!-- <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
-        <span class="small font-weight-bold">{{ 'Document_Signatures' | translate }}:</span>
-        <div class="row px-2 px-md-3 px-xl-5">
-            <ng-container *ngFor="let signature of model?.Signatures">
-                <div class="col-12 col-md-6 px-2 px-md-5 mt-3">
-                    <div class="border-bottom d-flex">
-                        <div class="d-flex align-items-center justify-content">
-                            <t-image [src]="'users/' + signature.CreatedById + '/image'"
-                                [imageId]="ws.get('User', signature.CreatedById)?.ImageId" [size]="36" shape="circle">
-                            </t-image>
-                        </div>
-                        <div class="p-2 text-truncate d-flex flex-column">
-                            <span>
-                                <t-view-link link="../../../users" [itemId]="signature.CreatedById">
-                                    {{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}
-                                </t-view-link>
-                                <span *ngIf="!!signature?.OnBehalfOfUserId">
-                                    {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
-                                        [itemId]="signature.OnBehalfOfUserId">
-                                        {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
-                                    </t-view-link></span>
-                            </span>
-                            <t-view-link link="../../../roles" [itemId]="signature.RoleId" class="small">
-                                {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</t-view-link>
-                        </div>
-                    </div>
-                    <div class="px-2">
-                        <span class="small text-muted" [style.margin-left.px]="marginLeft"
-                            [style.margin-right.px]="marginRight"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }}
-                        </span>
-                    </div>
-                </div>
-            </ng-container>
-        </div>
-    </div> -->
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">

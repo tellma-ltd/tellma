@@ -1424,6 +1424,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         return null;
     }
   }
+
+  public tabChange(newTabId: string) {
+    console.log(newTabId);
+  }
 }
 
 /**
