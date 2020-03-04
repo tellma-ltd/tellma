@@ -121,9 +121,16 @@ BEGIN -- Inserting
 		[Value0] = 1000
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId]
+	FROM @WL
+	
+	INSERT INTO @E
+	EXEC [bll].[WideLines__Unpivot] @WL;
+
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',
-		@Documents = @D, @WideLines = @WL, @Lines = @L, @Entries = @E,
+		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
@@ -318,7 +325,7 @@ BEGIN -- Inserting
 	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',
-		@Documents = @D, @WideLines = @WL, @Lines = @L, @Entries = @E,
+		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

@@ -1,100 +1,62 @@
 ﻿CREATE PROCEDURE [api].[Documents__Save]
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
-	@WideLines dbo.[WideLineList] READONLY,
-	--@Lines [dbo].[LineList] READONLY, 
-	--@Entries [dbo].EntryList READONLY,
-	@ReturnIds BIT = 0,
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].EntryList READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @PreprocessedEntriesJson NVARCHAR (MAX), @PreprocessedEntries dbo.EntryList;
 
-	DECLARE @AllLines dbo.[LineList];
-	DECLARE @AllEntries dbo.EntryList;
-	DECLARE @PreprocessedWideLines dbo.[WideLineList];
-	DECLARE @PreprocessedEntries [dbo].EntryList;
-
-	-- THe following results in nested INSERT EXEC, which is not allowed. Solution: Flatten the SProc.
-	--INSERT INTO @PreprocessedWideLines
-	--EXEC bll.[WideLines__Preprocess] @WideLines;
-
-	DECLARE @LineDefinitionId NVARCHAR (50);
-	DECLARE @Script NVARCHAR (MAX);
-
-	SELECT @LineDefinitionId = MIN([DefinitionId])
-	FROM @WideLines WL
-	JOIN dbo.LineDefinitions LD ON LD.[Id] = WL.[DefinitionId]
-	--WHERE LD.[Script] IS NOT NULL;
-	
-	WHILE @LineDefinitionId IS NOT NULL
-	BEGIN
-		Declare @PreScript NVARCHAR(MAX) =N'
-		SET NOCOUNT ON
-		DECLARE @ProcessedWideLines WideLineList;
-
-		INSERT INTO @ProcessedWideLines
-		SELECT * FROM @WideLines;
-		------
-		'
-		DECLARE @PostScript NVARCHAR(MAX) = N'
-		-----
-		SELECT * FROM @ProcessedWideLines;
-		';
-		SELECT @Script = @PreScript + ISNULL([Script],N'') + @PostScript
-		FROM dbo.LineDefinitions WHERE [Id] = @LineDefinitionId;
-
-		DECLARE @WL dbo.[WideLineList]; DELETE FROM @WL;
-		INSERT INTO @WL SELECT * FROM @WideLines WHERE [DefinitionId] = @LineDefinitionId;
-
-		INSERT INTO @PreprocessedWideLines
-		EXECUTE	sp_executesql @Script, N'@WideLines WideLineList READONLY', @WideLines = @WideLines;
-
-		SET @LineDefinitionId = (
-			SELECT MIN(WL.[DefinitionId])
-			FROM @WideLines WL
-			JOIN dbo.LineDefinitions LD ON LD.[Id] = WL.[DefinitionId]
-			WHERE LD.[Script] IS NOT NULL
-			AND WL.[DefinitionId] > @LineDefinitionId
-		);
-	END
-
-	INSERT INTO @AllLines(	   
-		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
-	--SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
-	--FROM @Lines
-	--UNION
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
-	FROM @PreprocessedWideLines
-
-	--INSERT INTO @AllEntries SELECT * FROM @Entries;
-	INSERT INTO @AllEntries
-	EXEC [bll].[WideLines__Unpivot] @PreprocessedWideLines;
-
-	-- using line definition Id, the entries wil be filled
-	INSERT INTO @PreprocessedEntries
+--	INSERT INTO @PreprocessedEntries
 	EXEC bll.[Documents__Preprocess]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
-		@Lines = @AllLines,
-		@Entries = @AllEntries;
+		@Lines = @Lines,
+		@Entries = @Entries,
+		@PreprocessedEntriesJson = @PreprocessedEntriesJson OUTPUT;
+	--PRINT N'api.Documents__Save: PreprocessedEntriesJson = ' + ISNULL(@PreprocessedEntriesJson, N'');
+	
+	INSERT INTO @PreprocessedEntries
+	SELECT * FROM OpenJson(@PreprocessedEntriesJson)
+	WITH (
+	[Index]						INT '$.Index',
+	[LineIndex]					INT '$.LineIndex',
+	[DocumentIndex]				INT '$.DocumentIndex',
+	[Id]						INT '$.Id',
+	[EntryNumber]				INT '$.EntryNumber',
+	[Direction]					SMALLINT '$.Direction',
+	[AccountId]					INT '$.AccountId',
+	[CurrencyId]				NCHAR (3) '$.CurrencyId',
+	[AgentId]					INT '$.AgentId',
+	[ResourceId]				INT '$.ResourceId',
+	[ResponsibilityCenterId]	INT '$.ResponsibilityCenterId',
+	--[AccountIdentifier]			NVARCHAR (10) '$.AccountIdentifier',
+	--[ResourceIdentifier]		NVARCHAR (10) '$.ResourceIdentifier',
+	[EntryTypeId]				INT '$.EntryTypeId',
+	--[BatchCode]					NVARCHAR (50) '$.BatchCode',
+	[DueDate]					DATE '$.DueDate',
+	[MonetaryValue]				DECIMAL (19,4) '$.MonetaryValue',
+	[Quantity]					DECIMAL (19,4) '$.Quantity',
+	[UnitId]					INT '$.UnitId',
+	[Value]						DECIMAL (19,4) '$.Value',
 
-	-- If Agent Id in Documents is not Null, then propagate it to the entries where the Agent Definition is compatible
-	UPDATE PE
-	SET AgentId = D.AgentId
-	FROM @PreprocessedEntries PE
-	JOIN @AllLines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
-	JOIN @Documents D ON L.DocumentIndex = D.[Index]
-	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
-	JOIN dbo.Agents AG ON D.AgentId = AG.Id
-	WHERE LDE.[AgentDefinitionId] LIKE N'%' + AG.DefinitionId +'%'
-			
+	[Time1]						DATETIME2 (2) '$.Time1',	-- from time
+	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
+	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
+	[AdditionalReference]		NVARCHAR (50) '$.AdditionalReference',
+	[NotedAgentId]				INT '$.NotedAgentId',
+	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
+	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
+	[NotedDate]					DATE '$.NotedDate'
+	)
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
-		@Lines = @AllLines,
+		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries;
 
 	SELECT @ValidationErrorsJson = 
@@ -106,43 +68,12 @@ BEGIN
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
-
-	DECLARE @ReturnResult NVARCHAR (MAX);
 	
-	EXEC [dal].[Documents__Save]
+
+	EXEC [dal].[Documents__SaveAndRefresh]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
-		@Lines = @AllLines,
+		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
 		@Entries = @PreprocessedEntries,
-		@ReturnIds = @ReturnIds,
-		@ReturnResult = @ReturnResult OUTPUT;
-
-	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
-	INSERT INTO @DocumentsIndexedIds([Index], [Id])
-	SELECT [Index], [Id]
-	FROM OpenJson(@ReturnResult)
-	WITH (
-		[Index] INT '$.Index',
-		[Id] INT '$.Id'
-	);
-
-	-- if we added/deleted draft lines, the document state should change
-	DECLARE @DocIds dbo.IdList;
-	INSERT INTO @DocIds([Id])
-	SELECT [Id] FROM @DocumentsIndexedIds;
-	EXEC dal.Documents_State__Refresh @DocIds;
-
-	---- Assign the new ones to self
-	DECLARE @NewDocumentsIds dbo.IdList;
-	INSERT INTO @NewDocumentsIds([Id])
-	SELECT Id FROM @DocumentsIndexedIds
-	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
-
-	EXEC [dal].[Documents__Assign]
-		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId,
-		@Comment = N'FYC'
-
-	IF @ReturnIds = 1
-		SELECT * FROM @DocumentsIndexedIds;
+		@ReturnIds = 0;
 END;

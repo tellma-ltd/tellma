@@ -207,9 +207,7 @@
     <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Save.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
     <Build Include="api\Stored Procedures\api.Lines__Sign.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Ready__Select.sql" />
@@ -258,7 +256,6 @@
     <Build Include="dbo\User Defined Types\dbo.UserList.sql" />
     <Build Include="Mapping\Users.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents__Preprocess.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources__Fill.sql" />
@@ -564,8 +561,8 @@
     <Build Include="Mapping\DocumentsRequiredSignatures.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Uncancel.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Uncancel.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents__Preprocess2.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Save2.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents__Preprocess.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
   </ItemGroup>
   <ItemGroup>

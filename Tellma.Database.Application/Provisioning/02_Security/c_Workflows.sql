@@ -41,6 +41,16 @@ BEGIN
 	(0, 8, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 	(0, 9, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
+		INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(10, N'LeaseOutIssueAndSalesInvoiceNoVAT',	+3),-- Requested
+	(11, N'LeaseOutIssueAndSalesInvoiceNoVAT',	+4);-- Reviewed
+
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
+	[RuleType],			[RoleId],			[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
+	(0, 10, N'ByRole',	@1AccountManager,	NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+	(0, 11, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+
 
 	--INSERT INTO @Workflows([Index],
 	--[LineDefinitionId],		ToState) Values

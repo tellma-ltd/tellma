@@ -63,7 +63,7 @@ BEGIN -- Inserting
 	(0, 1, 11,0,-1,@1AR,		NULL,												@It3am,		@USD,			2500,				2500);
 
 	EXEC master.sys.sp_set_session_context 'UserId', @Jiad_akra;
-	EXEC [api].[Documents__Save2]
+	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journal-vouchers',
 		@Documents = @D,
 		@Lines = @L, @Entries = @E,

@@ -42,7 +42,7 @@ BEGIN -- Inserting
 	INSERT INTO @E
 	EXEC [bll].[WideLines__Unpivot] @WL;
 
-	EXEC [api].[Documents__Save2]
+	EXEC [api].[Documents__Save]
 		@DefinitionId = N'revenue-recognition-vouchers',
 		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -57,14 +57,16 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 0;
 	-- Executing
-	EXEC [api].[Documents__Sign]
-		@IndexedIds = @DocsIndexedIds,
-		@ToState = 3, -- N'completed',
-		@OnBehalfOfuserId = @mohamad_akra,
-		@RuleType = N'ByAgent',
-		@RoleId = NULL,
-		@SignedAt = @Now,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	-- TODO: Bug Fix: elAmin is not getting the accoutn manager role
+	--EXEC [api].[Documents__Sign]
+	--	@IndexedIds = @DocsIndexedIds,
+	--	@ToState = 3, -- N'completed',
+	--	@OnBehalfOfuserId = @amtaam,
+	--	@RuleType = N'Role',
+	--	@RoleId = @1AccountManager,
+	--	@SignedAt = @Now,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	--IF @ValidationErrorsJson IS NOT NULL 
 	--BEGIN

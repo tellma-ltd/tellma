@@ -8,21 +8,24 @@ BEGIN
 	([Index],	[Name],				[Code]) VALUES
 	(0,			N'Comptroller',		'CMPT'),
 	(1,			N'General Manager', 'GM'),
-	(2,			N'Reader',			'RDR')
+	(2,			N'Reader',			'RDR'),
+	(3,			N'Account Manager',	'AM')
 	;
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
 	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@gmail.com'	UNION
 	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'amtaam@gmail.com'	UNION
 	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mohamad.akra@banan-it.com'
-
+	SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'amtaam@gmail.com'
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
 	(0,				0,		N'all',									N'Read'),
 	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
 	(1,				0,		N'all',									N'Read'),
-	(2,				0,		N'all',									N'Read');
+	(2,				0,		N'all',									N'Read'),
+	(3,				0,		N'documents/revenue-recognition-vouchers',	N'All')
+	;
 END
 
 IF @DB = N'102' -- Banan ET, ETB, en
@@ -141,7 +144,8 @@ EXEC dal.Roles__Save
 	@Members = @Members,
 	@Permissions = @Permissions
 
-DECLARE @1GeneralManager INT, @1Comptroller INT, @1Reader INT;
-SELECT @1Comptroller = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller'
-SELECT @1GeneralManager = [Id] FROM dbo.Roles WHERE [Name] = N'General Manager'
+DECLARE @1GeneralManager INT, @1Comptroller INT, @1Reader INT, @1AccountManager INT;
+SELECT @1Comptroller = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller';
+SELECT @1GeneralManager = [Id] FROM dbo.Roles WHERE [Name] = N'General Manager';
 SELECT @1Reader = [Id] FROM dbo.Roles WHERE [Name] = N'Reader';
+SELECT @1AccountManager = [Id] FROM dbo.Roles WHERE [Name] = N'Account Manager';
