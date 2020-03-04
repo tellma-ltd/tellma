@@ -84,7 +84,7 @@ namespace Tellma.Entities
             DocState.Failed,
             DocState.Completed,
             DocState.Invalid,
-            DocState.Reviewed,
+            DocState.Finalized,
             DocState.Closed
         },
             new string[] {
@@ -96,7 +96,7 @@ namespace Tellma.Entities
             DocStateName.Failed,
             DocStateName.Completed,
             DocStateName.Invalid,
-            DocStateName.Reviewed,
+            DocStateName.Finalized,
             DocStateName.Closed
         })]
         public short? State { get; set; }
@@ -181,7 +181,7 @@ namespace Tellma.Entities
         public const short Failed = -3;
         public const short Completed = 3;
         public const short Invalid = -4;
-        public const short Reviewed = 4;
+        public const short Finalized = 4;
         public const short Closed = 5;
     }
 
@@ -189,15 +189,15 @@ namespace Tellma.Entities
     {
         private const string _prefix = "Document_State_";
 
-        public const string Draft = _prefix + nameof(Draft);
-        public const string Void = _prefix + nameof(Void);
-        public const string Requested = _prefix + nameof(Requested);
-        public const string Rejected = _prefix + nameof(Rejected);
-        public const string Authorized = _prefix + nameof(Authorized);
-        public const string Failed = _prefix + nameof(Failed);
-        public const string Completed = _prefix + nameof(Completed);
-        public const string Invalid = _prefix + nameof(Invalid);
-        public const string Reviewed = _prefix + nameof(Reviewed);
-        public const string Closed = _prefix + nameof(Closed);
+        public const string Draft = _prefix + "0";
+        public const string Void = _prefix + "minus_1";
+        public const string Requested = _prefix + "1";
+        public const string Rejected = _prefix + "minus_2";
+        public const string Authorized = _prefix + "2";
+        public const string Failed = _prefix + "minus_3";
+        public const string Completed = _prefix + "3";
+        public const string Invalid = _prefix + "minus_4";
+        public const string Finalized = _prefix + "4";
+        public const string Closed = _prefix + "5";
     }
 }

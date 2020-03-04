@@ -3,7 +3,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
 import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
@@ -84,6 +84,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public comment: string;
   public picSize = 36;
 
+  public activeTab: string;
+
 
   @Input()
   public set definitionId(t: string) {
@@ -111,17 +113,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
     ['Currency', /* 'Resource/Currency', */ 'Resource/Units', 'Agent',
-      'EntryType', 'AccountType', 'ResponsibilityCenter'] // , 'Resource/ResourceClassification', 'ResourceClassification']
+      'EntryType', 'AccountType', 'ResponsibilityCenter']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
-      'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit'] // , 'Resource/ResourceClassification']
+      'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
-
-    // // Signatures
-    // ['OnBehalfOfUser', 'Role', 'CreatedBy']
-    //   .map(prop => `Signatures/${prop}`).join(',') + ',' +
 
     // Attachments
     ['CreatedBy', 'ModifiedBy']
@@ -133,15 +131,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute, private modalService: NgbModal) {
+    private router: Router, private route: ActivatedRoute, private modalService: NgbModal) {
     super();
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
-      // This triggers changes on the screen
 
       if (this.isScreenMode) {
+
+        const activeTab = params.get('tab');
+        if (!!activeTab && this.activeTab !== activeTab) {
+          // this.state
+          this.activeTab = activeTab;
+        }
 
         const definitionId = params.get('definitionId');
 
@@ -150,6 +153,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }
       }
     });
+  }
+
+  public tabChange(newTabId: string) {
+    if (this.activeTab !== newTabId) {
+      this.activeTab = newTabId;
+
+      // Capture the new tab id in the URL
+      const params: Params = {
+        tab: newTabId
+      };
+
+      this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    }
   }
 
   get view(): string {
@@ -1113,39 +1129,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public actionDisplay(toState: number): string {
-    // Used for stamp
-    switch (toState) {
-      case 1: return this.translate.instant('Document_State_Requested');
-      case 2: return this.translate.instant('Document_State_Authorized');
-      case 3: return this.translate.instant('Document_State_Completed');
-      case 4: return this.translate.instant('Document_State_Reviewed');
-
-      case -1: return this.translate.instant('Document_State_Void');
-      case -2: return this.translate.instant('Document_State_Rejected');
-      case -3: return this.translate.instant('Document_State_Failed');
-      case -4: return this.translate.instant('Document_State_Invalid');
-      default: return '';
+    if (toState >= 0) {
+      return this.translate.instant('Document_State_' + toState);
+    } else {
+      return this.translate.instant('Document_State_minus_' + (-toState));
     }
   }
 
   public requiredSignatureDisplay(signature: RequiredSignature) {
     // Used for the footer of the stamp in all rule types except 'Public'
-    switch (Math.abs(signature.ToState)) {
-      case 1: return this.translate.instant('RequestedBy');
-      case 2: return this.translate.instant('AuthorizedBy');
-      case 3: return this.translate.instant('CompletedBy');
-      case 4: return this.translate.instant('ReviewedBy');
-    }
+    return this.translate.instant('RequiredSignature_' + Math.abs(signature.ToState));
   }
 
   public requiredSignatoryDisplay(signature: RequiredSignature) {
     // Used for the footer of the stamp for rule type 'Public'
-    switch (Math.abs(signature.ToState)) {
-      case 1: return this.translate.instant('Requester');
-      case 2: return this.translate.instant('Authorizer');
-      case 3: return this.translate.instant('Completer');
-      case 4: return this.translate.instant('Reviewer');
-    }
+    return this.translate.instant('RequiredSigner_' + Math.abs(signature.ToState));
   }
 
   /////////// New stuff
@@ -1423,10 +1421,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       default:
         return null;
     }
-  }
-
-  public tabChange(newTabId: string) {
-    console.log(newTabId);
   }
 }
 

@@ -62,18 +62,11 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
                     control: 'state',
                     label: () => trx.instant('State'),
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
-                    format: (c: number) => {
-                        switch (c) {
-                            case 0: return trx.instant('Document_State_Draft');
-                            case -1: return trx.instant('Document_State_Void');
-                            case 1: return trx.instant('Document_State_Requested');
-                            case -2: return trx.instant('Document_State_Rejected');
-                            case 2: return trx.instant('Document_State_Authorized');
-                            case -3: return trx.instant('Document_State_Failed');
-                            case 3: return trx.instant('Document_State_Completed');
-                            case -4: return trx.instant('Document_State_Invalid');
-                            case 4: return trx.instant('Document_State_Reviewed');
-                            default: return null;
+                    format: (state: number) => {
+                        if (state >= 0) {
+                            return trx.instant('Document_State_' + state);
+                        } else {
+                            return trx.instant('Document_State_minus_' + (-state));
                         }
                     },
                     color: (c: number) => {

@@ -4,21 +4,21 @@
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,State,Memo"
   selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeVoid' | translate" inactiveFilter="State ne -1"
   [multiselectActions]="[
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [filterDefinition]="{
             'CreatedBy' : [
                 { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'State' : [
-                { template: draft, expression: 'State eq 0'},
-                { template: void, expression: 'State eq -1'},
-                { template: requested, expression: 'State eq 1'},
-                { template: rejected, expression: 'State eq -2'},
-                { template: authorized, expression: 'State eq 2'},
-                { template: failed, expression: 'State eq -3'},
-                { template: completed, expression: 'State eq 3'},
-                { template: invalid, expression: 'State eq -4'},
-                { template: reviewed, expression: 'State eq 4'},
-                { template: closed, expression: 'State eq 5'}
+                { template: state_0, expression: 'State eq 0'},
+                { template: state_minus_1, expression: 'State eq -1'},
+                { template: state_1, expression: 'State eq 1'},
+                { template: state_minus_2, expression: 'State eq -2'},
+                { template: state_2, expression: 'State eq 2'},
+                { template: state_minus_3, expression: 'State eq -3'},
+                { template: state_3, expression: 'State eq 3'},
+                { template: state_minus_4, expression: 'State eq -4'},
+                { template: state_4, expression: 'State eq 4'},
+                { template: state_5, expression: 'State eq 5'}
             ]
           }">
 </t-master>
@@ -61,13 +61,13 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #draft> {{ 'Document_State_Draft' | translate }} </ng-template>
-<ng-template #void> {{ 'Document_State_Void' | translate }} </ng-template>
-<ng-template #requested> {{ 'Document_State_Requested' | translate }} </ng-template>
-<ng-template #rejected> {{ 'Document_State_Rejected' | translate }} </ng-template>
-<ng-template #authorized> {{ 'Document_State_Authorized' | translate }} </ng-template>
-<ng-template #failed> {{ 'Document_State_Failed' | translate }} </ng-template>
-<ng-template #completed> {{ 'Document_State_Completed' | translate }} </ng-template>
-<ng-template #invalid> {{ 'Document_State_Invalid' | translate }} </ng-template>
-<ng-template #reviewed> {{ 'Document_State_Reviewed' | translate }} </ng-template>
-<ng-template #closed> {{ 'Document_State_Closed' | translate }} </ng-template>
+<ng-template #state_0> {{ 'Document_State_0' | translate }} </ng-template>
+<ng-template #state_minus_1> {{ 'Document_State_minus_1' | translate }} </ng-template>
+<ng-template #state_1> {{ 'Document_State_1' | translate }} </ng-template>
+<ng-template #state_minus_2> {{ 'Document_State_minus_2' | translate }} </ng-template>
+<ng-template #state_2> {{ 'Document_State_2' | translate }} </ng-template>
+<ng-template #state_minus_3> {{ 'Document_State_minus_3' | translate }} </ng-template>
+<ng-template #state_3> {{ 'Document_State_3' | translate }} </ng-template>
+<ng-template #state_minus_4> {{ 'Document_State_minus_4' | translate }} </ng-template>
+<ng-template #state_4> {{ 'Document_State_4' | translate }} </ng-template>
+<ng-template #state_5> {{ 'Document_State_5' | translate }} </ng-template>

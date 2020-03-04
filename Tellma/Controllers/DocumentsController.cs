@@ -537,7 +537,7 @@ namespace Tellma.Controllers
             }
 
             // Save the documents
-            var (ids, fileIdsToDelete) = await _repo.Documents__Save(
+            var (ids, fileIdsToDelete) = await _repo.Documents__SaveAndRefresh(
                 DefinitionId,
                 documents: entities,
                 attachments: attachments,

@@ -45,12 +45,12 @@ let _definitionIds: string[];
 
 function getPrefix(ws: TenantWorkspace, definitionId: string) {
     const def = ws.definitions.Documents[definitionId];
-    return  !!def ? def.Prefix : '';
+    return !!def ? def.Prefix : '';
 }
 
 function getCodeWidth(ws: TenantWorkspace, definitionId: string) {
     const def = ws.definitions.Documents[definitionId];
-    return  !!def ? def.CodeWidth : 4;
+    return !!def ? def.CodeWidth : 4;
 }
 
 export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
@@ -97,19 +97,11 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     control: 'state',
                     label: () => trx.instant('State'),
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4, 5],
-                    format: (c: number) => {
-                        switch (c) {
-                            case 0: return trx.instant('Document_State_Draft');
-                            case -1: return trx.instant('Document_State_Void');
-                            case 1: return trx.instant('Document_State_Requested');
-                            case -2: return trx.instant('Document_State_Rejected');
-                            case 2: return trx.instant('Document_State_Authorized');
-                            case -3: return trx.instant('Document_State_Failed');
-                            case 3: return trx.instant('Document_State_Completed');
-                            case -4: return trx.instant('Document_State_Invalid');
-                            case 4: return trx.instant('Document_State_Reviewed');
-                            case 5: return trx.instant('Document_State_Closed');
-                            default: return null;
+                    format: (state: number) => {
+                        if (state >= 0) {
+                            return trx.instant('Document_State_' + state);
+                        } else {
+                            return trx.instant('Document_State_minus_' + (-state));
                         }
                     },
                     color: (c: number) => {
