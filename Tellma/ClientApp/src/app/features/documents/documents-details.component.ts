@@ -1415,12 +1415,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.ReadOnlyState && line.State >= colDef.ReadOnlyState;
+    return line.State >= colDef.ReadOnlyState;
   }
 
   public isRequired(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!colDef.RequiredState && line.State >= colDef.RequiredState;
+    return line.State >= colDef.RequiredState;
   }
 
   public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
