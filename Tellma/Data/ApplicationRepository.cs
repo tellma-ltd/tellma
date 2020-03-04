@@ -3754,7 +3754,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<int> Ids, List<string> DeletedFileIds)> Documents__Save(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
+        public async Task<(List<int> Ids, List<string> DeletedFileIds)> Documents__SaveAndRefresh(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
             var deletedFileIds = new List<string>();
             var result = new List<IndexedId>();
@@ -3799,7 +3799,7 @@ namespace Tellma.Data
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(Documents__SaveAndRefresh)}]";
 
                 // Execute
                 using var reader = await cmd.ExecuteReaderAsync();

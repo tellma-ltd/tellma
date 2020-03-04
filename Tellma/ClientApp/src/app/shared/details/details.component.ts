@@ -396,10 +396,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   private get globalState(): MasterDetailsStore {
     if (!this.workspace.current.mdState[this.apiEndpoint]) {
-      // if (this.mode === 'screen') {
-      //   this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
-      // }
-
       this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
     }
 
@@ -809,7 +805,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   onNext(): void {
-    this.router.navigate(['..', this.getNextId()], { relativeTo: this.route });
+    this.router.navigate(['..', this.getNextId()], { relativeTo: this.route, queryParamsHandling: 'preserve' });
   }
 
   get canNext(): boolean {

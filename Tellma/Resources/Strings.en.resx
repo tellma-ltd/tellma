@@ -436,35 +436,35 @@
   <data name="Document_State" xml:space="preserve">
     <value>State</value>
   </data>
-  <data name="Document_State_Authorized" xml:space="preserve">
-    <value>Authorized</value>
-  </data>
-  <data name="Document_State_Closed" xml:space="preserve">
-    <value>Closed</value>
-  </data>
-  <data name="Document_State_Completed" xml:space="preserve">
-    <value>Completed</value>
-  </data>
-  <data name="Document_State_Draft" xml:space="preserve">
+  <data name="Document_State_0" xml:space="preserve">
     <value>Draft</value>
   </data>
-  <data name="Document_State_Failed" xml:space="preserve">
-    <value>Failed</value>
-  </data>
-  <data name="Document_State_Invalid" xml:space="preserve">
-    <value>Invalid</value>
-  </data>
-  <data name="Document_State_Rejected" xml:space="preserve">
-    <value>Rejected</value>
-  </data>
-  <data name="Document_State_Requested" xml:space="preserve">
+  <data name="Document_State_1" xml:space="preserve">
     <value>Requested</value>
   </data>
-  <data name="Document_State_Reviewed" xml:space="preserve">
-    <value>Reviewed</value>
+  <data name="Document_State_2" xml:space="preserve">
+    <value>Authorized</value>
   </data>
-  <data name="Document_State_Void" xml:space="preserve">
+  <data name="Document_State_3" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Document_State_4" xml:space="preserve">
+    <value>Finalized</value>
+  </data>
+  <data name="Document_State_5" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Document_State_minus_1" xml:space="preserve">
     <value>Void</value>
+  </data>
+  <data name="Document_State_minus_2" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Document_State_minus_3" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Document_State_minus_4" xml:space="preserve">
+    <value>Invalid</value>
   </data>
   <data name="Document_VoucherBooklet" xml:space="preserve">
     <value>Voucher Booklet</value>

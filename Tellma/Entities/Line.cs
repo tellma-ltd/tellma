@@ -68,7 +68,7 @@ namespace Tellma.Entities
             DocState.Failed,
             DocState.Completed,
             DocState.Invalid,
-            DocState.Reviewed,
+            DocState.Finalized,
             DocState.Closed
         },
             new string[] {
@@ -80,7 +80,7 @@ namespace Tellma.Entities
             DocStateName.Failed,
             DocStateName.Completed,
             DocStateName.Invalid,
-            DocStateName.Reviewed,
+            DocStateName.Finalized,
             DocStateName.Closed
         })]
         public short? State { get; set; }

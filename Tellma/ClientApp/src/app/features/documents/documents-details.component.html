@@ -23,16 +23,16 @@
         <t-restricted [metadata]="model?.EntityMetadata?.State">
             <!-- Positive state in wide screen -->
             <div class="t-flow-chart small d-none d-md-block" *ngIf="!model?.State || model.State > 0">
-                <div [class.active]="!model?.State"><span>{{'Document_State_Draft' | translate}}</span></div>
+                <div [class.active]="!model?.State"><span>{{'Document_State_0' | translate}}</span></div>
                 <div [class.active]="model?.State === 1" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
-                    <span>{{'Document_State_Requested' | translate}}</span></div>
+                    <span>{{'Document_State_1' | translate}}</span></div>
                 <div [class.active]="model?.State === 2" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
-                    <span>{{'Document_State_Authorized' | translate}}</span></div>
+                    <span>{{'Document_State_2' | translate}}</span></div>
                 <div [class.active]="model?.State === 3" *ngIf="showState(model, extras?.RequiredSignatures, 3)">
-                    <span>{{'Document_State_Completed' | translate}}</span></div>
+                    <span>{{'Document_State_3' | translate}}</span></div>
                 <div [class.active]="model?.State === 4" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
-                    <span>{{'Document_State_Reviewed' | translate}}</span></div>
-                <div [class.active]="model?.State === 5"><span>{{'Document_State_Closed' | translate}}</span></div>
+                    <span>{{'Document_State_4' | translate}}</span></div>
+                <div [class.active]="model?.State === 5"><span>{{'Document_State_5' | translate}}</span></div>
             </div>
             <div class="small t-lone-state active d-none d-md-block" *ngIf="!!model?.State && model.State < 0">
                 <!-- Negative state in wide screen-->
@@ -46,16 +46,16 @@
             </div>
 
             <ng-template #loneState>
-                <span>{{ (!model?.State ? 'Document_State_Draft' :
-                            model?.State === -1 ? 'Document_State_Void' :
-                            model?.State === 1 ? 'Document_State_Requested' :
-                            model?.State === -2 ? 'Document_State_Rejected' :
-                            model?.State === 2 ? 'Document_State_Authorized' :
-                            model?.State === -3 ? 'Document_State_Failed' :
-                            model?.State === 3 ? 'Document_State_Completed' :
-                            model?.State === -4 ? 'Document_State_Invalid' :
-                            model?.State === 4 ? 'Document_State_Reviewed' :
-                            model?.State === 5 ? 'Document_State_Closed' :
+                <span>{{ (!model?.State ? 'Document_State_0' :
+                            model?.State === -1 ? 'Document_State_minus_1' :
+                            model?.State === 1 ? 'Document_State_1' :
+                            model?.State === -2 ? 'Document_State_minus_2' :
+                            model?.State === 2 ? 'Document_State_2' :
+                            model?.State === -3 ? 'Document_State_minus_3' :
+                            model?.State === 3 ? 'Document_State_3' :
+                            model?.State === -4 ? 'Document_State_minus_4' :
+                            model?.State === 4 ? 'Document_State_4' :
+                            model?.State === 5 ? 'Document_State_5' :
                              model?.State) | translate }}</span>
             </ng-template>
         </t-restricted>
@@ -98,7 +98,7 @@
         </div>
     </t-form-group>    
 
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" (activeIdChange)="tabChange($event)">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="activeTab" (activeIdChange)="tabChange($event)">
         <li *ngFor="let lineDefId of lineDefinitionIds(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
@@ -865,7 +865,7 @@
         </li>
         <li [ngbNavItem]="'Attachment'">
             <a ngbNavLink><span
-                class="small">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
+                class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
             </a>
             <ng-template ngbNavContent>
                 <!-- No Attachments Message -->
