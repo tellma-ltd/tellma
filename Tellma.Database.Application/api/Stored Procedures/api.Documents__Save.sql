@@ -2,8 +2,8 @@
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
 	@WideLines dbo.[WideLineList] READONLY,
-	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].EntryList READONLY,
+	--@Lines [dbo].[LineList] READONLY, 
+	--@Entries [dbo].EntryList READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -62,13 +62,13 @@ BEGIN
 
 	INSERT INTO @AllLines(	   
 		   [Index],	[DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
-	FROM @Lines
-	UNION
+	--SELECT [Index], [DocumentIndex], [Id], [DefinitionId], [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
+	--FROM @Lines
+	--UNION
 	SELECT [Index], [DocumentIndex], [Id], [DefinitionId],  [ResponsibilityCenterId], [AgentId], [ResourceId], [CurrencyId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
 	FROM @PreprocessedWideLines
 
-	INSERT INTO @AllEntries SELECT * FROM @Entries;
+	--INSERT INTO @AllEntries SELECT * FROM @Entries;
 	INSERT INTO @AllEntries
 	EXEC [bll].[WideLines__Unpivot] @PreprocessedWideLines;
 
@@ -84,7 +84,7 @@ BEGIN
 	UPDATE PE
 	SET AgentId = D.AgentId
 	FROM @PreprocessedEntries PE
-	JOIN @Lines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @AllLines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
 	JOIN dbo.Agents AG ON D.AgentId = AG.Id

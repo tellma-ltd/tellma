@@ -62,73 +62,72 @@ BEGIN -- Inserting
 	(0, 0, 11,0,+1,@1GMFund,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices, 	NULL,		@USD,			2500,				2500),--
 	(0, 1, 11,0,-1,@1AR,		NULL,												@It3am,		@USD,			2500,				2500);
 
-	IF @DB = N'101' -- Banan SD, USD, en
+	EXEC master.sys.sp_set_session_context 'UserId', @Jiad_akra;
+	EXEC [api].[Documents__Save2]
+		@DefinitionId = N'manual-journal-vouchers',
+		@Documents = @D,
+		@Lines = @L, @Entries = @E,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		EXEC master.sys.sp_set_session_context 'UserId', @Jiad_akra;
-		EXEC [api].[Documents__Save]
-			@DefinitionId = N'manual-journal-vouchers',
-			@Documents = @D, @Lines = @L, @Entries = @E,
-			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		Print 'Banan SD Documents: Insert: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
 
-		IF @ValidationErrorsJson IS NOT NULL 
-		BEGIN
-			Print 'Banan SD Documents: Insert: ' + @ValidationErrorsJson
-			GOTO Err_Label;
-		END;
-
-		DELETE FROM @DocsIndexedIds;
-		INSERT INTO @DocsIndexedIds([Index], [Id])
-		SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
+	DELETE FROM @DocsIndexedIds;
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 		
-		EXEC [api].[Documents__Sign]
-			@IndexedIds = @DocsIndexedIds,
-			@ToState = 3, -- N'Completed',
-			@OnBehalfOfuserId = @Jiad_akra,
-			@RuleType = N'ByRole',
-			@RoleId = @1Comptroller, -- we allow selecting the role manually,
-			@SignedAt = @Now,
-			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__Sign]
+		@IndexedIds = @DocsIndexedIds,
+		@ToState = 3, -- N'Completed',
+		@OnBehalfOfuserId = @Jiad_akra,
+		@RuleType = N'ByRole',
+		@RoleId = @1Comptroller, -- we allow selecting the role manually,
+		@SignedAt = @Now,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-		IF @ValidationErrorsJson IS NOT NULL 
-		BEGIN
-			Print 'Lines Signing: ' + @ValidationErrorsJson
-			GOTO Err_Label;
-		END;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Lines Signing: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
 	
-		EXEC [api].[Documents__Assign] 
-			@IndexedIds = @DocsIndexedIds,
-			@AssigneeId = @amtaam,
-			@Comment = N'For your kind attention',
-			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__Assign] 
+		@IndexedIds = @DocsIndexedIds,
+		@AssigneeId = @amtaam,
+		@Comment = N'For your kind attention',
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-		DELETE FROM @DocsIndexedIds;
-		INSERT INTO @DocsIndexedIds([Index], [Id])
-		SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
-		EXEC master.sys.sp_set_session_context 'UserId', @amtaam;
+	DELETE FROM @DocsIndexedIds;
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
+	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;
 
-		EXEC [api].[Documents__Sign]
-			@IndexedIds = @DocsIndexedIds,
-			@ToState = 4, -- N'Ready To Post'
-			@OnBehalfOfuserId = @amtaam,
-			@RuleType = N'ByRole',
-			@RoleId = @1GeneralManager, -- we allow selecting the role manually,
-			@SignedAt = @Now,
-			@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__Sign]
+		@IndexedIds = @DocsIndexedIds,
+		@ToState = 4, -- N'Ready To Post'
+		@OnBehalfOfuserId = @amtaam,
+		@RuleType = N'ByRole',
+		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
+		@SignedAt = @Now,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-		IF @ValidationErrorsJson IS NOT NULL 
-		BEGIN
-			Print 'Lines Signing: ' + @ValidationErrorsJson
-			GOTO Err_Label;
-		END;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Lines Signing: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
 
-		--EXEC [api].[Documents__Close]
-		--	@IndexedIds = @DocsIndexedIds,
-		--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__Post]
+		@IndexedIds = @DocsIndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-		--IF @ValidationErrorsJson IS NOT NULL 
-		--BEGIN
-		--	Print 'Documents closing: ' + @ValidationErrorsJson
-		--	GOTO Err_Label;
-		--END;
-	END
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Documents posting: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
+
 END

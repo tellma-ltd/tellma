@@ -79,7 +79,7 @@ END
 --:r .\06_Accounts\105_Accounts.sql
 
 :r .\07_Entries\101\101a_manual-journal-vouchers.sql
-:r .\07_Entries\101\101b_cash-payment-vouchers.sql
+--:r .\07_Entries\101\101b_cash-payment-vouchers.sql
 --:r .\07_Entries\101\101c_petty-cash-vouchers.sql
 :r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 

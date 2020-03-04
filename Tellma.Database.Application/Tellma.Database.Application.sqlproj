@@ -564,6 +564,9 @@
     <Build Include="Mapping\DocumentsRequiredSignatures.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Uncancel.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Uncancel.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents__Preprocess2.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Save2.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -599,7 +602,7 @@
     <None Include="Provisioning\07_Entries\101\101b_cash-payment-vouchers.sql" />
     <None Include="Provisioning\07_Entries\101\101c_petty-cash-vouchers.sql" />
     <None Include="Provisioning\00_Common\f_RuleTypes.sql" />
-    <None Include="dal\Stored Procedures\dal.Documents_PostingState__Update.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents_PostingState__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_services-expenses.sql" />
   </ItemGroup>

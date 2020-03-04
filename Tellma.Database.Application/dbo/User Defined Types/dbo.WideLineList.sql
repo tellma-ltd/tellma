@@ -16,6 +16,7 @@
 	[Memo]						NVARCHAR (255),
 	
 	[Direction0]				SMALLINT,
+	[AccountId0]				INT,
 	[AgentId0]					INT,
 	[ResourceId0]				INT,
 	[ResponsibilityCenterId0]	INT,
@@ -38,6 +39,7 @@
 	[NotedDate0]				DATE,
 
 	[Direction1]				SMALLINT,
+	[AccountId1]				INT,
 	[AgentId1]					INT,
 	[ResourceId1]				INT,
 	[ResponsibilityCenterId1]	INT,
@@ -60,6 +62,7 @@
 	[NotedDate1]				DATE,
 
 	[Direction2]				SMALLINT,
+	[AccountId2]				INT,
 	[AgentId2]					INT,
 	[ResourceId2]				INT,
 	[ResponsibilityCenterId2]	INT,
