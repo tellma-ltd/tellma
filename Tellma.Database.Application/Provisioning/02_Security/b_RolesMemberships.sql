@@ -20,8 +20,7 @@ BEGIN
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
-	(0,				0,		N'all',									N'Read'),
-	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
+	(0,				0,		N'all',									N'All'),
 	(1,				0,		N'all',									N'Read'),
 	(2,				0,		N'all',									N'Read'),
 	(3,				0,		N'documents/revenue-recognition-vouchers',	N'All')
