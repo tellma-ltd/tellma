@@ -25,6 +25,7 @@ SET NOCOUNT ON;
 			--[AgentDefinitionList],
 			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
+			[ViewDefaultsToForm],
 			[Script]
 		FROM @Entities 
 	) AS s ON (t.Id = s.[Id])
@@ -58,6 +59,7 @@ SET NOCOUNT ON;
 			--t.[AgentDefinitionList]			= s.[AgentDefinitionList],
 			--t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
 			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
+			t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
 			t.[Script]						= s.[Script],
 			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
@@ -75,6 +77,7 @@ SET NOCOUNT ON;
 			--[AgentDefinitionList],
 			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
+			[ViewDefaultsToForm],
 			[Script]
 		)
 		VALUES (
@@ -91,6 +94,7 @@ SET NOCOUNT ON;
 			--s.[AgentDefinitionList],
 			--s.[ResponsibilityTypeList],
 			s.[AllowSelectiveSigning],
+			s.[ViewDefaultsToForm],
 			s.[Script]
 		);
 

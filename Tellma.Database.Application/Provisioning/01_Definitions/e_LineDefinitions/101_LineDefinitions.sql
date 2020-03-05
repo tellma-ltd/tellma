@@ -22,8 +22,8 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
 --CashPaymentToSupplierAndPurchaseInvoiceVAT
 INSERT @LineDefinitions([Index],
-[Id],					[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES
-(1,N'CashPaymentToSupplierAndPurchaseInvoiceVAT',
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES
+(1,1,N'CashPaymentToSupplierAndPurchaseInvoiceVAT',
 						N'Cash Purchase w/VAT',	N'شراء نقدي + قيمة مضافة',	N'Cash Purchases w/VAT',N'مشتريات نقدية + قيمة مضافة');
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -69,8 +69,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (10,1,	N'Entries',	N'Value',				2,	N'Equi. in USD',		N'المعادل ($)',			4,4);
 --CashPaymentToOther
 INSERT @LineDefinitions([Index],
-[Id],					[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
-2,N'CashPaymentToOther',N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
+[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
+2,1,N'CashPaymentToOther',	N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],[AccountTypeParentCode],	[AgentDefinitionId]) VALUES
 (0,2,0,	-1,	N'CashAndCashEquivalents',	N'cash-custodians');
@@ -92,8 +92,8 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (1,2,-3,	N'Other reasons',		N'أسباب أخرى');
 --CashReceiptFromOther
 INSERT @LineDefinitions([Index],
-[Id],						[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
-3,N'CashReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
+[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
+3,1,N'CashReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
 [Direction],[AccountTypeParentCode], [AgentDefinitionId]) VALUES
 (0,3,0,-1,	N'CashAndCashEquivalents', N'cash-custodians');
@@ -111,8 +111,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,3,	N'Entries',	N'Value',				0,	N'Equiv Amt ($)',			N'($) المعادل',			4,4); 
 --CashReceiptFromCustomerAndSalesInvoiceVAT
 INSERT @LineDefinitions([Index],
-[Id],					[TitleSingular],		[TitleSingular2],			[TitlePlural],	[TitlePlural2]) VALUES (
-4,N'CashReceiptFromCustomerAndSalesInvoiceVAT',	
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],	[TitlePlural2]) VALUES (
+4,1,N'CashReceiptFromCustomerAndSalesInvoiceVAT',	
 						N'Cash Sale w/VAT',	N'بيع نقدي + قيمة مضافة',	N'Cash Sales w/VAT',N'مبيعات نقدية + قيمة مضافة');
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -157,9 +157,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (10,4,	N'Entries',	N'Value',				0,	N'Equi. in USD',		N'المعادل ($)',			4,4);
 --CashReceiptFromCustomer
 INSERT @LineDefinitions([Index],
-[Id],						[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2],
+[ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2],
 [Description]) VALUES (
-5,N'CashReceiptFromCustomer',N'Customer Payment',	N'دفعية زبون',	N'Customer Payments',	N'دفعية زبائن',
+5,1,N'CashReceiptFromCustomer',	N'Customer Payment',	N'دفعية زبون',	N'Customer Payments',	N'دفعية زبائن',
 N'For cash receipt from customers who are not paying VAT');
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -198,9 +198,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,5,	N'Entries',	N'Value',				0,	N'Equi. in USD',		N'المعادل ($)',			4,4);
 --LeaseOutIssue. TODO: Auto calculate Time2 and Revenue, based on AgentRates
 INSERT @LineDefinitions([Index],
-[Id],				[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],
+[ViewDefaultsToForm],[Id],[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],
 [Description]) VALUES (
-6,N'LeaseOutIssue',	N'Lease/Subscription V.',	N'إيجار -اشتراك ق.م',	N'Leases/Subscriptions V.',	N'إيجارات -اشتراكات ق.م',
+6,0,N'LeaseOutIssue',	N'Lease/Subscription V.',	N'إيجار -اشتراك ق.م',	N'Leases/Subscriptions V.',	N'إيجارات -اشتراكات ق.م',
 N'For lease out of properties or software subscriptions with VAT. Indicates the rendering of service');
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -238,9 +238,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,6,	N'Entries', N'Value',				0,	N'Equiv. ($)',	N'المقابل ($)',	1,4);
 --LeaseOutIssueAndSalesInvoiceNoVAT.  TODO: Auto calculate Time2 and Revenue, based on AgentRates
 INSERT @LineDefinitions([Index],
-[Id],							[TitleSingular],		[TitleSingular2],	[TitlePlural],				[TitlePlural2],
+[ViewDefaultsToForm],[Id],				[TitleSingular],		[TitleSingular2],	[TitlePlural],				[TitlePlural2],
 [Description]) VALUES (
-7,N'LeaseOutIssueAndSalesInvoiceNoVAT',	N'Lease/Subscription N.V.',	N'إيجار -اشتراك لا ق.م',	N'Leases/Subscriptions N.V.',	N'إيجارات -اشتراكات لا ق.م',
+7,0,N'LeaseOutIssueAndSalesInvoiceNoVAT',N'Lease/Subscription N.V.',	N'إيجار -اشتراك لا ق.م',	N'Leases/Subscriptions N.V.',	N'إيجارات -اشتراكات لا ق.م',
 N'For lease out of properties or software subscriptions No VAT. Indicates both the rendering of service and issue of invoice.');
 UPDATE @LineDefinitions
 SET [Script] = N'
