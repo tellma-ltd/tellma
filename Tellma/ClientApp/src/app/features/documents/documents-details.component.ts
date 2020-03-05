@@ -25,6 +25,7 @@ import { Attachment } from '~/app/data/entities/attachment';
 import { MeasurementUnit } from '~/app/data/entities/measurement-unit';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { RequiredSignature } from '~/app/data/entities/required-signature';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 interface DocumentEventBase {
   time: string;
@@ -115,6 +116,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public confirmationMessage: string;
   public signatureForNegativeModal: RequiredSignature;
+  public reasonChoicesForNegativeModal: SelectorChoice[];
   public reasonDetails: string;
   public reasonId: number;
 
@@ -225,12 +227,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   create = () => {
     const result: DocumentForSave = {
-      Memo: this.initialText,
       DocumentDate: new Date().toISOString().split('T')[0],
-      MemoIsCommon: true,
+      MemoIsCommon: false,
       Lines: [],
       Attachments: []
     };
+
+    if (this.definitionId === 'manual-journal-vouchers') {
+      result.Memo = this.initialText;
+      result.MemoIsCommon = true;
+    }
 
     // const defs = this.definition;
     // TODO: Set defaults
@@ -1052,8 +1058,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.onSign(signature, true);
   }
 
-  public onSignNo(signature: RequiredSignature): void {
+  public onSignNo(lineDefId: string, signature: RequiredSignature): void {
+    // Remember the required signature that the user is signing
     this.signatureForNegativeModal = signature;
+
+    // Remember the reason choices for the current line Definition and state
+    const lineDef = this.lineDefinition(lineDefId);
+    const reasons = !!lineDef ? lineDef.StateReasons || [] : [];
+    this.reasonChoicesForNegativeModal = reasons
+      .filter(e => Math.abs(e.State) === Math.abs(signature.ToState))
+      .map(e => ({ name: () => this.ws.getMultilingualValueImmediate(e, 'Name'), value: e.Id }));
+
+    // Launch the modal that asks the user for the reason behind the negative signature
     const modalRef = this.modalService.open(this.negativeSignatureModal);
     modalRef.result.then(
       (confirmed: boolean) => {

@@ -258,63 +258,63 @@ namespace Tellma.Data.Queries
 
                         // Relative DateTime values
                         case "startofyear":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfYear(userToday);
                             break;
 
                         case "endofyear":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfYear(userToday).AddYears(1);
                             break;
 
                         case "startofquarter":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfQuarter(userToday);
                             break;
 
                         case "endofquarter":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfQuarter(userToday).AddMonths(3);
                             break;
 
                         case "startofmonth":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfMonth(userToday);
                             break;
 
                         case "endofmonth":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = StartOfMonth(userToday).AddMonths(1);
                             break;
 
                         case "today":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = Today(userToday);
                             break;
 
                         case "endofday":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTime(atom, propName, propType);
 
                             value = Today(userToday).AddDays(1);
                             break;
 
                         case "now":
-                            EnsureNullFunction(atom);
+                            EnsureNullModifier(atom);
                             EnsureTypeDateTimeOffset(atom, propName, propType);
 
                             var now = DateTimeOffset.Now;
@@ -534,7 +534,7 @@ namespace Tellma.Data.Queries
             return result;
         }
 
-        private static void EnsureNullFunction(FilterAtom atom)
+        private static void EnsureNullModifier(FilterAtom atom)
         {
             if (!string.IsNullOrWhiteSpace(atom.Modifier))
             {

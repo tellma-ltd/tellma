@@ -113,6 +113,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   ngOnInit() {
 
+    console.log('Change!');
+
     // If there is 0 or 1 definitionId, use the specific API, otherwise use the generic one with a filter
     const apiEndpoint = this.apiEndpoint(this.definitionIdsSingleOrDefault);
     this.api = this.apiService.crudFactory(apiEndpoint, this.cancelRunningCall$);
@@ -198,11 +200,17 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     }));
   }
 
+  private identical(currentDefIds: string[], previousDefIds: string[]): boolean {
+    return (!currentDefIds && !previousDefIds) || (
+      !!currentDefIds && !!previousDefIds && currentDefIds.length === previousDefIds.length &&
+      currentDefIds.every((defId, i) => defId === previousDefIds[i]));
+  }
+
   ngOnChanges(changes: SimpleChanges) {
-    // the combination of these properties define a new details picker
-    const screenDefProperties = [changes.definitionIds, changes.collection];
-    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
-    if (screenDefChanges) {
+    // the combination of collection and definitionIds define a new details picker
+    if ((!!changes.collection && !changes.collection.isFirstChange()) ||
+      (!!changes.definitionIds && !changes.definitionIds.isFirstChange() &&
+        !this.identical(changes.definitionIds.currentValue, changes.definitionIds.previousValue))) {
       this.ngOnDestroy();
       this.ngOnInit();
     }

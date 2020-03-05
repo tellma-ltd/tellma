@@ -65,13 +65,13 @@
         </t-text-editor>
     </t-form-group>
 
-    <ngb-tabset class="w-100 pt-3 pt-sm-4" [destroyOnHide]="true">
+    <ul ngbNav #tabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs" [destroyOnHide]="true">
         <!-- Basic -->
-        <ngb-tab>
-            <ng-template ngbTabTitle>
-                <span class="small">{{ 'Basic' | translate }}</span>
-            </ng-template>
-            <ng-template ngbTabContent>
+        <li ngbNavItem="basic">
+            <a ngbNavLink>
+                <span class="small t-slightly-bold">{{ 'Basic' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- Responsibility Center -->
@@ -238,14 +238,14 @@
 
                 </div>
             </ng-template>
-        </ngb-tab>
+        </li>
 
         <!-- Advanced -->
-        <ngb-tab>
-            <ng-template ngbTabTitle>
-                <span class="small">{{ 'Advanced' | translate }}</span>
-            </ng-template>
-            <ng-template ngbTabContent>
+        <li ngbNavItem="advanced">
+            <a ngbNavLink>
+                <span class="small t-slightly-bold">{{ 'Advanced' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
                 <div class="row m-0 pt-2 pt-sm-3">
 
                     <!-- Legacy Classification -->
@@ -350,8 +350,9 @@
 
                 </div>
             </ng-template>
-        </ngb-tab>
-    </ngb-tabset>
+        </li>
+    </ul>
+    <div class="w-100" [ngbNavOutlet]="tabs"></div>
 </ng-template>
 
 <!-- Actions -->

@@ -16,7 +16,6 @@ import {
   NgbDatepickerModule,
   NgbDateAdapter,
   NgbDatepickerI18n,
-  NgbTabsetModule,
   NgbTooltipModule,
   NgbNavModule
 } from '@ng-bootstrap/ng-bootstrap';
@@ -142,7 +141,6 @@ import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cel
     NgbModalModule,
     NgbPopoverModule,
     NgbDatepickerModule,
-    NgbTabsetModule,
     NgbNavModule,
     NgbTooltipModule,
     NgxChartsModule
@@ -156,7 +154,6 @@ import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cel
     NgbModalModule,
     NgbCollapseModule,
     NgbPopoverModule,
-    NgbTabsetModule,
     NgbNavModule,
     NgbTooltipModule,
     TranslateModule,

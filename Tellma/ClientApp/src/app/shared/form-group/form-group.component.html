@@ -7,7 +7,7 @@
 <div class="d-flex flex-wrap flex-lg-nowrap" [ngbPopover]="invalid ? errorsPopover : null" container="body"
   [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
   <!-- Label -->
-  <div class="font-weight-bold small t-form-group-label" *ngIf="showLabel">
+  <div class="font-weight-bold small t-form-group-label text-nowrap" *ngIf="showLabel">
     <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
   </div>
   <!-- Content -->
