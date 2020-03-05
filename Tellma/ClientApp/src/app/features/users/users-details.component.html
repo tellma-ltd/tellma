@@ -114,54 +114,59 @@
     <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
   </div>
 
-  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true" *ngIf="showRoles">
+  <ng-container *ngIf="showRoles">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
 
-    <!-- Roles -->
-    <ngb-tab [disabled]="true">
-      <ng-template ngbTabTitle><span class="small">{{ 'User_Roles' | translate }}<span
-            *ngIf="model?.EntityMetadata?.Roles == 2"> ({{ model?.Roles.length | number
-          }})</span></span>
-        <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon>
-        </span>
-      </ng-template>
-      <ng-template ngbTabContent>
-        <t-restricted [metadata]="model?.EntityMetadata?.Roles" [class.p-4]="model?.EntityMetadata?.Roles === 1">
-          <t-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [columnTemplates]="{
-            'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
-            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
-          }">
-          </t-table>
-        </t-restricted>
+      <!-- Roles -->
+      <li [disabled]="true" ngbNavItem="roles">
+        <a ngbNavLink>
+          <span
+            class="small t-slightly-bold">{{ ('User_Roles' | translate) + (!model.Id || model?.EntityMetadata?.Roles === 2 ? ' (' + (model?.Roles?.length | number) + ')' : '') }}</span>
+          <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
+            </fa-icon>
+          </span>
+        </a>
+        <ng-template ngbNavContent>
+          <t-restricted [metadata]="model?.EntityMetadata?.Roles" [class.p-4]="model?.EntityMetadata?.Roles === 1">
+            <t-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [columnTemplates]="{
+              'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
+              'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+            }">
+            </t-table>
+          </t-restricted>
 
-        <!-- RoleId -->
-        <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
-        <ng-template #row_RoleId let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.RoleId">
-            <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.Role">
-              <t-view-link link="../../roles" [itemId]="item?.RoleId">{{
-              ws.getMultilingualValue('Role',
-              item.RoleId, 'Name') }}</t-view-link>
-            </t-restricted>
-            <t-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update.call(null, item)" [required]="!item.PH"
-              [showMembers]="false">
-            </t-roles-picker>
-          </t-form-group-cell>
+          <!-- RoleId -->
+          <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
+          <ng-template #row_RoleId let-item="item" let-index="index" let-update="update">
+            <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.RoleId">
+              <t-restricted *ngIf="!isEdit" [metadata]="item.EntityMetadata?.Role">
+                <t-view-link link="../../roles" [itemId]="item?.RoleId">{{
+                ws.getMultilingualValue('Role',
+                item.RoleId, 'Name') }}</t-view-link>
+              </t-restricted>
+              <t-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update.call(null, item)"
+                [required]="!item.PH" [showMembers]="false">
+              </t-roles-picker>
+            </t-form-group-cell>
+          </ng-template>
+
+          <!-- Memo -->
+          <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+          <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+            <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
+              <div *ngIf="!isEdit">
+                <t-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</t-restricted>
+              </div>
+              <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
+                [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+            </t-form-group-cell>
+          </ng-template>
         </ng-template>
+      </li>
+    </ul>
+    <div class="w-100" [ngbNavOutlet]="tabs"></div>
+  </ng-container>
 
-        <!-- Memo -->
-        <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-        <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
-          <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
-            <div *ngIf="!isEdit">
-              <t-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</t-restricted>
-            </div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
-              [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-          </t-form-group-cell>
-        </ng-template>
-      </ng-template>
-    </ngb-tab>
-  </ngb-tabset>
 </ng-template>
 
 <!-- Actions -->

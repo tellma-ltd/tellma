@@ -65,7 +65,7 @@ export class CustomUserSettingsService {
           handleFreshAdminUserSettings(result, workspace, this.storage);
         }),
         catchError(friendlyError => {
-          console.log(friendlyError.error);
+          console.error(friendlyError.error);
           return of(null);
         })
       );
@@ -77,7 +77,7 @@ export class CustomUserSettingsService {
           handleFreshUserSettings(result, args.tenantId, workspace, this.storage);
         }),
         catchError(friendlyError => {
-          console.log(friendlyError.error);
+          console.error(friendlyError.error);
           return of(null);
         })
       );

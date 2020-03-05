@@ -349,6 +349,7 @@ namespace Tellma.Controllers
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient
                 {
+                    Id = r.Id,
                     State = r.State,
                     Name = r.Name,
                     Name2 = r.Name2,

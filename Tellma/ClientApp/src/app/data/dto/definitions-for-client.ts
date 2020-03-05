@@ -133,6 +133,7 @@ export interface LineDefinitionColumnForClient {
 }
 
 export interface LineDefinitionStateReasonForClient {
+    Id: number;
     State: number;
     Name: string;
     Name2: string;

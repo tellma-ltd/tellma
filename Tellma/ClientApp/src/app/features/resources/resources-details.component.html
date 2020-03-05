@@ -1,6 +1,7 @@
-<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create" [cloneFunc]="clone"
-    [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb"
-    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" [actions]="[
+<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
+    [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
+    [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -338,24 +339,25 @@
     </t-form-group>
 
     <!-- Tabs -->
-    <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
 
         <!-- Units -->
-        <ngb-tab>
-            <ng-template ngbTabTitle><span class="small">{{ 'Resource_Units' | translate }}<span
-                        *ngIf="model?.EntityMetadata?.Units == 2"> ({{ Units_count(model) | number
-          }})</span></span>
+        <li ngbNavItem="units">
+            <a ngbNavLink>
+                <span
+                    class="small t-slightly-bold">{{ ('Resource_Units' | translate) + (!model.Id || model?.EntityMetadata?.Units === 2 ? ' (' + (Units_count(model) | number) + ')' : '') }}</span>
                 <span *ngIf="Units_showError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
-                    </fa-icon></span>
-            </ng-template>
-            <ng-template ngbTabContent>
+                    </fa-icon>
+                </span>
+            </a>
+            <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Units"
                     [class.p-4]="model?.EntityMetadata?.Units === 1">
                     <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit', 'Multiplier']"
                         [columnTemplates]="{
-              'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
-              'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
-            }">
+                                            'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
+                                            'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
+                                            }">
                     </t-table>
                 </t-restricted>
 
@@ -384,8 +386,9 @@
                     </t-form-group-cell>
                 </ng-template>
             </ng-template>
-        </ngb-tab>
-    </ngb-tabset>
+        </li>
+    </ul>
+    <div class="w-100" [ngbNavOutlet]="tabs"></div>
 </ng-template>
 
 <!-- Actions -->

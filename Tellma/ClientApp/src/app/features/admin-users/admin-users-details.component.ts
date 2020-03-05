@@ -179,7 +179,14 @@ export class AdminUsersDetailsComponent extends DetailsBaseComponent {
   }
 
   permissionViewLookup(view: string): string {
-    return this.viewsDb[view].name();
+    if (!view) {
+      return '';
+    } else if (!this.viewsDb[view]) {
+      console.error(`missing view ${view}`);
+      return '';
+    } else {
+      return this.viewsDb[view].name();
+    }
   }
 
   public onPermissionChanged(item: AdminPermission) {

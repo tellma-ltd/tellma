@@ -102,7 +102,7 @@
         <li *ngFor="let lineDefId of lineDefinitionIds(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
-                    class="small t-slightly-bold">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines == 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                    class="small t-slightly-bold">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
                 <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">&nbsp;<fa-icon
                         icon="exclamation-triangle">
                     </fa-icon>
@@ -808,7 +808,7 @@
 
                             <!-- No signature but can sign -->
                             <ng-container *ngIf="!signature.SignedById && signature.CanSign">
-                                <button class="btn btn-danger px-2 w-50" (click)="onSignNo(signature)">
+                                <button class="btn btn-danger px-2 w-50" (click)="onSignNo(lineDefId, signature)">
                                     <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
                                     <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
                                 </button>&nbsp;&nbsp;
@@ -1093,10 +1093,17 @@
 
     <!-- body -->
     <div class="modal-body">
-        <!-- TODO: Reason -->
+        <!-- Reason -->
+        <div class="mt-1" *ngIf="reasonChoicesForNegativeModal?.length > 0">
+            <div class="font-weight-bold small">
+                <span class="t-vertical-align-middle">{{ 'Signature_Reason' | translate }}</span>
+            </div>
+            <t-selector [(ngModel)]="reasonId" [choices]="reasonChoicesForNegativeModal">
+            </t-selector>
+        </div>
 
         <!-- Reason Details -->
-        <div class="mt-1">
+        <div class="mt-3 mb-2">
             <div class="font-weight-bold small">
                 <span class="t-vertical-align-middle">{{ 'Signature_ReasonDetails' | translate }}</span>
             </div>
