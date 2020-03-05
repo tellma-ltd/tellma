@@ -1356,7 +1356,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showLineErrors(lineDefId: string, model: Document) {
     return !!model && !!model.Lines &&
-      model.Lines.some(line => lineDefId === line.DefinitionId && !!line.serverErrors);
+      model.Lines.some(line => lineDefId === line.DefinitionId && (!!line.serverErrors ||
+        (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
   }
 
   public columnPaths(lineDefId: string, model: DocumentForSave): string[] {
@@ -1532,8 +1533,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const lineDef = this.lineDefinition(lineDefId);
         if (!!lineDef) {
           if (lineDef.Entries) {
-            for (const entryDef of lineDef.Entries) {
-              item.Entries[entryDef.Index] = { Direction: entryDef.Direction };
+            for (let i = 0; i < lineDef.Entries.length; i++) {
+              const entryDef = lineDef.Entries[i];
+              item.Entries[i] = { Direction: entryDef.Direction };
             }
           } else {
             console.error(`Line definition ${lineDefId} is missing its Entries`);

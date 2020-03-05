@@ -870,14 +870,14 @@
         </li>
         <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
             <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span
-                    class="small t-slightly-bold">...</span></a>
+                    class="small t-slightly-bold"><fa-icon icon="ellipsis-v"></fa-icon></span></a>
             <div ngbDropdownMenu>
                 <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)"
                     ngbDropdownItem (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId) }}</button>
             </div>
         </li>
 
-        <li [ngbNavItem]="'Attachment'">
+        <li class="ml-auto" [ngbNavItem]="'Attachment'">
             <a ngbNavLink><span
                     class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
             </a>
