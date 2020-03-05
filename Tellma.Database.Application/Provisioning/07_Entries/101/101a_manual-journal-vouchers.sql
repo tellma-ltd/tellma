@@ -81,7 +81,7 @@ BEGIN -- Inserting
 		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
-		@ToState = 3, -- N'Completed',
+		@ToState = 4, -- N'Completed',
 		@OnBehalfOfuserId = @Jiad_akra,
 		@RuleType = N'ByRole',
 		@RoleId = @1Comptroller, -- we allow selecting the role manually,
@@ -94,32 +94,6 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 	
-	EXEC [api].[Documents__Assign] 
-		@IndexedIds = @DocsIndexedIds,
-		@AssigneeId = @amtaam,
-		@Comment = N'For your kind attention',
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	DELETE FROM @DocsIndexedIds;
-	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
-	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;
-
-	EXEC [api].[Documents__Sign]
-		@IndexedIds = @DocsIndexedIds,
-		@ToState = 4, -- N'Ready To Post'
-		@OnBehalfOfuserId = @amtaam,
-		@RuleType = N'ByRole',
-		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
-		@SignedAt = @Now,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-	IF @ValidationErrorsJson IS NOT NULL 
-	BEGIN
-		Print 'Lines Signing: ' + @ValidationErrorsJson
-		GOTO Err_Label;
-	END;
-
 	EXEC [api].[Documents__Post]
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
