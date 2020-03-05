@@ -5,8 +5,6 @@ namespace Tellma.Entities
 {
     public class LineDefinitionEntryForSave : EntityWithKey<int>
     {
-        public int? EntryNumber { get; set; }
-
         public short? Direction { get; set; }
 
         public string AccountTypeParentCode { get; set; }
@@ -18,6 +16,9 @@ namespace Tellma.Entities
 
     public class LineDefinitionEntry : LineDefinitionEntryForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         public string LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]

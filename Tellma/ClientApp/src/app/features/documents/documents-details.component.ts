@@ -160,13 +160,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
         // Active tab
         if (params.has('tab')) {
-          const urlTab = params.get('tab');
-          if (this.definition.LineDefinitions.some(e => e.IsVisibleByDefault && e.LineDefinitionId === urlTab)) {
-            this.activeTab = urlTab;
-          } else {
-            const firstVisibleLineDef = this.definition.LineDefinitions.filter(e => e.IsVisibleByDefault)[0];
-            this.activeTab = !!firstVisibleLineDef ? firstVisibleLineDef.LineDefinitionId : null;
-          }
+          this.activeTab = params.get('tab');
         } else {
           if (!!this.activeTab) {
             this.onTabChange(this.activeTab, false);
@@ -1314,6 +1308,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.activeTab = lineDefId;
   }
 
+  public getActiveTab(model: Document) {
+    // Special tabs, TODO: Remove
+    if (this.activeTab === 'Attachment') {
+      return 'Attachment';
+    }
+
+    const visibleTabs = this.visibleTabs(model);
+    if (visibleTabs.some(e => e === this.activeTab)) {
+      return this.activeTab;
+    } else {
+      return visibleTabs[0];
+    }
+  }
+
   public tabTitle(lineDefId: string): string {
     const def = this.ws.definitions.Lines[lineDefId];
     return !!def ? this.ws.getMultilingualValueImmediate(def, 'TitlePlural') : lineDefId;
@@ -1420,7 +1428,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private entryDefinition(lineDefId: string, columnIndex: number): LineDefinitionEntryForClient {
     const lineDef = this.lineDefinition(lineDefId);
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return !!lineDef && !!lineDef.Entries && !!colDef ? lineDef.Entries[colDef.EntryNumber] : null;
+    return !!lineDef && !!lineDef.Entries && !!colDef ? lineDef.Entries[colDef.EntryIndex] : null;
   }
 
   public columnName(lineDefId: string, columnIndex: number): string {
@@ -1433,17 +1441,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(colDef, 'Label');
   }
 
+  /**
+   * Returns either the line or one of its entries depending on the column definition
+   */
   private entity(def: LineDefinitionColumnForClient, line: LineForSave): LineForSave | EntryForSave {
     let entity: LineForSave | EntryForSave;
     if (!!def) {
       if (def.TableName === 'Lines') {
         entity = line;
       } else if (def.TableName === 'Entries') {
-        // if (!line.Entries[def.EntryNumber]) {
-        //   line.Entries[def.EntryNumber] = {};
+        // if (!line.Entries[def.EntryIndex]) {
+        //   line.Entries[def.EntryIndex] = {};
         // }
 
-        entity = line.Entries[def.EntryNumber];
+        entity = line.Entries[def.EntryIndex];
       }
     }
 
@@ -1453,11 +1464,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public entry(lineDefId: string, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     if (!!colDef && colDef.TableName === 'Entries') {
-      // if (!line.Entries[colDef.EntryNumber]) {
-      //   line.Entries[colDef.EntryNumber] = {};
+      // if (!line.Entries[colDef.EntryIndex]) {
+      //   line.Entries[colDef.EntryIndex] = {};
       // }
 
-      return line.Entries[colDef.EntryNumber];
+      return line.Entries[colDef.EntryIndex];
     }
 
     return null;
@@ -1522,7 +1533,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         if (!!lineDef) {
           if (lineDef.Entries) {
             for (const entryDef of lineDef.Entries) {
-              item.Entries[entryDef.EntryNumber] = { Direction: entryDef.Direction };
+              item.Entries[entryDef.Index] = { Direction: entryDef.Direction };
             }
           } else {
             console.error(`Line definition ${lineDefId} is missing its Entries`);

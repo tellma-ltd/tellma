@@ -3,7 +3,6 @@
 import { EntityForSave } from './base/entity-for-save';
 
 export interface EntryForSave extends EntityForSave {
-    EntryNumber?: number;
     Direction?: 1 | -1;
     AccountId?: number;
     CurrencyId?: string;

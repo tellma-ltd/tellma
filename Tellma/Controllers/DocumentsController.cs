@@ -360,12 +360,6 @@ namespace Tellma.Controllers
                 {
                     // Line defaults
                     line.Entries ??= new List<EntryForSave>();
-
-                    line.Entries.ForEach(entry =>
-                    {
-                        // Entry defaults
-                        entry.EntryNumber ??= 0;
-                    });
                 });
             });
 

@@ -6,9 +6,6 @@ namespace Tellma.Entities
 {
     public class EntryForSave : EntityWithKey<int>
     {
-        [AlwaysAccessible]
-        public int? EntryNumber { get; set; }
-
         [Display(Name = "Entry_Direction")]
         [AlwaysAccessible]
         [ChoiceList(new object[] { (short)-1, (short)1 })]
@@ -78,6 +75,8 @@ namespace Tellma.Entities
 
     public class Entry : EntryForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
         public int? LineId { get; set; }
 
         [Display(Name = "CreatedAt")]
