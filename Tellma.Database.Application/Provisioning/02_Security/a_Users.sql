@@ -2,12 +2,13 @@
 
 IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Users
-	([Index],	[Name],				[Email]) VALUES
-	(0,			N'Jiad Akra',		N'jiad.akra@gmail.com'),
-	(1,			N'elAmin alTayyib',	N'amtaam@gmail.com'),
-	(2,			N'Mohamad Akra',	N'mohamad.akra@banan-it.com'),
-	(3,			N'Ahmad Abdussalam',N'Elhelalaby1@gmail.com');
-
+	([Index],	[Name],				[Name2],				[Email]) VALUES
+	(0,			N'Jiad Akra',		N'جياد عكره',			N'jiad.akra@gmail.com'),
+	(1,			N'elAmin alTayyib',	N'الأمين الطيب',			N'amtaam@gmail.com'),
+	(2,			N'Mohamad Akra',	N'محمد عكره',			N'mohamad.akra@banan-it.com'),
+	(3,			N'Ahmad Abdussalam',N'أحمد عبد السلام',		N'Elhelalaby1@gmail.com'),
+	(4,			N'Alaeldin Ismail',	N'علاء الدين اسماعيل',	N'alaeldin.ismail@ebanan.com'),
+	(5,			N'Omer al-Samani',	N'عمر السماني',			N'omer.alsamani@ebanan.com');
 IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Users
 	([Index],	[Name],					[Email]) VALUES
@@ -15,14 +16,13 @@ IF @DB = N'102' -- Banan ET, ETB, en
 	(1,			N'Mohamad Akra',		N'mohamad.akra@banan-it.com'),
 	(2,			N'Ahmad Akra',			N'ahmad.akra@banan-it.com'),
 	(3,			N'Yisak Fikadu',		N'yisakfikadu79@gmail.com'),
-	(4,			N'Wondewsen Semaneh',	N'wendylulu99@gmail.com');
-
+	(4,			N'Abrham Tenker',		N'abrham.tenker@banan-it.com'),
+	(5,			N'Wondewsen Semaneh',	N'wendylulu99@gmail.com');
 IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 	INSERT INTO @Users
 	([Index],[Name],			[Name2],		[Email]) VALUES
 	(0,		N'Salman Al-Juhani',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),
 	(1,		N'Sami Shubaily',	N'萨米·希比利（Sami Shibili)',		N'sami.shubaily@lifan.com');
-
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 	INSERT INTO @Users
 	([Index],	[Name],						[Email]) VALUES
@@ -40,7 +40,6 @@ IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(11,		N'Mestawet G/Egziyabhare',	N'mestawetezige@gmail.com'),
 	(12,		N'Belay Abagero',			N'belayabagero07@gmail.com'),
 	(13,		N'Kalkidan Asemamaw',		N'kasmamaw5@gmail.com');
-
 IF @DB = N'105' -- Simpex, SAR, en/ar
 	INSERT INTO @Users
 	([Index],[Name],			[Name2],		[Email]) VALUES
@@ -50,11 +49,14 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	(3,		N'Tareq Fakhrani',	N'طارق فخراني',N'tareq.Fakhrani@simpex.co.sa'),
 	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
+
 EXEC [dal].[Users__Save]
 	@Entities = @Users
 
-DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT, @aasalam INT;
+DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT, @aasalam INT, @alaeldin INT, @omer INT;
 SELECT @Jiad_akra = [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@gmail.com';
 SELECT @amtaam = [Id] FROM dbo.Users WHERE [Email] = N'amtaam@gmail.com';
 SELECT @mohamad_akra = [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@banan-it.com';
 SELECT @aasalam = [Id] FROM dbo.Users WHERE [Email] = N'Elhelalaby1@gmail.com';
+SELECT @alaeldin = [Id] FROM dbo.Users WHERE [Email] = N'alaeldin.ismail@ebanan.com';
+SELECT @omer = [Id] FROM dbo.Users WHERE [Email] = N'omer.alsamani@ebanan.com';

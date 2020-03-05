@@ -35,8 +35,8 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 4985
 	WHERE [DocumentIndex] = 12 AND [Index] = 0;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId]
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo]
 	FROM @WL
 	
 	INSERT INTO @E

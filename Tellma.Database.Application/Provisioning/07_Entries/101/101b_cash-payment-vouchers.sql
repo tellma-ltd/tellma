@@ -18,7 +18,7 @@ BEGIN -- Inserting
 	--(25,		'2019.01.07',	N'Sold USD and received in BOK'),
 	--(26,		'2019.01.07',	N'Employees Dec 2018 Salaries Payment')
 	;
-
+	UPDATE @D Set [MemoIsCommon] = 0;
 --(0,2,	N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
 --(1,2,	N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
 --(2,2,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',				N'المبلغ',				1,2),
@@ -121,8 +121,8 @@ BEGIN -- Inserting
 		[Value0] = 1000
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId]
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo]
 	FROM @WL
 	
 	INSERT INTO @E
@@ -235,8 +235,8 @@ BEGIN -- Inserting
 	END;
 
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
-	INSERT INTO @D([Index], [Id], [DocumentDate], [Memo])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id],[DocumentDate], [Memo]
+	INSERT INTO @D([Index], [Id], [DocumentDate], [Memo], [MemoIsCommon])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id],[DocumentDate], [Memo], [MemoIsCommon]
 	FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
 
 	INSERT INTO @L([Index],	[DocumentIndex],
@@ -306,10 +306,11 @@ BEGIN -- Inserting
 	FROM dbo.Entries E
 	WHERE LineId IN (SELECT [Id] FROM @L)
 
-	INSERT INTO @L([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(1, 0,				N'ManualLine'),
-	(1, 4,				N'ManualLine'),
-	(1, 5,				N'ManualLine');
+	INSERT INTO @L([Index], [DocumentIndex],
+	[DefinitionId],		[Memo]) VALUES
+	(1,0,N'ManualLine', N'Shawarma'),
+	(1,4,N'ManualLine', NULL),
+	(1,5,N'ManualLine', N'Shawarma');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES

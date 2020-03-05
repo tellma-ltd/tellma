@@ -6,25 +6,32 @@ IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Roles
 	([Index],	[Name],				[Code]) VALUES
-	(0,			N'Comptroller',		'CMPT'),
+	(0,			N'Finance Manager',	'FM'),
 	(1,			N'General Manager', 'GM'),
 	(2,			N'Reader',			'RDR'),
-	(3,			N'Account Manager',	'AM')
+	(3,			N'Account Manager',	'AM'),
+	(4,			N'Comptroller',		'CMPT')
 	;
-	INSERT INTO @Members
-	([HeaderIndex],	[Index],	[UserId])
-	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'jiad.akra@gmail.com'	UNION
-	SELECT	1,		0,			[Id] FROM dbo.[Users] WHERE Email = N'amtaam@gmail.com'	UNION
-	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mohamad.akra@banan-it.com'
-	SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'amtaam@gmail.com'
-	INSERT INTO @Permissions
+	INSERT INTO @Members([Index],[HeaderIndex],
+	[UserId]) VALUES
+	(0,0,@Jiad_akra),
+	(0,1,@amtaam),
+	(0,2,@mohamad_akra),
+	(0,3,@amtaam),
+	(0,4,@Jiad_akra),
+	(1,4,@alaeldin);
+
+	INSERT INTO @Permissions([Index], [HeaderIndex],
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
-	([HeaderIndex],	[Index],[View],									[Action]) VALUES
-	(0,				0,		N'all',									N'All'),
-	(1,				0,		N'all',									N'Read'),
-	(2,				0,		N'all',									N'Read'),
-	(3,				0,		N'documents/revenue-recognition-vouchers',	N'All')
-	;
+		[Action],	[Criteria],			[View]) VALUES
+	(0,0,N'All',	NULL,				N'all'),
+	(0,1,N'Read',	NULL,				N'all'),
+	(0,2,N'Read',	NULL,				N'all'),
+	(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
+	(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
+	(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
+	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers')
+	 ;
 END
 
 IF @DB = N'102' -- Banan ET, ETB, en
