@@ -323,9 +323,7 @@ namespace Tellma.Controllers
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
 
-                AgentDefinitionList = def.AgentDefinitionList,
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
-                ResponsibilityTypeList = def.ResponsibilityTypeList,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     EntryNumber = e.EntryNumber.Value,

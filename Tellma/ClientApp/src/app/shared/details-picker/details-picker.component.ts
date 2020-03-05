@@ -113,8 +113,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   ngOnInit() {
 
-    console.log('Change!');
-
     // If there is 0 or 1 definitionId, use the specific API, otherwise use the generic one with a filter
     const apiEndpoint = this.apiEndpoint(this.definitionIdsSingleOrDefault);
     this.api = this.apiService.crudFactory(apiEndpoint, this.cancelRunningCall$);

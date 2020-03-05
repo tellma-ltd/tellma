@@ -17,6 +17,7 @@
 
     var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
     var appUri = (Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
+    // var appUri = ("/") + "?ui-culture=" + currentCulture;
 }
 
 <!DOCTYPE html>

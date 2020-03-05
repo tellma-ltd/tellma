@@ -149,8 +149,6 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural { get; set; }
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
-        public string AgentDefinitionList { get; set; }
-        public string ResponsibilityTypeList { get; set; }
         public bool AllowSelectiveSigning { get; set; }
         public List<LineDefinitionEntryForClient> Entries { get; set; }
         public List<LineDefinitionColumnForClient> Columns { get; set; }

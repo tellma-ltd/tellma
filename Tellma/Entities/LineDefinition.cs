@@ -54,9 +54,6 @@ namespace Tellma.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
-
-        public string AgentDefinitionList { get; set; }
-        public string ResponsibilityTypeList { get; set; }
         public bool? AllowSelectiveSigning { get; set; }
         public string Script { get; set; }
 

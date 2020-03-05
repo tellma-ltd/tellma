@@ -96,10 +96,11 @@
             <input type="checkbox" class="custom-control-input" [(ngModel)]="model.MemoIsCommon" id="memoIsCommon">
             <label class="custom-control-label t-pointer" for="memoIsCommon">&zwnj;</label>
         </div>
-    </t-form-group>    
+    </t-form-group>
 
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="activeTab" (activeIdChange)="onTabChange($event, isEdit)">
-        <li *ngFor="let lineDefId of lineDefinitionIds(model)" [ngbNavItem]="lineDefId">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="activeTab"
+        (activeIdChange)="onTabChange($event, isEdit)">
+        <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
                     class="small t-slightly-bold">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
@@ -411,7 +412,8 @@
 
                         <!-- Monetary Value -->
                         <ng-container *ngIf="showMonetaryValue(entry)">
-                            <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate" [serverErrors]="entry.serverErrors?.MonetaryValue">
+                            <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate"
+                                [serverErrors]="entry.serverErrors?.MonetaryValue">
                                 <!-- View -->
                                 <ng-container *ngIf="!isEdit">
                                     <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
@@ -866,9 +868,18 @@
 
             </ng-template>
         </li>
-        <li [ngbNavItem]="'Attachment'">
+        <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
+            <a href (click)="false" class="nav-link" ngbDropdownToggle><span
+                    class="small t-slightly-bold">More&nbsp;</span></a>
+            <div ngbDropdownMenu>
+                <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)"
+                    ngbDropdownItem (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId) }}</button>
+            </div>
+        </li>
+
+        <li [ngbNavItem]="'Attachment'" class="ml-auto">
             <a ngbNavLink><span
-                class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
+                    class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
             </a>
             <ng-template ngbNavContent>
                 <!-- No Attachments Message -->
@@ -929,7 +940,6 @@
 
             </ng-template>
         </li>
-
     </ul>
     <div class="w-100" [ngbNavOutlet]="tabs">
 

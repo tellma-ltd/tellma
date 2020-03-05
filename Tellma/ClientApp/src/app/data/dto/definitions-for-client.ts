@@ -105,8 +105,6 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     TitlePlural: string;
     TitlePlural2: string;
     TitlePlural3: string;
-    AgentDefinitionList: string;
-    ResponsibilityTypeList: string;
     AllowSelectiveSigning: boolean;
     Entries: LineDefinitionEntryForClient[];
     Columns: LineDefinitionColumnForClient[];

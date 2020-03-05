@@ -75,8 +75,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Caching for other functions
 
-  private _lineDefinitionIdsLines: LineForSave[];
-  private _lineDefinitionIds: string[];
+  private _computeTabsLines: LineForSave[];
+  private _computeTabsDefinitions: DocumentDefinitionForClient;
+  private _visibleTabs: string[];
+  private _invisibleTabs: string[];
 
   private _lines: { [key: string]: LineForSave[] };
   private _linesModel: DocumentForSave;
@@ -158,7 +160,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
         // Active tab
         if (params.has('tab')) {
-          this.activeTab = params.get('tab');
+          const urlTab = params.get('tab');
+          if (this.definition.LineDefinitions.some(e => e.IsVisibleByDefault && e.LineDefinitionId === urlTab)) {
+            this.activeTab = urlTab;
+          } else {
+            const firstVisibleLineDef = this.definition.LineDefinitions.filter(e => e.IsVisibleByDefault)[0];
+            this.activeTab = !!firstVisibleLineDef ? firstVisibleLineDef.LineDefinitionId : null;
+          }
         } else {
           if (!!this.activeTab) {
             this.onTabChange(this.activeTab, false);
@@ -1216,31 +1224,94 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public lineDefinitionIds(model: Document): string[] {
+  private computeTabs(model: Document): void {
     if (!model) {
-      return [];
+      this._computeTabsLines = null;
+      this._visibleTabs = [];
+      this._invisibleTabs = [];
+      return;
     }
 
-    if (this._lineDefinitionIdsLines !== model.Lines) {
-      this._lineDefinitionIdsLines = model.Lines;
+    if (this._computeTabsLines !== model.Lines || this._computeTabsDefinitions !== this.definition) {
+      this._computeTabsLines = model.Lines;
+      this._computeTabsDefinitions = this.definition;
 
-      const tracker: { [key: string]: true } = {};
-      const lineDefIdsFromDefinitions = this.ws.definitions.Documents[this.definitionId].LineDefinitions.map(e => e.LineDefinitionId);
+      // This tracks the line definition Ids from the document lines
+      const linesTracker: { [key: string]: true } = {};
 
-      for (const lineDefId of lineDefIdsFromDefinitions) {
-        tracker[lineDefId] = true;
-      }
-
+      // Add all definition IDs from the document lines to the lines tracker
       if (!!model.Lines) {
         for (const line of model.Lines) {
-          tracker[line.DefinitionId] = true;
+          linesTracker[line.DefinitionId] = true;
         }
       }
 
-      this._lineDefinitionIds = Object.keys(tracker);
-    }
+      // This tracks the line definition Ids from the definition
+      const visibleTabs: string[] = [];
+      const invisibleTabs: string[] = [];
+      const invisibleTracker: { [key: string]: true } = {};
+      const definitionTracker: { [key: string]: true } = {};
+      const lineDefinitions = this.ws.definitions.Documents[this.definitionId].LineDefinitions;
 
-    return this._lineDefinitionIds;
+      // Add the visible line def Ids from definitions to the def tracker
+      const visibleLineDefIdsFromDefinitions = lineDefinitions
+        .filter(e => e.IsVisibleByDefault)
+        .map(e => e.LineDefinitionId);
+
+      for (const lineDefId of visibleLineDefIdsFromDefinitions) {
+        if (!definitionTracker[lineDefId]) {
+          definitionTracker[lineDefId] = true;
+          visibleTabs.push(lineDefId);
+        }
+      }
+
+      // Add the invisible line def Ids that have lines in the document to the def tracker
+      const invisibleLineDefIdsFromDefinitions = lineDefinitions
+        .filter(e => !e.IsVisibleByDefault)
+        .map(e => e.LineDefinitionId);
+
+      for (const lineDefId of invisibleLineDefIdsFromDefinitions) {
+        if (!!linesTracker[lineDefId]) {
+          if (!definitionTracker[lineDefId]) {
+            definitionTracker[lineDefId] = true;
+            visibleTabs.push(lineDefId);
+          }
+        } else {
+          if (!invisibleTracker[lineDefId]) {
+            invisibleTracker[lineDefId] = true;
+            invisibleTabs.push(lineDefId);
+          }
+        }
+      }
+
+      // Add def Ids that are presenet in the lines but not the definition (anomalies)
+      for (const lineDefId of Object.keys(linesTracker)) {
+        if (!definitionTracker[lineDefId]) {
+          definitionTracker[lineDefId] = true;
+          visibleTabs.push(lineDefId);
+        }
+      }
+
+      this._visibleTabs = visibleTabs;
+      this._invisibleTabs = invisibleTabs;
+    }
+  }
+
+  public visibleTabs(model: Document): string[] {
+    this.computeTabs(model);
+    return this._visibleTabs;
+  }
+
+  public invisibleTabs(model: Document): string[] {
+    this.computeTabs(model);
+    return this._invisibleTabs;
+  }
+
+  public onOtherTab(lineDefId: string): void {
+    this._visibleTabs.push(lineDefId);
+    this._visibleTabs = this._visibleTabs.slice();
+    this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
+    this.activeTab = lineDefId;
   }
 
   public tabTitle(lineDefId: string): string {
