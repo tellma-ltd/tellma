@@ -46,4 +46,5 @@ BEGIN
 	UPDATE L
 	SET L.[State] = ISNULL(NL.ToState, 0)
 	FROM Lines L LEFT JOIN FinalLineStates NL ON L.[Id] = NL.[LineId]
+	WHERE L.[Id] IN (SELECT [Id] FROM @Ids)
 END;

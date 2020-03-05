@@ -86,8 +86,9 @@ BEGIN
 -- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
-		E.[Direction] = COALESCE(E.[Direction], LDE.[Direction])
-		-- TODO: fill with all the remaining defaults
+		E.[Direction] = LDE.[Direction],
+		E.[EntryTypeId] = COALESCE((SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = LDE.[EntryTypeCode]),
+									E.[EntryTypeId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]

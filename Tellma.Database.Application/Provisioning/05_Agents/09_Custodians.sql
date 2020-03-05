@@ -36,5 +36,6 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
-	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'elAmin Attayyib');
-	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Agents WHERE Name = N'Ahmad Abdussalam');
+	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Agents WHERE [Name] = N'elAmin Attayyib' AND [DefinitionId] = N'cash-custodians');
+	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Agents WHERE [Name] = N'Ahmad Abdussalam' AND [DefinitionId] = N'cash-custodians');
+	DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.Agents WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] = N'cash-custodians');

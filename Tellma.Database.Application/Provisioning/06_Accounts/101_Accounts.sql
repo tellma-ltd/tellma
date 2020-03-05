@@ -7,7 +7,7 @@ BEGIN
 
 	(1,1,0,		@CashOnHand,				N'GM Fund',					NULL,			@RC_Inv,					NULL,			N'cash-custodians',	@GMSafe),
 	(2,1,0,		@CashOnHand,				N'KSA Fund',				NULL,			@RC_Inv,					NULL,			N'cash-custodians',	@KSASafe),
-	(3,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,					NULL,			N'banks',			@Bank_BOK),
+	(3,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,					NULL,			N'cash-custodians',	@KRTBank),
 
 	(4,1,0,		@TradeReceivables,			N'Trade Receivables',		NULL,			@RC_Inv,					NULL,			N'customers',	NULL),
 	--(4,1,0,		@TradeReceivables,			N'Tier-3 A/R - SDG',		@SDG,			@RC_Inv,					NULL,			N'customers',	NULL),
@@ -41,7 +41,7 @@ BEGIN
 	(33,1,0,	@TradeAndOtherPayables,		N'10% Retained Salaries',	@USD,			@RC_Inv,					NULL,			N'employees',		NULL),
 	(34,1,0,	@TradeAndOtherPayables,		N'PrimeLedgers A/P',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
 	(35,1,0,	@TradeAndOtherPayablesToTradeSuppliers,N'Trade Payables',NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
-	(36,1,0,	@Accruals,					N'Accruals',				@USD,			@RC_Inv,					NULL,			N'suppliers',		NULL),
+	(36,1,0,	@Accruals,					N'Accruals',				NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
 	(37,1,0,	@TradeAndOtherPayables,		N'Dividends Payables',		@USD,			@RC_Inv,					NULL,			N'partners',		NULL),
 	(38,1,0,	@TradeAndOtherPayables,		N'Borrowings from M/A',		@USD,			@RC_Inv,					NULL,			N'partners',		@PartnerMA),
 
