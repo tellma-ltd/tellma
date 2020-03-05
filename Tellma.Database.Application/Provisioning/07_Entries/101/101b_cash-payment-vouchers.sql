@@ -312,11 +312,11 @@ BEGIN -- Inserting
 	(1,4,N'ManualLine', NULL),
 	(1,5,N'ManualLine', N'Shawarma');
 
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
 				[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
-	(0, 1, 0,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
-	(0, 1, 4,0,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
-	(0, 1, 5,0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
+	(0, 1, 0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
+	(0, 1, 4,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
+	(0, 1, 5,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
 
 	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;
 	EXEC [api].[Documents__Save]

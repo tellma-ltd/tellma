@@ -4,11 +4,11 @@
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[RuleType]					NVARCHAR (50)	NOT NULL DEFAULT N'ByRole',
-	[RuleTypeEntryNumber]		INT,
+	[RuleTypeEntryIndex]		INT,
 	[RoleId]					INT,
 	[Userid]					INT,
 	[PredicateType]				NVARCHAR(50),
-	[PredicateTypeEntryNumber]	INT,
+	[PredicateTypeEntryIndex]	INT,
 	[Value]						DECIMAL (19,4),
 	[ProxyRoleId]				INT			-- If a transition has a proxy role, an agent with that proxy role can sign on behalf.
 );

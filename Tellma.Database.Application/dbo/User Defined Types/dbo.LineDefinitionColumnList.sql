@@ -6,7 +6,7 @@
 	[Id]					INT				DEFAULT 0,
 	[TableName]				NVARCHAR (10)	NOT NULL,
 	[ColumnName]			NVARCHAR (50),
-	[EntryNumber]			INT,
+	[EntryIndex]			INT,
 	[Label]					NVARCHAR (50),
 	[Label2]				NVARCHAR (50),
 	[Label3]				NVARCHAR (50),

@@ -160,8 +160,8 @@ AS
 		E2.[NotedAmount],
 		E2.[NotedDate]
 	FROM @Lines L
-	JOIN @Entries E0 ON L.[Index] = E0.[LineIndex] AND L.[DocumentIndex] = E0.[DocumentIndex] AND E0.EntryNumber = 0
-	LEFT JOIN @Entries E1 ON L.[Index] = E1.[LineIndex] AND L.[DocumentIndex] = E1.[DocumentIndex] AND E1.EntryNumber = 1
-	LEFT JOIN @Entries E2 ON L.[Index] = E2.[LineIndex] AND L.[DocumentIndex] = E2.[DocumentIndex] AND E2.EntryNumber = 2
+	JOIN @Entries E0 ON L.[Index] = E0.[LineIndex] AND L.[DocumentIndex] = E0.[DocumentIndex] AND E0.[Index] = 0
+	LEFT JOIN @Entries E1 ON L.[Index] = E1.[LineIndex] AND L.[DocumentIndex] = E1.[DocumentIndex] AND E1.[Index] = 1
+	LEFT JOIN @Entries E2 ON L.[Index] = E2.[LineIndex] AND L.[DocumentIndex] = E2.[DocumentIndex] AND E2.[Index] = 2
 
 	SELECT * FROM @WideLines;

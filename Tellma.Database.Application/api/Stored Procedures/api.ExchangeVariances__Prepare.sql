@@ -44,8 +44,8 @@ BEGIN
 		SELECT [AccountId], [AgentId], [ResourceId], ABS(ValueBalance - FXBalance) AS [Value], SIGN(ValueBalance - FXBalance) AS [Direction]
 		FROM ExchangeVarianceEntries
 	)
-	INSERT INTO @Entries([Index], [LineIndex], [EntryNumber], [Direction],[AccountId], [AgentId], [ResourceId], [Quantity], [Value])
-	SELECT [Index], [Index], 1,
+	INSERT INTO @Entries([Index], [LineIndex], [Direction],[AccountId], [AgentId], [ResourceId], [Quantity], [Value])
+	SELECT [Index], [Index],
 		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], [AccountId], [AgentId], [ResourceId], 0, CAST(ABS([ValueBalance]) AS DECIMAL (19,4)) AS [ValueBalance]
 	FROM ExchangeVarianceEntries
 

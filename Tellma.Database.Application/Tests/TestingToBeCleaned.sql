@@ -4,7 +4,7 @@
 
 	DECLARE @DocumentId int = 0, @State NVARCHAR (255), @DocumentType NVARCHAR (255), @SerialNumber int, @Mode NVARCHAR (255), @ResponsibleAgent int;
 	DECLARE @LineNumber int = 0, @DocumentOffset int = 0;
-	DECLARE @EntryNumber int = 0, @Operation int, @Memo NVARCHAR (255), @Reference NVARCHAR (255), @Account NVARCHAR (255), @Custody int, @Resource int, @Direction smallint, @Amount DECIMAL (19,4), @Value DECIMAL (19,4), @Note NVARCHAR (255);
+	DECLARE @Index int = 0, @Operation int, @Memo NVARCHAR (255), @Reference NVARCHAR (255), @Account NVARCHAR (255), @Custody int, @Resource int, @Direction smallint, @Amount DECIMAL (19,4), @Value DECIMAL (19,4), @Note NVARCHAR (255);
 	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList, @ValidationMessage nvarchar(1024);
 	
 	-- List of Concepts

@@ -103,7 +103,7 @@ SET NOCOUNT ON;
 		SELECT
 			LDE.[Id],
 			LD.[Id] AS [LineDefinitionId],
-			LDE.[EntryNumber],
+			LDE.[Index],
 			LDE.[Direction]	,
 			LDE.[AccountTypeParentCode]	,
 			LDE.[AgentDefinitionId],
@@ -114,7 +114,7 @@ SET NOCOUNT ON;
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
-			t.[EntryNumber]				= s.[EntryNumber],
+			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
 			t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
 			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
@@ -125,7 +125,7 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
 			[LineDefinitionId],
-			[EntryNumber],
+			[Index],
 			[Direction],
 			[AccountTypeParentCode]	,
 			[AgentDefinitionId],
@@ -133,7 +133,7 @@ SET NOCOUNT ON;
 		)
 		VALUES (
 			s.[LineDefinitionId],
-			s.[EntryNumber],
+			s.[Index],
 			s.[Direction],
 			s.[AccountTypeParentCode],
 			s.[AgentDefinitionId],
@@ -148,7 +148,7 @@ SET NOCOUNT ON;
 			LDC.[Index],
 			LDC.[TableName],
 			LDC.[ColumnName],
-			LDC.[EntryNumber],
+			LDC.[EntryIndex],
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
@@ -163,7 +163,7 @@ SET NOCOUNT ON;
 			t.[Index]			= s.[Index],
 			t.[TableName]		= s.[TableName],
 			t.[ColumnName]		= s.[ColumnName],
-			t.[EntryNumber]		= s.[EntryNumber],
+			t.[EntryIndex]		= s.[EntryIndex],
 			t.[Label]			= s.[Label],
 			t.[Label2]			= s.[Label2],
 			t.[Label3]			= s.[Label3],
@@ -173,8 +173,8 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryNumber], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryNumber], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState]);
+		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState]);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (

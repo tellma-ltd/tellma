@@ -11,7 +11,7 @@ BEGIN -- Inserting
 		(0,0,	N'GoodReceiptWithInvoice',	1),
 		(1,0,	N'GoodReceiptWithInvoice',	2),
 		(2,0,	N'CashIssue',				1);
-	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [EntryNumber],
+	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [Index],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
 		(0,0,0,1,	+1,			@ESL,			N'InventoryPurchaseExtension', 		@HR1000x1_9,	0,			500000, 0),
 		(1,0,0,2,	-1,			@VimeksAccount,	NULL,								@USD,		100000,			0,		0),
@@ -28,7 +28,7 @@ BEGIN -- Inserting
 		(3,1,	 N'GoodReceiptWithInvoice', 1),
 		(4,1,	 N'GoodReceiptWithInvoice', 2);
 
-	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [EntryNumber],
+	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [Index],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Volume], [Value]) VALUES
 		(6,3,1,1,	+1,			@fuelHR,		N'TransportationExpense', 			@Oil,			0,			20,		0),
 		(7,3,1,2,	-1,			@NocJimmaAccount,	NULL,							@ETB,		430.6,			0,		0),
@@ -57,19 +57,19 @@ BEGIN -- Inserting
 	END;
 
 	INSERT INTO @D21Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D21Ids) ORDER BY [SortKey], [EntryNumber];
+	SELECT * FROM rpt.Documents(@D21Ids) ORDER BY [SortKey], [Index];
 
 	WITH GritwiLines AS (
 		SELECT
-			SortKey, LineId, [DefinitionId], EntryNumber, Account, [EntryTypeId], [Resource], Direction, Quantity, [Unit], [Value]
+			SortKey, LineId, [DefinitionId], [Index], Account, [EntryTypeId], [Resource], Direction, Quantity, [Unit], [Value]
 		FROM rpt.Documents(@D21Ids)
 		WHERE [DefinitionId] = N'GoodReceiptInWithInvoice'
 	)
 	SELECT L1.Account As LC, L1.[Resource] As [Item], L1.[Quantity], L1.[Unit], L2.[Quantity] As [Price], L2.[Resource] AS [Currency], L2.[Account] AS [Supplier]
 	FROM (
-		SELECT * FROM GritwiLines WHERE EntryNumber = 1
+		SELECT * FROM GritwiLines WHERE [Index] = 1
 	) L1 JOIN (
-		SELECT * FROM GritwiLines WHERE EntryNumber = 2
+		SELECT * FROM GritwiLines WHERE [Index] = 2
 	) L2 ON L2.LineId = L1.LineId;
 
 	WITH CompactLines AS (
@@ -109,8 +109,8 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.Lines DL
 	JOIN @D22 D22 ON D22.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E22([Id], [LineId], [DocumentIndex], [LineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [DECIMAL (19,4)Amount], [Value])
-	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
+	INSERT INTO @E22([Id], [LineId], [DocumentIndex], [LineIndex], [Index], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [DECIMAL (19,4)Amount], [Value])
+	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [Index], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
 	FROM dbo.Entries DLE
 	JOIN @L22 L22 ON L22.[Id] = DLE.[LineId];
 
@@ -136,7 +136,7 @@ BEGIN -- Updating document and deleting lines/entries
 	END;
 
 	INSERT INTO @D22Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D22Ids) ORDER BY [SortKey], [EntryNumber];
+	SELECT * FROM rpt.Documents(@D22Ids) ORDER BY [SortKey], [Index];
 END
 
 BEGIN -- signing
@@ -148,7 +148,7 @@ BEGIN -- signing
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	INSERT INTO @D23Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D23Ids) ORDER BY [SortKey], [EntryNumber];
+	SELECT * FROM rpt.Documents(@D23Ids) ORDER BY [SortKey], [Index];
 	SELECT * FROM [rpt].[Documents__Signatures](@D23Ids);
 
 	--select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt]  from RoleMemberships;

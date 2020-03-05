@@ -6,14 +6,14 @@ AS
 RETURN (
 	WITH ApplicableSignatures AS
 	(
-		SELECT L.Id As LineId, WS.RuleType, WS.[RuleTypeEntryNumber],  WS.RoleId, COALESCE(
+		SELECT L.Id As LineId, WS.RuleType, WS.[RuleTypeEntryIndex],  WS.RoleId, COALESCE(
 				WS.UserId,
 				(SELECT UserId FROM dbo.Agents WHERE [Id] IN (
-					SELECT AgentId FROM dbo.Entries WHERE LineId = L.Id AND EntryNumber = WS.[RuleTypeEntryNumber]
+					SELECT AgentId FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)
 			) AS UserId,
-			WS.PredicateType, WS.[PredicateTypeEntryNumber], WS.[Value], W.ToState, WS.ProxyRoleId
+			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value], W.ToState, WS.ProxyRoleId
 		FROM dbo.Lines L
 		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId
 		JOIN dbo.WorkflowSignatures WS ON WS.WorkflowId = W.[Id]
@@ -24,7 +24,7 @@ RETURN (
 				WS.[PredicateType] = N'ValueGreaterOrEqual'
 				AND L.[Id] IN (
 					SELECT LineId FROM dbo.Entries
-					WHERE EntryNumber = WS.[PredicateTypeEntryNumber]
+					WHERE [Index] = WS.[PredicateTypeEntryIndex]
 					AND [Value] >= WS.[Value]
 				)
 			)

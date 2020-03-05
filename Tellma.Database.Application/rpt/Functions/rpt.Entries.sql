@@ -22,7 +22,7 @@ RETURN
 		L.[DefinitionId] AS [LineDefinitionId],
 		L.[State] AS [LineState],
 		E.[ResponsibilityCenterId],
-		--E.[EntryNumber],
+		--E.[Index],
 		E.[Direction],
 		E.[AccountId],
 		A.[LegacyTypeId],

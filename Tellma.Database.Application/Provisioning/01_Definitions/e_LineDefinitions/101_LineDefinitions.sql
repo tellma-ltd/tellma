@@ -4,11 +4,11 @@ BEGIN
 INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitlePlural]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode]) VALUES
-(0,0,0,+1,	N'StatementOfFinancialPositionAbstract');
+(0,0,+1,	N'StatementOfFinancialPositionAbstract');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],		[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 																[ReadOnlyState]) VALUES
 (0,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4), -- only if it appears,
 (1,0,	N'Entries',	N'Account',		0,			N'Account',		3,4),
@@ -48,13 +48,13 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],	[AgentDefinitionId],[EntryTypeCode]) VALUES
-(0,1,0,+1,	N'ValueAddedTaxReceivables',NULL,				NULL),
-(1,1,1,+1,	N'Accruals',				N'suppliers',		NULL),
-(2,1,2,-1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'PaymentsToSuppliersForGoodsAndServices');
+(0,1,+1,	N'ValueAddedTaxReceivables',NULL,				NULL),
+(1,1,+1,	N'Accruals',				N'suppliers',		NULL),
+(2,1,-1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState]) VALUES
 (0,1,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5), 
 (1,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
@@ -71,11 +71,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
 2,1,N'CashPaymentToOther',	N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],	[AgentDefinitionId]) VALUES
-(0,2,0,	-1,	N'CashAndCashEquivalents',	N'cash-custodians');
+(0,2,	-1,	N'CashAndCashEquivalents',	N'cash-custodians');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],					[Label2],				[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],					[Label2],				[RequiredState],
 																									[ReadOnlyState]) VALUES
 (0,2,	N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
 (1,2,	N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
@@ -94,11 +94,11 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
 3,1,N'CashReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode], [AgentDefinitionId]) VALUES
-(0,3,0,-1,	N'CashAndCashEquivalents', N'cash-custodians');
+(0,3,-1,	N'CashAndCashEquivalents', N'cash-custodians');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],					[Label2],			[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],					[Label2],			[RequiredState],
 																								[ReadOnlyState]) VALUES
 (0,3,	N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
 (1,3,	N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
@@ -136,13 +136,13 @@ SET [Script] = N'
 	-----
 --	SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 4;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],	[AgentDefinitionId],[EntryTypeCode]) VALUES
-(0,4,0,+1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
-(1,4,1,-1,	N'ValueAddedTaxPayables',	NULL,				NULL),
-(2,4,2,-1,	N'AccruedIncome',			N'customers',		NULL);
+(0,4,+1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
+(1,4,-1,	N'ValueAddedTaxPayables',	NULL,				NULL),
+(2,4,-1,	N'AccruedIncome',			N'customers',		NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState]) VALUES
 (0,4,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5), 
 (1,4,	N'Entries',	N'NotedDate',			1,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
@@ -179,12 +179,12 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 5;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[AgentDefinitionId], [EntryTypeCode]) VALUES
-(0,5,0,+1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
-(1,5,1,-1,	N'TradeReceivables',		N'customers',		NULL);
+(0,5,+1,	N'CashAndCashEquivalents',	N'cash-custodians',	N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
+(1,5,-1,	N'TradeReceivables',		N'customers',		NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState]) VALUES
 (0,5,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5), 
 (1,5,	N'Entries',	N'AgentId',				1,	N'Customer',			N'الزبون',				3,4),
@@ -219,12 +219,12 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 6;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[AgentDefinitionId]) VALUES
-(0,6,0,+1,	N'AccruedIncome',	N'customers'),
-(1,6,1,-1,	N'Revenue',			N'cost-objects');
+(0,6,+1,	N'AccruedIncome',	N'customers'),
+(1,6,-1,	N'Revenue',			N'cost-objects');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],		[Label2],		[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState]) VALUES
 (0,6,	N'Entries', N'AgentId',				0,	N'Customer',	N'الزبون',		1,4),
 (1,6,	N'Entries', N'AgentId',				1,	N'System',		N'النظام',		1,4),
@@ -259,12 +259,12 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 7;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[AgentDefinitionId]) VALUES
-(0,7,0,+1,	N'TradeReceivables',	N'customers'),
-(1,7,1,-1,	N'Revenue',				N'cost-objects');
+(0,7,+1,	N'TradeReceivables',	N'customers'),
+(1,7,-1,	N'Revenue',				N'cost-objects');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryNumber],	[Label],		[Label2],		[RequiredState],
+		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState]) VALUES
 (0,7,	N'Entries', N'AgentId',				0,	N'Customer',	N'الزبون',		1,4),
 (1,7,	N'Entries', N'AgentId',				1,	N'System',		N'النظام',		1,4),

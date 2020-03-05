@@ -54,7 +54,7 @@ BEGIN
 	-----
 	SELECT * FROM @Entries;
 
-	--WITH EmployeesAccruals([Index], [LineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
+	--WITH EmployeesAccruals([Index], [LineIndex], [Index], [AccountId], [AccruedValue], [Time]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId], A.[ResourceId]),
 	--		A.[AgentId],
@@ -74,7 +74,7 @@ BEGIN
 	--	JOIN dbo.Accounts A ON EA.AccountId = A.Id
 	--	GROUP BY A.[AgentId]
 	--),
-	--EmployeeIncomeTaxes([Index], [LineIndex], [EntryNumber], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
+	--EmployeeIncomeTaxes([Index], [LineIndex], [Index], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
 	--		A.[AgentId],
@@ -91,7 +91,7 @@ BEGIN
 	--),
 	---- TODO: Deduct any ther taxes/deductions
 	---- TODO: Deduct loans
-	--EmployeesPayable([Index], [LineIndex], [EntryNumber], [AccountId], [NetPayable]) AS (
+	--EmployeesPayable([Index], [LineIndex], [Index], [AccountId], [NetPayable]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY E.EmployeeId) + (SELECT MAX([Index]) FROM EmployeeIncomeTaxes),
 	--		E.[EmployeeId],
@@ -107,16 +107,16 @@ BEGIN
 	--)
 	---- We reverse the accrual effect
 	---- TODO: How to handle boundary cases when Payable willl be positive
-	--INSERT INTO @Entries([Index],[LineIndex], [EntryNumber], [Direction],[AccountId], [Value], [Time])
-	--SELECT				[Index],[LineIndex], [EntryNumber], SIGN([AccruedValue]), [AccountId], ABS([AccruedValue]), [Time]
+	--INSERT INTO @Entries([Index],[LineIndex], [Index], [Direction],[AccountId], [Value], [Time])
+	--SELECT				[Index],[LineIndex], [Index], SIGN([AccruedValue]), [AccountId], ABS([AccruedValue]), [Time]
 	--FROM EmployeesAccruals
 	--UNION
 	---- Add the income tax. TODO: Add related agent and related amount for simpler declaration
-	--SELECT				[Index], [LineIndex], [EntryNumber], -1,		[AccountId], [IncomeTax], 0
+	--SELECT				[Index], [LineIndex], [Index], -1,		[AccountId], [IncomeTax], 0
 	--FROM EmployeeIncomeTaxes
 	---- Add the payable
 	--UNION
-	--SELECT				[Index], [LineIndex], [EntryNumber], -1,		[AccountId], [NetPayable], 0
+	--SELECT				[Index], [LineIndex], [Index], -1,		[AccountId], [NetPayable], 0
 	--FROM EmployeesPayable
 	--;
 	   

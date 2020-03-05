@@ -36,7 +36,7 @@ AS
 		--WL.[NotedAmount0]				= LDE.[NotedAmount],
 		--WL.[NotedDate0]					= LDE.[NotedDate]
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
-	WHERE LDE.EntryNumber = 0
+	WHERE LDE.[Index] = 0
 
 	UPDATE WL
 	SET
@@ -64,7 +64,7 @@ AS
 		--WL.[NotedAmount1]				= LDE.[NotedAmount],
 		--WL.[NotedDate1]					= LDE.[NotedDate]
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
-	WHERE LDE.EntryNumber = 1
+	WHERE LDE.[Index] = 1
 
 	UPDATE WL
 	SET
@@ -92,6 +92,6 @@ AS
 		--WL.[NotedAmount2]				= LDE.[NotedAmount],
 		--WL.[NotedDate2]					= LDE.[NotedDate]
 	FROM @WideLines AS WL JOIN dbo.LineDefinitionEntries LDE ON WL.DefinitionId = LDE.[LineDefinitionId]
-	WHERE LDE.EntryNumber = 2
+	WHERE LDE.[Index] = 2
 
 	SELECT * FROM @WideLines;

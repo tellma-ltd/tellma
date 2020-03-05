@@ -45,7 +45,7 @@ BEGIN -- Inserting
 	DECLARE @500Pkt INT = (SELECT [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'500pkt');
 	DECLARE @mt INT = (SELECT [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'mt');
 
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 				[AccountId],	[EntryTypeId],							[AgentId],	[ResourceId],	[Quantity], [UnitId],	[Value]) VALUES
 	(0, 0, 0,0,+1,@WH,			@InternalInventoryTransferExtension, 	@5WH_JED,	@R0,			1,			@mt,	10000),--
 	(1, 1, 0,0,+1,@WH,			@InternalInventoryTransferExtension, 	@5WH_JED,	@R1,			10,			@500Pkt,		20000),
@@ -55,7 +55,7 @@ BEGIN -- Inserting
 --	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, NULL,			1175000),
 --	(5, 5, 1,1,-1,@SA_CBEUSD,		@InternalCashTransferExtension,	50000,			1175000);
 /*
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 				[AccountId],	[EntryTypeId],				[Value], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAmount]) VALUES
 	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,	N'C-14209',			NULL,					NULL,			NULL),		
 	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000,	N'C-14209',			N'FS010102',			@Toyota,		600000),

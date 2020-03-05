@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].Value',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Value',
 		N'Error_TheMonetaryValueDoesNotMatchValue'
 	FROM @Entries E
 	WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
@@ -35,7 +35,7 @@ SET NOCOUNT ON;
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT
 	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
+	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([Index] AS NVARCHAR(255)),
 	--	N'Error_TheAmount0DoesNotMatchTheValue1',
 	--	[MonetaryValue],
 	--	[Value]
@@ -96,7 +96,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].AgentId',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AgentId',
 		N'Error_TheAgentIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
@@ -107,7 +107,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[EntryNumber] AS NVARCHAR(255)) + N'].ResourceId',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
 		N'Error_TheResourceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id

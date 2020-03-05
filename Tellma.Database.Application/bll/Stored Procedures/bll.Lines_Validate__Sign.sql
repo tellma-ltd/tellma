@@ -110,7 +110,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
 	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
 	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-	WHERE WS.RuleType = N'ByAgent' AND WS.RuleTypeEntryNumber  = E.EntryNumber
+	WHERE WS.RuleType = N'ByAgent' AND WS.[RuleTypeEntryIndex]  = E.[Index]
 	AND AG.UserId IS NULL
 
 	-- Cannot sign a line with no Entries
@@ -137,8 +137,8 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountId',
-		N'Error_LineHasNullAccountInEntryNumber0',
-		E.EntryNumber
+		N'Error_LineHasNullAccountInEntryIndex0',
+		E.[Index]
 	FROM @Ids FE
 	JOIN dbo.Entries E ON FE.[Id] = E.LineId
 	WHERE E.AccountId IS NULL

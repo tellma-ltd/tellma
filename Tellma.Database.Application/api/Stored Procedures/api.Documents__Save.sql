@@ -26,7 +26,6 @@ BEGIN
 	[LineIndex]					INT '$.LineIndex',
 	[DocumentIndex]				INT '$.DocumentIndex',
 	[Id]						INT '$.Id',
-	[EntryNumber]				INT '$.EntryNumber',
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',

@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].LineDefinitionEntries (
 	[Id]						INT					CONSTRAINT [PK_LineDefinitionEntries] PRIMARY KEY NONCLUSTERED IDENTITY,
 	[LineDefinitionId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] REFERENCES [dbo].[LineDefinitions] ([Id]),
-	[EntryNumber]				INT					NOT NULL  CONSTRAINT [CK_LineDefinitionEntries_EntryNumber]	CHECK([EntryNumber] >= 0),
-	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [EntryNumber]),
+	[Index]				INT					NOT NULL  CONSTRAINT [CK_LineDefinitionEntries_Index]	CHECK([Index] >= 0),
+	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [Index]),
 	[Direction]					SMALLINT			NOT NULL CHECK([Direction] IN (-1, +1)),
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL CONSTRAINT [FK_LineDefinitionEntries__AccountTypeParentCode] REFERENCES dbo.AccountTypes([Code]),
 	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_LineDefinitionEntries_AgentDefinitions] REFERENCES [dbo].[AgentDefinitions] ([Id]),

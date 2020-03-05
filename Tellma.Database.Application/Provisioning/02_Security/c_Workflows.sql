@@ -19,7 +19,7 @@ BEGIN
 	(5, N'CashPaymentToSupplierAndPurchaseInvoiceVAT',	+4);-- Reviewed
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	[RuleType],			[RoleId],	[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
+	[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 	(0, 2, N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 	(0, 3, N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 	(0, 4, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
@@ -33,7 +33,7 @@ BEGIN
 	(9, N'CashPaymentToOther',	+4);-- Reviewed
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	[RuleType],			[RoleId],	[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
+	[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 	(0, 6, N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 	(0, 7, N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 	(0, 8, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
@@ -45,7 +45,7 @@ BEGIN
 	(11, N'LeaseOutIssueAndSalesInvoiceNoVAT',	+4);-- Reviewed
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	[RuleType],			[RoleId],			[RuleTypeEntryNumber], [ProxyRoleId]) VALUES
+	[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 	(0, 10, N'ByRole',	@1AccountManager,	NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 	(0, 11, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
@@ -57,7 +57,7 @@ BEGIN
 	--(8, N'PettyCashPayment',+4);
 
 	--INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	--[RuleType],			[RoleId],	[RuleTypeEntryNumber],	[PredicateType],[PredicateTypeEntryNumber], [Value]) VALUES
+	--[RuleType],			[RoleId],	[RuleTypeEntryIndex],	[PredicateType],[PredicateTypeEntryIndex], [Value]) VALUES
 	--(0, 6, N'ByRole',	@1GeneralManager,	NULL,			N'ValueGreaterOrEqual',0,					500),
 	--(0, 7, N'ByAgent',	NULL,				0,				NULL,			NULL,						NULL), -- Agent0: Cash custodian
 	--(0, 8, N'ByRole',	@1Comptroller,		NULL,			NULL,			NULL,						NULL);
@@ -133,11 +133,11 @@ USING (
 		WS.[Id], 
 		W.[Id] AS [WorkflowId],
 		WS.[RuleType],
-		WS.[RuleTypeEntryNumber],
+		WS.[RuleTypeEntryIndex],
 		WS.[RoleId],
 		WS.[Userid],
 		WS.[PredicateType],
-		WS.[PredicateTypeEntryNumber],
+		WS.[PredicateTypeEntryIndex],
 		WS.[Value],
 		WS.[ProxyRoleId]
 	FROM @WorkflowSignatures WS
@@ -146,14 +146,14 @@ USING (
 WHEN MATCHED THEN
 	UPDATE SET
 		t.[RuleType]				= s.[RuleType],
-		t.[RuleTypeEntryNumber]		= s.[RuleTypeEntryNumber],
+		t.[RuleTypeEntryIndex]		= s.[RuleTypeEntryIndex],
 		t.[RoleId]					= s.[RoleId],
 		t.[Userid]					= s.[Userid],
 		t.[PredicateType]			= s.[PredicateType],
-		t.[PredicateTypeEntryNumber]=s.[PredicateTypeEntryNumber],
+		t.[PredicateTypeEntryIndex]	= s.[PredicateTypeEntryIndex],
 		t.[Value]					= s.[Value],
 		t.[ProxyRoleId]				= s.[ProxyRoleId],
 		t.[SavedById]				= CONVERT(INT, SESSION_CONTEXT(N'UserId'))
 WHEN NOT MATCHED THEN
-	INSERT ([WorkflowId], [RuleType], [RuleTypeEntryNumber],		[RoleId], [Userid],		[PredicateType], [PredicateTypeEntryNumber], [Value], [ProxyRoleId])
-	VALUES (s.[WorkflowId], s.[RuleType], s.[RuleTypeEntryNumber], s.[RoleId], s.[Userid], s.[PredicateType], s.[PredicateTypeEntryNumber], s.[Value], s.[ProxyRoleId]);
+	INSERT ([WorkflowId],	[RuleType],		[RuleTypeEntryIndex],	[RoleId], [Userid],		[PredicateType], [PredicateTypeEntryIndex], [Value], [ProxyRoleId])
+	VALUES (s.[WorkflowId], s.[RuleType], s.[RuleTypeEntryIndex], s.[RoleId], s.[Userid], s.[PredicateType], s.[PredicateTypeEntryIndex], s.[Value], s.[ProxyRoleId]);

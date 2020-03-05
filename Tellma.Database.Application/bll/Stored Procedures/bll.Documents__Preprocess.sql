@@ -33,7 +33,7 @@ BEGIN
 	FROM @PreprocessedEntries PE
 	JOIN @PreprocessedLines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
-	JOIN dbo.LineDefinitionEntries LDE ON PE.EntryNumber = LDE.EntryNumber AND L.DefinitionId = LDE.LineDefinitionId
+	JOIN dbo.LineDefinitionEntries LDE ON PE.Index = LDE.[Index] AND L.DefinitionId = LDE.LineDefinitionId
 	JOIN dbo.Agents AG ON D.AgentId = AG.Id
 	WHERE LDE.[AgentDefinitionId] LIKE N'%' + AG.DefinitionId +'%'
 */
@@ -90,7 +90,7 @@ BEGIN
 		-- TODO: fill with all the remaining defaults
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber]
+	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> N'ManualLine';
 	-- Copy information from Account to entries
 	UPDATE E 
@@ -161,7 +161,7 @@ BEGIN
 		SELECT MIN(A.[Id]) AS AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
 		JOIN dbo.Accounts A ON A.AccountTypeId IN (
 			SELECT [Id] FROM AccountTypes 
 			WHERE [Node].IsDescendantOf((

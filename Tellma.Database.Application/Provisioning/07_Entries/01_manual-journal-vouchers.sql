@@ -36,8 +36,8 @@ BEGIN -- Inserting
 	(2,			0,				N'ManualLine'),
 	(3,			0,				N'ManualLine'),
 
-	(4,			1,				N'ManualLine'),
-	(5,			1,				N'ManualLine');
+	(0,			1,				N'ManualLine'),
+	(1,			1,				N'ManualLine');
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
@@ -54,7 +54,7 @@ BEGIN -- Inserting
 	(14,		4,				N'ManualLine'),
 	(15,		4,				N'ManualLine');
 		;
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 				[AccountId],		[EntryTypeId],					[MonetaryValue],[Value]) VALUES
 	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 	200000,			4700000),--
 	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	100,			2350),
@@ -79,7 +79,7 @@ BEGIN -- Inserting
 	-- If ResourceClassificationEntryType is enforced, show Entry Classification
 	-- If AgentDefinition is not null, Show Agent
 
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 				[AccountId],	[EntryTypeId],				[Value], [ExternalReference], [AdditionalReference], [NotedAgentId], [NotedAmount]) VALUES
 	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,600000,	N'C-14209',			NULL,					NULL,			NULL),		
 	(7, 7, 2,1,+1,@VATInput,	NULL, 						90000,	N'C-14209',			N'FS010102',			@Toyota,		600000),

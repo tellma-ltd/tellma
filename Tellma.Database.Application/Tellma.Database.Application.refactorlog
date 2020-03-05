@@ -98,11 +98,11 @@
     <Property Name="NewName" Value="[PredicateType]" />
   </Operation>
   <Operation Name="Rename Refactor" Key="65be6633-9666-4280-a269-7cdad9fad789" ChangeDateTime="02/26/2020 12:56:35">
-    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[EntryNumber]" />
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[Index]" />
     <Property Name="ElementType" Value="SqlSimpleColumn" />
     <Property Name="ParentElementName" Value="[dbo].[WorkflowSignatures]" />
     <Property Name="ParentElementType" Value="SqlTable" />
-    <Property Name="NewName" Value="[RuleTypeEntryNumber]" />
+    <Property Name="NewName" Value="[RuleTypeIndex]" />
   </Operation>
   <Operation Name="Rename Refactor" Key="6b2b5db4-1b29-4883-aa15-985763cce193" ChangeDateTime="02/29/2020 03:45:18">
     <Property Name="ElementName" Value="[map].[RequiredSignatures]" />
@@ -201,5 +201,26 @@
     <Property Name="ParentElementName" Value="[dbo].[LineDefinitionStateReasons]" />
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[State]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4a99ac07-d41f-427b-80d8-aaa561a475bf" ChangeDateTime="03/05/2020 13:09:03">
+    <Property Name="ElementName" Value="[dbo].[Entries].[Index]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Index]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="516eabd0-b8e9-42d2-8db2-4d7a8aef5449" ChangeDateTime="03/05/2020 13:10:55">
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[RuleTypeIndex]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkflowSignatures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RuleTypeEntryIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ae26f720-7091-4841-a0d7-68407a3eadfd" ChangeDateTime="03/05/2020 13:11:17">
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatures].[PredicateTypeIndex]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[WorkflowSignatures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PredicateTypeEntryIndex]" />
   </Operation>
 </Operations>

@@ -131,7 +131,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
@@ -173,7 +173,7 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [EntryNumber], [Direction], [AccountId], [CurrencyId],
+		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[EntryTypeId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Quantity], [UnitId], [Value],
@@ -185,7 +185,7 @@ BEGIN
 			[NotedAmount], 
 			[NotedDate]
 		)
-		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[CurrencyId],
+		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],

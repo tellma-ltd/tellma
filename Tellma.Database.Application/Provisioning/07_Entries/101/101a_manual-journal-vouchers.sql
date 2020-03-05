@@ -34,33 +34,33 @@ BEGIN -- Inserting
 	(0,			10,				N'ManualLine'),(1,			10,				N'ManualLine'),(2,			10,				N'ManualLine'),
 	(0,			11,				N'ManualLine'),(1,			11,				N'ManualLine');
 
-	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
 				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
 
-	(0, 0, 2,0,+1,@1GMFund,		@ProceedsFromBorrowingsClassifiedAsFinancingActivities,NULL,	@USD,			10000,				10000),--
-	(0, 1, 2,0,-1,@1MAPayable,	NULL,												NULL,		NULL,			10000,				10000),
+	(0, 0, 2,+1,@1GMFund,		@ProceedsFromBorrowingsClassifiedAsFinancingActivities,NULL,	@USD,			10000,				10000),--
+	(0, 1, 2,-1,@1MAPayable,	NULL,												NULL,		NULL,			10000,				10000),
 
-	(0, 0, 3,0,+1,@1DomainRegistration,	@AdministrativeExpense,						@1Overhead,	@USD,			19.95,				19.95),--
-	(0, 1, 3,0,-1,@1MAPayable,	NULL,												NULL,		NULL,			19.95,				19.95),
+	(0, 0, 3,+1,@1DomainRegistration,	@AdministrativeExpense,						@1Overhead,	@USD,			19.95,				19.95),--
+	(0, 1, 3,-1,@1MAPayable,	NULL,												NULL,		NULL,			19.95,				19.95),
 
-	(0, 0, 6,0,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
-	(0, 1, 6,0,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
+	(0, 0, 6,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
+	(0, 1, 6,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
 
-	(0, 0, 7,0,+1,@1Internet,	@AdministrativeExpense, 							@1Overhead,	@SDG,			250,				4.55),--
-	(0, 1, 7,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			250,				4.55),
+	(0, 0, 7,+1,@1Internet,	@AdministrativeExpense, 							@1Overhead,	@SDG,			250,				4.55),--
+	(0, 1, 7,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			250,				4.55),
 
-	(0, 0, 8,0,+1,@1Maintenance,@AdministrativeExpense, 							@1Overhead,	@SDG,			50,					0.91),--
-	(0, 1, 8,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			50,					0.91),
+	(0, 0, 8,+1,@1Maintenance,@AdministrativeExpense, 							@1Overhead,	@SDG,			50,					0.91),--
+	(0, 1, 8,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			50,					0.91),
 
-	(0, 0, 9,0,+1,@1Utilities,	@AdministrativeExpense, 							@1Overhead,	@SDG,			2500,				45.45),--
-	(0, 1, 9,0,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			2500,				45.45),
+	(0, 0, 9,+1,@1Utilities,	@AdministrativeExpense, 							@1Overhead,	@SDG,			2500,				45.45),--
+	(0, 1, 9,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			2500,				45.45),
 	
-	(0, 0, 10,0,+1,@1EITax,		NULL, 												NULL,		@SDG,			15843.78,			379.99),--
-	(0, 1, 10,0,+1,@1EStax,		NULL,												NULL,		@SDG,			58,					1.23),
-	(0, 2, 10,0,-1,@1BOK,		@PaymentsToAndOnBehalfOfEmployees,					NULL,		@SDG,			15901.4,			381.22),
+	(0, 0, 10,+1,@1EITax,		NULL, 												NULL,		@SDG,			15843.78,			379.99),--
+	(0, 1, 10,+1,@1EStax,		NULL,												NULL,		@SDG,			58,					1.23),
+	(0, 2, 10,-1,@1BOK,		@PaymentsToAndOnBehalfOfEmployees,					NULL,		@SDG,			15901.4,			381.22),
 	
-	(0, 0, 11,0,+1,@1GMFund,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices, 	NULL,		@USD,			2500,				2500),--
-	(0, 1, 11,0,-1,@1AR,		NULL,												@It3am,		@USD,			2500,				2500);
+	(0, 0, 11,+1,@1GMFund,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices, 	NULL,		@USD,			2500,				2500),--
+	(0, 1, 11,-1,@1AR,		NULL,												@It3am,		@USD,			2500,				2500);
 
 	EXEC master.sys.sp_set_session_context 'UserId', @Jiad_akra;
 	EXEC [api].[Documents__Save]

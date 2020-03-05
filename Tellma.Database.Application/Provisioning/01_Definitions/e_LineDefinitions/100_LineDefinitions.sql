@@ -18,7 +18,7 @@ BEGIN
 	[Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES
 	(0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[TableName],[ColumnName],[EntryNumber],	[Label],		[RequiredState],
+	[SortKey],	[TableName],[ColumnName],[Index],	[Label],		[RequiredState],
 																		[ReadOnlyState]) VALUES
 	(0,0,0,		N'Line',	N'Line.Memo',	0,			N'Memo',		5,4), -- only if it appears,
 	(1,0,1,		N'Entries',	N'Account',		0,			N'Account',		3,4),
@@ -83,13 +83,13 @@ SET [Script] = N'
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 [Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
 (0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'),
 (1,1,1,+1,	N'Accruals',				N'SACR'),
 (2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-[SortKey],	[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
+[SortKey],	[TableName],[ColumnName],[Index],	[Label],				[Label2],				[RequiredState],
 																									[ReadOnlyState]) VALUES
 (0,1,0,		N'Line',	N'Memo',				0,	N'Memo',				N'البيان',				1,5), 
 (1,1,1,		N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5), 
@@ -124,12 +124,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 2;
 
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 	[Direction],	[AccountTypeParentCode]) VALUES
 	(0,2,0,	-1,		N'CashAndCashEquivalents');
 
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[TableName],[ColumnName],[EntryNumber],	[Label],					[Label2],				[RequiredState],
+	[SortKey],	[TableName],[ColumnName],[Index],	[Label],					[Label2],				[RequiredState],
 																											[ReadOnlyState]) VALUES
 	(0,2,0,		N'Line',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
 	(1,2,1,		N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
@@ -172,11 +172,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	--	-----
 	--	SELECT * FROM @ProcessedWideLines;'
 	--WHERE [Index] = 3;
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 	(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[TableName],[ColumnName],[EntryNumber],	[Label],					[Label2],			[RequiredState],
+	[SortKey],	[TableName],[ColumnName],[Index],	[Label],					[Label2],			[RequiredState],
 																										[ReadOnlyState]) VALUES
 	(0,3,0,		N'Entries', N'NotedDate',			0,	N'Date',					N'التاريخ',			1,4), 
 	(1,3,1,		N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',			1,4),
@@ -212,7 +212,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		-----
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 4;
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 	(0,4,0,+1,		N'TradeAndOtherPayables',	N'WHTX'),
 	(1,4,1,-1,		N'TradeAndOtherPayables',	N'TPBL');
@@ -249,12 +249,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		-----
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 5;
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 	(0,5,0,+1,		N'TotalInventories',		N'STCK'),
 	(1,5,1,-1,		N'TradeAndOtherPayables',	N'SACR');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[TableName],[ColumnName],[EntryNumber],	[Label],				[Label2],				[RequiredState],
+	[SortKey],	[TableName],[ColumnName],[Index],	[Label],				[Label2],				[RequiredState],
 																										[ReadOnlyState]) VALUES
 	(0,6,0,		N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5), 
 	(1,6,1,		N'Entries', N'AgentId',				1,	N'Supplier',			N'المورد',				3,4),
@@ -287,7 +287,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		-----
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 6;
-	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[EntryNumber],
+	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
 	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
 	(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR'); -- we need functionality to fill one tab based on info in the other tab
 END
