@@ -112,7 +112,6 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 }
 
 export interface LineDefinitionEntryForClient {
-    EntryNumber: number;
     Direction: 1 | -1;
     AccountTypeParentCode: string;
     AgentDefinitionId: string;
@@ -122,7 +121,7 @@ export interface LineDefinitionEntryForClient {
 export interface LineDefinitionColumnForClient {
     TableName: 'Lines' | 'Entries';
     ColumnName: string;
-    EntryNumber: number;
+    EntryIndex: number;
     Label: string;
     Label2: string;
     Label3: string;

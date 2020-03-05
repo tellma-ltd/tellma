@@ -326,7 +326,6 @@ namespace Tellma.Controllers
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
-                    EntryNumber = e.EntryNumber.Value,
                     Direction = e.Direction.Value,
                     AccountTypeParentCode = e.AccountTypeParentCode,
                     AgentDefinitionId = e.AgentDefinitionId,
@@ -337,7 +336,7 @@ namespace Tellma.Controllers
                 {
                     TableName = c.TableName,
                     ColumnName = c.ColumnName,
-                    EntryNumber = c.EntryNumber.Value,
+                    EntryIndex = c.EntryIndex.Value,
                     Label = c.Label,
                     Label2 = c.Label2,
                     Label3 = c.Label3,

@@ -7,7 +7,7 @@ namespace Tellma.Entities
     {
         public string TableName { get; set; }
         public string ColumnName { get; set; }
-        public int? EntryNumber { get; set; }
+        public int? EntryIndex { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -30,6 +30,9 @@ namespace Tellma.Entities
 
     public class LineDefinitionColumn : LineDefinitionColumnForSave
     {
+        [AlwaysAccessible]
+        public int? Index { get; set; }
+
         public string LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
