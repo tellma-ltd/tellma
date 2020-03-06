@@ -10,7 +10,8 @@ BEGIN
 	(1,			N'General Manager', 'GM'),
 	(2,			N'Reader',			'RDR'),
 	(3,			N'Account Manager',	'AM'),
-	(4,			N'Comptroller',		'CMPT')
+	(4,			N'Comptroller',		'CMPT'),
+	(5,			N'Cash Custodian',	'CC')
 	;
 	INSERT INTO @Members([Index],[HeaderIndex],
 	[UserId]) VALUES
@@ -19,7 +20,10 @@ BEGIN
 	(0,2,@mohamad_akra),
 	(0,3,@amtaam),
 	(0,4,@Jiad_akra),
-	(1,4,@alaeldin);
+	(1,4,@alaeldin),
+	(0,5,@amtaam),
+	(1,5,@aasalam)
+	;
 
 	INSERT INTO @Permissions([Index], [HeaderIndex],
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
@@ -28,9 +32,17 @@ BEGIN
 	(0,1,N'Read',	NULL,				N'all'),
 	(0,2,N'Read',	NULL,				N'all'),
 	(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
+	(1,3,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-payment-vouchers'),
+	(2,3,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-receipt-vouchers'),
 	(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
 	(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
-	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers')
+	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers'),
+	(0,5,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-payment-vouchers'),
+	(1,5,N'All',	N'Lines/Entries[0]/Agent/UserId = Me',
+										N'documents/cash-receipt-vouchers')
 	 ;
 END
 
