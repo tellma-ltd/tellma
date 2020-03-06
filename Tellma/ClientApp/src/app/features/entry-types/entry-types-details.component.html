@@ -54,8 +54,8 @@
 
   <!-- Code -->
   <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <div class="text-truncate" *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required></t-text-editor>
+    <span *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</span>
+    <t-text-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required></t-text-editor>
   </t-form-group>
 
   <!-- Parent -->
@@ -64,7 +64,7 @@
       <t-view-link *ngIf="!isEdit" link="../../entry-types" [itemId]="model?.ParentId">{{
         ws.getMultilingualValue('EntryType', model?.ParentId, 'Name') }}</t-view-link>
     </t-restricted>
-    <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
+    <t-entry-types-picker *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.ParentId">
     </t-entry-types-picker>
   </t-form-group>
 
@@ -80,6 +80,11 @@
   <!-- Is Active -->
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </t-form-group>
+
+  <!-- Is System -->
+  <t-form-group class="t-form-group" [label]="'IsSystem' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsSystem ? 'Yes' : 'No') | translate }}</div>
   </t-form-group>
 </ng-template>
 

@@ -479,7 +479,7 @@
 
         <!-- Template reused in both tree and flat tables -->
         <ng-template #selectColumns let-id="id">
-          <td class="t-pointer text-truncate" style="max-width: 500px;" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
+          <td class="t-pointer text-truncate" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
             <t-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
             </t-auto-cell>
           </td>

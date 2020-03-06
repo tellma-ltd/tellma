@@ -19,6 +19,8 @@ export class DatePickerComponent implements ControlValueAccessor, Validator {
   @HostBinding('class.w-100')
   w100 = true;
 
+  public isDisabled = false;
+
   ///////////////// Implementation of ControlValueAccessor
   writeValue(v: any): void {
     this.picker.writeValue(v); // Format
@@ -35,6 +37,7 @@ export class DatePickerComponent implements ControlValueAccessor, Validator {
   }
 
   setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
     this.picker.setDisabledState(isDisabled);
   }
 

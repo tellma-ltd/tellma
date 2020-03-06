@@ -1,6 +1,6 @@
-<div style="overflow-y:hidden" [style.max-height]="tableHeight">
-  <cdk-virtual-scroll-viewport [style.min-width.px]="minWidth" [itemSize]="itemSize" [style.height]="tableMaxHeight">
-    <table #t class="table table-sm table-striped mb-2 mb-sm-0 text-nowrap">
+<div style="overflow-y:hidden;" [style.max-height.px]="tableHeight">
+  <cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableMaxHeight">
+    <table #t class="table table-sm text-nowrap">
 
       <!-- Header -->
       <thead class="small">
@@ -12,7 +12,7 @@
           </th>
           <th class="border-top-0" style="width:1px">
             <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
-              style="background:transparent;color:transparent;border-color: transparent" disabled>
+              style="background:transparent;color:transparent;border-color: transparent;" disabled>
               <fa-icon icon="trash"></fa-icon>
             </button>
           </th>
@@ -22,11 +22,11 @@
       <!-- Body -->
       <tbody>
         <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
-          <tr [style.height.px]="itemSize">
+          <tr [style.height.px]="itemSize" [class.t-biege]="i % 2 === 0">
             <td class="text-muted">
               <div class="text-center">
                 <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>
-                <fa-icon style="font-size: 60%" *ngIf="item.PH" icon="asterisk"> </fa-icon>
+                <fa-icon style="font-size: 60%;" *ngIf="item.PH" icon="asterisk"> </fa-icon>
               </div>
             </td>
             <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">
@@ -45,7 +45,7 @@
             </td>
           </tr>
         </ng-container>
-        <tr *ngIf="visibleDataCount < 1">
+        <tr *ngIf="visibleDataCount < 1" class="t-biege">
           <td colspan="1000">&nbsp;&nbsp;
             <span class="font-italic font-weight-light text-muted" *ngIf="!isEdit">
               {{ 'NoItemsFound' | translate }}
@@ -55,7 +55,7 @@
         <tr *ngIf="visibleDataCount < 2">
           <td colspan="1000">&nbsp;</td>
         </tr>
-        <tr *ngIf="visibleDataCount < 3">
+        <tr *ngIf="visibleDataCount < 3" class="t-biege">
           <td colspan="1000">&nbsp;</td>
         </tr>
       </tbody>

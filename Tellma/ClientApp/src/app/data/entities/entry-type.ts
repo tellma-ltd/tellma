@@ -20,6 +20,7 @@ export interface EntryType extends EntryTypeForSave {
   Level?: number;
   ActiveChildCount?: number;
   ChildCount?: number;
+  IsSystem?: boolean;
   IsActive?: boolean;
   CreatedAt?: string;
   CreatedById?: number | string;
@@ -83,6 +84,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService,
           alignment: 'right'
         },
 
+        IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

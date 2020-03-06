@@ -213,14 +213,14 @@
       <!-- Name2 -->
       <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.secondaryPostfix"
         *ngIf="ws.settings.SecondaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name2">
-        <t-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        <t-text-editor [(ngModel)]="myUser.Name2" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-text-editor>
       </t-form-group>
 
       <!-- Name3 -->
       <t-form-group class="t-form-group" [label]="('Name' | translate) + ws.ternaryPostfix"
         *ngIf="ws.settings.TernaryLanguageId" [serverErrors]="myUser?.serverErrors?.Name3">
-        <t-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        <t-text-editor [(ngModel)]="myUser.Name3" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-text-editor>
       </t-form-group>
     </div>

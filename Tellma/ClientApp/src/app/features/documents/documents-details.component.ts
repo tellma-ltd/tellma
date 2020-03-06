@@ -83,6 +83,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _lines: { [key: string]: LineForSave[] };
   private _linesModel: DocumentForSave;
 
+  private _onNewLineFactoryLineDefId: string;
+  private _onNewLineFactoryResult: (item: LineForSave) => LineForSave;
+
   // These are bound from UI
   public assigneeId: number;
   public comment: string;
@@ -1323,6 +1326,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public tabTitle(lineDefId: string): string {
+    if (lineDefId === 'ManualLine' && this.definitionId === 'manual-journal-vouchers')  {
+      return this.translate.instant('Lines');
+    }
+
     const def = this.ws.definitions.Lines[lineDefId];
     return !!def ? this.ws.getMultilingualValueImmediate(def, 'TitlePlural') : lineDefId;
   }
@@ -1412,10 +1419,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return templates;
   }
 
-  public tableMinWidth(lineDefId: string, model: DocumentForSave): number {
-    return this.columnPaths(lineDefId, model).length * 135; // Apprx. = the width of the table on a large screen divided by 7 fields
-  }
-
   private lineDefinition(lineDefId: string) {
     const lineDef = !!lineDefId ? this.ws.definitions.Lines[lineDefId] : null;
     return lineDef;
@@ -1451,11 +1454,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (def.TableName === 'Lines') {
         entity = line;
       } else if (def.TableName === 'Entries') {
-        // if (!line.Entries[def.EntryIndex]) {
-        //   line.Entries[def.EntryIndex] = {};
-        // }
-
-        entity = line.Entries[def.EntryIndex];
+        entity = !!line.Entries ? line.Entries[def.EntryIndex] : null;
       }
     }
 
@@ -1465,11 +1464,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public entry(lineDefId: string, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     if (!!colDef && colDef.TableName === 'Entries') {
-      // if (!line.Entries[colDef.EntryIndex]) {
-      //   line.Entries[colDef.EntryIndex] = {};
-      // }
-
-      return line.Entries[colDef.EntryIndex];
+      return !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 
     return null;
@@ -1523,29 +1518,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
-    return (item) => {
-      item.DefinitionId = lineDefId;
-      if (lineDefId === 'ManualLine') {
-        item.Entries = [{ Direction: 1 }];
-      } else {
-        // Add the specified number of entries
-        item.Entries = [];
-        const lineDef = this.lineDefinition(lineDefId);
-        if (!!lineDef) {
-          if (lineDef.Entries) {
-            for (let i = 0; i < lineDef.Entries.length; i++) {
-              const entryDef = lineDef.Entries[i];
-              item.Entries[i] = { Direction: entryDef.Direction };
+    if (this._onNewLineFactoryLineDefId !== lineDefId) {
+      this._onNewLineFactoryLineDefId = lineDefId;
+      this._onNewLineFactoryResult = (item) => {
+        item.DefinitionId = lineDefId;
+        if (lineDefId === 'ManualLine') {
+          item.Entries = [{ Direction: 1 }];
+        } else {
+          // Add the specified number of entries
+          item.Entries = [];
+          const lineDef = this.lineDefinition(lineDefId);
+          if (!!lineDef) {
+            if (lineDef.Entries) {
+              for (let i = 0; i < lineDef.Entries.length; i++) {
+                const entryDef = lineDef.Entries[i];
+                item.Entries[i] = { Direction: entryDef.Direction };
+              }
+            } else {
+              console.error(`Line definition ${lineDefId} is missing its Entries`);
             }
           } else {
-            console.error(`Line definition ${lineDefId} is missing its Entries`);
+            console.error(`Missing line definition ${lineDefId}`);
           }
-        } else {
-          console.error(`Missing line definition ${lineDefId}`);
         }
-      }
-      return item;
-    };
+        return item;
+      };
+    }
+
+    return this._onNewLineFactoryResult;
   }
 
   public columnFloat(lineDefId: string, columnIndex: number): string {
