@@ -1,5 +1,6 @@
 import { Component, Input, ElementRef, ViewChild, HostBinding } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { isNumber } from 'util';
 
 export interface SelectorChoice {
   /**
@@ -59,5 +60,19 @@ export class SelectorComponent implements ControlValueAccessor {
   public trackByFn(_: number, item: SelectorChoice) {
     // Might cause problems if we supply a new list with an item having the same value but a different name
     return item.value;
+  }
+
+  public onValueChanged(value: any) {
+    if (value === null || value === '') {
+      value = undefined;
+    }
+
+    if (value !== undefined && !!this.choices && !!this.choices[0] && typeof this.choices[0].value === 'number') {
+      this.onChange(+value);
+    } else {
+      this.onChange(value);
+    }
+
+    this.onTouched();
   }
 }

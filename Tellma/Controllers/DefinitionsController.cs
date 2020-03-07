@@ -324,6 +324,7 @@ namespace Tellma.Controllers
                 TitleSingular3 = def.TitleSingular3,
 
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
+                ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,

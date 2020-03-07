@@ -136,34 +136,34 @@
           <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
             [class.dropdown-menu-right]="!isRtl">
 
-            <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies" (click)="onCollapse()">
               {{ 'ChangeCompany' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" routerLink="/root/welcome" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome" (click)="onCollapse()">
               {{ 'WelcomePage' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMySystemAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMyCompanyAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMyCompanyAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: companyName } }}
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
               {{ 'SignOut' | translate }}
             </button>
             <!-- Company languages -->
             <ng-container *ngIf="settings?.SecondaryLanguageId || settings?.TernaryLanguageId">
               <hr />
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage"
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage" ngbDropdownItem
                 (click)="onPrimary();onCollapse()">
                 {{ settings?.PrimaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" (click)="onSecondary();onCollapse()">
+                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" ngbDropdownItem (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" (click)="onTernary();onCollapse()">
+                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" ngbDropdownItem (click)="onTernary();onCollapse()">
                 {{ settings?.TernaryLanguageName }}
               </button>
             </ng-container>

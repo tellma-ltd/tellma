@@ -106,6 +106,7 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     TitlePlural2: string;
     TitlePlural3: string;
     AllowSelectiveSigning: boolean;
+    ViewDefaultsToForm: boolean;
     Entries: LineDefinitionEntryForClient[];
     Columns: LineDefinitionColumnForClient[];
     StateReasons: LineDefinitionStateReasonForClient[];

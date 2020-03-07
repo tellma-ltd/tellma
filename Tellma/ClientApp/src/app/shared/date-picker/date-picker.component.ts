@@ -28,7 +28,11 @@ export class DatePickerComponent implements ControlValueAccessor, Validator {
 
   registerOnChange(fn: (val: any) => void): void {
     this.picker.registerOnChange((v) => {
-      fn(v);
+      if (!v) {
+        fn(undefined);
+      } else {
+        fn(v);
+      }
     });
   }
 

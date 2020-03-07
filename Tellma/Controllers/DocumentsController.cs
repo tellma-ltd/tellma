@@ -347,10 +347,10 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> entities)
+        protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> docs)
         {
             // Set default values
-            entities.ForEach(doc =>
+            docs.ForEach(doc =>
             {
                 // Document defaults
                 doc.MemoIsCommon ??= true;
@@ -364,17 +364,21 @@ namespace Tellma.Controllers
             });
 
             // Set common header values on the lines
-            entities.ForEach(doc =>
+            docs.ForEach(doc =>
             {
                 if (doc.MemoIsCommon.Value)
                 {
                     doc.Lines.ForEach(line => line.Memo = doc.Memo);
                 }
+                else
+                {
+                    doc.Memo = null;
+                }
             });
 
             // SQL server preprocessing
-            await _repo.Documents__Preprocess(DefinitionId, entities);
-            return entities;
+            await _repo.Documents__Preprocess(DefinitionId, docs);
+            return docs;
         }
 
         protected override async Task SaveValidateAsync(List<DocumentForSave> docs)

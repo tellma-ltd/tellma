@@ -499,11 +499,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
 
-    if (!!accountType.IsResourceClassification) {
-      return `AccountType/Node descof ${account.AccountTypeId}`;
-    } else {
-      return null;
-    }
+    // TODO:
+
+    // if (!!accountType.IsResourceClassification) {
+    //   return `AccountType/Node descof ${account.AccountTypeId}`;
+    // } else {
+    //   return null;
+    // }
+
+    return null;
   }
 
   public labelResource(_: Entry): string {
@@ -1325,13 +1329,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public tabTitle(lineDefId: string): string {
-    if (lineDefId === 'ManualLine' && this.definitionId === 'manual-journal-vouchers')  {
+  public tabTitle(lineDefId: string, model: DocumentForSave): string {
+    if (lineDefId === 'ManualLine' && this.definitionId === 'manual-journal-vouchers') {
       return this.translate.instant('Lines');
     }
 
-    const def = this.ws.definitions.Lines[lineDefId];
-    return !!def ? this.ws.getMultilingualValueImmediate(def, 'TitlePlural') : lineDefId;
+    const def = this.lineDefinition(lineDefId);
+    const isForm = this.showAsForm(lineDefId, model);
+    return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural') : lineDefId;
   }
 
   public lines(lineDefId: string, model: Document): LineForSave[] {
@@ -1548,7 +1553,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._onNewLineFactoryResult;
   }
 
-  public columnFloat(lineDefId: string, columnIndex: number): string {
+  public columnLabelAlignment(lineDefId: string, columnIndex: number): string {
     if (this.workspace.ws.isRtl) {
       return null;
     }
@@ -1558,10 +1563,50 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'MonetaryValue':
       case 'Quantity':
       case 'Value':
+      case 'NotedAmount':
         return 'right';
       default:
         return null;
     }
+  }
+
+  public showAsForm(lineDefId: string, model: DocumentForSave) {
+    const count = this.lines(lineDefId, model).length;
+    if (count > 1) {
+      return false;
+    } else {
+      const lineDef = this.lineDefinition(lineDefId);
+      return !!lineDef ? lineDef.ViewDefaultsToForm : false;
+    }
+  }
+
+  public dummyUpdate = () => { };
+
+  public onCreateForm(lineDefId: string, model: DocumentForSave) {
+    if (!model) {
+      return;
+    }
+
+    let newLine: LineForSave = {};
+    newLine = this.onNewLineFactory(lineDefId)(newLine);
+    this.lines(lineDefId, model).push(newLine);
+    this.onInsert(newLine, model);
+  }
+
+  public onDeleteForm(lineDefId: string, model: DocumentForSave) {
+    if (!model) {
+      return;
+    }
+
+    const lines = this.lines(lineDefId, model);
+    if (lines.length === 1) {
+      const line = lines.pop();
+      this.onDelete(line, model);
+    }
+  }
+
+  public get actionsDropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 }
 

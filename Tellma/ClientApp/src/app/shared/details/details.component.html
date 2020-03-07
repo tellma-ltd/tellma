@@ -24,7 +24,7 @@
           <ng-template #loading>{{ 'Loading' | translate }}...</ng-template>
 
           <!-- Dirty Asterisk -->
-          <span class="text-danger t-dirty-asterisk px-2" [class.text-danger]="isLight" [class.t-light-danger]="isDark"
+          <span class="text-danger t-dirty-asterisk px-1" [class.text-danger]="isLight" [class.t-light-danger]="isDark"
             *ngIf="isDirty">*</span>
         </li>
       </ul>
@@ -66,7 +66,7 @@
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">
                 <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                  [class.t-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
+                  [class.t-text-whitish]="isDark" ngbDropdownItem (click)="onAction(action)" [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
@@ -75,7 +75,7 @@
             <div *ngIf="showDelete" [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip"
               container="body">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                [class.t-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
+                [class.t-text-whitish]="isDark" ngbDropdownItem (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
                 *ngIf="showDelete">
                 {{ 'Delete' | translate }}
               </button>
@@ -83,7 +83,7 @@
 
             <div *ngIf="showClone" [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                [class.t-text-whitish]="isDark" (click)="onClone()" [disabled]="!canClone">
+                [class.t-text-whitish]="isDark" ngbDropdownItem (click)="onClone()" [disabled]="!canClone">
                 {{ 'Clone' | translate }}
               </button>
 
@@ -159,7 +159,7 @@
           <ng-template #loading>{{ 'Loading' | translate }}...</ng-template>
 
           <!-- Dirty Asterisk -->
-          <span class="text-danger t-dirty-asterisk px-2" *ngIf="isDirty">*</span>
+          <span class="text-danger t-dirty-asterisk px-1" *ngIf="isDirty">*</span>
         </li>
       </ul>
     </div>
