@@ -51,32 +51,31 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 				[Name],				[Name2],			[Code], [ResponsibilityType], [ParentIndex])
-	SELECT 0,0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
+	SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
 
 	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-		[Name],							[Code], [ResponsibilityType], [ParentIndex]) VALUES
-	(1,1,N'Executive/Shared',			N'0',	N'Investment',			0),
-	(2,0,N'Steel Manufacturing',		N'1',	N'Profit',				0),
-	(3,1,N'Finance',					N'11',	N'Cost',				2),
-	(4,0,N'Marketing & Sales',			N'12',	N'Profit',				2),
-	(5,1,N'Sales/Shared',				N'120',	N'Cost',				4),
-	(6,1,N'Sales - AG',					N'121',	N'Revenue',				4),
-	(7,1,N'Sales - Bole',				N'122',	N'Revenue',				4),
-	(8,1,N'HR',							N'13',	N'Cost',				2),
-	(9,1,N'Materials',					N'14',	N'Cost',				2),
-	(10,0,N'Technical',					N'15',	N'Cost',				2),
-	(12,1,N'Production',				N'151',	N'Cost',				10),
-	(13,1,N'Maintenance',				N'152',	N'Cost',				10),
-	(14,1,N'Coffee',					N'2',	N'Profit',				0),
-	(15,1,N'Walia Common',				N'3',	N'Cost',				0)
+		[Name],						[Code], [ResponsibilityType], [ParentIndex]) VALUES
+	(1,1,N'Executive/Shared',		N'0',	N'Cost',				0),
+	(2,0,N'Steel Manufacturing',	N'1',	N'Profit',				0),
+	(3,1,N'Finance',				N'11',	N'Cost',				2),
+	(4,0,N'Marketing & Sales',		N'12',	N'Profit',				2),
+	(5,1,N'Sales/Shared',			N'120',	N'Cost',				4),	
+	(6,1,N'Sales - AG',				N'121',	N'Revenue',				4),
+	(7,1,N'Sales - Bole',			N'122',	N'Revenue',				4),
+	(8,1,N'HR',						N'13',	N'Cost',				2),
+	(9,1,N'Materials',				N'14',	N'Cost',				2),
+	(10,0,N'Technical',				N'15',	N'Cost',				2),
+	(12,1,N'Production',			N'151',	N'Cost',				10),
+	(13,1,N'Maintenance',			N'152',	N'Cost',				10),
+	(14,1,N'Coffee',				N'2',	N'Profit',				0)
 	;
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 				[Name],				[Name2],			[Code], [ResponsibilityType], [ParentIndex])
-	SELECT 0,0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
+	SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
 
 	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],

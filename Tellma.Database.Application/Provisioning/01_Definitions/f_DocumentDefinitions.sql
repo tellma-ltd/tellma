@@ -33,12 +33,12 @@ END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],				[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',		N'JV'),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'ورقة دفع نقدي',		N'Cash Payment Vouchers',		N'أوراق دفع نقدية',		N'CPV'),
---	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',		N'ورقة دفع نثرية',		N'Petty Cash Vouchers',			N'أوراق دفع نثريات',		N'PCV'),
-	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',		N'CRV'),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',N'RRV');
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians'),
+	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians'),
+	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL),
+	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
@@ -48,18 +48,17 @@ BEGIN
 	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
 	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
 	(3,1,	N'ManualLine',						0),
-	---- petty-cash-vouchers, if we define max Value for a cash custodian, it can be merged with above
-	--(0,2,	N'PettyCashPaymentToSupplierAndPurchaseInvoiceVAT',0),
-	--(1,2,	N'PettyCashPaymentToOther',			1), -- for non-suppliers
-	--(2,2,	N'ManualLine',						0),
 	-- cash-receipt-vouchers
-	(0,3,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
-	(1,3,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
-	(2,3,	N'CashReceiptFromOther',			0), -- for non-customers
+	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
+	(1,2,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
+	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
 	-- revenue-recognition-vouchers, for revenue recognition
-	(0,4,	N'LeaseOutIssue',					1), -- for tax visible customers
-	(1,4,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
-	(2,4,	N'ManualLine',						0);
+	(0,3,	N'LeaseOutIssue',					1), -- for tax visible customers
+	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
+	(2,3,	N'ManualLine',						0),
+	-- 	asset-depreciation-vouchers, for depreciation expenses recognition
+	(0,4,	N'DailyAssetDepreciation',			1), -- where depreciation is calculated by days
+	(1,4,	N'ManualLine',						0);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -98,19 +97,33 @@ BEGIN
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],		[IsOriginalDocument],	[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	1,		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
-	(1,	N'cash-payment-vouchers',	0,		N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		0,		N'Petty Cash Voucher',		N'Petty Cash Vouchers',		N'PCV');
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians'),
+	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians'),
+	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL),
+	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	N'ManualLine',		1),
-	(2,1,	N'PurchaseInvoice',	1),
-	(3,1,	N'GoodsReceiptNote',0), 
-	(0,2,	N'PettyCashPayment',1);
+			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',						1),
+	-- cash-payment-vouchers
+	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- if goods were received, then fill a separate GRN/GRIV
+	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
+	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
+	(3,1,	N'ManualLine',						0),
+	-- cash-receipt-vouchers
+	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
+	(1,2,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
+	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
+	-- revenue-recognition-vouchers, for revenue recognition of rentals
+	(0,3,	N'LeaseOutIssue',					1), -- for tax visible customers
+--	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
+	(2,3,	N'ManualLine',						0),
+	-- 	asset-depreciation-vouchers, for depreciation expenses recognition
+	(0,4,	N'DailyAssetDepreciation',			1), -- where depreciation is calculated by days
+	(1,4,	N'ManualLine',						0);
+
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN

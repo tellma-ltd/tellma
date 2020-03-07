@@ -11,5 +11,6 @@
 	[Label2]				NVARCHAR (50),
 	[Label3]				NVARCHAR (50),
 	[RequiredState]			SMALLINT		NOT NULL DEFAULT 4,
-	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4
+	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4,
+	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0
 );
