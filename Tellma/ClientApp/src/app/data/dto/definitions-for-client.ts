@@ -117,6 +117,10 @@ export interface LineDefinitionEntryForClient {
     AccountTypeParentCode: string;
     AgentDefinitionId: string;
     EntryTypeCode: string;
+
+    // Computed
+    AccountTypeParentId?: number;
+    AccountTypeParentIsResourceClassification: boolean;
 }
 
 export interface LineDefinitionColumnForClient {

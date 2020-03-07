@@ -14,3 +14,5 @@ AS
 	)
 	DELETE FROM [dbo].[AccountTypes]
 	WHERE [Id] IN (SELECT [Id] FROM EntitiesWithDescendants);
+
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();

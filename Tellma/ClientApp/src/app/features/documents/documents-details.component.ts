@@ -496,18 +496,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public filterResource(entry: Entry): string {
+    // For manual JV
     const account = this.account(entry);
     const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
 
-    // TODO:
-
-    // if (!!accountType.IsResourceClassification) {
-    //   return `AccountType/Node descof ${account.AccountTypeId}`;
-    // } else {
-    //   return null;
-    // }
-
-    return null;
+    if (!!accountType.IsResourceClassification) {
+      return `AccountType/Node descof ${account.AccountTypeId}`;
+    } else {
+      return null;
+    }
   }
 
   public labelResource(_: Entry): string {
@@ -1481,9 +1478,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public resourcesFilter(lineDefId: string, columnIndex: number): string {
-    // TODO: if the AccountTypeParent.IsResourceClassification = false, no filter
+    // Filter for smart line
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.AccountTypeParentCode ? `AccountType/Node descof ${entryDef.AccountTypeParentCode}` : null;
+    return !!entryDef && !!entryDef.AccountTypeParentIsResourceClassification &&
+      !!entryDef.AccountTypeParentId ? `AccountType/Node descof ${entryDef.AccountTypeParentId}` : null;
   }
 
   public serverErrors(lineDefId: string, columnIndex: number, line: LineForSave) {

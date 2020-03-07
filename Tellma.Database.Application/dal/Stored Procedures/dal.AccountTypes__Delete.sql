@@ -29,3 +29,5 @@ AS
 	MERGE INTO [dbo].[AccountTypes] As t
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
