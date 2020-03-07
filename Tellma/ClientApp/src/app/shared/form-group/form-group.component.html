@@ -7,11 +7,11 @@
 <div class="d-flex flex-wrap flex-lg-nowrap" [ngbPopover]="invalid ? errorsPopover : null" container="body"
   [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
   <!-- Label -->
-  <div class="font-weight-bold small t-form-group-label text-nowrap" *ngIf="showLabel">
+  <div class="font-weight-bold small t-form-group-label" style="overflow-wrap: anywhere;" [class.pr-2]="!isRtl" [class.pl-2]="isRtl" *ngIf="showLabel">
     <span class="t-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
   </div>
   <!-- Content -->
-  <div class="d-flex form-group-container" [class.w-100]="!showLabel" [class.t-labeled-form-group-content]="showLabel"
+  <div class="d-flex form-group-container" style="overflow-wrap: anywhere;" [class.w-100]="!showLabel" [class.t-labeled-form-group-content]="showLabel"
     [class.is-invalid]="invalid">
     <ng-content></ng-content>
   </div>

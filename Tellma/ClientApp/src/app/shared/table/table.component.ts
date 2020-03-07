@@ -190,7 +190,7 @@ export class TableComponent implements OnInit, OnChanges {
     return Math.ceil(9 * 30 / this.itemSize);
   }
 
-  public get tableHeight(): string {
+  public get tableHeight(): number {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
@@ -198,14 +198,14 @@ export class TableComponent implements OnInit, OnChanges {
     const visibleRows = Math.min(maxVisibleRows, actualRows);
     const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
     const height = headerHeight + visibleRows * rowHeight + placeHolderRows * 31;
-    return (height + 10) + 'px';
+    return height + 16; // extra pixels takes care of the horiztonal scrollbar
   }
 
-  public get tableMaxHeight(): string {
+  public get tableMaxHeight(): number {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
     const height = headerHeight + maxVisibleRows * rowHeight;
-    return (height + 1) + 'px';
+    return height + 1;
   }
 }

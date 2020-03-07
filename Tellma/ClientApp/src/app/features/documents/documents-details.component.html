@@ -98,8 +98,8 @@
         </div>
     </t-form-group>
 
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true" [activeId]="getActiveTab(model)"
-        (activeIdChange)="onTabChange($event, isEdit)">
+    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true"
+        [activeId]="getActiveTab(model)" (activeIdChange)="onTabChange($event, isEdit)">
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
@@ -118,7 +118,7 @@
                         [columnPaths]="columnPaths(lineDefId, model)"
                         [columnTemplates]="columnTemplates(lineDefId, model, smartHeader, smartRow)"
                         [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
-                        (delete)="onDelete($event, model)" [minWidth]="tableMinWidth(lineDefId, model)">
+                        (delete)="onDelete($event, model)">
                     </t-table>
 
                     <!-- Manual Lines -->
@@ -136,83 +136,77 @@
 
                 <!-- Smart Line -->
                 <ng-template #smartHeader let-columnIndex="argument">
-                    <div [style.float]="columnFloat(lineDefId, columnIndex)">
-                        {{ columnLabel(lineDefId, columnIndex) }}</div>
+                    <div [style.float]="columnFloat(lineDefId, columnIndex)" [style.min-width.px]="isEdit ? 120 : 0"> <!-- 32 + 19 + [7 x (9.6 + X)] < 961 -->
+                        {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
                 </ng-template>
                 <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index"
                     let-update="update">
                     <t-form-group-cell class="t-form-group" [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
-                        <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)">
-                            <div class="text-truncate" [style.float]="columnFloat(lineDefId, columnIndex)"
-                                style="float:right;max-width: 200px;" [ngSwitch]="columnName(lineDefId, columnIndex)">
-                                <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{
+                        <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
+                            [ngSwitch]="columnName(lineDefId, columnIndex)">
+                            <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{
                                     ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                    {{
+                            </t-view-link>
+                            <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{
                                     ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <t-view-link *ngSwitchCase="'AgentId'"
-                                    [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <t-view-link *ngSwitchCase="'ResourceId'"
-                                    [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <t-view-link *ngSwitchCase="'ResponsibilityCenterId'"
-                                    link="../../../responsibility-centers"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('ResponsibilityCenter', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{ ws.getMultilingualValue('ResponsibilityCenter', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <t-view-link *ngSwitchCase="'EntryTypeId'" link="../../../entry-types"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <span
-                                    *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                                <span
-                                    *ngSwitchCase="'MonetaryValue'">{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
-                                <span
-                                    *ngSwitchCase="'Quantity'">{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
-                                <span
-                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('MeasurementUnit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
-                                <span
-                                    *ngSwitchCase="'Value'">{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
-                                <span
-                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                                <span
-                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                                <span
-                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                                <span
-                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                                <t-view-link *ngSwitchCase="'NotedAgentId'"
-                                    [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)"
-                                    [title]="ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name')">
-                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                                </t-view-link>
-                                <span *ngSwitchCase="'NotedAgentName'"
-                                    [title]="getFieldValue(lineDefId, columnIndex, line)">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                                <span
-                                    *ngSwitchCase="'NotedAmount'">{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
-                                <span
-                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                                <span *ngSwitchCase="'Memo'"
-                                    [title]="getFieldValue(lineDefId, columnIndex, line)">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            </t-view-link>
+                            <t-view-link *ngSwitchCase="'AgentId'"
+                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                            </t-view-link>
+                            <t-view-link *ngSwitchCase="'ResourceId'"
+                                [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                            </t-view-link>
+                            <t-view-link *ngSwitchCase="'ResponsibilityCenterId'" link="../../../responsibility-centers"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{ ws.getMultilingualValue('ResponsibilityCenter', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                            </t-view-link>
+                            <t-view-link *ngSwitchCase="'EntryTypeId'" link="../../../entry-types"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                            </t-view-link>
+                            <span
+                                *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                            <div *ngSwitchCase="'MonetaryValue'" style="float:right">
+                                {{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}
                             </div>
+                            <div *ngSwitchCase="'Quantity'" style="float:right">
+                                {{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}
+                            </div>
+                            <span
+                                *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('MeasurementUnit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
+                            <div *ngSwitchCase="'Value'" style="float:right">
+                                {{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}
+                            </div>
+                            <span
+                                *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                            <span
+                                *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                            <span
+                                *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            <span
+                                *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            <t-view-link *ngSwitchCase="'NotedAgentId'"
+                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                            </t-view-link>
+                            <span
+                                *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            <div *ngSwitchCase="'NotedAmount'" style="float:right">
+                                {{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}
+                            </div>
+                            <span
+                                *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                            <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                         </t-restricted>
                         <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-accounts-picker *ngSwitchCase="'AccountId'"
@@ -550,8 +544,7 @@
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.EntryTypeId">
                                     <t-view-link link="../../../entry-types" [itemId]="entry.EntryTypeId">
-                                        <div class="text-truncate"
-                                            [title]="ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name')">
+                                        <div class="text-truncate">
                                             {{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}
                                         </div>
                                     </t-view-link>
@@ -564,8 +557,7 @@
                                     </t-entry-types-picker>
                                     <t-restricted *ngIf="readonlyEntryType(entry)"
                                         [metadata]="entry.EntityMetadata?.EntryTypeId">
-                                        <div class="text-truncate"
-                                            [title]="ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name')">
+                                        <div class="text-truncate">
                                             {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId(entry), 'Name') }}
                                         </div>
                                     </t-restricted>
@@ -580,7 +572,7 @@
                                 [serverErrors]="entry.serverErrors?.ExternalReference">
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ExternalReference">
-                                    <div class="text-truncate" [title]="entry.ExternalReference">
+                                    <div class="text-truncate">
                                         {{ entry.ExternalReference }}
                                     </div>
                                 </t-restricted>
@@ -598,7 +590,7 @@
                                 [serverErrors]="entry.serverErrors?.AdditionalReference">
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.AdditionalReference">
-                                    <div class="text-truncate" [title]="entry.AdditionalReference">
+                                    <div class="text-truncate">
                                         {{ entry.AdditionalReference }}
                                     </div>
                                 </t-restricted>
@@ -636,7 +628,7 @@
                                 [serverErrors]="entry.serverErrors?.NotedAgentName">
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAgentName">
-                                    <div class="text-truncate" [title]="entry.NotedAgentName">
+                                    <div class="text-truncate">
                                         {{ entry.NotedAgentName }}
                                     </div>
                                 </t-restricted>
@@ -654,7 +646,7 @@
                                 [serverErrors]="entry.serverErrors?.NotedAmount">
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAmount">
-                                    <div class="text-truncate" [title]="entry.NotedAmount">
+                                    <div class="text-truncate">
                                         {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
                                     </div>
                                 </t-restricted>
@@ -673,7 +665,7 @@
                                 [serverErrors]="entry.serverErrors?.NotedDate">
                                 <!-- View -->
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedDate">
-                                    <div class="text-truncate" [title]="entry.NotedDate">
+                                    <div class="text-truncate">
                                         {{ entry.NotedDate | date:'yyyy-MM-dd' }}
                                     </div>
                                 </t-restricted>
@@ -869,11 +861,12 @@
             </ng-template>
         </li>
         <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
-            <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span
-                    class="small t-slightly-bold"><fa-icon icon="ellipsis-v"></fa-icon></span></a>
+            <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span class="small t-slightly-bold">
+                    <fa-icon icon="ellipsis-h"></fa-icon>
+                </span></a>
             <div ngbDropdownMenu>
-                <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)"
-                    ngbDropdownItem (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId) }}</button>
+                <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)" ngbDropdownItem
+                    (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId) }}</button>
             </div>
         </li>
 

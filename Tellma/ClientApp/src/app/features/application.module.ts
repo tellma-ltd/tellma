@@ -35,7 +35,7 @@ import {
   faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder,
   faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt, faLock, faFile,
   faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileArchive, faFileImage,
-  faFileAudio, faFileVideo, faThumbsUp, faThumbsDown, faEllipsisV
+  faFileAudio, faFileVideo, faThumbsUp, faThumbsDown, faEllipsisV, faEllipsisH
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -469,7 +469,7 @@ export class ApplicationModule {
       faThumbsUp, faThumbsDown,
       // File icons
       faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt,
-      faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV,
+      faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH,
 
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
