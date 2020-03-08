@@ -563,6 +563,8 @@
     <Build Include="bll\Stored Procedures\bll.Documents__Preprocess.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
+    <Build Include="Mapping\LineDefinitionEntries.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.AssetsDepreciation__Populate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
