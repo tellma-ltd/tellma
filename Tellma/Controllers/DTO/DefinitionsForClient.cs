@@ -150,6 +150,7 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
         public bool AllowSelectiveSigning { get; set; }
+        public bool ViewDefaultsToForm { get; set; }
         public List<LineDefinitionEntryForClient> Entries { get; set; }
         public List<LineDefinitionColumnForClient> Columns { get; set; }
         public List<LineDefinitionStateReasonForClient> StateReasons { get; set; }
@@ -161,6 +162,11 @@ namespace Tellma.Controllers.Dto
         public string AccountTypeParentCode { get; set; }
         public string AgentDefinitionId { get; set; }
         public string EntryTypeCode { get; set; }
+
+
+        // Computed
+        public int? AccountTypeParentId { get; set; }
+        public bool AccountTypeParentIsResourceClassification { get; set; }
     }
 
     public class LineDefinitionColumnForClient

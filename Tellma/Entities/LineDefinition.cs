@@ -55,6 +55,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
         public bool? AllowSelectiveSigning { get; set; }
+        public bool? ViewDefaultsToForm { get; set; }
         public string Script { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntry.LineDefinitionId))]

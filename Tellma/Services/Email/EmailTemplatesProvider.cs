@@ -74,17 +74,7 @@ namespace Tellma.Services.Email
 <table style=""font-size:1rem;direction: {direction};padding: 0.5rem;background-color: #f8f9fa;max-width: 900px;border: 1px solid lightgrey;font-family: BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';"">
     <tr>
         <td style=""background: #343a40;padding: 1rem;text-align: center;"">
-            <table align=""center"">
-                <tr>
-                    <td>
-                        <img width=""36"" height=""36"" src=""{appDomain}favicon.ico""></img>
-                    </td>
-                    <td>
-                        &nbsp;&nbsp;<span style=""color: white; font-size:22px"">{appName}<strong
-                                style=""color: #17a2b8;"">ERP</strong></span>&nbsp;&nbsp;&nbsp;
-                    </td>
-                </tr>
-            </table>
+            <img width=""64"" src=""{appDomain}img/tellma.png""></img>
         </td>
     </tr>
     <tr>

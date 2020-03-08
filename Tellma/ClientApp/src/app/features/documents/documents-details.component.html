@@ -103,7 +103,7 @@
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
                 <span
-                    class="small t-slightly-bold">{{ tabTitle(lineDefId) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
                 <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">&nbsp;<fa-icon
                         icon="exclamation-triangle">
                     </fa-icon>
@@ -114,12 +114,65 @@
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
 
                     <!-- Smart Lines -->
-                    <t-table *ngIf="lineDefId !== 'ManualLine'" [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
-                        [columnPaths]="columnPaths(lineDefId, model)"
-                        [columnTemplates]="columnTemplates(lineDefId, model, smartHeader, smartRow)"
-                        [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
-                        (delete)="onDelete($event, model)">
-                    </t-table>
+                    <ng-container *ngIf="lineDefId !== 'ManualLine'">
+
+                        <!-- Table -->
+                        <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
+                            [isEdit]="isEdit" [columnPaths]="columnPaths(lineDefId, model)"
+                            [columnTemplates]="columnTemplates(lineDefId, model, smartHeader, smartRow)"
+                            [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
+                            (delete)="onDelete($event, model)">
+                        </t-table>
+
+                        <!-- Form -->
+                        <ng-container *ngIf="showAsForm(lineDefId, model)">
+                            <div class="row m-0 mt-2">
+                                <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
+                                    <ng-container *ngFor="let colPath of columnPaths(lineDefId, model)">
+                                        <ng-container *ngTemplateOutlet="smartRow; context: { 
+                                                item: lines(lineDefId, model)[0], 
+                                                argument: colPath, 
+                                                index: 0, 
+                                                update: dummyUpdate, 
+                                                isForm: true }">
+                                        </ng-container>
+                                    </ng-container>
+                                </ng-container>
+                                <ng-template #noFormMessage>
+                                    <div class="px-3 text-muted font-italic">
+                                        {{ 'NotAdded' | translate }}
+                                    </div>
+                                </ng-template>
+                            </div>
+
+                            <div class="col-12 py-1 px-3 mt-3 d-flex" *ngIf="isEdit">
+                                <!-- Add button -->
+                                <button *ngIf="lines(lineDefId, model).length === 0" class="btn btn-sm btn-primary"
+                                    (click)="onCreateForm(lineDefId, model)">
+                                    <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                                </button>
+                                <!-- Actions dropdown -->
+                                <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group" ngbDropdown
+                                    [placement]="actionsDropdownPlacement">
+                                    <button type="button"
+                                        class="btn btn-sm btn-primary dropdown-toggle"
+                                        ngbDropdownToggle>
+                                        {{ 'Actions' | translate }}
+                                    </button>
+                                    <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
+                                            (click)="onDeleteForm(lineDefId, model)">
+                                            {{ ('Delete' | translate) + ' ' + tabTitle(lineDefId, model) }}
+                                        </button>
+                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
+                                            (click)="onCreateForm(lineDefId, model)">
+                                            {{ 'AddAnotherSwitchToTable' | translate }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
 
                     <!-- Manual Lines -->
                     <t-table *ngIf="lineDefId === 'ManualLine'" [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
@@ -136,23 +189,37 @@
 
                 <!-- Smart Line -->
                 <ng-template #smartHeader let-columnIndex="argument">
-                    <div [style.float]="columnFloat(lineDefId, columnIndex)" [style.min-width.px]="isEdit ? 120 : 0"> <!-- 32 + 19 + [7 x (9.6 + X)] < 961 -->
+                    <div [style.text-align]="columnLabelAlignment(lineDefId, columnIndex)"
+                        [style.min-width.px]="isEdit ? 120 : 0">
+                        <!-- 32 + 19 + [7 x (9.6 + X)] < 961 -->
                         {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
                 </ng-template>
                 <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index"
-                    let-update="update">
-                    <t-form-group-cell class="t-form-group" [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
-                        <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
-                            [ngSwitch]="columnName(lineDefId, columnIndex)">
+                    let-update="update" let-isForm="isForm">
+
+                    <t-form-group-cell *ngIf="!isForm" class="t-form-group"
+                        [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
+                        <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
+                    </t-form-group-cell>
+                    <t-form-group *ngIf="isForm" class="t-form-group"
+                        [serverErrors]="serverErrors(lineDefId, columnIndex, line)"
+                        [label]="columnLabel(lineDefId, columnIndex)">
+                        <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
+                    </t-form-group>
+
+                    <ng-template #formGroupContents>
+                        <!-- <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
+                            [ngSwitch]="columnName(lineDefId, columnIndex)"> -->
+                        <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{
-                                    ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                        ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{
-                                    ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                        ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'AgentId'"
                                 [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
@@ -207,7 +274,7 @@
                                 *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
                             <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                        </t-restricted>
+                        </ng-container>
                         <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-accounts-picker *ngSwitchCase="'AccountId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
@@ -262,7 +329,7 @@
                                 [ngModelOptions]="{ updateOn: 'blur' }"
                                 [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
                                 [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                textAlignment="right">
+                                [textAlignment]="isForm ? null : 'right'">
                             </t-decimal-editor>
                             <t-decimal-editor *ngSwitchCase="'Quantity'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
@@ -270,7 +337,7 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
                                 [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
-                                textAlignment="right">
+                                [textAlignment]="isForm ? null : 'right'">
                             </t-decimal-editor>
                             <t-measurement-units-picker *ngSwitchCase="'UnitId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
@@ -284,7 +351,7 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
                                 [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="functional_decimals"
-                                [maxDecimalPlaces]="functional_decimals" textAlignment="right">
+                                [maxDecimalPlaces]="functional_decimals" [textAlignment]="isForm ? null : 'right'">
                             </t-decimal-editor>
                             <t-date-picker *ngSwitchCase="'Time1'" [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -333,7 +400,7 @@
                                 [ngModelOptions]="{ updateOn: 'blur' }"
                                 [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
                                 [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                textAlignment="right">
+                                [textAlignment]="isForm ? null : 'right'">
                             </t-decimal-editor>
                             <t-date-picker *ngSwitchCase="'NotedDate'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
@@ -349,7 +416,7 @@
                                 [ngModelOptions]="{ updateOn: 'blur' }">
                             </t-text-editor>
                         </ng-container>
-                    </t-form-group-cell>
+                    </ng-template>
                 </ng-template>
 
                 <!-- Manual Line -->
@@ -749,7 +816,7 @@
                     <div class="col-12 mt-3">
                         <span class="small font-weight-bold">{{ 'Signatures' | translate }}</span>
                     </div>
-                    <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3"
+                    <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3 mb-1"
                         *ngFor="let signature of requiredSignaturesForLineDef(model, lineDefId, extras)">
                         <div class="border-bottom d-flex align-items-stretch p-2 bg-light">
 
@@ -866,7 +933,7 @@
                 </span></a>
             <div ngbDropdownMenu>
                 <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)" ngbDropdownItem
-                    (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId) }}</button>
+                    (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId, model) }}</button>
             </div>
         </li>
 

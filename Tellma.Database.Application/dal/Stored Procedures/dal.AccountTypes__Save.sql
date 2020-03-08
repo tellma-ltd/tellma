@@ -92,5 +92,7 @@ SET NOCOUNT ON;
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

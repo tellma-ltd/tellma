@@ -324,12 +324,15 @@ namespace Tellma.Controllers
                 TitleSingular3 = def.TitleSingular3,
 
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
+                ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,
                     AccountTypeParentCode = e.AccountTypeParentCode,
                     AgentDefinitionId = e.AgentDefinitionId,
                     EntryTypeCode = e.EntryTypeCode,
+                    AccountTypeParentId = e.AccountTypeParentId,
+                    AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false
                 })?.ToList(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient

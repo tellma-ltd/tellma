@@ -279,7 +279,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   private chooseItem(id: string | number) {
 
-    id = id || null; // Standardise empty value
+    id = id || undefined; // Standardise empty value
 
     if (this.chosenItem !== id) {
       this.chosenItem = id;

@@ -61,7 +61,11 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
 
   onChange(val: any) {
     this.triggerTouch = true;
-    this.onChangeFn(val);
+    if (!val) {
+      this.onChangeFn(undefined);
+    } else {
+      this.onChangeFn(val);
+    }
   }
 
   ///////////////// Implementation of AfterViewInit

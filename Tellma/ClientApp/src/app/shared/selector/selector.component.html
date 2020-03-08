@@ -1,4 +1,4 @@
-<select class="form-control t-input dropdown-toggle2" #selector (change)="onChange($event.target.value); onTouched();"
+<select class="form-control t-input" [class.t-pointer]="!isDisabled" #selector (change)="onValueChanged($event.target.value)"
   (blur)="onTouched();" [disabled]="isDisabled">
   <option></option>
   <option *ngFor="let choice of choices; trackBy: trackByFn" value="{{choice.value}}">{{ choice.name() }}</option>

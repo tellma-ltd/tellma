@@ -42,7 +42,7 @@
             <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
               [class.dropdown-menu-right]="!isRtl">
               <ng-container *ngFor="let lang of activeLanguages">
-                <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage"
+                <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage" ngbDropdownItem
                   (click)="onSetLanguage(lang)">
                   {{ languageName(lang) }}
                 </button>
@@ -65,16 +65,16 @@
             </button>
             <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
               [class.dropdown-menu-right]="!isRtl">
-              <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
+              <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies" (click)="onCollapse()">
                 {{ 'MyCompanies' | translate }}
               </button>
-              <button type="button" class="dropdown-item btn-light" routerLink="/root/welcome" (click)="onCollapse()">
+              <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome" (click)="onCollapse()">
                 {{ 'WelcomePage' | translate }}
               </button>
-              <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">
+              <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMySystemAccount();onCollapse()">
                 {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
               </button>
-              <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
+              <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
                 {{ 'SignOut' | translate }}
               </button>
             </div>

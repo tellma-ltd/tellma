@@ -163,11 +163,11 @@
                         {{ 'Data' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <button type="button" class="dropdown-item btn-light" (click)="onExport()"
+                        <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
                             [disabled]="!canExport">
                             {{ 'Export' | translate }}
                         </button>
-                        <button type="button" *ngIf="description" class="dropdown-item btn-light"
+                        <button type="button" *ngIf="description" class="dropdown-item btn-light" ngbDropdownItem
                             (click)="modalService.open(descModal)">
                             {{ 'Description' | translate }}
                         </button>

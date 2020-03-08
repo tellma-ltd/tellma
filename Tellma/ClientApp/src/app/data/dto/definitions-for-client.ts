@@ -106,6 +106,7 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     TitlePlural2: string;
     TitlePlural3: string;
     AllowSelectiveSigning: boolean;
+    ViewDefaultsToForm: boolean;
     Entries: LineDefinitionEntryForClient[];
     Columns: LineDefinitionColumnForClient[];
     StateReasons: LineDefinitionStateReasonForClient[];
@@ -116,6 +117,10 @@ export interface LineDefinitionEntryForClient {
     AccountTypeParentCode: string;
     AgentDefinitionId: string;
     EntryTypeCode: string;
+
+    // Computed
+    AccountTypeParentId?: number;
+    AccountTypeParentIsResourceClassification: boolean;
 }
 
 export interface LineDefinitionColumnForClient {
