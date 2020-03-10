@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 	IF NOT EXISTS (SELECT * FROM dbo.[AdminUsers])
 	BEGIN
 		SET @UserId = IDENT_CURRENT('[dbo].[AdminUsers]');
-		EXEC master.sys.sp_set_session_context 'UserId', @UserId;
+		EXEC [sys].[sp_set_session_context] 'UserId', @UserId;
 	END
 		
 	SET @UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'));

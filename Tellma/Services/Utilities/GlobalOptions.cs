@@ -4,9 +4,9 @@
     {
         public bool EmailEnabled { get; set; } = true;
 
-        public bool EmbeddedIdentityServerEnabled { get; set; } = true;
+        public bool EmbeddedIdentityServerEnabled { get; set; }
 
-        public bool EmbeddedClientApplicationEnabled { get; set; } = true;
+        public bool EmbeddedClientApplicationEnabled { get; set; }
 
         public LocalizationOptions Localization { get; set; }
 

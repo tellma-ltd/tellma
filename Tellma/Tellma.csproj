@@ -12,6 +12,10 @@
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
     <UserSecretsId>58ff9f7f-d690-449d-b257-6d84703203be</UserSecretsId>
     <AssemblyName>Tellma</AssemblyName>
+    <Version>10.9.0</Version>
+    <PackageProjectUrl>www.tellma.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tellma-ltd/tellma</RepositoryUrl>
+    <Description>The next generation ERP software for enterprises</Description>
   </PropertyGroup>
 
   <ItemGroup>

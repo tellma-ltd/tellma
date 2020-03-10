@@ -179,25 +179,33 @@ namespace Tellma
 
         public void Configure(IApplicationBuilder app)
         {
+            // Configuration Errors
+            app.Use(async (context, next) =>
+            {
+                string error = ConfigurationError ?? GlobalError;
+                if (error != null)
+                {
+                    // This means the application was not configured correctly and should not be running
+                    // We cut the pipeline short and report the error message in plain text
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsync(error);
+                }
+                else
+                {
+                    // All is good, continue the normal pipeline
+                    await next.Invoke();
+                }
+            });
+
+            // If there is a configuration/global error already, don't configure the remaining
+            // middleware, they may overrwrite the error message causing the above trick to fail
+            if ((ConfigurationError ?? GlobalError) != null)
+            {
+                return;
+            }
+
             try
             {
-                // Configuration Errors
-                app.Use(async (context, next) =>
-                {
-                    string error = ConfigurationError ?? GlobalError;
-                    if (error != null)
-                    {
-                        // This means the application was not configured correctly and should not be running
-                        // We cut the pipeline short and report the error message in plain text
-                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                        await context.Response.WriteAsync(error);
-                    }
-                    else
-                    {
-                        // All is good, continue the normal pipeline
-                        await next.Invoke();
-                    }
-                });
 
                 // Regular Errors
                 if (_env.IsDevelopment())

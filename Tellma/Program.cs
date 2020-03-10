@@ -42,6 +42,7 @@ namespace Tellma
         {
             // If missing, the default admin user is added here
             using var scope = provider.CreateScope();
+
             // (1) Retrieve the admin credentials from configurations
             var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
             string email = opt?.Admin?.Email ?? "admin@tellma.com";

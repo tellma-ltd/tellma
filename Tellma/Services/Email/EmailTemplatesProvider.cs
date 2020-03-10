@@ -74,7 +74,7 @@ namespace Tellma.Services.Email
 <table style=""font-size:1rem;direction: {direction};padding: 0.5rem;background-color: #f8f9fa;max-width: 900px;border: 1px solid lightgrey;font-family: BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';"">
     <tr>
         <td style=""background: #343a40;padding: 1rem;text-align: center;"">
-            <img width=""64"" src=""{appDomain}img/tellma.png""></img>
+            <img height=""30px"" src=""{appDomain}img/tellma.png""></img>
         </td>
     </tr>
     <tr>
