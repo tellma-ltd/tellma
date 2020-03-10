@@ -223,4 +223,17 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[PredicateTypeEntryIndex]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d8fdbd43-bfe7-42e2-ad11-1a4fe6f856aa" ChangeDateTime="03/08/2020 08:53:42">
+    <Property Name="ElementName" Value="[dbo].[rpt_Production__Actual_vs_Planned]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Production__Actual_vs_Planned]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="61cc06fe-5095-4210-a513-a90be5746883" ChangeDateTime="03/08/2020 08:53:57">
+    <Property Name="ElementName" Value="[dbo].[Production__Actual_vs_Planned]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

@@ -17,7 +17,7 @@ RETURNS TABLE AS RETURN
 	AvailableSignaturesForState AS (
 		SELECT [LineId], [RuleType],
 		IIF([RuleType] = N'ByRole',[RoleId], -1) AS [RoleId],
-		IIF([RuleType] IN (N'ByUser', N'ByAgent'), [OnBehalfofUserid], -1) AS [UserId]		
+		IIF([RuleType] IN (N'ByUser', N'ByAgent'), [OnBehalfofUserId], -1) AS [UserId]		
 		FROM dbo.[LineSignatures]
 		WHERE ToState = @ToState
 		AND [LineId] IN (SELECT [Id] FROM @Ids)

@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[rpt_Production__Actual_vs_Planned]
-	@FromDate Date,
-	@ToDate Date
+﻿CREATE PROCEDURE [rpt].[Production__Actual_vs_Planned]
+	@fromDate Date,
+	@toDate Date
 	-- TODO: rewrite using summary entries
 AS
 BEGIN
@@ -15,7 +15,7 @@ BEGIN
 			R.[Lookup1Id], J.[AgentId],
 			SUM(J.[AlgebraicMass]) AS [Mass],
 			SUM(J.[AlgebraicCount]) AS [Count]
-		FROM [rpt].[Entries](@FromDate, @ToDate) J
+		FROM [map].[DetailsEntries]() J --(@FromDate, @ToDate) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.Id
 		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
@@ -30,7 +30,7 @@ BEGIN
 			DATEDIFF(
 				DAY,
 				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
-				(CASE WHEN ToDate < @ToDate THEN ToDate Else @ToDate END)
+				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
 		) As [Mass],
 		[MassUnitId],
@@ -38,7 +38,7 @@ BEGIN
 			DATEDIFF(
 				DAY,
 				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
-				(CASE WHEN ToDate < @ToDate THEN ToDate Else @ToDate END)
+				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
 		) As [Count],
 		[CountUnitId]

@@ -29,7 +29,7 @@ BEGIN -- Inserting
 --(7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',				N'تاريخ الشيك',			5,5),
 --(8,2,	N'Entries',	N'Value',				0,	N'Equiv Amt ($)',			N'($) المعادل',			4,4);
 	-- Requesting
-	EXEC master.sys.sp_set_session_context 'UserId', @mohamad_akra;
+	EXEC sys.sp_set_session_context 'UserId', @mohamad_akra;
 
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPaymentToOther';
@@ -172,7 +172,7 @@ BEGIN -- Inserting
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 1;
 
 	-- Approving
-	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;		
+	EXEC sys.sp_set_session_context 'UserId', @amtaam;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 2, -- N'Approved',
@@ -188,7 +188,7 @@ BEGIN -- Inserting
 	END;
 
 	-- Executing
-	EXEC master.sys.sp_set_session_context 'UserId', @amtaam;		
+	EXEC sys.sp_set_session_context 'UserId', @amtaam;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 3, -- N'Completed',
@@ -219,7 +219,7 @@ BEGIN -- Inserting
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 3;
 
 	-- Reviewing
-	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;		
+	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 4, -- N'Ready To Post',
@@ -318,7 +318,7 @@ BEGIN -- Inserting
 	(0, 1, 4,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
 	(0, 1, 5,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
 
-	EXEC master.sys.sp_set_session_context 'UserId', @jiad_akra;
+	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',
 		@Documents = @D, @Lines = @L, @Entries = @E,

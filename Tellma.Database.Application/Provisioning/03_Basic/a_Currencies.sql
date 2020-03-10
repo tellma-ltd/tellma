@@ -52,7 +52,7 @@ BEGIN
 	Print 'Currencies: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;						
-EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
+EXEC sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
 
 
 IF @DebugCurrencies = 1

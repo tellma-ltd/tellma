@@ -8,7 +8,7 @@ AS
 BEGIN
     -- Set the global values of the session context
 	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
-    EXEC master.sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
+    EXEC sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 
     -- Get the User Id
     DECLARE 
@@ -67,10 +67,10 @@ BEGIN
     FROM [dbo].[Settings]
 
     -- Set the User Id
-    EXEC master.sys.sp_set_session_context @key = N'UserId', @value = @UserId;
+    EXEC sys.sp_set_session_context @key = N'UserId', @value = @UserId;
 
 	-- Set the Functional Currency Id
-    EXEC master.sys.sp_set_session_context @key = N'FunctionalCurrencyId', @value = @FunctionalCurrencyId;
+    EXEC sys.sp_set_session_context @key = N'FunctionalCurrencyId', @value = @FunctionalCurrencyId;
 
     -- Return the user information
     SELECT 

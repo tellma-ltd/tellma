@@ -39,12 +39,13 @@ BEGIN
 		(N'Administrator',	N'المشرف',	@DeployEmail);
 	END
 
+	DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 	EXEC [dal].[Users__Save]
 		@Entities = @Users
 END
 
 DECLARE @AdminUserId INT = (SELECT[Id] FROM dbo.[Users] WHERE [Email] = @DeployEmail);
-EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
+EXEC sys.sp_set_session_context 'UserId', @AdminUserId;
 
 IF  NOT EXISTS(SELECT * FROM [dbo].[Roles] WHERE [Code] = N'All')
 BEGIN
@@ -89,6 +90,9 @@ BEGIN
 	INSERT INTO @Members ([UserId])	VALUES (@AdminUserId);
 	INSERT INTO @Permissions ([View],	[Action]) VALUES (N'all', N'All');
 
+	DELETE FROM @Roles WHERE [Name] IN (SELECT [Name] FROM dbo.Roles);
+	DELETE FROM @Members WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
+	DELETE FROM @Permissions WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
 	EXEC [dal].[Roles__Save]
 		@Entities = @Roles,
 		@Members = @Members,
