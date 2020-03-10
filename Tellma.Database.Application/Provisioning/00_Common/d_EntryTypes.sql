@@ -204,6 +204,10 @@ UPDATE ET
 SET ET.IsActive = T.IsActive
 FROM dbo.[EntryTypes] ET JOIN @ET T ON ET.[Code] = T.[Code];
 
+UPDATE DB
+SET DB.[Node] = FE.[Node]
+FROM dbo.[EntryTypes] DB JOIN @ET FE ON DB.[Code] = FE.[Code]
+
 DECLARE @PaymentsToSuppliersForGoodsAndServices INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices' );
 DECLARE @PaymentsToAndOnBehalfOfEmployees INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToAndOnBehalfOfEmployees' );
 

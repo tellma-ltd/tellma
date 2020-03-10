@@ -57,7 +57,7 @@ BEGIN
 	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
 	(2,3,	N'ManualLine',						0),
 	-- 	asset-depreciation-vouchers, for depreciation expenses recognition
-	(0,4,	N'DailyAssetDepreciation',			1), -- where depreciation is calculated by days
+	(0,4,	N'PPEDepreciation',					1), -- where depreciation is calculated by days
 	(1,4,	N'ManualLine',						0);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en

@@ -285,11 +285,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,7,	N'Entries', N'Value',				0,	N'Equiv. ($)',	N'المقابل ($)',	1,4,0),
 (10,7,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
 (11,7,	N'Entries',	N'ResponsibilityCenterId',1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
---DailyAssetDepreciation
+--PPEDepreciation
 INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Id],				[TitleSingular],		[TitleSingular2],		[TitlePlural],				[TitlePlural2],
+[ViewDefaultsToForm],[Id],			[TitleSingular],		[TitleSingular2],		[TitlePlural],				[TitlePlural2],
 [Description]) VALUES (
-8,0,N'DailyAssetDepreciation',			N'Asset Depreciation',	N'إهلاك أصل',			N'Assets Depreciation',		N'إهلاكات أصول',
+8,0,N'PPEDepreciation',				N'Asset Depreciation',	N'إهلاك أصل',			N'Assets Depreciation',		N'إهلاكات أصول',
 N'For depreciation of assets that are time based, and using the number of days as criteria');
 UPDATE @LineDefinitions
 SET [Script] = N'
