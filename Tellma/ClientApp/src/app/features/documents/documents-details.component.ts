@@ -1611,7 +1611,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     // New unsaved docs have a null state
-    return (model.State || 0) === state && model.PostingState !== 1;
+    return (model.State || 0) === state && model.PostingState !== 1 && model.PostingState !== -1;
   }
 
   public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
@@ -1624,6 +1624,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
+  }
+
+  public showLoneState(model: Document) {
+    return !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
   }
 
   // Posting State
@@ -1667,7 +1671,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.canDo(this.view, 'PostingState', doc.CreatedById);
   }
 
+  public canPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 0 &&
+      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State === 4 || e.State < 0));
+  }
 
+  public canUnpost(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 1;
+  }
+
+  public canCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 0 &&
+      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
+  }
+
+  public canUncancel(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === -1;
+  }
 }
 
 /**

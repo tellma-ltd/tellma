@@ -19,21 +19,34 @@
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
-    <div class="w-100 t-document-header d-flex justify-content-end">
-        <div class="d-flex align-items-stretch py-1">
-            <!-- <button class="btn btn-sm btn-danger mx-1" (click)="onUnpost(model)" *ngIf="model?.PostingState === 1">
-                <fa-icon icon="times"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Un-Post" }}</span>
+    <div class="w-100 t-document-header d-flex justify-content-between">
+        <div class="d-flex align-items-stretch p-1">
+            <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" style="min-width: 90px;"
+                (click)="onUnpost(model)" *ngIf="!isEdit && canUnpost(model, extras?.RequiredSignatures)">
+                <fa-icon icon="undo"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Unpost" | translate }}</span>
             </button>
-            <button class="btn btn-sm btn-success mx-1" (click)="onPost(model)" *ngIf="model?.PostingState === 0">
-                <fa-icon icon="archive"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Post" }}</span>
-            </button> -->
+            <button class="btn btn-sm btn-danger t-toolbar-button" style="min-width: 90px;" (click)="onCancel(model)"
+                *ngIf="!isEdit && canCancel(model, extras?.RequiredSignatures)">
+                <fa-icon icon="times"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Cancel" | translate }}</span>
+            </button>
+            <button class="btn btn-sm btn-success t-toolbar-button" style="min-width: 90px;" (click)="onPost(model)"
+                *ngIf="!isEdit && canPost(model, extras?.RequiredSignatures)">
+                <fa-icon icon="check"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Post" | translate }}</span>
+            </button>
+            <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" style="min-width: 90px;"
+                (click)="!isEdit && onUncancel(model)" *ngIf="canUncancel(model, extras?.RequiredSignatures)">
+                <fa-icon icon="undo"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
+            </button>
         </div>
         <!-- Positive state in wide screen -->
         <div>
-            <div class="t-flow-chart small d-none d-md-block" *ngIf="!model?.State || model.State > 0">
-                <div [class.active]="isState(0, model)"><span>{{'Document_State_0' | translate}}</span></div>
+            <div class="t-flow-chart small d-none d-lg-block" *ngIf="!showLoneState(model)">
+                <div [class.active]="isState(0, model)">
+                    <span>{{'Document_State_0' | translate}}</span></div>
                 <div [class.active]="isState(1, model)" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
                     <span>{{'Document_State_1' | translate}}</span></div>
                 <div [class.active]="isState(2, model)" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
@@ -42,18 +55,16 @@
                     <span>{{'Document_State_3' | translate}}</span></div>
                 <div [class.active]="isState(4, model)" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
                     <span>{{'Document_State_4' | translate}}</span></div>
-                <div class="text-nowrap" [class.active]="model?.PostingState === 1"><span>
-                        {{'Document_PostingState_1' | translate}}
-                    </span>
-                </div>
+                <div [class.active]="model?.PostingState === 1">
+                    <span>{{'Document_PostingState_1' | translate}}</span></div>
             </div>
-            <div class="small t-lone-state active d-none d-md-block" *ngIf="!!model?.State && model.State < 0">
+            <div class="small t-lone-state active d-none d-lg-block" *ngIf="showLoneState(model)">
                 <!-- Negative state in wide screen-->
                 <ng-container *ngTemplateOutlet="loneState">
 
                 </ng-container>
             </div>
-            <div class="small t-lone-state active d-block d-md-none">
+            <div class="small t-lone-state active d-block d-lg-none">
                 <!-- Narrow screen -->
                 <ng-container *ngTemplateOutlet="loneState"> </ng-container>
             </div>
@@ -61,6 +72,7 @@
 
         <ng-template #loneState>
             <span>{{ (model?.PostingState === 1 ? 'Document_PostingState_1' :
+                            model?.PostingState === -1 ? 'Document_PostingState_minus_1' :
                             !model?.State ? 'Document_State_0' :
                             model?.State === -1 ? 'Document_State_minus_1' :
                             model?.State === 1 ? 'Document_State_1' :
