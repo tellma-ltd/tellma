@@ -119,6 +119,7 @@
     <None Include="Dev.publish.xml" />
     <None Include="IntegrationTests.publish.xml" />
     <None Include="Tellma.Database.Admin.publish.xml" />
+    <None Include="Production.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Tellma.Database.Admin.refactorlog" />

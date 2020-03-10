@@ -430,6 +430,18 @@
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
   </data>
+  <data name="Document_PostingState" xml:space="preserve">
+    <value>写入状况</value>
+  </data>
+  <data name="Document_PostingState_0" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="Document_PostingState_1" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="Document_PostingState_minus_1" xml:space="preserve">
+    <value>取消</value>
+  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p. </value>
   </data>
@@ -450,9 +462,6 @@
   </data>
   <data name="Document_State_4" xml:space="preserve">
     <value>发布</value>
-  </data>
-  <data name="Document_State_5" xml:space="preserve">
-    <value>存档</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>空虚</value>
@@ -1128,6 +1137,9 @@
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>面具</value>
+  </data>
+  <data name="Permission_PostingState" xml:space="preserve">
+    <value>邮政/取消</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>读</value>

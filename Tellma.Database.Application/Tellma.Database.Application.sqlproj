@@ -538,6 +538,9 @@
     <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
     <Build Include="Mapping\LineDefinitionEntries.sql" />
     <Build Include="dbo\Stored Procedures\dbo.AssetsDepreciation__Populate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Post.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Unpost.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Uncancel.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Production__Actual_vs_Planned.sql" />
   </ItemGroup>
   <ItemGroup>

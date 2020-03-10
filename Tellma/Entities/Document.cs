@@ -76,30 +76,45 @@ namespace Tellma.Entities
         [Display(Name = "Document_State")]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
-            DocState.Draft,
-            DocState.Void,
-            DocState.Requested,
-            DocState.Rejected,
-            DocState.Authorized,
-            DocState.Failed,
-            DocState.Completed,
-            DocState.Invalid,
-            DocState.Finalized,
-            DocState.Closed
+            LineState.Draft,
+            LineState.Void,
+            LineState.Requested,
+            LineState.Rejected,
+            LineState.Authorized,
+            LineState.Failed,
+            LineState.Completed,
+            LineState.Invalid,
+            LineState.Finalized
         },
             new string[] {
-            DocStateName.Draft,
-            DocStateName.Void,
-            DocStateName.Requested,
-            DocStateName.Rejected,
-            DocStateName.Authorized,
-            DocStateName.Failed,
-            DocStateName.Completed,
-            DocStateName.Invalid,
-            DocStateName.Finalized,
-            DocStateName.Closed
+            LineStateName.Draft,
+            LineStateName.Void,
+            LineStateName.Requested,
+            LineStateName.Rejected,
+            LineStateName.Authorized,
+            LineStateName.Failed,
+            LineStateName.Completed,
+            LineStateName.Invalid,
+            LineStateName.Finalized
         })]
         public short? State { get; set; }
+
+        [Display(Name = "Document_PostingState")]
+        [AlwaysAccessible]
+        [ChoiceList(new object[] {
+            DocState.Current,
+            DocState.Posted,
+            DocState.Canceled,
+        },
+            new string[] {
+            DocStateName.Current,
+            DocStateName.Posted,
+            DocStateName.Canceled,
+        })]
+        public short? PostingState { get; set; }
+
+        [Display(Name = "Document_PostingStateAt")]
+        public DateTimeOffset? PostingStateAt { get; set; }
 
         [Display(Name = "Document_Comment")]
         public string Comment { get; set; }
@@ -171,7 +186,7 @@ namespace Tellma.Entities
         // END HIDDEN
     }
 
-    public static class DocState
+    public static class LineState
     {
         public const short Draft = 0;
         public const short Void = -1;
@@ -182,10 +197,9 @@ namespace Tellma.Entities
         public const short Completed = 3;
         public const short Invalid = -4;
         public const short Finalized = 4;
-        public const short Closed = 5;
     }
 
-    public static class DocStateName
+    public static class LineStateName
     {
         private const string _prefix = "Document_State_";
 
@@ -198,6 +212,21 @@ namespace Tellma.Entities
         public const string Completed = _prefix + "3";
         public const string Invalid = _prefix + "minus_4";
         public const string Finalized = _prefix + "4";
-        public const string Closed = _prefix + "5";
+    }
+
+    public static class DocState
+    {
+        public const short Current = 0;
+        public const short Posted = 0;
+        public const short Canceled = 0;
+    }
+
+    public static class DocStateName
+    {
+        private const string _prefix = "Document_PostingState_";
+
+        public const string Current = _prefix + "0";
+        public const string Posted = _prefix + "1";
+        public const string Canceled = _prefix + "minus_1";
     }
 }

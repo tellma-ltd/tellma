@@ -1,6 +1,5 @@
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
-import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
@@ -11,7 +10,7 @@ import { DocumentAssignment } from './document-assignment';
 import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
 
-export type DocumentState = LineState | 5;
+export type DocumentState = 0 | 1 | -1;
 
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     DocumentDate?: string;
@@ -24,7 +23,9 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: string;
     SerialNumber?: number;
-    State?: DocumentState;
+    State?: LineState;
+    PostingState?: DocumentState;
+    PostingStateAt?: string;
     Comment?: string;
     AssigneeId?: number;
     AssignedAt?: string;
@@ -94,8 +95,8 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
                 State: {
-                    control: 'state',
-                    label: () => trx.instant('State'),
+                    control: 'choice',
+                    label: () => trx.instant('Document_State'),
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4, 5],
                     format: (state: number) => {
                         if (state >= 0) {
@@ -103,24 +104,29 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                         } else {
                             return trx.instant('Document_State_minus_' + (-state));
                         }
+                    }
+                },
+                PostingState: {
+                    control: 'state',
+                    label: () => trx.instant('Document_PostingState'),
+                    choices: [0, -1, 1],
+                    format: (state: number) => {
+                        if (state >= 0) {
+                            return trx.instant('Document_PostingState_' + state);
+                        } else {
+                            return trx.instant('Document_PostingState_minus_' + (-state));
+                        }
                     },
                     color: (c: number) => {
                         switch (c) {
                             case 0: return '#6c757d';
                             case -1: return '#dc3545';
                             case 1: return '#28a745';
-                            case -2: return '#dc3545';
-                            case 2: return '#28a745';
-                            case -3: return '#dc3545';
-                            case 3: return '#28a745';
-                            case -4: return '#dc3545';
-                            case 4: return '#28a745';
-                            case 5: return '#28a745';
                             default: return null;
                         }
                     }
                 },
-
+                PostingStateAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },
 

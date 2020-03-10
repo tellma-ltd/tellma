@@ -16,7 +16,8 @@
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
     var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
-    var appUri = (Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
+    var webClientUri = Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash();
+    var appUri = (string.IsNullOrWhiteSpace(webClientUri) ? "/" : webClientUri); // + "?ui-culture=" + currentCulture;
     // var appUri = ("/") + "?ui-culture=" + currentCulture;
 }
 

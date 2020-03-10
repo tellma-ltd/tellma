@@ -20,19 +20,32 @@
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
     <div class="w-100 t-document-header d-flex justify-content-end">
-        <t-restricted [metadata]="model?.EntityMetadata?.State">
-            <!-- Positive state in wide screen -->
+        <div class="d-flex align-items-stretch py-1">
+            <!-- <button class="btn btn-sm btn-danger mx-1" (click)="onUnpost(model)" *ngIf="model?.PostingState === 1">
+                <fa-icon icon="times"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Un-Post" }}</span>
+            </button>
+            <button class="btn btn-sm btn-success mx-1" (click)="onPost(model)" *ngIf="model?.PostingState === 0">
+                <fa-icon icon="archive"></fa-icon>
+                <span>&nbsp;&nbsp;{{ "Post" }}</span>
+            </button> -->
+        </div>
+        <!-- Positive state in wide screen -->
+        <div>
             <div class="t-flow-chart small d-none d-md-block" *ngIf="!model?.State || model.State > 0">
-                <div [class.active]="!model?.State"><span>{{'Document_State_0' | translate}}</span></div>
-                <div [class.active]="model?.State === 1" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
+                <div [class.active]="isState(0, model)"><span>{{'Document_State_0' | translate}}</span></div>
+                <div [class.active]="isState(1, model)" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
                     <span>{{'Document_State_1' | translate}}</span></div>
-                <div [class.active]="model?.State === 2" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
+                <div [class.active]="isState(2, model)" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
                     <span>{{'Document_State_2' | translate}}</span></div>
-                <div [class.active]="model?.State === 3" *ngIf="showState(model, extras?.RequiredSignatures, 3)">
+                <div [class.active]="isState(3, model)" *ngIf="showState(model, extras?.RequiredSignatures, 3)">
                     <span>{{'Document_State_3' | translate}}</span></div>
-                <div [class.active]="model?.State === 4" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
+                <div [class.active]="isState(4, model)" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
                     <span>{{'Document_State_4' | translate}}</span></div>
-                <div [class.active]="model?.State === 5"><span>{{'Document_State_5' | translate}}</span></div>
+                <div class="text-nowrap" [class.active]="model?.PostingState === 1"><span>
+                        {{'Document_PostingState_1' | translate}}
+                    </span>
+                </div>
             </div>
             <div class="small t-lone-state active d-none d-md-block" *ngIf="!!model?.State && model.State < 0">
                 <!-- Negative state in wide screen-->
@@ -44,9 +57,11 @@
                 <!-- Narrow screen -->
                 <ng-container *ngTemplateOutlet="loneState"> </ng-container>
             </div>
+        </div>
 
-            <ng-template #loneState>
-                <span>{{ (!model?.State ? 'Document_State_0' :
+        <ng-template #loneState>
+            <span>{{ (model?.PostingState === 1 ? 'Document_PostingState_1' :
+                            !model?.State ? 'Document_State_0' :
                             model?.State === -1 ? 'Document_State_minus_1' :
                             model?.State === 1 ? 'Document_State_1' :
                             model?.State === -2 ? 'Document_State_minus_2' :
@@ -55,10 +70,8 @@
                             model?.State === 3 ? 'Document_State_3' :
                             model?.State === -4 ? 'Document_State_minus_4' :
                             model?.State === 4 ? 'Document_State_4' :
-                            model?.State === 5 ? 'Document_State_5' :
                              model?.State) | translate }}</span>
-            </ng-template>
-        </t-restricted>
+        </ng-template>
     </div>
 </ng-template>
 
@@ -154,8 +167,7 @@
                                 <!-- Actions dropdown -->
                                 <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group" ngbDropdown
                                     [placement]="actionsDropdownPlacement">
-                                    <button type="button"
-                                        class="btn btn-sm btn-primary dropdown-toggle"
+                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
                                         ngbDropdownToggle>
                                         {{ 'Actions' | translate }}
                                     </button>

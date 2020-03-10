@@ -10,6 +10,12 @@ BEGIN
 	VALUES (@FullName, @Email, IDENT_CURRENT('dbo.AdminUsers'), IDENT_CURRENT('dbo.AdminUsers'));
 END
 
+IF NOT EXISTS (SELECT * FROM [dbo].[DirectoryUsers] WHERE [Email] = @Email)
+BEGIN
+	INSERT INTO [dbo].[DirectoryUsers] ([Email], [IsAdmin])
+	VALUES (@Email, 1);
+END
+
 DECLARE @AdminId INT, @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();
 SELECT @AdminId = Id FROM [dbo].[AdminUsers] WHERE [Email] = @Email;
 

@@ -95,6 +95,7 @@ BEGIN -- Inserting
 	END;
 	
 	EXEC [api].[Documents__Post]
+		@DefinitionId = N'manual-journal-vouchers',
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

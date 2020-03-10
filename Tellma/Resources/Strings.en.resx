@@ -350,7 +350,7 @@
     <value>Algebraic Mass</value>
   </data>
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>Algebraic Monetary Value</value>
+    <value>Algebraic Amount</value>
   </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
     <value>Algebraic Time</value>
@@ -430,6 +430,18 @@
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
   </data>
+  <data name="Document_PostingState" xml:space="preserve">
+    <value>Posting State</value>
+  </data>
+  <data name="Document_PostingState_0" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Document_PostingState_1" xml:space="preserve">
+    <value>Posted</value>
+  </data>
+  <data name="Document_PostingState_minus_1" xml:space="preserve">
+    <value>Canceled</value>
+  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
   </data>
@@ -450,9 +462,6 @@
   </data>
   <data name="Document_State_4" xml:space="preserve">
     <value>Finalized</value>
-  </data>
-  <data name="Document_State_5" xml:space="preserve">
-    <value>Closed</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>Void</value>
@@ -1129,6 +1138,9 @@
   <data name="Permission_Mask" xml:space="preserve">
     <value>Mask</value>
   </data>
+  <data name="Permission_PostingState" xml:space="preserve">
+    <value>Post/Cancel</value>
+  </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>Read</value>
   </data>
@@ -1466,7 +1478,7 @@
     <value>Attribute 5</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
-    <value>Monetary Value</value>
+    <value>Amount</value>
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>Reorder Level</value>

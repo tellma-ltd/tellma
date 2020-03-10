@@ -1,24 +1,29 @@
 <t-master *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,State,Memo"
-  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeVoid' | translate" inactiveFilter="State ne -1"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,PostingState,State,Memo"
+  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeCanceled' | translate" inactiveFilter="PostingState ne -1"
   [multiselectActions]="[
           ]" [filterDefinition]="{
             'CreatedBy' : [
-                { template: createdByMe, expression: 'CreatedById eq me'}
+            { template: createdByMe, expression: 'CreatedById eq me'},
+            { template: assignedToMe, expression: 'AssigneeId eq me'}
+            ],
+            'PostingState' : [
+                { template: postingState_0, expression: 'PostingState eq 0'},
+                { template: postingState_1, expression: 'PostingState eq 1'},
+                { template: postingState_minus_1, expression: 'PostingState eq -1'}
             ],
             'State' : [
                 { template: state_0, expression: 'State eq 0'},
-                { template: state_minus_1, expression: 'State eq -1'},
                 { template: state_1, expression: 'State eq 1'},
-                { template: state_minus_2, expression: 'State eq -2'},
+                { template: state_minus_1, expression: 'State eq -1'},
                 { template: state_2, expression: 'State eq 2'},
-                { template: state_minus_3, expression: 'State eq -3'},
+                { template: state_minus_2, expression: 'State eq -2'},
                 { template: state_3, expression: 'State eq 3'},
-                { template: state_minus_4, expression: 'State eq -4'},
+                { template: state_minus_3, expression: 'State eq -3'},
                 { template: state_4, expression: 'State eq 4'},
-                { template: state_5, expression: 'State eq 5'}
+                { template: state_minus_4, expression: 'State eq -4'}
             ]
           }">
 </t-master>
@@ -60,6 +65,7 @@
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+<ng-template #assignedToMe> {{ 'AssignedToMe' | translate }} </ng-template>
 
 <ng-template #state_0> {{ 'Document_State_0' | translate }} </ng-template>
 <ng-template #state_minus_1> {{ 'Document_State_minus_1' | translate }} </ng-template>
@@ -70,4 +76,7 @@
 <ng-template #state_3> {{ 'Document_State_3' | translate }} </ng-template>
 <ng-template #state_minus_4> {{ 'Document_State_minus_4' | translate }} </ng-template>
 <ng-template #state_4> {{ 'Document_State_4' | translate }} </ng-template>
-<ng-template #state_5> {{ 'Document_State_5' | translate }} </ng-template>
+
+<ng-template #postingState_0> {{ 'Document_PostingState_0' | translate }} </ng-template>
+<ng-template #postingState_minus_1> {{ 'Document_PostingState_minus_1' | translate }} </ng-template>
+<ng-template #postingState_1> {{ 'Document_PostingState_1' | translate }} </ng-template>

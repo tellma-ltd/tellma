@@ -164,6 +164,7 @@ BEGIN -- Inserting
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
 	EXEC [api].[Documents__Post]
+		@DefinitionId = N'manual-journal-vouchers',
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

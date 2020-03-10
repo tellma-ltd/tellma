@@ -12,7 +12,7 @@ export interface ActionInfo {
 }
 
 export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' |
-    'ResendInvitationEmail' | 'ResetPassword' | 'All';
+    'ResendInvitationEmail' | 'ResetPassword' | 'PostingState' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };
@@ -26,6 +26,7 @@ export const ACTIONS: { [action: string]: string } = {
     'IsActive': 'Permission_IsActive',
     'IsDeprecated': 'Permission_IsDeprecated',
     'ResendInvitationEmail': 'ResendInvitationEmail',
+    'PostingState': 'Permission_PostingState',
     'ResetPassword': 'ResetPassword',
     'All': 'View_All',
 };

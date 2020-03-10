@@ -343,35 +343,16 @@ export class ApiService {
       activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
       deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
       assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
-        const paramsArray: string[] = [
-          `assigneeId=${encodeURIComponent(args.assigneeId)}`
-        ];
+
+        const paramsArray = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
+
+        paramsArray.push(`assigneeId=${encodeURIComponent(args.assigneeId)}`);
 
         if (!!args.comment) {
           paramsArray.push(`comment=${encodeURIComponent(args.comment)}`);
         }
 
-        if (!!args.returnEntities) {
-          paramsArray.push(`returnEntities=${args.returnEntities}`);
-        }
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${args.expand}`);
-        }
-
-        if (!!args.select) {
-          paramsArray.push(`select=${args.select}`);
-        }
-
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/assign?${params}`;
@@ -393,9 +374,11 @@ export class ApiService {
         return obs$;
       },
       sign: (ids: (string | number)[], args: SignArguments, extras?: { [key: string]: any }) => {
-        const paramsArray: string[] = [
-          `toState=${encodeURIComponent(args.toState)}`
-        ];
+
+        const paramsArray = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
+
+        paramsArray.push(`toState=${encodeURIComponent(args.toState)}`);
 
         if (!!args.reasonId) {
           paramsArray.push(`reasonId=${encodeURIComponent(args.reasonId)}`);
@@ -421,28 +404,6 @@ export class ApiService {
           paramsArray.push(`signedAt=${encodeURIComponent(args.signedAt)}`);
         }
 
-        if (!!args.returnEntities) {
-          paramsArray.push(`returnEntities=${args.returnEntities}`);
-        }
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${args.expand}`);
-        }
-
-        if (!!args.select) {
-          paramsArray.push(`select=${args.select}`);
-        }
-
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
-
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/sign-lines?${params}`;
 
@@ -463,30 +424,9 @@ export class ApiService {
         return obs$;
       },
       unsign: (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
-        const paramsArray: string[] = [
-        ];
 
-        if (!!args.returnEntities) {
-          paramsArray.push(`returnEntities=${args.returnEntities}`);
-        }
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${args.expand}`);
-        }
-
-        if (!!args.select) {
-          paramsArray.push(`select=${args.select}`);
-        }
-
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        const paramsArray = this.stringifyActionArguments(args);
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/unsign-lines?${params}`;
@@ -507,6 +447,10 @@ export class ApiService {
 
         return obs$;
       },
+      post: this.updateStateFactory(definitionId, 'post', cancellationToken$),
+      unpost: this.updateStateFactory(definitionId, 'unpost', cancellationToken$),
+      cancel: this.updateStateFactory(definitionId, 'cancel', cancellationToken$),
+      uncancel: this.updateStateFactory(definitionId, 'uncancel', cancellationToken$),
       getAttachment: (docId: string | number, attachmentId: string | number) => {
 
         const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/attachments/${attachmentId}`;
@@ -787,16 +731,7 @@ export class ApiService {
     return {
       get: (args: GetArguments, extras?: { [key: string]: any }) => {
         const paramsArray = this.stringifyGetArguments(args);
-
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
@@ -824,15 +759,7 @@ export class ApiService {
           paramsArray.push(`select=${encodeURIComponent(args.select)}`);
         }
 
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/${id}?${params}`;
@@ -860,15 +787,7 @@ export class ApiService {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
         }
 
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/aggregate?${params}`;
@@ -908,15 +827,7 @@ export class ApiService {
           });
         }
 
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/children-of?${params}`;
@@ -947,15 +858,7 @@ export class ApiService {
 
         paramsArray.push(`returnEntities=${!!args.returnEntities}`);
 
-        if (!!extras) {
-          Object.keys(extras).forEach(key => {
-            const value = extras[key];
-            if (value !== undefined && value !== null) {
-              const valueString = value.toString();
-              paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
-            }
-          });
-        }
+        this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
@@ -1122,6 +1025,33 @@ export class ApiService {
     return obs$;
   }
 
+  private updateStateFactory(definitionId: string, transition: string, cancellationToken$: Observable<void>) {
+    return (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
+
+      const paramsArray = this.stringifyActionArguments(args);
+      this.addExtras(paramsArray, extras);
+
+      const params: string = paramsArray.join('&');
+      const url = appsettings.apiAddress + `api/documents/${definitionId}/${transition}?${params}`;
+
+      this.showRotator = true;
+      const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      }).pipe(
+        tap(() => this.showRotator = false),
+        catchError(error => {
+          this.showRotator = false;
+          const friendlyError = friendlify(error, this.trx);
+          return throwError(friendlyError);
+        }),
+        takeUntil(cancellationToken$),
+        finalize(() => this.showRotator = false)
+      );
+
+      return obs$;
+    };
+  }
+
   private activateFactory<TDto extends EntityForSave>(endpoint: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: ActivateArguments) => {
       args = args || {};
@@ -1228,5 +1158,38 @@ export class ApiService {
     }
 
     return paramsArray;
+  }
+
+  stringifyActionArguments(args: ActionArguments): string[] {
+    args = args || {};
+
+    const paramsArray: string[] = [
+    ];
+
+    if (!!args.select) {
+      paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+    }
+
+    if (!!args.expand) {
+      paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+    }
+
+    if (!!args.returnEntities) {
+      paramsArray.push(`returnEntities=${args.returnEntities}`);
+    }
+
+    return paramsArray;
+  }
+
+  addExtras(paramsArray: string[], extras: { [key: string]: any }) {
+    if (!!extras) {
+      Object.keys(extras).forEach(key => {
+        const value = extras[key];
+        if (value !== undefined && value !== null) {
+          const valueString = value.toString();
+          paramsArray.push(`${key}=${encodeURIComponent(valueString)}`);
+        }
+      });
+    }
   }
 }

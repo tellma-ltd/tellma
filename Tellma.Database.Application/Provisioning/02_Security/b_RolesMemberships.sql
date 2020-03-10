@@ -26,7 +26,7 @@ BEGIN
 	;
 
 	INSERT INTO @Permissions([Index], [HeaderIndex],
-	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
+	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'PostingState', N'All'))
 		[Action],	[Criteria],			[View]) VALUES
 	(0,0,N'All',	NULL,				N'all'),
 	(0,1,N'Read',	NULL,				N'all'),

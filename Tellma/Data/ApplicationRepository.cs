@@ -3948,11 +3948,18 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Lines__UnsignAndRefresh)}]";
 
-                // Execute                    
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                // Execute     
+                if (returnIds)
                 {
-                    result.Add(reader.GetInt32(0));
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(reader.GetInt32(0));
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
 
@@ -4004,8 +4011,6 @@ namespace Tellma.Data
             // Execute                    
             await cmd.ExecuteNonQueryAsync();
         }
-
-        // TODO: deal with the SPs below
 
         public async Task<List<string>> Documents__Delete(IEnumerable<int> ids)
         {
@@ -4072,11 +4077,39 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents_Close(List<int> ids, bool isActive)
+        // Posting State Management
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(string definitionId, List<int> ids, int top)
         {
-            // TODO
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Post)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task Documents__Post(List<int> ids)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -4086,21 +4119,44 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@IsActive", isActive);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents_Close)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Post)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task Documents_Open(List<int> ids, bool isActive)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(string definitionId, List<int> ids, int top)
         {
-            // TODO
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Unpost)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task Documents__Unpost(List<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -4110,11 +4166,106 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@IsActive", isActive);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents_Open)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Unpost)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(string definitionId, List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Cancel)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task Documents__Cancel(List<int> ids)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Cancel)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(string definitionId, List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Uncancel)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task Documents__Uncancel(List<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Uncancel)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
