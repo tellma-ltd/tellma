@@ -3,12 +3,13 @@
 IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Users
 	([Index],	[Name],				[Name2],				[Email]) VALUES
-	(0,			N'Jiad Akra',		N'جياد عكره',			N'jiad.akra@gmail.com'),
-	(1,			N'elAmin alTayyib',	N'الأمين الطيب',			N'amtaam@gmail.com'),
-	(2,			N'Mohamad Akra',	N'محمد عكره',			N'mohamad.akra@banan-it.com'),
+	(0,			N'Jiad Akra',		N'جياد عكره',			N'jiad.akra@banan-it.com'),
+	(1,			N'elAmin alTayyib',	N'الأمين الطيب',			N'elamin.altayeb@ebanan.com'),
+--	(2,			N'Mohamad Akra',	N'محمد عكره',			N'mohamad.akra@banan-it.com'),
 	(3,			N'Ahmad Abdussalam',N'أحمد عبد السلام',		N'Elhelalaby1@gmail.com'),
 	(4,			N'Alaeldin Ismail',	N'علاء الدين اسماعيل',	N'alaeldin.ismail@ebanan.com'),
 	(5,			N'Omer al-Samani',	N'عمر السماني',			N'omer.alsamani@ebanan.com');
+
 IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Users
 	([Index],	[Name],					[Email]) VALUES
@@ -50,13 +51,15 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
 
+
+DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 EXEC [dal].[Users__Save]
 	@Entities = @Users
 
 DECLARE @Jiad_akra INT, @amtaam INT, @mohamad_akra INT, @aasalam INT, @alaeldin INT, @omer INT;
-SELECT @Jiad_akra = [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@gmail.com';
-SELECT @amtaam = [Id] FROM dbo.Users WHERE [Email] = N'amtaam@gmail.com';
-SELECT @mohamad_akra = [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@banan-it.com';
+SELECT @Jiad_akra = [Id] FROM dbo.Users WHERE [Email] = N'jiad.akra@banan-it.com';
+SELECT @amtaam = [Id] FROM dbo.Users WHERE [Email] = N'elamin.altayeb@ebanan.com';
+SELECT @mohamad_akra = [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@tellma.com';
 SELECT @aasalam = [Id] FROM dbo.Users WHERE [Email] = N'Elhelalaby1@gmail.com';
 SELECT @alaeldin = [Id] FROM dbo.Users WHERE [Email] = N'alaeldin.ismail@ebanan.com';
 SELECT @omer = [Id] FROM dbo.Users WHERE [Email] = N'omer.alsamani@ebanan.com';

@@ -189,6 +189,7 @@ INSERT INTO @EntryTypes ([Index], [IsAssignable], [ParentIndex], [Code], [Name])
 SELECT [Index], 1-[IsAbstract], (SELECT [Index] FROM @ET WHERE [Node] = ET.[Node].GetAncestor(1)) AS ParentIndex, [Code], [Name]
 FROM @ET ET
 
+DELETE FROM @EntryTypes WHERE [Code] IN (SELECT [Code] FROM dbo.EntryTypes);
 EXEC [api].[EntryTypes__Save]
 	@Entities = @EntryTypes,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

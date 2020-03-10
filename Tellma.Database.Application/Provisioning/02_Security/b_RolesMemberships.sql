@@ -32,16 +32,16 @@ BEGIN
 	(0,1,N'Read',	NULL,				N'all'),
 	(0,2,N'Read',	NULL,				N'all'),
 	(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
-	(1,3,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+	(1,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
 										N'documents/cash-payment-vouchers'),
-	(2,3,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+	(2,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
 										N'documents/cash-receipt-vouchers'),
 	(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
 	(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
 	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers'),
-	(0,5,N'Update',	N'Agent/UserId = Me or (Agent/UserId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+	(0,5,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
 										N'documents/cash-payment-vouchers'),
-	(1,5,N'All',	N'Lines/Entries[0]/Agent/UserId = Me',
+	(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
 										N'documents/cash-receipt-vouchers')
 	 ;
 END
@@ -157,6 +157,9 @@ BEGIN
 	(5,				0,		N'all',									N'Read');
 END
 
+DELETE FROM @Roles WHERE [Name] IN (SELECT [Name] FROM dbo.Roles);
+DELETE FROM @Members WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
+DELETE FROM @Permissions WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
 EXEC dal.Roles__Save
 	@Entities = @Roles,
 	@Members = @Members,

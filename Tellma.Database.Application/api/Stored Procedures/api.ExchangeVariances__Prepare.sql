@@ -32,12 +32,16 @@ BEGIN
 		AND [AccountTypeId] IN (SELECT [Id] FROM ExchangeVarianceAccountTypes)
 	),
 	ExchangeVarianceEntries AS (
-		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],
-		[AccountId], [AgentId], [ResourceId], -SUM(E.[AlgebraicValue]) AS ValueBalance, SUM(E.[AlgebraicMonetaryValue]) AS FXBalance
-		FROM [rpt].[Entries](NULL, @DocumentDate) E
+		SELECT ROW_NUMBER() OVER (ORDER BY E.[AccountId]) AS [Index],
+		E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId], -SUM(E.[AlgebraicValue]) AS ValueBalance, SUM(E.[AlgebraicMonetaryValue]) AS FXBalance
+		FROM [map].[DetailsEntries]() E
+		JOIN dbo.Lines L ON E.LineId = L.Id
+		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
-		GROUP BY [AccountId], [AgentId], [ResourceId]
+		AND L.[State] = 4 AND D.[PostingState] = 1
+		AND D.[DocumentDate] <= @DocumentDate
+		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
 		HAVING SUM(E.[AlgebraicValue]) * @Rate <> SUM(E.[AlgebraicMonetaryValue])
 	),
 	GainLossEntry AS (

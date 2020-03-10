@@ -181,7 +181,8 @@ BEGIN
 			[IsAssignable],  [IsCurrent], [IsResourceClassification], [IsReal],[IsPersonal],
 			(SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = RC.EntryTypeParentCode), [Description]
 	FROM @AT RC;
-		
+
+	DELETE FROM @AccountTypes WHERE [Code] IN (SELECT [Code] FROM dbo.AccountTypes);		
 	EXEC [api].[AccountTypes__Save]
 		@Entities = @AccountTypes,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

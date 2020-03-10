@@ -10,4 +10,4 @@ BEGIN RETURN
 			@Prefix + 
 			REPLICATE(N'0', @CodeWidth - 1 - FLOOR(LOG10(@SerialNumber))) +
 			CAST(@SerialNumber AS NVARCHAR(30))
-END
+END;

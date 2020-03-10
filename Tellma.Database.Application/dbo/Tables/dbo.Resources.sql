@@ -28,6 +28,13 @@ CREATE TABLE [dbo].[Resources] (
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
+	-- For PPE
+	[CostObjectId]					INT					CONSTRAINT [FK_Resources__CostObjectId] REFERENCES dbo.Agents([Id]),
+	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Resources__ResponsibilityCenterId] REFERENCES dbo.ResponsibilityCenters([Id]),
+	[ResidualMonetaryValue]			Decimal (19,4),
+	ResidualValue					Decimal (19,4),
+	-- For inventory
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration

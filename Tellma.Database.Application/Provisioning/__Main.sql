@@ -7,6 +7,7 @@
 	DECLARE @SecondaryLanguageId NVARCHAR(255)		= '$(SecondaryLanguageId)'; --N'en';
 	DECLARE @TernaryLanguageId NVARCHAR(255)		= '$(TernaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
+	DECLARE @ProvisionData NVARCHAR(255)			= '$(ProvisionData)'; -- 1 or 0
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @ChartOfAccounts NVARCHAR(255)			= NULL; --'$(ChartOfAccounts)';
@@ -14,11 +15,13 @@
 	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
+IF @ProvisionData = N'0' RETURN;
 
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
 :r .\00_Common\b_FunctionalCurrency.sql
 :r .\00_Common\c_Settings.sql
+
 :r .\00_Common\d_EntryTypes.sql
 :r .\00_Common\e101_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
@@ -83,6 +86,16 @@ END
 --:r .\07_Entries\101\101c_petty-cash-vouchers.sql
 :r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 
+DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (
+	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',
+	N'281dba1b-7e3d-4497-b396-877ba91087c8',
+	N'5aeec2a2-3008-4c62-8559-16896c17cc3f',
+	N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',
+	N'aa5c998a-bc0b-49f1-8e03-80775cc4c15a',
+	N'30d3f1d2-d168-4414-a933-305e99a71269',
+	N'9ce0a0e3-772d-406a-8aef-46684b757eac'
+); -- ON DELETE CASCADE
+
 INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], [OrderBy], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
 (N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/DocumentDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 12',NULL,0,1,0),
 (N'281dba1b-7e3d-4497-b396-877ba91087c8',N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',NULL,0,1,0),
@@ -122,16 +135,19 @@ SET IDENTITY_INSERT dbo.ReportMeasureDefinitions OFF
 
 SET IDENTITY_INSERT dbo.ReportParameterDefinitions ON
 INSERT INTO dbo.ReportParameterDefinitions([Id], [Index], ReportDefinitionId, [Key], [Label], Visibility) VALUES
-(1,	0	,N'281dba1b-7e3d-4497-b396-877ba91087c8'	,N'Currency' ,NULL,N'Required'),
-(2,	0	,N'5aeec2a2-3008-4c62-8559-16896c17cc3f'	,N'Date' ,NULL,N'Optional'),
-(3,	0	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'toDate' ,NULL,N'Optional'),
-(4,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,NULL,N'Optional'),
-(5,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'ToDate' ,N'To Date',N'Optional'),
-(6,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,N'From Date',N'Optional'),
-(7,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'DocumentState' ,N'Document State',N'Optional'),
-(8,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'LineState' ,N'Line State',N'Optional'),
-(9,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'Currency' ,NULL,N'Optional'),
-(10,1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff',	N'AccountId' ,NULL,N'Optional');
+(1,	0	,N'281dba1b-7e3d-4497-b396-877ba91087c8',	N'Currency' ,NULL,N'Required'),
+
+(2,	0	,N'5aeec2a2-3008-4c62-8559-16896c17cc3f',	N'Date' ,NULL,N'Optional'),
+
+(3,	0	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'fromDate' ,N'From Date',N'Optional'),
+(4,	1	,N'0c46cb52-739f-4308-82dd-7cd578bb04ff'	,N'toDate' ,N'To Date',N'Optional'),
+
+(5,	0	,N'9ce0a0e3-772d-406a-8aef-46684b757eac'	,N'fromDate' ,N'From Date',N'Optional'),
+(6,	1	,N'9ce0a0e3-772d-406a-8aef-46684b757eac'	,N'ToDate' ,N'To Date',N'Optional'),
+(7,	2	,N'9ce0a0e3-772d-406a-8aef-46684b757eac'	,N'DocumentState' ,N'Document State',N'Optional'),
+(8,	3	,N'9ce0a0e3-772d-406a-8aef-46684b757eac'	,N'LineState' ,N'Line State',N'Optional'),
+(9,	4	,N'9ce0a0e3-772d-406a-8aef-46684b757eac'	,N'Currency' ,NULL,N'Optional'),
+(10,5	,N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'AccountId' ,NULL,N'Optional');
 SET IDENTITY_INSERT dbo.ReportParameterDefinitions OFF
 
 SET IDENTITY_INSERT dbo.ReportSelectDefinitions ON

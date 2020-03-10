@@ -161,20 +161,9 @@
     <Build Include="dbo\User Defined Types\dbo.EntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
     <Build Include="dbo\Tables\dbo.LegacyClassifications.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ConsumablesServices.sql" />
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
     <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
-    <Build Include="dbo\Views\dbo.InventoriesFact.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_NegativeInventories.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDetails.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDeclaration.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_AssetRegister.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccountBalances.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__EmploymentIncomeTax.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__WitholdingTaxOnPayment.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_Paysheet.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccount__Statement.sql" />
     <Build Include="dbo\Tables\dbo.IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Functions\dbo.fi_IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Tables\dbo.IfrsConcepts.sql" />
@@ -190,10 +179,7 @@
     <Build Include="dbo\User Defined Types\dbo.IdWithStateList.sql" />
     <Build Include="dbo\Tables\dbo.Plans.sql" />
     <Build Include="dbo\Tables\dbo.Lookups.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_Production__Actual_vs_Planned.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrderLines__Price.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrder__Discount.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
     <Build Include="api\Stored Procedures\api.IfrsDisclosureDetails__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
@@ -221,15 +207,7 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__Sign.sql" />
     <Build Include="Security\rpt.sql" />
-    <Build Include="rpt\Functions\rpt.MeasurementUnits__Select.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Ifrs_110000.sql" />
-    <Build Include="rpt\Functions\rpt.Documents.sql" />
-    <Build Include="rpt\Functions\rpt.Documents__Signatures.sql" />
-    <Build Include="bll\Functions\bll.fn_Line_Criteria__Satisfied.sql" />
-    <Build Include="rpt\Functions\rpt.Lines_ToState_Roles__Missing.sql" />
-    <Build Include="rpt\Functions\rpt.Lines_ToState_Roles__MissingConditional.sql" />
-    <Build Include="rpt\Functions\rpt.LinesWithNoDefinedWorkflows.sql" />
-    <Build Include="rpt\Functions\rpt.Resources.sql" />
     <Build Include="dal\Stored Procedures\dal.Resources__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Resources__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Resources__Save.sql" />
@@ -356,14 +334,11 @@
     <Build Include="dal\Stored Procedures\dal.LookupDefinitions__UpdateState.sql" />
     <Build Include="Mapping\LookupDefinitions.sql" />
     <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
-    <Build Include="rpt\Functions\rpt.Account__Statement.sql" />
-    <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
     <Build Include="api\Stored Procedures\api.Lines__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Close.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Post.sql" />
-    <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_Lines__Ready.sql" />
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
@@ -527,8 +502,6 @@
     <Build Include="Mapping\ReportRowDefinitions.sql" />
     <Build Include="Mapping\ReportColumnDefinitions.sql" />
     <Build Include="Mapping\ReportMeasureDefinitions.sql" />
-    <Build Include="rpt\Functions\rpt.Entries.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.ERCA__VAT_PurchasesSummary.sql" />
     <Build Include="dbo\Tables\dbo.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceUnitList.sql" />
     <Build Include="dbo\Tables\dbo.Registers.sql" />
@@ -565,6 +538,7 @@
     <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
     <Build Include="Mapping\LineDefinitionEntries.sql" />
     <Build Include="dbo\Stored Procedures\dbo.AssetsDepreciation__Populate.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.Production__Actual_vs_Planned.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -603,6 +577,7 @@
     <Build Include="dal\Stored Procedures\dal.Documents_PostingState__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_services-expenses.sql" />
+    <None Include="101.AzureBananSD.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

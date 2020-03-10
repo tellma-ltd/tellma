@@ -39,6 +39,7 @@ BEGIN
 		(N'SAR', N'Riyal',	N'ريال',	N'Saudi Riyal',	N'ريال سعودي',		2);
 	END
 
+	DELETE FROM @FunctionalCurrencies WHERE [Id] IN (SELECT [Id] FROM dbo.[Currencies])
 	EXEC [api].Currencies__Save
 		@Entities = @FunctionalCurrencies,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
