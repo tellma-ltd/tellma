@@ -254,6 +254,101 @@ namespace Tellma.Controllers
             , _logger);
         }
 
+        [HttpPut("post")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Post([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdatePostingState(ids, args, nameof(Post));
+        }
+
+        [HttpPut("unpost")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Unpost([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdatePostingState(ids, args, nameof(Unpost));
+        }
+
+        [HttpPut("cancel")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Cancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdatePostingState(ids, args, nameof(Cancel));
+        }
+
+        [HttpPut("uncancel")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Uncancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdatePostingState(ids, args, nameof(Uncancel));
+        }
+
+        private async Task<ActionResult<EntitiesResponse<Document>>> UpdatePostingState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Parse parameters
+                var selectExp = SelectExpression.Parse(args.Select);
+                var expandExp = ExpandExpression.Parse(args.Expand);
+                var returnEntities = args.ReturnEntities ?? false;
+                var idsArray = ids.ToArray();
+
+                // Check user permissions
+                await CheckActionPermissions("PostingState", idsArray);
+
+                // C# Validation 
+                // TODO
+
+                // Transaction
+                using var trx = ControllerUtilities.CreateTransaction();
+
+                // Validate
+                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+                var errors = transition switch
+                {
+                    nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId, ids, top: remainingErrorCount),
+                    nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId, ids, top: remainingErrorCount),
+                    nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId, ids, top: remainingErrorCount),
+                    nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId, ids, top: remainingErrorCount),
+                    _ => throw new BadRequestException($"Unknown transition {transition}"),
+                };
+
+                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+                if (!ModelState.IsValid)
+                {
+                    throw new UnprocessableEntityException(ModelState);
+                }
+
+                // Update state
+                switch (transition)
+                {
+                    case nameof(Post):
+                        await _repo.Documents__Post(ids);
+                        break;
+                    case nameof(Unpost):
+                        await _repo.Documents__Unpost(ids);
+                        break;
+                    case nameof(Cancel):
+                        await _repo.Documents__Cancel(ids);
+                        break;
+                    case nameof(Uncancel):
+                        await _repo.Documents__Uncancel(ids);
+                        break;
+                    default:
+                        throw new BadRequestException($"Unknown transition {transition}");
+                }
+
+                if (returnEntities)
+                {
+                    var response = await GetByIdListAsync(ids.ToArray(), expandExp, selectExp);
+
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
+                }
+            }
+            , _logger);
+        }
+
         protected override IRepository GetRepository()
         {
             string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} '{DefinitionId}'";
@@ -666,7 +761,7 @@ namespace Tellma.Controllers
                 .Data?.Documents? // Get document definitions for client from the cache
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
                 new List<(string, string)>(); // Avoiding null reference exception at all cost
-            
+
             return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
         }
 

@@ -60,28 +60,26 @@ namespace Tellma.Entities
         [Display(Name = "State")]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
-            DocState.Draft,
-            DocState.Void,
-            DocState.Requested,
-            DocState.Rejected,
-            DocState.Authorized,
-            DocState.Failed,
-            DocState.Completed,
-            DocState.Invalid,
-            DocState.Finalized,
-            DocState.Closed
+            LineState.Draft,
+            LineState.Void,
+            LineState.Requested,
+            LineState.Rejected,
+            LineState.Authorized,
+            LineState.Failed,
+            LineState.Completed,
+            LineState.Invalid,
+            LineState.Finalized
         },
             new string[] {
-            DocStateName.Draft,
-            DocStateName.Void,
-            DocStateName.Requested,
-            DocStateName.Rejected,
-            DocStateName.Authorized,
-            DocStateName.Failed,
-            DocStateName.Completed,
-            DocStateName.Invalid,
-            DocStateName.Finalized,
-            DocStateName.Closed
+            LineStateName.Draft,
+            LineStateName.Void,
+            LineStateName.Requested,
+            LineStateName.Rejected,
+            LineStateName.Authorized,
+            LineStateName.Failed,
+            LineStateName.Completed,
+            LineStateName.Invalid,
+            LineStateName.Finalized
         })]
         public short? State { get; set; }
 

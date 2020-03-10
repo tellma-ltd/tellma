@@ -11,8 +11,6 @@ import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { APPLICATION_VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
-import { metadata_LegacyType } from '~/app/data/entities/legacy-type';
-import { metadata_Account } from '~/app/data/entities/account';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { metadata_Document } from '~/app/data/entities/document';
@@ -329,6 +327,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
               Read: { supportsCriteria: true, supportsMask: true },
               Update: { supportsCriteria: true, supportsMask: true },
               Delete: { supportsCriteria: true, supportsMask: false },
+              PostingState: { supportsCriteria: true, supportsMask: false }
             }
           };
         }

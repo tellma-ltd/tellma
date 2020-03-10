@@ -4,18 +4,18 @@ import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/dat
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
+import { DocumentForSave, Document, serialNumber, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
 } from '~/app/data/dto/definitions-for-client';
-import { LineForSave, Line } from '~/app/data/entities/line';
+import { LineForSave, Line, LineState } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, FriendlyError } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError } from 'rxjs';
+import { of, throwError, Observable } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -26,6 +26,8 @@ import { MeasurementUnit } from '~/app/data/entities/measurement-unit';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { ActionArguments } from '~/app/data/action-arguments';
+import { EntitiesResponse } from '~/app/data/dto/get-response';
 
 interface DocumentEventBase {
   time: string;
@@ -273,6 +275,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete clone.ModifiedById;
       delete clone.SerialNumber;
       delete clone.State;
+      delete clone.PostingState;
+      delete clone.PostingStateAt;
 
       return clone;
     } else {
@@ -417,6 +421,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           addToWorkspace(res, this.workspace);
           this.details.state.extras = res.Extras;
           this.handleFreshExtras(res.Extras);
+        }),
+        catchError(friendlyError => {
+          this.details.displayModalError(formatServerError(friendlyError));
+          return of(null);
         })
       ).subscribe({ error: this.details.handleActionError });
 
@@ -1143,18 +1151,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!signature.SignedById && signature.SignedById === this.ws.userSettings.UserId;
   }
 
-  public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
-    if (!model || !model.Id) {
-      return false;
-    }
-
-    if (model.State === state) {
-      return true;
-    }
-
-    return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
-  }
-
   public positiveActionDisplay(toState: number): string {
     // Used for button
     return this.actionDisplay(Math.abs(toState));
@@ -1606,6 +1602,72 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get actionsDropdownPlacement() {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
+
+  // The state chart
+
+  public isState(state: LineState | DocumentState, model: Document): boolean {
+    if (!model) {
+      return false;
+    }
+
+    // New unsaved docs have a null state
+    return (model.State || 0) === state && model.PostingState !== 1;
+  }
+
+  public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
+    if (!model || !model.Id) {
+      return false;
+    }
+
+    if (model.State === state) {
+      return true;
+    }
+
+    return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
+  }
+
+  // Posting State
+
+  public onPostingState(
+    doc: Document,
+    fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
+    fn([doc.Id], {
+      returnEntities: true,
+      expand: this.expand
+    }, { includeRequiredSignatures: true }).pipe(
+      tap(res => {
+        addToWorkspace(res, this.workspace);
+        this.details.state.extras = res.Extras;
+        this.handleFreshExtras(res.Extras);
+      }),
+      catchError((friendlyError: FriendlyError) => {
+        this.details.displayModalError(formatServerError(friendlyError));
+        return of(null);
+      })
+    ).subscribe();
+  }
+
+  public onPost(doc: Document): void {
+    this.onPostingState(doc, this.documentsApi.post);
+  }
+
+  public onUnpost(doc: Document): void {
+    this.onPostingState(doc, this.documentsApi.unpost);
+  }
+
+  public onCancel(doc: Document): void {
+    this.onPostingState(doc, this.documentsApi.cancel);
+  }
+
+  public onUncancel(doc: Document): void {
+    this.onPostingState(doc, this.documentsApi.uncancel);
+  }
+
+  public hasPermissionToUpdateState(doc: Document): boolean {
+    return this.ws.canDo(this.view, 'PostingState', doc.CreatedById);
+  }
+
+
 }
 
 /**

@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Uncancel]
+	@DefinitionId NVARCHAR(50),
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

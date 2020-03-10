@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Documents__Cancel]
+	@DefinitionId NVARCHAR(50),
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -6,6 +7,7 @@ AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Cancel]
+		@DefinitionId = @DefinitionId,
 		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
