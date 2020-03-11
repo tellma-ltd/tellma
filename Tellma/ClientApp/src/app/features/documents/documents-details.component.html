@@ -3,7 +3,8 @@
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
     [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
-    [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras">
+    [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
+    [toolbarTemplate]="toolbar">
 
 </t-details>
 
@@ -18,30 +19,49 @@
     <span>{{ formatSerial(model?.SerialNumber) }}</span>
 </ng-template>
 
+<!-- Extra toolbar buttons -->
+<ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
+    <!-- Unpost -->
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+        container="body" *ngIf="!isEdit && showUnpost(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="onUnpost(model)"
+            [disabled]="!hasPermissionToUpdateState(model)">
+            <fa-icon icon="undo"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Unpost" | translate }}</span>
+        </button>
+    </div>
+    <!-- Cancel -->
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+        container="body" *ngIf="!isEdit && showCancel(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-danger t-toolbar-button" (click)="onCancel(model)"
+            [disabled]="!hasPermissionToUpdateState(model)">
+            <fa-icon icon="times"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Cancel" | translate }}</span>
+        </button>
+    </div>
+    <!-- Post -->
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+        container="body" *ngIf="!isEdit && showPost(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-success t-toolbar-button" (click)="onPost(model)"
+            [disabled]="!hasPermissionToUpdateState(model)">
+            <fa-icon icon="check"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Post" | translate }}</span>
+        </button>
+    </div>
+    <!-- Uncancel -->
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+        container="body" *ngIf="!isEdit && showUncancel(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
+            (click)="!isEdit && onUncancel(model)"
+            [disabled]="!hasPermissionToUpdateState(model)">
+            <fa-icon icon="undo"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
+        </button>
+    </div>
+</ng-template>
+
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
-    <div class="w-100 t-document-header d-flex justify-content-between">
-        <div class="d-flex align-items-stretch p-1">
-            <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" style="min-width: 90px;"
-                (click)="onUnpost(model)" *ngIf="!isEdit && canUnpost(model, extras?.RequiredSignatures)">
-                <fa-icon icon="undo"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Unpost" | translate }}</span>
-            </button>
-            <button class="btn btn-sm btn-danger t-toolbar-button" style="min-width: 90px;" (click)="onCancel(model)"
-                *ngIf="!isEdit && canCancel(model, extras?.RequiredSignatures)">
-                <fa-icon icon="times"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Cancel" | translate }}</span>
-            </button>
-            <button class="btn btn-sm btn-success t-toolbar-button" style="min-width: 90px;" (click)="onPost(model)"
-                *ngIf="!isEdit && canPost(model, extras?.RequiredSignatures)">
-                <fa-icon icon="check"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Post" | translate }}</span>
-            </button>
-            <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" style="min-width: 90px;"
-                (click)="!isEdit && onUncancel(model)" *ngIf="canUncancel(model, extras?.RequiredSignatures)">
-                <fa-icon icon="undo"></fa-icon>
-                <span>&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
-            </button>
-        </div>
+    <div class="w-100 t-document-header d-flex justify-content-end">
         <!-- Positive state in wide screen -->
         <div>
             <div class="t-flow-chart small d-none d-lg-block" *ngIf="!showLoneState(model)">

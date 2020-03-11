@@ -44,7 +44,15 @@ interface DocumentCreationEvent extends DocumentEventBase {
   type: 'creation';
 }
 
-type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent;
+interface DocumentPostingEvent extends DocumentEventBase {
+  type: 'posting';
+}
+
+interface DocumentCancellationEvent extends DocumentEventBase {
+  type: 'cancellation';
+}
+
+type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentPostingEvent | DocumentCancellationEvent;
 
 @Component({
   selector: 't-documents-details',
@@ -378,6 +386,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!model.CreatedById) {
         mappedHistory.push({ type: 'creation', userId: model.CreatedById, time: model.CreatedAt });
       }
+
+      // if (!!model.PostingStateById && !!model.PostingStateAt) {
+      //   if (model.PostingState === 1) {
+      //     mappedHistory.push({ type: 'posting', userId: model.PostingStateById, time: model.PostingStateAt });
+      //   }
+      //   if (model.PostingState === -1) {
+      //     mappedHistory.push({ type: 'cancellation', userId: model.PostingStateById, time: model.PostingStateAt });
+      //   }
+      // }
 
       const sortedHistory: DocumentEvent[] = mappedHistory.sort((a, b) => {
         return a.time < b.time ? 1 :
@@ -1671,22 +1688,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.canDo(this.view, 'PostingState', doc.CreatedById);
   }
 
-  public canPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+  public showPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === 0 &&
       (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State === 4 || e.State < 0));
   }
 
-  public canUnpost(doc: Document, _: RequiredSignature[]): boolean {
+  public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === 1;
   }
 
-  public canCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === 0 &&
       (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
   }
 
-  public canUncancel(doc: Document, _: RequiredSignature[]): boolean {
+  public showUncancel(doc: Document, _: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === -1;
+  }
+
+  public postingStateTooltip(doc: Document): string {
+    return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 }
 
