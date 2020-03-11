@@ -542,6 +542,7 @@
     <Build Include="dal\Stored Procedures\dal.Documents__Unpost.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Uncancel.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Production__Actual_vs_Planned.sql" />
+    <Build Include="Mapping\DocumentDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

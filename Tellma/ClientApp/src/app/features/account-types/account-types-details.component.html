@@ -55,7 +55,7 @@
 
   <!-- Code -->
   <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <div class="text-truncate" *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
+    <span *ngIf="!isEdit">{{model?.Code}}</span>
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required></t-text-editor>
   </t-form-group>
 

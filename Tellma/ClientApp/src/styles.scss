@@ -56,15 +56,18 @@ a {
 .navbar-brand {
   margin-right: 0;
 }
+.breadcrumb {
+  padding: 0.35rem 0.6rem;
+}
 
 .breadcrumb-item {
   font-size: 1.2rem;
-  margin: -0.4rem;
+  // margin: -0.4rem;
 }
 
 .breadcrumb-item + .breadcrumb-item {
-  padding-left: 0.8rem;
-  padding-right: 0.8rem;
+  padding-left: 0rem;
+  padding-right: 0rem;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {

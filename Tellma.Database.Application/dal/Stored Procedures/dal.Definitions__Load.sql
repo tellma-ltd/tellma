@@ -22,7 +22,7 @@ SELECT * FROM [map].[ReportColumnDefinitions]() ORDER BY [Index];
 SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index];
 
 -- Get the document definitions
-SELECT * FROM [dbo].[DocumentDefinitions]
+SELECT * FROM [map].[DocumentDefinitions]();
 SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index];
 
 -- Get the line definitions
