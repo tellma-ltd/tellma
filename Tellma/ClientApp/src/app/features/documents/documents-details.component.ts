@@ -44,7 +44,15 @@ interface DocumentCreationEvent extends DocumentEventBase {
   type: 'creation';
 }
 
-type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent;
+interface DocumentPostingEvent extends DocumentEventBase {
+  type: 'posting';
+}
+
+interface DocumentCancellationEvent extends DocumentEventBase {
+  type: 'cancellation';
+}
+
+type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentPostingEvent | DocumentCancellationEvent;
 
 @Component({
   selector: 't-documents-details',
@@ -378,6 +386,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!model.CreatedById) {
         mappedHistory.push({ type: 'creation', userId: model.CreatedById, time: model.CreatedAt });
       }
+
+      // if (!!model.PostingStateById && !!model.PostingStateAt) {
+      //   if (model.PostingState === 1) {
+      //     mappedHistory.push({ type: 'posting', userId: model.PostingStateById, time: model.PostingStateAt });
+      //   }
+      //   if (model.PostingState === -1) {
+      //     mappedHistory.push({ type: 'cancellation', userId: model.PostingStateById, time: model.PostingStateAt });
+      //   }
+      // }
 
       const sortedHistory: DocumentEvent[] = mappedHistory.sort((a, b) => {
         return a.time < b.time ? 1 :
@@ -1611,7 +1628,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     // New unsaved docs have a null state
-    return (model.State || 0) === state && model.PostingState !== 1;
+    return (model.State || 0) === state && model.PostingState !== 1 && model.PostingState !== -1;
   }
 
   public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
@@ -1624,6 +1641,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
+  }
+
+  public showLoneState(model: Document) {
+    return !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
   }
 
   // Posting State
@@ -1667,7 +1688,27 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.canDo(this.view, 'PostingState', doc.CreatedById);
   }
 
+  public showPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 0 &&
+      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State === 4 || e.State < 0));
+  }
 
+  public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 1;
+  }
+
+  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === 0 &&
+      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
+  }
+
+  public showUncancel(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !!doc.Id && doc.PostingState === -1;
+  }
+
+  public postingStateTooltip(doc: Document): string {
+    return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
 }
 
 /**

@@ -6,7 +6,7 @@ BEGIN
 		@Ids = @Ids,
 		@PostingState = 0;
 
-	-- TODO: Update all lines that don't have a workflow to DRAFT
+	-- TODO: Update all lines that don't have a workflow to DRAFT and refresh document state
 
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]

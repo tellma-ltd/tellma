@@ -2,12 +2,16 @@
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,PostingState,State,Memo"
-  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeCanceled' | translate" inactiveFilter="PostingState ne -1"
-  [multiselectActions]="[
-          ]" [filterDefinition]="{
+  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeCanceled' | translate"
+  inactiveFilter="PostingState ne -1" [multiselectActions]="[
+                { template: post, action: onPost, showAction: showPost, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
+                { template: cancel, action: onCancel, showAction: showCancel, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
+                { template: unpost, action: onUnpost, showAction: showUnpost, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
+                { template: uncancel, action: onUncancel, showAction: showUncancel, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip }
+            ]" [filterDefinition]="{
             'CreatedBy' : [
-            { template: createdByMe, expression: 'CreatedById eq me'},
-            { template: assignedToMe, expression: 'AssigneeId eq me'}
+                { template: createdByMe, expression: 'CreatedById eq me'},
+                { template: assignedToMe, expression: 'AssigneeId eq me'}
             ],
             'PostingState' : [
                 { template: postingState_0, expression: 'PostingState eq 0'},
@@ -38,10 +42,13 @@
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
     <t-auto-cell collection="Document" [definition]="definitionId" path="" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Document" [definition]="definitionId" path="DocumentDate" [entity]="c[id]"></t-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <t-auto-cell collection="Document" [definition]="definitionId" path="DocumentDate" [entity]="c[id]"></t-auto-cell>
-    <t-auto-cell collection="Document" [definition]="definitionId" path="State" [entity]="c[id]"></t-auto-cell>
+    <div class="text-truncate flex-grow-1">
+      <t-auto-cell collection="Document" [definition]="definitionId" path="Memo" [entity]="c[id]"></t-auto-cell>
+    </div>
+    <t-auto-cell collection="Document" [definition]="definitionId" path="PostingState" [entity]="c[id]"></t-auto-cell>
   </div>
 </ng-template>
 
@@ -80,3 +87,9 @@
 <ng-template #postingState_0> {{ 'Document_PostingState_0' | translate }} </ng-template>
 <ng-template #postingState_minus_1> {{ 'Document_PostingState_minus_1' | translate }} </ng-template>
 <ng-template #postingState_1> {{ 'Document_PostingState_1' | translate }} </ng-template>
+
+
+<ng-template #post> {{ 'Post' | translate }} </ng-template>
+<ng-template #unpost> {{ 'Unpost' | translate }} </ng-template>
+<ng-template #cancel> {{ 'Cancel' | translate }} </ng-template>
+<ng-template #uncancel> {{ 'Uncancel' | translate }} </ng-template>

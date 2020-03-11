@@ -340,8 +340,6 @@ export class ApiService {
 
   public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
       assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
 
         const paramsArray = this.stringifyActionArguments(args);

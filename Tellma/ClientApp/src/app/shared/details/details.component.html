@@ -66,7 +66,8 @@
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">
                 <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                  [class.t-text-whitish]="isDark" ngbDropdownItem (click)="onAction(action)" [disabled]="!canAction(action)">
+                  [class.t-text-whitish]="isDark" ngbDropdownItem (click)="onAction(action)"
+                  [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
@@ -75,8 +76,8 @@
             <div *ngIf="showDelete" [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip"
               container="body">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                [class.t-text-whitish]="isDark" ngbDropdownItem (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
-                *ngIf="showDelete">
+                [class.t-text-whitish]="isDark" ngbDropdownItem (click)="modalService.open(deleteModal)"
+                [disabled]="!canDelete" *ngIf="showDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
@@ -90,6 +91,9 @@
             </div>
           </div>
         </div>
+        <ng-container
+          *ngTemplateOutlet="toolbarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+        </ng-container>
       </div>
 
       <!-- Edit Toolbar -->
@@ -107,6 +111,9 @@
           (click)="onCancel()">
           <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
         </button>
+        <ng-container
+          *ngTemplateOutlet="toolbarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+        </ng-container>
       </div>
 
       <div>
@@ -179,11 +186,13 @@
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
         <div class="border bg-white w-100 t-paper">
           <div class="border-bottom" *ngIf="documentHeaderTemplate">
-            <ng-container *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+            <ng-container
+              *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
             </ng-container>
           </div>
           <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
-            <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+            <ng-container
+              *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
             </ng-container>
 
             <!-- Errors -->
@@ -198,7 +207,8 @@
 
       <!-- Full screen content -->
       <ng-container *ngIf="showDocument && fullScreenLayout">
-        <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+        <ng-container
+          *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
         </ng-container>
       </ng-container>
 
@@ -220,7 +230,8 @@
     <!-- Sidebar -->
     <div *ngIf="showSidebar" class="t-sidebar bg-white">
       <div class="bg-white">
-        <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+        <ng-container
+          *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
         </ng-container>
       </div>
     </div>
