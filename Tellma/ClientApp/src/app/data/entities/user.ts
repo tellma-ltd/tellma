@@ -36,6 +36,7 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService, _: s
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
+    _settings = ws.settings;
     const companyLanguages = [ws.settings.PrimaryLanguageId];
     if (ws.settings.SecondaryLanguageId) {
       companyLanguages.push(ws.settings.SecondaryLanguageId);
@@ -43,7 +44,6 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService, _: s
     if (ws.settings.TernaryLanguageId) {
       companyLanguages.push(ws.settings.TernaryLanguageId);
     }
-    _settings = ws.settings;
     _cache = {
       collection: 'User',
       titleSingular: () => trx.instant('User'),

@@ -12,7 +12,7 @@ import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
-import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker } from '~/app/data/util';
+import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker, FriendlyError } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
@@ -276,6 +276,14 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return cloneId;
   }
 
+  private getAndCleanShowInEditMode(): boolean {
+    return false;
+
+    // const showInEditMode = this.state.showInEditMode;
+    // delete this.state.showInEditMode;
+    // return showInEditMode;
+  }
+
   private doFetch(): Observable<void> {
     // clear the errors before refreshing
     this.clearErrors();
@@ -285,6 +293,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
     // calculate some logical values
     const cloneId = this.getAndCleanCloneId();
+    const showInEditMode = this.getAndCleanShowInEditMode();
     const isCloning = !!cloneId;
     const isNewNotClone = this.isNew && !isCloning;
     const isCloneOfAvailableItem = isCloning && !!this.workspace.current[this.collection][cloneId];
@@ -357,7 +366,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
               // display the item in readonly if it's a screen
               // or in edit if it's a popup
               this.state.detailsStatus = DetailsStatus.loaded;
-              if (this.isPopupMode) {
+              if (this.isPopupMode || showInEditMode) {
                 this.onEdit();
               }
             }
@@ -452,10 +461,51 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return !!s.detailsId ? this.workspace.current[this.collection][s.detailsId] : null;
   }
 
+  /**
+   * Handles server errors for APIs that take an ID array as a parameter,
+   * the top 10 errors are simply displayed to the user in a modal
+   */
   public handleActionError = (friendlyError: any) => {
+    if (this.workspace.current.unauthorized) {
+      return;
+    }
+
+    const top = 10;
+    let errorMessage: string = friendlyError.error;
+    if (friendlyError.status === 422) {
+      const validationErrors = friendlyError.error as { [key: string]: string[] };
+      const keys = Object.keys(validationErrors);
+      const tracker: { [key: string]: true } = {};
+      for (const key of keys) {
+        for (const error of validationErrors[key]) {
+          tracker[error] = true; // To show distinct errors
+        }
+      }
+      const errors = Object.keys(tracker);
+      errorMessage = errors.slice(0, top || 10).join(', ');
+      if (errors.length > top) {
+        errorMessage += ', ...'; // To show that's not all
+      }
+    } else {
+      errorMessage = friendlyError.error as string;
+    }
+
+    this.displayModalError(errorMessage);
+  }
+
+  /**
+   * Handles server errors for save, if the error is 422 it distributes it
+   * on the entity that was saved and all its related weak entities, otherwise
+   * displays the error in a modal
+   */
+  private handleSaveError = (friendlyError: any) => {
+    if (this.workspace.current.unauthorized) {
+      return;
+    }
 
     // This handles 422 ModelState errors
     if (friendlyError.status === 422) {
+      console.log(friendlyError);
       this._unboundServerErrors = [];
       const serverErrors = applyServerErrors([this.activeModel], friendlyError.error);
       const keys = Object.keys(serverErrors);
@@ -735,7 +785,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
             }
           }
         },
-        (friendlyError) => this.handleActionError(friendlyError)
+        (friendlyError) => this.handleSaveError(friendlyError)
       );
     }
   }

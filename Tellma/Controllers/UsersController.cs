@@ -349,6 +349,27 @@ namespace Tellma.Controllers
             // Check user permissions
             await CheckActionPermissions("IsActive", idsArray);
 
+            // C# Validation
+            var userInfo = await _appRepo.GetUserInfoAsync();
+            var userId = userInfo.UserId.Value;
+            foreach (var (id, index) in ids.Select((id, index) => (id, index)))
+            {
+                if (id == userId)
+                {
+                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeactivateYourOwnUser"].Value);
+
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _appRepo.Users__Activate(ids, isActive);
@@ -642,10 +663,18 @@ namespace Tellma.Controllers
         {
             // Make sure the user is not deleting his/her own account
             var userInfo = await _appRepo.GetUserInfoAsync();
-            var index = ids.IndexOf(userInfo.UserId.Value);
-            if (index >= 0)
+            var userId = userInfo.UserId.Value;
+            foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
-                ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
+                if (id == userId)
+                {
+                    ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
+
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        break;
+                    }
+                }
             }
 
             // SQL validation

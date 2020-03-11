@@ -171,6 +171,10 @@
                             (click)="modalService.open(descModal)">
                             {{ 'Description' | translate }}
                         </button>
+                        <button type="button" *ngIf="showEditDefinition" class="dropdown-item btn-light" ngbDropdownItem
+                            (click)="onEdit()">
+                            {{ 'EditDefinition' | translate }}
+                        </button>
                     </div>
                 </div>
             </div>

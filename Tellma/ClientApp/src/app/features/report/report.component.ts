@@ -508,4 +508,16 @@ export class ReportComponent implements OnInit, OnDestroy {
   public get disableRefresh(): boolean {
     return !this.areAllRequiredParamsSpecified || this.state.disableFetch;
   }
+
+  public get showEditDefinition(): boolean {
+    return this.isScreenMode;
+  }
+
+  public onEdit(): void {
+    const params: Params = {
+      mode: 'edit'
+    };
+
+    this.router.navigate(['../../report-definitions', this.definitionId, params], { relativeTo: this.route });
+  }
 }

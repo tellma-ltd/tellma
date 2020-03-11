@@ -298,13 +298,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
           if (v === 'Unauthorized') {
             // this means the user can no longer access the admin console
-            // (1) Delete the workspace of the admin console
-            delete this.workspace.ws.admin;
 
-            // (2) triggers a refresh next time the user navigates to "my companies"
+            // (1) triggers a refresh next time the user navigates to "my companies"
             this.workspace.ws.companiesStatus = null;
 
-            // (3) Delete from local storage everything related
+            // (2) Delete from local storage everything related
             this.storage.removeItem(adminStorageKey(ADMIN_SETTINGS_PREFIX));
             this.storage.removeItem(adminVersionStorageKey(ADMIN_SETTINGS_PREFIX));
             this.storage.removeItem(adminStorageKey(ADMIN_PERMISSIONS_PREFIX));
@@ -312,8 +310,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(adminStorageKey(ADMIN_USER_SETTINGS_PREFIX));
             this.storage.removeItem(adminVersionStorageKey(ADMIN_USER_SETTINGS_PREFIX));
 
-            // (4) Take the user to unauthorized screen
-            this.router.navigate(['root', 'error', 'admin-unauthorized']);
+            // (3) Take the user to unauthorized screen and then delete the workspace
+            this.workspace.ws.admin.unauthorized = true;
+            this.router.navigate(['root', 'error', 'admin-unauthorized']).then(() => {
+              delete this.workspace.ws.admin;
+            });
           }
         }
 
@@ -345,13 +346,10 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
           if (v === 'Unauthorized') {
             // this means the user is no longer a member of this tenant
-            // (1) Delete the workspace of this tenant
-            delete this.workspace.ws.tenants[tenantId];
-
-            // (2) triggers a refresh next time the user navigates to "my companies"
+            // (1) triggers a refresh next time the user navigates to "my companies"
             this.workspace.ws.companiesStatus = null;
 
-            // (3) Delete from local storage everything related
+            // (2) Delete from local storage everything related
             this.storage.removeItem(storageKey(SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(storageKey(DEFINITIONS_PREFIX, tenantId));
@@ -361,8 +359,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(storageKey(USER_SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(USER_SETTINGS_PREFIX, tenantId));
 
-            // (4) Take the user to unauthorized screen
-            this.router.navigate(['root', 'error', 'unauthorized']);
+            // (3) Take the user to unauthorized screen and then clean the workspace
+            this.workspace.ws.tenants[tenantId].unauthorized = true;
+            this.router.navigate(['root', 'error', 'unauthorized']).then(() => {
+              delete this.workspace.ws.tenants[tenantId];
+            });
           }
         }
 

@@ -153,7 +153,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
+    private workspace: WorkspaceService, private translate: TranslateService,
     private route: ActivatedRoute, private modalService: NgbModal) {
     super();
   }

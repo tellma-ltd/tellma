@@ -154,9 +154,6 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
   </data>
-  <data name="ActionDidNotPassValidation" xml:space="preserve">
-    <value>الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل</value>
-  </data>
   <data name="Active" xml:space="preserve">
     <value>منشط</value>
   </data>

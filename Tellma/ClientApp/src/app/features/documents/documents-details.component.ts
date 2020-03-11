@@ -438,10 +438,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           addToWorkspace(res, this.workspace);
           this.details.state.extras = res.Extras;
           this.handleFreshExtras(res.Extras);
-        }),
-        catchError(friendlyError => {
-          this.details.displayModalError(formatServerError(friendlyError));
-          return of(null);
         })
       ).subscribe({ error: this.details.handleActionError });
 
@@ -797,7 +793,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }),
         catchError(friendlyError => {
           delete att.downloading;
-          this.details.displayModalError(formatServerError(friendlyError));
+          this.details.handleActionError(friendlyError);
           return of(null);
         }),
         finalize(() => {
@@ -1130,11 +1126,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         this.details.state.extras = res.Extras;
         this.handleFreshExtras(res.Extras);
       }),
-      catchError((friendlyError: FriendlyError) => {
-        this.details.displayModalError(formatServerError(friendlyError));
-        return of(null);
-      })
-    ).subscribe();
+    ).subscribe({ error: this.details.handleActionError });
   }
 
   public onUnsign(signature: RequiredSignature) {
@@ -1153,11 +1145,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               this.details.state.extras = res.Extras;
               this.handleFreshExtras(res.Extras);
             }),
-            catchError(friendlyError => {
-              this.details.displayModalError(formatServerError(friendlyError));
-              return of(null);
-            })
-          ).subscribe();
+          ).subscribe({ error: this.details.handleActionError });
         }
       },
       _ => { }
@@ -1663,12 +1651,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         addToWorkspace(res, this.workspace);
         this.details.state.extras = res.Extras;
         this.handleFreshExtras(res.Extras);
-      }),
-      catchError((friendlyError: FriendlyError) => {
-        this.details.displayModalError(formatServerError(friendlyError));
-        return of(null);
       })
-    ).subscribe();
+    ).subscribe({ error: this.details.handleActionError });
   }
 
   public onPost(doc: Document): void {
@@ -1722,31 +1706,4 @@ interface HashTable {
   undefined?: HashTable;
 
   lineIds?: number[];
-}
-
-/**
- * Sometimes the server returns 422 validation errors in a complicated structure,
- * but we still wish to show them as a single string this method parses the validation
- * errors and concatinates them together in a single
- */
-function formatServerError(friendlyError: FriendlyError, top: number = 10) {
-  let errorMessage: string = friendlyError.error;
-  if (friendlyError.status === 422) {
-    const validationErrors = friendlyError.error as { [key: string]: string[] };
-    const keys = Object.keys(validationErrors);
-    const tracker: { [key: string]: true } = {};
-    for (const key of keys) {
-      for (const error of validationErrors[key]) {
-        tracker[error] = true; // To show distinct errors
-      }
-    }
-    const errors = Object.keys(tracker);
-    errorMessage = errors.slice(0, top || 10).join(', ');
-    if (errors.length > top) {
-      errorMessage += ', ...'; // To show that's not all
-    }
-  } else {
-    errorMessage = friendlyError.error as string;
-  }
-  return errorMessage;
 }

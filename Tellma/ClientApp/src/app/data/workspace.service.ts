@@ -242,6 +242,11 @@ export class AdminWorkspace extends SpecificWorkspace {
   userSettingsVersion: string;
 
   /**
+   * Tells the UnsavedChangesGuard to step aside
+   */
+  unauthorized: boolean;
+
+  /**
    * Keeps the state of every master-details pair in screen mode
    */
   mdState: { [key: string]: MasterDetailsStore };
@@ -296,6 +301,11 @@ export class TenantWorkspace extends SpecificWorkspace {
 
   definitions: DefinitionsForClient;
   definitionsVersion: string;
+
+  /**
+   * Tells the UnsavedChangesGuard to step aside
+   */
+  unauthorized: boolean;
 
   /**
    * Keeps the state of every master-details pair in screen mode
