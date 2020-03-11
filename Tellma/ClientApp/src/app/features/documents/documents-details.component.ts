@@ -1398,7 +1398,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } else {
       // All line definitions other than 'ManualLine'
       const lineDef = this.ws.definitions.Lines[lineDefId];
-      return !!lineDef && !!lineDef.Columns ? lineDef.Columns.map((_, index) => index + '') : [];
+      const isMultiRS = this.ws.settings.IsMultiResponsibilityCenter;
+      return !!lineDef && !!lineDef.Columns ? lineDef.Columns
+        .filter(e => isMultiRS || e.ColumnName !== 'ResponsibilityCenterId') // Hide Responsibility Centers columns when there is only one
+        .map((_, index) => index + '') : [];
     }
   }
 

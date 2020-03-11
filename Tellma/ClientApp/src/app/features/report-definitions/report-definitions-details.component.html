@@ -605,21 +605,12 @@
                 <div class="p-2 px-3">
                     <span>{{ 'Preview' | translate }}</span>
                 </div>
-                <!-- <div class="t-flow-chart small" *ngIf="model.State !== 'Archived'">
-                    <div [class.active]="model.State === 'Draft'"><span>{{'Definition_State_Draft' | translate}}</span>
-                    </div>
-                    <div [class.active]="model.State === 'Deployed'">
-                        <span>{{'Definition_State_Deployed' | translate}}</span></div>
-                </div>
-                <div class="small active t-lone-state" *ngIf="model.State === 'Archived'">
-                    <span>{{'Definition_State_Archived' | translate}}</span>
-                </div> -->
             </div>
 
             <!-- Report Preview -->
             <div class="flex-grow-1">
                 <div class="col bg-light border shadow h-100">
-                    <t-report mode="preview" [previewDefinition]="getForClient(model)"
+                    <t-report class="h-100" mode="preview" [previewDefinition]="getForClient(model)"
                         [showChart]="model.DefaultsToChart">
 
                     </t-report>
