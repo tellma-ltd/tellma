@@ -19,9 +19,10 @@
 	-- For PPE
 	[CostObjectId]					INT,
 	[ExpenseEntryTypeId]			INT,
-	[ResponsibilityCenterId]		INT,
-	ResidualMonetaryValue			Decimal (19,4),
-	ResidualValue					Decimal (19,4),
+	[ExpenseCenterId]				INT,
+	[InvestmentCenterId]			INT,
+	[ResidualMonetaryValue]			Decimal (19,4),
+	[ResidualValue]					Decimal (19,4),
 	-- For inventory
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),

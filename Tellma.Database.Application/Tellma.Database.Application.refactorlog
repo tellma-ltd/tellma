@@ -236,4 +236,11 @@
     <Property Name="NewSchema" Value="rpt" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cac2f98e-c6ff-441f-85a9-3330a70157b3" ChangeDateTime="03/10/2020 13:57:52">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ExpenseCenterId]" />
+  </Operation>
 </Operations>

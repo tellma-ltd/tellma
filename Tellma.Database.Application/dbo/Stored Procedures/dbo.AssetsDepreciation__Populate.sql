@@ -36,10 +36,11 @@ AS
 			[DocumentIndex],ResourceId1,Quantity1,		UnitId1,AgentId0,			EntryTypeId0,				Time11,	Time21,
 			CurrencyId1,	ResponsibilityCenterId1,ResponsibilityCenterId0)
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
-			@DocumentIndex, [Id],		@UsedCapacity,	@UnitId, 4 AS 'CostObjectId',	16 AS 'ExpenseEntryTypeId',	@Time1,	@Time2, 
-			[CurrencyId],	@InvestmentCenterId,	1 AS 'ExpenseResponsibilityCenterId'
+			@DocumentIndex, [Id],		@UsedCapacity,	@UnitId, [CostObjectId], [ExpenseEntryTypeId],	@Time1,	@Time2, 
+			[CurrencyId],	[InvestmentCenterId],	1 AS 'ExpenseResponsibilityCenterId'
 	FROM dbo.Resources
-	WHERE AccountTypeId IN (SELECT [Id] FROM @PPETypeIds);
+	WHERE AccountTypeId IN (SELECT [Id] FROM @PPETypeIds)
+	AND [InvestmentCenterId] = @InvestmentCenterId;
 
 	WITH PPEBalancesPre AS (
 	SELECT

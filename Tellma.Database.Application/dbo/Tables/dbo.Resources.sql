@@ -31,9 +31,10 @@ CREATE TABLE [dbo].[Resources] (
 	-- For PPE
 	[CostObjectId]					INT					CONSTRAINT [FK_Resources__CostObjectId] REFERENCES dbo.Agents([Id]),
 	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
-	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Resources__ResponsibilityCenterId] REFERENCES dbo.ResponsibilityCenters([Id]),
+	[ExpenseCenterId]				INT					CONSTRAINT [FK_Resources__ExpenseCenterId] REFERENCES dbo.ResponsibilityCenters([Id]),
+	[InvestmentCenterId]			INT					CONSTRAINT [FK_Resources__InvestmentCenterId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[ResidualMonetaryValue]			Decimal (19,4),
-	ResidualValue					Decimal (19,4),
+	[ResidualValue]					Decimal (19,4),
 	-- For inventory
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
