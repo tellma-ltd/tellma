@@ -596,6 +596,10 @@
       <DefaultValue>en</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="ProvisionData">
+      <DefaultValue>1</DefaultValue>
+      <Value>$(SqlCmdVar__7)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="SecondaryLanguageId">
       <DefaultValue>ar</DefaultValue>
       <Value>$(SqlCmdVar__5)</Value>

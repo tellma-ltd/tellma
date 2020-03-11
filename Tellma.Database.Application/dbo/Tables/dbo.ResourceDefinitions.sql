@@ -21,6 +21,15 @@
 	-- [CustomsReferenceVisibility]		NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CustomsReferenceVisibility] IN (N'None', N'Optional', N'Required')),
 	-- [PreferredSupplierVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([PreferredSupplierVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
+
+	[CostObjectVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CostObjectVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExpenseEntryTypeId]				INT,
+	[ExpenseCenterId]					INT,
+	[InvestmentCenterId]				INT,
+	[ResidualMonetaryValue]				Decimal (19,4),
+	[ResidualValue]						Decimal (19,4),
+
+
 	[ReorderLevelVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[AvailableSinceLabel]				NVARCHAR (50),
