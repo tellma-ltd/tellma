@@ -35,7 +35,11 @@ import {
   faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder,
   faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt, faLock, faFile,
   faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileArchive, faFileImage,
-  faFileAudio, faFileVideo, faThumbsUp, faThumbsDown, faEllipsisV, faEllipsisH, faArchive, faLaptop
+  faFileAudio, faFileVideo, faThumbsUp, faThumbsDown, faEllipsisV, faEllipsisH, faArchive,
+  faLaptop, faMicrochip, faLaptopCode, faUser, faUserTie, faUserTag, faUserShield,
+  faUsersCog,
+  faFemale,
+  faMale
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -475,7 +479,8 @@ export class ApplicationModule {
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
-      faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop
+      faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
+      faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale
     );
   }
 }

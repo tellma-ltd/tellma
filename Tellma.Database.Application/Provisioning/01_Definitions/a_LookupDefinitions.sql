@@ -3,9 +3,9 @@
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @LookupDefinitions([Index],
-	[Id],									[TitleSingular],			[TitlePlural]) VALUES
-	(0,N'it-equipment-manufacturers',		N'IT Manufacturer',			N'IT Manufacturers'),
-	(1,N'operating-systems',				N'Operating System',		N'Operating Systems');
+	[Id],									[TitleSingular],			[TitlePlural],				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
+	(0,N'it-equipment-manufacturers',		N'IT Manufacturer',			N'IT Manufacturers',		N'microchip',		N'Administration',		100),
+	(1,N'operating-systems',				N'Operating System',		N'Operating Systems',		N'laptop-code',		N'Administration',		200);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

@@ -48,7 +48,6 @@ import {
   faUsers,
   faCog,
   faTasks,
-  faMale,
   faBuilding,
   faChartPie,
 
@@ -56,11 +55,8 @@ import {
   faTable,
   faExternalLinkAlt,
   faMinusSquare,
-  faChartBar,
-  faChartArea,
   faChartLine,
   faInfoCircle,
-  faTachometerAlt,
   faTools,
   faCamera,
   faRuler
@@ -204,7 +200,7 @@ export class SharedModule {
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,
       faAsterisk, faCameraRetro, faUser, faRuler, faUsers, faCog,
-      faTasks, faMale, faBuilding, faChartPie, faInfoCircle, faTools, faCamera,
+      faTasks, faBuilding, faChartPie, faInfoCircle, faTools, faCamera,
 
       faBars,
       faChartLine, faExternalLinkAlt, faMinusSquare

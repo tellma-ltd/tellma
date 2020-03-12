@@ -16,8 +16,8 @@ BEGIN
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',		N'CRV'),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',N'RRV');
+	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',				N'CRV'),
+	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',		N'RRV');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
@@ -33,12 +33,12 @@ END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians'),
-	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians'),
-	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL),
-	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL);
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList],	[MainMenuIcon],		[MainMenuSection],	[MainMenuSortKey]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL,					N'exchange-alt',	N'Financials',		0),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians',		N'money-check-alt',	N'Purchasing',		20),
+	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians',		N'file-invoice-dollar',	N'Sales',			50),
+	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL,				N'money-bill-wave',	N'Sales',			75),
+	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL,					N'file-contract',	N'FixedAssets',		20);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
