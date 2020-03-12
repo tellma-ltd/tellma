@@ -45,40 +45,94 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 10 },
     { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 30 },
     { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 40 },
-    { label: 'Currencies', icon: 'euro-sign', link: '../currencies', view: 'currencies', sortKey: 45 },
     { label: 'MeasurementUnits', icon: 'ruler', link: '../measurement-units', view: 'measurement-units', sortKey: 50 },
     { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
   ];
 
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
     Financials: {
-      background: 't-green',
+      background: 't-blue1',
       items: [
         {
           label: 'Accounts', icon: 'coins', link: '../accounts',
           view: 'accounts', sortKey: 100
         },
         {
-          label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
-          view: 'legacy-classifications', sortKey: 200
+          label: 'EntryTypes', icon: 'sitemap', link: '../entry-types',
+          view: 'entry-types', sortKey: 200
         },
-        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 100 },
         {
           label: 'AccountTypes', icon: 'sitemap', link: '../account-types',
           view: 'account-types', sortKey: 300
         },
         {
-          label: 'Currencies', icon: 'euro-sign', link: '../currencies',
-          view: 'currencies', sortKey: 400
+          label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
+          view: 'legacy-classifications', sortKey: 400
         },
         {
-          label: 'ResponsibilityCenters', icon: 'sitemap', link: '../responsibility-centers',
-          view: 'responsibility-centers', sortKey: 600
+          label: 'LegacyTypes', icon: 'list', link: '../legacy-types',
+          view: 'legacy-types', sortKey: 500
         },
       ]
     },
+    Cash: {
+      background: 't-green1',
+      items: []
+    },
+    FixedAssets: {
+      background: 't-teal2',
+      items: []
+    },
+    Inventory: {
+      background: 't-blue2',
+      items: []
+    },
+    Production: {
+      background: 't-green2',
+      items: []
+    },
+    Purchasing: {
+      background: 't-teal3',
+      items: []
+    },
+    Sales: {
+      background: 't-blue3',
+      items: []
+    },
+    HumanCapital: {
+      background: 't-green3',
+      items: []
+    },
+    Investments: {
+      background: 't-teal1',
+      items: []
+    },
+    Maintenance: {
+      background: 't-blue1',
+      items: []
+    },
     Administration: {
-      background: 't-blue',
+      background: 't-green1',
+      items: [
+        {
+          label: 'MeasurementUnits', icon: 'ruler', link: '../measurement-units',
+          view: 'measurement-units', sortKey: 100
+        },
+        { label: 'Currencies', icon: 'euro-sign', link: '../currencies',
+          view: 'currencies', sortKey: 200
+        },
+        {
+          label: 'ResponsibilityCenters', icon: 'sitemap', link: '../responsibility-centers',
+          view: 'responsibility-centers', sortKey: 300
+        },
+        {
+          label: 'Settings', icon: 'cog', link: '../settings',
+          view: 'settings', sortKey: 400
+        },
+      ]
+    },
+    Security: {
+      background: 't-teal2',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',
@@ -88,29 +142,26 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'Roles', icon: 'tasks', link: '../roles',
           view: 'roles', sortKey: 200
         },
-        {
-          label: 'MeasurementUnits', icon: 'ruler', link: '../measurement-units',
-          view: 'measurement-units', sortKey: 300
-        },
-        {
-          label: 'Settings', icon: 'cog', link: '../settings',
-          view: 'settings', sortKey: 400
-        },
+      ]
+    },
+    Studio: {
+      background: 't-black',
+      items: [
         {
           label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
           view: 'report-definitions', sortKey: 500
         },
-        {
-          label: 'LegacyTypes', icon: 'list', link: '../legacy-types',
-          view: 'legacy-types', sortKey: 600
-        },
-        {
-          label: 'EntryTypes', icon: 'sitemap', link: '../entry-types',
-          view: 'entry-types', sortKey: 700
-        },
       ]
     },
-    Miscellaneous: { // TODO
+    Help: {
+      background: 't-blue2',
+      items: [
+        // TODO: About + Licensing
+        // TODO: Documentation
+      ]
+    },
+
+    Miscellaneous: {
       background: 't-grey',
       items: [
       ]
@@ -160,10 +211,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
       this._mainMenu = Object.keys(menu).map(e => ({
-        label: this.translate.instant(e),
+        label: this.translate.instant('Menu_' + e),
         items: menu[e].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
         background: menu[e].background
       }));
+
+      // Useful for keeping all occurrences of menu sections in sync
+      // console.log(Object.keys(this.mainMenuBase).join(`', '`)); // xyz-definition.ts
+      // console.log(Object.keys(this.mainMenuBase).join(`", "`)); // XyzDefinition.cs
+      // console.log(Object.keys(this.mainMenuBase).map(e => 'Menu_' + e).join(`", "`)); // XyzDefinition.cs
     }
 
     return this._mainMenu;

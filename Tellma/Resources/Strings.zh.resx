@@ -160,9 +160,6 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>添加外部登录在</value>
   </data>
-  <data name="Administration" xml:space="preserve">
-    <value>管理</value>
-  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>管理员用户</value>
   </data>
@@ -772,9 +769,6 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
   </data>
-  <data name="Financials" xml:space="preserve">
-    <value>金融</value>
-  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>忘记这个浏览器</value>
   </data>
@@ -994,14 +988,56 @@
   <data name="Memo" xml:space="preserve">
     <value>备忘录</value>
   </data>
+  <data name="Menu_Administration" xml:space="preserve">
+    <value>管理</value>
+  </data>
+  <data name="Menu_Cash" xml:space="preserve">
+    <value>现金</value>
+  </data>
   <data name="Menu_ExternalSignIns" xml:space="preserve">
     <value>外部登录插件</value>
+  </data>
+  <data name="Menu_Financials" xml:space="preserve">
+    <value>金融</value>
+  </data>
+  <data name="Menu_FixedAssets" xml:space="preserve">
+    <value>固定资产</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>救命</value>
+  </data>
+  <data name="Menu_HumanCapital" xml:space="preserve">
+    <value>人力资本</value>
+  </data>
+  <data name="Menu_Inventory" xml:space="preserve">
+    <value>库存</value>
+  </data>
+  <data name="Menu_Investments" xml:space="preserve">
+    <value>投资</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>保养</value>
   </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>密码</value>
   </data>
+  <data name="Menu_Production" xml:space="preserve">
+    <value>生产</value>
+  </data>
   <data name="Menu_Profile" xml:space="preserve">
     <value>轮廓</value>
+  </data>
+  <data name="Menu_Purchasing" xml:space="preserve">
+    <value>购买</value>
+  </data>
+  <data name="Menu_Sales" xml:space="preserve">
+    <value>销售</value>
+  </data>
+  <data name="Menu_Security" xml:space="preserve">
+    <value>安全</value>
+  </data>
+  <data name="Menu_Studio" xml:space="preserve">
+    <value>工作室</value>
   </data>
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>

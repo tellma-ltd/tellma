@@ -39,7 +39,6 @@ IF @ProvisionData = N'0' RETURN;
 :r .\01_Definitions\e_LineDefinitions\999_LineDefinitions.sql
 
 :r .\01_Definitions\f_DocumentDefinitions.sql
-
 :r .\02_Security\a_Users.sql
 :r .\02_Security\b_RolesMemberships.sql
 :r .\02_Security\c_Workflows.sql

@@ -160,9 +160,6 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>Add an External Sign-in</value>
   </data>
-  <data name="Administration" xml:space="preserve">
-    <value>Administration</value>
-  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>Admin User</value>
   </data>
@@ -772,9 +769,6 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
   </data>
-  <data name="Financials" xml:space="preserve">
-    <value>Financials</value>
-  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>Forget This Browser</value>
   </data>
@@ -994,14 +988,56 @@
   <data name="Memo" xml:space="preserve">
     <value>Memo</value>
   </data>
+  <data name="Menu_Administration" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Menu_Cash" xml:space="preserve">
+    <value>Cash</value>
+  </data>
   <data name="Menu_ExternalSignIns" xml:space="preserve">
     <value>External Sign-ins</value>
+  </data>
+  <data name="Menu_Financials" xml:space="preserve">
+    <value>Financials</value>
+  </data>
+  <data name="Menu_FixedAssets" xml:space="preserve">
+    <value>Fixed Assets</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Menu_HumanCapital" xml:space="preserve">
+    <value>Human Capital</value>
+  </data>
+  <data name="Menu_Inventory" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="Menu_Investments" xml:space="preserve">
+    <value>Investments</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Maintenance</value>
   </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="Menu_Production" xml:space="preserve">
+    <value>Production</value>
+  </data>
   <data name="Menu_Profile" xml:space="preserve">
     <value>Profile</value>
+  </data>
+  <data name="Menu_Purchasing" xml:space="preserve">
+    <value>Purchasing</value>
+  </data>
+  <data name="Menu_Sales" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Menu_Security" xml:space="preserve">
+    <value>Security</value>
+  </data>
+  <data name="Menu_Studio" xml:space="preserve">
+    <value>Studio</value>
   </data>
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>2FA</value>

@@ -107,7 +107,7 @@
   <t-form-group class="t-form-group" [label]="'AccountType_IsCurrent' | translate"
     [serverErrors]="model?.serverErrors?.IsCurrent">
     <div *ngIf="!isEdit">
-      {{ (model?.IsCurrent === true ? 'Yes' : model?.IsCurrent === false ? 'No' : ' ') | translate }}</div>
+      {{ (model?.IsCurrent === true ? 'Yes' : model?.IsCurrent === false ? 'No' : '') | translate }}&zwnj;</div>
     <t-selector *ngIf="isEdit" [ngModel]="getIsCurrent(model)" (ngModelChange)="setIsCurrent(model, $event)"
       [choices]="isCurrentChoices">
     </t-selector>

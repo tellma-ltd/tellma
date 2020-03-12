@@ -30,7 +30,6 @@ namespace Tellma.Controllers
             _logger = logger;
         }
 
-
         [HttpGet("client")]
         public ActionResult<DataWithVersion<DefinitionsForClient>> DefinitionsForClient()
         {
@@ -376,35 +375,6 @@ namespace Tellma.Controllers
                 Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def)),
 
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def)),
-
-                // TODO: Load these from the database as well
-
-                //Documents = new Dictionary<string, DocumentDefinitionForClient>
-                //{
-                //    ["manual-journal-vouchers"] = new DocumentDefinitionForClient
-                //    {
-                //        Prefix = "JV",
-                //        TitlePlural = "Manual Journal Vouchers",
-                //        TitlePlural2 = "قيود تسوية يدوية",
-                //        TitlePlural3 = "手动日记帐凭单",
-                //        TitleSingular = "Manual Journal Voucher",
-                //        TitleSingular2 = "قيد تسوية يدوي",
-                //        TitleSingular3 = "手动日记帐凭证",
-                //        MainMenuIcon = "exchange-alt",
-                //        MainMenuSection = "Financials",
-                //        MainMenuSortKey = 50m,
-
-                //        // TODO: implement mock
-                //    }
-                //},
-
-                //Lines = new Dictionary<string, LineDefinitionForClient>
-                //{
-                //    //["bla"] = new LineDefinitionForClient
-                //    //{
-                //    //    // TODO: implement mock
-                //    //}
-                //},
             };
 
             return new DataWithVersion<DefinitionsForClient>
@@ -413,6 +383,5 @@ namespace Tellma.Controllers
                 Version = version.ToString()
             };
         }
-
     }
 }

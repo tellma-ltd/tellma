@@ -579,6 +579,8 @@ namespace Tellma.Controllers
             // Step (4): Save the users in the app database
             var ids = await _appRepo.Users__Save(entities, imageIds, returnIds);
 
+            // TODO: Check if the user lost his/her admin permissions
+
             // Step (5): Delete old images from the blob storage
             if (blobsToDelete.Any())
             {

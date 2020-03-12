@@ -114,14 +114,13 @@ namespace Tellma.Entities
         public bool? ShowInMainMenu { get; set; }
 
         [Display(Name = "MainMenuSection")]
-        [ChoiceList(new object[] { "Financials", "Administration" }, // TODO Add the rest, here and in TypeScript
-            new string[] { "Financials", "Administration" })]
+        [ChoiceList(new object[] { "Financials", "Cash", "FixedAssets", "Inventory", "Production", "Purchasing", "Sales", "HumanCapital", "Investments", "Maintenance", "Administration", "Security", "Studio", "Help" },
+            new string[] { "Menu_Financials", "Menu_Cash", "Menu_FixedAssets", "Menu_Inventory", "Menu_Production", "Menu_Purchasing", "Menu_Sales", "Menu_HumanCapital", "Menu_Investments", "Menu_Maintenance", "Menu_Administration", "Menu_Security", "Menu_Studio", "Menu_Help" })]
         [AlwaysAccessible]
         public string MainMenuSection { get; set; }
 
         [Display(Name = "MainMenuIcon")]
-        [ChoiceList(new object[] { "clipboard", "chart-pie" }, // TODO Add the rest, here and in TypeScript
-            new string[] { "Icon_Clipboard", "Icon_ChartPie" })]
+       // [ChoiceList(new object[] { "clipboard", "chart-pie" })]
         [AlwaysAccessible]
         public string MainMenuIcon { get; set; }
 

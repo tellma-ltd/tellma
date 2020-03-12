@@ -5,22 +5,22 @@ IF @DB = N'100'
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(1,N'investment-properties',			N'Investment properties',				N'Investment property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
-	(2,N'intangible-assets',				N'Intangible assets',					N'Intangible asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
-	(3,N'biological-assets',				N'Biological assets',					N'Biological asset',			dbo.fn_ATCode__Id(N'BiologicalAssets')),
-	(4,N'inventories',						N'Inventory items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
+	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
+	(3,N'biological-assets',				N'Biological Assets',					N'Biological Asset',			dbo.fn_ATCode__Id(N'BiologicalAssets')),
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
-	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(1,N'computer-equipment',				N'Computer equipment',					N'Computer equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
-	(2,N'intangible-assets',				N'Intangible assets',					N'Intangible asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense')),
-	(6,N'employee-benefits-expenses',		N'Employee benefits expenses',			N'Employee benefits expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'));
+	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment'), N'building', N'FixedAssets', 500),
+	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension'), N'laptop', N'FixedAssets', 500),
+	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill'), N'cube', N'FixedAssets', 500),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'), N'hand-holding-usd', N'Purchasing', 500),
+	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'), N'hand-holding-usd', N'HumanCapital', 500);
 
 	UPDATE @ResourceDefinitions
 	SET 
@@ -36,34 +36,34 @@ ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(1,N'computer-equipment',				N'Computer equipment',					N'Computer equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
 END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(4,N'inventories',						N'Inventory items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
 END
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'Property, plant and equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(1,N'investment-properties',			N'Investment properties',				N'Investment property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
-	(4,N'inventories',						N'Inventory items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services expenses',					N'Service expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitlePlural2],						[TitleSingular],					[TitleSingular2],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, plants and equipment',	N'الممتلكات والمنشآت والمعدات',	N'Property, plant and equipment',	N'الممتلكة -المنشأة-المعدة',	dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(4,N'paper-products',					N'Paper Products',						N'منتجات الورق',					N'Paper Product',					N'منتج ورق',					dbo.fn_ATCode__Id(N'Merchandise')),
-	(5,N'services-expenses',				N'Services',							N'الخدمات',							N'Service',							N'الخدمة',						dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'ممتلكات ومنشآت ومعدات',		N'Property, Plant and Equipment',	N'ممتلكة -منشأة-معدة',	dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(4,N'paper-products',					N'Paper Products',						N'منتجات ورق',					N'Paper Product',					N'منتج ورق',					dbo.fn_ATCode__Id(N'Merchandise')),
+	(5,N'services-expenses',				N'Services',							N'خدمات',						N'Service',							N'خدمة',						dbo.fn_ATCode__Id(N'ServicesExpense'));
 
 	UPDATE @ResourceDefinitions
 	SET

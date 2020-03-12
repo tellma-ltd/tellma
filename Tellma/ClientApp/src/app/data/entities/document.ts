@@ -97,7 +97,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 State: {
                     control: 'choice',
                     label: () => trx.instant('Document_State'),
-                    choices: [0, -1, 1, -2, 2, -3, 3, -4, 4, 5],
+                    choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
                     format: (state: number) => {
                         if (state >= 0) {
                             return trx.instant('Document_State_' + state);

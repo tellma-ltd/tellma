@@ -160,9 +160,6 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>أضف مسجل دخول خارجي</value>
   </data>
-  <data name="Administration" xml:space="preserve">
-    <value>الإشراف</value>
-  </data>
   <data name="AdminUser" xml:space="preserve">
     <value>حساب مشرف</value>
   </data>
@@ -772,9 +769,6 @@
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
   </data>
-  <data name="Financials" xml:space="preserve">
-    <value>المالية</value>
-  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>تناسى المتصفح الحالي</value>
   </data>
@@ -914,19 +908,19 @@
     <value>الاسم</value>
   </data>
   <data name="LegacyClassification" xml:space="preserve">
-    <value>تصنيف سابق</value>
+    <value>تصنيف موروث</value>
   </data>
   <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
   <data name="LegacyClassifications" xml:space="preserve">
-    <value>تصنيفات سابقة</value>
+    <value>تصنيفات موروثة</value>
   </data>
   <data name="LegacyType" xml:space="preserve">
-    <value>نوع سابق</value>
+    <value>نوع موروث</value>
   </data>
   <data name="LegacyTypes" xml:space="preserve">
-    <value>أنواع سابقة</value>
+    <value>أنواع موروثة</value>
   </data>
   <data name="Line" xml:space="preserve">
     <value>سطر</value>
@@ -994,14 +988,56 @@
   <data name="Memo" xml:space="preserve">
     <value>ملاحظات</value>
   </data>
+  <data name="Menu_Administration" xml:space="preserve">
+    <value>إشراف</value>
+  </data>
+  <data name="Menu_Cash" xml:space="preserve">
+    <value>نقد</value>
+  </data>
   <data name="Menu_ExternalSignIns" xml:space="preserve">
     <value>تسجيل الدخول الخارجي</value>
+  </data>
+  <data name="Menu_Financials" xml:space="preserve">
+    <value>مالية</value>
+  </data>
+  <data name="Menu_FixedAssets" xml:space="preserve">
+    <value>أصول ثابتة</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>مساعدة</value>
+  </data>
+  <data name="Menu_HumanCapital" xml:space="preserve">
+    <value>موارد بشرية</value>
+  </data>
+  <data name="Menu_Inventory" xml:space="preserve">
+    <value>مخزون</value>
+  </data>
+  <data name="Menu_Investments" xml:space="preserve">
+    <value>استثمارات</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>صيانة</value>
   </data>
   <data name="Menu_Password" xml:space="preserve">
     <value>كلمة المرور</value>
   </data>
+  <data name="Menu_Production" xml:space="preserve">
+    <value>إنتاج</value>
+  </data>
   <data name="Menu_Profile" xml:space="preserve">
     <value>الملف الشخصي</value>
+  </data>
+  <data name="Menu_Purchasing" xml:space="preserve">
+    <value>مشتريات</value>
+  </data>
+  <data name="Menu_Sales" xml:space="preserve">
+    <value>مبيعات</value>
+  </data>
+  <data name="Menu_Security" xml:space="preserve">
+    <value>أمان</value>
+  </data>
+  <data name="Menu_Studio" xml:space="preserve">
+    <value>استديو</value>
   </data>
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>

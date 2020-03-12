@@ -508,7 +508,7 @@ input.t-h2,
 }
 
 .t-icon-selector {
-  height: 6rem;
+  height: 11rem;
   overflow-y: auto;
   border: 1px solid $gray-800;
   color: white !important;
@@ -1371,21 +1371,49 @@ tr.t-highlight {
   }
 }
 
-.t-cyan {
-  @include background-color(#17a2b8);
+.t-quickaccess, .t-teal1 {
+  @include background-color($primary); // Teal
 }
 
-.t-green {
-  @include background-color(#259093);
+.t-teal2 {
+  @include background-color(#1592a6); // Teal
 }
 
-.t-blue {
-  @include background-color(#159f85);
+.t-teal3 {
+  @include background-color(#128293); // Teal
+}
+
+.t-blue1 {
+  @include background-color(#259093); // Blue
+}
+
+.t-blue2 {
+  @include background-color(#218284); // Blue
+}
+
+.t-blue3 {
+  @include background-color(#1e7376); // Blue
+}
+
+.t-green1 {
+  @include background-color(#159f85); // Green
+}
+
+.t-green2 {
+  @include background-color(#138f78); // Green
+}
+
+.t-green3 {
+  @include background-color(#117f6a); // Green
+}
+
+.t-black {
+  @include background-color($gray-700); // Dark
 }
 
 .t-grey,
 .t-gray {
-  @include background-color(#858f85);
+  @include background-color(#858f85); // Gray
 }
 
 .t-menu-section {

@@ -363,7 +363,7 @@
                     <!-- Filter -->
                     <div class="form-group" [class.is-invalid]="invalid(filter, model.serverErrors?.Filter)">
                         <label class="small" for="filter">{{ 'ReportDefinition_Filter' | translate }}</label>
-                        <textarea class="form-control t-studio-input t-no-resize" rows="4" id="filter" type="text"
+                        <textarea class="form-control t-studio-input t-no-resize" rows="6" id="filter" type="text"
                             [(ngModel)]="model.Filter" (ngModelChange)="onFilterChange(model)"
                             [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false" #filter="ngModel"></textarea>
@@ -563,13 +563,16 @@
                         <div class="form-group">
                             <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
                             <select class="form-control t-studio-input" id="mainMenuSection"
-                                [(ngModel)]="model.MainMenuSection"
+                                [(ngModel)]="model.MainMenuSection" #mainMenuSection="ngModel"
                                 (ngModelChange)="onDefinitionChange(model, 'MainMenuSection')">
                                 <option value=""></option>
                                 <option *ngFor="let mainMenuSection of allMainMenuSections"
                                     value="{{mainMenuSection.value}}">
                                     {{ mainMenuSection.name() }}</option>
                             </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSection, serverErrors: model.serverErrors?.MainMenuSection }">
+                            </ng-container>
                         </div>
 
                         <!-- Main Menu Icon -->
@@ -579,19 +582,26 @@
                                 <div class="py-1 text-center t-pointer t-icon-selector-icon"
                                     (click)="onIconClick(model, icon)"
                                     [class.t-highlighted]="icon.value === model.MainMenuIcon"
-                                    *ngFor="let icon of allMainMenuIcons; let i = index;">
-                                    <fa-icon [icon]="icon.value"></fa-icon>
+                                    *ngFor="let icon of allMainMenuIcons; let i = index;" [title]="icon.value">
+                                    <fa-icon [icon]="icon.value" style="font-size: 1.1rem"></fa-icon>
                                 </div>
                             </div>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: null, serverErrors: model.serverErrors?.MainMenuIcon }">
+                            </ng-container>
                         </div>
 
                         <!-- Main Menu Sort Key -->
                         <div class="form-group">
                             <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
                             <input class="form-control t-studio-input" id="sortKey" type="number"
-                                [(ngModel)]="model.MainMenuSortKey"
+                                [(ngModel)]="model.MainMenuSortKey" #mainMenuSortKey="ngModel"
                                 (ngModelChange)="onDefinitionChange(model, 'MainMenuSortKey')"
                                 [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSortKey, serverErrors: model.serverErrors?.MainMenuSortKey }">
+                            </ng-container>
                         </div>
                     </ng-container>
                 </div>

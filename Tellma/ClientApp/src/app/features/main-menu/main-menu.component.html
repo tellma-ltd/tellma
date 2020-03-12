@@ -14,10 +14,10 @@
     <div *ngIf="showNoItemsFound"> {{ 'NoItemsFound' | translate }}</div>
 
     <!-- Quick Access -->
-    <div class="mb-4 mb-md-5 t-cyan" *ngIf="!search" [class.d-none]="!showSection(quickAccess)">
+    <div class="mb-4 mb-md-5 t-quickaccess" *ngIf="!search" [class.d-none]="!showSection(quickAccess)">
       <div class="t-menu-section">
-        <span>{{ 'QuickAccess' | translate }}</span></div>
-      <a class="t-menu-item btn m-1 t-cyan" [id]="getId(0, i)" (focus)="onFocus(0, i)"
+        <span>{{ 'Menu_QuickAccess' | translate }}</span></div>
+      <a class="t-menu-item btn m-1" [id]="getId(0, i)" (focus)="onFocus(0, i)"
         [class.d-none]="!showItem(item)" (blur)="onBlur()" *ngFor="let item of quickAccess; let i = index;"
         [routerLink]="item.link">
         <div class="pt-4 pb-1 t-menu-item-icon">

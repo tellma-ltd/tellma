@@ -4,11 +4,12 @@ IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Users
 	([Index],	[Name],				[Name2],				[Email]) VALUES
 	(0,			N'Jiad Akra',		N'جياد عكره',			N'jiad.akra@banan-it.com'),
-	(1,			N'elAmin alTayyib',	N'الأمين الطيب',			N'elamin.altayeb@ebanan.com'),
---	(2,			N'Mohamad Akra',	N'محمد عكره',			N'mohamad.akra@banan-it.com'),
+	(1,			N'elAmin alTayyib',	N'الأمين الطيب',		N'elamin.altayeb@ebanan.com'),
+	(2,			N'Mohamad Akra',	N'محمد عكره',			N'mohamad.akra@tellma.com'),
 	(3,			N'Ahmad Abdussalam',N'أحمد عبد السلام',		N'Elhelalaby1@gmail.com'),
 	(4,			N'Alaeldin Ismail',	N'علاء الدين اسماعيل',	N'alaeldin.ismail@ebanan.com'),
-	(5,			N'Omer al-Samani',	N'عمر السماني',			N'omer.alsamani@ebanan.com');
+	(5,			N'Omer al-Samani',	N'عمر السماني',		N'omer.alsamani@ebanan.com'),
+	(6,			N'Ahmad Akra',		N'أحمد عكره',			N'ahmad.akra@tellma.com');
 
 IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Users
