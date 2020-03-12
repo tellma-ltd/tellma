@@ -29,7 +29,6 @@
 	[ResidualMonetaryValueVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
 	[ResidualValueVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualValueVisibility] IN (N'None', N'Optional', N'Required')),
 
-
 	[ReorderLevelVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[AvailableSinceLabel]				NVARCHAR (50),
