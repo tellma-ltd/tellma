@@ -1,7 +1,7 @@
 <div class="container py-4 px-5">
     <div class="t-menu-section"><span>{{ 'AdminConsole' | translate }}</span></div>
 
-    <div class="t-cyan">
+    <div class="t-teal1">
         <a class="t-menu-item btn m-1" [class.d-none]="!canView('admin-users')"
             *ngFor="let item of mainMenuItems; let i = index;" [routerLink]="item.link">
             <div class="pt-4 pb-1 t-menu-item-icon">
