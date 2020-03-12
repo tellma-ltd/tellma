@@ -1474,6 +1474,9 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>Available Till</value>
   </data>
+  <data name="Resource_CostObject" xml:space="preserve">
+    <value>Cost Object</value>
+  </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -1486,6 +1489,12 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
+  <data name="Resource_ExpenseCenter" xml:space="preserve">
+    <value>Expense Center</value>
+  </data>
+  <data name="Resource_ExpenseEntryType" xml:space="preserve">
+    <value>Purpose</value>
+  </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>
   </data>
@@ -1494,6 +1503,9 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>Integer Attribute 2</value>
+  </data>
+  <data name="Resource_InvestmentCenter" xml:space="preserve">
+    <value>Investment Center</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -1515,6 +1527,12 @@
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>Reorder Level</value>
+  </data>
+  <data name="Resource_ResidualMonetaryValue" xml:space="preserve">
+    <value>Residual Monetary Value</value>
+  </data>
+  <data name="Resource_ResidualValue" xml:space="preserve">
+    <value>Residual Value</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>Text Attribute 1</value>

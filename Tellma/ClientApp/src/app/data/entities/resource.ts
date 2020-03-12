@@ -20,6 +20,12 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Description?: string;
     Description2?: string;
     Description3?: string;
+    CostObjectId?: number;
+    ExpenseEntryTypeId?: number;
+    ExpenseCenterId?: number;
+    InvestmentCenterId?: number;
+    ResidualMonetaryValue?: number;
+    ResidualValue?: number;
     ReorderLevel?: number;
     EconomicOrderQuantity?: number;
     AvailableSince?: string;
@@ -72,6 +78,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             _definitionIds = Object.keys(ws.definitions.Resources);
         }
 
+        const functionalE = ws.settings.FunctionalCurrencyDecimals;
+
         const entityDesc: EntityDescriptor = {
             collection: 'Resource',
             definitionId,
@@ -96,10 +104,20 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Code: { control: 'text', label: () => trx.instant('Code') },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Resource_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Resource_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
+                MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                CostObjectId: { control: 'number', label: () => `${trx.instant('Resource_CostObject')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CostObject: { control: 'navigation', label: () => trx.instant('Resource_CostObject'), type: 'Agent', foreignKeyName: 'CostObjectId' },
+                ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
+                ExpenseCenterId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ExpenseCenter: { control: 'navigation', label: () => trx.instant('Resource_ExpenseCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'ExpenseCenterId' },
+                InvestmentCenterId: { control: 'number', label: () => `${trx.instant('Resource_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                InvestmentCenter: { control: 'navigation', label: () => trx.instant('Resource_InvestmentCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'InvestmentCenterId' },
+                ResidualMonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                ResidualValue: { control: 'number', label: () => `${trx.instant('Resource_ResidualValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})` , minDecimalPlaces: functionalE, maxDecimalPlaces: functionalE, alignment: 'right' },
                 ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 AvailableSince: { control: 'date', label: () => trx.instant('Resource_AvailableSince') },

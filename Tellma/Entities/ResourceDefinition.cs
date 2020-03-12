@@ -60,6 +60,12 @@ namespace Tellma.Entities
         public string IdentifierVisibility { get; set; }
         public string CurrencyVisibility { get; set; }
         public string DescriptionVisibility { get; set; }
+        public string CostObjectVisibility { get; set; }
+        public string ExpenseEntryTypeVisibility { get; set; }
+        public string ExpenseCenterVisibility { get; set; }
+        public string InvestmentCenterVisibility { get; set; }
+        public string ResidualMonetaryValueVisibility { get; set; }
+        public string ResidualValueVisibility { get; set; }
         public string ReorderLevelVisibility { get; set; }
         public string EconomicOrderQuantityVisibility { get; set; }
         public string AvailableSinceLabel { get; set; }

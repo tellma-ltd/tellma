@@ -1474,6 +1474,9 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>可直到</value>
   </data>
+  <data name="Resource_CostObject" xml:space="preserve">
+    <value>成本对象</value>
+  </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
@@ -1486,6 +1489,12 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
+  <data name="Resource_ExpenseCenter" xml:space="preserve">
+    <value>费用中心</value>
+  </data>
+  <data name="Resource_ExpenseEntryType" xml:space="preserve">
+    <value>费用条目类型</value>
+  </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>识别码</value>
   </data>
@@ -1494,6 +1503,9 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>整数属性2</value>
+  </data>
+  <data name="Resource_InvestmentCenter" xml:space="preserve">
+    <value>投资中心</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>资源查找1</value>
@@ -1515,6 +1527,12 @@
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
     <value>订货点水平</value>
+  </data>
+  <data name="Resource_ResidualMonetaryValue" xml:space="preserve">
+    <value>剩余货币价值</value>
+  </data>
+  <data name="Resource_ResidualValue" xml:space="preserve">
+    <value>剩余价值</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>文本属性1</value>

@@ -32,7 +32,8 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `AccountType,Currency,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
+  public expand = `AccountType,Currency,CostObject,ExpenseEntryType,
+ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -211,6 +212,54 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public get Description_isRequired(): boolean {
     return this.definition.DescriptionVisibility === 'Required';
+  }
+
+  public get CostObject_isVisible(): boolean {
+    return !!this.definition.CostObjectVisibility;
+  }
+
+  public get CostObject_isRequired(): boolean {
+    return this.definition.CostObjectVisibility === 'Required';
+  }
+
+  public get ExpenseEntryType_isVisible(): boolean {
+    return !!this.definition.ExpenseEntryTypeVisibility;
+  }
+
+  public get ExpenseEntryType_isRequired(): boolean {
+    return this.definition.ExpenseEntryTypeVisibility === 'Required';
+  }
+
+  public get ExpenseCenter_isVisible(): boolean {
+    return !!this.definition.ExpenseCenterVisibility;
+  }
+
+  public get ExpenseCenter_isRequired(): boolean {
+    return this.definition.ExpenseCenterVisibility === 'Required';
+  }
+
+  public get InvestmentCenter_isVisible(): boolean {
+    return !!this.definition.InvestmentCenterVisibility;
+  }
+
+  public get InvestmentCenter_isRequired(): boolean {
+    return this.definition.InvestmentCenterVisibility === 'Required';
+  }
+
+  public get ResidualMonetaryValue_isVisible(): boolean {
+    return !!this.definition.ResidualMonetaryValueVisibility;
+  }
+
+  public get ResidualMonetaryValue_isRequired(): boolean {
+    return this.definition.ResidualMonetaryValueVisibility === 'Required';
+  }
+
+  public get ResidualValue_isVisible(): boolean {
+    return !!this.definition.ResidualValueVisibility;
+  }
+
+  public get ResidualValue_isRequired(): boolean {
+    return this.definition.ResidualValueVisibility === 'Required';
   }
 
   public get ReorderLevel_isVisible(): boolean {

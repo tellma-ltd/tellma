@@ -23,11 +23,11 @@
 	[DescriptionVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[CostObjectVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CostObjectVisibility] IN (N'None', N'Optional', N'Required')),
-	[ExpenseEntryTypeId]				INT,
-	[ExpenseCenterId]					INT,
-	[InvestmentCenterId]				INT,
-	[ResidualMonetaryValue]				Decimal (19,4),
-	[ResidualValue]						Decimal (19,4),
+	[ExpenseEntryTypeVisibility]		NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ExpenseEntryTypeVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExpenseCenterVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ExpenseCenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[InvestmentCenterVisibility]		NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([InvestmentCenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[ResidualMonetaryValueVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
+	[ResidualValueVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualValueVisibility] IN (N'None', N'Optional', N'Required')),
 
 
 	[ReorderLevelVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),

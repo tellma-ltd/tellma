@@ -27,6 +27,7 @@ namespace Tellma.Controllers
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
+        private readonly ISettingsCache _settingsCache;
         private readonly IModelMetadataProvider _modelMetadataProvider;
 
         private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
@@ -42,12 +43,14 @@ namespace Tellma.Controllers
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
+            ISettingsCache settingsCache,
             IModelMetadataProvider modelMetadataProvider) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
             _definitionsCache = definitionsCache;
+            _settingsCache = settingsCache;
             _modelMetadataProvider = modelMetadataProvider;
         }
 
@@ -147,7 +150,27 @@ namespace Tellma.Controllers
             SetDefaultValue(entities, e => e.Text1, definition.Text1DefaultValue);
             SetDefaultValue(entities, e => e.Text2, definition.Text2DefaultValue);
 
+            // For resources that use residual value, if currency id is functional
+            // copy residual monetary value into residual value
+            if (IsVisible(definition.ResidualMonetaryValueVisibility) && IsVisible(definition.ResidualValueVisibility))
+            {
+                var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
+                var functionalId = settings.FunctionalCurrencyId;
+                foreach (var entity in entities)
+                {
+                    if (entity.CurrencyId == functionalId && entity.ResidualValue != null)
+                    {
+                        entity.ResidualMonetaryValue = entity.ResidualValue;
+                    }
+                }
+            }
+
             return Task.FromResult(entities);
+        }
+
+        private bool IsVisible(string visibility)
+        {
+            return visibility == Visibility.Optional || visibility == Visibility.Required;
         }
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
@@ -161,6 +184,14 @@ namespace Tellma.Controllers
             ValidateIfRequired(entities, e => e.Description, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description2, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description3, definition.DescriptionVisibility);
+
+            ValidateIfRequired(entities, e => e.CostObjectId, definition.CostObjectVisibility);
+            ValidateIfRequired(entities, e => e.ExpenseEntryTypeId, definition.ExpenseEntryTypeVisibility);
+            ValidateIfRequired(entities, e => e.ExpenseCenterId, definition.ExpenseCenterVisibility);
+            ValidateIfRequired(entities, e => e.InvestmentCenterId, definition.InvestmentCenterVisibility);
+            ValidateIfRequired(entities, e => e.ResidualMonetaryValue, definition.ResidualMonetaryValueVisibility);
+            ValidateIfRequired(entities, e => e.ResidualValue, definition.ResidualValueVisibility);
+
             ValidateIfRequired(entities, e => e.ReorderLevel, definition.ReorderLevelVisibility);
             ValidateIfRequired(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityVisibility);
             ValidateIfRequired(entities, e => e.AvailableSince, definition.AvailableSinceVisibility);

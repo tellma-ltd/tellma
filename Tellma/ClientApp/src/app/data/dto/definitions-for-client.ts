@@ -167,6 +167,13 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 
     DescriptionVisibility: Visibility;
 
+    CostObjectVisibility: Visibility;
+    ExpenseEntryTypeVisibility: Visibility;
+    ExpenseCenterVisibility: Visibility;
+    InvestmentCenterVisibility: Visibility;
+    ResidualMonetaryValueVisibility: Visibility;
+    ResidualValueVisibility: Visibility;
+
     ReorderLevelVisibility: string;
     ReorderLevelDefaultValue: number;
 

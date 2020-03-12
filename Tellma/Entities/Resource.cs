@@ -60,6 +60,24 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+        [Display(Name = "Resource_CostObject")]
+        public int? CostObjectId { get; set; }
+
+        [Display(Name = "Resource_ExpenseEntryType")]
+        public int? ExpenseEntryTypeId { get; set; }
+
+        [Display(Name = "Resource_ExpenseCenter")]
+        public int? ExpenseCenterId { get; set; }
+
+        [Display(Name = "Resource_InvestmentCenter")]
+        public int? InvestmentCenterId { get; set; }
+
+        [Display(Name = "Resource_ResidualMonetaryValue")]
+        public decimal? ResidualMonetaryValue { get; set; }
+
+        [Display(Name = "Resource_ResidualValue")]
+        public decimal? ResidualValue { get; set; }
+
         [Display(Name = "Resource_ReorderLevel")]
         public decimal? ReorderLevel { get; set; }
 
@@ -139,6 +157,22 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+
+        [Display(Name = "Resource_CostObject")]
+        [ForeignKey(nameof(CostObjectId))]
+        public Agent CostObject { get; set; }
+
+        [Display(Name = "Resource_ExpenseEntryType")]
+        [ForeignKey(nameof(ExpenseEntryTypeId))]
+        public EntryType ExpenseEntryType { get; set; }
+
+        [Display(Name = "Resource_ExpenseCenter")]
+        [ForeignKey(nameof(ExpenseCenterId))]
+        public ResponsibilityCenter ExpenseCenter { get; set; }
+
+        [Display(Name = "Resource_InvestmentCenter")]
+        [ForeignKey(nameof(InvestmentCenterId))]
+        public ResponsibilityCenter InvestmentCenter { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

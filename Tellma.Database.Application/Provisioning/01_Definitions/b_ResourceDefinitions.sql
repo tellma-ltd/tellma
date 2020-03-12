@@ -21,7 +21,7 @@ BEGIN
 	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill'),	N'cube',			N'FixedAssets',		300),
 	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'),						N'hand-holding-usd', N'Purchasing',		400),
 	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'),				N'hand-holding-usd', N'HumanCapital',	500);
-
+	
 	UPDATE @ResourceDefinitions
 	SET 
 		[Lookup1Visibility]		= N'Optional',
@@ -31,6 +31,16 @@ BEGIN
 		[Lookup2Label]			= N'Operating System',
 		[Lookup2DefinitionId]	= N'operating-systems'
 	WHERE [Id] = N'computer-equipment';
+	
+	UPDATE @ResourceDefinitions
+	SET 
+		[CostObjectVisibility]				= N'Optional',
+		[ExpenseEntryTypeVisibility]		= N'Optional',
+		[ExpenseCenterVisibility]			= N'Optional',
+		[InvestmentCenterVisibility]		= N'Optional',
+		[ResidualMonetaryValueVisibility]	= N'Optional',
+		[ResidualValueVisibility]			= N'Optional'
+	WHERE [Id] = N'properties-plants-and-equipment';
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

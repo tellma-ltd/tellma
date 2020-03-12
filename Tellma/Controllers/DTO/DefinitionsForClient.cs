@@ -215,6 +215,15 @@ namespace Tellma.Controllers.Dto
 
         public string DescriptionVisibility { get; set; } // Yes
 
+
+        public string CostObjectVisibility { get; set; } // Yes
+        public string ExpenseEntryTypeVisibility { get; set; } // Yes
+        public string ExpenseCenterVisibility { get; set; } // Yes
+        public string InvestmentCenterVisibility { get; set; } // Yes
+        public string ResidualMonetaryValueVisibility { get; set; } // Yes
+        public string ResidualValueVisibility { get; set; } // Yes
+
+
         public string ReorderLevelVisibility { get; set; } // Yes
         public decimal? ReorderLevelDefaultValue { get; set; }
 

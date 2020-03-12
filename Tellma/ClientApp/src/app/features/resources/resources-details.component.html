@@ -120,10 +120,64 @@
         </t-decimal-editor>
     </t-form-group>
 
+    <!-- Cost Object -->
+    <t-form-group *ngIf="CostObject_isVisible" class="t-form-group" [label]="'Resource_CostObject' | translate"
+        [serverErrors]="model?.serverErrors?.CostObjectId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CostObject">
+            <t-view-link [link]="'../../../agents/' + ws.get('Agent', model.CostObjectId)?.DefinitionId"
+                [itemId]="model?.CostObjectId">
+                {{ ws.getMultilingualValue('Agent', model.CostObjectId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <!-- <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.CostObjectId" [required]="CostObject_isRequired">
+        </t-agents-picker> -->
+        <div class="text-danger t-slightly-bold" *ngIf="isEdit">
+            TODO
+        </div>
+    </t-form-group>
+
+    <!-- Expense Entry Type -->
+    <t-form-group *ngIf="ExpenseEntryType_isVisible" class="t-form-group"
+        [label]="'Resource_ExpenseEntryType' | translate" [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseEntryType">
+            <t-view-link link="../../../entry-types" [itemId]="model?.ExpenseEntryTypeId">
+                {{ ws.getMultilingualValue('EntryType', model.ExpenseEntryTypeId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseEntryTypeId"
+            [required]="ExpenseEntryType_isRequired">
+        </t-entry-types-picker>
+    </t-form-group>
+
+    <!-- Expense Center -->
+    <t-form-group *ngIf="ExpenseCenter_isVisible" class="t-form-group" [label]="'Resource_ExpenseCenter' | translate"
+        [serverErrors]="model?.serverErrors?.ExpenseCenterId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseCenter">
+            <t-view-link link="../../../responsibility-centers" [itemId]="model?.ExpenseCenterId">
+                {{ ws.getMultilingualValue('ResponsibilityCenter', model.ExpenseCenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseCenterId"
+            [required]="ExpenseCenter_isRequired">
+        </t-responsibility-centers-picker>
+    </t-form-group>
+
+    <!-- Investment Center -->
+    <t-form-group *ngIf="InvestmentCenter_isVisible" class="t-form-group"
+        [label]="'Resource_InvestmentCenter' | translate" [serverErrors]="model?.serverErrors?.InvestmentCenterId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InvestmentCenter">
+            <t-view-link link="../../../responsibility-centers" [itemId]="model?.InvestmentCenterId">
+                {{ ws.getMultilingualValue('ResponsibilityCenter', model.InvestmentCenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId"
+            [required]="InvestmentCenter_isRequired" filter="ResponsibilityType eq 'Investment'">
+        </t-responsibility-centers-picker>
+    </t-form-group>
+
     <!-- Lookup 1 -->
     <t-form-group class="t-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
         [serverErrors]="model?.serverErrors?.Lookup1Id">
-
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup1">
             <t-view-link [link]="'../../../lookups/' + Lookup1_DefinitionId" [itemId]="model?.Lookup1Id">
                 {{ ws.getMultilingualValue('Lookup', model.Lookup1Id, 'Name') }}

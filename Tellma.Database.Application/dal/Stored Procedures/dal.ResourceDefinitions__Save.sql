@@ -31,6 +31,14 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility],
 			[DescriptionVisibility],
+
+			[CostObjectVisibility],
+			[ExpenseEntryTypeVisibility],
+			[ExpenseCenterVisibility],
+			[InvestmentCenterVisibility],
+			[ResidualMonetaryValueVisibility],
+			[ResidualValueVisibility],
+
 			[ReorderLevelVisibility],
 			[EconomicOrderQuantityVisibility],
 
@@ -129,6 +137,14 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility] = s.[CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility] = s.[PreferredSupplierVisibility],
 			t.[DescriptionVisibility] = s.[DescriptionVisibility],
+			
+			t.[CostObjectVisibility] = s.[CostObjectVisibility],
+			t.[ExpenseEntryTypeVisibility] = s.[ExpenseEntryTypeVisibility],
+			t.[ExpenseCenterVisibility] = s.[ExpenseCenterVisibility],
+			t.[InvestmentCenterVisibility] = s.[InvestmentCenterVisibility],
+			t.[ResidualMonetaryValueVisibility] = s.[ResidualMonetaryValueVisibility],
+			t.[ResidualValueVisibility] = s.[ResidualValueVisibility],
+
 			t.[ReorderLevelVisibility]=s.[ReorderLevelVisibility],
 			t.[EconomicOrderQuantityVisibility]=s.[EconomicOrderQuantityVisibility],
 			t.[AvailableSinceLabel] = s.[AvailableSinceLabel],
@@ -224,6 +240,14 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility],
 			[DescriptionVisibility],
+
+			[CostObjectVisibility],
+			[ExpenseEntryTypeVisibility],
+			[ExpenseCenterVisibility],
+			[InvestmentCenterVisibility],
+			[ResidualMonetaryValueVisibility],
+			[ResidualValueVisibility],
+
 			[ReorderLevelVisibility],
 			[EconomicOrderQuantityVisibility],
 			[AvailableSinceLabel],
@@ -319,6 +343,14 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility],
 			s.[DescriptionVisibility],
+			
+			s.[CostObjectVisibility],
+			s.[ExpenseEntryTypeVisibility],
+			s.[ExpenseCenterVisibility],
+			s.[InvestmentCenterVisibility],
+			s.[ResidualMonetaryValueVisibility],
+			s.[ResidualValueVisibility],
+
 			s.[ReorderLevelVisibility],
 			s.[EconomicOrderQuantityVisibility],
 			s.[AvailableSinceLabel],
