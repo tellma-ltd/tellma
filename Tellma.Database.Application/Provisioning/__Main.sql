@@ -70,7 +70,7 @@ IF @ProvisionData = N'0' RETURN;
 :r .\05_Agents\05_Partners.sql
 :r .\05_Agents\06_Suppliers.sql
 --:r .\05_Agents\07_TaxAgencies.sql
-:r .\05_Agents\08_Banks.sql
+--:r .\05_Agents\08_Banks.sql
 :r .\05_Agents\09_Custodians.sql
 :r .\05_Agents\09a_Warehouses.sql
 :r .\05_Agents\10_Employees.sql
@@ -161,6 +161,7 @@ INSERT INTO dbo.ReportSelectDefinitions([Id], [Index], ReportDefinitionId, [Path
 (9,	8,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Value');
 SET IDENTITY_INSERT dbo.ReportSelectDefinitions OFF
 
+--UPDATE Settings SET DefinitionsVersion = NewId()
 RETURN;
 ERR_LABEL:
 	SELECT * FROM OpenJson(@ValidationErrorsJson)

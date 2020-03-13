@@ -23,15 +23,15 @@ BEGIN
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],					[TitleSingular],	[TitlePlural],			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
 		(0,N'cost-objects',		N'Cost Object',		N'Cost Objects',		N'list',			N'Financials',		600),
-		(1,N'creditors',		N'Creditor',		N'Creditors',			N'hands',			N'Investments',		100),
+		(1,N'creditors',		N'Creditor',		N'Creditors',			N'hands',			N'Cash',			100),
 		(2,N'customers',		N'Customer',		N'Customers',			N'user-friends',	N'Sales',			500),
 		--(2,N't2-customers',	N'Tier-2 Customer',	N'Tier-2 Customers'),
 		--(3,N't3-customers',	N'Tier-3 Customer',	N'Tier-3 Customers'),
-		(4,N'debtors',			N'Debtor',			N'Debtors',				N'hand-holding-usd',N'Investments',		200),
-		(5,N'partners',			N'Partner',			N'Partners',			N'user-tie',		N'Investments',		300),
+		(4,N'debtors',			N'Debtor',			N'Debtors',				N'hand-holding-usd',N'Cash',			200),
+		(5,N'partners',			N'Partner',			N'Partners',			N'user-tie',		N'Financials',		300),
 		(6,N'suppliers',		N'Supplier',		N'Suppliers',			N'truck',			N'Purchasing',		500),
 		--(7,N'tax-agencies',	N'Tax Agency',		N'Tax Agencies',		N'landmark',		N'Administration',	100),
-		(8,N'banks',			N'Bank',			N'Banks',				N'landmark',		N'Cash',			400),
+		--(8,N'banks',			N'Bank',			N'Banks',				N'landmark',		N'Cash',			400),
 		(9,N'cash-custodians',	N'Cash Custodian',	N'Cash Custodians',		N'lock',			N'Cash',			300);
 
 		INSERT INTO @AgentDefinitions([Index],
