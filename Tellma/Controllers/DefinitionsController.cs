@@ -295,6 +295,7 @@ namespace Tellma.Controllers
         {
             return new DocumentDefinitionForClient
             {
+                IsOriginalDocument = def.IsOriginalDocument ?? false,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,

@@ -9,6 +9,10 @@ namespace Tellma.Entities
     [StrongEntity]
     public class DocumentForSave<TDocumentLine, TAttachment> : EntityWithKey<int>
     {
+        [Display(Name = "Document_SerialNumber")]
+        [AlwaysAccessible]
+        public int? SerialNumber { get; set; }
+
         [Display(Name = "Document_DocumentDate")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public DateTime? DocumentDate { get; set; }
@@ -20,12 +24,6 @@ namespace Tellma.Entities
         public byte? Clearance { get; set; }
 
         // HIDDEN
-
-        [Display(Name = "Document_VoucherBooklet")]
-        public int? VoucherBookletId { get; set; } // HIDDEN
-
-        [Display(Name = "Document_VoucherNumericReference")]
-        public int? VoucherNumericReference { get; set; }
 
         [Display(Name = "Document_DocumentLookup1")]
         public int? DocumentLookup1Id { get; set; }
@@ -74,10 +72,6 @@ namespace Tellma.Entities
     {
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }
-
-        [Display(Name = "Document_SerialNumber")]
-        [AlwaysAccessible]
-        public int? SerialNumber { get; set; }
 
         [Display(Name = "Document_State")]
         [AlwaysAccessible]
@@ -172,10 +166,6 @@ namespace Tellma.Entities
         public List<DocumentAssignment> AssignmentsHistory { get; set; }
 
         // HIDDEN
-
-        [Display(Name = "Document_VoucherBooklet")]
-        [ForeignKey(nameof(VoucherBookletId))]
-        public VoucherBooklet VoucherBooklet { get; set; }
 
         [Display(Name = "Document_DocumentLookup1")]
         [ForeignKey(nameof(DocumentLookup1Id))]

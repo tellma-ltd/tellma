@@ -3,7 +3,7 @@
   <ng-container *ngSwitchCase="2" [ngSwitch]="control">
 
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
-    <div class="d-inline" *ngSwitchCase="'state'" [style.text-align]="alignment">
+    <div class="d-inline text-nowrap" *ngSwitchCase="'state'" [style.text-align]="alignment">
       <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
     </div>
     <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">{{ displayValue }}</span>

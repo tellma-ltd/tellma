@@ -9,6 +9,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
   @Input()
+  placeholder = '';
+
+  @Input()
   textAlignment: 'left' | 'right' = null;
 
   @Input()
@@ -49,8 +52,8 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange()
-      || !!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange()) {
+    if ((!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange())
+      || (!!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange())) {
       this.input.nativeElement.value = this.format(this.input.nativeElement.value);
     }
   }

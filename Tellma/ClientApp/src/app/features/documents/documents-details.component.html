@@ -52,8 +52,7 @@
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUncancel(model, extras?.RequiredSignatures)">
         <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
-            (click)="!isEdit && onUncancel(model)"
-            [disabled]="!hasPermissionToUpdateState(model)">
+            (click)="!isEdit && onUncancel(model)" [disabled]="!hasPermissionToUpdateState(model)">
             <fa-icon icon="undo"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
         </button>
@@ -112,8 +111,13 @@
 <ng-template #document let-model="model" let-extras="extras" let-isEdit="isEdit">
 
     <!-- Serial Number -->
-    <t-form-group class="col-12 mb-2 mb-sm-4">
-        <h2 class="font-weight-normal">{{ formatSerial(model?.SerialNumber) }}</h2>
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+        <h2 class="font-weight-normal" *ngIf="!isEdit || isOriginalDocument">{{ formatSerial(model?.SerialNumber) }}
+        </h2>
+        <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber" [ngModelOptions]="{ updateOn: 'blur' }"
+            [codeWidth]="codeWidth" [prefix]="serialPrefix" required>
+        </t-serial-editor>
+
     </t-form-group>
 
     <!-- Document Date -->
@@ -125,7 +129,7 @@
         <t-date-picker *ngIf="isEdit" [(ngModel)]="model.DocumentDate" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="true">
         </t-date-picker>
-    </t-form-group>    
+    </t-form-group>
 
     <!-- Clearance -->
     <t-form-group class="t-form-group" [label]="'Document_Clearance' | translate"

@@ -14,6 +14,7 @@ export type DocumentState = 0 | 1 | -1;
 export type DocumentClearance = 0 | 1 | 2;
 
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
+    SerialNumber?: number;
     DocumentDate?: string;
     Clearance?: DocumentClearance;
     Memo?: string;
@@ -24,7 +25,6 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 
 export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: string;
-    SerialNumber?: number;
     State?: LineState;
     PostingState?: DocumentState;
     PostingStateAt?: string;
@@ -169,7 +169,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
 export function serialNumber(serial: number, prefix: string, codeWidth: number) {
 
     // Handle null and 0
-    if (!serial) {
+    if (serial === null || serial === undefined) {
         return null;
     }
 

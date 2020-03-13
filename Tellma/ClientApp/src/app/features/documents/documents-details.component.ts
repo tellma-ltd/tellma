@@ -312,6 +312,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return serialNumber(serial, def.Prefix, def.CodeWidth || 4);
   }
 
+  public get serialPrefix(): string {
+    return this.definition.Prefix;
+  }
+
+  public get codeWidth(): number {
+    return this.definition.CodeWidth;
+  }
+
   public get showSidebar(): boolean {
     return this.isScreenMode && this.route.snapshot.paramMap.get('id') !== 'new';
   }
@@ -1631,9 +1639,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
+  // Serial Number
+  public get isOriginalDocument(): boolean {
+    return this.definition.IsOriginalDocument;
+  }
+
   // The state chart
 
-  public isState(state: LineState | DocumentState, model: Document): boolean {
+  public isState(state: LineState, model: Document): boolean {
     if (!model) {
       return false;
     }
@@ -1642,12 +1655,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return (model.State || 0) === state && model.PostingState !== 1 && model.PostingState !== -1;
   }
 
-  public showState(model: Document, requiredSignatures: RequiredSignature[], state: number) {
+  public showState(model: Document, requiredSignatures: RequiredSignature[], state: LineState) {
     if (!model || !model.Id) {
       return false;
     }
 
-    if (model.State === state) {
+    if (this.isState(state, model)) {
       return true;
     }
 

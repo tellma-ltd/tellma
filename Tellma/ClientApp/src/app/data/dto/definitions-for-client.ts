@@ -87,6 +87,7 @@ export interface ReportDimensionDefinitionForClient {
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
+    IsOriginalDocument: boolean;
     Prefix: string;
     CodeWidth: number;
     AgentDefinitionList: string;

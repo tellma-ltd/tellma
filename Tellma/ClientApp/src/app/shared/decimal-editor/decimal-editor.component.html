@@ -1,2 +1,2 @@
-<input class="form-control t-input" type="text" [style.text-align]="textAlignment" #input
+<input class="form-control t-input" type="text" [style.text-align]="textAlignment" #input [placeholder]="placeholder"
     (input)="onChange($event.target.value)" (blur)="onBlur($event.target.value)" [disabled]="isDisabled" />

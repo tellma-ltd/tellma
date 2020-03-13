@@ -129,6 +129,7 @@ namespace Tellma.Controllers.Dto
 
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public bool IsOriginalDocument { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
         public string AgentDefinitionList { get; set; }

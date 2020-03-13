@@ -1,0 +1,7 @@
+<div class="d-flex flex-nowrap text-nowrap w-100">
+    <h2 class="font-weight-normal">{{ prefix }}
+    </h2>
+    <input class="form-control t-input" type="text" #input
+        [placeholder]="zeros" (input)="onChange($event.target.value)" (blur)="onBlur($event.target.value)"
+        [disabled]="isDisabled" />
+</div>
