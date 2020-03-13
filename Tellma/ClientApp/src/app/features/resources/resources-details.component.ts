@@ -205,7 +205,6 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
 
-
   public get Description_isVisible(): boolean {
     return !!this.definition.DescriptionVisibility;
   }
@@ -231,7 +230,7 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public get ExpenseCenter_isVisible(): boolean {
-    return !!this.definition.ExpenseCenterVisibility;
+    return !!this.definition.ExpenseCenterVisibility && this.ws.settings.IsMultiResponsibilityCenter;
   }
 
   public get ExpenseCenter_isRequired(): boolean {
@@ -239,23 +238,36 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public get InvestmentCenter_isVisible(): boolean {
-    return !!this.definition.InvestmentCenterVisibility;
+    return !!this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiResponsibilityCenter;
   }
 
   public get InvestmentCenter_isRequired(): boolean {
     return this.definition.InvestmentCenterVisibility === 'Required';
   }
 
-  public get ResidualMonetaryValue_isVisible(): boolean {
-    return !!this.definition.ResidualMonetaryValueVisibility;
+  public ResidualMonetaryValue_isVisible(model: ResourceForSave): boolean {
+    return !!this.definition.ResidualMonetaryValueVisibility && !!model &&
+      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId;
   }
 
   public get ResidualMonetaryValue_isRequired(): boolean {
     return this.definition.ResidualMonetaryValueVisibility === 'Required';
   }
 
+  public currencyPostfix(model: ResourceForSave): string {
+    return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` : '';
+  }
+
   public get ResidualValue_isVisible(): boolean {
     return !!this.definition.ResidualValueVisibility;
+  }
+
+  public get functionalDecimals(): number {
+    return this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public get functionalPostfix(): string {
+    return ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
   }
 
   public get ResidualValue_isRequired(): boolean {
