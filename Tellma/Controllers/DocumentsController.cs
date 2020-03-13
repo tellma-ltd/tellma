@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tellma.Controllers
 {
@@ -492,19 +493,27 @@ namespace Tellma.Controllers
                 .SelectMany(g => g).ToDictionary(entry => entry, entry => entry.Id);
 
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+            var definition = Definition();
 
             ///////// Document Validation
             int docIndex = 0;
             foreach (var doc in docs)
             {
-                // Check that the date is not in the future
+                // If not an original document, the serial number is required
+                if (!definition.IsOriginalDocument && doc.SerialNumber == null)
+                {
+                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                        _localizer[nameof(RequiredAttribute), _localizer["Document_SerialNumber"]]);
+                }
+
+                // Date cannot be in the future
                 if (doc.DocumentDate > DateTime.Today.AddDays(1))
                 {
                     ModelState.AddModelError($"[{docIndex}].{nameof(doc.DocumentDate)}",
                         _localizer["Error_DateCannotBeInTheFuture"]);
                 }
 
-                // Check that the date is not before archive date
+                // Date cannot be before archive date
                 if (doc.DocumentDate <= settings.ArchiveDate)
                 {
                     ModelState.AddModelError($"[{docIndex}].{nameof(doc.DocumentDate)}",

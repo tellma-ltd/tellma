@@ -92,11 +92,13 @@ import { FormGroupBaseComponent } from '../shared/form-group-base/form-group-bas
 import { FormGroupDynamicComponent } from '../shared/form-group-dynamic/form-group-dynamic.component';
 import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-group-settings.component';
 import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cell.component';
+import { SerialEditorComponent } from './serial-editor/serial-editor.component';
 
 @NgModule({
   declarations: [
     BrandComponent,
     DecimalEditorComponent,
+    SerialEditorComponent,
     DetailsComponent,
     DetailsBaseComponent,
     MasterBaseComponent,
@@ -174,6 +176,7 @@ import { FormGroupCellComponent } from '../shared/form-group-cell/form-group-cel
     FormGroupCellComponent,
     SelectorComponent,
     DecimalEditorComponent,
+    SerialEditorComponent,
     DetailsBaseComponent,
     MasterBaseComponent,
     DatePickerComponent,
