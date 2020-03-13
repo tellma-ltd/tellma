@@ -239,6 +239,12 @@ BEGIN
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;
 	
+	-- Make sure Nonworkflow lines are stored with State = 4 (Finalized)
+	UPDATE dbo.Lines
+	SET [State] = 4
+	WHERE [Id] IN (SELECT [Id] FROM @LinesIndexedIds)
+	AND [DefinitionId] NOT IN (SELECT [LineDefinitionId] FROM dbo.Workflows)
+
 	-- if we added/deleted draft lines, the document state should change
 	DECLARE @DocIds dbo.IdList;
 	INSERT INTO @DocIds([Id])

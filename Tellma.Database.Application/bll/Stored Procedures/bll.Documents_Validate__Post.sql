@@ -7,7 +7,6 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Document Date not before last archive date (C#)
-	-- Posting date must not be within Archived period (C#)
 
 	-- Cannot file with no lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -32,7 +31,7 @@ SET NOCOUNT ON;
 	--WHERE DL.[State] IN (N'Draft', N'Requested', N'Authorized', N'Completed')
 	WHERE L.[State] Between 0 AND 3
 
-	-- Cannot post a document which does not have at lease one line that is (Ready To Post)
+	-- Cannot post a document which does not have at lease one line that is (Finalized)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
@@ -43,7 +42,7 @@ SET NOCOUNT ON;
 		FROM dbo.[Lines]
 		WHERE [State] = 4
 	);
-	-- Cannot post a document with non-balanced (Ready to Post) lines
+	-- Cannot post a document with non-balanced (Finalized) lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 

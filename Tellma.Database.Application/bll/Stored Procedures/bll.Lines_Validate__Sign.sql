@@ -130,7 +130,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE D.[State] = 5 --<> 'Closed'
+	WHERE D.[PostingState] = 1 --<> 'Posted'
 
 	-- No Null account when moving to state 4
 	IF @ToState = 4 -- reviewed
@@ -146,12 +146,13 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.Entries E ON FE.[Id] = E.LineId
 	JOIN dbo.Lines L ON L.[Id] = FE.[Id]
-	JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
+	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	LEFT JOIN dbo.Agents AG ON E.AgentId = AG.Id
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
 	WHERE E.AccountId IS NULL
 
-	-- No deprecated account
+	-- No deprecated account, for any positive state
+	IF @ToState > 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 

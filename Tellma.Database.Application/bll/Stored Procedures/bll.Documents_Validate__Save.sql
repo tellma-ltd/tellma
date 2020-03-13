@@ -7,8 +7,8 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET()
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	/* [C# Validation]
 	
@@ -113,5 +113,33 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[ResourceId] IS NULL)
 	AND (A.[HasResource] = 1);
+
+	-- Validate W-less lines can be moved to state 4
+	-- TODO: refactor code from here and bll.Lines_Validate__Sign
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
+		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Agent3Resource4',
+		E.[Index],
+		LDE.[AccountTypeParentCode],
+		E.[CurrencyId],
+		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
+	LEFT JOIN dbo.Agents AG ON E.AgentId = AG.Id
+	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
+	WHERE L.DefinitionId NOT IN (SELECT LineDefinitionId FROM dbo.Workflows)
+	AND E.AccountId IS NULL
+	-- TODO: refactor code from here and bll.Lines_Validate__Sign
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + ISNULL(CAST(E.[Index] AS NVARCHAR (255)),'') + ']', 
+		N'Error_TheAccount0IsDeprecated',
+		A.[Name]
+	FROM @Entries E
+	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
+	WHERE (A.[IsDeprecated] = 1);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

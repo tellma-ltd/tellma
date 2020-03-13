@@ -26,7 +26,7 @@ that has not been signed
 -- The system refreshes the document lines and the list of accessible states.
 -- The document can be closed provided that:
 	1) All the lines have reached their final states
-	2) The lines with state REVIEWED are balanced
+	2) The lines with state FINALIZED are balanced
 -- The user may edit/save a document provided that the document is active
 -- When a user modifies a line that was signed by others, there are two options:
 	1) Flexible: System allows changing and alerts the prior users
