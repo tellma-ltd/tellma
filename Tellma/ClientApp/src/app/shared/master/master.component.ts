@@ -762,7 +762,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       if (!result) {
         return null;
       } else if (result === '(Description)') {
-        result = this.entityDescriptor.orderby.join(',');
+        result = this.entityDescriptor.orderby().join(',');
       } else {
 
         try {
@@ -770,7 +770,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
             this.collection, this.definition, this.workspace, this.translate);
 
           if (!!entityDesc) {
-            result = entityDesc.orderby.map(e => `${result}/${e}`).join(',');
+            result = entityDesc.orderby().map(e => `${result}/${e}`).join(',');
           }
 
         } catch { }

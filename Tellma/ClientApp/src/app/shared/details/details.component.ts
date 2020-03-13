@@ -992,24 +992,30 @@ export function applyServerErrors(
 
   const paths = Object.keys(errors);
   const leftovers: { [key: string]: string[] } = {};
-  for (const path of paths) {
-    const steps = path.split('.');
+  for (const p of paths) {
+    let path = p;
 
+    // This path targets an entity as a whole, not just one of its properties, we
+    // add them to a special indexer "_Self" in that entity's serverErrors collection
+    if (p.trim().endsWith(']')) {
+      path += '._Self';
+    }
+
+    const steps = path.split('.');
     let current = entity;
+
     for (let s = 0; s < steps.length - 1; s++) {
       const step = steps[s];
-      if (!current) {
-        // Do nothing
-
-      } else if (step.endsWith(']')) {
+      if (step.endsWith(']')) {
         // handle array
         const parts = step.substring(0, step.length - 1).split('[');
         const arrayPart = parts[0];
         const indexPart = +parts[1];
 
         if (isNaN(indexPart)) {
-          // ignore a malformed error path
-          leftovers[path] = errors[path];
+          // ignore a malformed error path (a later step will add the errors to leftovers)
+          console.error(`Badly formatted server error path '${path}'`);
+          current = null;
           break;
         }
 
@@ -1024,13 +1030,15 @@ export function applyServerErrors(
         // handle non-array
         current = current[step];
       }
+
+      if (!current) {
+        break;
+      }
     }
 
     if (!!current) {
-      const currentEntity = current as EntityForSave;
-      // we have to use the property indexer here otherwise typescript will complain
-      // in reality we are setting serverErrors even if the target is an array, javascript
-      // allows that but typescript doesn't
+      const currentEntity = current as EntityForSave; // This is a lie to keep typescript happy, sometimes it's an array
+
       if (!currentEntity.serverErrors) {
         currentEntity.serverErrors = {};
       }
@@ -1063,7 +1071,7 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
     for (const item of entity) {
       clearServerErrors(item);
     }
-  } else if (!!entity.Id || entity.Id === null) {
+  } else if (!!entity.Id || entity.Id === null) { // TODO: Review this
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
     for (const prop of props) {

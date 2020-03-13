@@ -4,7 +4,7 @@ import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/dat
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { DocumentForSave, Document, serialNumber, DocumentState } from '~/app/data/entities/document';
+import { DocumentForSave, Document, serialNumber, DocumentState, DocumentClearance, metadata_Document } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
@@ -28,6 +28,7 @@ import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
+import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 interface DocumentEventBase {
   time: string;
@@ -244,6 +245,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const result: DocumentForSave = {
       DocumentDate: new Date().toISOString().split('T')[0],
       MemoIsCommon: false,
+      Clearance: 0,
       Lines: [],
       Attachments: []
     };
@@ -315,7 +317,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // TODO
-  isInactive(_: DocumentForSave) {
+  isInactive(model: DocumentForSave) {
     return null;
   }
 
@@ -455,6 +457,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public get marginRight(): number {
     return this.workspace.ws.isRtl ? 36 : 0;
+  }
+
+  public get attachmentsClass(): string {
+    return this.workspace.ws.isRtl ? 'mr-auto' : 'ml-auto';
+  }
+
+  public clearanceDisplay(clearance: DocumentClearance) {
+    if (clearance === null || clearance === undefined) {
+      return '';
+    }
+
+    const desc = metadata_Document(this.workspace, this.translate, this.definitionId).properties.Clearance as ChoicePropDescriptor;
+    return desc.format(clearance);
+  }
+
+  public get clearanceChoices(): SelectorChoice[] {
+    const desc = metadata_Document(this.workspace, this.translate, this.definitionId).properties.Clearance as ChoicePropDescriptor;
+    return getChoices(desc);
   }
 
   public account(entry: Entry): AccountForSave {

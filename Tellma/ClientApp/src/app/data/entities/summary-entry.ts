@@ -29,8 +29,8 @@ export function metadata_SummaryEntry(wss: WorkspaceService, trx: TranslateServi
                 { key: 'ToDate', isRequired: true, desc: { control: 'date', label: () => trx.instant('ToDate') } },
             ],
             screenUrl: 'summary-entries',
-            orderby: ['AccountId'],
-            format: (item: Entity) => '',
+            orderby: () => ['AccountId'],
+            format: (__: Entity) => '',
             properties: {
                 AccountId: { control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Account: { control: 'navigation', label: () => trx.instant('Entry_Account'), type: 'Account', foreignKeyName: 'AccountId' },

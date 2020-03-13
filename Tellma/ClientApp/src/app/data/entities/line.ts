@@ -43,7 +43,7 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
             titleSingular: () => trx.instant('Line'),
             titlePlural: () => trx.instant('Lines'),
             select: [],
-            orderby: ['Id'],
+            orderby: () => ['Id'],
             format: (item: EntityWithKey) => '',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

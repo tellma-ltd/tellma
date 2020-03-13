@@ -113,7 +113,7 @@ export interface EntityDescriptor {
     /**
      * When ordering by a nav property of this Entity type, this value specifies the OData 'orderby' value to use.
      */
-    orderby: string[];
+    orderby: () => string[];
 
     /**
      * The server endpoint from which to retrieve Entities of this type, after the 'https://web.tellma.com/api/' part.

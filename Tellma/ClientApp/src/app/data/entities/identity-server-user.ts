@@ -27,7 +27,7 @@ export function metadata_IdentityServerUser(wss: WorkspaceService, trx: Translat
             select: ['Email'],
             apiEndpoint: 'identity-server-users',
             screenUrl: 'identity-server-users',
-            orderby: ['Email'],
+            orderby: () => ['Email'],
             format: (item: IdentityServerUser) => item.Email,
             isAdmin: true,
             properties: {

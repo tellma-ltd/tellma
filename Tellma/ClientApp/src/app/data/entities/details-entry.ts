@@ -57,8 +57,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             //     { key: 'VolumeUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' } },
             // ],
             screenUrl: 'details-entries', // TODO
-            orderby: ['Id'],
-            format: (item: EntityWithKey) => '',
+            orderby: () => ['Id'],
+            format: (__: EntityWithKey) => '',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 LineId: { control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

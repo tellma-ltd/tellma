@@ -552,7 +552,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           this.workspace, this.translate);
 
         // This is to ensure that ordering of select columns is done in the correct order
-        desc.orderby.forEach(o => {
+        desc.orderby().forEach(o => {
           const descSelect = desc.select.find(s => s === o);
           if (!!descSelect) {
             const descSelectPath = `${stringPath}/${descSelect}`.trim();

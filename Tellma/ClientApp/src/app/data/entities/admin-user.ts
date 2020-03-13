@@ -38,7 +38,7 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
             select: ['Name'],
             apiEndpoint: 'admin-users',
             screenUrl: 'admin-users',
-            orderby: ['Name'],
+            orderby: () => ['Name'],
             format: (item: AdminUserForSave) => item.Name,
             isAdmin: true,
             properties: {

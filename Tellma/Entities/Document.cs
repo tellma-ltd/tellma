@@ -13,6 +13,12 @@ namespace Tellma.Entities
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public DateTime? DocumentDate { get; set; }
 
+        [Display(Name = "Document_Clearance")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
+            new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
+        public byte? Clearance { get; set; }
+
         // HIDDEN
 
         [Display(Name = "Document_VoucherBooklet")]

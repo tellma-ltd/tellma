@@ -397,6 +397,18 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>المرفقات</value>
   </data>
+  <data name="Document_Clearance" xml:space="preserve">
+    <value>درجة السرية</value>
+  </data>
+  <data name="Document_Clearance_0" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="Document_Clearance_1" xml:space="preserve">
+    <value>سري</value>
+  </data>
+  <data name="Document_Clearance_2" xml:space="preserve">
+    <value>سري للغاية</value>
+  </data>
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>

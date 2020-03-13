@@ -67,7 +67,7 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
       select: _select,
       apiEndpoint: !!definitionId ? `agents/${definitionId}` : 'agents',
       screenUrl: !!definitionId ? `agents/${definitionId}` : 'agents',
-      orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+      orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

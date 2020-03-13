@@ -449,6 +449,7 @@ namespace Tellma.Controllers
             {
                 // Document defaults
                 doc.MemoIsCommon ??= true;
+                // doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
 
                 doc.Lines.ForEach(line =>

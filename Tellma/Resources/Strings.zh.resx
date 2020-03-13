@@ -397,6 +397,18 @@
   <data name="Document_Attachments" xml:space="preserve">
     <value>附件</value>
   </data>
+  <data name="Document_Clearance" xml:space="preserve">
+    <value>许可级别</value>
+  </data>
+  <data name="Document_Clearance_0" xml:space="preserve">
+    <value>上市</value>
+  </data>
+  <data name="Document_Clearance_1" xml:space="preserve">
+    <value>秘密</value>
+  </data>
+  <data name="Document_Clearance_2" xml:space="preserve">
+    <value>绝密</value>
+  </data>
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>

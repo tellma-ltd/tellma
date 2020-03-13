@@ -11,9 +11,11 @@ import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
 
 export type DocumentState = 0 | 1 | -1;
+export type DocumentClearance = 0 | 1 | 2;
 
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     DocumentDate?: string;
+    Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
     Lines?: TLine[];
@@ -81,13 +83,19 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             select: _select,
             apiEndpoint: !!definitionId ? `documents/${definitionId}` : 'documents',
             screenUrl: !!definitionId ? `documents/${definitionId}` : 'documents',
-            orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+            orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
                 DocumentDate: { control: 'date', label: () => trx.instant('Document_DocumentDate') },
+                Clearance: {
+                    control: 'choice',
+                    label: () => trx.instant('Document_Clearance'),
+                    choices: [0, 1, 2],
+                    format: (c: number) => trx.instant('Document_Clearance_' + c)
+                },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
                 SerialNumber: {

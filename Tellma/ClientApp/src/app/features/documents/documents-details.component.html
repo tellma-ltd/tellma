@@ -125,6 +125,16 @@
         <t-date-picker *ngIf="isEdit" [(ngModel)]="model.DocumentDate" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="true">
         </t-date-picker>
+    </t-form-group>    
+
+    <!-- Clearance -->
+    <t-form-group class="t-form-group" [label]="'Document_Clearance' | translate"
+        [serverErrors]="model?.serverErrors?.Clearance">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Clearance">
+            <div>{{ clearanceDisplay(model?.Clearance) }}</div>
+        </t-restricted>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.Clearance" [choices]="clearanceChoices">
+        </t-selector>
     </t-form-group>
 
     <!-- Memo -->
@@ -981,7 +991,7 @@
             </div>
         </li>
 
-        <li class="ml-auto" [ngbNavItem]="'Attachment'">
+        <li class="{{ attachmentsClass }}" [ngbNavItem]="'Attachment'">
             <a ngbNavLink><span
                     class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
             </a>

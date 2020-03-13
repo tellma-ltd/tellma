@@ -33,7 +33,7 @@ export function metadata_IfrsConceptInner(wss: WorkspaceService, trx: TranslateS
         select: _label,
         apiEndpoint: '',
         screenUrl: '',
-        orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
+        orderby: () => ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
         format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
         properties: {
             IfrsType: {
