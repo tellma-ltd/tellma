@@ -543,6 +543,14 @@
     <Build Include="dal\Stored Procedures\dal.Documents__Uncancel.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Production__Actual_vs_Planned.sql" />
     <Build Include="Mapping\DocumentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ExchangeRates.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ExchangeRateList.sql" />
+    <Build Include="api\Stored Procedures\api.ExchangeRates__Save.sql" />
+    <Build Include="api\Stored Procedures\api.ExchangeRates__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.ExchangeRates__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.ExchangeRates__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

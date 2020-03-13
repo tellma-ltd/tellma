@@ -11,6 +11,7 @@
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CHECK ([State] BETWEEN -4 AND +4),
 	[PostingState]					SMALLINT		NOT NULL DEFAULT 0 CHECK ([PostingState] BETWEEN -1 AND +1),
 	[PostingStateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[Clearance]						TINYINT			NOT NULL DEFAULT 0,
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	-- When evidence type = source document
 	[VoucherBookletId]				INT, -- each range might be dedicated for a special purpose

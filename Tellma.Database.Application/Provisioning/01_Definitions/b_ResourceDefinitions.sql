@@ -1,6 +1,5 @@
 ﻿DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 
-
 IF @DB = N'100'
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],

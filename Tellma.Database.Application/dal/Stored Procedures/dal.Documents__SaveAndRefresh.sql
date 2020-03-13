@@ -21,7 +21,9 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id],
-				[DocumentDate], [VoucherNumericReference], --[SortKey],
+				[DocumentDate],  --[SortKey],
+				[Clearance],
+				[VoucherNumericReference],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
 				[AgentId],
@@ -34,6 +36,7 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DocumentDate]			= s.[DocumentDate],
+				t.[Clearance]				= s.[Clearance],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
 				t.[MemoIsCommon]			= s.[MemoIsCommon],
@@ -43,12 +46,12 @@ BEGIN
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId], [SerialNumber], 
-				[DocumentDate], [VoucherNumericReference], --[SortKey],
+				[DocumentDate], [Clearance], [VoucherNumericReference], --[SortKey],
 				[Memo], [MemoIsCommon], [AgentId]
 			)
 			VALUES (
 				@DefinitionId, s.[SerialNumber],
-				s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
+				s.[DocumentDate], s.[Clearance], s.[VoucherNumericReference], --s.[SerialNumber], 
 				s.[Memo], s.[MemoIsCommon], s.[AgentId]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
