@@ -9,6 +9,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET()
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 
 	/* [C# Validation]
 	
@@ -26,6 +27,45 @@ SET NOCOUNT ON;
 	FROM @Entries E
 	WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
 	AND (ISNULL([MonetaryValue],0) <> ISNULL([Value],0))
+
+	--[C# Validation]
+	-- For copy documents, serial number is required
+	IF @IsOriginalDocument = 0
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
+		N'Error_TheSerialNumberIsRequired'
+	FROM @Documents
+	WHERE [SerialNumber] IS NULL
+
+	-- Serial number must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
+		N'Error_TheSerialNumber0IsDuplicated',
+		CAST([SerialNumber] AS NVARCHAR (50))
+	FROM @Documents
+	WHERE [SerialNumber] IN (
+		SELECT [SerialNumber]
+		FROM @Documents
+		WHERE [SerialNumber] IS NOT NULL
+		GROUP BY [SerialNumber]
+		HAVING COUNT(*) > 1
+	);
+	
+	-- Serial number must not be already in the back end
+	IF @IsOriginalDocument = 0
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].SerialNumber',
+		N'Error_TheSerialNumber0IsUsed',
+		CAST(FE.[SerialNumber] AS NVARCHAR (50))
+	FROM @Documents FE
+	JOIN [dbo].[Documents] BE ON FE.[SerialNumber] = BE.[SerialNumber]
+	WHERE
+		FE.[SerialNumber] IS NOT NULL
+	AND BE.DefinitionId = @DefinitionId
+	AND FE.Id <> BE.Id;
 
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
 

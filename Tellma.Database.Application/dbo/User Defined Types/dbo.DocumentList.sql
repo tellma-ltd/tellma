@@ -1,11 +1,10 @@
 ﻿CREATE TYPE [dbo].[DocumentList] AS TABLE (
 	[Index]									INT				PRIMARY KEY,-- IDENTITY (0,1),
 	[Id]									INT				NOT NULL DEFAULT 0,
-	--[OperatingSegmentId]					INT				NOT NULL,
+	--[InvestmentCenterId]					INT				NOT NULL,
+	[SerialNumber]							INT,
 	[DocumentDate]							DATE			NOT NULL DEFAULT (CONVERT (date, SYSDATETIME())),
 	[Clearance]								TINYINT			NOT NULL DEFAULT 0,
-	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose
-	[VoucherNumericReference]				INT, -- must fall between RangeStarts and RangeEnds of the booklet
 	[DocumentLookup1Id]						INT, -- e.g., cash machine serial in the case of a sale
 	[DocumentLookup2Id]						INT,
 	[DocumentLookup3Id]						INT,

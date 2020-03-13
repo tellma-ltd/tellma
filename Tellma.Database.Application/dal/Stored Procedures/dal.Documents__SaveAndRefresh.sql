@@ -12,6 +12,7 @@ BEGIN
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 
 	INSERT INTO @DocumentsIndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -21,38 +22,48 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id],
-				[DocumentDate],  --[SortKey],
+				[DocumentDate],
 				[Clearance],
-				[VoucherNumericReference],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
 				[AgentId],
+				[SerialNumber] As ManualSerialNumber,
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
-				) As [SerialNumber]
+				) As [AutoSerialNumber]
 			FROM @Documents D
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[DocumentDate]			= s.[DocumentDate],
-				t.[Clearance]				= s.[Clearance],
-				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
-				t.[Memo]					= s.[Memo],
-				t.[MemoIsCommon]			= s.[MemoIsCommon],
-				t.[AgentId]					= s.[AgentId],
-				t.[ModifiedAt]				= @Now,
-				t.[ModifiedById]			= @UserId
+				t.[SerialNumber]	= IIF(@IsOriginalDocument = 1, 
+										t.[SerialNumber],
+										s.[ManualSerialNumber]),
+				t.[DocumentDate]	= s.[DocumentDate],
+				t.[Clearance]		= s.[Clearance],
+				t.[Memo]			= s.[Memo],
+				t.[MemoIsCommon]	= s.[MemoIsCommon],
+				t.[AgentId]			= s.[AgentId],
+				t.[ModifiedAt]		= @Now,
+				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DefinitionId], [SerialNumber], 
-				[DocumentDate], [Clearance], [VoucherNumericReference], --[SortKey],
-				[Memo], [MemoIsCommon], [AgentId]
+				[DefinitionId],
+				[SerialNumber], 
+				[DocumentDate],
+				[Clearance],
+				[Memo],
+				[MemoIsCommon],
+				[AgentId]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber],
-				s.[DocumentDate], s.[Clearance], s.[VoucherNumericReference], --s.[SerialNumber], 
-				s.[Memo], s.[MemoIsCommon], s.[AgentId]
+				@DefinitionId,
+				IIF(@IsOriginalDocument = 1, s.[AutoSerialNumber], s.[ManualSerialNumber]),
+				s.[DocumentDate],
+				s.[Clearance],
+				s.[Memo],
+				s.[MemoIsCommon],
+				s.[AgentId]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;

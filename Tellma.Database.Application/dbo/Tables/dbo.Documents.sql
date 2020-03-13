@@ -7,15 +7,12 @@
 	-- Common to all document types
 	[DefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
+	CONSTRAINT [IX_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
 	[DocumentDate]					DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CHECK ([State] BETWEEN -4 AND +4),
 	[PostingState]					SMALLINT		NOT NULL DEFAULT 0 CHECK ([PostingState] BETWEEN -1 AND +1),
-	[PostingStateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[PostingStateAt]				DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0,
-	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
-	-- When evidence type = source document
-	[VoucherBookletId]				INT, -- each range might be dedicated for a special purpose
-	[VoucherNumericReference]		INT, -- must fall between RangeStarts and RangeEnds of the booklet
 	-- Dynamic properties defined by document type specification
 	[DocumentLookup1Id]				INT, -- e.g., cash machine serial in the case of a sale
 	[DocumentLookup2Id]				INT,
@@ -57,12 +54,5 @@
 	-- If the company is in Alofi, and the server is hosted in Apia, the server time will be one day behind
 	-- So, the user will not be able to enter transactions unless DocumentDate is allowed 1d future 	
  );
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__VoucherBooklet_VoucherNumericReference]
-  ON [dbo].[Documents]([VoucherBookletId], [VoucherNumericReference])
-  WHERE [VoucherNumericReference] IS NOT NULL;
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__DocumentDefinitionId_SerialNumber]
-  ON [dbo].[Documents]([DefinitionId], [SerialNumber])
 GO
 -- TODO: Add trigger to fill DocumentsStatesHistory automatically, or use temporal

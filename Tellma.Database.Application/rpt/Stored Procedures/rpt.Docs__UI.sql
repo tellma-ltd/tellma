@@ -9,8 +9,8 @@ WITH Docs AS (
 			D.[DefinitionId] AS DocumentDefinitionId,
 			[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 			D.[State],
-			ISNULL(VB.[StringPrefix], '') +
-			ISNULL(CAST(D.[VoucherNumericReference] AS NVARCHAR(30)), '') AS [VoucherRef],
+			ISNULL(DD.[Prefix], '') +
+			ISNULL(CAST(D.[SerialNumber] AS NVARCHAR(30)), '') AS [VoucherRef],
 			U.[Name] AS [AssignedTo],
 			--D.[SortKey] As [DocumentSortKey],
 			D.[Memo],
@@ -24,7 +24,6 @@ WITH Docs AS (
 			E.[Value]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
-		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.[Users] U ON DA.AssigneeId = U.Id
 		LEFT JOIN dbo.[Lines] L ON D.[Id] = L.[DocumentId]
