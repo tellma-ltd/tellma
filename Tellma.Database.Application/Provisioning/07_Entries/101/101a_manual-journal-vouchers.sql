@@ -5,7 +5,6 @@ BEGIN -- Inserting
 	([Index],	[DocumentDate], [Memo]) VALUES
 	(2,			'2019.01.02',	N'Received 10,000 USD from MA - Dec'),
 	(3,			'2019.01.02',	N'Yahoo Business Mail Subscription Jan 2019'),
-	(6,			'2019.01.05',	N'Sold USD'),
 	(7,			'2019.01.05',	N'Charged phone for PR and Marketing'),
 	(8,			'2019.01.05',	N'Garden maintenance'),
 	(9,			'2019.01.05',	N'Electricity'),
@@ -27,7 +26,6 @@ BEGIN -- Inserting
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
 	(0,			2,				N'ManualLine'),(1,			2,				N'ManualLine'),
 	(0,			3,				N'ManualLine'),(1,			3,				N'ManualLine'),
-	(0,			6,				N'ManualLine'),(1,			6,				N'ManualLine'),
 	(0,			7,				N'ManualLine'),(1,			7,				N'ManualLine'),
 	(0,			8,				N'ManualLine'),(1,			8,				N'ManualLine'),
 	(0,			9,				N'ManualLine'),(1,			9,				N'ManualLine'),
@@ -42,9 +40,6 @@ BEGIN -- Inserting
 
 	(0, 0, 3,+1,@1DomainRegistration,	@AdministrativeExpense,						@1Overhead,	@USD,			19.95,				19.95),--
 	(0, 1, 3,-1,@1MAPayable,	NULL,												NULL,		NULL,			19.95,				19.95),
-
-	(0, 0, 6,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
-	(0, 1, 6,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
 
 	(0, 0, 7,+1,@1Internet,	@AdministrativeExpense, 							@1Overhead,	@SDG,			250,				4.55),--
 	(0, 1, 7,-1,@1GMFund,		@PaymentsToSuppliersForGoodsAndServices,			NULL,		@SDG,			250,				4.55),

@@ -11,6 +11,7 @@ BEGIN -- Inserting
 	(0,			'2019.01.01',	N'Meals'),
 	(4,			'2019.01.03',	N'Maintenance'),
 	(5,			'2019.01.03',	N'Meals'),
+	(6,			'2019.01.05',	N'Sold USD'),
 	(21,		'2019.01.06',	N'Mohammed Kamil 2018 Vacation and 10% Deductions'),
 	(22,		'2019.01.06',	N'Ahmad Abdussalam Gift Allowance'),
 	(23,		'2019.01.06',	N'Paid first installment for the former workers as per the court ruling. Total amount is 110,000 SDG. The remaining portion will be paid next month.'),
@@ -70,6 +71,10 @@ BEGIN -- Inserting
 		[ExternalReference0] = N'00540',
 		[Value0] = 25.09
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
+
+	--(0, 0, 6,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
+	--(0, 1, 6,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
+
 
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPaymentToOther';
