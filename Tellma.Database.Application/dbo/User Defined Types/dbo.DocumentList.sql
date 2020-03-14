@@ -12,7 +12,7 @@
 	[Memo]							NVARCHAR (255),	
 	[MemoIsCommon]					BIT				DEFAULT 1,
 	[AgentId]						INT,
-	[AgentIdIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[AgentIsCommon]					BIT				NOT NULL DEFAULT 1,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),

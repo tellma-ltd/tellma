@@ -25,7 +25,7 @@
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- Agent Definition is specified in DocumentDefinition
 	[AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.Agents([Id]), 
-	[AgentIdIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[AgentIsCommon]					BIT				NOT NULL DEFAULT 1,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),

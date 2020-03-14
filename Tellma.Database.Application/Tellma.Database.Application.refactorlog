@@ -271,4 +271,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Resources__Preprocess]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="70bb3e6d-ae86-453b-bfc4-d2bff20c03f9" ChangeDateTime="03/14/2020 12:01:44">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AgentIdIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentIsCommon]" />
+  </Operation>
 </Operations>
