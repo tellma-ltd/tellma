@@ -22,8 +22,6 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			--[AgentDefinitionList],
-			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[ViewDefaultsToForm],
 			[Script]
@@ -56,8 +54,6 @@ SET NOCOUNT ON;
 			t.[TitlePlural]					= s.[TitlePlural],
 			t.[TitlePlural2]				= s.[TitlePlural2],
 			t.[TitlePlural3]				= s.[TitlePlural3],
-			--t.[AgentDefinitionList]			= s.[AgentDefinitionList],
-			--t.[ResponsibilityTypeList]		= s.[ResponsibilityTypeList],
 			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 			t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
 			t.[Script]						= s.[Script],
@@ -74,8 +70,6 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			--[AgentDefinitionList],
-			--[ResponsibilityTypeList],
 			[AllowSelectiveSigning],
 			[ViewDefaultsToForm],
 			[Script]
@@ -91,8 +85,6 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
-			--s.[AgentDefinitionList],
-			--s.[ResponsibilityTypeList],
 			s.[AllowSelectiveSigning],
 			s.[ViewDefaultsToForm],
 			s.[Script]
@@ -153,7 +145,8 @@ SET NOCOUNT ON;
 			LDC.[Label2],
 			LDC.[Label3],
 			LDC.[RequiredState],
-			LDC.[ReadOnlyState]
+			LDC.[ReadOnlyState],
+			LDC.[InheritsFromHeader]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 	) AS s
@@ -169,12 +162,13 @@ SET NOCOUNT ON;
 			t.[Label3]			= s.[Label3],
 			t.[RequiredState]	= s.[RequiredState],
 			t.[ReadOnlyState]	= s.[ReadOnlyState],
+			t.[InheritsFromHeader]=s.[InheritsFromHeader],
 			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState]);
+		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (

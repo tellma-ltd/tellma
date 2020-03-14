@@ -25,7 +25,7 @@
 */
 --DECLARE @@PTAccountTypes dbo.[LegacyTypeList];
 --INSERT INTO @PTLegacyTypes (
---	[Id],					[Name],						[IsCurrent],[AgentDefinitionList],	[IsRelated],[ResourceClassificationParentCode], [EntryClassificationParentCode],			[Description]) VALUES
+--	[Id],					[Name],						[IsCurrent],[AgentDefinitionId],	[IsRelated],[ResourceClassificationParentCode], [EntryClassificationParentCode],			[Description]) VALUES
 --(N'AccountsPayable',		N'Accounts Payable',		1,			N'suppliers',				NULL,	N'Cash',							NULL,										N'This represents balances owed to vendors for goods, supplies, and services purchased on an open account. Accounts payable balances are used in accrual-based accounting, are generally due in 30 or 60 days, and do not bear interest.'),
 --(N'AccountsReceivable',		N'Accounts Receivable',	1,			N'customers',				NULL,	N'Cash',							NULL,										N'This represents amounts owed by customers for items or services sold to them when cash is not received at the time of sale. Typically, accounts receivable balances are recorded on sales invoices that include terms of payment. Accounts receivable are used in accrual-based accounting.'),
 --(N'AccumulatedDepreciation',N'AccumulatedDepreciation'0,			N'cost-centers,cost-units',	0,		N'PropertyPlantAndEquipment',		N'DepreciationPropertyPlantAndEquipment',	N'This is a contra asset account to depreciable (fixed) assets such as buildings, machinery, and equipment. Depreciable basis (expense) is the difference between an asset''s cost and its estimated salvage value. Recording depreciation is a way to indicate that assets have declined in service potential. Accumulated depreciation represents total depreciation taken to date on the assets.'),

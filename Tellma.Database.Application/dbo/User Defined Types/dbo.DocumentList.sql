@@ -12,7 +12,7 @@
 	[DocumentText2]							NVARCHAR (255),
 	[Memo]									NVARCHAR (255),	
 	[MemoIsCommon]							BIT				DEFAULT 1,
-	[AgentId]								INT -- Definition is specified in DocumentDefinition.AgentDefinitionList
+	[AgentId]								INT
 
 	--[CurrencyId]							INT, 
 	--[CurrencyIsCommon]						BIT				DEFAULT 1,

@@ -4,12 +4,7 @@
 	[Id]						NVARCHAR (50)	CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY,
 	-- IsPrimal, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	-- Original is less confusing than Source Document. An SIV is not a source document, but can be primal
-	[IsOriginalDocument]		BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired = 0
-	-- EvidenceType = Authentication <=> Document is paperless. Workflow and Account signatures are required
-	-- EvidenceType = SourceDocument <=> There is a external booklet from which we are copying. In that case, Include voucher booklet and reference. Only workflow required
-	-- EvidenceType = Attachment <=> There is no external booklet. Instead, there are support documents proving what happened. In that case, attach them. Only workflow required
-	-- EvidenceType = Trust <=> There is no supporting document proving what happened. Simply accept the posting as is. Only workflow required
-	--[EvidenceTypeId]			NVARCHAR (30)	NOT NULL DEFAULT N'Trust' CONSTRAINT [CK_DocumentDefinitions__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
+	[IsOriginalDocument]		BIT				DEFAULT 1,
 	[TitleSingular]				NVARCHAR (255),
 	[TitleSingular2]			NVARCHAR (255),
 	[TitleSingular3]			NVARCHAR (255),
@@ -23,8 +18,25 @@
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
 
-	[AgentDefinitionList]		NVARCHAR (1024),
-
+	[AgentDefinitionId]			NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
+	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
+	[InvestmentCenterVisibility]NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([InvestmentCenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[Time1Visibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Time1Visibility] IN (N'None', N'Optional', N'Required')),
+	[Time1Label1]				NVARCHAR (50),
+	[Time1Label2]				NVARCHAR (50),
+	[Time1Label3]				NVARCHAR (50),
+	[Time2Visibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([Time2Visibility] IN (N'None', N'Optional', N'Required')),
+	[Time2Label1]				NVARCHAR (50),
+	[Time2Label2]				NVARCHAR (50),
+	[Time2Label3]				NVARCHAR (50),
+	[QuantityVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([QuantityVisibility] IN (N'None', N'Optional', N'Required')),
+	[QuantityLabel1]			NVARCHAR (50),
+	[QuantityLabel2]			NVARCHAR (50),
+	[QuantityLabel3]			NVARCHAR (50),
+	[UnitVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UnitVisibility] IN (N'None', N'Optional', N'Required')),
+	[UnitLabel1]				NVARCHAR (50),
+	[UnitLabel2]				NVARCHAR (50),
+	[UnitLabel3]				NVARCHAR (50),
 	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu

@@ -33,7 +33,7 @@ END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList],	[MainMenuIcon],		[MainMenuSection],	[MainMenuSortKey]) VALUES
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionId],	[MainMenuIcon],		[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL,					N'exchange-alt',	N'Financials',		0),
 	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians',		N'money-check-alt',	N'Cash',			20),
 	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians',		N'file-invoice-dollar',	N'Cash',		50),
@@ -97,7 +97,7 @@ BEGIN
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionList]) VALUES
+		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionId]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL),
 	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians'),
 	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians'),

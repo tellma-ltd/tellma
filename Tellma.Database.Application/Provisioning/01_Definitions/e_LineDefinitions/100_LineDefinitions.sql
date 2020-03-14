@@ -192,7 +192,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 	-- Withholding Tax Payable
 	INSERT @LineDefinitions([Index],
-	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
+	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionId], [ResponsibilityTypeList]) VALUES (
 	4,N'WithholdingTaxPayable',	N'Withholding Tax Payable',	N'ضريبة خصم مشتريات',	N'Withholding Taxes Payable',	N'ضرائب خصم مشتريات',	N'suppliers',			N'Investment');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
@@ -230,7 +230,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 	-- Goods Receipts Note
 	INSERT @LineDefinitions([Index],
-	[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
+	[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionId], [ResponsibilityTypeList]) VALUES (
 	5,N'GoodsReceiptNote',	N'Goods Receipt Note',	N'استلام مخزن',		N'Goods Receipt Notes',	N'استلامات مخازن',	N'suppliers',			N'Investment');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
@@ -268,7 +268,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 
 	-- GRIV
 	INSERT @LineDefinitions([Index],
-	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
+	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionId], [ResponsibilityTypeList]) VALUES (
 	6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers',			N'Investment');
 	UPDATE @LineDefinitions
 	SET [Script] = N'

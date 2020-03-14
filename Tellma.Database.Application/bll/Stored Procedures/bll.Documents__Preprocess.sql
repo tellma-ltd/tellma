@@ -25,18 +25,15 @@ BEGIN
 	-----
 	SELECT * FROM @ProcessedWideLines;
 	';
-	-- Fill entries from Document header, and Tabs headers
-/*	-- To be discussed if it makes sense. If so, implement in C#.
-	-- If Agent Id in Documents is not Null, then propagate it to the entries where the Agent Definition is compatible
-	UPDATE PE
-	SET AgentId = D.AgentId
-	FROM @PreprocessedEntries PE
-	JOIN @PreprocessedLines L ON PE.[LineIndex] = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
-	JOIN @Documents D ON L.DocumentIndex = D.[Index]
-	JOIN dbo.LineDefinitionEntries LDE ON PE.Index = LDE.[Index] AND L.DefinitionId = LDE.LineDefinitionId
-	JOIN dbo.Agents AG ON D.AgentId = AG.Id
-	WHERE LDE.[AgentDefinitionId] LIKE N'%' + AG.DefinitionId +'%'
-*/
+	-- C#: Fill entries from Document header, if LineDefinitionColumns dictates it
+	-- SQL prevents running this code since Entries is READONLY
+	--UPDATE E
+	--	SET E.AgentId = (SELECT AgentId FROM @Documents WHERE [Index] = E.DocumentIndex)
+	--FROM @Entries E
+	--JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.DocumentIndex
+	--JOIN @Documents D ON L.[DocumentIndex] = D.[Index]
+	--JOIN dbo.LineDefinitionColumns LDC ON L.DefinitionId = LDC.LineDefinitionId AND E.[Index] = LDC.[EntryIndex]
+	--WHERE D.AgentIsCommon = 1 AND LDC.ColumnName = N'AgentId' AND LDC.[InheritsFromHeader] = 1
 
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
@@ -45,12 +42,12 @@ BEGIN
 		SELECT [Id] FROM dbo.LineDefinitions
 		WHERE [Script] IS NOT NULL
 	);
-
+	-- Copy lines and entries with no script as they are
 	INSERT INTO @PreprocessedLines SELECT * FROM @Lines WHERE DefinitionId NOT IN (SELECT [Id] FROM @ScriptLineDefinitions)
 	INSERT INTO @PreprocessedEntries
 	SELECT E.* FROM @Entries E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-
+	-- Populate PreprocessedLines and PreprocessedEntries using script
 	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
 	BEGIN
 		INSERT INTO @ScriptLines SELECT * FROM @Lines WHERE DefinitionId IN (SELECT [Id] FROM @ScriptLineDefinitions)
@@ -80,10 +77,8 @@ BEGIN
 		INSERT INTO @PreprocessedLines SELECT * FROM @ScriptLines;
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
-	END -- IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
--- PreprocessedLines and PreprocessedEntries now populated from script
-
--- Copy information from Line definitions to Entries
+	END
+	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
 		E.[Direction] = LDE.[Direction],
@@ -126,17 +121,30 @@ BEGIN
 	SET E.[UnitId] = RU.UnitId
 	FROM @PreprocessedEntries E
 	JOIN RU ON E.ResourceId = RU.ResourceId;
-	-- When currency is null, set it to functiona
+	-- When currency is null, set it to functional currency
 	UPDATE @PreprocessedEntries
 	SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
-	-- when there is only one responsibility center, use it everywhere
+	
+	DECLARE @BalanceSheetRoot HIERARCHYID = (
+			SELECT [Node] FROM dbo.AccountTypes
+			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
+	);
+	-- C#: When there is only one responsibility center, use it everywhere
 	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE IsActive = 1) = 1
-	UPDATE @PreprocessedEntries
-	SET ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE IsActive = 1);
-	-- for financial amounts in functional currency, the value is known
+		UPDATE @PreprocessedEntries
+		SET ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE IsActive = 1);
+	-- SQL or C#?
+	ELSE 	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1) = 1
+		UPDATE PE 
+		SET PE.ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1)
+		FROM @PreprocessedEntries PE
+		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
+		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+	-- C#, for financial amounts in functional currency, the value is known
 	UPDATE E 
 	SET
-		[Value]			= [MonetaryValue]
+		[Value]		= [MonetaryValue]
 	FROM @PreprocessedEntries E
 	WHERE
 		[CurrencyId] = @FunctionalCurrencyId
@@ -186,13 +194,15 @@ BEGIN
 	SET E.AccountId = CA.AccountId
 	FROM @PreprocessedEntries E
 	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex]
-	-- Return the populated entries. (Later we may need to return the populated lines as well)
+	-- Return the populated entries.
+	-- (Later we may need to return the populated lines and documents as well)
 	SELECT @PreprocessedEntriesJson = 
 	(
 		SELECT *
 		FROM @PreprocessedEntries
 		FOR JSON PATH
 	);
+	
 	--PRINT N'bll.Documents__Preprocess: PreprocessedEntriesJson = ' + ISNULL(@PreprocessedEntriesJson, N'');
 	SELECT * FROM @PreprocessedEntries;
 END

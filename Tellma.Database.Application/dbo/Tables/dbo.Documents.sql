@@ -22,9 +22,20 @@
 	--[SortKey]						DECIMAL (9,4)	NOT NULL,
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]							NVARCHAR (255),
-	[MemoIsCommon]					BIT				DEFAULT 1,
-	-- If Agent Id is specified, it is automatically copied to all tabs using the same agent definition, and they become read only
-	[AgentId]						INT, -- Definition is specified in DocumentDefinition.AgentDefinitionList
+	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
+	-- Agent Definition is specified in DocumentDefinition
+	[AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.Agents([Id]), 
+	[AgentIdIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[InvestmentCenterId]			INT,
+	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
+	[Time1]							DATETIME2 (2),
+	[Time1IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Time2]							DATETIME2 (2), -- must be less than DocumentDate when posting
+	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Quantity]						DECIMAL (19,4)	NULL,
+	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[MeasurementUnitId]				INT CONSTRAINT [FK_Documents__MeasurementUnitId] REFERENCES dbo.MeasurementUnits([Id]),
+	[MeasurementUnitIsCommon]		BIT				NOT NULL DEFAULT 1,
 	--[CurrencyId]					INT, 
 	--[InvoiceReference]			NVARCHAR (50),
 	-- Transaction specific, to record the acquisition or loss of goods and services
