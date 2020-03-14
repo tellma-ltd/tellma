@@ -27,6 +27,17 @@ BEGIN
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
 				[AgentId],
+				[AgentIdIsCommon],
+				[InvestmentCenterId],
+				[InvestmentCenterIsCommon],
+				[Time1],
+				[Time1IsCommon],
+				[Time2],
+				[Time2IsCommon],
+				[Quantity],
+				[QuantityIsCommon],
+				[MeasurementUnitId],
+				[MeasurementUnitIsCommon],
 				[SerialNumber] As ManualSerialNumber,
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
@@ -36,16 +47,27 @@ BEGIN
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[SerialNumber]	= IIF(@IsOriginalDocument = 1, 
-										t.[SerialNumber],
-										s.[ManualSerialNumber]),
-				t.[DocumentDate]	= s.[DocumentDate],
-				t.[Clearance]		= s.[Clearance],
-				t.[Memo]			= s.[Memo],
-				t.[MemoIsCommon]	= s.[MemoIsCommon],
-				t.[AgentId]			= s.[AgentId],
-				t.[ModifiedAt]		= @Now,
-				t.[ModifiedById]	= @UserId
+				t.[SerialNumber]			= IIF(@IsOriginalDocument = 1, 
+												t.[SerialNumber],
+												s.[ManualSerialNumber]),
+				t.[DocumentDate]			= s.[DocumentDate],
+				t.[Clearance]				= s.[Clearance],
+				t.[Memo]					= s.[Memo],
+				t.[MemoIsCommon]			= s.[MemoIsCommon],
+				t.[AgentId]					= s.[AgentId],
+				t.[AgentIdIsCommon]			= s.[AgentIdIsCommon],
+				t.[InvestmentCenterId]		= s.[InvestmentCenterId],
+				t.[InvestmentCenterIsCommon]= s.[InvestmentCenterIsCommon],
+				t.[Time1]					= s.[Time1],
+				t.[Time1IsCommon]			= s.[Time1IsCommon],
+				t.[Time2]					= s.[Time2],
+				t.[Time2IsCommon]			= s.[Time2IsCommon],
+				t.[Quantity]				= s.[Quantity],
+				t.[QuantityIsCommon]		= s.[QuantityIsCommon],
+				t.[MeasurementUnitId]		= s.[MeasurementUnitId],
+				t.[MeasurementUnitIsCommon]	= s.[MeasurementUnitIsCommon],
+				t.[ModifiedAt]				= @Now,
+				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId],
@@ -54,7 +76,18 @@ BEGIN
 				[Clearance],
 				[Memo],
 				[MemoIsCommon],
-				[AgentId]
+				[AgentId],
+				[AgentIdIsCommon],
+				[InvestmentCenterId],
+				[InvestmentCenterIsCommon],
+				[Time1],
+				[Time1IsCommon],
+				[Time2],
+				[Time2IsCommon],
+				[Quantity],
+				[QuantityIsCommon],
+				[MeasurementUnitId],
+				[MeasurementUnitIsCommon]
 			)
 			VALUES (
 				@DefinitionId,
@@ -63,7 +96,18 @@ BEGIN
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],
-				s.[AgentId]
+				s.[AgentId],
+				s.[AgentIdIsCommon],
+				s.[InvestmentCenterId],
+				s.[InvestmentCenterIsCommon],
+				s.[Time1],
+				s.[Time1IsCommon],
+				s.[Time2],
+				s.[Time2IsCommon],
+				s.[Quantity],
+				s.[QuantityIsCommon],
+				s.[MeasurementUnitId],
+				s.[MeasurementUnitIsCommon]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
