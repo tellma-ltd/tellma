@@ -449,7 +449,7 @@
     <value>取消</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
-    <value>p.p. </value>
+    <value>p.p.</value>
   </data>
   <data name="Document_State" xml:space="preserve">
     <value>州</value>
@@ -1353,9 +1353,6 @@
   </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
     <value>定义</value>
-  </data>
-  <data name="ReportDefinition_Filter" xml:space="preserve">
-    <value>过滤</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>过滤</value>

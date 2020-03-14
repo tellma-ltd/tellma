@@ -1357,9 +1357,6 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
-  <data name="ReportDefinition_Filter" xml:space="preserve">
-    <value>Filter</value>
-  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
@@ -1625,7 +1622,7 @@
     <value>Functional Currency</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
-    <value>The primary currency used when generating and spending cash </value>
+    <value>The primary currency used when generating and spending cash</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>Primary Language</value>
