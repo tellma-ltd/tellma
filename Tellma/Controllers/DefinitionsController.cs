@@ -305,7 +305,7 @@ namespace Tellma.Controllers
 
                 Prefix = def.Prefix,
                 CodeWidth = def.CodeWidth ?? 4,
-                AgentDefinitionList = def.AgentDefinitionList,
+                AgentDefinitionId = def.AgentDefinitionId,
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
                     LineDefinitionId = d.LineDefinitionId,

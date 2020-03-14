@@ -132,7 +132,7 @@ namespace Tellma.Controllers.Dto
         public bool IsOriginalDocument { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
-        public string AgentDefinitionList { get; set; }
+        public string AgentDefinitionId { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
     }
 

@@ -90,7 +90,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     IsOriginalDocument: boolean;
     Prefix: string;
     CodeWidth: number;
-    AgentDefinitionList: string;
+    AgentDefinitionId: string;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
 }
 
