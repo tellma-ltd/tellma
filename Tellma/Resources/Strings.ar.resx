@@ -1357,9 +1357,6 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>المصفاة</value>
   </data>
-  <data name="ReportDefinition_Filter" xml:space="preserve">
-    <value>المصفاة</value>
-  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>

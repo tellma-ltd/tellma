@@ -55,6 +55,42 @@ namespace Tellma.Entities
         [Display(Name = "Document_Agent")]
         public int? AgentId { get; set; }
 
+
+        public bool? AgentIdIsCommon { get; set; }
+
+
+        public int? InvestmentCenterId { get; set; }
+        public bool? InvestmentCenterIsCommon { get; set; }
+
+        public DateTime? Time1 { get; set; }
+        public bool? Time1IsCommon { get; set; }
+
+        public DateTime? Time2 { get; set; }
+        public bool? Time2IsCommon { get; set; }
+
+        public decimal? Quantity { get; set; }
+
+
+        /*
+         * 
+    [AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.Agents([Id]), 
+	[AgentIdIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[InvestmentCenterId]			INT,
+	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
+	[Time1]							DATETIME2 (2),
+	[Time1IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Time2]							DATETIME2 (2), -- must be less than DocumentDate when posting
+	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Quantity]						DECIMAL (19,4)	NULL,
+	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[MeasurementUnitId]				INT CONSTRAINT [FK_Documents__MeasurementUnitId] REFERENCES dbo.MeasurementUnits([Id]),
+	[MeasurementUnitIsCommon]		BIT				NOT NULL DEFAULT 1,
+         * 
+         */
+
+
+
+
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
 
