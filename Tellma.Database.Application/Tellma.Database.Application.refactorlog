@@ -250,4 +250,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AgentDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="aa6a5bfb-589b-4693-9d6c-1d6c6bb27d20" ChangeDateTime="03/14/2020 09:33:13">
+    <Property Name="ElementName" Value="[dbo].[Documents].[MeasurementUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d3014637-78b2-4ced-a4d0-58004b276358" ChangeDateTime="03/14/2020 09:33:34">
+    <Property Name="ElementName" Value="[dbo].[Documents].[MeasurementUnitIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitIsCommon]" />
+  </Operation>
 </Operations>
