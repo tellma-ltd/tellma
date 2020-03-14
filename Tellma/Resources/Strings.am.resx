@@ -284,7 +284,7 @@
     <value>የይለፍ ቃል አረጋግጥ</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
-    <value>የቅጂ መብት © {0} Tellma, ኃላፊነቱ የተወሰነ ሁሉም መብቶች የተጠበቁ ናቸው.</value>
+    <value>የቅጂ መብት © {0} ተልማ, ኃላፊነቱ የተወሰነ ሁሉም መብቶች የተጠበቁ ናቸው.</value>
   </data>
   <data name="CreateAPassword" xml:space="preserve">
     <value>የ ሚስጥር ቁጥር ፍጠር</value>
