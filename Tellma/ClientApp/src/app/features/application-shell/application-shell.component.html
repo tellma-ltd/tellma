@@ -28,12 +28,12 @@
             {{ 'Home' | translate }}
           </a>
         </li> -->
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./ifrs-notes"
+        <li class="nav-item">
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" [routerLink]="['./documents', { 'select': 'DocumentDate,State,PostingState,Assignee,AssignedAt', 'orderby': 'AssignedAt desc' }]"
             (click)="onCollapse()">
-            {{ 'IfrsNotes' | translate }}
+            {{ 'Documents' | translate }}
           </a>
-        </li> -->
+        </li>
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
             (click)="onCollapse()">
@@ -41,74 +41,24 @@
           </a>
         </li>
 
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./resources/raw-materials" (click)="onCollapse()">
-            {{ 'Raw Materials' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./resources/currencies" (click)="onCollapse()">
-            {{ 'Currencies' | translate }}
-          </a>
-        </li>
-        
-        <li class="nav-item">
-            <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-              routerLink="./resources/bla" (click)="onCollapse()">
-              {{ 'Bla' | translate }}
-            </a>
-          </li> -->
-
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
             (click)="onCollapse()">
             {{ 'Roles' | translate }}
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./accounts/gl-accounts" (click)="onCollapse()">
-            {{ 'G/L Accounts' | translate }}
-          </a>
-        </li> -->
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./measurement-units" (click)="onCollapse()">
             {{ 'MeasurementUnits' | translate }}
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./resources/raw-materials" (click)="onCollapse()">
-            {{ 'Raw Materials' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./resources/finished-goods" (click)="onCollapse()">
-            {{ 'Finished Goods' | translate }}
-          </a>
-        </li> -->
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
             (click)="onCollapse()">
             {{ 'Currencies' | translate }}
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./lookups/colors" (click)="onCollapse()">
-            {{ 'Colors' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./lookups/thicknesses" (click)="onCollapse()">
-            {{ 'Thicknesses' | translate }}
-          </a>
-        </li> -->
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
             (click)="onCollapse()">

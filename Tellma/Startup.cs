@@ -18,7 +18,7 @@ namespace Tellma
     public class Startup
     {
         // The UI cultures currently supported by the system
-        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh" };
+        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh", "am" };
 
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
