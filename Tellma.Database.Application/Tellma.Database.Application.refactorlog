@@ -264,4 +264,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[UnitIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0a6653e5-0752-42b1-b9c8-1db35535ad04" ChangeDateTime="03/14/2020 11:08:05">
+    <Property Name="ElementName" Value="[bll].[Resources__Fill]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources__Preprocess]" />
+  </Operation>
 </Operations>

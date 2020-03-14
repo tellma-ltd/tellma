@@ -40,6 +40,15 @@ BEGIN
 	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL,					N'money-bill-wave',	N'Sales',			75),
 	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL,					N'file-contract',	N'FixedAssets',		20);
 
+	UPDATE @DocumentDefinitions
+	SET
+		Time1Visibility = N'Required',
+		Time1Label1 = N'Depreciation Starts', Time1Label2 = N'الاستهلاك ابتداء من',
+		QuantityVisibility = N'Required',
+		QuantityLabel1 = N'Duration', QuantityLabel2 = N'لمدة',
+		UnitVisibility = N'Required',
+		UnitLabel1 = N'', UnitLabel2 = N''
+	WHERE [Id] = N'asset-depreciation-vouchers'
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',						1),
