@@ -481,12 +481,6 @@
   <data name="Document_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
   </data>
-  <data name="Document_VoucherBooklet" xml:space="preserve">
-    <value>Voucher Booklet</value>
-  </data>
-  <data name="Document_VoucherNumericReference" xml:space="preserve">
-    <value>Voucher Reference</value>
-  </data>
   <data name="Documents" xml:space="preserve">
     <value>Documents</value>
   </data>

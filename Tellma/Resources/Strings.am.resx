@@ -59,1893 +59,1893 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="," xml:space="preserve">
-    <value>،</value>
+    <value>፣</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
-    <value>غير مسموح بالدخول</value>
+    <value>መዳረሻ ተከልክሏል</value>
   </data>
   <data name="AccessDeniedMessage" xml:space="preserve">
-    <value>ليس لديك حق الوصول إلى هذا المورد.</value>
+    <value>የዚህ መርጃ መዳረሻ የለዎትም.</value>
   </data>
   <data name="Account" xml:space="preserve">
-    <value>حساب</value>
+    <value>ሒሳብ</value>
   </data>
   <data name="Account_Agent" xml:space="preserve">
-    <value>الذمة</value>
+    <value>ወኪል</value>
   </data>
   <data name="Account_AgentDefinition" xml:space="preserve">
-    <value>تعريف الذمة</value>
+    <value>ወኪል ፍቺ</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
-    <value>العملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
-    <value>تصنيف السطر</value>
+    <value>ምዝግብ አይነት</value>
   </data>
   <data name="Account_HasAdditionalReference" xml:space="preserve">
-    <value>مرتبط بمرجع إضافي</value>
+    <value>ተጨማሪ ማጣቀሻ አለው</value>
   </data>
   <data name="Account_HasExternalReference" xml:space="preserve">
-    <value>مرتبط بمرجع خارجي</value>
+    <value>የውጭ ማጣቀሻ አለው</value>
   </data>
   <data name="Account_HasNotedAgentId" xml:space="preserve">
-    <value>مرتبط بذمة معنية</value>
+    <value>ወኪል ከመዘገበ</value>
   </data>
   <data name="Account_HasNotedAgentName" xml:space="preserve">
-    <value>مرتبط باسم ذمة معنية</value>
+    <value>ወኪል ስም ከመዘገበ</value>
   </data>
   <data name="Account_HasNotedAmount" xml:space="preserve">
-    <value>مرتبط بمبلغ معني</value>
+    <value>እንደተመለከትነው መጠን ያለው</value>
   </data>
   <data name="Account_HasNotedDate" xml:space="preserve">
-    <value>مربتط بتاريخ معني</value>
+    <value>እንደተመለከትነው ቀን አለው</value>
   </data>
   <data name="Account_HasResource" xml:space="preserve">
-    <value>مرتبط بمورد</value>
+    <value>ሪሶርስ አለው</value>
   </data>
   <data name="Account_Identifier" xml:space="preserve">
-    <value>رقم التعريف</value>
+    <value>መለያ</value>
   </data>
   <data name="Account_IsCurrent" xml:space="preserve">
-    <value>حساب جار</value>
+    <value>የሆነው የአሁኑ</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
+    <value>የሆነው ተብሎ ታልፏል</value>
   </data>
   <data name="Account_IsRelated" xml:space="preserve">
-    <value>ذمة ذات علاقة</value>
+    <value>የሆነው ተዛማጅ</value>
   </data>
   <data name="Account_LegacyClassification" xml:space="preserve">
-    <value>التصنيف السابق</value>
+    <value>Legacy ምደባ</value>
   </data>
   <data name="Account_LegacyType" xml:space="preserve">
-    <value>النوع السابق</value>
+    <value>የቆየ አይነት</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
-    <value>المورد</value>
+    <value>ምንጭ</value>
   </data>
   <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
+    <value>ኃላፊነት ማዕከል</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
-    <value>النوع</value>
+    <value>ዓይነት</value>
   </data>
   <data name="Accounts" xml:space="preserve">
-    <value>حسابات</value>
+    <value>መለያዎች</value>
   </data>
   <data name="AccountType" xml:space="preserve">
-    <value>نوع حساب</value>
+    <value>የመለያ አይነት</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
-    <value>تصنيف الغرض</value>
+    <value>ምዝግብ አይነት ወላጅ</value>
   </data>
   <data name="AccountType_IsCurrent" xml:space="preserve">
-    <value>حسابات جارية</value>
+    <value>የሆነው የአሁኑ</value>
   </data>
   <data name="AccountType_IsPersonal" xml:space="preserve">
-    <value>حسابات شخصية</value>
+    <value>የሆነው የግል</value>
   </data>
   <data name="AccountType_IsReal" xml:space="preserve">
-    <value>حسابات حقيقية</value>
+    <value>እውነተኛ</value>
   </data>
   <data name="AccountType_IsResourceClassification" xml:space="preserve">
-    <value>تصنيف أصول</value>
+    <value>ሪሶርስ ምደባ ነው</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
-    <value>أنواع حسابات</value>
+    <value>የመለያ አይነቶች</value>
   </data>
   <data name="Active" xml:space="preserve">
-    <value>منشط</value>
+    <value>ገቢር</value>
   </data>
   <data name="AddAnExternalSignIn" xml:space="preserve">
-    <value>أضف مسجل دخول خارجي</value>
+    <value>አንድ ውጫዊ ይግቡ-ውስጥ ያክሉ</value>
   </data>
   <data name="AdminUser" xml:space="preserve">
-    <value>حساب مشرف</value>
+    <value>የአስተዳዳሪ ተጠቃሚ</value>
   </data>
   <data name="AdminUsers" xml:space="preserve">
-    <value>حسابات مشرفين</value>
+    <value>የአስተዳደር ተጠቃሚዎች</value>
   </data>
   <data name="Agent" xml:space="preserve">
-    <value>ذمة</value>
+    <value>ወኪል</value>
   </data>
   <data name="Agent_BankAccountNumber" xml:space="preserve">
-    <value>رقم حساب البنك</value>
+    <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
-    <value>الجنس</value>
+    <value>ፆታ</value>
   </data>
   <data name="Agent_Gender_Female" xml:space="preserve">
-    <value>أنثى</value>
+    <value>ሴት</value>
   </data>
   <data name="Agent_Gender_Male" xml:space="preserve">
-    <value>ذكر</value>
+    <value>ተባዕት</value>
   </data>
   <data name="Agent_IsRelated" xml:space="preserve">
-    <value>ذو علاقة</value>
+    <value>የሆነው ተዛማጅ</value>
   </data>
   <data name="Agent_Job" xml:space="preserve">
-    <value>الوظيفة</value>
+    <value>ሥራ</value>
   </data>
   <data name="Agent_Rates" xml:space="preserve">
-    <value>المعدلات</value>
+    <value>ተመኖች</value>
   </data>
   <data name="Agent_StartDate" xml:space="preserve">
-    <value>تاريخ البدأ</value>
+    <value>መጀመሪያ ቀን</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>رقم التعريف الضريبي</value>
+    <value>የግብር መለያ ቁጥር</value>
   </data>
   <data name="Agent_Title" xml:space="preserve">
-    <value>اللقب</value>
+    <value>አርእስት</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
-    <value>المستخدم</value>
+    <value>ተጠቃሚ</value>
   </data>
   <data name="AgentRate_Currency" xml:space="preserve">
-    <value>العملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="AgentRate_Rate" xml:space="preserve">
-    <value>المعدل</value>
+    <value>ደረጃ ይስጡ</value>
   </data>
   <data name="AgentRate_Resource" xml:space="preserve">
-    <value>البيان</value>
+    <value>መግለጫ</value>
   </data>
   <data name="AgentRate_Unit" xml:space="preserve">
-    <value>الوحدة</value>
+    <value>መለኪያ</value>
   </data>
   <data name="Agents" xml:space="preserve">
-    <value>ذمم</value>
+    <value>ወኪሎች</value>
   </data>
   <data name="Android" xml:space="preserve">
-    <value>الآندرويد</value>
+    <value>የ Android</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>تلما</value>
+    <value>ተልማ</value>
   </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
-    <value>امتداد الملف</value>
+    <value>የፋይል ቅጥያ</value>
   </data>
   <data name="Attachment_Size" xml:space="preserve">
-    <value>الحجم</value>
+    <value>ልክ</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
-    <value>تطبيق (Authenticator)</value>
+    <value>አረጋጋጭ መተግበሪያ</value>
   </data>
   <data name="AuthenticatorCode" xml:space="preserve">
-    <value>الكود من تطبيق (authenticator)</value>
+    <value>ማረጋገጫ ኮድ</value>
   </data>
   <data name="Button_DisableTwoFactorAuthentication" xml:space="preserve">
-    <value>تعطيل التوثيق مزدوج العوامل</value>
+    <value>አሰናክል 2FA</value>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>إلغاء</value>
+    <value>ሰርዝ</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
-    <value>تغير كلمة المرور</value>
+    <value>የሚስጥር ቁልፍ ይቀይሩ</value>
   </data>
   <data name="Classification" xml:space="preserve">
-    <value>تصنيف</value>
+    <value>በዓይነቱ መመደብ</value>
   </data>
   <data name="Classifications" xml:space="preserve">
-    <value>تصنيفات</value>
+    <value>ምደባዎች</value>
   </data>
   <data name="ClickHere" xml:space="preserve">
-    <value>إضغط هنا</value>
+    <value>እዚህ ጠቅ ያድርጉ</value>
   </data>
   <data name="ClickHereLower" xml:space="preserve">
-    <value>إضغط هنا</value>
+    <value>እዚህ ጠቅ ያድርጉ</value>
   </data>
   <data name="Code" xml:space="preserve">
-    <value>الكود</value>
+    <value>ኮድ</value>
   </data>
   <data name="ConfigureAuthenticatorApp" xml:space="preserve">
-    <value>ضبط تطبيق (Authenticator)</value>
+    <value>አዋቅር አረጋጋጭ መተግበሪያ</value>
   </data>
   <data name="ConfigureAuthenticatorIntro" xml:space="preserve">
-    <value>لاستخدام تطبيق (authenticator) قم باتباع الخطوات التالية:</value>
+    <value>የሚከተሉትን ደረጃዎች አማካኝነት አንድ አረጋጋጭ መተግበሪያ በጉዞ ለመጠቀም:</value>
   </data>
   <data name="ConfigureAuthenticatorStep1" xml:space="preserve">
-    <value>حمل تطبيقا للتوثيق المزدوج العوامل، مثلا (Google Authenticator):</value>
+    <value>የ Google ማረጋገጫ አካል እንደ ባለሁለት አረጋጋጭ መተግበሪያውን ያውርዱ:</value>
   </data>
   <data name="ConfigureAuthenticatorStep2" xml:space="preserve">
-    <value>قم بمسح الباركود أدناه أو قم بإدخال الكود التالي في تطبيق (authenticator)، حجم الرموز لا يؤثر وكذلك المسافات بينها:</value>
+    <value>የ QR ኮድ ይቃኙ ወይም ሁለት ምክንያት አረጋጋጭ መተግበሪያ ወደ የሚከተሉትን ቁልፍ ያስገቡ. ክፍተቶች እና ማቀፊያዎን ነገር አታድርጉ;</value>
   </data>
   <data name="ConfigureAuthenticatorStep3" xml:space="preserve">
-    <value>بعد مسح الباركود أو إدخال الكود، سيعرض لك التطبيق رقما سريا للتحقق، قم بإدخاله في الحقل أدناه.</value>
+    <value>አንተ ቁልፍ ከላይ ያለውን የ QR ኮድ ወይም ግብዓት ስካን አንዴ የእርስዎ አረጋጋጭ መተግበሪያ ሚስጥር ኮድ ጋር ያቀርባል. ከታች ያለውን የማረጋገጫ ሳጥን ውስጥ ኮዱን ያስገቡ.</value>
   </data>
   <data name="ConfirmEmail" xml:space="preserve">
-    <value>تأكيد البريد الإلكتروني</value>
+    <value>ኢ - ሜልህን አረጋግጥ</value>
   </data>
   <data name="ConfirmNewPassword" xml:space="preserve">
-    <value>تأكيد كلمة المرور الجديدة</value>
+    <value>አዲሱን የይለፍ ቃል አረጋግጥ</value>
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
-    <value>تأكيد كلمة المرور</value>
+    <value>የይለፍ ቃል አረጋግጥ</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
-    <value>تلما لتقنية المعلومات © {0} جميع الحقوق محفوظة</value>
+    <value>የቅጂ መብት © {0} ተልማ, ኃላፊነቱ የተወሰነ ሁሉም መብቶች የተጠበቁ ናቸው.</value>
   </data>
   <data name="CreateAPassword" xml:space="preserve">
-    <value>تحديد كلمة المرور</value>
+    <value>የ ሚስጥር ቁጥር ፍጠር</value>
   </data>
   <data name="CreatedAt" xml:space="preserve">
-    <value>زمن الإنشاء</value>
+    <value>በዚህ ጊዜ የተፈጠረ</value>
   </data>
   <data name="CreatedBy" xml:space="preserve">
-    <value>الإنشاء من قبل</value>
+    <value>የተፈጠረ</value>
   </data>
   <data name="Currencies" xml:space="preserve">
-    <value>عملات</value>
+    <value>ገንዘቦች</value>
   </data>
   <data name="Currency" xml:space="preserve">
-    <value>عملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="Currency_DecimalPlaces" xml:space="preserve">
-    <value>عدد المنازل العشرية</value>
+    <value>የአስርዮሽ ቦታዎች</value>
   </data>
   <data name="CurrentPassword" xml:space="preserve">
-    <value>كلمة المرور الحالية</value>
+    <value>የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ</value>
   </data>
   <data name="Data" xml:space="preserve">
-    <value>البيانات</value>
+    <value>መረጃ</value>
   </data>
   <data name="DefaultAggregationMeasure" xml:space="preserve">
-    <value>{0} {1}</value>
+    <value>{0} መካከል {1}</value>
   </data>
   <data name="DefaultError" xml:space="preserve">
-    <value>حدث خطأ غير معروف.</value>
+    <value>ያልታወቀ አለመሳካት ተከስቷል.</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
-    <value>الحالة</value>
+    <value>ሁኔታ</value>
   </data>
   <data name="Definition_State_Archived" xml:space="preserve">
-    <value>مؤرشف</value>
+    <value>በማህደር</value>
   </data>
   <data name="Definition_State_Deployed" xml:space="preserve">
-    <value>مفعل</value>
+    <value>የተተገበሩ</value>
   </data>
   <data name="Definition_State_Draft" xml:space="preserve">
-    <value>جديد</value>
+    <value>ረቂቅ</value>
   </data>
   <data name="Description" xml:space="preserve">
-    <value>البيان</value>
+    <value>መግለጫ</value>
   </data>
   <data name="DetailsEntries" xml:space="preserve">
-    <value>أسطر مفصلة</value>
+    <value>ዝርዝሮች ግቤቶችን</value>
   </data>
   <data name="DetailsEntry" xml:space="preserve">
-    <value>سطر مفصل</value>
+    <value>ዝርዝሮች የገባበት</value>
   </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
-    <value>العدد الجبري</value>
+    <value>አልጀብራዊ ቆጠራ</value>
   </data>
   <data name="DetailsEntry_AlgebraicMass" xml:space="preserve">
-    <value>الكتلة الجبرية</value>
+    <value>በአልጀብራዊ የቅዳሴ</value>
   </data>
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
-    <value>المبلغ الجبري</value>
+    <value>በአልጀብራዊ መጠን</value>
   </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
-    <value>الزمن الجبري</value>
+    <value>በአልጀብራዊ ሰዓት</value>
   </data>
   <data name="DetailsEntry_AlgebraicValue" xml:space="preserve">
-    <value>القيمة الجبرية</value>
+    <value>በአልጀብራዊ እሴት</value>
   </data>
   <data name="DetailsEntry_AlgebraicVolume" xml:space="preserve">
-    <value>الحجم الجبري</value>
+    <value>አልጀብራዊ ጥራዝ</value>
   </data>
   <data name="DetailsEntry_Count" xml:space="preserve">
-    <value>العدد</value>
+    <value>ቁጠር</value>
   </data>
   <data name="DetailsEntry_Mass" xml:space="preserve">
-    <value>الوزن</value>
+    <value>ቅዳሴ</value>
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
-    <value>الزمن</value>
+    <value>ጊዜ</value>
   </data>
   <data name="DetailsEntry_Volume" xml:space="preserve">
-    <value>الحجم</value>
+    <value>ድምጽ</value>
   </data>
   <data name="DisableTwoFactorAuthentication" xml:space="preserve">
-    <value>تعطيل التوثيق مزدوج العوامل</value>
+    <value>አሰናክል ሁለት-መንስኤ ማረጋገጫ (2FA)</value>
   </data>
   <data name="DisableTwoFactorAuthenticationBody" xml:space="preserve">
-    <value>تعطيل التوثيق مزدوج العوامل لا يقوم بإعادة تعيين مفتاح الـ(authenticator) خاصتك، لإعادة تعيين المفتاح</value>
+    <value>መታገድን 2FA አረጋጋጭ መተግበሪያዎች ውስጥ ጥቅም ላይ ቁልፎች አይለወጥም. አንድ አረጋጋጭ መተግበሪያ ውስጥ ጥቅም ላይ ቁልፍ መለወጥ ከፈለጉ</value>
   </data>
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
-    <value>هذا الأمر يقوم بتعطيل التوثيق مزدوج العوامل</value>
+    <value>ይህ እርምጃ ብቻ ነው 2FA ያሰናክለዋል.</value>
   </data>
   <data name="Document" xml:space="preserve">
-    <value>مستند</value>
+    <value>የሰነድ</value>
   </data>
   <data name="Document_Agent" xml:space="preserve">
-    <value>الذمة</value>
+    <value>ወኪል</value>
   </data>
   <data name="Document_AssignedAt" xml:space="preserve">
-    <value>زمن الإرسال</value>
+    <value>በ የተመደበ</value>
   </data>
   <data name="Document_AssignedBy" xml:space="preserve">
-    <value>المرسل</value>
+    <value>የተመደበ</value>
   </data>
   <data name="Document_Assignee" xml:space="preserve">
-    <value>المستلم</value>
+    <value>ተሿሚው</value>
   </data>
   <data name="Document_AssignmentsHistory" xml:space="preserve">
-    <value>التداولات</value>
+    <value>የመዘዋወር ደም</value>
   </data>
   <data name="Document_Attachments" xml:space="preserve">
-    <value>المرفقات</value>
+    <value>አባሪዎች</value>
   </data>
   <data name="Document_Clearance" xml:space="preserve">
-    <value>درجة السرية</value>
+    <value>ከፋይነት ደረጃ</value>
   </data>
   <data name="Document_Clearance_0" xml:space="preserve">
-    <value>متاح</value>
+    <value>ሕዝባዊ</value>
   </data>
   <data name="Document_Clearance_1" xml:space="preserve">
-    <value>سري</value>
+    <value>ምሥጢር</value>
   </data>
   <data name="Document_Clearance_2" xml:space="preserve">
-    <value>سري للغاية</value>
+    <value>ከባድ ሚስጥር</value>
   </data>
   <data name="Document_Comment" xml:space="preserve">
-    <value>التعليق</value>
+    <value>አስተያየት</value>
   </data>
   <data name="Document_DocumentDate" xml:space="preserve">
-    <value>التاريخ</value>
+    <value>ቀን</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>الصفة 1</value>
+    <value>አይነታ 1</value>
   </data>
   <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>الصفة 2</value>
+    <value>አይነታ 2</value>
   </data>
   <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>الصفة 3</value>
+    <value>አይነታ 3</value>
   </data>
   <data name="Document_DocumentText1" xml:space="preserve">
-    <value>الصفة النصية 1</value>
+    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
   </data>
   <data name="Document_DocumentText2" xml:space="preserve">
-    <value>الصفة النصية 2</value>
+    <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
-    <value>الملاحظات مشتركة</value>
+    <value>Memo የሆነው የጋራ</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
-    <value>زمن الاطلاع</value>
+    <value>ላይ የተከፈተው</value>
   </data>
   <data name="Document_PostingState" xml:space="preserve">
-    <value>حالة الترحيل</value>
+    <value>የመለጠፍ መንግስት</value>
   </data>
   <data name="Document_PostingState_0" xml:space="preserve">
-    <value>جار</value>
+    <value>የአሁኑ</value>
   </data>
   <data name="Document_PostingState_1" xml:space="preserve">
-    <value>مرحّل</value>
+    <value>የተለጠፈው</value>
   </data>
   <data name="Document_PostingState_minus_1" xml:space="preserve">
-    <value>ملغى</value>
+    <value>ተትቷል</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
-    <value>الرقم المتسلسل</value>
+    <value>ተከታታይ ቁጥር</value>
   </data>
   <data name="Document_State" xml:space="preserve">
-    <value>حالة القيد</value>
+    <value>ሁኔታ</value>
   </data>
   <data name="Document_State_0" xml:space="preserve">
-    <value>جديد</value>
+    <value>ረቂቅ</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>مطلوب</value>
+    <value>ተጠይቋል</value>
   </data>
   <data name="Document_State_2" xml:space="preserve">
-    <value>معتمد</value>
+    <value>የተፈቀዱ</value>
   </data>
   <data name="Document_State_3" xml:space="preserve">
-    <value>مكتمل</value>
+    <value>የተጠናቀቁ</value>
   </data>
   <data name="Document_State_4" xml:space="preserve">
-    <value>جاهز</value>
+    <value>ይጠናቀቃል</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
-    <value>ملغى</value>
+    <value>ባዶነት</value>
   </data>
   <data name="Document_State_minus_2" xml:space="preserve">
-    <value>مرفوض</value>
+    <value>ተቀባይነት አላገኘም</value>
   </data>
   <data name="Document_State_minus_3" xml:space="preserve">
-    <value>متعذر</value>
+    <value>አልተሳካም</value>
   </data>
   <data name="Document_State_minus_4" xml:space="preserve">
-    <value>خطأ</value>
+    <value>ዋጋ ቢስ</value>
   </data>
   <data name="Documents" xml:space="preserve">
-    <value>مستندات</value>
+    <value>ሰነዶች</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
-    <value>عنوان البريد الإلكتروني ({0}) محجوز.</value>
+    <value>ኢሜይል «{0} 'አስቀድሞ ተወስዷል.</value>
   </data>
   <data name="DuplicateRoleName" xml:space="preserve">
-    <value>اسم الدور ({0}) محجوز.</value>
+    <value>ሚና ስም «{0} 'አስቀድሞ ተወስዷል.</value>
   </data>
   <data name="DuplicateUserName" xml:space="preserve">
-    <value>اسم المستخدم ({0}) محجوز.</value>
+    <value>የተጠቃሚ ስም «{0} 'አስቀድሞ ተወስዷል.</value>
   </data>
   <data name="Email" xml:space="preserve">
-    <value>البريد الإلكتروني</value>
+    <value>ኢሜይል</value>
   </data>
   <data name="EmailAddressAttribute" xml:space="preserve">
-    <value>حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم</value>
+    <value>በ {0} መስክ ትክክለኛ ኢ-ሜል አድራሻ አይደለም</value>
   </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
-    <value>شكرا على تأكيد عنوان بريدك الإلكتروني</value>
+    <value>የእርስዎ ኢሜይል የሚያረጋግጥ እናመሰግናለን</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
-    <value>أدخل عنوان بريدك الإلكتروني</value>
+    <value>የእርስዎን ኢሜይል ያስገቡ</value>
   </data>
   <data name="Entry_Account" xml:space="preserve">
-    <value>الحساب</value>
+    <value>ሒሳብ</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
-    <value>المرجع الإضافي</value>
+    <value>ተጨማሪ ማጣቀሻ</value>
   </data>
   <data name="Entry_Agent" xml:space="preserve">
-    <value>الذمّة</value>
+    <value>ወኪል</value>
   </data>
   <data name="Entry_ContractType" xml:space="preserve">
-    <value>نوع العقد</value>
+    <value>የኮንትራት ዓይነት</value>
   </data>
   <data name="Entry_Currency" xml:space="preserve">
-    <value>العملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="Entry_Direction" xml:space="preserve">
-    <value>الاتجاه</value>
+    <value>አቅጣጫ</value>
   </data>
   <data name="Entry_Direction_Credit" xml:space="preserve">
-    <value>دائن</value>
+    <value>ክሬዲት</value>
   </data>
   <data name="Entry_Direction_Debit" xml:space="preserve">
-    <value>مدين</value>
+    <value>ዴቢት</value>
   </data>
   <data name="Entry_DueDate" xml:space="preserve">
-    <value>تاريخ الاستحقاق</value>
+    <value>የመጨረሻ ማስረከቢያ ቀን</value>
   </data>
   <data name="Entry_EntryType" xml:space="preserve">
-    <value>السبب</value>
+    <value>ዓላማ</value>
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
-    <value>المرجع الخارجي</value>
+    <value>የውጭ ማጣቀሻ</value>
   </data>
   <data name="Entry_Line" xml:space="preserve">
-    <value>السطر</value>
+    <value>መሥመር</value>
   </data>
   <data name="Entry_MonetaryValue" xml:space="preserve">
-    <value>المبلغ</value>
+    <value>መጠን</value>
   </data>
   <data name="Entry_NotedAgent" xml:space="preserve">
-    <value>الذمة المعنية</value>
+    <value>እንደተጠቀሰው ወኪል</value>
   </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
-    <value>اسم الذمة المعنية</value>
+    <value>እንደተጠቀሰው ወኪል ስም</value>
   </data>
   <data name="Entry_NotedAmount" xml:space="preserve">
-    <value>المبلغ المعني</value>
+    <value>እንደተጠቀሰው መጠን</value>
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
-    <value>التاريخ المعني</value>
+    <value>እንደተጠቀሰው ቀን</value>
   </data>
   <data name="Entry_Quantity" xml:space="preserve">
-    <value>الكمية</value>
+    <value>ብዛት</value>
   </data>
   <data name="Entry_Resource" xml:space="preserve">
-    <value>المورد</value>
+    <value>ምንጭ</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
+    <value>ኃላፊነት ማዕከል</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
-    <value>الزمن 1</value>
+    <value>የጊዜ 1</value>
   </data>
   <data name="Entry_Time2" xml:space="preserve">
-    <value>الزمن 2</value>
+    <value>የጊዜ 2</value>
   </data>
   <data name="Entry_Unit" xml:space="preserve">
-    <value>الوحدة</value>
+    <value>መለኪያ</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
-    <value>القيمة</value>
+    <value>ዋጋ</value>
   </data>
   <data name="EntryType" xml:space="preserve">
-    <value>تصنيف السطر</value>
+    <value>ምዝግብ አይነት</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
-    <value>تصنيفات الأسطر</value>
+    <value>ግቤት አይነቶች</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
-    <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
+    <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
+    <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
-    <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
+    <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
-    <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
+    <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
   </data>
   <data name="Error_BasicFieldsKeyword0ShouldComeEndOfPath" xml:space="preserve">
-    <value>النص المفتاحي ({0}) يعبر عن كل الحقول الأساسية، وينبغي أن يذكر فقط في آخر مسار المعامل select</value>
+    <value>በ ቁልፍ ቃል »{0} 'ሁሉ መሠረታዊ መስኮች ይወክላሉ; እና የተመረጡ መንገድ መጨረሻ ላይ ይመጣል ይገባል.</value>
   </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
-    <value>لا يمكنك إيقاف نشاط المستخدم خاصتك</value>
+    <value>በራስዎ ተጠቃሚ አቦዝን አይችልም.</value>
   </data>
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
-    <value>تعذر حذف بيان من نوع {0} لأنه مستخدم</value>
+    <value>ይህም በጥቅም ላይ አስቀድሞ ስለሆነ አንድ {0} መዝገብ መሰረዝ አይቻልም.</value>
   </data>
   <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
-    <value>لا يمكن حذف بيان شجري تنحدر منه بيانات أخرى</value>
+    <value>ልጆች ጋር አንድ ዛፍ አንጓ መሰረዝ አይቻልም.</value>
   </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
-    <value>لا يمكنك حذف المستخدم خاصتك</value>
+    <value>በራስዎ ተጠቃሚ መሰረዝ አይችሉም.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
-    <value>لا يمكن تعديل بيان غير منشط</value>
+    <value>አንድ የቀዘቀዘ ንጥል ማስተካከል አይቻልም.</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
-    <value>الكود مطلوب لوضع التعديل</value>
+    <value>ኮድ የዝማኔ ማስመጣት ሁነታ ያስፈልጋል.</value>
   </data>
   <data name="Error_Column0NotRecognizable" xml:space="preserve">
-    <value>عنوان العمود ({0}) غير معروف</value>
+    <value>አምድ «{0}» የሚታወቅ አይደለም.</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
-    <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
+    <value>የእርስዎ ኢሜይል የሚያረጋግጥ ላይ ሳለ አንድ ስህተት ተከስቷል.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
-    <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة</value>
+    <value>ቀኑ ማህደሩ ቀን በፊት ሊሆን አይችልም {0}</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
-    <value>التاريخ لا يمكن أن يكون في المستقبل</value>
+    <value>ቀን ወደፊት ላይ መሆን አይችልም</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
-    <value>حذف {0} ليس مدعوما من هذه الواجهة</value>
+    <value>መሰረዝ {0} በዚህ ኤ ጀምሮ አይደገፍም.</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
-    <value>مسجل الدخول الخارجي لم يفصح عن عنوان بريدك الإلكتروني</value>
+    <value>ወደ ኢሜይል ውጫዊ በመለያ-የሚሰጡ አልነበረም.</value>
   </data>
   <data name="Error_EmptyImportFile" xml:space="preserve">
-    <value>الملف المحمل ليس فيه بيانات</value>
+    <value>ከውጪ ፋይል ባዶ ነው.</value>
   </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
-    <value>رسالة خطأ من مسجل الدخول الخارجي: {0}</value>
+    <value>ከውጫዊ አቅራቢ ስህተት: {0}.</value>
   </data>
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
-    <value>ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ({0})</value>
+    <value>ከውጪ የ Excel ፋይል በርካታ ወረቀቶች, «{0}» ስም ጋር ከእነርሱ አንዱ ምልክት ያድርጉ ይዟል.</value>
   </data>
   <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
-    <value>الحقل ({1}) على النوع ({0}) هو حقل بسيط، وبالتالي لا يمكن أن يتبعه حقل آخر في مسارات select</value>
+    <value>አይነት ላይ የመስክ «{0} '' {1}» ስለዚህ ይህ ይምረጡ መንገድ ላይ ሌላ መስክ ተከትሎ አይችልም, የዳሰሳ መስክ አይደለም.</value>
   </data>
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
-    <value>المفاتيح الأجنبية مثل ({0}) لا يمكن استخدامها في مسارات select</value>
+    <value>የውጭ ቁልፎች «{0}» ወደ ይምረጡ ክርክር ውስጥ ሊገለጹ አይችሉም እፈልጋለሁ.</value>
   </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
-    <value>مفتاح اللغة ({0}) غير معروف</value>
+    <value>ልክ ያልሆነ ቋንቋ መታወቂያ «{0}».</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
-    <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
+    <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
-    <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>
+    <value>በመጫን ላይ ስህተት ከውጫዊ የመግቢያ መረጃ.</value>
   </data>
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
-    <value>لا يمكن استخدام الحقل ({0}) في مسار معامل select دون استخدامه أيضا في مسار معامل expand</value>
+    <value>በጣም ወደ ለማስፋፋት ክርክር ውስጥ ጨምሮ ያለ ይምረጡ ክርክር ውስጥ የአሰሳ መስክ «{0}» መጥቀስ አይቻልም.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
-    <value>المرفقات الجديدة ينبغي أن تحتوي على ملف</value>
+    <value>አዲስ አባሪዎችን ፋይል ባይቶች ማካተት አለበት</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
-    <value>لم يتم رفع أي ملف</value>
+    <value>ምንም ፋይል ተሰቅሏል.</value>
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
-    <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
+    <value>የውሂብ ነጥቦች ብዛት {0} ከፍተኛውን ያልፋል.</value>
   </data>
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
-    <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف</value>
+    <value>አዲስ ብቻ አባሪዎችን ፋይል ባይቶች ሊያካትት ይችላል</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
-    <value>وضع الحذف ليس مدعوما من هذه الواجهة</value>
+    <value>ሰርዝ ሁነታ የማወራረድ ኤ ውስጥ የሚደገፍ አይደለም.</value>
   </data>
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
-    <value>الحقل {0} غير موجود على النوع {1}</value>
+    <value>ንብረት {0} አይነት {1} ላይ የለም.</value>
   </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
-    <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
+    <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
-    <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
+    <value>ሁለተኛ ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة هي نفسها اللغة الرئيسية</value>
+    <value>Ternary ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة هي نفسها اللغة الثانية</value>
+    <value>Ternary ቋንቋ ሁለተኛ ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
   </data>
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
-    <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
+    <value>በ {0} «{1} 'አንድ ወይም ተጨማሪ መለያዎች ውስጥ ጥቅም ላይ ውሏል</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
-    <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
+    <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
-    <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما</value>
+    <value>መጠን {0} በሁለቱም ውስጥ እንኳ ዋጋ {1} አይዛመድም {2}</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
-    <value>الكود ({0}) غير موجود</value>
+    <value>ኮድ «{0}» የለም.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
-    <value>الكود ({0}) مكرر</value>
+    <value>ኮድ «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
-    <value>الكود ({0}) مستخدم حاليا</value>
+    <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
-    <value>العملة ({0}) مستخدمة في ({1})</value>
+    <value>ምንዛሬ ውስጥ ጥቅም ላይ «{0} '' {1}»</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
-    <value>البريد الإلكتروني ({0}) مكرر</value>
+    <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheEmail0IsUsed" xml:space="preserve">
-    <value>عنوان البريد ({0}) مستخدم حاليا</value>
+    <value>በ ኢሜይል «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_TheEmailCannotBeModified" xml:space="preserve">
-    <value>لا يمكن تعديل عنوان بريد المستخدم من هنا</value>
+    <value>የተጠቃሚው ኢሜይል ከዚህ ሊቀየሩ አይችሉም.</value>
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
-    <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
+    <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
-    <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
+    <value># AB12E5: ወደ መስክ {0} እንደ ትክክለኛ ኤችቲኤምኤል የአስራስድስትዮሽ ቀለም, መሆን አለበት.</value>
   </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>المفاتيح التالية يحتكرها النظام: {0}</value>
+    <value>የሚከተሉት መታወቂያዎች ስርዓቱ የተጠበቁ ናቸው: {0}</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
-    <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
+    <value>መታወቂያ ጋር ከመዝገብ «{0}» አልተገኘም. ምናልባት ቀደም ተሰርዟል, አድሰው ይሞክሩ.</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
-    <value>الاسم ({0}) مكرر</value>
+    <value>ስም «{0}» የተባዙ ነው.</value>
   </data>
   <data name="Error_TheName0IsUsed" xml:space="preserve">
-    <value>الاسم ({0}) مستخدم حاليا</value>
+    <value>ስም «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
-    <value>كلمة المرور وتأكيدها غير متطابقين</value>
+    <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
-    <value>الدور ({0}) غير منشط</value>
+    <value>ሚና «{0} 'ንቁ አይደለም.</value>
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
-    <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
+    <value>መታወቂያ ጋር ያለው ሚና «{0} 'የለም ወይም ከአሁን በኋላ የለም አይደለም.</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
-    <value>المستخدم ({0}) غير منشط</value>
+    <value>ተጠቃሚው «{0} 'ንቁ አይደለም.</value>
   </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
-    <value>القيمة ({0}) ليست صالحة لحقل {1}</value>
+    <value>ዋጋ «{0}» በ {1} መስክ ትክክል አይደለም.</value>
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
-    <value>الواجهة ذات الكود ({0}) غير منشطة</value>
+    <value>ኮድ ጋር ያለው አመለካከት «{0}» ገቢር አይደለም.</value>
   </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
-    <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية</value>
+    <value>ርዕስ በዋናው ምናሌ ውስጥ ያለውን ሪፖርት ለማሳየት ያስፈልጋል</value>
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
-    <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
+    <value>አንድ ያልታወቀ ስህተት ውጫዊ አቅራቢ በመጠቀም ውስጥ ለመግባት ሲሞከር ተከስቷል.</value>
   </data>
   <data name="Error_UnknownFileFormat" xml:space="preserve">
-    <value>صيغة الملف غير معروفة</value>
+    <value>ያልታወቀ የፋይል ቅርጸት.</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>المستخدم ({0}) قد قبل الدعوة</value>
+    <value>ተጠቃሚው «{0} 'አስቀድመው ግብዣ ተቀብለውታል.</value>
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
-    <value>القيمة ({0}) ليست صالحة لحقل {1}، القيم الصالحة هي: {2}</value>
+    <value>ዋጋ «{0}» በ {1} መስክ ትክክል አይደለም, ተቀባይነት እሴቶች ናቸው: {2}.</value>
   </data>
   <data name="Facebook" xml:space="preserve">
-    <value>الفيسبوك</value>
+    <value>facebook</value>
   </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
-    <value>تناسى المتصفح الحالي</value>
+    <value>ይህ አሳሽ እርሳ</value>
   </data>
   <data name="ForgotPasswordConfirmation" xml:space="preserve">
-    <value>تأكيد فقد كلمة المرور</value>
+    <value>ረሱ የይለፍ ቃል ማረጋገጫ</value>
   </data>
   <data name="ForgotPasswordConfirmationMessage" xml:space="preserve">
-    <value>راجع بريدك الإكتروني لتحديد كلمة مرور جديدة</value>
+    <value>የይለፍ ቃልዎን ዳግም ለማስጀመር እባክዎ ኢሜይልዎን ይመልከቱ.</value>
   </data>
   <data name="ForgotYourPassword" xml:space="preserve">
-    <value>نسيت كلمة المرور؟</value>
+    <value>የሚስጥራዊውን ቁጥር ረሳህው?</value>
   </data>
   <data name="FromDate" xml:space="preserve">
-    <value>من تاريخ</value>
+    <value>ቀን ጀምሮ</value>
   </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
-    <value>توليد أكواد الاسترداد</value>
+    <value>ማግኛ ኮዶችን መፍጠር</value>
   </data>
   <data name="GenerateTwoFactorAuthenticationRecoveryCodes" xml:space="preserve">
-    <value>توليد أكواد استرداد للتوثيق مزدوج العوامل</value>
+    <value>ሁለት-መንስኤ ማረጋገጫ (2FA) ማግኛ ኮዶችን መፍጠር</value>
   </data>
   <data name="Google" xml:space="preserve">
-    <value>جوجل</value>
+    <value>በጉግል መፈለግ</value>
   </data>
   <data name="GoTo0" xml:space="preserve">
-    <value>ذهاب إلى {0}</value>
+    <value>ወደ {0}</value>
   </data>
   <data name="GrandTotal" xml:space="preserve">
-    <value>المجموع الكلي</value>
+    <value>አጠቃላይ ድምር</value>
   </data>
   <data name="Home" xml:space="preserve">
-    <value>الرئيسية</value>
+    <value>መኖሪያ ቤት</value>
   </data>
   <data name="Icon_ChartPie" xml:space="preserve">
-    <value>مخطط دائري</value>
+    <value>አምባሻ ገበታ</value>
   </data>
   <data name="Icon_Clipboard" xml:space="preserve">
-    <value>حافظة</value>
+    <value>ቅንጥብ</value>
   </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
-    <value>عنوان البريد الإلكتروني ({0}) غير سليم.</value>
+    <value>ኢሜይል «{0}» ልክ ያልሆነ ነው.</value>
   </data>
   <data name="IdentityServerUser" xml:space="preserve">
-    <value>مستخدم من خادم الهويات</value>
+    <value>የማንነት የአገልጋይ ተጠቃሚ</value>
   </data>
   <data name="IdentityServerUser_EmailConfirmed" xml:space="preserve">
-    <value>عنوان البريد مؤكد</value>
+    <value>ኢሜይል ተረጋግጧል</value>
   </data>
   <data name="IdentityServerUser_LockoutEnd" xml:space="preserve">
-    <value>نهاية المنع من الدخول</value>
+    <value>Lockout መጨረሻ</value>
   </data>
   <data name="IdentityServerUser_PasswordSet" xml:space="preserve">
-    <value>كلمة المرور محددة</value>
+    <value>የይለፍ ቃል ነው አዘጋጅ</value>
   </data>
   <data name="IdentityServerUser_TwoFactorEnabled" xml:space="preserve">
-    <value>توثيق مزدوج العوامل</value>
+    <value>ሁለት ክፍሉ አይነቃም</value>
   </data>
   <data name="IdentityServerUsers" xml:space="preserve">
-    <value>مستخدمون من خادم الهويات</value>
+    <value>የማንነት የአገልጋይ ተጠቃሚዎች</value>
   </data>
   <data name="IfrsConcepts_Documentation" xml:space="preserve">
-    <value>التوثيق</value>
+    <value>ስነዳ</value>
   </data>
   <data name="IfrsConcepts_EffectiveDate" xml:space="preserve">
-    <value>تاريخ النفاذ</value>
+    <value>አዋጁ የሚጸናበት ጊዜ</value>
   </data>
   <data name="IfrsConcepts_ExpiryDate" xml:space="preserve">
-    <value>تاريخ الانتهاء</value>
+    <value>የአገልግሎት ማብቂያ ጊዜ</value>
   </data>
   <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
-    <value>بدون فروع</value>
+    <value>የሆነው ቅጠል</value>
   </data>
   <data name="IfrsConcepts_Label" xml:space="preserve">
-    <value>الاسم</value>
+    <value>ምልክት</value>
   </data>
   <data name="IfrsNotes" xml:space="preserve">
-    <value>إيضاحات (IFRS)</value>
+    <value>IFRS ማስታወሻዎች</value>
   </data>
   <data name="IfrsNotes_ForCredit" xml:space="preserve">
-    <value>للدائن</value>
+    <value>ክሬዲት ለማግኘት</value>
   </data>
   <data name="IfrsNotes_ForDebit" xml:space="preserve">
-    <value>للمدين</value>
+    <value>ዴቢት ለ</value>
   </data>
   <data name="Inactive" xml:space="preserve">
-    <value>غير منشط</value>
+    <value>የማይሠራ</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
-    <value>الكود غير سليم.</value>
+    <value>ልክ ያልሆነ አረጋጋጭ ኮድ.</value>
   </data>
   <data name="InvalidRecoveryCode" xml:space="preserve">
-    <value>كود الاسترداد غير سليم.</value>
+    <value>ልክ ያልሆነ ማግኛ ኮድ.</value>
   </data>
   <data name="InvalidRoleName" xml:space="preserve">
-    <value>اسم الدور ({0}) غير سليم.</value>
+    <value>ሚና ስም «{0}» ልክ ያልሆነ ነው.</value>
   </data>
   <data name="InvalidToken" xml:space="preserve">
-    <value>الرمز غير سليم.</value>
+    <value>ልክ ያልሆነ ማስመሰያ.</value>
   </data>
   <data name="InvalidUserName" xml:space="preserve">
-    <value>اسم المستخدم ({0}) غير سليم، يجب أن يحتوي فقط على حروف وأرقام.</value>
+    <value>የተጠቃሚ ስም «{0}», ልክ ያልሆነ ነው ብቻ ፊደሎች ወይም ቁጥሮች መያዝ ይችላሉ.</value>
   </data>
   <data name="InvitationEmailBody012" xml:space="preserve">
-    <value>لديك دعوة من {0} للانضمام إلى عائلة {1}، إضغط على الزر أدناه لقبول هذه الدعوة وإنشاء حسابك، الدعوة صالحة لمدة {2} أيام فقط.</value>
+    <value>{0} {1} ኢአርፒ እንድትቀላቀል ጋብዞሃል. ግብዣውን ለመቀበል እና የእርስዎን መለያ ለመፍጠር ከታች ያለውን አዝራር ላይ ጠቅ ያድርጉ. ይህ ግብዣ {2} ቀናት ብቻ ነው የሚሰራው.</value>
   </data>
   <data name="InvitationEmailButtonLabel" xml:space="preserve">
-    <value>قبول الدعوة</value>
+    <value>ግብዣ ተቀበል</value>
   </data>
   <data name="InvitationEmailConclusion" xml:space="preserve">
-    <value>مبارك،</value>
+    <value>የአንተ,</value>
   </data>
   <data name="InvitationEmailGreeting0" xml:space="preserve">
-    <value>مرحبا {0}!</value>
+    <value>ሠላም {0}!</value>
   </data>
   <data name="InvitationEmailSignature0" xml:space="preserve">
-    <value>فريق {0}</value>
+    <value>በ {0} ቡድን</value>
   </data>
   <data name="InvitationEmailSubject0" xml:space="preserve">
-    <value>دعوة للانضمام إلى {0}</value>
+    <value>ግብዣ ወደ {0}</value>
   </data>
   <data name="iOS" xml:space="preserve">
-    <value>الآيفون</value>
+    <value>iOS</value>
   </data>
   <data name="IsActive" xml:space="preserve">
-    <value>منشط</value>
+    <value>ንቁ ነው</value>
   </data>
   <data name="IsAssignable" xml:space="preserve">
-    <value>متاح للاستخدام</value>
+    <value>የሆነው ሊመደብ</value>
   </data>
   <data name="IsLeaf" xml:space="preserve">
-    <value>بدون فروع</value>
+    <value>የሆነው ቅጠል</value>
   </data>
   <data name="IsSystem" xml:space="preserve">
-    <value>من النظام</value>
+    <value>የሆነው ስርዓት</value>
   </data>
   <data name="Label" xml:space="preserve">
-    <value>الاسم</value>
+    <value>ምልክት</value>
   </data>
   <data name="LegacyClassification" xml:space="preserve">
-    <value>تصنيف موروث</value>
+    <value>Legacy ምደባ</value>
   </data>
   <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
+    <value>የሆነው ተብሎ ታልፏል</value>
   </data>
   <data name="LegacyClassifications" xml:space="preserve">
-    <value>تصنيفات موروثة</value>
+    <value>Legacy ምደባዎች</value>
   </data>
   <data name="LegacyType" xml:space="preserve">
-    <value>نوع موروث</value>
+    <value>የቆየ አይነት</value>
   </data>
   <data name="LegacyTypes" xml:space="preserve">
-    <value>أنواع موروثة</value>
+    <value>የቆየ አይነቶች</value>
   </data>
   <data name="Line" xml:space="preserve">
-    <value>سطر</value>
+    <value>መሥመር</value>
   </data>
   <data name="Line_Agent" xml:space="preserve">
-    <value>الذمة</value>
+    <value>ወኪል</value>
   </data>
   <data name="Line_Currency" xml:space="preserve">
-    <value>العملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="Line_Definition" xml:space="preserve">
-    <value>التعريف</value>
+    <value>መግለጫ</value>
   </data>
   <data name="Line_Document" xml:space="preserve">
-    <value>المستند</value>
+    <value>የሰነድ</value>
   </data>
   <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>المبلغ</value>
+    <value>መጠን</value>
   </data>
   <data name="Line_Quantity" xml:space="preserve">
-    <value>الكمية</value>
+    <value>ብዛት</value>
   </data>
   <data name="Line_Resource" xml:space="preserve">
-    <value>المورد</value>
+    <value>ምንጭ</value>
   </data>
   <data name="Line_Unit" xml:space="preserve">
-    <value>الوحدة</value>
+    <value>መለኪያ</value>
   </data>
   <data name="Lines" xml:space="preserve">
-    <value>أسطر</value>
+    <value>መስመሮች</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
-    <value>حساب معلق</value>
+    <value>ወደ ውጭ ተቆልፏል</value>
   </data>
   <data name="LockedOutMessage" xml:space="preserve">
-    <value>.هذا الحساب تم تعليقه مؤقتا، يرجى المحاولة مرة أخرى لاحقا</value>
+    <value>ይህ መለያ ለጊዜው ወደ ውጭ ተቆልፏል, እባክዎ ቆይተው እንደገና ይሞክሩ.</value>
   </data>
   <data name="LoginAlreadyAssociated" xml:space="preserve">
-    <value>مسجل الدخول الخارجي هذا مرتبط بمستخدم حالي.</value>
+    <value>በዚህ መግቢያ ጋር አንድ ተጠቃሚ አስቀድሞ አለ.</value>
   </data>
   <data name="Lookup" xml:space="preserve">
-    <value>جدول اطلاع</value>
+    <value>ተመልከት</value>
   </data>
   <data name="Lookups" xml:space="preserve">
-    <value>جداول اطلاع</value>
+    <value>የተፈለጉ</value>
   </data>
   <data name="MainMenuIcon" xml:space="preserve">
-    <value>الأيقونة</value>
+    <value>አዶ</value>
   </data>
   <data name="MainMenuSection" xml:space="preserve">
-    <value>القسم من القائمة الرئيسية</value>
+    <value>ማውጫ ክፍል</value>
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
-    <value>الترتيب في القائمة الرئيسية</value>
+    <value>ማውጫ ደርድር ቁልፍ</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
-    <value>وحدة قياس</value>
+    <value>የመለኪያ አሃድ</value>
   </data>
   <data name="MeasurementUnits" xml:space="preserve">
-    <value>وحدات قياس</value>
+    <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="Members" xml:space="preserve">
-    <value>أعضاء</value>
+    <value>አባላት</value>
   </data>
   <data name="Memo" xml:space="preserve">
-    <value>ملاحظات</value>
+    <value>Memo</value>
   </data>
   <data name="Menu_Administration" xml:space="preserve">
-    <value>إشراف</value>
+    <value>ማስተዳደር</value>
   </data>
   <data name="Menu_Cash" xml:space="preserve">
-    <value>نقد</value>
+    <value>ጥሬ ገንዘብ</value>
   </data>
   <data name="Menu_ExternalSignIns" xml:space="preserve">
-    <value>تسجيل الدخول الخارجي</value>
+    <value>የውጭ ይግቡ ተሰኪዎች</value>
   </data>
   <data name="Menu_Financials" xml:space="preserve">
-    <value>مالية</value>
+    <value>የፋይናንስ ጉዳዮች</value>
   </data>
   <data name="Menu_FixedAssets" xml:space="preserve">
-    <value>أصول ثابتة</value>
+    <value>ቋሚ ንብረት</value>
   </data>
   <data name="Menu_Help" xml:space="preserve">
-    <value>مساعدة</value>
+    <value>እርዳታ</value>
   </data>
   <data name="Menu_HumanCapital" xml:space="preserve">
-    <value>موارد بشرية</value>
+    <value>የሰው ኃይል</value>
   </data>
   <data name="Menu_Inventory" xml:space="preserve">
-    <value>مخزون</value>
+    <value>ንብረት ቆጠራ</value>
   </data>
   <data name="Menu_Investments" xml:space="preserve">
-    <value>استثمارات</value>
+    <value>ኢንቨስትመንት</value>
   </data>
   <data name="Menu_Maintenance" xml:space="preserve">
-    <value>صيانة</value>
+    <value>ጥገና</value>
   </data>
   <data name="Menu_Password" xml:space="preserve">
-    <value>كلمة المرور</value>
+    <value>ፕስወርድ</value>
   </data>
   <data name="Menu_Production" xml:space="preserve">
-    <value>إنتاج</value>
+    <value>ፕሮዳክሽን</value>
   </data>
   <data name="Menu_Profile" xml:space="preserve">
-    <value>الملف الشخصي</value>
+    <value>መገለጫ</value>
   </data>
   <data name="Menu_Purchasing" xml:space="preserve">
-    <value>مشتريات</value>
+    <value>ግዢ</value>
   </data>
   <data name="Menu_Sales" xml:space="preserve">
-    <value>مبيعات</value>
+    <value>የሽያጭ</value>
   </data>
   <data name="Menu_Security" xml:space="preserve">
-    <value>أمان</value>
+    <value>መያዣ</value>
   </data>
   <data name="Menu_Studio" xml:space="preserve">
-    <value>استديو</value>
+    <value>ስቱዲዮ</value>
   </data>
   <data name="Menu_TwoFactorAuthentication" xml:space="preserve">
-    <value>التوثيق مزدوج العوامل</value>
+    <value>2FA</value>
   </data>
   <data name="Microsoft" xml:space="preserve">
-    <value>مايكروسوفت</value>
+    <value>የ Microsoft</value>
   </data>
   <data name="Mode_Insert" xml:space="preserve">
-    <value>إضافة</value>
+    <value>አስገባ</value>
   </data>
   <data name="Mode_Merge" xml:space="preserve">
-    <value>دمج</value>
+    <value>ውህደቱን</value>
   </data>
   <data name="Mode_Update" xml:space="preserve">
-    <value>تعديل</value>
+    <value>አዘምን</value>
   </data>
   <data name="ModifiedAt" xml:space="preserve">
-    <value>زمن آخر تعديل</value>
+    <value>በዚህ ጊዜ የተቀየረበት</value>
   </data>
   <data name="ModifiedBy" xml:space="preserve">
-    <value>آخر تعديل من قبل</value>
+    <value>የተቀየሩ</value>
   </data>
   <data name="Modifier_day" xml:space="preserve">
-    <value>يوم الشهر</value>
+    <value>የወር ቀን</value>
   </data>
   <data name="Modifier_dayofyear" xml:space="preserve">
-    <value>يوم السنة</value>
+    <value>የዓመቱ ቀን</value>
   </data>
   <data name="Modifier_month" xml:space="preserve">
-    <value>الشهر</value>
+    <value>ወር</value>
   </data>
   <data name="Modifier_quarter" xml:space="preserve">
-    <value>الربع</value>
+    <value>ሩብ</value>
   </data>
   <data name="Modifier_week" xml:space="preserve">
-    <value>الأسبوع</value>
+    <value>ሳምንት</value>
   </data>
   <data name="Modifier_weekday" xml:space="preserve">
-    <value>يوم الأسبوع</value>
+    <value>በሳምንት ቀን</value>
   </data>
   <data name="Modifier_year" xml:space="preserve">
-    <value>السنة</value>
+    <value>አመት</value>
   </data>
   <data name="MU_BaseAmount" xml:space="preserve">
-    <value>الكمية بالوحدة الأساسية</value>
+    <value>ቤዝ ዩኒት ውስጥ መጠን</value>
   </data>
   <data name="MU_Count" xml:space="preserve">
-    <value>عدد</value>
+    <value>ቁጠር</value>
   </data>
   <data name="MU_Distance" xml:space="preserve">
-    <value>مسافة</value>
+    <value>ርቀት</value>
   </data>
   <data name="MU_Mass" xml:space="preserve">
-    <value>كتلة</value>
+    <value>ቅዳሴ</value>
   </data>
   <data name="MU_Pure" xml:space="preserve">
-    <value>محض</value>
+    <value>ንጹሕ</value>
   </data>
   <data name="MU_Time" xml:space="preserve">
-    <value>زمن</value>
+    <value>ጊዜ</value>
   </data>
   <data name="MU_UnitAmount" xml:space="preserve">
-    <value>الكمية بالوحدة الحالية</value>
+    <value>በዚህ ክፍል ውስጥ መጠን</value>
   </data>
   <data name="MU_UnitType" xml:space="preserve">
-    <value>التصنيف</value>
+    <value>ዩኒት አይነት</value>
   </data>
   <data name="MU_Volume" xml:space="preserve">
-    <value>حجم</value>
+    <value>ድምጽ</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>الاسم</value>
+    <value>ስም</value>
   </data>
   <data name="NewPassword" xml:space="preserve">
-    <value>كلمة المرور الجديدة</value>
+    <value>አዲስ የይለፍ ቃል</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>لا</value>
+    <value>አይ</value>
   </data>
   <data name="Or" xml:space="preserve">
-    <value>أو</value>
+    <value>ወይም</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
-    <value>التوثيق مزدوج العوامل</value>
+    <value>ባለሁለት ክፍሉ ማረጋገጫ (2FA)</value>
   </data>
   <data name="Password" xml:space="preserve">
-    <value>كلمة المرور</value>
+    <value>ፕስወርድ</value>
   </data>
   <data name="PasswordMismatch" xml:space="preserve">
-    <value>كلمة المرور غير صحيحة.</value>
+    <value>የተሳሳተ የይለፍ ቃል.</value>
   </data>
   <data name="PasswordRequiresDigit" xml:space="preserve">
-    <value>يجب أن تحتوي كلمة المرور على رقم واحد على الأقل ('0'-'9')</value>
+    <value>የይለፍ ቃሎችን ቢያንስ አንድ አሀዝ ሊኖርዎ ይገባል ( '0' - '9').</value>
   </data>
   <data name="PasswordRequiresLower" xml:space="preserve">
-    <value>يجب أن تحتوي كلمة المرور على حرف لاتيني صغير واحد على الأقل ('a'-'z')</value>
+    <value>(- 'z' 'ሀ') የይለፍ ቃሎችን ቢያንስ አንድ ንዑስ ሊኖራቸው ይገባል.</value>
   </data>
   <data name="PasswordRequiresNonAlphanumeric" xml:space="preserve">
-    <value>يجب أن تحتوي كلمة المرور على رمز غير أبجدي واحد على الأقل</value>
+    <value>የይለፍ ቃሎችን ቢያንስ አንድ ያልሆኑ የፊደልና ቁምፊ ሊኖራቸው ይገባል.</value>
   </data>
   <data name="PasswordRequiresUniqueChars" xml:space="preserve">
-    <value>يجب أن تحتوي كلمة المرور على الأقل على عدد {0} من الحروف المميزة عن بعضها</value>
+    <value>የይለፍ ቃሎችን ቢያንስ {0} የተለያዩ ቁምፊዎችን መጠቀም አለበት.</value>
   </data>
   <data name="PasswordRequiresUpper" xml:space="preserve">
-    <value>يجب أن تحتوي كلمة المرور على حرف لاتيني كبير واحد على الأقل ('A'-'Z')</value>
+    <value>የይለፍ ቃሎችን ቢያንስ አንድ አቢይ (- 'Z' 'ሀ') ሊኖረው ይገባል.</value>
   </data>
   <data name="PasswordTooShort" xml:space="preserve">
-    <value>يجب ألا يقل طول كلمة المرور عن {0} رموز</value>
+    <value>የይለፍ ቃሎችን ቢያንስ {0} ቁምፊዎች መሆን አለበት.</value>
   </data>
   <data name="Permission" xml:space="preserve">
-    <value>إذن</value>
+    <value>ፈቃድ</value>
   </data>
   <data name="Permission_Action" xml:space="preserve">
-    <value>النشاط</value>
+    <value>አክሽን</value>
   </data>
   <data name="Permission_Create" xml:space="preserve">
-    <value>إنشاء</value>
+    <value>ፈጠረ</value>
   </data>
   <data name="Permission_Criteria" xml:space="preserve">
-    <value>التقييد</value>
+    <value>መስፈርት</value>
   </data>
   <data name="Permission_Delete" xml:space="preserve">
-    <value>حذف</value>
+    <value>ሰርዝ</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
-    <value>تنشيط - إيقاف النشاط</value>
+    <value>አንቃ / አቦዝንን</value>
   </data>
   <data name="Permission_IsDeprecated" xml:space="preserve">
-    <value>تنشيط - أرشفة</value>
+    <value>አንቃ / አለመቀበልን</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
-    <value>حجاب</value>
+    <value>ሽፉን</value>
   </data>
   <data name="Permission_PostingState" xml:space="preserve">
-    <value>ترحيل/إلغاء</value>
+    <value>ልጥፍ / ሰርዝ</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
-    <value>اطلاع</value>
+    <value>አንብብ</value>
   </data>
   <data name="Permission_ReadAndCreate" xml:space="preserve">
-    <value>اطلاع وإنشاء</value>
+    <value>ያንብቡ እና ፍጠር</value>
   </data>
   <data name="Permission_Role" xml:space="preserve">
-    <value>الدور</value>
+    <value>ሚና</value>
   </data>
   <data name="Permission_Sign" xml:space="preserve">
-    <value>توقيع</value>
+    <value>ምልክት</value>
   </data>
   <data name="Permission_Update" xml:space="preserve">
-    <value>تعديل</value>
+    <value>አዘምን</value>
   </data>
   <data name="Permission_UpdateState" xml:space="preserve">
-    <value>تعديل الحالة</value>
+    <value>አዘምን ግዛት</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
-    <value>الواجهة</value>
+    <value>ዕይታ</value>
   </data>
   <data name="Permissions" xml:space="preserve">
-    <value>أذونات</value>
+    <value>ፍቃዶች</value>
   </data>
   <data name="PhoneNumber" xml:space="preserve">
-    <value>رقم الهاتف</value>
+    <value>ስልክ ቁጥር</value>
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
-    <value>يرجى التأكيد</value>
+    <value>አባክዎ ያጽድቁ</value>
   </data>
   <data name="PluralName" xml:space="preserve">
-    <value>اسم الجمع</value>
+    <value>የብዙ ቁጥር ስም</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
-    <value>سياسة الخصوصية</value>
+    <value>የ ግል የሆነ</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
-    <value>كود الاسترداد</value>
+    <value>መልሶ ማግኛ ኮድ</value>
   </data>
   <data name="RecoveryCodeRedemptionFailed" xml:space="preserve">
-    <value>تحصيل كود الاسترداد لم يكلل بالنجاح</value>
+    <value>ማግኛ ኮድ ቤዛነት አልተሳካም.</value>
   </data>
   <data name="RecoveryCodes" xml:space="preserve">
-    <value>أكواد الاسترداد</value>
+    <value>መልሶ ማግኛ ኮዶች</value>
   </data>
   <data name="RecoveryCodesLeft0" xml:space="preserve">
-    <value>عدد أكواد الاسترداد المتبقية: {0}</value>
+    <value>ቀሪ ማግኛ ኮዶች: {0}</value>
   </data>
   <data name="RecoveryCodesWarningBody" xml:space="preserve">
-    <value>إذا فقدت جهازك ذا تطبيق (authenticator) وفقدت معه هذه الأكواد لن تتمكن من تسجيل دخولك على هذا الحساب مرة أخرى.</value>
+    <value>የእርስዎ አረጋጋጭ መተግበሪያ ያጣሉ እና ማግኛ ኮዶች የላቸውም ከሆነ መለያዎ መዳረሻ ያጣሉ.</value>
   </data>
   <data name="RecoveryCodesWarningTitle" xml:space="preserve">
-    <value>احتفظ بهذه الأكواد في مكان آمن</value>
+    <value>በደህና ቦታ እነዚህ ኮዶች ያስቀምጡ.</value>
   </data>
   <data name="RecoveryCodeVerification" xml:space="preserve">
-    <value>التحقق من كود الاسترداد</value>
+    <value>መልሶ ማግኛ ኮድ ማረጋገጫ</value>
   </data>
   <data name="RecoveryCodeVerificationMessage" xml:space="preserve">
-    <value>إذا كنت تود تسجيل دخولك باستخدام كود استرداد فإن دخولك لن يستمر لفترة ممتدة ما لم تأت بكود من تطبيق (authenticator) أو تقوم بتعطيل ميزة التوثيق المزدوج العوامل ومن ثم تعيد تسجيل دخولك مجددا.</value>
+    <value>የመልሶ ማግኛ ኮድ ጋር መግባት ጠይቀዋል. አንድ አረጋጋጭ መተግበሪያ ኮድ ወይም ሊያሰናክል 2-አባል ማረጋገጥ ማቅረብ እና እንደገና ይግቡ ድረስ ይህ ክፍለ አይታወሱም.</value>
   </data>
   <data name="RegisteredExternalSignIns" xml:space="preserve">
-    <value>مسجلو دخولك الخارجيون</value>
+    <value>የእርስዎ የውጭ ይግቡ መግባቶች</value>
   </data>
   <data name="RememberMe" xml:space="preserve">
-    <value>إبق متصلا؟</value>
+    <value>አስታወስከኝ?</value>
   </data>
   <data name="RememberThisDevice" xml:space="preserve">
-    <value>تذكر هذا المتصفح</value>
+    <value>ይህን አሳሽ አስታውስ</value>
   </data>
   <data name="Remove0SignInFromYourAccount" xml:space="preserve">
-    <value>إزالة {0} كمسجل دخول خارجي إلى حسابك</value>
+    <value>ከመለያህ ውስጥ አስወግድ {0} ምልክት</value>
   </data>
   <data name="ReportDefinition" xml:space="preserve">
-    <value>تعريف تقرير</value>
+    <value>ሪፖርት ፍቺ</value>
   </data>
   <data name="ReportDefinition_Aggregation" xml:space="preserve">
-    <value>دالة التجميع</value>
+    <value>ውሁድ ተግባር</value>
   </data>
   <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
-    <value>معدل</value>
+    <value>አማካይ</value>
   </data>
   <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
-    <value>عدد</value>
+    <value>ቁጠር</value>
   </data>
   <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
-    <value>أقصى</value>
+    <value>ከፍተኛ</value>
   </data>
   <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
-    <value>أدنى</value>
+    <value>ዝቅተኛ</value>
   </data>
   <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
-    <value>مجموع</value>
+    <value>ድምር</value>
   </data>
   <data name="ReportDefinition_AutoExpand" xml:space="preserve">
-    <value>توسيع تلقائي</value>
+    <value>ራስ ዘርጋ</value>
   </data>
   <data name="ReportDefinition_Chart" xml:space="preserve">
-    <value>المخطط</value>
+    <value>ሠንጠረዥ</value>
   </data>
   <data name="ReportDefinition_Chart_Area" xml:space="preserve">
-    <value>مساحات بيانية</value>
+    <value>የአካባቢ ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_AreaNormalized" xml:space="preserve">
-    <value>مساحات بيانية مسواة</value>
+    <value>መደበኛ የአካባቢ ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_AreaStacked" xml:space="preserve">
-    <value>مساحات بيانية مرصوصة</value>
+    <value>የተቆለለ የአካባቢ ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_BarsHorizontal" xml:space="preserve">
-    <value>أعمدة أفقية</value>
+    <value>አግድም ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsHorizontalGrouped" xml:space="preserve">
-    <value>أعمدة أفقية مجمعة</value>
+    <value>ተመድበው አግድም ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsHorizontalNormalized" xml:space="preserve">
-    <value>أعمدة أفقية مسواة</value>
+    <value>መደበኛ አግድም ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsHorizontalStacked" xml:space="preserve">
-    <value>أعمدة أفقية مرصوصة</value>
+    <value>የተቆለለ አግድም ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsVertical" xml:space="preserve">
-    <value>أعمدة عمودية</value>
+    <value>አቀባዊ ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsVerticalGrouped" xml:space="preserve">
-    <value>أعمدة عمودية مجمعة</value>
+    <value>ተመድበው ቋሚ ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsVerticalNormalized" xml:space="preserve">
-    <value>أعمدة عمودية مسواة</value>
+    <value>መደበኛ ቋሚ ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_BarsVerticalStacked" xml:space="preserve">
-    <value>أعمدة عمودية مرصوصة</value>
+    <value>የተቆለለ ቋሚ ቡና</value>
   </data>
   <data name="ReportDefinition_Chart_Card" xml:space="preserve">
-    <value>بطاقة</value>
+    <value>ካርድ</value>
   </data>
   <data name="ReportDefinition_Chart_Doughnut" xml:space="preserve">
-    <value>مخطط دائري أجوف</value>
+    <value>የዶናት ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_Gauge" xml:space="preserve">
-    <value>مقياس</value>
+    <value>መለኪያ</value>
   </data>
   <data name="ReportDefinition_Chart_HeatMap" xml:space="preserve">
-    <value>خارطة حرارية</value>
+    <value>የሙቀት ካርታ</value>
   </data>
   <data name="ReportDefinition_Chart_Line" xml:space="preserve">
-    <value>خطوط بيانية</value>
+    <value>የመስመር ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_NumberCards" xml:space="preserve">
-    <value>بطاقات قيم</value>
+    <value>ብዛት ካርዶች</value>
   </data>
   <data name="ReportDefinition_Chart_Pie" xml:space="preserve">
-    <value>مخطط دائري</value>
+    <value>አምባሻ ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_Radar" xml:space="preserve">
-    <value>مخطط رادار</value>
+    <value>የራዳር ገበታ</value>
   </data>
   <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
-    <value>خارطة شجرية</value>
+    <value>የዛፍ ካርታ</value>
   </data>
   <data name="ReportDefinition_Collection" xml:space="preserve">
-    <value>المجموعة</value>
+    <value>ስብስብ</value>
   </data>
   <data name="ReportDefinition_Columns" xml:space="preserve">
-    <value>الأعمدة</value>
+    <value>አምዶች</value>
   </data>
   <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
-    <value>إظهار المخطط تلقائيا</value>
+    <value>ገበታ ወደ ነባሪዎች</value>
   </data>
   <data name="ReportDefinition_Definition" xml:space="preserve">
-    <value>التعريف</value>
+    <value>መግለጫ</value>
   </data>
   <data name="ReportDefinition_DefinitionId" xml:space="preserve">
-    <value>التعريف</value>
+    <value>መግለጫ</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
-    <value>المصفاة</value>
+    <value>ማጣሪያ</value>
   </data>
   <data name="ReportDefinition_Filter" xml:space="preserve">
-    <value>المصفاة</value>
+    <value>ማጣሪያ</value>
   </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
-    <value>معامل مطلوب</value>
+    <value>ያስፈልጋል</value>
   </data>
   <data name="ReportDefinition_Key" xml:space="preserve">
-    <value>المفتاح</value>
+    <value>ቁልፍ</value>
   </data>
   <data name="ReportDefinition_Measures" xml:space="preserve">
-    <value>القيم</value>
+    <value>እርምጃዎች</value>
   </data>
   <data name="ReportDefinition_Modifier" xml:space="preserve">
-    <value>المغير</value>
+    <value>መቀየሪያ</value>
   </data>
   <data name="ReportDefinition_OrderBy" xml:space="preserve">
-    <value>الترتيب</value>
+    <value>ትዕዛዝ</value>
   </data>
   <data name="ReportDefinition_OrderDirection" xml:space="preserve">
-    <value>جهة الترتيب</value>
+    <value>የትዕዛዝ አቅጣጫ</value>
   </data>
   <data name="ReportDefinition_OrderDirection_asc" xml:space="preserve">
-    <value>تصاعد</value>
+    <value>ሽቅብታ</value>
   </data>
   <data name="ReportDefinition_OrderDirection_desc" xml:space="preserve">
-    <value>تنازل</value>
+    <value>ሲወርድበትና</value>
   </data>
   <data name="ReportDefinition_Parameters" xml:space="preserve">
-    <value>المعاملات</value>
+    <value>መለኪያዎች</value>
   </data>
   <data name="ReportDefinition_Path" xml:space="preserve">
-    <value>المسار</value>
+    <value>ዱካ</value>
   </data>
   <data name="ReportDefinition_Rows" xml:space="preserve">
-    <value>الأسطر</value>
+    <value>ረድፎች</value>
   </data>
   <data name="ReportDefinition_Select" xml:space="preserve">
-    <value>الحقول</value>
+    <value>ይምረጡ</value>
   </data>
   <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
-    <value>أظهر مجموع الأعمدة</value>
+    <value>አሳይ አምዶች ጠቅላላ</value>
   </data>
   <data name="ReportDefinition_ShowInMainMenu" xml:space="preserve">
-    <value>إظهار في القائمة الرئيسية</value>
+    <value>ዋና ምናሌ ውስጥ አሳይ</value>
   </data>
   <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
-    <value>أظهر مجموع الأسطر</value>
+    <value>አሳይ ረድፎች ጠቅላላ</value>
   </data>
   <data name="ReportDefinition_Top" xml:space="preserve">
-    <value>أول</value>
+    <value>ጫፍ</value>
   </data>
   <data name="ReportDefinition_Type" xml:space="preserve">
-    <value>النوع</value>
+    <value>ዓይነት</value>
   </data>
   <data name="ReportDefinition_Type_Details" xml:space="preserve">
-    <value>تفصيلي</value>
+    <value>ዝርዝሮች</value>
   </data>
   <data name="ReportDefinition_Type_Summary" xml:space="preserve">
-    <value>إجمالي</value>
+    <value>ማጠቃለያ</value>
   </data>
   <data name="ReportDefinition_Value" xml:space="preserve">
-    <value>القيمة</value>
+    <value>ዋጋ</value>
   </data>
   <data name="ReportDefinition_Visibility" xml:space="preserve">
-    <value>المظهر</value>
+    <value>ለማየት መቻል</value>
   </data>
   <data name="ReportDefinition_Visibility_None" xml:space="preserve">
-    <value>مخفي</value>
+    <value>አንድም</value>
   </data>
   <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
-    <value>اختياري</value>
+    <value>ግዴታ ያልሆነ</value>
   </data>
   <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
-    <value>مطلوب</value>
+    <value>የሚያስፈልግ</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
-    <value>تعاريف تقارير</value>
+    <value>ሪፖርት ፍቺዎች</value>
   </data>
   <data name="RequiredAttribute" xml:space="preserve">
-    <value>حقل {0} مطلوب</value>
+    <value>በ {0} መስክ ያስፈልጋል.</value>
   </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
-    <value>إعادة تعيين مفتاح الـ(Authenticator)</value>
+    <value>ማረጋገጫ ቁልፍ ዳግም አስጀምር</value>
   </data>
   <data name="ResetAuthenticatorKeyWarningBody" xml:space="preserve">
-    <value>هذه العملية تقوم متعطيل التحقيق مزدوج العوامل حتى تقوم بضبط تطبيق (authenticator) مرة أخرى، إذا لم تقم بعملية الضبط على الفور قد تفقد إمكانية الدخول باستخدام هذا الحساب</value>
+    <value>የእርስዎን አረጋጋጭ መተግበሪያ ያረጋግጡ ድረስ ይህ ሂደት 2FA ያሰናክለዋል. የእርስዎን አረጋጋጭ መተግበሪያ አወቃቀር ለማጠናቀቅ አይደለም ከሆነ መለያዎ መዳረሻ ሊያጡ ይችላሉ.</value>
   </data>
   <data name="ResetAuthenticatorKeyWarningTitle" xml:space="preserve">
-    <value>إذا أعدت تعيين هذا المفتاح، لن يعمل تطبيق (authenticator) الخاص بك ما لم تقم بإعادة ضبطه مجددا</value>
+    <value>የ አረጋጋጭ ቁልፍ ዳግም ከሆነ ይህ ተገላገይው ድረስ አረጋጋጭ መተግበሪያ አይሰራም.</value>
   </data>
   <data name="ResetMyPassword" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور</value>
+    <value>የእኔ የይለፍ ቃል ዳግም አስጀምር</value>
   </data>
   <data name="ResetPassword" xml:space="preserve">
-    <value>تغيير كلمة المرور</value>
+    <value>ዳግም አስጀምር የይለፍ ቃል</value>
   </data>
   <data name="ResetPasswordConfirmation" xml:space="preserve">
-    <value>تأكيد إعادة تعيين كلمة المرور</value>
+    <value>የይለፍ ቃል ዳግም ማረጋገጫ</value>
   </data>
   <data name="ResetPasswordConfirmationMessage" xml:space="preserve">
-    <value>أعيد تعيين كلمة مرورك بنجاح، يمكنك تسجيل دخولك بالضغط على الزر أدناه</value>
+    <value>የእርስዎ የይለፍ ቃል ዳግም ውስጥ ለመግባት ከዚህ በታች ጠቅ ያድርጉ ቆይቷል</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>حدد كلمة مرور جديدة عبر <a href='{0}'>هذه الوصلة</a>.</value>
+    <value>እዚህ <a href='{0}'>ጠቅ</a> በማድረግ የይለፍ ቃልዎን ዳግም ያስጀምሩት.</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
-    <value>إعادة توليد أكواد الاسترداد</value>
+    <value>ማግኛ ኮዶች ዳግም አስጀምር</value>
   </data>
   <data name="ResetYourPassword" xml:space="preserve">
-    <value>إعادة تعيين كلمة المرور</value>
+    <value>የይለፍ ቃልዎን ዳግም አስጀምር</value>
   </data>
   <data name="Resource" xml:space="preserve">
-    <value>مورد</value>
+    <value>ምንጭ</value>
   </data>
   <data name="Resource_AccountType" xml:space="preserve">
-    <value>نوع الحسابات</value>
+    <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
-    <value>متاح من</value>
+    <value>የሚገኝ በመሆኑ</value>
   </data>
   <data name="Resource_AvailableTill" xml:space="preserve">
-    <value>متاح إلى</value>
+    <value>ድረስ ይገኛል</value>
   </data>
   <data name="Resource_CostObject" xml:space="preserve">
-    <value>مركز التكلفة</value>
+    <value>የወጭ የነገር</value>
   </data>
   <data name="Resource_Currency" xml:space="preserve">
-    <value>العملة</value>
+    <value>ገንዘብ</value>
   </data>
   <data name="Resource_Decimal1" xml:space="preserve">
-    <value>الصفة العشرية 1</value>
+    <value>አስርዮሽ መገለጫ ባህሪ 1</value>
   </data>
   <data name="Resource_Decimal2" xml:space="preserve">
-    <value>الصفة العشرية 2</value>
+    <value>አስርዮሽ መገለጫ ባህሪ 2</value>
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
-    <value>الكمية الاقتصادية</value>
+    <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
   </data>
   <data name="Resource_ExpenseCenter" xml:space="preserve">
-    <value>مركز المصروف</value>
+    <value>ማዕከል የወጪ</value>
   </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>الغرض</value>
+    <value>ዓላማ</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
-    <value>رقم التعريف</value>
+    <value>መለያ</value>
   </data>
   <data name="Resource_Int1" xml:space="preserve">
-    <value>الصفة العددية 1</value>
+    <value>ኢንቲጀር መገለጫ ባህሪ 1</value>
   </data>
   <data name="Resource_Int2" xml:space="preserve">
-    <value>الصفة العددية 2</value>
+    <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
   </data>
   <data name="Resource_InvestmentCenter" xml:space="preserve">
-    <value>مركز الاستثمار</value>
+    <value>የኢንቨስትመንት ማዕከል</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
-    <value>الصفة 1</value>
+    <value>አይነታ 1</value>
   </data>
   <data name="Resource_Lookup2" xml:space="preserve">
-    <value>الصفة 2</value>
+    <value>አይነታ 2</value>
   </data>
   <data name="Resource_Lookup3" xml:space="preserve">
-    <value>الصفة 3</value>
+    <value>አይነታ 3</value>
   </data>
   <data name="Resource_Lookup4" xml:space="preserve">
-    <value>الصفة 4</value>
+    <value>አይነታ 4</value>
   </data>
   <data name="Resource_Lookup5" xml:space="preserve">
-    <value>الصفة 5</value>
+    <value>አይነታ 5</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
-    <value>المبلغ</value>
+    <value>መጠን</value>
   </data>
   <data name="Resource_ReorderLevel" xml:space="preserve">
-    <value>حد إعادة الطلب</value>
+    <value>አስይዝ ደረጃ</value>
   </data>
   <data name="Resource_ResidualMonetaryValue" xml:space="preserve">
-    <value>مبلغ الخردة</value>
+    <value>ቀሪ የገንዘብ ዋጋ</value>
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
-    <value>قيمة الخردة</value>
+    <value>ትራፊ እሴት</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
-    <value>الصفة النصية 1</value>
+    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
   </data>
   <data name="Resource_Text2" xml:space="preserve">
-    <value>الصفة النصية 2</value>
+    <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
   <data name="Resource_Units" xml:space="preserve">
-    <value>وحدات القياس</value>
+    <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="Resources" xml:space="preserve">
-    <value>موارد</value>
+    <value>መርጃዎች</value>
   </data>
   <data name="ResourceUnit_Multiplier" xml:space="preserve">
-    <value>المعامل</value>
+    <value>ማባዣ</value>
   </data>
   <data name="ResourceUnit_Unit" xml:space="preserve">
-    <value>الوحدة</value>
+    <value>መለኪያ</value>
   </data>
   <data name="ResponsibilityCenter" xml:space="preserve">
-    <value>مركز مسؤولية</value>
+    <value>ኃላፊነት ማዕከል</value>
   </data>
   <data name="ResponsibilityCenter_Manager" xml:space="preserve">
-    <value>المدير</value>
+    <value>አስተዳዳሪ</value>
   </data>
   <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
-    <value>نوع المركز</value>
+    <value>ኃላፊነት አይነት</value>
   </data>
   <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
-    <value>تكلفة</value>
+    <value>ዋጋ</value>
   </data>
   <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
-    <value>استثمار</value>
+    <value>የኢንቨስትመንት</value>
   </data>
   <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
-    <value>ربح</value>
+    <value>ትርፍ</value>
   </data>
   <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
-    <value>إيراد</value>
+    <value>ገቢ</value>
   </data>
   <data name="ResponsibilityCenters" xml:space="preserve">
-    <value>مراكز مسؤولية</value>
+    <value>ኃላፊነት ማዕከላት</value>
   </data>
   <data name="Role" xml:space="preserve">
-    <value>دور</value>
+    <value>ሚና</value>
   </data>
   <data name="Role_IsPublic" xml:space="preserve">
-    <value>عام للجميع</value>
+    <value>የሆነው የህዝብ</value>
   </data>
   <data name="RoleMembership_Role" xml:space="preserve">
-    <value>الدور</value>
+    <value>ሚና</value>
   </data>
   <data name="RoleMembership_User" xml:space="preserve">
-    <value>المستخدم</value>
+    <value>ተጠቃሚ</value>
   </data>
   <data name="Roles" xml:space="preserve">
-    <value>أدوار</value>
+    <value>ሚናዎች</value>
   </data>
   <data name="Row{0}" xml:space="preserve">
-    <value>السطر {0}</value>
+    <value>ረድፍ {0}</value>
   </data>
   <data name="Save" xml:space="preserve">
-    <value>حفظ</value>
+    <value>አስቀምጥ</value>
   </data>
   <data name="SetPassword" xml:space="preserve">
-    <value>تحديد كلمة المرور</value>
+    <value>የይለፍ ቃል ያዘጋጁ</value>
   </data>
   <data name="SetPasswordMessage" xml:space="preserve">
-    <value>ليس لديك اسم مستخدم وكلمة مرور خاصين بهذا التطبيق، أضف كلمة مرور حتى يتسنى لك تسجيل دخولك من دون مسجل دخول خارجي.</value>
+    <value>ለዚህ መተግበሪያ አካባቢያዊ የተጠቃሚ ስም / ይለፍ ቃል የለዎትም. እርስዎ ውጫዊ የመግባት አቅራቢ ያለ መግባት ይችላሉ በአካባቢው የይለፍ ቃል ያክሉ.</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>إعدادات</value>
+    <value>ቅንብሮች</value>
   </data>
   <data name="Settings_ArchiveDate" xml:space="preserve">
-    <value>تاريخ الأِرشفة</value>
+    <value>የማህደር ቀን</value>
   </data>
   <data name="Settings_ArchiveDateDescription" xml:space="preserve">
-    <value>يمنع النظام تعديل أي معاملات قبل هذا التاريخ</value>
+    <value>በዚህ ቀን አይፈቀድም በፊት ግብይቶችን ማሻሻል</value>
   </data>
   <data name="Settings_BrandColor" xml:space="preserve">
-    <value>لون العلامة التجارية</value>
+    <value>ብራንድ ቀለም</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
-    <value>العملة الوظيفية</value>
+    <value>ተግባራዊ ምንዛሬ</value>
   </data>
   <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
-    <value>العملة الرئيسية المستخدمة في المعاملات النقدية</value>
+    <value>በማመንጨት እና ገንዘብ በማሳለፍ ጊዜ ተቀዳሚ ምንዛሪ ተጠቅሟል</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
-    <value>اللغة الرئيسية</value>
+    <value>ዋናው ቋንቋ</value>
   </data>
   <data name="Settings_PrimaryLanguageSymbol" xml:space="preserve">
-    <value>رمز اللغة الرئيسية</value>
+    <value>የመጀመሪያ ቋንቋ ምልክት</value>
   </data>
   <data name="Settings_ProvisionedAt" xml:space="preserve">
-    <value>زمن الإنشاء</value>
+    <value>አልቀረበም ላይ</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
-    <value>اللغة الثانوية</value>
+    <value>ሁለተኛ ቋንቋ</value>
   </data>
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
-    <value>رمز اللغة الثانوية</value>
+    <value>ሁለተኛ ቋንቋ ምልክት</value>
   </data>
   <data name="Settings_ShortCompanyName" xml:space="preserve">
-    <value>اسم المؤسسة</value>
+    <value>አጭር ኩባንያ ስም</value>
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة</value>
+    <value>Ternary ቋንቋ</value>
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
-    <value>رمز اللغة الثالثة</value>
+    <value>Ternary ቋንቋ ምልክት</value>
   </data>
   <data name="ShortDay1" xml:space="preserve">
-    <value>الإثنين</value>
+    <value>ሰኞ</value>
   </data>
   <data name="ShortDay2" xml:space="preserve">
-    <value>الثلاثاء</value>
+    <value>ማክ</value>
   </data>
   <data name="ShortDay3" xml:space="preserve">
-    <value>الأربعاء</value>
+    <value>ረቡዕ</value>
   </data>
   <data name="ShortDay4" xml:space="preserve">
-    <value>الخميس</value>
+    <value>ሐሙስ</value>
   </data>
   <data name="ShortDay5" xml:space="preserve">
-    <value>الجمعة</value>
+    <value>አርብ</value>
   </data>
   <data name="ShortDay6" xml:space="preserve">
-    <value>السبت</value>
+    <value>ቅዳሜ</value>
   </data>
   <data name="ShortDay7" xml:space="preserve">
-    <value>الأحد</value>
+    <value>ጸሐይ</value>
   </data>
   <data name="ShortMonth1" xml:space="preserve">
-    <value>يناير</value>
+    <value>ጃን</value>
   </data>
   <data name="ShortMonth10" xml:space="preserve">
-    <value>أكتوبر</value>
+    <value>ኦክቶ</value>
   </data>
   <data name="ShortMonth11" xml:space="preserve">
-    <value>نوفمبر</value>
+    <value>ህዳር</value>
   </data>
   <data name="ShortMonth12" xml:space="preserve">
-    <value>ديسمبر</value>
+    <value>ዲሴ</value>
   </data>
   <data name="ShortMonth2" xml:space="preserve">
-    <value>فبراير</value>
+    <value>Feb</value>
   </data>
   <data name="ShortMonth3" xml:space="preserve">
-    <value>مارس</value>
+    <value>Mar</value>
   </data>
   <data name="ShortMonth4" xml:space="preserve">
-    <value>أبريل</value>
+    <value>ኤፕ</value>
   </data>
   <data name="ShortMonth5" xml:space="preserve">
-    <value>مايو</value>
+    <value>ግንቦት</value>
   </data>
   <data name="ShortMonth6" xml:space="preserve">
-    <value>يونيو</value>
+    <value>ጁን</value>
   </data>
   <data name="ShortMonth7" xml:space="preserve">
-    <value>يوليو</value>
+    <value>Jul</value>
   </data>
   <data name="ShortMonth8" xml:space="preserve">
-    <value>أغسطس</value>
+    <value>ነሀሴ</value>
   </data>
   <data name="ShortMonth9" xml:space="preserve">
-    <value>سبتمبر</value>
+    <value>ሴፕቴ</value>
   </data>
   <data name="ShortQuarter1" xml:space="preserve">
-    <value>الربع 1</value>
+    <value>መ 1</value>
   </data>
   <data name="ShortQuarter2" xml:space="preserve">
-    <value>الربع 2</value>
+    <value>Q2</value>
   </data>
   <data name="ShortQuarter3" xml:space="preserve">
-    <value>الربع 3</value>
+    <value>መ 3</value>
   </data>
   <data name="ShortQuarter4" xml:space="preserve">
-    <value>الربع 4</value>
+    <value>Q4</value>
   </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
-    <value>بالنيابة عن</value>
+    <value>በእርሱ ፈንታ</value>
   </data>
   <data name="Signature_Reason" xml:space="preserve">
-    <value>السبب</value>
+    <value>ምክንያት</value>
   </data>
   <data name="Signature_ReasonDetails" xml:space="preserve">
-    <value>تفصيل السبب</value>
+    <value>ምክንያት ዝርዝሮች</value>
   </data>
   <data name="Signature_Role" xml:space="preserve">
-    <value>الدور</value>
+    <value>ሚና</value>
   </data>
   <data name="Signature_SignedAt" xml:space="preserve">
-    <value>زمن التوقيع</value>
+    <value>ላይ ገብተዋል</value>
   </data>
   <data name="Signatures" xml:space="preserve">
-    <value>توقيعات</value>
+    <value>ፊርማዎች</value>
   </data>
   <data name="SignIn" xml:space="preserve">
-    <value>تسجيل دخول</value>
+    <value>ስግን እን</value>
   </data>
   <data name="SignInUsingYour0Account" xml:space="preserve">
-    <value>سجل دخولك عن طريق حسابك عند {0}</value>
+    <value>የ {0} መለያ በመጠቀም ይግቡ</value>
   </data>
   <data name="SignInWith0" xml:space="preserve">
-    <value>تسجيل دخول بواسطة {0}</value>
+    <value>ጋር ይግቡ {0}</value>
   </data>
   <data name="SignOut" xml:space="preserve">
-    <value>تسجيل خروج</value>
+    <value>ዛግተ ውጣ</value>
   </data>
   <data name="SignOutConfirmation" xml:space="preserve">
-    <value>تأكيد تسجيل الخروج</value>
+    <value>ማረጋገጫ ዘግተህ</value>
   </data>
   <data name="SignOutConfirmationMessage" xml:space="preserve">
-    <value>تم تسجيل خروجك</value>
+    <value>አሁን ዘግተው ገብተዋል</value>
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
-    <value>هل تود تسجيل خروجك من {0}؟</value>
+    <value>እርስዎ {0} መውጣት መግባት ይፈልጋሉ?</value>
   </data>
   <data name="SortKey" xml:space="preserve">
-    <value>مفتاح الترتيب</value>
+    <value>ደርድር ቁልፍ</value>
   </data>
   <data name="SqlDatabase_DatabaseName" xml:space="preserve">
-    <value>اسم قاعدة البيانات</value>
+    <value>የውሂብ ጎታ ስም</value>
   </data>
   <data name="SqlDatabase_Server" xml:space="preserve">
-    <value>المخدم</value>
+    <value>አገልጋይ</value>
   </data>
   <data name="SqlServer_PasswordKey" xml:space="preserve">
-    <value>مفتاح كلمة المرور</value>
+    <value>የይለፍ ቃል ቁልፍ</value>
   </data>
   <data name="SqlServer_ServerName" xml:space="preserve">
-    <value>اسم المخدم</value>
+    <value>የአገልጋይ ስም</value>
   </data>
   <data name="SqlServer_UserName" xml:space="preserve">
-    <value>اسم الحساب</value>
+    <value>የተጠቃሚ ስም</value>
   </data>
   <data name="State" xml:space="preserve">
-    <value>الحالة</value>
+    <value>ሁኔታ</value>
   </data>
   <data name="StringLengthAttribute" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا</value>
+    <value>መስኩ {0} ከፍተኛ ርዝመት ጋር ሕብረቁምፊ መሆን አለበት {1}</value>
   </data>
   <data name="StringLengthAttribute2" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
+    <value>መስኩ {0} {2} ቢያንስ እና ከፍተኛ {1} ቁምፊዎች ርዝመት መሆን አለበት.</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
-    <value>أسطر مجملة</value>
+    <value>ማጠቃለያ ምዝግቦችን</value>
   </data>
   <data name="SummaryEntry" xml:space="preserve">
-    <value>سطر مجمل</value>
+    <value>ማጠቃለያ Entry</value>
   </data>
   <data name="T_CultureId" xml:space="preserve">
-    <value>اللغة</value>
+    <value>ባህል</value>
   </data>
   <data name="T_Name" xml:space="preserve">
-    <value>الاسم</value>
+    <value>ስም</value>
   </data>
   <data name="T_Tier" xml:space="preserve">
-    <value>الطبقة</value>
+    <value>መደርደሪያ</value>
   </data>
   <data name="T_Value" xml:space="preserve">
-    <value>القيمة</value>
+    <value>ዋጋ</value>
   </data>
   <data name="TermsOfService" xml:space="preserve">
-    <value>شروط الخدمة</value>
+    <value>የአገልግሎት ውል</value>
   </data>
   <data name="TheCurrentBrowserHasBeenForgotten" xml:space="preserve">
-    <value>تم تناسي المتصفح الحالي، عند تسجيل دخولك من هذا المتصفح في المرة المقبلة سيطالبك النظام بالكود من تطبيق (authenticator).</value>
+    <value>የአሁኑ አሳሽ ረስቶአል ተደርጓል. ከዚህ አሳሽ እንደገና ይግቡ ጊዜ የ 2fa ኮድ ይጠየቃል.</value>
   </data>
   <data name="TheExternalSignInWasAdded" xml:space="preserve">
-    <value>تم إضافة مسجل الدخول الخارجي.</value>
+    <value>ውጫዊ ምልክት-ውስጥ ታክሏል.</value>
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
-    <value>تم إزالة مسجل الدخول الخارجي.</value>
+    <value>ውጫዊ በመለያ-ተወግዷል.</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>العنوان</value>
+    <value>አርእስት</value>
   </data>
   <data name="TitleSingular" xml:space="preserve">
-    <value>الاسم المفرد</value>
+    <value>በነጠላ ስም</value>
   </data>
   <data name="ToDate" xml:space="preserve">
-    <value>إلى تاريخ (متضمن)</value>
+    <value>ቀን ወደ (A ስተዳደርን.)</value>
   </data>
   <data name="Total" xml:space="preserve">
-    <value>المجموع</value>
+    <value>ሙሉ</value>
   </data>
   <data name="TreeActiveChildCount" xml:space="preserve">
-    <value>عدد الفروع المنشطة</value>
+    <value>ገባሪ የልጅ ቆጠራ</value>
   </data>
   <data name="TreeChildCount" xml:space="preserve">
-    <value>عدد الفروع</value>
+    <value>የልጅ ቆጠራ</value>
   </data>
   <data name="TreeLevel" xml:space="preserve">
-    <value>الدرجة</value>
+    <value>ደረጃ</value>
   </data>
   <data name="TreeParent" xml:space="preserve">
-    <value>الأصل</value>
+    <value>ወላጅ</value>
   </data>
   <data name="TreePath" xml:space="preserve">
-    <value>المسار</value>
+    <value>ዱካ</value>
   </data>
   <data name="Twitter" xml:space="preserve">
-    <value>تويتر</value>
+    <value>በ Twitter</value>
   </data>
   <data name="TwoFactorAuthentication" xml:space="preserve">
-    <value>توثيق مزدوج العوامل</value>
+    <value>ባለሁለት ክፍሉ ማረጋገጫ</value>
   </data>
   <data name="TwoFactorAuthenticationInstructions" xml:space="preserve">
-    <value>حسابك محمي بتطبيق (authenticator)، أدخل الكود الذي يعرضه التطبيق في الحقل أدناه</value>
+    <value>የእርስዎ መለያ አንድ አረጋጋጭ መተግበሪያ ጋር የተጠበቀ ነው. ከዚህ በታች አረጋጋጭ ኮድ ያስገቡ</value>
   </data>
   <data name="TwoFactorAuthenticationRecoveryInstructions" xml:space="preserve">
-    <value>تطبيق (authenticator) ليس في متناول يدك؟ لتسجيل دخولك باستخدام كود استرداد</value>
+    <value>የእርስዎ አረጋጋጭ መሣሪያዎ መዳረሻ የለዎትም? ማግኛ ኮድ መግባትን</value>
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
-    <value>تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)</value>
+    <value>2FA ተሰናክሏል. አንድ አረጋጋጭ መተግበሪያ በማዋቀር 2FA ዳግም ማንቃት ይችላሉ</value>
   </data>
   <data name="User" xml:space="preserve">
-    <value>مستخدم</value>
+    <value>ተጠቃሚ</value>
   </data>
   <data name="User_Agent" xml:space="preserve">
-    <value>الذمّة</value>
+    <value>ወኪል</value>
   </data>
   <data name="User_Companies" xml:space="preserve">
-    <value>الشركات</value>
+    <value>ኩባንያዎች</value>
   </data>
   <data name="User_Confirmed" xml:space="preserve">
-    <value>مؤكد</value>
+    <value>ተረጋግጧል</value>
   </data>
   <data name="User_Email" xml:space="preserve">
-    <value>البريد الإلكتروني</value>
+    <value>ኢሜይል</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
-    <value>آخر نشاط</value>
+    <value>የመጨረሻው እንቅስቃሴ</value>
   </data>
   <data name="User_New" xml:space="preserve">
-    <value>مدعو</value>
+    <value>የተጋበዙ</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
-    <value>الأذونات</value>
+    <value>ፍቃዶች</value>
   </data>
   <data name="User_PreferredLanguage" xml:space="preserve">
-    <value>اللغة المفضلة</value>
+    <value>የተመረጠ ቋንቋ</value>
   </data>
   <data name="User_Roles" xml:space="preserve">
-    <value>الأدوار</value>
+    <value>ሚናዎች</value>
   </data>
   <data name="UserAlreadyHasPassword" xml:space="preserve">
-    <value>المستخدم لديه كلمة مرور.</value>
+    <value>ተጠቃሚ አስቀድሞ የይለፍ ቃል ስብስብ አለው.</value>
   </data>
   <data name="UserAlreadyInRole" xml:space="preserve">
-    <value>المستخدم موجود في دور ({0}).</value>
+    <value>ተጠቃሚ አስቀድሞ ሚና ላይ «{0}».</value>
   </data>
   <data name="UserLockoutNotEnabled" xml:space="preserve">
-    <value>تعليق الحساب غير متاح لهذا المستخدم</value>
+    <value>Lockout ለዚህ ተጠቃሚ አልነቃም.</value>
   </data>
   <data name="UserName" xml:space="preserve">
-    <value>اسم المستخدم</value>
+    <value>የተጠቃሚ ስም</value>
   </data>
   <data name="UserNotInRole" xml:space="preserve">
-    <value>المستخدم ليس عنده دور ({0}).</value>
+    <value>የተጠቃሚ «{0}» ሚና ላይ አይደለም.</value>
   </data>
   <data name="Users" xml:space="preserve">
-    <value>مستخدمون</value>
+    <value>ተጠቃሚዎች</value>
   </data>
   <data name="VerificationCode" xml:space="preserve">
-    <value>رقم التحقق</value>
+    <value>የማረጋገጫ የሚስጥር ቁጥር</value>
   </data>
   <data name="VerificationCodeInvalid" xml:space="preserve">
-    <value>رقم التحقق غير صحيح</value>
+    <value>የማረጋገጫ ኮድ ልክ ያልሆነ ነው.</value>
   </data>
   <data name="Verify" xml:space="preserve">
-    <value>تحقق</value>
+    <value>አረጋግጥ</value>
   </data>
   <data name="View" xml:space="preserve">
-    <value>واجهة</value>
+    <value>ዕይታ</value>
   </data>
   <data name="View_All" xml:space="preserve">
-    <value>الجميع</value>
+    <value>ሁሉ</value>
   </data>
   <data name="Views" xml:space="preserve">
-    <value>واجهات</value>
+    <value>ዕይታዎች</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>نعم</value>
+    <value>አዎ</value>
   </data>
   <data name="YouHaveGeneratedNewRecoveryCodes" xml:space="preserve">
-    <value>لقد قمت بتوليد أكواد استرداد جديدة</value>
+    <value>አዲስ የመልሶ ማግኛ ኮዶች የመነጩ ናቸው.</value>
   </data>
   <data name="YourAuthenticatorAppHasBeenVerified" xml:space="preserve">
-    <value>تم التحقق من تطبيق (authenticator) خاصتك</value>
+    <value>የእርስዎ አረጋጋጭ መተግበሪያ ተረጋግጧል.</value>
   </data>
   <data name="YourAuthenticatorAppKeyHasBeenReset" xml:space="preserve">
-    <value>تم إعادة تعيين مفتاح تطبيق (authenticator)، عليك بإعادة ضبط التطبيق حالا باستخدام المفتاح الجديد</value>
+    <value>የእርስዎ አረጋጋጭ መተግበሪያ ቁልፍ ዳግም ተጀምሯል, አዲሱን ቁልፍ በመጠቀም አረጋጋጭ መተግበሪያ ማዋቀር ይኖርብዎታል.</value>
   </data>
   <data name="YourPasswordHasBeenChanged" xml:space="preserve">
-    <value>تم تحديث كلمة مرورك.</value>
+    <value>የይለፍ ቃልዎ ተቀይሯል.</value>
   </data>
   <data name="YourPasswordHasBeenSet" xml:space="preserve">
-    <value>تم تحديد كلمة مرورك.</value>
+    <value>የእርስዎ የይለፍ ቃል ተዘጋጅቷል.</value>
   </data>
   <data name="YourProfileHasBeenUpdated" xml:space="preserve">
-    <value>تم تحديث حسابك.</value>
+    <value>መገለጫዎ ዘምኗል.</value>
   </data>
   <data name="YouShouldGenerateNewRecoveryCodes" xml:space="preserve">
-    <value>عليك بتوليد مجموعة جديدة من أكواد الاسترداد.</value>
+    <value>አንተ ማግኛ ኮዶች አዲስ ስብስብ ማመንጨት ይገባል.</value>
   </data>
 </root>

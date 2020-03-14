@@ -135,8 +135,12 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     }
                 },
                 PostingStateAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+
                 AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },
+                AssignedById: { control: 'number', label: () => `${trx.instant('Document_AssignedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AssignedBy: { control: 'navigation', label: () => trx.instant('Document_AssignedBy'), type: 'User', foreignKeyName: 'AssignedById' },
+                AssignedAt: { control: 'datetime', label: () => trx.instant('Document_AssignedAt') },
 
                 // Audit
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },

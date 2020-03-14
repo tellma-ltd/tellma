@@ -36,8 +36,20 @@ export class CustomUserSettingsService {
     return settings.CustomSettings;
   }
 
-  public get(key: string) {
+  public getString(key: string): string {
     return this.customSettings[key];
+  }
+
+  public get<T>(key: string): T {
+    try {
+      const resultString = this.customSettings[key];
+      if (!!resultString) {
+        const result = JSON.parse(resultString) as T;
+        return result;
+      }
+    } catch { }
+
+    return undefined;
   }
 
   public save(key: string, value: string) {
