@@ -278,4 +278,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AgentIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="716fd76c-ec32-4bd7-86ed-7fedcae53782" ChangeDateTime="03/14/2020 13:07:50">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Time1Label1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Time1Label]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="99efccd0-4cbb-4a17-94cc-b1a3f1ee250d" ChangeDateTime="03/14/2020 13:08:03">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Time2Label1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Time2Label]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2a9be913-6535-4f7f-b0cf-6dcbd934c743" ChangeDateTime="03/14/2020 13:08:16">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[QuantityLabel1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[QuantityLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9d81c0b9-002b-4cc9-80ec-017fcc5be104" ChangeDateTime="03/14/2020 13:08:29">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[UnitLabel1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitLabel]" />
+  </Operation>
 </Operations>

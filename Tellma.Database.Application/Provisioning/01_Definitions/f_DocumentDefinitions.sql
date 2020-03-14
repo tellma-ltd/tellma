@@ -43,11 +43,11 @@ BEGIN
 	UPDATE @DocumentDefinitions
 	SET
 		Time1Visibility = N'Required',
-		Time1Label1 = N'Depreciation Starts', Time1Label2 = N'الاستهلاك ابتداء من',
+		Time1Label = N'Depreciation Starts', Time1Label2 = N'الاستهلاك ابتداء من',
 		QuantityVisibility = N'Required',
-		QuantityLabel1 = N'Duration', QuantityLabel2 = N'لمدة',
+		QuantityLabel = N'Duration', QuantityLabel2 = N'لمدة',
 		UnitVisibility = N'Required',
-		UnitLabel1 = N'', UnitLabel2 = N''
+		UnitLabel = N'', UnitLabel2 = N''
 	WHERE [Id] = N'asset-depreciation-vouchers'
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
