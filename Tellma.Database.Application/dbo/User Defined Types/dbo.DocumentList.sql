@@ -21,8 +21,8 @@
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
 	[Quantity]						DECIMAL (19,4)	NULL,
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
-	[MeasurementUnitId]				INT,
-	[MeasurementUnitIsCommon]		BIT				NOT NULL DEFAULT 1
+	[UnitId]						INT,
+	[UnitIsCommon]					BIT				NOT NULL DEFAULT 1
 	--[CurrencyId]							INT, 
 	--[CurrencyIsCommon]						BIT				DEFAULT 1,
 	--[InvoiceReference]						NVARCHAR (255),

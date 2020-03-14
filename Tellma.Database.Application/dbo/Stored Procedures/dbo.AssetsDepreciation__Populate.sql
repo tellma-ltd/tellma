@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[AssetsDepreciation__Populate]
 	@DocumentIndex	INT = 0,
 	@DocumentDate	DATE = N'2020.01.31',
-	@UsedCapacity	DECIMAL (19,4) = 1,
+	@Quantity		DECIMAL (19,4) = 1, -- Used Capacity
 	@UnitId			INT = 8, -- select * from measurementunits
 	@Time1			DATETIME2 (2) = N'2020.01.01',
 	@Time2			DATETIME2 (2) = N'2020.01.31',
@@ -23,7 +23,7 @@ AS
 --(10,8,	N'Entries',	N'ResponsibilityCenterId',1,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
 --(11,8,	N'Entries',	N'ResponsibilityCenterId',0,N'Cost Ctr',	N'مركز التكلفة',4,4,0);
 	DECLARE @WideLines WideLineList;
-	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'');
+	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment');
 	DECLARE @PPETypeIds IdList;
 	DECLARE @AET INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment')
 
@@ -33,11 +33,11 @@ AS
 	AND [Node].IsDescendantOf(@PPENode) = 1; -- select * from entrytypes select * from responsibilitycenters
 
 	INSERT INTO @WideLines([Index], DefinitionId,
-			[DocumentIndex],ResourceId1,Quantity1,		UnitId1,AgentId0,			EntryTypeId0,				Time11,	Time21,
+			[DocumentIndex],ResourceId1,Quantity1,	UnitId1, AgentId0,		EntryTypeId0,			Time11,	Time21,
 			CurrencyId1,	ResponsibilityCenterId1,ResponsibilityCenterId0)
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
-			@DocumentIndex, [Id],		@UsedCapacity,	@UnitId, [CostObjectId], [ExpenseEntryTypeId],	@Time1,	@Time2, 
-			[CurrencyId],	[InvestmentCenterId],	1 AS 'ExpenseResponsibilityCenterId'
+			@DocumentIndex, [Id],		@Quantity,	@UnitId, [CostObjectId], [ExpenseEntryTypeId],	@Time1,	@Time2, 
+			[CurrencyId],	[InvestmentCenterId],	[ExpenseCenterId]
 	FROM dbo.Resources
 	WHERE AccountTypeId IN (SELECT [Id] FROM @PPETypeIds)
 	AND [InvestmentCenterId] = @InvestmentCenterId;
@@ -66,13 +66,9 @@ AS
 	-- Total information is used for accelerated depreciation models, when we implement them
 		SELECT --TotalCapacity, TotalMonetaryValue, TotalValue,
 				PB.RemainingCapacity,
-				-- To handle residual values, use this instead
-				--(PB.RemainingMonetaryValue - R.ResidualMonetaryValue) AS [DepreciableRemainingMonetaryValue],
-				(PB.RemainingMonetaryValue - 0) AS [DepreciableRemainingMonetaryValue],
-				-- To handle residual values, use this instead
-				--(PB.RemainingValue - R.ResidualValue) AS [DepreciableRemainingVaue],
-				(PB.RemainingValue - 0) AS [DepreciableRemainingValue],
-				IIF(@UsedCapacity <  PB.RemainingCapacity, @UsedCapacity,  PB.RemainingCapacity) AS [UsedCapacity],
+				(PB.RemainingMonetaryValue - R.ResidualMonetaryValue) AS [DepreciableRemainingMonetaryValue],
+				(PB.RemainingValue - R.ResidualValue) AS [DepreciableRemainingValue],
+				IIF(@Quantity <  PB.RemainingCapacity, @Quantity,  PB.RemainingCapacity) AS [UsedCapacity],
 				PB.[ResourceId]
 		FROM PPEBalancesPre PB
 		JOIN dbo.Resources R ON PB.ResourceId = R.Id
@@ -92,5 +88,5 @@ AS
 			AgentId0 AS [System],
 			(select [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
-			CurrencyId1 AS Currency, ResponsibilityCenterId1 AS InvCtr,ResponsibilityCenterId0 AS PLCenter
+			CurrencyId1 AS Currency, ResponsibilityCenterId1 AS InvCtr, ResponsibilityCenterId0 AS ExpCenter
 	FROM @WideLines WL;

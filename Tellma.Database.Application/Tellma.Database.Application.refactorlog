@@ -250,4 +250,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AgentDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="aa6a5bfb-589b-4693-9d6c-1d6c6bb27d20" ChangeDateTime="03/14/2020 09:33:13">
+    <Property Name="ElementName" Value="[dbo].[Documents].[MeasurementUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d3014637-78b2-4ced-a4d0-58004b276358" ChangeDateTime="03/14/2020 09:33:34">
+    <Property Name="ElementName" Value="[dbo].[Documents].[MeasurementUnitIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitIsCommon]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0a6653e5-0752-42b1-b9c8-1db35535ad04" ChangeDateTime="03/14/2020 11:08:05">
+    <Property Name="ElementName" Value="[bll].[Resources__Fill]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources__Preprocess]" />
+  </Operation>
 </Operations>

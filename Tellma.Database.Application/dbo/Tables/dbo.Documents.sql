@@ -34,8 +34,8 @@
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
 	[Quantity]						DECIMAL (19,4)	NULL,
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
-	[MeasurementUnitId]				INT CONSTRAINT [FK_Documents__MeasurementUnitId] REFERENCES dbo.MeasurementUnits([Id]),
-	[MeasurementUnitIsCommon]		BIT				NOT NULL DEFAULT 1,
+	[UnitId]						INT CONSTRAINT [FK_Documents__UnitId] REFERENCES dbo.MeasurementUnits([Id]),
+	[UnitIsCommon]					BIT				NOT NULL DEFAULT 1,
 	--[CurrencyId]					INT, 
 	--[InvoiceReference]			NVARCHAR (50),
 	-- Transaction specific, to record the acquisition or loss of goods and services

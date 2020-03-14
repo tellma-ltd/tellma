@@ -23,22 +23,28 @@ BEGIN
 	
 	UPDATE @ResourceDefinitions
 	SET 
-		[Lookup1Visibility]		= N'Optional',
-		[Lookup1Label]			= N'Manufacturer',
-		[Lookup1DefinitionId]	= N'it-equipment-manufacturers',
-		[Lookup2Visibility]		= N'Optional',
-		[Lookup2Label]			= N'Operating System',
-		[Lookup2DefinitionId]	= N'operating-systems'
+		[Lookup1Visibility]					= N'Optional',
+		[Lookup1Label]						= N'Manufacturer',
+		[Lookup1DefinitionId]				= N'it-equipment-manufacturers',
+		[Lookup2Visibility]					= N'Optional',
+		[Lookup2Label]						= N'Operating System',
+		[Lookup2DefinitionId]				= N'operating-systems',
+		[CostObjectVisibility]				= N'Optional',
+		[ExpenseEntryTypeVisibility]		= N'Optional',
+		[ExpenseCenterVisibility]			= N'Required',
+		[InvestmentCenterVisibility]		= N'Required',
+		[ResidualMonetaryValueVisibility]	= N'Required',
+		[ResidualValueVisibility]			= N'Required'
 	WHERE [Id] = N'computer-equipment';
 	
 	UPDATE @ResourceDefinitions
 	SET 
 		[CostObjectVisibility]				= N'Optional',
 		[ExpenseEntryTypeVisibility]		= N'Optional',
-		[ExpenseCenterVisibility]			= N'Optional',
-		[InvestmentCenterVisibility]		= N'Optional',
-		[ResidualMonetaryValueVisibility]	= N'Optional',
-		[ResidualValueVisibility]			= N'Optional'
+		[ExpenseCenterVisibility]			= N'Required',
+		[InvestmentCenterVisibility]		= N'Required',
+		[ResidualMonetaryValueVisibility]	= N'Required',
+		[ResidualValueVisibility]			= N'Required'
 	WHERE [Id] = N'properties-plants-and-equipment';
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en

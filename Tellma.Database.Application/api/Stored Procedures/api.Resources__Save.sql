@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	DECLARE @FilledResources [dbo].[ResourceList];
 
 	INSERT INTO @FilledResources
-	EXEC bll.Resources__Fill
+	EXEC bll.[Resources__Preprocess]
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities;
 
