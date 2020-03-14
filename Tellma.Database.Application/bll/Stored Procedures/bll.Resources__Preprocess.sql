@@ -8,20 +8,33 @@ DECLARE @PreprocessedResources [dbo].[ResourceList];
 INSERT INTO @PreprocessedResources
 SELECT * FROM @Entities;
 
-UPDATE @PreprocessedResources
-SET
-	[ResidualValue] = [ResidualMonetaryValue]
-WHERE [CurrencyId]  = dbo.fn_FunctionalCurrencyId();
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=- DONE IN C#
+--UPDATE @PreprocessedResources
+--SET
+--	[ResidualValue] = [ResidualMonetaryValue]
+--WHERE [CurrencyId]  = dbo.fn_FunctionalCurrencyId();
+
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 IF (
 	SELECT COUNT(*) FROM dbo.ResponsibilityCenters
-	WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1
+	WHERE [IsActive] = 1 AND [IsLeaf] = 1
+) = 1
+UPDATE @PreprocessedResources
+SET [ExpenseCenterId] = (
+		SELECT [Id] FROM dbo.ResponsibilityCenters
+		WHERE [IsActive] = 1 AND [IsLeaf] = 1
+	);
+	
+IF (
+	SELECT COUNT(*) FROM dbo.ResponsibilityCenters
+	WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
 ) = 1
 UPDATE @PreprocessedResources
 SET
 	[InvestmentCenterId] = (
 		SELECT [Id] FROM dbo.ResponsibilityCenters
-		WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1
+		WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
 	);
 
 

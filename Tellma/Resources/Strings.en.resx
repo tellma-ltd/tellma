@@ -382,6 +382,9 @@
   <data name="Document_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
+  <data name="Document_AgentIsCommon" xml:space="preserve">
+    <value>Agent Is Common</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>Assigned At</value>
   </data>
@@ -430,6 +433,12 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>Text Attribute 2</value>
   </data>
+  <data name="Document_InvestmentCenter" xml:space="preserve">
+    <value>Investment Center</value>
+  </data>
+  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
+    <value>Investment Center Is Common</value>
+  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo Is Common</value>
   </data>
@@ -447,6 +456,12 @@
   </data>
   <data name="Document_PostingState_minus_1" xml:space="preserve">
     <value>Canceled</value>
+  </data>
+  <data name="Document_Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Document_QuantityIsCommon" xml:space="preserve">
+    <value>Quantity Is Common</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
@@ -480,6 +495,24 @@
   </data>
   <data name="Document_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
+  </data>
+  <data name="Document_Time1" xml:space="preserve">
+    <value>Time 1</value>
+  </data>
+  <data name="Document_Time1IsCommon" xml:space="preserve">
+    <value>Time 1 Is Common</value>
+  </data>
+  <data name="Document_Time2" xml:space="preserve">
+    <value>Time 2</value>
+  </data>
+  <data name="Document_Time2IsCommon" xml:space="preserve">
+    <value>Time 2 Is Common</value>
+  </data>
+  <data name="Document_Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Document_UnitIsCommon" xml:space="preserve">
+    <value>Unit Is Common</value>
   </data>
   <data name="Documents" xml:space="preserve">
     <value>Documents</value>

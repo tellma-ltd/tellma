@@ -26,6 +26,7 @@ namespace Tellma.Entities
 
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
+        public bool? InheritsFromHeader { get; set; }
     }
 
     public class LineDefinitionColumn : LineDefinitionColumnForSave

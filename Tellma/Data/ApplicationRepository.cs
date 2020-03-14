@@ -2256,6 +2256,45 @@ namespace Tellma.Data
             return query.FromSql($"[map].[{nameof(Resources__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
+        public async Task Resources__Preprocess(string definitionId, List<ResourceForSave> entities)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Resource)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add("@DefinitionId", definitionId);
+            cmd.Parameters.Add(entitiesTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Resources__Preprocess)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            var props = typeof(ResourceForSave).GetMappedProperties();
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var entity = entities[index];
+
+                foreach (var prop in props)
+                {
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(entity, propValue);
+                }
+            }
+        }
+
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();

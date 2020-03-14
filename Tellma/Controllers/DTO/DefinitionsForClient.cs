@@ -133,6 +133,27 @@ namespace Tellma.Controllers.Dto
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
         public string AgentDefinitionId { get; set; }
+        public string AgentLabel { get; set; }
+        public string AgentLabel2 { get; set; }
+        public string AgentLabel3 { get; set; }
+        public string ClearanceVisibility { get; set; }
+        public string InvestmentCenterVisibility { get; set; }
+        public string Time1Visibility { get; set; }
+        public string Time1Label { get; set; }
+        public string Time1Label2 { get; set; }
+        public string Time1Label3 { get; set; }
+        public string Time2Visibility { get; set; }
+        public string Time2Label { get; set; }
+        public string Time2Label2 { get; set; }
+        public string Time2Label3 { get; set; }
+        public string QuantityVisibility { get; set; }
+        public string QuantityLabel { get; set; }
+        public string QuantityLabel2 { get; set; }
+        public string QuantityLabel3 { get; set; }
+        public string UnitVisibility { get; set; }
+        public string UnitLabel { get; set; }
+        public string UnitLabel2 { get; set; }
+        public string UnitLabel3 { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
     }
 
@@ -180,6 +201,7 @@ namespace Tellma.Controllers.Dto
         public string Label3 { get; set; }
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
+        public bool? InheritsFromHeader { get; set; }
     }
 
     public class LineDefinitionStateReasonForClient

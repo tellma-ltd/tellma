@@ -55,41 +55,38 @@ namespace Tellma.Entities
         [Display(Name = "Document_Agent")]
         public int? AgentId { get; set; }
 
+        [Display(Name = "Document_AgentIsCommon")]
+        public bool? AgentIsCommon { get; set; }
 
-        public bool? AgentIdIsCommon { get; set; }
-
-
+        [Display(Name = "Document_InvestmentCenter")]
         public int? InvestmentCenterId { get; set; }
+
+        [Display(Name = "Document_InvestmentCenterIsCommon")]
         public bool? InvestmentCenterIsCommon { get; set; }
 
+        [Display(Name = "Document_Time1")]
         public DateTime? Time1 { get; set; }
+
+        [Display(Name = "Document_Time1IsCommon")]
         public bool? Time1IsCommon { get; set; }
 
+        [Display(Name = "Document_Time2")]
         public DateTime? Time2 { get; set; }
+
+        [Display(Name = "Document_Time2IsCommon")]
         public bool? Time2IsCommon { get; set; }
 
+        [Display(Name = "Document_Quantity")]
         public decimal? Quantity { get; set; }
 
+        [Display(Name = "Document_QuantityIsCommon")]
+        public bool? QuantityIsCommon { get; set; }
 
-        /*
-         * 
-    [AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.Agents([Id]), 
-	[AgentIdIsCommon]				BIT				NOT NULL DEFAULT 1,
-	[InvestmentCenterId]			INT,
-	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
-	[Time1]							DATETIME2 (2),
-	[Time1IsCommon]					BIT				NOT NULL DEFAULT 1,
-	[Time2]							DATETIME2 (2), -- must be less than DocumentDate when posting
-	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
-	[Quantity]						DECIMAL (19,4)	NULL,
-	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
-	[MeasurementUnitId]				INT CONSTRAINT [FK_Documents__MeasurementUnitId] REFERENCES dbo.MeasurementUnits([Id]),
-	[MeasurementUnitIsCommon]		BIT				NOT NULL DEFAULT 1,
-         * 
-         */
+        [Display(Name = "Document_Unit")]
+        public int? UnitId { get; set; }
 
-
-
+        [Display(Name = "Document_UnitIsCommon")]
+        public bool? UnitIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
@@ -180,6 +177,17 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+        [Display(Name = "Document_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
+
+        [Display(Name = "Document_InvestmentCenter")]
+        [ForeignKey(nameof(InvestmentCenterId))]
+        public ResponsibilityCenter InvestmentCenter { get; set; }
+
+        [Display(Name = "Document_Unit")]
+        [ForeignKey(nameof(UnitId))]
+        public MeasurementUnit Unit { get; set; }
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]

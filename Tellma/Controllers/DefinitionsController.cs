@@ -306,6 +306,28 @@ namespace Tellma.Controllers
                 Prefix = def.Prefix,
                 CodeWidth = def.CodeWidth ?? 4,
                 AgentDefinitionId = def.AgentDefinitionId,
+                AgentLabel = def.AgentLabel,
+                AgentLabel2 = def.AgentLabel2,
+                AgentLabel3 = def.AgentLabel3,
+                ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
+                InvestmentCenterVisibility = MapVisibility(def.InvestmentCenterVisibility),
+                Time1Visibility = MapVisibility(def.Time1Visibility),
+                Time1Label = def.Time1Label,
+                Time1Label2 = def.Time1Label2,
+                Time1Label3 = def.Time1Label3,
+                Time2Visibility = MapVisibility(def.Time2Visibility),
+                Time2Label = def.Time2Label,
+                Time2Label2 = def.Time2Label2,
+                Time2Label3 = def.Time2Label3,
+                QuantityVisibility = def.QuantityVisibility,
+                QuantityLabel = def.QuantityLabel,
+                QuantityLabel2 = def.QuantityLabel2,
+                QuantityLabel3 = def.QuantityLabel3,
+                UnitVisibility = def.UnitVisibility,
+                UnitLabel = def.UnitLabel,
+                UnitLabel2 = def.UnitLabel2,
+                UnitLabel3 = def.UnitLabel3,
+
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
                     LineDefinitionId = d.LineDefinitionId,
@@ -351,6 +373,7 @@ namespace Tellma.Controllers
                     Label3 = c.Label3,
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
+                    InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader
                 })?.ToList(),
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient

@@ -123,7 +123,7 @@ namespace Tellma.Controllers
             return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
-        protected override Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
+        protected override async Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
         {
             var definition = Definition();
 
@@ -150,22 +150,31 @@ namespace Tellma.Controllers
             SetDefaultValue(entities, e => e.Text1, definition.Text1DefaultValue);
             SetDefaultValue(entities, e => e.Text2, definition.Text2DefaultValue);
 
+            var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
+            var functionalId = settings.FunctionalCurrencyId;
+
+            // If currency is null, set it to functional
+            entities.ForEach(entity =>
+            {
+                entity.CurrencyId ??= functionalId;
+            });
+
             // For resources that use residual value, if currency id is functional
             // copy residual monetary value into residual value
             if (IsVisible(definition.ResidualMonetaryValueVisibility) && IsVisible(definition.ResidualValueVisibility))
             {
-                var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
-                var functionalId = settings.FunctionalCurrencyId;
-                foreach (var entity in entities)
+                entities.ForEach(entity =>
                 {
                     if (entity.CurrencyId == functionalId && entity.ResidualValue != null)
                     {
                         entity.ResidualMonetaryValue = entity.ResidualValue;
                     }
-                }
+                });
             }
 
-            return Task.FromResult(entities);
+            // SQL Preprocessing
+            await _repo.Resources__Preprocess(DefinitionId, entities);
+            return entities;
         }
 
         private bool IsVisible(string visibility)

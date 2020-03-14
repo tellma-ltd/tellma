@@ -91,6 +91,27 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Prefix: string;
     CodeWidth: number;
     AgentDefinitionId: string;
+    AgentLabel: string;
+    AgentLabel2: string;
+    AgentLabel3: string;
+    ClearanceVisibility: Visibility;
+    InvestmentCenterVisibility: Visibility;
+    Time1Visibility: Visibility;
+    Time1Label: string;
+    Time1Label2: string;
+    Time1Label3: string;
+    Time2Visibility: Visibility;
+    Time2Label: string;
+    Time2Label2: string;
+    Time2Label3: string;
+    QuantityVisibility: Visibility;
+    QuantityLabel: string;
+    QuantityLabel2: string;
+    QuantityLabel3: string;
+    UnitVisibility: Visibility;
+    UnitLabel: string;
+    UnitLabel2: string;
+    UnitLabel3: string;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
 }
 
@@ -133,6 +154,7 @@ export interface LineDefinitionColumnForClient {
     Label3: string;
     RequiredState?: number;
     ReadOnlyState?: LineState;
+    InheritsFromHeader?: boolean;
 }
 
 export interface LineDefinitionStateReasonForClient {

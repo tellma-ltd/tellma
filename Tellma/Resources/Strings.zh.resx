@@ -382,6 +382,9 @@
   <data name="Document_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
+  <data name="Document_AgentIsCommon" xml:space="preserve">
+    <value>代理是很常见</value>
+  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>在分配</value>
   </data>
@@ -430,6 +433,12 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>文本属性2</value>
   </data>
+  <data name="Document_InvestmentCenter" xml:space="preserve">
+    <value>投资中心</value>
+  </data>
+  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
+    <value>投资中心是常有的事</value>
+  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>备注是常有的事</value>
   </data>
@@ -447,6 +456,12 @@
   </data>
   <data name="Document_PostingState_minus_1" xml:space="preserve">
     <value>取消</value>
+  </data>
+  <data name="Document_Quantity" xml:space="preserve">
+    <value>数量</value>
+  </data>
+  <data name="Document_QuantityIsCommon" xml:space="preserve">
+    <value>数量是很常见</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
@@ -480,6 +495,24 @@
   </data>
   <data name="Document_State_minus_4" xml:space="preserve">
     <value>无效</value>
+  </data>
+  <data name="Document_Time1" xml:space="preserve">
+    <value>时间1</value>
+  </data>
+  <data name="Document_Time1IsCommon" xml:space="preserve">
+    <value>时间1是常有的事</value>
+  </data>
+  <data name="Document_Time2" xml:space="preserve">
+    <value>时间2</value>
+  </data>
+  <data name="Document_Time2IsCommon" xml:space="preserve">
+    <value>时间2是常有的事</value>
+  </data>
+  <data name="Document_Unit" xml:space="preserve">
+    <value>单元</value>
+  </data>
+  <data name="Document_UnitIsCommon" xml:space="preserve">
+    <value>单位是常见</value>
   </data>
   <data name="Documents" xml:space="preserve">
     <value>文件资料</value>

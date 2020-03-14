@@ -324,8 +324,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.isScreenMode && this.route.snapshot.paramMap.get('id') !== 'new';
   }
 
-  // TODO
-  isInactive(model: DocumentForSave) {
+  isInactive(model: Document) {
+    if (!model) {
+      return '';
+    }
+
+    if (model.PostingState === 1) {
+      return 'Error_UnpostDocumentBeforeEdit';
+    }
+
+    if (model.PostingState === -1) {
+      return 'Error_UncancelDocumentBeforeEdit';
+    }
+
     return null;
   }
 
