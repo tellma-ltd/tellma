@@ -1,9 +1,4 @@
-﻿/* CPV consists of the following tabs
-	(0,1,	N'CashPayment',		1),
-	(1,1,	N'ManualLine',		1),
-	(2,1,	N'PurchaseInvoice',	0), 
-*/
-IF @DB = N'101' -- Banan SD, USD, en
+﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
@@ -74,7 +69,27 @@ BEGIN -- Inserting
 
 	--(0, 0, 6,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
 	--(0, 1, 6,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
+--(0,103,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1),
+--(1,103,	N'Entries',	N'AgentId',				1,	N'From Account',		N'من حساب',				1,2,1),
+--(2,103,	N'Entries',	N'CurrencyId',			1,	N'Currency',			N'العملة',				1,2,0),
+--(3,103,	N'Entries',	N'MonetaryValue',		1,	N'Amount',				N'المبلغ',				1,3,0),
+--(4,103,	N'Entries',	N'AgentId',				0,	N'To Account',			N'إلى حساب',			1,2,0),
+--(5,103,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,0),
+--(6,103,	N'Entries',	N'MonetaryValue',		0,	N'Amount',				N'المبلغ',				1,3,0),
+--(7,103,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',			N'مركز الاستثمار',		4,4,1);
 
+	INSERT INTO @WL
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 6, @DefinitionId = N'CashTransferExchange';
+	UPDATE @WL
+	SET
+		[Memo] = N'Sold USD',
+		[AgentId1] = @GMSafe,
+		[CurrencyId1] = @USD,
+		[MonetaryValue1] = 2000,
+		[AgentId0] = @GMSafe,
+		[CurrencyId0] = @SDG,
+		[MonetaryValue0] = 111000
+	WHERE [DocumentIndex] = 6 AND [Index] = 0;
 
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPaymentToOther';

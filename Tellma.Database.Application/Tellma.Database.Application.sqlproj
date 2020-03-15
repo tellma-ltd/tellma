@@ -478,7 +478,6 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Cancel.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Cancel.sql" />
     <Build Include="Mapping\LinesRequiredSignatures.sql" />
-    <Build Include="dbo\User Defined Types\dbo.IdWithCriteriaList.sql" />
     <Build Include="dbo\Views\dbo.WorkflowsView.sql" />
     <Build Include="dbo\Tables\dbo.ReportDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ReportParameterDefinitions.sql" />
@@ -503,8 +502,6 @@
     <Build Include="dbo\Tables\dbo.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceUnitList.sql" />
     <Build Include="dbo\Tables\dbo.Registers.sql" />
-    <Build Include="dbo\Tables\dbo.GLAccounts.sql" />
-    <Build Include="dbo\Tables\dbo.SubAccounts.sql" />
     <Build Include="dbo\Tables\dbo.AgentRates.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentRateList.sql" />
     <None Include="Provisioning\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql" />
@@ -548,6 +545,7 @@
     <Build Include="dal\Stored Procedures\dal.ExchangeRates__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
+    <Build Include="dbo\Views\dbo.ExchangeRatesView.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

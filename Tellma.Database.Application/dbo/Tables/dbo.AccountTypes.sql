@@ -11,6 +11,7 @@
 	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
 	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
 	[IsCurrent]				BIT,
+	CONSTRAINT [UX_AccountTypes__Code_IsCurrent] UNIQUE([Code], [IsCurrent]),
 	[IsReal]				BIT					NOT NULL DEFAULT 0,
 	[IsResourceClassification]BIT				NOT NULL DEFAULT 0,
 	[IsPersonal]			BIT					NOT NULL DEFAULT 0,

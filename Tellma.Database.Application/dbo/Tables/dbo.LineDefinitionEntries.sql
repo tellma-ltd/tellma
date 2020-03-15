@@ -5,6 +5,7 @@
 	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [Index]),
 	[Direction]					SMALLINT			NOT NULL CHECK([Direction] IN (-1, +1)),
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL CONSTRAINT [FK_LineDefinitionEntries__AccountTypeParentCode] REFERENCES dbo.AccountTypes([Code]),
+	[IsCurrent]					BIT,
 	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_LineDefinitionEntries_AgentDefinitions] REFERENCES [dbo].[AgentDefinitions] ([Id]),
 	[EntryTypeCode]				NVARCHAR (255)		CONSTRAINT [FK_LineDefinitionEntries_EntryTypeCode] REFERENCES [dbo].[EntryTypes] ([Code]),
 	[SavedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionEntries__SavedById] REFERENCES [dbo].[Users] ([Id]),

@@ -18,6 +18,7 @@
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
 
+	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
 	[AgentDefinitionId]			NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[AgentLabel]				NVARCHAR (50),
 	[AgentLabel2]				NVARCHAR (50),

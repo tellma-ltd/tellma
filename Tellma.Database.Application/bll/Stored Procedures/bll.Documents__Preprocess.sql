@@ -7,7 +7,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @FunctionalCurrencyId NCHAR(3) = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'));
+	DECLARE @FunctionalCurrencyId NCHAR(3) = dbo.fn_FunctionalCurrencyId();
 	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId NVARCHAR(50);
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
@@ -152,16 +152,15 @@ BEGIN
 			[Value] IS NULL OR 
 			[Value] IS NOT NULL AND [Value] <> [MonetaryValue]
 		);
-	-- For financial amounts in foreign currency, the value is manually entered or read from a web service
-	--UPDATE E 
-	--SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], A.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])
-	--FROM @PreprocessedEntries E
-	--JOIN dbo.Resources R ON E.ResourceId = R.Id
-	--JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	--JOIN @Documents D ON L.DocumentIndex = D.[Index]
-	--WHERE
-	--	A.[CurrencyId] <> @FunctionalCurrencyId
-	--	AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], A.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
+	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
+	UPDATE E 
+	SET E.[Value] = ER.AmountInFunctional * E.[MonetaryValue] / ER.AmountInCurrency
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN @Documents D ON L.DocumentIndex = D.[Index]
+	JOIN dbo.ExchangeRatesView ER ON E.CurrencyId = ER.CurrencyId
+	WHERE D.DocumentDate >= ER.ValidAsOf AND D.DocumentDate < ER.ValidTill
+	AND L.[DefinitionId] <> N'ManualLine';
 
 	-- TODO: Currently it sets the account to the first conformant
 	-- We better do it so that, if the stored account is one of the conformants, it leaves it.
@@ -184,8 +183,8 @@ BEGIN
 			AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
 			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 			AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
-			--AND (A.[Identifier] IS NULL				OR A.[Identifier] = E.[AccountIdentifier])
-			--AND A.IsCurrent = LDE.IsCurrent
+			--AND (A.[Identifier] IS NULL			OR A.[Identifier] = E.[AccountIdentifier])
+			AND (LDE.[IsCurrent] IS NULL			OR A.IsCurrent = LDE.IsCurrent)
 		WHERE L.DefinitionId <> N'ManualLine'
 		AND A.IsDeprecated = 0
 		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]

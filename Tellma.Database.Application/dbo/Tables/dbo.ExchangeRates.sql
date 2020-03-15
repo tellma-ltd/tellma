@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ExchangeRates]
 (
-	[Id]					INT	CONSTRAINT [PK_ExchangeRates] PRIMARY KEY,
+	[Id]					INT	CONSTRAINT [PK_ExchangeRates] PRIMARY KEY IDENTITY,
 	[CurrencyId]			NCHAR (3)			NOT NULL CONSTRAINT [FK_ExchangeRates__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	[ValidAsOf]				DATE				NOT NULL CHECK([ValidAsOf] < DATEADD(DAY, 1, CURRENT_TIMESTAMP)),
 	CONSTRAINT [IX_ExchangeRates__CurrencyId_ValidAsOf] UNIQUE ([CurrencyId], [ValidAsOf]),
