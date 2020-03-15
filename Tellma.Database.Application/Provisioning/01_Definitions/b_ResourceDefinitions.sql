@@ -23,6 +23,11 @@ BEGIN
 	
 	UPDATE @ResourceDefinitions
 	SET 
+		[IdentifierVisibility]				= N'Optional',
+		[IdentifierLabel]					= N'Tag #',
+		[IdentifierLabel2]					= N'رقم التعريف',
+		[CurrencyVisibility]				= N'Required',
+		[DescriptionVisibility]				= N'Optional',
 		[Lookup1Visibility]					= N'Optional',
 		[Lookup1Label]						= N'Manufacturer',
 		[Lookup1DefinitionId]				= N'it-equipment-manufacturers',
@@ -35,17 +40,7 @@ BEGIN
 		[InvestmentCenterVisibility]		= N'Required',
 		[ResidualMonetaryValueVisibility]	= N'Required',
 		[ResidualValueVisibility]			= N'Required'
-	WHERE [Id] = N'computer-equipment';
-	
-	UPDATE @ResourceDefinitions
-	SET 
-		[CostObjectVisibility]				= N'Optional',
-		[ExpenseEntryTypeVisibility]		= N'Optional',
-		[ExpenseCenterVisibility]			= N'Required',
-		[InvestmentCenterVisibility]		= N'Required',
-		[ResidualMonetaryValueVisibility]	= N'Required',
-		[ResidualValueVisibility]			= N'Required'
-	WHERE [Id] = N'properties-plants-and-equipment';
+	WHERE [Id] IN (N'computer-equipment', N'properties-plants-and-equipment');
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

@@ -7,7 +7,6 @@ DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinition
 	-- Inventory transfer, stock issue to consumption, inventory adjustment 
 	-- production, maintenance
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
-	-- manual journal, depreciation,  
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 BEGIN
