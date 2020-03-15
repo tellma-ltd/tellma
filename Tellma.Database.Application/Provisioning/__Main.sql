@@ -78,10 +78,10 @@ IF @ProvisionData = N'0' RETURN;
 :r .\06_Accounts\b_LegacyClassifications.sql
 :r .\06_Accounts\101_Accounts.sql
 --:r .\06_Accounts\105_Accounts.sql
-:r .\07_Entries\101\101a_manual-journal-vouchers.sql
+--:r .\07_Entries\101\101a_manual-journal-vouchers.sql
 :r .\07_Entries\101\101b_cash-payment-vouchers.sql
---:r .\07_Entries\101\101c_petty-cash-vouchers.sql
-:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
+----:r .\07_Entries\101\101c_petty-cash-vouchers.sql
+--:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 
 DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (
 	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',
