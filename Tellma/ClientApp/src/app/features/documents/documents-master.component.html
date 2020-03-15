@@ -2,7 +2,7 @@
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,PostingState,State,Memo"
-  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeCanceled' | translate"
+  selectForTiles="DocumentDate,State,Memo" [includeInactiveLabel]="'IncludeCanceled' | translate"
   inactiveFilter="PostingState ne -1" [multiselectActions]="[
                 { template: post, action: onPost, showAction: showPost, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },

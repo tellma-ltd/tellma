@@ -114,8 +114,8 @@
     <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
         <h2 class="font-weight-normal" *ngIf="!isEdit || isOriginalDocument">{{ formatSerial(model?.SerialNumber) }}
         </h2>
-        <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber" [ngModelOptions]="{ updateOn: 'blur' }"
-            [codeWidth]="codeWidth" [prefix]="serialPrefix" required>
+        <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber"
+            [ngModelOptions]="{ updateOn: 'blur' }" [codeWidth]="codeWidth" [prefix]="serialPrefix" required>
         </t-serial-editor>
 
     </t-form-group>
@@ -133,13 +133,27 @@
 
     <!-- Clearance -->
     <t-form-group class="t-form-group" [label]="'Document_Clearance' | translate"
-        [serverErrors]="model?.serverErrors?.Clearance">
+        [serverErrors]="model?.serverErrors?.Clearance" *ngIf="showClearance(model)">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Clearance">
             <div>{{ clearanceDisplay(model?.Clearance) }}</div>
         </t-restricted>
         <t-selector *ngIf="isEdit" [(ngModel)]="model.Clearance" [choices]="clearanceChoices">
         </t-selector>
     </t-form-group>
+
+    <!-- Agent -->
+    <!-- <t-form-group class="t-form-group" [label]="labelDocumentAgent(model)" [serverErrors]="model?.serverErrors?.AgentId"
+        *ngIf="showDocumentAgent(model)">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AgentId">
+            <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
+                [itemId]="model?.AgentId">
+                {{ ws.getMultilingualValue('Agent', model?.AgentId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [definitionIds]="documentAgentDefinitionIds(model)"
+            [required]="requireDocumentAgent(model)">
+        </t-agents-picker>
+    </t-form-group> -->
 
     <!-- Memo -->
     <t-form-group *ngIf="model?.MemoIsCommon && definitionId === 'manual-journal-vouchers'" class="t-form-group"

@@ -153,21 +153,23 @@ namespace Tellma.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
             var functionalId = settings.FunctionalCurrencyId;
 
-            // If currency is null, set it to functional
-            entities.ForEach(entity =>
+            if (IsVisible(definition.ResidualMonetaryValueVisibility))
             {
-                entity.CurrencyId ??= functionalId;
-            });
+                entities.ForEach(entity =>
+                {
+                    entity.CurrencyId ??= functionalId;
+                });
+            }
 
-            // For resources that use residual value, if currency id is functional
+            // For resources that use residual monetary value, if currency id is functional
             // copy residual monetary value into residual value
             if (IsVisible(definition.ResidualMonetaryValueVisibility) && IsVisible(definition.ResidualValueVisibility))
             {
                 entities.ForEach(entity =>
                 {
-                    if (entity.CurrencyId == functionalId && entity.ResidualValue != null)
+                    if (entity.CurrencyId == functionalId && entity.ResidualMonetaryValue != null)
                     {
-                        entity.ResidualMonetaryValue = entity.ResidualValue;
+                        entity.ResidualValue = entity.ResidualMonetaryValue;
                     }
                 });
             }

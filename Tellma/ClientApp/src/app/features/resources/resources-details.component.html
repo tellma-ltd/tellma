@@ -190,7 +190,7 @@
     </t-form-group>
 
     <!-- ResidualValue -->
-    <t-form-group *ngIf="ResidualValue_isVisible" class="t-form-group"
+    <t-form-group *ngIf="ResidualValue_isVisible(model)" class="t-form-group"
         [label]="('Resource_ResidualValue' | translate) + functionalPostfix" [serverErrors]="model?.serverErrors?.ResidualValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
             <div>

@@ -445,12 +445,21 @@ namespace Tellma.Controllers
 
         protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> docs)
         {
+            var docDef = Definition();
+
             // Set default values
             docs.ForEach(doc =>
             {
                 // Document defaults
-                doc.MemoIsCommon ??= true;
-                // doc.Clearance ??= 0; // Public
+                doc.MemoIsCommon ??= true; // TODO
+                doc.AgentIsCommon ??= docDef.AgentDefinitionId != null;
+                doc.InvestmentCenterIsCommon ??= docDef.InvestmentCenterVisibility != null;
+                doc.Time1IsCommon ??= docDef.Time1Visibility != null;
+                doc.Time2IsCommon ??= docDef.Time2Visibility != null;
+                doc.QuantityIsCommon ??= docDef.QuantityVisibility != null;
+                doc.UnitIsCommon ??= docDef.UnitVisibility != null;
+
+                doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
 
                 doc.Lines.ForEach(line =>
@@ -460,16 +469,140 @@ namespace Tellma.Controllers
                 });
             });
 
+            var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
+
             // Set common header values on the lines
             docs.ForEach(doc =>
             {
-                if (doc.MemoIsCommon.Value)
+                // All fields that aren't marked  as common, set them to
+                // null, the UI makes them invisible anyways
+                doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
+                doc.AgentId = doc.AgentIsCommon.Value ? doc.AgentId : null;
+                doc.InvestmentCenterId = doc.InvestmentCenterIsCommon.Value ? doc.InvestmentCenterId : null;
+                doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
+                doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
+                doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
+                doc.UnitId = doc.UnitIsCommon.Value ? doc.UnitId : null;
+
+                // All fields that are marked as common, copy the common value across to the 
+                // lines and entries, we deal with the lines one definitionId at a time
+                foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId))
                 {
-                    doc.Lines.ForEach(line => line.Memo = doc.Memo);
-                }
-                else
-                {
-                    doc.Memo = null;
+                    var lineDef = lineDefinitions.GetValueOrDefault(linesGroup.Key);
+                    if (lineDef == null)
+                    {
+                        // Validation takes care of this later on
+                        continue;
+                    }
+
+                    foreach (var line in linesGroup)
+                    {
+                        // If the number of entries is not the same as the definition specifies, fix that
+                        while (line.Entries.Count < lineDef.Entries.Count)
+                        {
+                            // If less, add the missing entries
+                            var entryDef = lineDef.Entries[line.Entries.Count];
+                            line.Entries.Add(new EntryForSave());
+                        }
+
+                        while (line.Entries.Count > lineDef.Entries.Count)
+                        {
+                            // If more, pop the excess entries from the end
+                            line.Entries.RemoveAt(line.Entries.Count - 1);
+                        }
+
+                        // Copy common values from the header if they are marked inherits from header
+                        foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
+                        {
+                            if (columnDef.TableName == "Lines")
+                            {
+                                switch (columnDef.ColumnName)
+                                {
+                                    case "Memo":
+                                        {
+                                            if (doc.MemoIsCommon.Value)
+                                            {
+                                                line.Memo = doc.Memo;
+                                            }
+
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            throw new Exception($"Unkown column name '{columnDef.ColumnName}' in table '{columnDef.TableName}'");
+                                        }
+                                }
+                            }
+                            else if (columnDef.TableName == "Entries")
+                            {
+                                if (columnDef.EntryIndex >= line.Entries.Count)
+                                {
+                                    // To avoid index out of bounds exception
+                                    continue;
+                                }
+
+                                // Copy the common values
+                                switch (columnDef.ColumnName)
+                                {
+                                    case nameof(Entry.AgentId):
+                                        if (doc.AgentIsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].AgentId = doc.AgentId;
+                                        }
+
+                                        break;
+
+                                    case nameof(Entry.ResponsibilityCenterId):
+                                        if (doc.InvestmentCenterIsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].ResponsibilityCenterId = doc.InvestmentCenterId;
+                                        }
+
+                                        break;
+
+                                    case nameof(Entry.Time1):
+                                        if (doc.Time1IsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].Time1 = doc.Time1;
+                                        }
+
+                                        break;
+
+                                    case nameof(Entry.Time2):
+                                        if (doc.Time2IsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].Time2 = doc.Time2;
+                                        }
+
+                                        break;
+
+                                    case nameof(Entry.Quantity):
+                                        if (doc.Time2IsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].Quantity = doc.Quantity;
+                                        }
+
+                                        break;
+
+                                    case nameof(Entry.UnitId):
+                                        if (doc.UnitIsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].UnitId = doc.UnitId;
+                                        }
+
+                                        break;
+
+                                    default:
+                                        break; // This property doesn't exist on the document, just ignore it
+                                }
+                            }
+                            else
+                            {
+                                // Developer mistake
+                                throw new Exception($"Unrecognized table name '{columnDef.TableName}'");
+                            }
+                        }
+                    }
                 }
             });
 
@@ -480,8 +613,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<DocumentForSave> docs)
         {
-            // TODO: Add definition validation and defaults here
-
             // Find lines with duplicate Ids
             var duplicateLineIds = docs.SelectMany(doc => doc.Lines) // All lines
                 .Where(line => line.Id != 0).GroupBy(line => line.Id).Where(g => g.Count() > 1) // Duplicate Ids
@@ -493,14 +624,17 @@ namespace Tellma.Controllers
                 .SelectMany(g => g).ToDictionary(entry => entry, entry => entry.Id);
 
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
-            var definition = Definition();
+            var docDef = Definition();
+            var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
+
+            // TODO: Add definition validation and defaults here
 
             ///////// Document Validation
             int docIndex = 0;
             foreach (var doc in docs)
             {
                 // If not an original document, the serial number is required
-                if (!definition.IsOriginalDocument && doc.SerialNumber == null)
+                if (!docDef.IsOriginalDocument && doc.SerialNumber == null)
                 {
                     ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
                         _localizer[nameof(RequiredAttribute), _localizer["Document_SerialNumber"]]);
@@ -524,12 +658,19 @@ namespace Tellma.Controllers
                 int lineIndex = 0;
                 foreach (var line in doc.Lines)
                 {
+                    var lineDef = lineDefinitions.GetValueOrDefault(line.DefinitionId);
+                    if (lineDef == null)
+                    {
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                            _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
+                    }
+
                     // Prevent duplicate line Ids
                     if (duplicateLineIds.ContainsKey(line))
                     {
                         // This error indicates a bug
                         var id = duplicateLineIds[line];
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Lines)}[{lineIndex}].{nameof(line.Id)}",
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
 
@@ -541,21 +682,21 @@ namespace Tellma.Controllers
                         if (duplicateEntryIds.ContainsKey(entry))
                         {
                             var id = duplicateEntryIds[entry];
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Lines)}[{lineIndex}].{nameof(line.Entries)}[{entryIndex}].{nameof(entry.Id)}",
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
                         // If the currency is functional, value must equal monetary value
                         if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
                         {
-                            var currencyDesc = _tenantInfoAccessor.GetCurrentInfo()
-                                .Localize(settings.FunctionalCurrencyDescription,
-                                            settings.FunctionalCurrencyDescription2,
-                                            settings.FunctionalCurrencyDescription3);
+                            var currencyName = _tenantInfoAccessor.GetCurrentInfo()
+                                .Localize(settings.FunctionalCurrencyName,
+                                            settings.FunctionalCurrencyName2,
+                                            settings.FunctionalCurrencyName3);
 
                             // TODO: Use the proper field name from definition, instead of "Amount"
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Lines)}[{lineIndex}].{nameof(line.Entries)}[{entryIndex}].{nameof(entry.MonetaryValue)}",
-                                _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyDesc]);
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
                         }
 
                         entryIndex++;
@@ -598,6 +739,16 @@ namespace Tellma.Controllers
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+        }
+
+        private string EntryPath(int docIndex, int lineIndex, int entryIndex, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{nameof(Line.Entries)}[{entryIndex}].{propName}";
+        }
+
+        private string LinePath(int docIndex, int lineIndex, string propName)
+        {
+            return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{propName}";
         }
 
         protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, ExpandExpression expand, bool returnIds)

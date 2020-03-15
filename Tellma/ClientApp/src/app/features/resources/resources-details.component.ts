@@ -246,8 +246,7 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public ResidualMonetaryValue_isVisible(model: ResourceForSave): boolean {
-    return !!this.definition.ResidualMonetaryValueVisibility && !!model &&
-      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId;
+    return !!this.definition.ResidualMonetaryValueVisibility;
   }
 
   public get ResidualMonetaryValue_isRequired(): boolean {
@@ -255,11 +254,16 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public currencyPostfix(model: ResourceForSave): string {
-    return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` : '';
+    return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` :
+      ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
   }
 
-  public get ResidualValue_isVisible(): boolean {
-    return !!this.definition.ResidualValueVisibility;
+  public ResidualValue_isVisible(model: ResourceForSave): boolean {
+    // If the residual monetary value is visible: appears only when the currency is not functional
+    // If the residual monetary value is invisible: appears anyway
+    return !!this.definition.ResidualValueVisibility && ((!!model &&
+      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId) ||
+      !this.ResidualMonetaryValue_isVisible(model));
   }
 
   public get functionalDecimals(): number {

@@ -4,7 +4,7 @@ import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/dat
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { DocumentForSave, Document, serialNumber, DocumentState, DocumentClearance, metadata_Document } from '~/app/data/entities/document';
+import { DocumentForSave, Document, serialNumber, DocumentClearance, metadata_Document } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
@@ -244,19 +244,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   create = () => {
     const result: DocumentForSave = {
       DocumentDate: new Date().toISOString().split('T')[0],
-      MemoIsCommon: false,
       Clearance: 0,
       Lines: [],
       Attachments: []
     };
 
     if (this.definitionId === 'manual-journal-vouchers') {
-      result.Memo = this.initialText;
       result.MemoIsCommon = true;
-    }
+      result.Memo = this.initialText;
+    } else {
+      const def = this.definition;
+      result.MemoIsCommon = false; // TODO
+      if (result.MemoIsCommon) {
+        result.Memo = this.initialText;
+      }
+      result.AgentIsCommon = false;
+      result.InvestmentCenterIsCommon = false;
+      result.Time1IsCommon = false;
+      result.Time2IsCommon = false;
+      result.QuantityIsCommon = false;
+      result.UnitIsCommon = false;
 
-    // const defs = this.definition;
-    // TODO: Set defaults
+      // result.AgentIsCommon = !!def.AgentDefinitionId;
+      // result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility;
+      // result.Time1IsCommon = !!def.Time1Visibility;
+      // result.Time2IsCommon = !!def.Time2Visibility;
+      // result.QuantityIsCommon = !!def.QuantityVisibility;
+      // result.UnitIsCommon = !!def.UnitVisibility;
+    }
 
     return result;
   }
@@ -461,7 +476,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           this.handleFreshExtras(res.Extras);
         })
       ).subscribe({ error: this.details.handleActionError });
-
     }
   }
 
@@ -482,6 +496,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.workspace.ws.isRtl ? 'mr-auto' : 'ml-auto';
   }
 
+  ////////////// Properties of the document
+
+  public showClearance(_: DocumentForSave) {
+    return !!this.definition.ClearanceVisibility;
+  }
+
   public clearanceDisplay(clearance: DocumentClearance) {
     if (clearance === null || clearance === undefined) {
       return '';
@@ -495,6 +515,37 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const desc = metadata_Document(this.workspace, this.translate, this.definitionId).properties.Clearance as ChoicePropDescriptor;
     return getChoices(desc);
   }
+
+  // AgentId
+
+  public showDocumentAgent(_: DocumentForSave): boolean {
+    return !!this.definition.AgentDefinitionId;
+  }
+
+  public requireDocumentAgent(_: DocumentForSave): boolean {
+    return true;
+  }
+
+  public labelDocumentAgent(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'AgentLabel');
+    if (!label) {
+      const agentDefId = this.definition.AgentDefinitionId;
+      const agentDef = this.ws.definitions.Agents[agentDefId];
+      if (!!agentDef) {
+        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      } else {
+        label = this.translate.instant('Agent');
+      }
+    }
+
+    return label;
+  }
+
+  public documentAgentDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.AgentDefinitionId];
+  }
+
+  /////// Properties of the lines
 
   public account(entry: Entry): AccountForSave {
     return this.ws.get('Account', entry.AccountId) as AccountForSave;
