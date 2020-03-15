@@ -15,47 +15,12 @@ SET NOCOUNT ON;
 	/* 
 	
 	 [✓] The SerialNumber is required if original document
+	 [✓] The SerialNumber is not duplicated in the uploaded list
 	 [✓] The DocumentDate is not after 1 day in the future
 	 [✓] The DocumentDate cannot be before archive date
 	 [✓] If Entry.CurrencyId is functional, the value must be the same as monetary value
 
 	*/
-
-	-- [C# Validation]
-	-- For functional currency, the monetary value must be equal to value
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Value',
-	--	N'Error_TheMonetaryValueDoesNotMatchValue'
-	--FROM @Entries E
-	--WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
-	--AND (ISNULL([MonetaryValue],0) <> ISNULL([Value],0))
-
-	--[C# Validation]
-	-- For copy documents, serial number is required
-	--IF @IsOriginalDocument = 0
-	--INSERT INTO @ValidationErrors([Key], [ErrorName])
-	--SELECT TOP (@Top)
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
-	--	N'Error_TheSerialNumberIsRequired'
-	--FROM @Documents
-	--WHERE [SerialNumber] IS NULL
-
-	-- Serial number must not be duplicated in the uploaded list
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
-		N'Error_TheSerialNumber0IsDuplicated',
-		CAST([SerialNumber] AS NVARCHAR (50))
-	FROM @Documents
-	WHERE [SerialNumber] IN (
-		SELECT [SerialNumber]
-		FROM @Documents
-		WHERE [SerialNumber] IS NOT NULL
-		GROUP BY [SerialNumber]
-		HAVING COUNT(*) > 1
-	);
 	
 	-- Serial number must not be already in the back end
 	IF @IsOriginalDocument = 0
@@ -99,13 +64,15 @@ SET NOCOUNT ON;
 	
 	-- (FE Check, DB IU trigger) Cannot save a CLOSED document
 	-- TODO: if it is not allowed to change a line once (Requested), report error
+
+	-- Must not edit a document that is already posted
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].DocumentState',
-		N'Error_CanOnlySaveADocumentInActiveState'
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotEditPostedOrCanceledDocuments'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	WHERE BE.[State] IN (-5, +5); -- Closed
+	WHERE BE.[PostingState] <> 0; -- Posted or Canceled
 
 	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
@@ -136,7 +103,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 
-	-- If Account HasAgent = 1, then AgentId is required
+	-- If Account AgentDefinitionId = 1, then AgentId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +

@@ -6,6 +6,16 @@
 	@PreprocessedEntriesJson NVARCHAR (MAX) = NULL OUTPUT 
 AS
 BEGIN
+	--=-=-=-=-=-=- [C# Preprocessing before SQL]
+	/* 
+	
+	 [✓] If Clearance is NULL, set it to 0
+	 [✓] If a line has the wrong number of entries, fix it
+	 [✓] Set all Entries' Directions according to definition (except for manual lines)
+	 [✓] Copy all IsCommon values from the documents to the lines and entries
+
+	*/
+
 	SET NOCOUNT ON;
 	DECLARE @FunctionalCurrencyId NCHAR(3) = dbo.fn_FunctionalCurrencyId();
 	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId NVARCHAR(50);
@@ -82,7 +92,7 @@ BEGIN
 	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
-		E.[Direction] = LDE.[Direction],
+	--	E.[Direction] = LDE.[Direction], -- Handled in C#
 		E.[EntryTypeId] = COALESCE((SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = LDE.[EntryTypeCode]),
 									E.[EntryTypeId])
 	FROM @PreprocessedEntries E
@@ -135,29 +145,30 @@ BEGIN
 			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
 	);
 
-	-- C#: When there is only one responsibility center, use it everywhere
-	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE IsActive = 1) = 1
+	-- When there is only one responsibility center, use it everywhere
+	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE IsActive = 1 AND IsLeaf = 1) = 1
 		UPDATE @PreprocessedEntries
-		SET ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE IsActive = 1);
-	-- SQL or C#?
-	ELSE 	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1) = 1
+		SET ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE IsActive = 1 AND IsLeaf = 1);
+	ELSE IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1 AND IsLeaf = 1) = 1
 		UPDATE PE 
-		SET PE.ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1)
+		SET PE.ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1 AND IsLeaf = 1)
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+
 	-- C#, for financial amounts in functional currency, the value is known
-	UPDATE E 
-	SET
-		[Value]		= [MonetaryValue]
-	FROM @PreprocessedEntries E
-	WHERE
-		[CurrencyId] = @FunctionalCurrencyId
-		AND (
-			[Value] IS NULL OR 
-			[Value] IS NOT NULL AND [Value] <> [MonetaryValue]
-		);
+	--UPDATE E 
+	--SET
+	--	[Value]		= [MonetaryValue]
+	--FROM @PreprocessedEntries E
+	--WHERE
+	--	[CurrencyId] = @FunctionalCurrencyId
+	--	AND (
+	--		[Value] IS NULL OR 
+	--		[Value] IS NOT NULL AND [Value] <> [MonetaryValue]
+	--	);
+
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ER.AmountInFunctional * E.[MonetaryValue] / ER.AmountInCurrency
@@ -211,3 +222,10 @@ BEGIN
 	--PRINT N'bll.Documents__Preprocess: PreprocessedEntriesJson = ' + ISNULL(@PreprocessedEntriesJson, N'');
 	SELECT * FROM @PreprocessedEntries;
 END
+
+	--=-=-=-=-=-=- [C# Preprocessing after SQL]
+	/* 
+	
+	 [✓] If CurrencyId == functional and MonetaryValue IS NOT NULL, set Value = MonetaryValue
+
+	*/

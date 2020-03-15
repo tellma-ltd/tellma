@@ -26,6 +26,11 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "documents/";
 
+        private string ManualJournalVouchers => "manual-journal-vouchers";
+        private string ManualLine => "ManualLine";
+        private string Lines => "Lines";
+        private string Entries => "Entries";
+
         private readonly ILogger<DocumentsController> _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -446,6 +451,8 @@ namespace Tellma.Controllers
         protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> docs)
         {
             var docDef = Definition();
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+            var functionalId = settings.FunctionalCurrencyId;
 
             // Set default values
             docs.ForEach(doc =>
@@ -511,10 +518,19 @@ namespace Tellma.Controllers
                             line.Entries.RemoveAt(line.Entries.Count - 1);
                         }
 
+                        // Copy the direction from the definition
+                        for (var i = 0; i < line.Entries.Count; i++)
+                        {
+                            if (line.DefinitionId != ManualLine)
+                            {
+                                line.Entries[i].Direction = lineDef.Entries[i].Direction;
+                            }
+                        }
+
                         // Copy common values from the header if they are marked inherits from header
                         foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                         {
-                            if (columnDef.TableName == "Lines")
+                            if (columnDef.TableName == Lines)
                             {
                                 switch (columnDef.ColumnName)
                                 {
@@ -533,7 +549,7 @@ namespace Tellma.Controllers
                                         }
                                 }
                             }
-                            else if (columnDef.TableName == "Entries")
+                            else if (columnDef.TableName == Entries)
                             {
                                 if (columnDef.EntryIndex >= line.Entries.Count)
                                 {
@@ -608,6 +624,22 @@ namespace Tellma.Controllers
 
             // SQL server preprocessing
             await _repo.Documents__Preprocess(DefinitionId, docs);
+
+            // C# Processing after SQL
+            docs.ForEach(doc =>
+            {
+                doc.Lines.ForEach(line =>
+                {
+                    line.Entries.ForEach(entry =>
+                    {
+                        if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.MonetaryValue != null)
+                        {
+                            entry.Value = entry.MonetaryValue;
+                        }
+                    });
+                });
+            });
+
             return docs;
         }
 
@@ -650,7 +682,7 @@ namespace Tellma.Controllers
                     {
                         var serial = duplicateSerialNumbers[doc];
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer["Error_DateCannotBeInTheFuture", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
+                            _localizer["Error_TheSerialNumber0IsDuplicated", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
                     }
                 }
 

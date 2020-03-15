@@ -143,6 +143,7 @@ export interface LineDefinitionEntryForClient {
     // Computed
     AccountTypeParentId?: number;
     AccountTypeParentIsResourceClassification: boolean;
+    EntryTypeParentId?: number;
 }
 
 export interface LineDefinitionColumnForClient {

@@ -189,6 +189,7 @@ namespace Tellma.Controllers.Dto
         // Computed
         public int? AccountTypeParentId { get; set; }
         public bool AccountTypeParentIsResourceClassification { get; set; }
+        public int? EntryTypeParentId { get; set; }
     }
 
     public class LineDefinitionColumnForClient

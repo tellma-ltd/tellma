@@ -360,7 +360,8 @@ namespace Tellma.Controllers
                     AgentDefinitionId = e.AgentDefinitionId,
                     EntryTypeCode = e.EntryTypeCode,
                     AccountTypeParentId = e.AccountTypeParentId,
-                    AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false
+                    AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false,
+                    EntryTypeParentId = e.EntryTypeParentId
                 })?.ToList(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient

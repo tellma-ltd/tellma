@@ -1578,6 +1578,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       !!entryDef.AccountTypeParentId ? `AccountType/Node descof ${entryDef.AccountTypeParentId}` : null;
   }
 
+  public entryTypeFilter(lineDefId: string, columnIndex: number): string {
+    // Filter for smart line
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
+  }
+
   public serverErrors(lineDefId: string, columnIndex: number, line: LineForSave) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     const entity = this.entity(colDef, line);

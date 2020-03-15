@@ -383,6 +383,7 @@
                             <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                [filter]="entryTypeFilter(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
                             </t-entry-types-picker>

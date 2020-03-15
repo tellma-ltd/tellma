@@ -1,5 +1,4 @@
 import { Component, ViewChild, TemplateRef } from '@angular/core';
-import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
