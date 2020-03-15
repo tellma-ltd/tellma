@@ -3,9 +3,9 @@ BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo]) VALUES
-	(0,			'2019.01.01',	N'Meals'),
+	(0,			'2019.01.01',	N'Meals 1'),
 	(4,			'2019.01.03',	N'Maintenance'),
-	(5,			'2019.01.03',	N'Meals'),
+	(5,			'2019.01.03',	N'Meals 2'),
 	(6,			'2019.01.05',	N'Sold USD'),
 	(21,		'2019.01.06',	N'Mohammed Kamil 2018 Vacation and 10% Deductions'),
 	(22,		'2019.01.06',	N'Ahmad Abdussalam Gift Allowance'),
@@ -144,7 +144,6 @@ BEGIN -- Inserting
 	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
 	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo]
 	FROM @WL
-	
 	INSERT INTO @E
 	EXEC [bll].[WideLines__Unpivot] @WL;
 
@@ -256,15 +255,11 @@ BEGIN -- Inserting
 
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D([Index], [Id], [DocumentDate], [Memo], [MemoIsCommon])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id],[DocumentDate], [Memo], [MemoIsCommon]
+	SELECT [Id], [Id],[DocumentDate], [Memo], [MemoIsCommon]
 	FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
 
-	INSERT INTO @L([Index],	[DocumentIndex],
-		[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
-		[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, (SELECT [Index] FROM @D WHERE [Id] = L.[DocumentId]), 
-		[Id], [DefinitionId], [ResponsibilityCenterId], [CurrencyId],
-		[AgentId], [ResourceId], [MonetaryValue], [Quantity], [UnitId], [Value], [Memo]
+	INSERT INTO @L([Index],	[DocumentIndex], [Id], [DefinitionId], [Memo])
+	SELECT			[Id],	[DocumentId], 	[Id], [DefinitionId], [Memo]
 	FROM dbo.Lines L
 	WHERE DocumentId IN (SELECT [Id] FROM @D)
 
@@ -296,11 +291,8 @@ BEGIN -- Inserting
 		[NotedDate])
 	SELECT
 		ROW_NUMBER() OVER(ORDER BY [Id]) - 1 AS [Index],
-		(SELECT [Index] FROM @L WHERE [Id] = E.[LineId]) AS [LineIndex],
-		(SELECT [Index] FROM @D WHERE [Id] IN (
-			SELECT [Id] FROM dbo.Lines WHERE [Index] = (
-				SELECT [Index] FROM @L WHERE [Id] = E.[LineId]
-			))) AS [DocumentIndex],
+		[LineId],
+		(SELECT [DocumentIndex] FROM @L WHERE [Index] = E.[LineId]),
 		[Id],
 		[Direction],
 		[AgentId],
@@ -326,19 +318,27 @@ BEGIN -- Inserting
 	FROM dbo.Entries E
 	WHERE LineId IN (SELECT [Id] FROM @L)
 
+	DECLARE @DI1 INT, @DI2 INT, @DI3 INT;
+	SELECT @DI1 = [Id] FROM dbo.Documents WHERE [Memo] = N'Meals 1';
+	SELECT @DI2 = [Id] FROM dbo.Documents WHERE [Memo] = N'Maintenance';
+	SELECT @DI3 = [Id] FROM dbo.Documents WHERE [Memo] = N'Meals 2';
+	
 	INSERT INTO @L([Index], [DocumentIndex],
-	[DefinitionId],		[Memo]) VALUES
-	(1,0,N'ManualLine', N'Shawarma'),
-	(1,4,N'ManualLine', NULL),
-	(1,5,N'ManualLine', N'Shawarma');
+	[DefinitionId],			[Memo]) VALUES
+	(101,@DI1,N'ManualLine', N'Shawarma'),
+	(102,@DI2,N'ManualLine', NULL),
+	(103,@DI3,N'ManualLine', N'Shawarma');
+
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-				[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
-	(0, 1, 0,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
-	(0, 1, 4,+1,@1Maintenance,@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
-	(0, 1, 5,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
+					[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
+	(0, 101, @DI1,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
+	(0, 102, @DI2,+1,@1Maintenance,	@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
+	(0, 103, @DI3,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
 
 	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;
+GOTO DONE
+
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'cash-payment-vouchers',
 		@Documents = @D, @Lines = @L, @Entries = @E,
@@ -367,4 +367,5 @@ BEGIN -- Inserting
 		@RoleId = @1Comptroller,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+DONE:
 END

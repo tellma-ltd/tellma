@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 				E.[IsPersonal],
 				E.[EntryTypeParentId]
 			FROM @Entities E
-		) AS s ON (t.[Code] = s.[Code])
+		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
