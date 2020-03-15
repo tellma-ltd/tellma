@@ -37,7 +37,6 @@ IF @ProvisionData = N'0' RETURN;
 --:r .\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql
 --:r .\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql
 :r .\01_Definitions\e_LineDefinitions\999_LineDefinitions.sql
-
 :r .\01_Definitions\f_DocumentDefinitions.sql
 :r .\02_Security\a_Users.sql
 :r .\02_Security\b_RolesMemberships.sql
@@ -79,7 +78,6 @@ IF @ProvisionData = N'0' RETURN;
 :r .\06_Accounts\b_LegacyClassifications.sql
 :r .\06_Accounts\101_Accounts.sql
 --:r .\06_Accounts\105_Accounts.sql
-
 :r .\07_Entries\101\101a_manual-journal-vouchers.sql
 :r .\07_Entries\101\101b_cash-payment-vouchers.sql
 --:r .\07_Entries\101\101c_petty-cash-vouchers.sql

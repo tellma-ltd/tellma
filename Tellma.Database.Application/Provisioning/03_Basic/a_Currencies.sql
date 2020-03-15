@@ -54,9 +54,8 @@ BEGIN
 END;						
 EXEC sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
 
-
-IF @DebugCurrencies = 1
-BEGIN
-	SELECT * FROM map.Currencies();
-	SELECT * FROM map.Resources();
-END
+IF @DB = N'101' -- Banan SD, USD, en
+	INSERT INTO dbo.ExchangeRates(
+	[CurrencyId],	[ValidAsOf],	[AmountInCurrency], [AmountInFunctional]) VALUES
+	(N'SDG',		N'2019.01.01',	100,				1),
+	(N'SAR',		N'2019.01.01',	3.75,				1);

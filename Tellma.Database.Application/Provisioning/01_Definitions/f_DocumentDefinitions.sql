@@ -52,14 +52,15 @@ BEGIN
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',						1),
 	-- cash-payment-vouchers
-	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- if goods were received, then fill a separate GRN/GRIV
+	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- to recognize expenses, fill a separate GRN/GRIV
 	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
-	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
+	(2,1,	N'CashTransferExchange',			0),
 	(3,1,	N'ManualLine',						0),
 	-- cash-receipt-vouchers
 	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
 	(1,2,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
 	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
+	(3,2,	N'ManualLine',						0),
 	-- revenue-recognition-vouchers, for revenue recognition
 	(0,3,	N'LeaseOutIssue',					1), -- for tax visible customers
 	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers

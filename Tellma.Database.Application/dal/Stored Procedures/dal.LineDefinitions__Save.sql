@@ -98,6 +98,7 @@ SET NOCOUNT ON;
 			LDE.[Index],
 			LDE.[Direction]	,
 			LDE.[AccountTypeParentCode]	,
+			LDE.[IsCurrent],
 			LDE.[AgentDefinitionId],
 			LDE.[EntryTypeCode]
 		FROM @LineDefinitionEntries LDE
@@ -109,6 +110,7 @@ SET NOCOUNT ON;
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
 			t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
+			t.[IsCurrent]				= s.[IsCurrent],
 			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
 			t.[EntryTypeCode]			= s.[EntryTypeCode],
 			t.[SavedById]				= @UserId
@@ -119,7 +121,8 @@ SET NOCOUNT ON;
 			[LineDefinitionId],
 			[Index],
 			[Direction],
-			[AccountTypeParentCode]	,
+			[AccountTypeParentCode],
+			[IsCurrent],
 			[AgentDefinitionId],
 			[EntryTypeCode]
 		)
@@ -128,6 +131,7 @@ SET NOCOUNT ON;
 			s.[Index],
 			s.[Direction],
 			s.[AccountTypeParentCode],
+			s.[IsCurrent],
 			s.[AgentDefinitionId],
 			s.[EntryTypeCode]
 		);

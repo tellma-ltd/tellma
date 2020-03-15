@@ -17,6 +17,7 @@ WHEN MATCHED THEN
 		t.[TitlePlural3]		= s.[TitlePlural3],
 		t.[Prefix]				= s.[Prefix],
 		t.[CodeWidth]			= s.[CodeWidth],
+		t.[MemoVisibility]		= s.[MemoVisibility],
 		t.[AgentDefinitionId]	= s.[AgentDefinitionId],
 		t.[AgentLabel]			= s.[AgentLabel],
 		t.[AgentLabel2]			= s.[AgentLabel2],
@@ -49,6 +50,7 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT (
 		[Id], [IsOriginalDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
 		[Prefix], [CodeWidth],
+		[MemoVisibility],
 		[AgentDefinitionId],
 		[AgentLabel],
 		[AgentLabel2],
@@ -75,6 +77,7 @@ WHEN NOT MATCHED BY TARGET THEN
 	) VALUES (
 		s.[Id], s.[IsOriginalDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 		s.[Prefix], s.[CodeWidth],
+		s.[MemoVisibility],
 		s.[AgentDefinitionId],
 		s.[AgentLabel],
 		s.[AgentLabel2],
