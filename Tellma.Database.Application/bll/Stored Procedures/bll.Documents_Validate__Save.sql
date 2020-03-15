@@ -11,32 +11,36 @@ SET NOCOUNT ON;
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
 
-	/* [C# Validation]
+	--=-=-=-=-=-=- [C# Validation]
+	/* 
 	
+	 [✓] The SerialNumber is required if original document
 	 [✓] The DocumentDate is not after 1 day in the future
 	 [✓] The DocumentDate cannot be before archive date
+	 [✓] If Entry.CurrencyId is functional, the value must be the same as monetary value
 
 	*/
-	--[C# Validation]
+
+	-- [C# Validation]
 	-- For functional currency, the monetary value must be equal to value
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Value',
-		N'Error_TheMonetaryValueDoesNotMatchValue'
-	FROM @Entries E
-	WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
-	AND (ISNULL([MonetaryValue],0) <> ISNULL([Value],0))
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Value',
+	--	N'Error_TheMonetaryValueDoesNotMatchValue'
+	--FROM @Entries E
+	--WHERE (CurrencyId = dbo.fn_FunctionalCurrencyId())
+	--AND (ISNULL([MonetaryValue],0) <> ISNULL([Value],0))
 
 	--[C# Validation]
 	-- For copy documents, serial number is required
-	IF @IsOriginalDocument = 0
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
-		N'Error_TheSerialNumberIsRequired'
-	FROM @Documents
-	WHERE [SerialNumber] IS NULL
+	--IF @IsOriginalDocument = 0
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])
+	--SELECT TOP (@Top)
+	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].SerialNumber',
+	--	N'Error_TheSerialNumberIsRequired'
+	--FROM @Documents
+	--WHERE [SerialNumber] IS NULL
 
 	-- Serial number must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

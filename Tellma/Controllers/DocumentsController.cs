@@ -623,9 +623,14 @@ namespace Tellma.Controllers
                 .Where(entry => entry.Id != 0).GroupBy(entry => entry.Id).Where(g => g.Count() > 1)
                 .SelectMany(g => g).ToDictionary(entry => entry, entry => entry.Id);
 
+            // Find documents with duplicate Serial numbers
+            var duplicateSerialNumbers = docs.Where(doc => doc.SerialNumber > 0)
+                .GroupBy(doc => doc.SerialNumber).Where(g => g.Count() > 1).SelectMany(g => g)
+                .ToDictionary(doc => doc, doc => doc.SerialNumber.Value);
+
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var docDef = Definition();
-            var lineDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
+            var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
             // TODO: Add definition validation and defaults here
 
@@ -633,11 +638,20 @@ namespace Tellma.Controllers
             int docIndex = 0;
             foreach (var doc in docs)
             {
-                // If not an original document, the serial number is required
-                if (!docDef.IsOriginalDocument && doc.SerialNumber == null)
+                if (!docDef.IsOriginalDocument)
                 {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                        _localizer[nameof(RequiredAttribute), _localizer["Document_SerialNumber"]]);
+                    // If not an original document, the serial number is required
+                    if (doc.SerialNumber == null || doc.SerialNumber == 0)
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                            _localizer[nameof(RequiredAttribute), _localizer["Document_SerialNumber"]]);
+                    }
+                    else if (duplicateSerialNumbers.ContainsKey(doc))
+                    {
+                        var serial = duplicateSerialNumbers[doc];
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                            _localizer["Error_DateCannotBeInTheFuture", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
+                    }
                 }
 
                 // Date cannot be in the future
@@ -658,7 +672,7 @@ namespace Tellma.Controllers
                 int lineIndex = 0;
                 foreach (var line in doc.Lines)
                 {
-                    var lineDef = lineDefinitions.GetValueOrDefault(line.DefinitionId);
+                    var lineDef = lineDefs.GetValueOrDefault(line.DefinitionId);
                     if (lineDef == null)
                     {
                         ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
@@ -739,6 +753,22 @@ namespace Tellma.Controllers
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+        }
+
+        private string FormatSerial(int serial, string prefix, int codeWidth)
+        {
+            var result = serial.ToString();
+            if (result.Length < codeWidth)
+            {
+                result = "00000000000000000".Substring(0, codeWidth - result.Length) + result;
+            }
+
+            if (!string.IsNullOrWhiteSpace(prefix))
+            {
+                result = prefix + result;
+            }
+
+            return result;
         }
 
         private string EntryPath(int docIndex, int lineIndex, int entryIndex, string propName)

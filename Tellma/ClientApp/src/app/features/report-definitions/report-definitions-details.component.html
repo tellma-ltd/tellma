@@ -76,8 +76,9 @@
                     [cdkDropListConnectedTo]="[rows, columns, measures, select]"
                     (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="allFields(model)"
                     cdkDropListSortingDisabled>
-                    <ng-container *ngFor="let node of allFields(model); let i = index;">
-                        <div class="t-studio-source-row t-draggable" cdkDrag [class.d-none]="!showTreeNode(node)">
+
+                    <div *ngFor="let node of allFields(model); let i = index;" cdkDrag>
+                        <div class="t-studio-source-row t-draggable" [class.d-none]="!showTreeNode(node)">
                             <div class="text-truncate d-flex" [style.padding-left]="paddingLeft(node)"
                                 [style.padding-right]="paddingRight(node)">
                                 <!-- Expand button -->
@@ -90,13 +91,13 @@
                                 <span class="small">{{ node.desc.label() }}</span>
                             </div>
                             <!-- <div class="small text-white" *cdkDragPreview>
-                                            {{ node.desc.label() }}
-                                        </div> -->
+                                                {{ node.desc.label() }}
+                                            </div> -->
                             <div class="t-studio-source-row" *cdkDragPlaceholder>
                                 &nbsp;
                             </div>
                         </div>
-                    </ng-container>
+                    </div>
                 </div>
             </div>
         </div>

@@ -36,13 +36,13 @@ export function handleFreshGlobalSettings(
 export interface AppSettings {
 
   /**
-   * Base address of the API server, e.g.: 'https://www.tellma.com/'
+   * Base address of the API server, e.g.: 'https://web.tellma.com/'
    * (with and without forward slash are fine)
    */
   apiAddress?: string;
 
   /**
-   * Base address of the identity server: 'https://www.tellma.com'
+   * Base address of the identity server: 'https://web.tellma.com'
    * (with and without forward slash are fine)
    */
   identityAddress?: string;

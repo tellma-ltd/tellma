@@ -78,6 +78,7 @@ BEGIN
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
+
 	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
@@ -88,6 +89,7 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> N'ManualLine';
+
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
@@ -101,6 +103,7 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE L.DefinitionId = N'ManualLine';
+
 	-- for all lines, Get currency and identifier from Resources if available.
 	UPDATE E 
 	SET
@@ -110,6 +113,7 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Resources R ON E.ResourceId = R.Id;
+
 	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
 	WITH RU AS (
 		SELECT [ResourceId], MIN(UnitId) AS UnitId
@@ -121,6 +125,7 @@ BEGIN
 	SET E.[UnitId] = RU.UnitId
 	FROM @PreprocessedEntries E
 	JOIN RU ON E.ResourceId = RU.ResourceId;
+
 	-- When currency is null, set it to functional currency
 	UPDATE @PreprocessedEntries
 	SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
@@ -129,6 +134,7 @@ BEGIN
 			SELECT [Node] FROM dbo.AccountTypes
 			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
 	);
+
 	-- C#: When there is only one responsibility center, use it everywhere
 	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE IsActive = 1) = 1
 		UPDATE @PreprocessedEntries

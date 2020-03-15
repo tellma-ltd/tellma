@@ -216,7 +216,9 @@ export function serialNumber(serial: number, prefix: string, codeWidth: number) 
     }
 
     // Prepend the prefix
-    result = prefix + result;
+    if (!!prefix) {
+        result = prefix + result;
+    }
 
     // Return the result
     return result;

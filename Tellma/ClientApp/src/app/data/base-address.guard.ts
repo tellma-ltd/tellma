@@ -11,7 +11,7 @@ import { StorageService } from './storage.service';
 export class BaseAddressGuard implements CanActivate {
 
 /*
-  this guard is responsible the base address (e.g. https://www.tellma.com/)
+  this guard is responsible the base address (e.g. https://web.tellma.com/)
   it simply checks if the user is authenticated and redirectes him/her as follows:
   - authenticated: application
   - not authenticated: welcome page
