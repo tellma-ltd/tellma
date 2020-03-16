@@ -643,6 +643,9 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ መሰረዝ አይችሉም.</value>
   </data>
+  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
+    <value>የተለጠፈ ወይም የተሰረዙ ሰነዶችን ሊቀየሩ አይችሉም</value>
+  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>አንድ የቀዘቀዘ ንጥል ማስተካከል አይቻልም.</value>
   </data>
@@ -780,6 +783,12 @@
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው ሚና «{0} 'የለም ወይም ከአሁን በኋላ የለም አይደለም.</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
+    <value>ተከታታይ ቁጥር «{0}» የተባዙ ነው</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
+    <value>ተከታታይ ቁጥር «{0}» አስቀድሞ ጥቅም ላይ ውሏል</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>ተጠቃሚው «{0} 'ንቁ አይደለም.</value>

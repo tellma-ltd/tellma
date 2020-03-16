@@ -643,6 +643,9 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>لا يمكنك حذف المستخدم خاصتك</value>
   </data>
+  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
+    <value>لا يمكن تعديل المستندات المرحلة أو الملغاة</value>
+  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
   </data>
@@ -780,6 +783,12 @@
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
     <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
+    <value>الرقم المتسلسل ({0}) مكرر</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
+    <value>الرقم المتسلسل ({0}) مستخدم حاليا</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>المستخدم ({0}) غير منشط</value>

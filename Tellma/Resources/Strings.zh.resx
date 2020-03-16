@@ -643,6 +643,9 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>您无法删除自己的用户。</value>
   </data>
+  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
+    <value>发布或取消的文件不能被修改</value>
+  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>无法修改非活动项目。</value>
   </data>
@@ -780,6 +783,12 @@
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
     <value>ID为角色“{0}”不存在或已被删除。</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
+    <value>序列号“{0}”被复制</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
+    <value>序列号“{0}”已被使用</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>用户“{0}”不活跃。</value>

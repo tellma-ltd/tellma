@@ -643,6 +643,9 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>You cannot delete your own user.</value>
   </data>
+  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
+    <value>Posted or Canceled documents cannot be modified</value>
+  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
   </data>
@@ -780,6 +783,12 @@
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
     <value>The role with Id '{0}' does not exist or no longer exists.</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
+    <value>The serial number '{0}' is duplicated</value>
+  </data>
+  <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
+    <value>The serial number '{0}' is already used</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>The user '{0}' is not active.</value>
