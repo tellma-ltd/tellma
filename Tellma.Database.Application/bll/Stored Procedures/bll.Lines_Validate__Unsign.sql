@@ -6,16 +6,17 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- Cannot unsign the lines unless the document state is ACTIVE
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentIsIn0State',
-		CAST(BE.[State] AS NVARCHAR(50))
+		CASE
+			WHEN D.[PostingState] = 1 THEN N'Error_TheDocumentIsInPostedState'
+			WHEN D.[PostingState] = -1 THEN N'Error_TheDocumentIsInCancelledState'
+		END
 	FROM @Ids FE
-	JOIN [dbo].[Lines] DL ON FE.[Id] = DL.[Id]
-	JOIN [dbo].[Documents] BE ON DL.[DocumentId] = BE.[Id]
-	--WHERE (BE.[State] <> N'Active');
-	WHERE (BE.[State] = 5);
+	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
+	JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
+	WHERE (D.[PostingState] <> 0);
 
 	-- TODO: cannot unsign unless it was part of the last transition
 

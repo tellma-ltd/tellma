@@ -632,10 +632,18 @@ namespace Tellma.Controllers
                 {
                     line.Entries.ForEach(entry =>
                     {
-                        if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.MonetaryValue != null)
+                        if (entry.CurrencyId == settings.FunctionalCurrencyId)
                         {
-                            entry.Value = entry.MonetaryValue;
+                            if (line.DefinitionId != ManualLine)
+                            {
+                                entry.Value = entry.MonetaryValue;
+                            }
+                            else
+                            {
+                                entry.MonetaryValue = entry.Value;
+                            }
                         }
+                        // Other logic
                     });
                 });
             });

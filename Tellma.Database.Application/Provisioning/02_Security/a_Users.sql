@@ -15,7 +15,7 @@ IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Users
 	([Index],	[Name],					[Email]) VALUES
 	(0,			N'Jiad Akra',			N'jiad.akra@banan-it.com'),
-	(1,			N'Mohamad Akra',		N'mohamad.akra@banan-it.com'),
+	(1,			N'Mohamad Akra',		N'mohamad.akra@tellma.com'),
 	(2,			N'Ahmad Akra',			N'ahmad.akra@banan-it.com'),
 	(3,			N'Yisak Fikadu',		N'yisakfikadu79@gmail.com'),
 	(4,			N'Abrham Tenker',		N'abrham.tenker@banan-it.com'),

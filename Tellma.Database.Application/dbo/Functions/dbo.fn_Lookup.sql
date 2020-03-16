@@ -12,5 +12,3 @@ BEGIN
 		AND [Name] = @Name
 	)
 END
-
-

@@ -58,9 +58,9 @@ BEGIN
 	-- Profit/Loss Accounts
 	(50,1,0,	@Revenue,					N'Revenues',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(51,1,0,	@Revenue,					N'Commission',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(52,1,0,	@OtherIncome,				N'Rental Income',			NULL,			@RC_Inv,					NULL,			NULL,				NULL),
+	(52,1,0,	@OtherIncome,				N'Rental Income',			@SAR,			@RC_Inv,					NULL,			NULL,				NULL),
 
-	(69,1,0,	@ServicesExpense,			N'Accounting Services',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(69,1,0,	@ServicesExpense,			N'Accounting Services',		@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(83,1,0,	@ServicesExpense,			N'Legal Services',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 
 	(62,1,0,	@ServicesExpense,			N'Transportation',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
@@ -68,12 +68,12 @@ BEGIN
 	(80,1,0,	@ServicesExpense,			N'Travel',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(81,1,0,	@ServicesExpense,			N'Visa',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(67,1,0,	@ServicesExpense,			N'Internet & Tel',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(60,1,0,	@ServicesExpense,			N'Cloud Hosting',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(60,1,0,	@ServicesExpense,			N'Cloud Hosting',			@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(75,1,0,	@ServicesExpense,			N'Utilities',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(72,1,0,	@ServicesExpense,			N'Office Rental',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(72,1,0,	@ServicesExpense,			N'Office Rental',			@SDG,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 
 	(64,1,0,	@ServicesExpense,			N'Marketing Service',		NULL,			@RC_Inv,					@DistributionCosts,N'cost-objects',	NULL),
-	(63,1,0,	@ServicesExpense,			N'Domain Registration',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(63,1,0,	@ServicesExpense,			N'Domain Registration',		@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(77,1,0,	@ServicesExpense,			N'Maintenance',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 	(78,1,0,	@ServicesExpense,			N'Medical',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
 

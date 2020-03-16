@@ -546,6 +546,7 @@
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
     <Build Include="dbo\Views\dbo.ExchangeRatesView.sql" />
+    <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

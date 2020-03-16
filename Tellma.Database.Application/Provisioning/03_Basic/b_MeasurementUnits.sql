@@ -34,6 +34,7 @@ INSERT INTO @MeasurementUnits ([Index],
 (24, N'in', NULL,		NULL,		N'Distance',N'inch',		100,			2.541);
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
 INSERT INTO @MeasurementUnits ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
@@ -52,7 +53,13 @@ INSERT INTO @MeasurementUnits ([Index],
 (11, N'wmo',NULL,		NULL,		N'Time',	N'work month',	1,				1248),
 (12, N'wwk',NULL,		NULL,		N'Time',	N'work week',	1,				48),
 (13, N'wyr', NULL,		NULL,		N'Time',	N'work year',	1,				14976);
-
+UPDATE @MeasurementUnits SET [Code] = 
+	CASE
+		WHEN [Index] = 6 THEN N'DAY'
+		WHEN [Index] = 7 THEN N'MONTH'
+		WHEN [Index] = 8 THEN N'YEAR'
+	END
+END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 INSERT INTO @MeasurementUnits ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES

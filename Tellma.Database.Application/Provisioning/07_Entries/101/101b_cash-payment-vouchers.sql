@@ -15,18 +15,9 @@ BEGIN -- Inserting
 	--(26,		'2019.01.07',	N'Employees Dec 2018 Salaries Payment')
 	;
 	UPDATE @D Set [MemoIsCommon] = 0;
---(0,2,	N'Lines',	N'Memo',				0,	N'Memo',					N'البيان',				1,2),
---(1,2,	N'Entries',	N'CurrencyId',			0,	N'Currency',				N'العملة',				1,2),
---(2,2,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',				N'المبلغ',				1,2),
---(3,2,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',				N'المستفيد',			3,4),
---(4,2,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',					N'الغرض',				4,4),
---(5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',			N'البنك/الخزنة',		3,4),
---(6,2,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',		N'رقم الشيك/الإيصال',	3,4),
---(7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',				N'تاريخ الشيك',			5,5),
---(8,2,	N'Entries',	N'Value',				0,	N'Equiv Amt ($)',			N'($) المعادل',			4,4);
 	-- Requesting
 	EXEC sys.sp_set_session_context 'UserId', @mohamad_akra;
-
+	-- 0
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -37,10 +28,9 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'The family shawerma',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'49',
-		[Value0] = 12.55
+		[ExternalReference0] = N'49'
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
-
+	-- 4
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -50,10 +40,9 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'هيثم عوض محمد',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'00540',
-		[Value0] = 9.09
+		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
-
+	-- 5
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -63,21 +52,9 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'720مطاعم صابرين 660- شاورما العائلة',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'00540',
-		[Value0] = 25.09
+		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
-
-	--(0, 0, 6,+1,@1GMFund,		@InternalCashTransfer, 								NULL,		@SDG,			111000,				2000),--
-	--(0, 1, 6,-1,@1GMFund,		@InternalCashTransfer,								NULL,		@USD,			2000,				2000),
---(0,103,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1),
---(1,103,	N'Entries',	N'AgentId',				1,	N'From Account',		N'من حساب',				1,2,1),
---(2,103,	N'Entries',	N'CurrencyId',			1,	N'Currency',			N'العملة',				1,2,0),
---(3,103,	N'Entries',	N'MonetaryValue',		1,	N'Amount',				N'المبلغ',				1,3,0),
---(4,103,	N'Entries',	N'AgentId',				0,	N'To Account',			N'إلى حساب',			1,2,0),
---(5,103,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,0),
---(6,103,	N'Entries',	N'MonetaryValue',		0,	N'Amount',				N'المبلغ',				1,3,0),
---(7,103,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',			N'مركز الاستثمار',		4,4,1);
-
+	-- 6
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 6, @DefinitionId = N'CashTransferExchange';
 	UPDATE @WL
@@ -90,7 +67,7 @@ BEGIN -- Inserting
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 111000
 	WHERE [DocumentIndex] = 6 AND [Index] = 0;
-
+	-- 21
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -102,7 +79,7 @@ BEGIN -- Inserting
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'121109'
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
-
+	-- 22
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -114,7 +91,7 @@ BEGIN -- Inserting
 		[AgentId0] = @GMSafe,
 		[ExternalReference0] = N'121110'
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
-
+	-- 23
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -124,10 +101,9 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'Former guards',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'121111',
-		[Value0] = 1000
+		[ExternalReference0] = N'121111'
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
-
+	-- 24
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'CashPaymentToOther';
 	UPDATE @WL
@@ -137,8 +113,7 @@ BEGIN -- Inserting
 		[NotedAgentName0] = N'Court',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
 		[AgentId0] = @GMSafe,
-		[ExternalReference0] = N'GV-123',
-		[Value0] = 1000
+		[ExternalReference0] = N'GV-123'
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
 	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
