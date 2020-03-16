@@ -30,7 +30,7 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
             [Display(Name = "Email")]
             public string Email { get; set; }

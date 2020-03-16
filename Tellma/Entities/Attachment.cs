@@ -8,7 +8,7 @@ namespace Tellma.Entities
     {
         [Display(Name = "Name")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         public string FileName { get; set; }
 

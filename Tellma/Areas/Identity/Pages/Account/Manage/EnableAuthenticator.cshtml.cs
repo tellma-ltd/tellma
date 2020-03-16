@@ -49,7 +49,7 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Display(Name = "VerificationCode")]
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [StringLength(7, ErrorMessage = nameof(StringLengthAttribute) + "2", MinimumLength = 6)]
             [DataType(DataType.Text)]
             public string Code { get; set; }

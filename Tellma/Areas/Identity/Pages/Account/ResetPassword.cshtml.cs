@@ -26,12 +26,12 @@ namespace Tellma.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            //[Required(ErrorMessage = nameof(RequiredAttribute))]
+            //[Required(ErrorMessage = Services.Utilities.Constants.Error_RequiredField0)]
             //[EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
             //[Display(Name = "Email")]
             //public string Email { get; set; }
 
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [StringLength(100, ErrorMessage = nameof(StringLengthAttribute) + "2", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]

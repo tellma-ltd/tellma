@@ -25,7 +25,6 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
-import { IfrsNote } from './entities/ifrs-note';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
@@ -286,13 +285,6 @@ export class ApiService {
     return {
       activate: this.activateFactory<Role>('roles', cancellationToken$),
       deactivate: this.deactivateFactory<Role>('roles', cancellationToken$)
-    };
-  }
-
-  public ifrsNotesApi(cancellationToken$: Observable<void>) {
-    return {
-      activate: this.activateFactory<IfrsNote>('ifrs-notes', cancellationToken$),
-      deactivate: this.deactivateFactory<IfrsNote>('ifrs-notes', cancellationToken$)
     };
   }
 

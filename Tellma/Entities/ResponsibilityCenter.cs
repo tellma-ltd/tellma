@@ -15,7 +15,7 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [Display(Name = "ResponsibilityCenter_ResponsibilityType")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
             new string[] {
@@ -26,7 +26,7 @@ namespace Tellma.Entities
         public string ResponsibilityType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -50,7 +50,7 @@ namespace Tellma.Entities
         public string Code { get; set; }
 
         [Display(Name = "IsLeaf")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         public bool? IsLeaf { get; set; } = true;
     }

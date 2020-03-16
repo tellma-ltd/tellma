@@ -7,6 +7,8 @@ namespace Tellma.Services.Utilities
 {
     public static class Constants
     {
+        public const string Error_TheField0IsRequired = nameof(Error_TheField0IsRequired);
+
         public const string AdminConnection = nameof(AdminConnection);
         public const string IdentityConnection = nameof(IdentityConnection);
         public const string Server = "Server";

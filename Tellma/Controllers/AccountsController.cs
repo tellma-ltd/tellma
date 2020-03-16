@@ -152,7 +152,7 @@ namespace Tellma.Controllers
                 //    {
                 //        string path = $"[{index}].{nameof(entity.ContractType)}";
                 //        string propDisplayName = _localizer["Account_ContractType"];
-                //        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
+                //        string errorMsg = _localizer[Services.Utilities.Constants.Error_RequiredField0, propDisplayName];
 
                 //        ModelState.AddModelError(path, errorMsg);
                 //    }

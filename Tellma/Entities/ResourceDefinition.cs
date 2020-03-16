@@ -23,7 +23,7 @@ namespace Tellma.Entities
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }

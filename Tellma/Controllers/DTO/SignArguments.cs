@@ -11,10 +11,10 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// The desired new state target of this signature
         /// </summary>
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         public short ToState { get; set; }
 
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         public string RuleType { get; set; }
 
         /// <summary>

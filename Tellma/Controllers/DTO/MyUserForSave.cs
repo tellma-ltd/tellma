@@ -12,7 +12,7 @@ namespace Tellma.Controllers.Dto
         public byte[] Image { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string Name { get; set; }
 

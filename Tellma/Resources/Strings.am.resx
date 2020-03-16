@@ -172,15 +172,6 @@
   <data name="Agent_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
-  <data name="Agent_Gender" xml:space="preserve">
-    <value>ፆታ</value>
-  </data>
-  <data name="Agent_Gender_Female" xml:space="preserve">
-    <value>ሴት</value>
-  </data>
-  <data name="Agent_Gender_Male" xml:space="preserve">
-    <value>ተባዕት</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>የሆነው ተዛማጅ</value>
   </data>
@@ -195,9 +186,6 @@
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>የግብር መለያ ቁጥር</value>
-  </data>
-  <data name="Agent_Title" xml:space="preserve">
-    <value>አርእስት</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
     <value>ተጠቃሚ</value>
@@ -730,6 +718,9 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>በ {0} «{1} 'አንድ ወይም ተጨማሪ መለያዎች ውስጥ ጥቅም ላይ ውሏል</value>
   </data>
+  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
+    <value>በ ፍቺ መለያ አይነት ነው ምክንያቱም {0} ያስፈልጋል «{1}»</value>
+  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
@@ -760,6 +751,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
   </data>
+  <data name="Error_TheField0IsRequired" xml:space="preserve">
+    <value>በ {0} መስክ ያስፈልጋል.</value>
+  </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value># AB12E5: ወደ መስክ {0} እንደ ትክክለኛ ኤችቲኤምኤል የአስራስድስትዮሽ ቀለም, መሆን አለበት.</value>
   </data>
@@ -777,6 +771,9 @@
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
+  </data>
+  <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
+    <value>የመለያ አይነት ነው ምክንያቱም ዓላማ ያስፈልጋል «{0}»</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>
@@ -876,30 +873,6 @@
   </data>
   <data name="IdentityServerUsers" xml:space="preserve">
     <value>የማንነት የአገልጋይ ተጠቃሚዎች</value>
-  </data>
-  <data name="IfrsConcepts_Documentation" xml:space="preserve">
-    <value>ስነዳ</value>
-  </data>
-  <data name="IfrsConcepts_EffectiveDate" xml:space="preserve">
-    <value>አዋጁ የሚጸናበት ጊዜ</value>
-  </data>
-  <data name="IfrsConcepts_ExpiryDate" xml:space="preserve">
-    <value>የአገልግሎት ማብቂያ ጊዜ</value>
-  </data>
-  <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
-    <value>የሆነው ቅጠል</value>
-  </data>
-  <data name="IfrsConcepts_Label" xml:space="preserve">
-    <value>ምልክት</value>
-  </data>
-  <data name="IfrsNotes" xml:space="preserve">
-    <value>IFRS ማስታወሻዎች</value>
-  </data>
-  <data name="IfrsNotes_ForCredit" xml:space="preserve">
-    <value>ክሬዲት ለማግኘት</value>
-  </data>
-  <data name="IfrsNotes_ForDebit" xml:space="preserve">
-    <value>ዴቢት ለ</value>
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>የማይሠራ</value>
@@ -1473,9 +1446,6 @@
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>ሪፖርት ፍቺዎች</value>
-  </data>
-  <data name="RequiredAttribute" xml:space="preserve">
-    <value>በ {0} መስክ ያስፈልጋል.</value>
   </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>ማረጋገጫ ቁልፍ ዳግም አስጀምር</value>

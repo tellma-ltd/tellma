@@ -15,7 +15,7 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -31,13 +31,13 @@ namespace Tellma.Entities
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "IsAssignable")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
     }

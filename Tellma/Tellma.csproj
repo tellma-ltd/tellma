@@ -49,12 +49,14 @@
     <Compile Remove="ClientApp2\**" />
     <Compile Remove="ClientAppOld\dist\**" />
     <Compile Remove="ClientAppOld\platforms\**" />
+    <Compile Remove="ClientApp\dist\**" />
     <Compile Remove="Data2\**" />
     <Compile Remove="Pages\Account\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="ClientApp2\**" />
     <Content Remove="ClientAppOld\dist\**" />
     <Content Remove="ClientAppOld\platforms\**" />
+    <Content Remove="ClientApp\dist\**" />
     <Content Remove="Data2\**" />
     <Content Remove="Pages\Account\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
@@ -64,11 +66,13 @@
     <EmbeddedResource Remove="ClientApp2\**" />
     <EmbeddedResource Remove="ClientAppOld\dist\**" />
     <EmbeddedResource Remove="ClientAppOld\platforms\**" />
+    <EmbeddedResource Remove="ClientApp\dist\**" />
     <EmbeddedResource Remove="Data2\**" />
     <EmbeddedResource Remove="Pages\Account\**" />
     <None Remove="ClientApp2\**" />
     <None Remove="ClientAppOld\dist\**" />
     <None Remove="ClientAppOld\platforms\**" />
+    <None Remove="ClientApp\dist\**" />
     <None Remove="Data2\**" />
     <None Remove="Pages\Account\**" />
   </ItemGroup>

@@ -8,7 +8,7 @@ namespace Tellma.Entities
     public class CurrencyForSave : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -24,7 +24,7 @@ namespace Tellma.Entities
         public string Name3 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Description { get; set; }
@@ -40,7 +40,7 @@ namespace Tellma.Entities
         public string Description3 { get; set; }
 
         [Display(Name = "Currency_DecimalPlaces")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [ChoiceList(new object[] { (byte)0, (byte)2, (byte)3 })]
         public byte? E { get; set; }
     }

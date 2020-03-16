@@ -264,7 +264,7 @@ namespace Tellma.Controllers
                         string propName = (selector.Body as MemberExpression).Member.Name; // The name of the property we're validating
                         string path = $"[{index}].{propName}";
                         string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)? .DisplayName;
-                        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
+                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
 
                         ModelState.AddModelError(path, errorMsg);
 

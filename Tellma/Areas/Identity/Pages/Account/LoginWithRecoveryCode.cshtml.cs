@@ -41,7 +41,7 @@ namespace Tellma.Areas.Identity.Pages.Account
         public class InputModel
         {
             [BindProperty]
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [DataType(DataType.Text)]
             [Display(Name = "RecoveryCode")]
             public string RecoveryCode { get; set; }

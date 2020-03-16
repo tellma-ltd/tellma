@@ -8,7 +8,7 @@ namespace Tellma.Entities
     public class SettingsForSave : Entity
     {
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string ShortCompanyName { get; set; }
 
@@ -21,12 +21,12 @@ namespace Tellma.Entities
         public string ShortCompanyName3 { get; set; }
 
         [Display(Name = "Settings_FunctionalCurrency")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
         public string FunctionalCurrencyId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguage")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
         [Culture]
         public string PrimaryLanguageId { get; set; }

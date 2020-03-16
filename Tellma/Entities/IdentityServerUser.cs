@@ -6,7 +6,7 @@ namespace Tellma.Entities
     public class IdentityServerUser : EntityWithKey<string>
     {
         [Display(Name = "User_Email")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(256, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]

@@ -94,13 +94,6 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('ResendInvitationEmail')
         ]
     },
-    'ifrs-notes': {
-        name: 'IfrsNotes',
-        read: true,
-        actions: [
-            li('IsActive')
-        ]
-    },
     'currencies': {
         name: 'Currencies',
         read: true,

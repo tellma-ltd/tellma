@@ -110,7 +110,7 @@ namespace Tellma.Controllers
 
         [HttpPost("client")]
         public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> SaveUserSetting(
-            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = nameof(RequiredAttribute))] string key,
+            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)] string key,
             [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
         {
             await _appRepo.Users__SaveSettings(key, value);
@@ -491,7 +491,7 @@ namespace Tellma.Controllers
                         var propName = nameof(RoleMembershipForSave.RoleId);
                         var propDisplayName = _metadataProvider.GetMetadataForProperty(typeof(RoleMembershipForSave), propName)?.DisplayName ?? propName;
                         ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
-                            _localizer[nameof(RequiredAttribute), propDisplayName]);
+                            _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName]);
                     }
                 }
             }

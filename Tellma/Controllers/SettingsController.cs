@@ -198,7 +198,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrWhiteSpace(entity.PrimaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.PrimaryLanguageSymbol),
-                        _localizer[nameof(RequiredAttribute), _localizer["Settings_PrimaryLanguageSymbol"]]);
+                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_PrimaryLanguageSymbol"]]);
                 }
             }
 
@@ -211,7 +211,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.SecondaryLanguageSymbol),
-                        _localizer[nameof(RequiredAttribute), _localizer["Settings_SecondaryLanguageSymbol"]]);
+                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_SecondaryLanguageSymbol"]]);
                 }
 
                 if (entity.SecondaryLanguageId == entity.PrimaryLanguageId)
@@ -230,7 +230,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrWhiteSpace(entity.TernaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.TernaryLanguageSymbol),
-                        _localizer[nameof(RequiredAttribute), _localizer["Settings_TernaryLanguageSymbol"]]);
+                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_TernaryLanguageSymbol"]]);
                 }
 
                 if (entity.TernaryLanguageId == entity.PrimaryLanguageId)

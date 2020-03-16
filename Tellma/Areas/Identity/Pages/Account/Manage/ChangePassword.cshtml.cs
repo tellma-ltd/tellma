@@ -35,12 +35,12 @@ namespace Tellma.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [DataType(DataType.Password)]
             [Display(Name = "CurrentPassword")]
             public string OldPassword { get; set; }
 
-            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
             [StringLength(100, ErrorMessage = nameof(StringLengthAttribute) + "2", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "NewPassword")]

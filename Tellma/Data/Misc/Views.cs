@@ -58,15 +58,6 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "ifrs-notes",
-                        Name = "IfrsNotes",
-                        Read = true,
-                        Actions = new ActionInfo[]
-                        {
-                            Li("IsActive")
-                        }
-                    },
-                    new ViewInfo {
                         Id = "currencies",
                         Name = "Currencies",
                         Read = true,

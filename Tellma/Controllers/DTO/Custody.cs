@@ -14,7 +14,7 @@
 //    public class CustodyForSave : DtoForSaveKeyBase<int?>
 //    {
 //        [BasicField]
-//        [Required(ErrorMessage = nameof(RequiredAttribute))]
+//        [Required(ErrorMessage = Services.Utilities.Constants.Error_RequiredField0)]
 //        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
 //        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
 //        public string Name { get; set; }

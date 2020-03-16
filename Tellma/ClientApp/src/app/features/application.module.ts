@@ -21,8 +21,6 @@ import { UsersImportComponent } from './users/users-import.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
-import { IfrsNotesMasterComponent } from './ifrs-notes/ifrs-notes-master.component';
-import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.component';
 import { LegacyTypesMasterComponent } from './legacy-types/legacy-types-master.component';
 import { LegacyTypesImportComponent } from './legacy-types/legacy-types-import.component';
 import { LegacyTypesDetailsComponent } from './legacy-types/legacy-types-details.component';
@@ -411,8 +409,6 @@ const routes: Routes = [
     UsersMasterComponent,
     UsersImportComponent,
     SettingsComponent,
-    IfrsNotesMasterComponent,
-    IfrsNotesDetailsComponent,
     LegacyTypesMasterComponent,
     LegacyTypesImportComponent,
     LegacyTypesDetailsComponent,

@@ -41,7 +41,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
-    // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 20 },
     { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 10 },
     { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 30 },
     { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 40 },

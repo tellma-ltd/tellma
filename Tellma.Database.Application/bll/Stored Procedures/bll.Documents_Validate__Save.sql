@@ -76,19 +76,53 @@ SET NOCOUNT ON;
 
 	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
-	-- Missing Entry Type for given Account Type
+	-- JV: Some Accounts of some Account Types require an Entry Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_TheAccountType0RequiresAnEntryType',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType
-	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL;
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
+		N'Error_ThePurposeIsRequiredBecauseAccountTypeIs0',
+		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [AccountType]
+	FROM @Entries [E]
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[Accounts] [A] ON [E].[AccountId] = [A].[Id]
+	JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	WHERE ([E].[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId = N'ManualLine';
 
-	-- Invalid Entry Type for Account Type
+
+	-- SMART Screens: Some Entry Definitions with some Account Types require an Entry Type
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
+		N'Error_TheField0IsRequired',
+		dbo.fn_Localize([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [EntryTypeFieldName]
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
+	JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
+	WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> N'ManualLine';
+		
+		
+	-- JV: The Entry Type must be compatible with the Account Type
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT TOP (@Top)
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
+		N'Error_IncompatibleAccountType0AndEntryType1',
+		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
+		ETE.[Code]
+	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
+	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
+	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
+	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.DefinitionId = N'ManualLine';
+
+
+	-- SMART Screens: The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -102,6 +136,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
+
 
 	-- If Account AgentDefinitionId = 1, then AgentId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

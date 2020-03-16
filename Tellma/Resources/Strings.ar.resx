@@ -172,15 +172,6 @@
   <data name="Agent_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
   </data>
-  <data name="Agent_Gender" xml:space="preserve">
-    <value>الجنس</value>
-  </data>
-  <data name="Agent_Gender_Female" xml:space="preserve">
-    <value>أنثى</value>
-  </data>
-  <data name="Agent_Gender_Male" xml:space="preserve">
-    <value>ذكر</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>ذو علاقة</value>
   </data>
@@ -195,9 +186,6 @@
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم التعريف الضريبي</value>
-  </data>
-  <data name="Agent_Title" xml:space="preserve">
-    <value>اللقب</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
     <value>المستخدم</value>
@@ -611,10 +599,10 @@
     <value>القيمة</value>
   </data>
   <data name="EntryType" xml:space="preserve">
-    <value>تصنيف السطر</value>
+    <value>نوع السطر</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
-    <value>تصنيفات الأسطر</value>
+    <value>أنواع الأسطر</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
@@ -730,6 +718,9 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
   </data>
+  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
+    <value>حقل {0} مطلوب لأن نوع الحساب في التعريف هو ({1})</value>
+  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
   </data>
@@ -760,6 +751,9 @@
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
   </data>
+  <data name="Error_TheField0IsRequired" xml:space="preserve">
+    <value>حقل {0} مطلوب</value>
+  </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
   </data>
@@ -777,6 +771,9 @@
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
+  </data>
+  <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
+    <value>حقل السبب مطلوب لأن نوع الحساب هو ({0})</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>
@@ -876,30 +873,6 @@
   </data>
   <data name="IdentityServerUsers" xml:space="preserve">
     <value>مستخدمون من خادم الهويات</value>
-  </data>
-  <data name="IfrsConcepts_Documentation" xml:space="preserve">
-    <value>التوثيق</value>
-  </data>
-  <data name="IfrsConcepts_EffectiveDate" xml:space="preserve">
-    <value>تاريخ النفاذ</value>
-  </data>
-  <data name="IfrsConcepts_ExpiryDate" xml:space="preserve">
-    <value>تاريخ الانتهاء</value>
-  </data>
-  <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
-    <value>بدون فروع</value>
-  </data>
-  <data name="IfrsConcepts_Label" xml:space="preserve">
-    <value>الاسم</value>
-  </data>
-  <data name="IfrsNotes" xml:space="preserve">
-    <value>إيضاحات (IFRS)</value>
-  </data>
-  <data name="IfrsNotes_ForCredit" xml:space="preserve">
-    <value>للدائن</value>
-  </data>
-  <data name="IfrsNotes_ForDebit" xml:space="preserve">
-    <value>للمدين</value>
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>غير منشط</value>
@@ -1473,9 +1446,6 @@
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>
-  </data>
-  <data name="RequiredAttribute" xml:space="preserve">
-    <value>حقل {0} مطلوب</value>
   </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>إعادة تعيين مفتاح الـ(Authenticator)</value>

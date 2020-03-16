@@ -9,7 +9,7 @@ namespace Tellma.Entities
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
         [Display(Name = "Definition")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string DefinitionId { get; set; }

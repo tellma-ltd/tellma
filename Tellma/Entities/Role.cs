@@ -9,7 +9,7 @@ namespace Tellma.Entities
     public class RoleForSave<TPermission, TRoleMembership> : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Name { get; set; }
@@ -30,7 +30,7 @@ namespace Tellma.Entities
         public string Code { get; set; }
 
         [Display(Name = "Role_IsPublic")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         public bool? IsPublic { get; set; }
 

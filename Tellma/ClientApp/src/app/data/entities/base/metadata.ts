@@ -1,10 +1,9 @@
 import { metadata_MeasurementUnit } from '../measurement-unit';
-import { TenantWorkspace, AdminWorkspace, WorkspaceService } from '../../workspace.service';
+import { WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
 import { metadata_LegacyType } from '../legacy-type';
-import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
@@ -37,7 +36,6 @@ export const metadata: {
     Agent: metadata_Agent,
     Role: metadata_Role,
     LegacyType: metadata_LegacyType,
-    IfrsNote: metadata_IfrsNote,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
     Resource: metadata_Resource,

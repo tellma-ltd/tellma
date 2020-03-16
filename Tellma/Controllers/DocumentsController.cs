@@ -676,13 +676,13 @@ namespace Tellma.Controllers
                     if (doc.SerialNumber == null || doc.SerialNumber == 0)
                     {
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer[nameof(RequiredAttribute), _localizer["Document_SerialNumber"]]);
+                            _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Document_SerialNumber"]]);
                     }
                     else if (duplicateSerialNumbers.ContainsKey(doc))
                     {
                         var serial = duplicateSerialNumbers[doc];
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer["Error_TheSerialNumber0IsDuplicated", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
+                            _localizer["Error_DuplicateSerial0", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
                     }
                 }
 

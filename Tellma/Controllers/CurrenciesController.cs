@@ -128,7 +128,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrEmpty(entity.Id))
                 {
                     string path = $"[{index}].{nameof(entity.Id)}";
-                    string msg = _localizer[nameof(RequiredAttribute), _localizer["Code"]];
+                    string msg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Code"]];
 
                     ModelState.AddModelError(path, msg);
                 }

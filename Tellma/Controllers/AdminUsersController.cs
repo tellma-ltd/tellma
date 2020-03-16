@@ -96,7 +96,7 @@ namespace Tellma.Controllers
 
         [HttpPost("client")]
         public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> SaveUserSetting(
-            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = nameof(RequiredAttribute))] string key,
+            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)] string key,
             [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
         {
             await _repo.AdminUsers__SaveSettings(key, value);

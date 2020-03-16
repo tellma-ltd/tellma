@@ -40,7 +40,7 @@ namespace Tellma.Entities
         public string Description3 { get; set; }
 
         [Display(Name = "ReportDefinition_Type")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "Summary", "Details" },
             new string[] { "ReportDefinition_Type_Summary", "ReportDefinition_Type_Details" })]
@@ -77,7 +77,7 @@ namespace Tellma.Entities
         public bool? DefaultsToChart { get; set; }
 
         [Display(Name = "ReportDefinition_Collection")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Collection { get; set; }
@@ -187,7 +187,7 @@ namespace Tellma.Entities
     public class ReportParameterDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Key")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Key { get; set; }
@@ -246,7 +246,7 @@ namespace Tellma.Entities
     {
 
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -277,7 +277,7 @@ namespace Tellma.Entities
     public abstract class ReportDimensionDefinition : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -358,7 +358,7 @@ namespace Tellma.Entities
     public class ReportMeasureDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -386,7 +386,7 @@ namespace Tellma.Entities
         public string OrderDirection { get; set; }
 
         [Display(Name = "ReportDefinition_Aggregation")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "count", "sum", "avg", "max", "min" },
             new string[] {

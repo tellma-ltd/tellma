@@ -56,14 +56,14 @@ namespace Tellma.Controllers
                 // Some basic validation
                 if (string.IsNullOrWhiteSpace(args.Password))
                 {
-                    throw new BadRequestException(_localizer[nameof(RequiredAttribute), _localizer["Password"]]);
+                    throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Password"]]);
                 }
 
                 // Some basic validation
                 if (string.IsNullOrWhiteSpace(args.UserId))
                 {
                     // Developer mistake
-                    throw new BadRequestException(_localizer[nameof(RequiredAttribute), "UserId"]);
+                    throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, "UserId"]);
                 }
 
                 // Go ahead and reset the password as specified
