@@ -19,6 +19,19 @@ SET NOCOUNT ON;
 
 	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
 
+	-- Must not sign a document that is already posted
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		CASE
+			WHEN D.[PostingState] = 1 THEN N'Error_CannotSignPostedDocuments'
+			WHEN D.[PostingState] = -1 THEN N'Error_CannotSignCanceledDocuments'
+		END
+	FROM @Ids FE
+	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
+	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
+	WHERE D.[PostingState] <> 0; -- Posted or Canceled
+
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
 		WHERE [UserId] = @OnBehalfOfuserId
@@ -121,16 +134,6 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
-
-	-- cannot sign lines unless the document is open.
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_LineBelongsToClosedDocument'
-	FROM @Ids FE
-	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
-	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE D.[PostingState] = 1 --<> 'Posted'
 
 	-- No Null account when moving to state 4
 	IF @ToState = 4 -- reviewed

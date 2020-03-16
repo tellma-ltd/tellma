@@ -5,13 +5,14 @@ DELETE FROM @Permissions;
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Roles
-	([Index],	[Name],				[Code]) VALUES
-	(0,			N'Finance Manager',	'FM'),
-	(1,			N'General Manager', 'GM'),
-	(2,			N'Reader',			'RDR'),
-	(3,			N'Account Manager',	'AM'),
-	(4,			N'Comptroller',		'CMPT'),
-	(5,			N'Cash Custodian',	'CC')
+	([Index],	[Name],				[Code], [IsPublic]) VALUES
+	(0,			N'Finance Manager',	'FM',	0),
+	(1,			N'General Manager', 'GM',	0),
+	(2,			N'Reader',			'RDR',	0),
+	(3,			N'Account Manager',	'AM',	0),
+	(4,			N'Comptroller',		'CMPT',	0),
+	(5,			N'Cash Custodian',	'CC',	0),
+	(6,			N'Public',			'PBLC',	1)
 	;
 	INSERT INTO @Members([Index],[HeaderIndex],
 	[UserId]) VALUES
@@ -42,8 +43,23 @@ BEGIN
 	(0,5,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
 										N'documents/cash-payment-vouchers'),
 	(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
-										N'documents/cash-receipt-vouchers')
+										N'documents/cash-receipt-vouchers'),
+	(0,6,N'Read',	NULL,				N'account-types'),
+	(1,6,N'Read',	NULL,				N'agents/cash-custodians'),
+	(2,6,N'Read',	NULL,				N'agents/cost-objects'),
+	(3,6,N'Read',	NULL,				N'currencies'),
+	(4,6,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
+	(5,6,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
+	(6,6,N'Read',	NULL,				N'entry-types'),
+	(7,6,N'Read',	NULL,				N'agents/it-manufacturers'),
+	(8,6,N'Read',	NULL,				N'measurement-units'),
+	(9,6,N'Read',	NULL,				N'lookups/operating-systems'),
+	(10,6,N'Read',	NULL,				N'responsibility-centers'),
+	(11,6,N'Read',	NULL,				N'resources/services-expenses'),
+	(12,6,N'Read',	NULL,				N'agents/suppliers'),
+	(13,6,N'Read',	NULL,				N'users')
 	 ;
+
 END
 
 IF @DB = N'102' -- Banan ET, ETB, en

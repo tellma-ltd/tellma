@@ -10,9 +10,9 @@ BEGIN
 	END
 	ELSE IF @DB = N'101' -- Banan SD, USD, en
 	BEGIN
-		INSERT INTO @FunctionalCurrencies(
-		[Id],	[Name],		[Description],				[E]) VALUES
-		(N'USD', N'Dollar',	N'United States Dollar',	2);
+		INSERT INTO @FunctionalCurrencies
+		([Id],	[Name],		[Name2],[Description],			[Description2],	[E]) VALUES
+		(N'USD', N'USD',	N'دولار',N'US Dollar',N'دولار أمريكي',2);
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	BEGIN

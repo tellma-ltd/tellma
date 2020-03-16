@@ -69,10 +69,13 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_CannotEditPostedOrCanceledDocuments'
+		CASE
+			WHEN D.[PostingState] = 1 THEN N'Error_CannotEditPostedDocuments'
+			WHEN D.[PostingState] = -1 THEN N'Error_CannotEditCanceledDocuments'
+		END
 	FROM @Documents FE
-	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	WHERE BE.[PostingState] <> 0; -- Posted or Canceled
+	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
+	WHERE D.[PostingState] <> 0; -- Posted or Canceled
 
 	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
