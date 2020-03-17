@@ -9,12 +9,12 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[Code]) VALUES
-	(0,			N'Ahmad Habashi',	N'E1'),
-	(1,			N'Ahmad Abdussalam',N'E2'),
-	(101,		N'Abu Ammar',		N'E101'),
-	(102,		N'Mohamad Ali',		N'E102'),
-	(103,		N'elAmin elTayeb',	N'E103')
+	([Index],	[Name],				[Name2],			[Code]) VALUES
+	(0,			N'Ahmad Habashi',	N'أحمد حبشي',		N'E1'),
+	(1,			N'Ahmad Abdussalam',N'أحمد عبدالسلام',	N'E2'),
+	(101,		N'Abu Ammar',		N'أبو عمار',		N'E101'),
+	(102,		N'Mohamad Ali',		N'محمد علي',		N'E102'),
+	(103,		N'elAmin elTayeb',	N'الأمين الطيب',		N'E103')
 	;
 
 	INSERT INTO @AgentRates([Index], [HeaderIndex],

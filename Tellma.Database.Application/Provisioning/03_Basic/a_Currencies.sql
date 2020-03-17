@@ -15,9 +15,9 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 INSERT INTO @Currencies([Index],
-	[Id],	[Name],		[Name2],[Description],	[Description2], [E]) VALUES
-(1, N'SAR', N'Riyal',	N'ريال',	N'SA Riyal',	N'ريال سعودي',		2),
-(2, N'SDG', N'Pound',	N'جنيه',N'SD Pound',	N'جنيه سوداني',	2);
+	[Id],	[Name],	[Name2],[Description],	[Description2], [E]) VALUES
+(1, N'SAR', N'SAR',	N'ريال',	N'SA Riyal',	N'ريال سعودي',		2),
+(2, N'SDG', N'SDG',	N'جنيه',N'SD Pound',	N'جنيه سوداني',	2);
 
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 INSERT INTO @Currencies([Index],

@@ -11,13 +11,11 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 -- TODO: Add IsCostEntity to table Agents
 BEGIN
 	INSERT INTO @CostObjects
-	([Index],	[Name]) VALUES
-	(0,			N'Babylon/HCM'),
-	(1,			N'BSmart'),
-	(2,			N'Tellma'),
-	(9,			N'Overhead');
-
-
+	([Index],	[Name],			[Name2]) VALUES
+	(0,			N'Babylon/HCM', N'بابل'),
+	(1,			N'BSmart',		N'بيسمارت'),
+	(2,			N'Tellma',		N'تلما'),
+	(9,			N'Overhead',	N'غير مباشر');
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	Print N'Tellma.' + @DB;

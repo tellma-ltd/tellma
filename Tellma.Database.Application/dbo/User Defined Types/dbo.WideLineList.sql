@@ -15,7 +15,7 @@
 	[Value]						DECIMAL (19,4),
 	[Memo]						NVARCHAR (255),
 	
-	[Id0]						INT				NOT NULL DEFAULT 0,
+	[Id0]						INT,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
 	[AgentId0]					INT,
@@ -39,7 +39,7 @@
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
 
-	[Id1]						INT				NOT NULL DEFAULT 0,
+	[Id1]						INT,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
 	[AgentId1]					INT,
@@ -63,7 +63,7 @@
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
 
-	[Id2]						INT				NOT NULL DEFAULT 0,
+	[Id2]						INT,
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
 	[AgentId2]					INT,

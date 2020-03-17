@@ -25,7 +25,7 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES
 (1,1,N'CashPaymentToSupplierAndPurchaseInvoiceVAT',
-						N'Cash Purchase w/VAT',	N'شراء نقدي + قيمة مضافة',	N'Cash Purchases w/VAT',N'مشتريات نقدية + قيمة مضافة');
+						N'Cash Purchase',	N'شراء نقدي',	N'Cash Purchases',N'مشتريات نقدية');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -36,20 +36,16 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[NotedAgentId0]	= [AgentId1],
-		[CurrencyId0] = [CurrencyId1],
-		[CurrencyId2] = [CurrencyId1],
-		[MonetaryValue2] = ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
-		[ResponsibilityCenterId0] = [ResponsibilityCenterId2],
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId2]
+		[CurrencyId1] = [CurrencyId0],
+		[MonetaryValue1] = ISNULL([MonetaryValue0],0) + ISNULL([NotedAmount0],0),
+		[ResponsibilityCenterId0] = [ResponsibilityCenterId1]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[EntryTypeCode]) VALUES
 (0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL),
-(1,1,+1,	N'Accruals',				1,		N'suppliers',		NULL),
-(2,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'PaymentsToSuppliersForGoodsAndServices');
+(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -57,15 +53,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,1,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5,1),
 (1,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
 (2,1,	N'Entries',	N'ExternalReference',	0,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
-(3,1,	N'Entries',	N'AgentId',				1,	N'Supplier',			N'المورد',				3,4,1),-- may inherit
-(4,1,	N'Entries',	N'CurrencyId',			1,	N'Currency',			N'العملة',				1,2,1),
-(5,1,	N'Entries',	N'MonetaryValue',		1,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
+(3,1,	N'Entries',	N'NotedAgentId',		0,	N'Supplier',			N'المورد',				3,4,0),-- may inherit
+(4,1,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
+(5,1,	N'Entries',	N'NotedAmount',			0,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
 (6,1,	N'Entries',	N'MonetaryValue',		0,	N'VAT',					N'ق.م.',				3,4,0),
-(7,1,	N'Entries',	N'MonetaryValue',		2,	N'Total',				N'الإجمالي',				3,0,0),
-(8,1,	N'Entries',	N'AgentId',				2,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,1),
-(9,1,	N'Entries',	N'ExternalReference',	2,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
-(10,1,	N'Entries',	N'NotedDate',			2,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(11,1,	N'Entries',	N'ResponsibilityCenterId',2,N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
+(7,1,	N'Entries',	N'MonetaryValue',		1,	N'Total',				N'الإجمالي',				3,0,0),
+(8,1,	N'Entries',	N'AgentId',				1,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,0),
+(9,1,	N'Entries',	N'ExternalReference',	1,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
+(10,1,	N'Entries',	N'NotedDate',			1,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
+(11,1,	N'Entries',	N'ResponsibilityCenterId',1,N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
 --CashPaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
@@ -82,7 +78,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,2,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',			N'المبلغ',				1,2,0),
 (3,2,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',			N'المستفيد',			3,4,0),
 (4,2,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',				N'الغرض',				4,4,0),
-(5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,1),
+(5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,0),
 (6,2,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,4,0),
 (7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
 (8,2,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1)

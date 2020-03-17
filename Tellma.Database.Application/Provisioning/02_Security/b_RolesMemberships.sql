@@ -5,15 +5,15 @@ DELETE FROM @Permissions;
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Roles
-	([Index],	[Name],				[Code], [IsPublic]) VALUES
-	(0,			N'Finance Manager',	'FM',	0),
-	(1,			N'General Manager', 'GM',	0),
-	(2,			N'Reader',			'RDR',	0),
-	(3,			N'Account Manager',	'AM',	0),
-	(4,			N'Comptroller',		'CMPT',	0),
-	(5,			N'Cash Custodian',	'CC',	0),
-	(6,			N'Public',			'PBLC',	1)
-	;
+	([Index],	[Name],				[Name2],		[Code], [IsPublic]) VALUES
+	(0,			N'Finance Manager',	N'مدير مالي',	'FM',	0),
+	(1,			N'General Manager', N'مدير عام',	'GM',	0),
+	(2,			N'Reader',			N'قارئ',		'RDR',	0),
+	(3,			N'Account Manager',	N'مدير علاقة',	'AM',	0),
+	(4,			N'Comptroller',		N'مشرف حسابات','CMPT',	0),
+	(5,			N'Cash Custodian',	N'مسؤول عهدة',	'CC',	0),
+	(6,			N'Admin. Affairs',	N'الشؤون الإدارية', N'AA',0),
+	(9,			N'Public',			N'عام',			'PBLC',	1)
 	INSERT INTO @Members([Index],[HeaderIndex],
 	[UserId]) VALUES
 	(0,0,@Jiad_akra),
@@ -23,14 +23,14 @@ BEGIN
 	(0,4,@Jiad_akra),
 	(1,4,@alaeldin),
 	(0,5,@amtaam),
-	(1,5,@aasalam)
-	;
+	(1,5,@aasalam),
+	(0,6,@omer);
 
 	INSERT INTO @Permissions([Index], [HeaderIndex],
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'PostingState', N'All'))
 		[Action],	[Criteria],			[View]) VALUES
 	(0,0,N'All',	NULL,				N'all'),
-	(0,1,N'Read',	NULL,				N'all'),
+	(0,1,N'All',	NULL,				N'all'),
 	(0,2,N'Read',	NULL,				N'all'),
 	(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
 	(1,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
@@ -40,26 +40,27 @@ BEGIN
 	(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
 	(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
 	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers'),
+	(3,4,N'Read',	NULL,				N'accounts'),
 	(0,5,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
 										N'documents/cash-payment-vouchers'),
 	(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
 										N'documents/cash-receipt-vouchers'),
-	(0,6,N'Read',	NULL,				N'account-types'),
-	(1,6,N'Read',	NULL,				N'agents/cash-custodians'),
-	(2,6,N'Read',	NULL,				N'agents/cost-objects'),
-	(3,6,N'Read',	NULL,				N'currencies'),
-	(4,6,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
-	(5,6,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
-	(6,6,N'Read',	NULL,				N'entry-types'),
-	(7,6,N'Read',	NULL,				N'agents/it-manufacturers'),
-	(8,6,N'Read',	NULL,				N'measurement-units'),
-	(9,6,N'Read',	NULL,				N'lookups/operating-systems'),
-	(10,6,N'Read',	NULL,				N'responsibility-centers'),
-	(11,6,N'Read',	NULL,				N'resources/services-expenses'),
-	(12,6,N'Read',	NULL,				N'agents/suppliers'),
-	(13,6,N'Read',	NULL,				N'users')
-	 ;
+	(2,5,N'Update', NULL,				N'agents/suppliers'),
 
+	(0,9,N'Read',	NULL,				N'agents/cash-custodians'),
+	(1,9,N'Read',	NULL,				N'agents/cost-objects'),
+	(2,9,N'Read',	NULL,				N'currencies'),
+	(3,9,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
+	(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
+	(5,9,N'Read',	NULL,				N'entry-types'),
+	(6,9,N'Read',	NULL,				N'agents/it-manufacturers'),
+	(7,9,N'Read',	NULL,				N'measurement-units'),
+	(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
+	(9,9,N'Read',	NULL,				N'responsibility-centers'),
+	(10,9,N'Read',	NULL,				N'resources/services-expenses'),
+	(11,9,N'Read',	NULL,				N'roles'),
+	(12,9,N'Read',	NULL,				N'agents/suppliers'),
+	(13,9,N'Read',	NULL,				N'users');
 END
 
 IF @DB = N'102' -- Banan ET, ETB, en

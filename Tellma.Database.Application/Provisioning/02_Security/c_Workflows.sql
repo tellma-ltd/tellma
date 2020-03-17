@@ -22,7 +22,7 @@ BEGIN
 	[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 	(0, 2, N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 	(0, 3, N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-	(0, 4, N'ByAgent',	NULL,				2,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+	(0, 4, N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 	(0, 5, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
 	INSERT INTO @Workflows([Index],
