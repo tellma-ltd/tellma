@@ -417,14 +417,10 @@ SET NOCOUNT ON;
 	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
 	WHERE (E.[NotedDate] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
 
-
-
-
 	
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--                 Pending Review
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
+	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=		
 
 	-- Validate W-less lines can be moved to state 4
 	-- TODO: refactor code from here and bll.Lines_Validate__Sign
