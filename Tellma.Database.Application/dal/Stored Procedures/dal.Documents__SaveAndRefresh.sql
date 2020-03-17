@@ -293,15 +293,12 @@ BEGIN
 	WHERE x.[InsertedFileId] IS NULL
 		
 	--SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
-
-	-- Return deleted File IDs, so C# can delete them from Blob Storage
-	SELECT [Id] FROM @DeletedFileIds;
 	
 	-- Make sure Nonworkflow lines are stored with State = 4 (Finalized)
 	UPDATE dbo.Lines
 	SET [State] = 4
 	WHERE [Id] IN (SELECT [Id] FROM @LinesIndexedIds)
-	AND [DefinitionId] NOT IN (SELECT [LineDefinitionId] FROM dbo.Workflows)
+	AND [DefinitionId] NOT IN (SELECT [LineDefinitionId] FROM dbo.[Workflows] WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures]))
 
 	-- if we added/deleted draft lines, the document state should change
 	DECLARE @DocIds dbo.IdList;
@@ -319,6 +316,9 @@ BEGIN
 		@Ids = @NewDocumentsIds,
 		@AssigneeId = @UserId,
 		@Comment = N'FYC'
+
+	-- Return deleted File IDs, so C# can delete them from Blob Storage
+	SELECT [Id] FROM @DeletedFileIds;
 
 	-- Return the document Ids if requested
 	IF (@ReturnIds = 1) 

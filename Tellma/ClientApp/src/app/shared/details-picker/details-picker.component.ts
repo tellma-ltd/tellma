@@ -80,7 +80,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private _isDisabled = false;
   private _searchResults: (string | number)[] = [];
   private _highlightedIndex = 0;
-  private chosenItem: string | number = null;
+  private chosenItem: string | number;
   private _errorMessage: string;
   private _initialText: string;
   private _definitionId: string;
@@ -331,7 +331,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   writeValue(id: any): void {
 
-    id = id || null;
+    id = id || undefined; // Standardize empty value
 
     // Restart input stream
     this.cancelRunningCall$.next(null);

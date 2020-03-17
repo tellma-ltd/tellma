@@ -343,7 +343,6 @@ export class ApiService {
           paramsArray.push(`comment=${encodeURIComponent(args.comment)}`);
         }
 
-
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/assign?${params}`;
 

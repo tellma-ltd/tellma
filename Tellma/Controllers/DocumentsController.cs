@@ -16,7 +16,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
-using System.ComponentModel.DataAnnotations;
 
 namespace Tellma.Controllers
 {

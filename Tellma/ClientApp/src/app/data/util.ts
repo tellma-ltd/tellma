@@ -294,3 +294,29 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
 
   return Object.keys(resultPaths).join(',');
 }
+
+/**
+ * Returns the date part of the argument as per the local time formatted as ISO 8601, for example: '2020-03-17'
+ */
+export function toLocalDateISOString(date: Date): string {
+
+        // Year
+        let year = date.getFullYear().toString();
+        if (year.length < 4) {
+            year = '000'.substring(0, 4 - year.length) + year;
+        }
+
+        // Month
+        let month = (date.getMonth() + 1).toString();
+        if (month.length < 2) {
+            month = '0' + month;
+        }
+
+        // Day
+        let day = date.getDate().toString();
+        if (day.length < 2) {
+            day = '0' + day;
+        }
+
+        return `${year}-${month}-${day}`;
+}

@@ -12,7 +12,7 @@ import {
 import { LineForSave, Line, LineState } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
-import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, FriendlyError } from '~/app/data/util';
+import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, toLocalDateISOString } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError, Observable } from 'rxjs';
@@ -243,7 +243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   create = () => {
     const result: DocumentForSave = {
-      DocumentDate: new Date().toISOString().split('T')[0],
+      DocumentDate: toLocalDateISOString(new Date()),
       Clearance: 0,
       Lines: [],
       Attachments: []
@@ -439,7 +439,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const result: { [date: string]: DocumentEvent[] } = {};
       for (const entry of sortedHistory) {
-        const date = entry.time.split('T')[0];
+        const date = toLocalDateISOString(new Date(entry.time));
         if (!result[date]) {
           result[date] = [];
         }
