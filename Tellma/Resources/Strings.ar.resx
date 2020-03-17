@@ -467,7 +467,7 @@
     <value>معتمد</value>
   </data>
   <data name="Document_State_3" xml:space="preserve">
-    <value>مكتمل</value>
+    <value>منفذ</value>
   </data>
   <data name="Document_State_4" xml:space="preserve">
     <value>جاهز</value>
@@ -673,6 +673,9 @@
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>المفاتيح الأجنبية مثل ({0}) لا يمكن استخدامها في مسارات select</value>
   </data>
+  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
+    <value>نوع الحساب ({0}) والسبب ({1}) غير متناسبان</value>
+  </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>مفتاح اللغة ({0}) غير معروف</value>
   </data>
@@ -718,9 +721,6 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
   </data>
-  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
-    <value>حقل {0} مطلوب لأن نوع الحساب في التعريف هو ({1})</value>
-  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
   </data>
@@ -757,6 +757,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
   </data>
+  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
+    <value>قيمة {0} ({1}) غير مناسبة هنا</value>
+  </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>المفاتيح التالية يحتكرها النظام: {0}</value>
   </data>
@@ -774,6 +777,9 @@
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
     <value>حقل السبب مطلوب لأن نوع الحساب هو ({0})</value>
+  </data>
+  <data name="Error_TheResourceIsRequired" xml:space="preserve">
+    <value>حقل المورد مطلوب</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>

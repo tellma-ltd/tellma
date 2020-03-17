@@ -673,6 +673,9 @@
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>የውጭ ቁልፎች «{0}» ወደ ይምረጡ ክርክር ውስጥ ሊገለጹ አይችሉም እፈልጋለሁ.</value>
   </data>
+  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
+    <value>ተኳሃኝ የመለያ አይነት «{0}» እና ዓላማ «{1}»</value>
+  </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>ልክ ያልሆነ ቋንቋ መታወቂያ «{0}».</value>
   </data>
@@ -718,9 +721,6 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>በ {0} «{1} 'አንድ ወይም ተጨማሪ መለያዎች ውስጥ ጥቅም ላይ ውሏል</value>
   </data>
-  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
-    <value>በ ፍቺ መለያ አይነት ነው ምክንያቱም {0} ያስፈልጋል «{1}»</value>
-  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>የመለያ ምደባ «{0}» መለያ ላይ ውሏል «{1}»</value>
   </data>
@@ -757,6 +757,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value># AB12E5: ወደ መስክ {0} እንደ ትክክለኛ ኤችቲኤምኤል የአስራስድስትዮሽ ቀለም, መሆን አለበት.</value>
   </data>
+  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
+    <value>{0} እሴት «{1} 'እዚህ ተኳሃኝ ነው</value>
+  </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>የሚከተሉት መታወቂያዎች ስርዓቱ የተጠበቁ ናቸው: {0}</value>
   </data>
@@ -773,7 +776,10 @@
     <value>የይለፍ ቃል እና ማረጋገጫው የይለፍ ቃል አይዛመዱም.</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>የመለያ አይነት ነው ምክንያቱም ዓላማ ያስፈልጋል «{0}»</value>
+    <value>የመለያ አይነት ነው ምክንያቱም ዓላማ መስክ ያስፈልጋል «{0}»</value>
+  </data>
+  <data name="Error_TheResourceIsRequired" xml:space="preserve">
+    <value>የ መገልገያ መስክ ያስፈልጋል</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>ሚና «{0} 'ንቁ አይደለም.</value>

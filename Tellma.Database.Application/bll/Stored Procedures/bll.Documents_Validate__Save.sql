@@ -79,7 +79,7 @@ SET NOCOUNT ON;
 
 	-- TODO: For the cases below, add the condition that Entry Type is enforced
 
-	-- JV: Some Accounts of some Account Types require an Entry Type
+	-- MANUAL Lines: Some Accounts of some Account Types require an Entry Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -92,8 +92,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	WHERE ([E].[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId = N'ManualLine';
 
-
-	-- SMART Screens: Some Entry Definitions with some Account Types require an Entry Type
+	-- SMART Lines: Some Entry Definitions with some Account Types require an Entry Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -107,61 +106,90 @@ SET NOCOUNT ON;
 	JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
 	WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> N'ManualLine';
 		
-		
-	-- JV: The Entry Type must be compatible with the Account Type
+	-- MANUAL Lines: The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_IncompatibleAccountType0AndEntryType1',
 		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
-		ETE.[Code]
+		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
 	FROM @Entries E
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
-	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.DefinitionId = N'ManualLine';
+	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] = N'ManualLine';
 
-
-	-- SMART Screens: The Entry Type must be compatible with the Account Type
+	-- SMART Lines: The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_IncompatibleAccountType0AndEntryType1',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
-		ETE.[Code]
+		N'Error_TheField0Value1IsIncompatible',
+		dbo.fn_Localize([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [EntryTypeFieldName],
+		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
 	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
+	JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
-	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
+	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] <> N'ManualLine';
 
-
-	-- If Account AgentDefinitionId = 1, then AgentId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	-- MANUAL Lines: If Account AgentDefinitionId IS NOT NULL, then AgentId is required
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AgentId',
-		N'Error_TheAgentIsNotSpecified'
+		N'Error_TheField0IsRequired',
+		[dbo].[fn_Localize]([AD].[TitleSingular], [AD].[TitleSingular2], [AD].[TitleSingular3]) AS [FieldName]
 	FROM @Entries E
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[AgentId] IS NULL)
-	AND (A.[AgentDefinitionId] IS NOT NULL);
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[Accounts] A On E.AccountId = A.Id
+	JOIN [dbo].[AgentDefinitions] AD ON A.AgentDefinitionId = AD.Id -- Means there is A.AgentDefinitionId IS NOT NULL
+	WHERE (E.[AgentId] IS NULL) AND (L.[DefinitionId] = N'ManualLine');
 
-	-- If Account HasResource = 1, then ResourceId is required
+	-- SMART Lines: The AgentId is required if Line State >= RequiredState of line def column
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AgentId',
+		N'Error_TheField0IsRequired',
+		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
+	FROM @Entries E	
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'AgentId'
+	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
+	WHERE (E.[AgentId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
+
+	-- MANUAL Lines: If Account HasResource = 1, then ResourceId is required
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
-		N'Error_TheResourceIsNotSpecified'
+		N'Error_TheResourceIsRequired'
 	FROM @Entries E
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	WHERE (E.[ResourceId] IS NULL)
-	AND (A.[HasResource] = 1);
+	AND (A.[HasResource] = 1) AND L.[DefinitionId] <> N'ManualLine';
+	
+	-- SMART Lines: The ResourceId is required if Line State >= RequiredState of line def column
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
+		N'Error_TheField0IsRequired',
+		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
+	FROM @Entries E	
+	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResourceId'
+	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
+	WHERE (E.[ResourceId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
+
 
 	-- Validate W-less lines can be moved to state 4
 	-- TODO: refactor code from here and bll.Lines_Validate__Sign
@@ -181,6 +209,7 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
 	WHERE L.DefinitionId NOT IN (SELECT LineDefinitionId FROM dbo.Workflows)
 	AND E.AccountId IS NULL
+
 	-- TODO: refactor code from here and bll.Lines_Validate__Sign
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)

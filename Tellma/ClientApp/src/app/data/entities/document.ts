@@ -165,7 +165,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                         }
                     }
                 },
-                PostingStateAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+                PostingStateAt: { control: 'datetime', label: () => trx.instant('Document_PostingStateAt') },
 
                 AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },

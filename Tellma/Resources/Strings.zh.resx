@@ -673,6 +673,9 @@
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>外键像“{0}”不能在选择参数中指定。</value>
   </data>
+  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
+    <value>不兼容的帐户类型 '{0}' 和目的 '{1}'</value>
+  </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>无效的语言ID '{0}'。</value>
   </data>
@@ -718,9 +721,6 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>{0}'{1}'用于一个或多个帐户</value>
   </data>
-  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
-    <value>{0}是必需的，因为定义的账户类型是“{1}”</value>
-  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>帐户“ {1}”中使用了帐户分类“ {0}”</value>
   </data>
@@ -757,6 +757,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>字段{0}必须是有效的HTML十六进制颜色，如：＃AB12E5。</value>
   </data>
+  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
+    <value>{0}值 '{1}' 是不相容这里</value>
+  </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>系统保留了以下密钥:{0}</value>
   </data>
@@ -773,7 +776,10 @@
     <value>密码和确认密码不匹配。</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>目的是必需的，因为该帐户类型是“{0}”</value>
+    <value>目的字段是必需的，因为该帐户类型是“{0}”</value>
+  </data>
+  <data name="Error_TheResourceIsRequired" xml:space="preserve">
+    <value>资源字段是必需的</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>角色“{0}”无效。</value>

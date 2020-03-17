@@ -1611,13 +1611,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
+    // return false;
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return line.State >= colDef.ReadOnlyState;
+    return (line.State || 0) >= colDef.ReadOnlyState;
   }
 
   public isRequired(lineDefId: string, columnIndex: number, line: Line) {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return line.State >= colDef.RequiredState;
+    return (line.State || 0) >= colDef.RequiredState;
   }
 
   public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {

@@ -673,6 +673,9 @@
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>Foreign keys like '{0}' cannot be specified in the select argument.</value>
   </data>
+  <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
+    <value>Incompatible Account Type '{0}' and Purpose '{1}'</value>
+  </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>Invalid Language Id '{0}'.</value>
   </data>
@@ -718,9 +721,6 @@
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>The {0} '{1}' is used in one or more accounts</value>
   </data>
-  <data name="Error_The0IsRequiredBecauseAccountTypeIs1" xml:space="preserve">
-    <value>{0} is required because the defined account type is '{1}'</value>
-  </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>The account classification '{0}' is used in account '{1}'</value>
   </data>
@@ -757,6 +757,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5.</value>
   </data>
+  <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
+    <value>{0} value '{1}' is incompatible here</value>
+  </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
     <value>The following IDs are reserved by the system: {0}</value>
   </data>
@@ -773,7 +776,10 @@
     <value>The password and confirmation password do not match.</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>Purpose is required because the account type is '{0}'</value>
+    <value>The Purpose field is required because the account type is '{0}'</value>
+  </data>
+  <data name="Error_TheResourceIsRequired" xml:space="preserve">
+    <value>The Resource field is required</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>The role '{0}' is not active.</value>

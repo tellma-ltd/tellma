@@ -632,17 +632,21 @@ namespace Tellma.Controllers
                 {
                     line.Entries.ForEach(entry =>
                     {
+                        // If currency is functional, make sure that Value = MonetaryValue
                         if (entry.CurrencyId == settings.FunctionalCurrencyId)
                         {
-                            if (line.DefinitionId != ManualLine)
+                            if (line.DefinitionId == ManualLine)
                             {
-                                entry.Value = entry.MonetaryValue;
+                                // Manual lines, the value is always entered by the user
+                                entry.MonetaryValue = entry.Value;
                             }
                             else
                             {
-                                entry.MonetaryValue = entry.Value;
+                                // Smart lines, the monetary value is always entered by the user
+                                entry.Value = entry.MonetaryValue;
                             }
                         }
+
                         // Other logic
                     });
                 });

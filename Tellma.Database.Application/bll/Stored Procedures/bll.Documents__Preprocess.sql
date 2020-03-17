@@ -226,6 +226,7 @@ END
 	--=-=-=-=-=-=- [C# Preprocessing after SQL]
 	/* 
 	
-	 [✓] If CurrencyId == functional and MonetaryValue IS NOT NULL, set Value = MonetaryValue
+	 [✓] For Smart Lines: If CurrencyId == functional set Value = MonetaryValue
+	 [✓] For Manual Lines: If CurrencyId == functional set MonetaryValue = Value
 
 	*/
