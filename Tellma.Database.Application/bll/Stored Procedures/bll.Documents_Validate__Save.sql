@@ -188,6 +188,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResourceId'
 	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
 	WHERE (E.[ResourceId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
+
+	-- TODO: Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
 	
 	-- The ResponsibilityCenterId is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
