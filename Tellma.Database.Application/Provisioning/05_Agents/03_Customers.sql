@@ -11,13 +11,13 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Customers
-	([Index],	[Name]) VALUES
-	(0,			N'International African University'),
-	(1,			N'Mico poultry'),
-	(2,			N'Sabco'),
-	(3,			N'al-Washm'),
-	(4,			N'TAGI restaurants'),
-	(5,			N'It3aam')
+	([Index],	[Name],	[Name2]) VALUES
+	(0,			N'International African University', N'جامعة أفريقيا العالمية'),
+	(1,			N'Mico poultry', N'ميكو'),
+	(2,			N'Sabco', N'سابكو'),
+	(3,			N'al-Washm', N'شركة الوشم'),
+	(4,			N'TAGI restaurants', N'مطاعم تاجي'),
+	(5,			N'It3aam', N'شركة إطعام')
 	;
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'customers',

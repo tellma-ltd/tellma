@@ -8,10 +8,10 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(2,		N'Warren Buffet');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Partners
-	([Index], [Name]) VALUES
-	(0,		N'Mohamad Akra'),
-	(1,		N'elAmin alTayeb'),
-	(2,		N'Abdullah Ulber');
+	([Index], [Name], [Name2]) VALUES
+	(0,		N'Mohamad Akra', N'محمد عكره'),
+	(1,		N'elAmin alTayeb', N'الأمين الطيب'),
+	(2,		N'Abdullah Ulber', N'عبد الله ألبر');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Partners
 	([Index], [Name]) VALUES

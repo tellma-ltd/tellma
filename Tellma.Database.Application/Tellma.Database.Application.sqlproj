@@ -585,7 +585,7 @@
     <Build Include="dal\Stored Procedures\dal.Documents_PostingState__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_services-expenses.sql" />
-    <None Include="101.AzureBananSD.publish.xml" />
+    <None Include="101.AzureBananSDTraining.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

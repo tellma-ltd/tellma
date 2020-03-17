@@ -6,7 +6,7 @@ BEGIN
 END
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	PRINT N'Tellma.' + @DB;
+	SET @ShortCompanyName2 = N'بنان السودان';
 END
 IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

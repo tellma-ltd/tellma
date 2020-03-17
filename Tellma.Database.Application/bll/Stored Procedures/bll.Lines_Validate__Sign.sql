@@ -32,6 +32,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
 	WHERE D.[PostingState] <> 0; -- Posted or Canceled
 
+	IF @RuleType = N'ByRole'
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
 		WHERE [UserId] = @OnBehalfOfuserId
@@ -153,6 +154,7 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Agents AG ON E.AgentId = AG.Id
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
 	WHERE E.AccountId IS NULL
+	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
 
 	-- No deprecated account, for any positive state
 	IF @ToState > 0
