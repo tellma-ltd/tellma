@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [api].[ResponsibilityCenters__Save]
-	@Entities [ResponsibilityCenterList] READONLY,
+﻿CREATE PROCEDURE [api].[Centers__Save]
+	@Entities [CenterList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[ResponsibilityCenters_Validate__Save]
+	EXEC [bll].[Centers_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[ResponsibilityCenters__Save]
+	EXEC [dal].[Centers__Save]
 		@Entities = @Entities;
 END;

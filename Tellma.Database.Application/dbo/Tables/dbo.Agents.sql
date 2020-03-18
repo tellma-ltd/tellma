@@ -53,7 +53,7 @@
 	--[OwnershipType]				NVARCHAR (255), -- Investment/Shareholder/SisterCompany/Other(Default) -- We Own shares in them, they own share in us, ...
 	--[OwnershipPercent]			DECIMAL	DEFAULT 0, -- If investment, how much the entity owns in this agent. If shareholder, how much he owns in the entity
 	--==-=-=-==-=- Property of relations
-	--[OperatingSegmentId]		INT					CONSTRAINT [FK_Agents__OperatingSegmentId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
+	--[OperatingSegmentId]		INT					CONSTRAINT [FK_Agents__OperatingSegmentId] REFERENCES dbo.[Centers]([Id]),
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
 --	customers
 	--[CustomerRating]			INT,			-- user defined list

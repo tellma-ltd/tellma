@@ -1,14 +1,14 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Accounts([Index],[IsCurrent],[HasResource],--[Code],
-					[AccountTypeId],			[Name],						[CurrencyId],	[ResponsibilityCenterId], [EntryTypeId], [AgentDefinitionId],	[AgentId]) VALUES
+					[AccountTypeId],			[Name],						[CurrencyId],[CenterId], [EntryTypeId], [AgentDefinitionId],	[AgentId]) VALUES
 	-- Assets Accounts
-	(0,1,0,		@PropertyPlantAndEquipment,	N'Property, plant and equipment',@USD,		@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(0,1,0,		@PropertyPlantAndEquipment,	N'Property, plant and equipment',@USD,		@RC_Inv,	NULL,			N'cost-objects',	NULL),
 
-	(1,1,0,		@CashOnHand,				N'GM Fund',					NULL,			@RC_Inv,					NULL,			N'cash-custodians',	@GMSafe),
-	(2,1,0,		@CashOnHand,				N'Admin Fund',				NULL,			@RC_Inv,					NULL,			N'cash-custodians',	@AdminSafe),
-	(3,1,0,		@CashOnHand,				N'KSA Fund',				NULL,			@RC_Inv,					NULL,			N'cash-custodians',	@KSASafe),
-	(4,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,					NULL,			N'cash-custodians',	@KRTBank),
+	(1,1,0,		@CashOnHand,				N'GM Fund',					NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@GMSafe),
+	(2,1,0,		@CashOnHand,				N'Admin Fund',				NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@AdminSafe),
+	(3,1,0,		@CashOnHand,				N'KSA Fund',				NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@KSASafe),
+	(4,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,	NULL,			N'cash-custodians',	@KRTBank),
 
 	(5,1,0,		@TradeReceivables,			N'Trade Receivables',		NULL,			@RC_Inv,					NULL,			N'customers',	NULL),
 	--(4,1,0,		@TradeReceivables,			N'Tier-3 A/R - SDG',		@SDG,			@RC_Inv,					NULL,			N'customers',	NULL),

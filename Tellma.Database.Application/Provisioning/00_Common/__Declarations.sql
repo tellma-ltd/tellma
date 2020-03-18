@@ -3,7 +3,7 @@
 			@DebugEntryClassifications bit = 0, @DebugAccountTypes bit = 0,
 			@DebugLookupDefinitions bit = 0, @DebugAgentDefinitions bit = 0;
 	DECLARE @DebugCurrencies bit = 0, @DebugUnits bit = 0, @DebugLookups bit = 0;
-	DECLARE @DebugResponsibilityCenters bit = 0;
+	DECLARE @DebugCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0,
 			@DebugBanks bit = 0, @DebugCustodies bit = 0, @DebugTaxAgencies bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugLegacyClassifications bit = 0, @DebugAccounts bit = 0;

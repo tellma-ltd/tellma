@@ -56,7 +56,7 @@ BEGIN
 	(6,9,N'Read',	NULL,				N'lookups/it-equipment-manufacturers'),
 	(7,9,N'Read',	NULL,				N'units'),
 	(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
-	(9,9,N'Read',	NULL,				N'responsibility-centers'),
+	(9,9,N'Read',	NULL,				N'centers'),
 	(10,9,N'Read',	NULL,				N'resources/services-expenses'),
 	(11,9,N'Read',	NULL,				N'roles'),
 	(12,9,N'Read',	NULL,				N'agents/suppliers'),

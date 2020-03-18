@@ -19,8 +19,8 @@ BEGIN -- Inserting
 --(6,7,	N'Entries', N'Time2',				0,	N'Till',		N'حتى',			1,4,1),
 --(7,7,	N'Entries', N'CurrencyId',			0,	N'Currency',	N'العملة',		1,4,0),
 --(8,7,	N'Entries', N'MonetaryValue',		0,	N'Amount',		N'المطالبة',	1,4,0),
---(9,7,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
---(10,7,	N'Entries',	N'ResponsibilityCenterId',1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
+--(9,7,	N'Entries',	N'CenterId',0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+--(10,7,	N'Entries',	N'CenterId',1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
 	INSERT INTO @WL
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 12, @DefinitionId = N'LeaseOutIssueAndSalesInvoiceNoVAT';
 	UPDATE @WL

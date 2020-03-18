@@ -59,7 +59,7 @@ BEGIN
 	)
 	GROUP BY [AT].[Code]
 	
-	-- TODO: Calculate ProfitLossFromDiscontinuedOperations by considering responsibility centers who are discontinued during period
+	-- TODO: Calculate ProfitLossFromDiscontinuedOperations by considering centers who are discontinued during period
 /*
 	INSERT INTO #IfrsDisclosureDetails (
 			[Concept],

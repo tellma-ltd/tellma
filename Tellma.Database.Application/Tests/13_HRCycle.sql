@@ -7,7 +7,7 @@ INSERT INTO @LM2 ([Index], [DocumentIndex],
 	(11,4, N'ManualLine',	1),
 	(12,4, N'ManualLine',	2);
 INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
-				[AccountId],		[IfrsEntryClassificationId],	[Value],[ResourceId], [Time], [ResponsibilityCenterId], [AgentId]) VALUES
+				[AccountId],		[IfrsEntryClassificationId],	[Value],[ResourceId], [Time], [CenterId], [AgentId]) VALUES
 	(12,11,4,1,+1,@SalariesAdmin,			N'WagesAndSalaries',	7000,	NULL,			 0,		@SalesOpsAG,			NULL),
 	(13,11,4,2,-1,@SalariesAccrualsTaxable,	NULL,					1500,	@Transportation, 0,		NULL,					@Mestawet),
 	(14,11,4,3,-1,@SalariesAccrualsTaxable,	NULL,					5000,	@Basic,			0,		NULL,					@Mestawet),

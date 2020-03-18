@@ -1,7 +1,7 @@
 ﻿	CREATE FUNCTION [map].[SummaryEntries] (
 	@fromDate Date = '01.01.2018',
 	@toDate Date = '01.01.2019',
-	@ResponsibilityCenterId INT = NULL,
+	@CenterId INT = NULL,
 	@AgentDefinitionId NVARCHAR(50) = NULL,
 	@AccountTypeCode NVARCHAR (255) = NULL
 )
@@ -16,7 +16,7 @@ RETURN
 	ReportAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE
-			(@ResponsibilityCenterId IS NULL OR [ResponsibilityCenterId] = @ResponsibilityCenterId)
+			(@CenterId IS NULL OR [CenterId] = @CenterId)
 		AND (@AgentDefinitionId IS NULL OR [AgentDefinitionId]= @AgentDefinitionId)
 		AND (@AccountTypeCode IS NULL OR [AccountTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
 	),

@@ -44,7 +44,7 @@ BEGIN
 		PE.[AccountId] = (
 			SELECT [Id] FROM dbo.Accounts
 			WHERE AccountTypeId = R.AccountTypeId
-			AND ([ResponsibilityCenterId] IS NULL OR [ResponsibilityCenterId] = PE.ResponsibilityCenterId)
+			AND ([CenterId] IS NULL OR [CenterId] = PE.CenterId)
 			AND ([AgentId] IS NULL OR [AgentId] = PE.[AgentId])
 			AND ([ResourceId] IS NULL OR [ResourceId] = PE.[ResourceId])
 			AND ([CurrencyId] IS NULL OR [CurrencyId] = PE.CurrencyId)

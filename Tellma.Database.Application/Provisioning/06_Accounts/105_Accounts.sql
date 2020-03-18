@@ -1,7 +1,7 @@
 ﻿IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @Accounts([Index],[IsCurrent],[HasResource],
-				[AccountTypeId],			[LegacyTypeId],			[LegacyClassificationId],		[Name],				[Name2],				[Code], [CurrencyId], [ResponsibilityCenterId], [EntryTypeId], [AgentDefinitionId], [AgentId],	[ResourceId]) VALUES
+				[AccountTypeId],			[LegacyTypeId],			[LegacyClassificationId],		[Name],				[Name2],				[Code], [CurrencyId], [CenterId], [EntryTypeId], [AgentDefinitionId], [AgentId],	[ResourceId]) VALUES
 	(0,1,0,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'RJB - USD',			N'الراجحي - دولار',		N'1101', N'USD',		@RC5_Exec,				NULL,			N'banks',			@Bank_RJB,	NULL),
 	(1,1,0,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'RJB - SAR',			N'الراجحي - ريال',			N'1102', N'SAR',		@RC5_Exec,				NULL,			N'banks',			@Bank_RJB,	NULL),
 	(2,1,0,@CashAndCashEquivalents,		N'Cash',					@BankAndCash_AC,		N'RJB - LC',			N'الراجحي - اعتماد',	N'1201', N'USD',		@RC5_Exec,				NULL,			N'banks',			@Bank_RJB,	NULL), -- reserved DECIMAL (19,4) to pay for LC when needed

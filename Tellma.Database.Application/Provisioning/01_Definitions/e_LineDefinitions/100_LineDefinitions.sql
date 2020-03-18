@@ -45,8 +45,8 @@ BEGIN
 		-----
 		UPDATE @ProcessedWideLines
 		SET
-			[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
-			[ResponsibilityCenterId2] = [ResponsibilityCenterId0],
+			[CenterId1] = [CenterId0],
+			[CenterId2] = [CenterId0],
 			[AgentId2]	= [AgentId1],
 			[CurrencyId1] = [CurrencyId0],
 			[CurrencyId2] = [CurrencyId0],
@@ -71,8 +71,8 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
-		[ResponsibilityCenterId2] = [ResponsibilityCenterId0],
+		[CenterId1] = [CenterId0],
+		[CenterId2] = [CenterId0],
 		[AgentId2]	= [AgentId1],
 		[CurrencyId1] = [CurrencyId0],
 		[CurrencyId2] = [CurrencyId0],
@@ -100,7 +100,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,1,6,		N'Entries',	N'MonetaryValue',		0,	N'VAT',					N'القيمة المضافة',		1,4),
 (7,1,7,		N'Entries',	N'MonetaryValue',		2,	N'Total',				N'المبلغ بعد الضريبة',	1,1),
 (8,1,8,		N'Entries',	N'DueDate',				2,	N'Due Date',			N'تاريخ الاستحقاق',		1,4),
-(9,1,9,		N'Entries',	N'ResponsibilityCenterId',0,N'Responsibility Center',N'مركز المسؤولية',	0,4);
+(9,1,9,		N'Entries',	N'CenterId',			0,	N'Inv. Center',			N'مركز الاستثمار',	0,4);
 
 	-- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 	-- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
@@ -141,7 +141,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(7,2,7,		N'Entries',	N'AccountIdentifier',	0,	N'Account Identifier',		N'تمييز الحساب',		3,4),
 	(8,2,8,		N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',		N'رقم الشيك/الإيصال',	3,4),
 	(9,2,9,		N'Entries',	N'NotedDate',			0,	N'Check Date',				N'تاريخ الشيك',			3,4),
-	(10,2,10,	N'Entries',	N'ResponsibilityCenterId',0,N'Responsibility Center',	N'مركز المسؤولية',		1,4);
+	(10,2,10,	N'Entries',	N'CenterId',			0,	N'Inv. Center',				N'مركز المسؤولية',		1,4);
 
 	INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 	[StateId], [Name],					[Name2]) VALUES
@@ -188,12 +188,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(7,3,7,		N'Entries', N'AgentId',				0,	N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
 	(8,3,8,		N'Entries', N'AccountIdentifier',	0,	N'Account Identifier',		N'تمييزالعهدة',	3,4),
 	(9,3,9,		N'Entries', N'ExternalReference',	0,	N'Receipt #',				N'رقم الإيصال',		3,4),
-	(10,3,10,	N'Entries', N'ResponsibilityCenterId',0,N'Responsibility Center',	N'مركز المسؤولية',	4,4);  
+	(10,3,10,	N'Entries', N'CenterId',			0,	N'Inv. Center',				N'مركز الاستثمار',	4,4);  
 
 	-- Withholding Tax Payable
 	INSERT @LineDefinitions([Index],
-	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionId], [ResponsibilityTypeList]) VALUES (
-	4,N'WithholdingTaxPayable',	N'Withholding Tax Payable',	N'ضريبة خصم مشتريات',	N'Withholding Taxes Payable',	N'ضرائب خصم مشتريات',	N'suppliers',			N'Investment');
+	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionId]) VALUES (
+	4,N'WithholdingTaxPayable',	N'Withholding Tax Payable',	N'ضريبة خصم مشتريات',	N'Withholding Taxes Payable',	N'ضرائب خصم مشتريات',	N'suppliers');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
 		SET NOCOUNT ON
@@ -206,7 +206,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue0]			= 0.02 * [NotedAmount0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]					= [CenterId0],
 			[ExternalReference1]		= [ExternalReference0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
@@ -226,7 +226,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(4,4,4,		N'Entry[0].NotedAmount',			N'TaxableAmount',			N'المبلغ الخاضع للخصم',1,2),
 	(5,4,5,		N'Entry[0].MonetaryValue',			N'Withtholding Tax',		N'الخصم الضريبي',		0,4),
 	(6,4,6,		N'Entry[0].ExternalReference',		N'Voucher #',				N'رقم الإيصال',			3,4),
-	(7,4,7,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',		4,4);
+	(7,4,7,		N'CenterId',	N'Responsibility Center',	N'مركز المسؤولية',		4,4);
 
 	-- Goods Receipts Note
 	INSERT @LineDefinitions([Index],
@@ -244,7 +244,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue1]			= [MonetaryValue0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]	= [CenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'
@@ -264,12 +264,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(5,6,5,		N'Entries', N'UnitId',				0,	N'Unit',				N'الوحدة',				1,4),
 	(6,6,6,		N'Entries', N'CurrencyId',			0,	N'Currency',			N'العملة',				4,4),
 	(7,6,7,		N'Entries', N'MonetaryValue',		0,	N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
-	(8,6,8,		N'Entries', N'ResponsibilityCenterId',0,N'Responsibility Center',N'مركز المسؤولية',	0,4);
+	(8,6,8,		N'Entries', N'CenterId',0,N'Inv. Center',N'مركز المسؤولية',	0,4);
 
 	-- GRIV
 	INSERT @LineDefinitions([Index],
-	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionId], [ResponsibilityTypeList]) VALUES (
-	6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers',			N'Investment');
+	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionId]) VALUES (
+	6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
 		SET NOCOUNT ON
@@ -282,7 +282,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue1]			= [MonetaryValue0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]	= [CenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'

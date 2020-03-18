@@ -397,4 +397,116 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Units__AsQuery]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1ca45821-8c9a-4e0d-9ed8-4c3ceeb92ce0" ChangeDateTime="03/18/2020 04:55:19">
+    <Property Name="ElementName" Value="[dbo].[ResponsibilityCenters]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5a35a2c6-e770-45fd-be8c-0e106a1888f1" ChangeDateTime="03/18/2020 05:15:29">
+    <Property Name="ElementName" Value="[dbo].[Centers].[ResponsibilityType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Centers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CenterType]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ba6c693-f7e9-42f6-9bea-79a59f8817db" ChangeDateTime="03/18/2020 05:17:27">
+    <Property Name="ElementName" Value="[dbo].[ResponsibilityCenterList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CenterList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf941989-05d3-4d20-bd9d-3253ab841c7b" ChangeDateTime="03/18/2020 05:59:55">
+    <Property Name="ElementName" Value="[api].[ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="67b9ecfa-339a-46b3-982b-7ce71349c658" ChangeDateTime="03/18/2020 06:03:37">
+    <Property Name="ElementName" Value="[bll].[ResponsibilityCenters_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7e6ea502-707e-46ba-9d39-cb8efb6ecfd7" ChangeDateTime="03/18/2020 06:04:07">
+    <Property Name="ElementName" Value="[bll].[ResponsibilityCenters_Validate__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers_Validate__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="01342354-b696-4627-829f-e88c2276ff22" ChangeDateTime="03/18/2020 06:10:11">
+    <Property Name="ElementName" Value="[bll].[ResponsibilityCenters_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="47dda3b0-34f0-413c-8e0f-f3291e5fb3d9" ChangeDateTime="03/18/2020 06:11:02">
+    <Property Name="ElementName" Value="[dal].[ResponsibilityCenters__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ea7aaf7e-e4c2-474f-bbaa-ab0e069bb19c" ChangeDateTime="03/18/2020 06:11:25">
+    <Property Name="ElementName" Value="[dal].[ResponsibilityCenters__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="718589eb-e08c-434c-b5a9-e60d84ab95f9" ChangeDateTime="03/18/2020 06:11:54">
+    <Property Name="ElementName" Value="[dal].[ResponsibilityCenters__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6333beeb-141a-4df2-987c-7eddaca83eb0" ChangeDateTime="03/18/2020 06:12:30">
+    <Property Name="ElementName" Value="[map].[ResponsibilityCenters]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="72deda0d-a485-4ff8-9353-033ff07112a8" ChangeDateTime="03/18/2020 06:12:53">
+    <Property Name="ElementName" Value="[map].[ResponsibilityCenters__AsQuery]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__AsQuery]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5b9a8df9-d409-4223-8a8e-081aaf2eccfc" ChangeDateTime="03/18/2020 06:13:34">
+    <Property Name="ElementName" Value="[dal].[ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Centers__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6e552c45-14cc-4aa5-8fce-4c962dba563d" ChangeDateTime="03/18/2020 06:14:59">
+    <Property Name="ElementName" Value="[dbo].[Entries].[ResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5427e65c-e995-4be7-a003-044e3416f7f9" ChangeDateTime="03/18/2020 06:25:31">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[ResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5f9a8d3e-1ae9-47d3-b548-da990c504513" ChangeDateTime="03/18/2020 06:31:33">
+    <Property Name="ElementName" Value="[dbo].[fe_ResponsibilityCenter__FirstSibling]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fe_Center__FirstSibling]" />
+  </Operation>
 </Operations>

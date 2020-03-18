@@ -9,7 +9,7 @@
 	[CurrencyId]				NCHAR (3)		,
 	[AgentId]					INT,
 	[ResourceId]				INT,
-	[ResponsibilityCenterId]	INT,
+	[CenterId]					INT,
 	--[AccountIdentifier]			NVARCHAR (10),
 	--[ResourceIdentifier]		NVARCHAR (10),
 	[EntryTypeId]				INT,

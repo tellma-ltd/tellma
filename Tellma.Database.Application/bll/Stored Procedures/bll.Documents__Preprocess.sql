@@ -106,7 +106,7 @@ BEGIN
 		E.[CurrencyId]				= COALESCE(A.[CurrencyId], E.[CurrencyId]),
 		E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 		E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
-		E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
+		E.[CenterId]				= COALESCE(A.[CenterId], E.[CenterId]),
 	--	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 		E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
@@ -145,13 +145,13 @@ BEGIN
 			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
 	);
 
-	-- When there is only one responsibility center, use it everywhere
-	IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE IsActive = 1 AND IsLeaf = 1) = 1
+	-- When there is only one center, use it everywhere
+	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE IsActive = 1 AND IsLeaf = 1) = 1
 		UPDATE @PreprocessedEntries
-		SET ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE IsActive = 1 AND IsLeaf = 1);
-	ELSE IF (SELECT COUNT(*) FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1 AND IsLeaf = 1) = 1
+		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE IsActive = 1 AND IsLeaf = 1);
+	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND IsActive = 1 AND IsLeaf = 1) = 1
 		UPDATE PE 
-		SET PE.ResponsibilityCenterId = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE ResponsibilityType = N'Investment' AND IsActive = 1 AND IsLeaf = 1)
+		SET PE.CenterId = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND IsActive = 1 AND IsLeaf = 1)
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
@@ -195,7 +195,7 @@ BEGIN
 				WHERE [Code] = LDE.AccountTypeParentCode
 			)) = 1
 			)
-			AND (A.[ResponsibilityCenterId] IS NULL OR A.[ResponsibilityCenterId] = E.[ResponsibilityCenterId])
+			AND (A.[CenterId] IS NULL				OR A.[CenterId] = E.[CenterId])
 			AND (A.[AgentId] IS NULL				OR A.[AgentId] = E.[AgentId])
 			AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
 			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])

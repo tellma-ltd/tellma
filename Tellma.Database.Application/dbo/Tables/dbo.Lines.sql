@@ -10,7 +10,6 @@
 	--[AuthorizeddAt]				DATETIMEOFFSET(7),
 	--[CompletedAt]				DATETIMEOFFSET(7),
 	--[ReviewedAt]				DATETIMEOFFSET(7),
-	[ResponsibilityCenterId]	INT					CONSTRAINT [FK_Lines__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),

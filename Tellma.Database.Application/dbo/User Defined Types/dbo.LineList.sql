@@ -4,7 +4,6 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
-	[ResponsibilityCenterId]	INT,
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[CurrencyId]				NCHAR (3),

@@ -68,4 +68,4 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 		--AR.[SupplierRating], AR.[PaymentTerms], 
 		--RC.[Name] AS OperatingSegment
 		FROM dbo.fi_Agents(N'TaxAgencies', NULL) A
-		--JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
+		--JOIN dbo.Centers RC ON A.OperatingSegmentId = RC.Id;

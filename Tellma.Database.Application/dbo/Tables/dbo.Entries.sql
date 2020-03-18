@@ -11,7 +11,7 @@
 	-- Resource Id is Required in Entries only if we have resource classification in the account
 	[ResourceId]				INT				NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
 	-- required when the resource classification is anything but Cash
-	[ResponsibilityCenterId]	INT				NULL REFERENCES dbo.ResponsibilityCenters([Id]),
+	[CenterId]					INT				NULL REFERENCES dbo.[Centers]([Id]),
 	--[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entries__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
 	--[ResourceIdentifier]		NVARCHAR (10),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),

@@ -135,7 +135,6 @@ BEGIN
 				L.[Id],
 				DI.Id AS DocumentId,
 				L.[DefinitionId],
-				L.[ResponsibilityCenterId],
 				L.[AgentId],
 				L.[ResourceId],
 				L.[CurrencyId],
@@ -150,7 +149,6 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
-				t.[ResponsibilityCenterId]=s.[ResponsibilityCenterId],
 				t.[AgentId]				= s.[AgentId],
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
@@ -163,7 +161,6 @@ BEGIN
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
-				[ResponsibilityCenterId],
 				[AgentId],
 				[ResourceId],
 				[CurrencyId],
@@ -174,7 +171,6 @@ BEGIN
 				[Memo]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
-				s.[ResponsibilityCenterId],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[CurrencyId],
@@ -198,7 +194,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
-			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
+			E.[AgentId], E.[ResourceId], E.[CenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
 			E.[Time1], E.[Time2],
@@ -219,7 +215,7 @@ BEGIN
 			t.[CurrencyId]				= s.[CurrencyId],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
-			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
+			t.[CenterId]	= s.[CenterId],
 			--t.[AccountIdentifier]		= s.[AccountIdentifier],
 			--t.[ResourceIdentifier]		= s.[ResourceIdentifier],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -240,7 +236,7 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
-			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
+			[AgentId], [ResourceId], [CenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[EntryTypeId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Quantity], [UnitId], [Value],
 			[Time1], [Time2],
@@ -252,7 +248,7 @@ BEGIN
 			[NotedDate]
 		)
 		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
-			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
+			s.[AgentId], s.[ResourceId], s.[CenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],
 			s.[Time1], s.[Time2],

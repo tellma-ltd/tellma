@@ -42,7 +42,7 @@ SET NOCOUNT ON;
 
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
 
-	-- TODO: validate that the ResponsibilityType is conformant with the AccountType
+	-- TODO: validate that the CenterType is conformant with the AccountType
 
 	-- (FE Check) If CurrencyId = functional currency, the value must match the DECIMAL (19,4) amount
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -191,18 +191,18 @@ SET NOCOUNT ON;
 
 	-- TODO: Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
 	
-	-- The ResponsibilityCenterId is required if Line State >= RequiredState of line def column
+	-- The CenterId is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResponsibilityCenterId',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].CenterId',
 		N'Error_TheField0IsRequired',
 		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
 	FROM @Entries E	
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResponsibilityCenterId'
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'CenterId'
 	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[ResponsibilityCenterId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
+	WHERE (E.[CenterId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
 	
 	-- The EntryTypeId is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

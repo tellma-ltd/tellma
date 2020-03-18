@@ -31,8 +31,8 @@ BEGIN
 		-----
 		UPDATE @ProcessedWideLines
 		SET
-			[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
-			[ResponsibilityCenterId2] = [ResponsibilityCenterId0],
+			[CenterId1] = [CenterId0],
+			[CenterId2] = [CenterId0],
 			[AgentId2]	= [AgentId1],
 			[CurrencyId1] = [CurrencyId0],
 			[CurrencyId2] = [CurrencyId0],
@@ -57,8 +57,8 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
-		[ResponsibilityCenterId2] = [ResponsibilityCenterId0],
+		[CenterId1] = [CenterId0],
+		[CenterId2] = [CenterId0],
 		[AgentId2]	= [AgentId1],
 		[CurrencyId1] = [CurrencyId0],
 		[CurrencyId2] = [CurrencyId0],
@@ -86,7 +86,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,1,6,	N'Entry[0].MonetaryValue',		N'VAT',					N'القيمة المضافة',		1,4),
 (7,1,7,	N'Entry[2].MonetaryValue',		N'Total',				N'المبلغ بعد الضريبة',	1,1),
 (8,1,8,	N'Entry[2].DueDate',			N'Due Date',			N'تاريخ الاستحقاق',		1,4),
-(9,1,9,	N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',0,4);
+(9,1,9,	N'Entry[0].CenterId',	N' Center',N'مركز المسؤولية',0,4);
 
 	-- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 	-- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
@@ -126,7 +126,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(6,2,6,		N'Entry[0].AccountIdentifier',		N'Account Identifier',		N'تمييز الحساب',			3,4),
 	(7,2,7,		N'Entry[0].ExternalReference',		N'Check #/Receipt #',		N'رقم الشيك/رقم الإيصال',	3,4),
 	(8,2,8,		N'Entry[0].NotedDate'	,			N'Check Date',				N'تاريخ الشيك',				3,4),
-	(9,2,9,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',			1,4)
+	(9,2,9,		N'Entry[0].CenterId',	N' Center',	N'مركز المسؤولية',			1,4)
 	;
 
 	INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
@@ -172,12 +172,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(5,3,5,		N'Entry[0].EntryTypeId',			N'Purpose',					N'الغرض',			4,4),
 	(6,3,6,		N'Entry[0].AgentId',				N'Petty Cash Custodian',	N'أمين العهدة',		3,4),
 	(7,3,7,		N'Entry[0].ExternalReference',		N'Receipt #',				N'رقم الإيصال',		3,4),
-	(8,3,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',	4,4);
+	(8,3,8,		N'Entry[0].CenterId',	N' Center',	N'مركز المسؤولية',	4,4);
 
 	-- Withholding Tax Payable
 	INSERT @LineDefinitions([Index],
-	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
-	4,N'WithholdingTaxPayable',	N'Withholding Tax Payable',	N'ضريبة خصم مشتريات',	N'Withholding Taxes Payable',	N'ضرائب خصم مشتريات',	N'suppliers',			N'Investment');
+	[Id],						[TitleSingular],			[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[AgentDefinitionList]) VALUES (
+	4,N'WithholdingTaxPayable',	N'Withholding Tax Payable',	N'ضريبة خصم مشتريات',	N'Withholding Taxes Payable',	N'ضرائب خصم مشتريات',	N'suppliers');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
 		SET NOCOUNT ON
@@ -190,7 +190,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue0]			= 0.02 * [NotedAmount0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]	= [CenterId0],
 			[ExternalReference1]		= [ExternalReference0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
@@ -210,12 +210,12 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(4,4,4,		N'Entry[0].NotedAmount',			N'TaxableAmount',			N'المبلغ الخاضع للخصم',1,2),
 	(5,4,5,		N'Entry[0].MonetaryValue',			N'Withtholding Tax',		N'الخصم الضريبي',		0,4),
 	(6,4,6,		N'Entry[0].ExternalReference',		N'Voucher #',				N'رقم الإيصال',			3,4),
-	(7,4,7,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',	N'مركز المسؤولية',		4,4);
+	(7,4,7,		N'Entry[0].CenterId',	N' Center',	N'مركز المسؤولية',		4,4);
 
 	-- Goods Receipts Note
 	INSERT @LineDefinitions([Index],
-	[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
-	5,N'GoodsReceiptNote',	N'Goods Receipt Note',	N'استلام مخزن',		N'Goods Receipt Notes',	N'استلامات مخازن',	N'suppliers',			N'Investment');
+	[Id],					[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2],		[AgentDefinitionList]) VALUES (
+	5,N'GoodsReceiptNote',	N'Goods Receipt Note',	N'استلام مخزن',		N'Goods Receipt Notes',	N'استلامات مخازن',	N'suppliers');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
 		SET NOCOUNT ON
@@ -228,7 +228,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue1]			= [MonetaryValue0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]	= [CenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'
@@ -238,22 +238,22 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	(0,5,0,+1,		N'TotalInventories',		N'STCK'),
 	(1,5,1,-1,		N'TradeAndOtherPayables',	N'SACR');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-	[SortKey],	[ColumnName],						[Label],				[Label2],				[RequiredState],
+	[SortKey],	[ColumnName],					[Label],				[Label2],				[RequiredState],
 																									[ReadOnlyState]) VALUES
-	(0,5,0,		N'Line.Memo',						N'Memo',				N'البيان',				1,5), 
-	(1,5,1,		N'Entry[0].AgentId',				N'Supplier',			N'المورد',				3,4),
-	(2,5,2,		N'Entry[0].NotedAgentId',			N'Beneficiary',			N'المستفيد',			3,4),
-	(3,5,3,		N'Entry[0].ResourceId',				N'Item',				N'الصنف',				1,4),
-	(4,5,4,		N'Entry[0].Quantity',				N'Quantity',			N'الكمية',				1,4),
-	(5,5,5,		N'Entry[0].UnitId',					N'Unit',				N'الوحدة',				1,4),
-	(6,5,6,		N'Entry[0].CurrencyId',				N'Currency',			N'العملة',				4,4),
-	(7,5,7,		N'Entry[0].MonetaryValue',			N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
-	(8,5,8,		N'Entry[0].ResponsibilityCenterId',	N'Responsibility Center',N'مركز المسؤولية',	0,4);
+	(0,5,0,		N'Line.Memo',					N'Memo',				N'البيان',				1,5), 
+	(1,5,1,		N'Entry[0].AgentId',			N'Supplier',			N'المورد',				3,4),
+	(2,5,2,		N'Entry[0].NotedAgentId',		N'Beneficiary',			N'المستفيد',			3,4),
+	(3,5,3,		N'Entry[0].ResourceId',			N'Item',				N'الصنف',				1,4),
+	(4,5,4,		N'Entry[0].Quantity',			N'Quantity',			N'الكمية',				1,4),
+	(5,5,5,		N'Entry[0].UnitId',				N'Unit',				N'الوحدة',				1,4),
+	(6,5,6,		N'Entry[0].CurrencyId',			N'Currency',			N'العملة',				4,4),
+	(7,5,7,		N'Entry[0].MonetaryValue',		N'Price Excl. VAT',		N'المبلغ قبل الضريية',	4,4),
+	(8,5,8,		N'Entry[0].CenterId',			N'Center',				N'مركز المسؤولية',	0,4);
 
 	-- GRIV
 	INSERT @LineDefinitions([Index],
-	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionList], [ResponsibilityTypeList]) VALUES (
-	6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers',			N'Investment');
+	[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],					[TitlePlural2],			[AgentDefinitionList]) VALUES (
+	6,N'GoodsReceiptIssueVoucher',	N'Goods Receipt/Issue Voucher',	N'استلام مستخدم',	N'Goods Receipt/Issue Voucher',	N'استلامات مستخدمين',	N'suppliers');
 	UPDATE @LineDefinitions
 	SET [Script] = N'
 		SET NOCOUNT ON
@@ -266,7 +266,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SET
 			[NotedAgentId0]				= [AgentId1],
 			[MonetaryValue1]			= [MonetaryValue0],
-			[ResponsibilityCenterId1]	= [ResponsibilityCenterId0],
+			[CenterId1]	= [CenterId0],
 			[CurrencyId1]				= [CurrencyId0]
 		-----
 		SELECT * FROM @ProcessedWideLines;'

@@ -4,7 +4,7 @@
 -- For reporting purposes, we want to avoid showing large dimensions such as customers, resources, etc...
 	[Id]							INT					CONSTRAINT [PK_Accounts] PRIMARY KEY IDENTITY,
 	-- To transfer an entry from requested to authorized, we need an evidence that the responsible center manager has authorized it.
-	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
+	[CenterId]						INT					CONSTRAINT [FK_Accounts__CenterId] REFERENCES [dbo].[Centers] ([Id]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -75,7 +75,7 @@ GO
 --			[IsCurrent],
 --			[AgentId],
 --			[ResourceId],
---			[ResponsibilityCenterId],
+--			[CenterId],
 --			[Identifier],
 --			[EntryTypeId]
 --);

@@ -60,7 +60,7 @@ IF @ProvisionData = N'0' RETURN;
 :r .\04_Resources\d1_FG_vehicles.sql
 --:r .\04_Resources\e1_CCE_received-checks.sql
 
-:r .\05_Agents\00_ResponsibilityCenters.sql
+:r .\05_Agents\00_Centers.sql
 :r .\05_Agents\01_CostObjects.sql
 :r .\05_Agents\02_Creditors.sql
 :r .\05_Agents\03_Customers.sql

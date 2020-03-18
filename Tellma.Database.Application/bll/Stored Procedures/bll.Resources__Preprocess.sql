@@ -17,24 +17,24 @@ SELECT * FROM @Entities;
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 IF (
-	SELECT COUNT(*) FROM dbo.ResponsibilityCenters
+	SELECT COUNT(*) FROM dbo.[Centers]
 	WHERE [IsActive] = 1 AND [IsLeaf] = 1
 ) = 1
 UPDATE @PreprocessedResources
 SET [ExpenseCenterId] = (
-		SELECT [Id] FROM dbo.ResponsibilityCenters
+		SELECT [Id] FROM dbo.[Centers]
 		WHERE [IsActive] = 1 AND [IsLeaf] = 1
 	);
 	
 IF (
-	SELECT COUNT(*) FROM dbo.ResponsibilityCenters
-	WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
+	SELECT COUNT(*) FROM dbo.[Centers]
+	WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
 ) = 1
 UPDATE @PreprocessedResources
 SET
 	[InvestmentCenterId] = (
-		SELECT [Id] FROM dbo.ResponsibilityCenters
-		WHERE ResponsibilityType = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
+		SELECT [Id] FROM dbo.[Centers]
+		WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
 	);
 
 

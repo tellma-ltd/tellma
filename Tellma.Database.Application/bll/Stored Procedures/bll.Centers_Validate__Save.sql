@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [bll].[ResponsibilityCenters_Validate__Save]
-	@Entities [ResponsibilityCenterList] READONLY,
+﻿CREATE PROCEDURE [bll].[Centers_Validate__Save]
+	@Entities [CenterList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -10,7 +10,7 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[ResponsibilityCenters] WHERE IsActive = 0);
+    WHERE Id IN (SELECT Id from [dbo].[Centers] WHERE IsActive = 0);
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -19,7 +19,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[ResponsibilityCenters])
+    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[Centers])
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -28,7 +28,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE
-	JOIN [dbo].[ResponsibilityCenters] BE ON FE.Code = BE.Code
+	JOIN [dbo].[Centers] BE ON FE.Code = BE.Code
 	WHERE (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[ResponsibilityCenters] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[Centers] BE ON FE.[Name] = BE.[Name]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -63,7 +63,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE
-	JOIN [dbo].[ResponsibilityCenters] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[Centers] BE ON FE.[Name2] = BE.[Name2]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -73,7 +73,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE
-	JOIN [dbo].[ResponsibilityCenters] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[Centers] BE ON FE.[Name3] = BE.[Name3]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list
@@ -120,14 +120,14 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- Parent Responsibility Center must be active
+	-- Parent Center must be active
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ParentId',
-		N'Error_TheParentResponsibilityCenter0IsInactive',
+		N'Error_TheParentCenter0IsInactive',
 		FE.ParentId
 	FROM @Entities FE 
-	JOIN [dbo].[ResponsibilityCenters] BE ON FE.ParentId = BE.Id
+	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.IsActive = 0);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

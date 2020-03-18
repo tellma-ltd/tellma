@@ -1,9 +1,9 @@
-﻿CREATE PROCEDURE [dal].[ResponsibilityCenters__Save]
-	@Entities [ResponsibilityCenterList] READONLY,
+﻿CREATE PROCEDURE [dal].[Centers__Save]
+	@Entities [CenterList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -13,11 +13,11 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[ResponsibilityCenters] AS t
+		MERGE INTO [dbo].[Centers] AS t
 		USING (
 			SELECT
-				--E.[Index], E.[Id], E.[ParentId], [IsOperatingSegment], [ManagerId], [ResponsibilityType],
-				E.[Index], E.[Id], E.[ParentId], [ManagerId], [ResponsibilityType],
+				--E.[Index], E.[Id], E.[ParentId], [IsOperatingSegment], [ManagerId], [CenterType],
+				E.[Index], E.[Id], E.[ParentId], [ManagerId], [CenterType],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code], E.[IsLeaf]
 			FROM @Entities E
@@ -36,13 +36,13 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResponsibilityType], [ParentId], [Node], [Name],	[Name2], [Name3], [Code], [IsLeaf], [ManagerId])
-			VALUES (s.[ResponsibilityType], s.[Parentid], s.[Node], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsLeaf], s.[ManagerId])
+			INSERT ([CenterType], [ParentId], [Node], [Name],	[Name2], [Name3], [Code], [IsLeaf], [ManagerId])
+			VALUES (s.[CenterType], s.[Parentid], s.[Node], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsLeaf], s.[ManagerId])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
 	-- The following code is needed for bulk import, when the reliance is on Parent Index
-	MERGE [dbo].[ResponsibilityCenters] As t
+	MERGE [dbo].[Centers] As t
 	USING (
 		SELECT II.[Id], IIParent.[Id] As ParentId
 		FROM @Entities O
@@ -55,8 +55,8 @@ SET NOCOUNT ON;
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
 		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
-		FROM [dbo].[ResponsibilityCenters] E
-		LEFT JOIN [dbo].[ResponsibilityCenters] E2 ON E.[ParentId] = E2.[Id]
+		FROM [dbo].[Centers] E
+		LEFT JOIN [dbo].[Centers] E2 ON E.[ParentId] = E2.[Id]
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  
@@ -69,12 +69,12 @@ SET NOCOUNT ON;
 		FROM Children C
 		JOIN Paths P ON C.[ParentId] = P.[Id]
 	)
-	MERGE INTO [dbo].[ResponsibilityCenters] As t
+	MERGE INTO [dbo].[Centers] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 
-	-- Whether there are multiple responsibility centers is an important settings value
-	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+	-- Whether there are multiple centers is an important settings value
+	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
 	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
 

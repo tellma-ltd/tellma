@@ -46,7 +46,7 @@ BEGIN TRY
 		:r ..\Samples\01_Basic\b_Units.sql
 		:r ..\Samples\01_Basic\c_Lookups.sql
 		
-		:r ..\Samples\02_Agents\01_ResponsibilityCenters.sql
+		:r ..\Samples\02_Agents\01_Centers.sql
 		:r ..\Samples\02_Agents\02_Suppliers.sql
 		:r ..\Samples\02_Agents\03_Customers.sql
 		:r ..\Samples\02_Agents\04_Employees.sql

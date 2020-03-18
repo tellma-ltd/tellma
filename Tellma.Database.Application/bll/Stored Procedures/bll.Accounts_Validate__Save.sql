@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 	WHERE L.[State] > 0
 	AND (
 		FE.HasResource						<> A.[HasResource]						OR
-		--FE.[ResponsibilityCenterId]		<> A.[ResponsibilityCenterId]			OR
+		--FE.[CenterId]						<> A.[CenterId]			OR
 		ISNULL(FE.[LegacyTypeId], N'')		<> ISNULL(A.[LegacyTypeId], N'')		OR
 		ISNULL(FE.[AgentDefinitionId],N'')	<> ISNULL(A.[AgentDefinitionId], N'')	OR
 		FE.[AccountTypeId]					<> A.[AccountTypeId]					OR
@@ -133,29 +133,29 @@ SET NOCOUNT ON;
 		--FE.[EntryTypeId]					<> A.[EntryTypeId]
 	)
 
-	-- Setting the responsibility center for smart accounts to given one (whether it was null or null)
-	-- is not allowed if the account has been used already in an line but with different responsibility center
+	-- Setting the center for smart accounts to given one (whether it was null or null)
+	-- is not allowed if the account has been used already in an line but with different center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithResponsibilityCenter4',
+		N'Error_TheAccount0IsUsedIn12LineDefinition3WithCenter4',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 		L.DefinitionId,
-		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS ResponsibilityCenter
+		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS Center
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.ResponsibilityCenters RC ON RC.Id = E.ResponsibilityCenterId
+	JOIN dbo.[Centers] RC ON RC.Id = E.[CenterId]
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
-	AND FE.[ResponsibilityCenterId] IS NOT NULL
-	AND FE.[ResponsibilityCenterId] <> E.[ResponsibilityCenterId]
+	AND FE.[CenterId] IS NOT NULL
+	AND FE.[CenterId] <> E.[CenterId]
 
 	-- Changing the Agent for smart accounts to given one (whether it was null or null)
 	-- is not allowed if the account has been used already in an line but with different agent
@@ -278,8 +278,8 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
--- Updating the responsibility center for an account is not allowed if the account has been used already in a line
--- but with different responsibility center
+-- Updating the center for an account is not allowed if the account has been used already in a line
+-- but with different center
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -298,7 +298,7 @@ SET NOCOUNT ON;
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
-	AND FE.[ResponsibilityCenterId] IS NOT NULL
-	AND FE.[ResponsibilityCenterId] <> E.[ResponsibilityCenterId]
+	AND FE.[CenterId] IS NOT NULL
+	AND FE.[CenterId] <> E.[CenterId]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

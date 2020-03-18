@@ -6,10 +6,10 @@ SET NOCOUNT ON;
 DECLARE @ProcessedEntities [dbo].[AccountList];
 INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
--- If there is only ONE active responsibility center set the account to it
-IF (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE [IsActive] = 1 AND [IsLeaf] = 1) = 1
+-- If there is only ONE activecenter set the account to it
+IF (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1) = 1
 UPDATE @ProcessedEntities
-SET [ResponsibilityCenterId] = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
+SET [CenterId] = (SELECT [Id] FROM [dbo].[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 
 -- If AccountType.IsPersonal = 0, set IsRelated to 0
 UPDATE A

@@ -20,8 +20,8 @@ AS
 --(7,8,	N'Entries', N'CurrencyId',			1,	N'Currency',	N'العملة',		1,0,0),
 --(8,8,	N'Entries', N'MonetaryValue',		1,	N'Depreciation',N'الإهلاك',		1,0,0),
 --(9,8,	N'Entries', N'Value',				1,	N'Equiv. ($)',	N'المقابل ($)',	1,4,0),
---(10,8,	N'Entries',	N'ResponsibilityCenterId',1,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
---(11,8,	N'Entries',	N'ResponsibilityCenterId',0,N'Cost Ctr',	N'مركز التكلفة',4,4,0);
+--(10,8,	N'Entries',	N'CenterId',1,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+--(11,8,	N'Entries',	N'CenterId',0,N'Cost Ctr',	N'مركز التكلفة',4,4,0);
 	DECLARE @WideLines WideLineList;
 	DECLARE @PPENode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment');
 	DECLARE @PPETypeIds IdList;
@@ -30,11 +30,11 @@ AS
 	INSERT INTO @PPETypeIds([Id])
 	SELECT [Id] FROM dbo.AccountTypes
 	WHERE IsResourceClassification = 1
-	AND [Node].IsDescendantOf(@PPENode) = 1; -- select * from entrytypes select * from responsibilitycenters
+	AND [Node].IsDescendantOf(@PPENode) = 1; -- select * from entrytypes select * from centers
 
 	INSERT INTO @WideLines([Index], DefinitionId,
 			[DocumentIndex],ResourceId1,Quantity1,	UnitId1, AgentId0,		EntryTypeId0,			Time11,	Time21,
-			CurrencyId1,	ResponsibilityCenterId1,ResponsibilityCenterId0)
+			CurrencyId1,	CenterId1,				CenterId0)
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
 			@DocumentIndex, [Id],		@Quantity,	@UnitId, [CostObjectId], [ExpenseEntryTypeId],	@Time1,	@Time2, 
 			[CurrencyId],	[InvestmentCenterId],	[ExpenseCenterId]
@@ -86,7 +86,7 @@ AS
 	SELECT [Index], [DocumentIndex], ResourceId1 AS [Asset], Quantity1 AS [UsedCapacity],
 			(SELECT [Name] FROM dbo.[Units] WHERE [Id] = WL.UnitId1) AS Unit, MonetaryValue1 As UsedMonetaryValue, Value1 As UsedValue, 
 			AgentId0 AS [System],
-			(select [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
+			(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
-			CurrencyId1 AS Currency, ResponsibilityCenterId1 AS InvCtr, ResponsibilityCenterId0 AS ExpCenter
+			CurrencyId1 AS Currency, CenterId1 AS InvCtr, CenterId0 AS ExpCenter
 	FROM @WideLines WL;

@@ -19,7 +19,7 @@ RETURN (
 		[IsCurrent],
 		[AgentId],
 		[ResourceId],
-		[ResponsibilityCenterId],
+		[CenterId],
 		[Identifier],
 		[EntryTypeId],
 		CAST(0 AS BIT) AS [IsDeprecated],

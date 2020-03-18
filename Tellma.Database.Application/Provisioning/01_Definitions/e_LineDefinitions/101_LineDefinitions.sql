@@ -38,7 +38,7 @@ SET [Script] = N'
 	SET
 		[CurrencyId1] = [CurrencyId0],
 		[MonetaryValue1] = ISNULL([MonetaryValue0],0) + ISNULL([NotedAmount0],0),
-		[ResponsibilityCenterId0] = [ResponsibilityCenterId1]
+		[CenterId0] = [CenterId1]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
@@ -61,7 +61,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,1,	N'Entries',	N'AgentId',				1,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,0),
 (9,1,	N'Entries',	N'ExternalReference',	1,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
 (10,1,	N'Entries',	N'NotedDate',			1,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(11,1,	N'Entries',	N'ResponsibilityCenterId',1,N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
+(11,1,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
 --CashPaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
@@ -81,7 +81,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,0),
 (6,2,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,4,0),
 (7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(8,2,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1)
+(8,2,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1)
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
@@ -102,7 +102,7 @@ SET [Script] = N'
 	SET
 		[NotedAgentId0]	= [AgentId1],
 		[NotedAgentId1]	= [AgentId0],
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId0]
+		[CenterId1] = [CenterId0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 103;
@@ -121,7 +121,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,103,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
 (5,103,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
 (6,103,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
-(7,103,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+(7,103,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
 --CashReceiptFromOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
@@ -141,7 +141,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,3,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',	N'البنك/الخزنة',	3,4,1),
 (6,3,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',	N'رقم الشيك/الإيصال',3,4,0),
 (7,3,	N'Entries',	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,5,0),
-(8,3,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+(8,3,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
 --CashReceiptFromCustomerAndSalesInvoiceVAT
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],	[TitlePlural2]) VALUES (
@@ -160,8 +160,8 @@ SET [Script] = N'
 		[NotedAgentId1]	= [AgentId2],
 		[CurrencyId1] = [CurrencyId2],
 		[NotedAmount0] = [MonetaryValue1] + [MonetaryValue2],
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId0],
-		[ResponsibilityCenterId2] = [ResponsibilityCenterId0]
+		[CenterId1] = [CenterId0],
+		[CenterId2] = [CenterId0]
 	-----
 --	SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 4;
@@ -187,7 +187,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (10,4,	N'Entries',	N'MonetaryValue',		0,	N'Amount Rcvd',		N'المبلغ المستلم',		3,4,0),
 (11,4,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',	N'رقم الشيك\الإيصال',	3,4,0),
 (12,4,	N'Entries',	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',			5,5,0),
-(13,4,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',		N'مركز الاستثمار',		4,4,1)
+(13,4,	N'Entries',	N'CenterId',			0,N'Invest. Ctr',		N'مركز الاستثمار',		4,4,1)
 --CashReceiptFromCustomer
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2],
@@ -204,7 +204,7 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[ResponsibilityCenterId1] = [ResponsibilityCenterId0]
+		[CenterId1] = [CenterId0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 5;
@@ -225,7 +225,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,5,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,1),
 (7,5,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
 (8,5,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(9,5,	N'Entries',	N'ResponsibilityCenterId',0,N'Invest. Ctr',			N'مركز الاستثمار',		4,4,0)
+(9,5,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',			N'مركز الاستثمار',		4,4,0)
 --LeaseOutIssue. TODO: Auto calculate Revenue based on AgentRates
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],
@@ -265,8 +265,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,6,	N'Entries', N'Time2',				0,	N'Till',		N'حتى',			1,1,1),
 (7,6,	N'Entries', N'CurrencyId',			0,	N'Currency',	N'العملة',		1,4,0),
 (8,6,	N'Entries', N'MonetaryValue',		0,	N'Amount',		N'المطالبة',	1,4,0),
-(9,6,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
-(10,6,	N'Entries',	N'ResponsibilityCenterId',1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
+(9,6,	N'Entries',	N'CenterId',			0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+(10,6,	N'Entries',	N'CenterId',			1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
 --LeaseOutIssueAndSalesInvoiceNoVAT.  TODO: Auto calculate Time2 and Revenue, based on AgentRates
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],				[TitleSingular],		[TitleSingular2],	[TitlePlural],				[TitlePlural2],
@@ -306,8 +306,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,7,	N'Entries', N'Time2',				0,	N'Till',		N'حتى',			1,4,1),
 (7,7,	N'Entries', N'CurrencyId',			0,	N'Currency',	N'العملة',		1,4,0),
 (8,7,	N'Entries', N'MonetaryValue',		0,	N'Amount',		N'المطالبة',	1,4,0),
-(9,7,	N'Entries',	N'ResponsibilityCenterId',0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
-(10,7,	N'Entries',	N'ResponsibilityCenterId',1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
+(9,7,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+(10,7,	N'Entries',	N'CenterId',			1,	N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
 --PPEDepreciation
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],			[TitleSingular],		[TitleSingular2],		[TitlePlural],				[TitlePlural2],
@@ -345,6 +345,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,8,	N'Entries', N'Time1',				1,	N'From',		N'ابتداء من',	1,4,1),
 (6,8,	N'Entries', N'Time2',				1,	N'Till',		N'حتى',			1,0,1),
 (7,8,	N'Entries', N'MonetaryValue',		1,	N'Depreciation',N'الإهلاك',		1,0,0),
-(8,8,	N'Entries',	N'ResponsibilityCenterId',1,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
-(9,8,	N'Entries',	N'ResponsibilityCenterId',0,N'Cost Ctr',	N'مركز التكلفة',4,4,0);
+(8,8,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+(9,8,	N'Entries',	N'CenterId',			0,	N'Cost Ctr',	N'مركز التكلفة',4,4,0);
 END

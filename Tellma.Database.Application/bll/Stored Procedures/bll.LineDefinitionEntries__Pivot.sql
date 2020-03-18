@@ -15,8 +15,8 @@ AS
 		WL.[Direction0]					= LDE.[Direction]
 		--WL.[AgentId0]					= LDE.[AgentId],
 		--WL.[ResourceId0]				= LDE.[ResourceId],
-		--WL.[ResponsibilityCenterId0]	= LDE.[ResponsibilityCenterId],
-		--WL.[AccountIdentifier0]			= LDE.[AccountIdentifier],
+		--WL.[CenterId0]				= LDE.[CenterId],
+		--WL.[AccountIdentifier0]		= LDE.[AccountIdentifier],
 		--WL.[ResourceIdentifier0]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId0]				= LDE.[CurrencyId],
 		--WL.[EntryTypeId0]				= LDE.[EntryTypeId],
@@ -43,7 +43,7 @@ AS
 		WL.[Direction1]					= LDE.[Direction]
 		--WL.[AgentId1]					= LDE.[AgentId],
 		--WL.[ResourceId1]				= LDE.[ResourceId],
-		--WL.[ResponsibilityCenterId1]	= LDE.[ResponsibilityCenterId],
+		--WL.[CenterId1]	= LDE.[ResponsibilityCenterId],
 		--WL.[AccountIdentifier1]			= LDE.[AccountIdentifier],
 		--WL.[ResourceIdentifier1]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId1]				= LDE.[CurrencyId],
@@ -71,7 +71,7 @@ AS
 		WL.[Direction2]					= LDE.[Direction]
 		--WL.[AgentId2]					= LDE.[AgentId],
 		--WL.[ResourceId2]				= LDE.[ResourceId],
-		--WL.[ResponsibilityCenterId2]	= LDE.[ResponsibilityCenterId],
+		--WL.[CenterId2]				= LDE.[CenterId],
 		--WL.[AccountIdentifier2]			= LDE.[AccountIdentifier],
 		--WL.[ResourceIdentifier2]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId2]				= LDE.[CurrencyId],

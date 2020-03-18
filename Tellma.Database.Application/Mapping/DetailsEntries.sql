@@ -13,7 +13,7 @@ E AS
 	SELECT
 		E.[Id],
 		E.[LineId],
-		E.[ResponsibilityCenterId],
+		E.[CenterId],
 		E.[Direction],
 		E.[AccountId],
 		--E.[AccountIdentifier]

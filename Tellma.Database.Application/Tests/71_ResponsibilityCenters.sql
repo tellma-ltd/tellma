@@ -67,7 +67,7 @@ WSI
 				(N'Walia Water Bottling', 18),
 		(N'New Kersa', NULL);
 
-	EXEC [api].[ResponsibilityCenters__Save]
+	EXEC [api].[Centers__Save]
 		@Entities = @OperationsDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 		@ResultsJson = @ResultsJson OUTPUT
@@ -79,7 +79,7 @@ WSI
 	END
 
 	IF @DebugOperations = 1
-		SELECT * FROM [dbo].[fr_ResponsibilityCenters__Json](@ResultsJson)
+		SELECT * FROM [dbo].[fr_Centers__Json](@ResultsJson)
 END
 BEGIN
 	DELETE FROM @OperationsDTO;
@@ -88,7 +88,7 @@ BEGIN
 	)
 	SELECT
 		[Id], [Name], [ParentId], [Code]
-	FROM [dbo].[ResponsibilityCenters];
+	FROM [dbo].[Centers];
 
 	UPDATE @OperationsDTO 
 	SET 
@@ -101,7 +101,7 @@ BEGIN
 		[EntityState] = N'Deleted'
 	WHERE [Name] = N'Fake';
 
-	EXEC [api].[ResponsibilityCenters__Save]
+	EXEC [api].[Centers__Save]
 		@Entities = @OperationsDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 		@ResultsJson = @ResultsJson OUTPUT;
@@ -112,9 +112,9 @@ BEGIN
 		GOTO Err_Label;
 	END
 	IF @DebugOperations = 1
-		SELECT * FROM [dbo].[fr_ResponsibilityCenters__Json](@ResultsJson);
+		SELECT * FROM [dbo].[fr_Centers__Json](@ResultsJson);
 END
 SELECT
-	@WSI = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Walia Steel Industry'),
-	@Existing = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Existing'),
-	@Expansion = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Expansion');
+	@WSI = (SELECT [Id] FROM [dbo].[Centers] WHERE [Name] = N'Walia Steel Industry'),
+	@Existing = (SELECT [Id] FROM [dbo].[Centers] WHERE [Name] = N'Existing'),
+	@Expansion = (SELECT [Id] FROM [dbo].[Centers] WHERE [Name] = N'Expansion');

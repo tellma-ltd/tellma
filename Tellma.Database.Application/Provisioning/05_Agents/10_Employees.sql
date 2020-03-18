@@ -125,7 +125,7 @@ BEGIN
 		@YigezuLegesse = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Yigezu Legesse'), 
 		@MesfinWolde = (SELECT [Id] FROM [dbo].fi_Agents(N'employees', NULL) WHERE [Name] = N'Mesfin Wolde');
 
-	--UPDATE dbo.ResponsibilityCenters
+	--UPDATE dbo.Centers
 	--SET ManagerId = CASE 
 	--	WHEN [Id] = @OS_Steel			THEN @BadegeKebede
 	--	WHEN [Id] = @RC_ExecutiveOffice	THEN @BadegeKebede

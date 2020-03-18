@@ -20,42 +20,42 @@ WSI
 	Maintenance
 	Coffee
 */
-DECLARE @ResponsibilityCenters dbo.ResponsibilityCenterList;
+DECLARE @Centers dbo.CenterList;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
-INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-			[Name],				[Name2],			[Name3],			[Code],	[ResponsibilityType], [ParentIndex])
+INSERT INTO @Centers([Index], [IsLeaf],
+			[Name],				[Name2],			[Name3],			[Code],	[CenterType], [ParentIndex])
 SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	[ShortCompanyName3],N'',	N'Investment',			NULL
 FROM dbo.Settings
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-				[Name],				[Code], [ResponsibilityType], [ParentIndex])
+	INSERT INTO @Centers([Index], [IsLeaf],
+				[Name],				[Code], [CenterType], [ParentIndex])
 	SELECT 0,1,[ShortCompanyName],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-			[Name],				[Code], [ResponsibilityType], [ParentIndex])
+INSERT INTO @Centers([Index], [IsLeaf],
+			[Name],				[Code], [CenterType], [ParentIndex])
 SELECT 0,1,[ShortCompanyName],	N'',	N'Investment',			NULL
 FROM dbo.Settings
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-			[Name],				[Name2],			[Code], [ResponsibilityType], [ParentIndex])
+INSERT INTO @Centers([Index], [IsLeaf],
+			[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
 SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 FROM dbo.Settings
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-				[Name],				[Name2],			[Code], [ResponsibilityType], [ParentIndex])
+	INSERT INTO @Centers([Index], [IsLeaf],
+				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
 	SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
 
-	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-		[Name],						[Code], [ResponsibilityType], [ParentIndex]) VALUES
+	INSERT INTO @Centers([Index], [IsLeaf],
+		[Name],						[Code], [CenterType], [ParentIndex]) VALUES
 	(1,1,N'Executive/Shared',		N'0',	N'Cost',				0),
 	(2,0,N'Steel Manufacturing',	N'1',	N'Profit',				0),
 	(3,1,N'Finance',				N'11',	N'Cost',				2),
@@ -73,13 +73,13 @@ BEGIN
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
-	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-				[Name],				[Name2],			[Code], [ResponsibilityType], [ParentIndex])
+	INSERT INTO @Centers([Index], [IsLeaf],
+				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
 	SELECT 0,1,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
 
-	INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-		[Name],						[Name2],					[Code], [ResponsibilityType], [ParentIndex]) VALUES -- HasBS, HasRevenues, HasExpenses 
+	INSERT INTO @Centers([Index], [IsLeaf],
+		[Name],						[Name2],					[Code], [CenterType], [ParentIndex]) VALUES -- HasBS, HasRevenues, HasExpenses 
 	(1,1,N'Simpex - Exec Office',	N'سيمبكس - مكتب تنفيذي',	N'0',	N'Investment',			0), -- ADM
 	(2,0,N'Jeddah Branch',			N'فرع جدة',					N'1',	N'Profit',				0), -- 
 	(3,1,N'Jeddah - Admin/Shared',	N'جدة - مكتب تنفيذي',		N'10',	N'Cost',				2), -- ADM
@@ -97,37 +97,37 @@ BEGIN
 	(15,1,N'Finance',				N'الشؤون المالية',			N'5',	N'Cost',				0) -- ADM
 	;
 END
-EXEC [api].[ResponsibilityCenters__Save]
-	@Entities = @ResponsibilityCenters,
+EXEC [api].[Centers__Save]
+	@Entities = @Centers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'ResponsibilityCenters: Inserting: ' + @ValidationErrorsJson
+	Print 'Centers: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 
 DECLARE @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
 		@RC_SalesAG INT, @RC_SalesBole INT, @RC_Inv INT;
 
-SELECT @RC_Inv = [Id] FROM dbo.ResponsibilityCenters WHERE [IsLeaf] = 1 AND [ResponsibilityType] = N'Investment';
+SELECT @RC_Inv = [Id] FROM dbo.[Centers] WHERE [IsLeaf] = 1 AND [CenterType] = N'Investment';
 
-SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE [Name] Like N'%Exec%';
-SELECT @RC_SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
-SELECT @RC_SalesBole = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'142';
-SELECT @RC_HR = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'15';
-SELECT @RC_Materials =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'16';
-SELECT @RC_Production =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'171';
+SELECT @RC_ExecutiveOffice = [Id] FROM dbo.[Centers] WHERE [Name] Like N'%Exec%';
+SELECT @RC_SalesAG =  [Id] FROM dbo.[Centers] WHERE Code = N'141';
+SELECT @RC_SalesBole = [Id] FROM dbo.[Centers] WHERE Code = N'142';
+SELECT @RC_HR = [Id] FROM dbo.[Centers] WHERE Code = N'15';
+SELECT @RC_Materials =  [Id] FROM dbo.[Centers] WHERE Code = N'16';
+SELECT @RC_Production =  [Id] FROM dbo.[Centers] WHERE Code = N'171';
 
-DECLARE @RC5_Exec INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'0');
-DECLARE @RC5_JedAdmin INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'10');
-DECLARE @RC5_JedSales INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'11');
-DECLARE @RC5_JedStores INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'12');
-DECLARE @RC5_RuhAdmin INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'20');
-DECLARE @RC5_RuhSales INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'21');
-DECLARE @RC5_RuhStores INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'22');
-DECLARE @RC5_DamAdmin INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'30');
-DECLARE @RC5_DamSales INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'31');
-DECLARE @RC5_DamStores INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'32');
-DECLARE @RC5_HR INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'4');
-DECLARE @RC5_Finance INT = (SELECT [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'5');
+DECLARE @RC5_Exec INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'0');
+DECLARE @RC5_JedAdmin INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'10');
+DECLARE @RC5_JedSales INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'11');
+DECLARE @RC5_JedStores INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'12');
+DECLARE @RC5_RuhAdmin INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'20');
+DECLARE @RC5_RuhSales INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'21');
+DECLARE @RC5_RuhStores INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'22');
+DECLARE @RC5_DamAdmin INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'30');
+DECLARE @RC5_DamSales INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'31');
+DECLARE @RC5_DamStores INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'32');
+DECLARE @RC5_HR INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'4');
+DECLARE @RC5_Finance INT = (SELECT [Id] FROM dbo.Centers WHERE Code = N'5');
