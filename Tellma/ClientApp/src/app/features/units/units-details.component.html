@@ -1,5 +1,5 @@
-<t-details collection="MeasurementUnit" [createFunc]="create"
-  [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="'MeasurementUnits' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+<t-details collection="Unit" [createFunc]="create"
+  [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="'Units' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -115,10 +115,9 @@
 
   <!-- Is Active -->
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <t-auto-cell collection="MeasurementUnit" [entity]="model" path="IsActive"></t-auto-cell>
+    <t-auto-cell collection="Unit" [entity]="model" path="IsActive"></t-auto-cell>
   </t-form-group>
 </ng-template>
-
 
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

@@ -29,7 +29,7 @@
           </a>
         </li> -->
         <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" [routerLink]="['./documents', { 'select': 'DocumentDate,State,PostingState,Assignee,AssignedAt', 'orderby': 'AssignedAt desc' }]"
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" [routerLink]="['./documents', { 'select': 'PostingDate,State,PostingState,Assignee,AssignedAt', 'orderby': 'AssignedAt desc' }]"
             (click)="onCollapse()">
             {{ 'Documents' | translate }}
           </a>
@@ -49,8 +49,8 @@
         </li>
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./measurement-units" (click)="onCollapse()">
-            {{ 'MeasurementUnits' | translate }}
+            routerLink="./units" (click)="onCollapse()">
+            {{ 'Units' | translate }}
           </a>
         </li>
         <li class="nav-item">

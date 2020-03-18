@@ -403,8 +403,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_DocumentDate" xml:space="preserve">
-    <value>Date</value>
+  <data name="Document_Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="Document_CurrencyIsCommon" xml:space="preserve">
+    <value>Currency Is Common</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -432,6 +435,9 @@
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
+  </data>
+  <data name="Document_PostingDate" xml:space="preserve">
+    <value>Date</value>
   </data>
   <data name="Document_PostingState" xml:space="preserve">
     <value>Posting State</value>
@@ -631,8 +637,11 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>You cannot delete your own user.</value>
   </data>
-  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
-    <value>Posted or Canceled documents cannot be modified</value>
+  <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
+    <value>Canceled documents cannot be modified</value>
+  </data>
+  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
+    <value>Posted documents cannot be modified</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
@@ -1002,12 +1011,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
-  </data>
-  <data name="MeasurementUnit" xml:space="preserve">
-    <value>Measurement Unit</value>
-  </data>
-  <data name="MeasurementUnits" xml:space="preserve">
-    <value>Measurement Units</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>Members</value>
@@ -1872,6 +1875,12 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA has been disabled. You can re-enable 2FA by setting up an authenticator app</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>Units</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>User</value>

@@ -223,8 +223,8 @@ namespace Tellma.Data
                 case nameof(AgentRate):
                     return "[map].[AgentRates]()";
 
-                case nameof(MeasurementUnit):
-                    return "[map].[MeasurementUnits]()";
+                case nameof(Unit):
+                    return "[map].[Units]()";
 
                 case nameof(Permission):
                     return "[dbo].[Permissions]";
@@ -995,9 +995,9 @@ namespace Tellma.Data
 
         #endregion
 
-        #region MeasurementUnits
+        #region Units
 
-        public Query<MeasurementUnit> MeasurementUnits__AsQuery(List<MeasurementUnitForSave> entities)
+        public Query<Unit> Units__AsQuery(List<UnitForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
@@ -1006,16 +1006,16 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(MeasurementUnit)}List]",
+                TypeName = $"[dbo].[{nameof(Unit)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             // Query
-            var query = Query<MeasurementUnit>();
-            return query.FromSql($"[map].[{nameof(MeasurementUnits__AsQuery)}] (@Entities)", null, entitiesTvp);
+            var query = Query<Unit>();
+            return query.FromSql($"[map].[{nameof(Units__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Units_Validate__Save(List<UnitForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1023,7 +1023,7 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(MeasurementUnit)}List]",
+                TypeName = $"[dbo].[{nameof(Unit)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -1032,13 +1032,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(Units_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> MeasurementUnits__Save(List<MeasurementUnitForSave> entities, bool returnIds)
+        public async Task<List<int>> Units__Save(List<UnitForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1048,7 +1048,7 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(MeasurementUnit)}List]",
+                    TypeName = $"[dbo].[{nameof(Unit)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1056,7 +1056,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(Units__Save)}]";
 
                 if (returnIds)
                 {
@@ -1087,7 +1087,7 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task MeasurementUnits__Activate(List<int> ids, bool isActive)
+        public async Task Units__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1104,13 +1104,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Activate)}]";
+            cmd.CommandText = $"[dal].[{nameof(Units__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Units_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1127,13 +1127,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(Units_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task MeasurementUnits__Delete(IEnumerable<int> ids)
+        public async Task Units__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1149,7 +1149,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(Units__Delete)}]";
 
             // Execute
             try

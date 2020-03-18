@@ -116,7 +116,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Line_Unit")]
         [ForeignKey(nameof(UnitId))]
-        public MeasurementUnit Unit { get; set; }
+        public Unit Unit { get; set; }
 
         [Display(Name = "Line_Agent")]
         [ForeignKey(nameof(AgentId))]

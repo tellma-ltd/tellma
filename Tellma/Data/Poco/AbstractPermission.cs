@@ -6,7 +6,7 @@
     public class AbstractPermission
     {
         /// <summary>
-        /// "measurement-units"
+        /// "units"
         /// </summary>
         public string View { get; set; }
 

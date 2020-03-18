@@ -29,7 +29,7 @@ namespace Tellma.Entities
 
         [Display(Name = "AgentRate_Unit")]
         [ForeignKey(nameof(UnitId))]
-        public MeasurementUnit Unit { get; set; }
+        public Unit Unit { get; set; }
 
         [Display(Name = "AgentRate_Currency")]
         [ForeignKey(nameof(CurrencyId))]

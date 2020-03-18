@@ -5,7 +5,6 @@ using Tellma.Services.ApiAuthentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -319,14 +318,15 @@ namespace Tellma.Controllers
                 Time2Label = def.Time2Label,
                 Time2Label2 = def.Time2Label2,
                 Time2Label3 = def.Time2Label3,
-                QuantityVisibility = def.QuantityVisibility,
+                QuantityVisibility = MapVisibility(def.QuantityVisibility),
                 QuantityLabel = def.QuantityLabel,
                 QuantityLabel2 = def.QuantityLabel2,
                 QuantityLabel3 = def.QuantityLabel3,
-                UnitVisibility = def.UnitVisibility,
+                UnitVisibility = MapVisibility(def.UnitVisibility),
                 UnitLabel = def.UnitLabel,
                 UnitLabel2 = def.UnitLabel2,
                 UnitLabel3 = def.UnitLabel3,
+                CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
 
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
@@ -358,6 +358,7 @@ namespace Tellma.Controllers
                     Direction = e.Direction.Value,
                     AccountTypeParentCode = e.AccountTypeParentCode,
                     AgentDefinitionId = e.AgentDefinitionId,
+                    NotedAgentDefinitionId = e.NotedAgentDefinitionId,
                     EntryTypeCode = e.EntryTypeCode,
                     AccountTypeParentId = e.AccountTypeParentId,
                     AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false,

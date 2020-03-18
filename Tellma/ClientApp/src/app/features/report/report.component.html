@@ -99,9 +99,9 @@
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-lookups-picker>
 
-                            <t-measurement-units-picker *ngSwitchCase="'MeasurementUnit'" [(ngModel)]="arguments[p.key]"
+                            <t-units-picker *ngSwitchCase="'Unit'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-measurement-units-picker>
+                            </t-units-picker>
 
                             <t-resources-picker *ngSwitchCase="'Resource'" [(ngModel)]="arguments[p.key]"
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"

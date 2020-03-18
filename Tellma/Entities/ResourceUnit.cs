@@ -38,7 +38,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ResourceUnit_Unit")]
         [ForeignKey(nameof(UnitId))]
-        public MeasurementUnit Unit { get; set; }
+        public Unit Unit { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

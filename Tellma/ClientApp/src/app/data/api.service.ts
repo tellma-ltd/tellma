@@ -8,7 +8,7 @@ import { EntityForSave } from './entities/base/entity-for-save';
 import { GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
 import { GetResponse, EntitiesResponse } from './dto/get-response';
-import { MeasurementUnit } from './entities/measurement-unit';
+import { Unit } from './entities/unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
 import { ImportResult } from './dto/import-result';
@@ -267,10 +267,10 @@ export class ApiService {
 
   // Application
 
-  public measurementUnitsApi(cancellationToken$: Observable<void>) {
+  public unitsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<MeasurementUnit>('measurement-units', cancellationToken$),
-      deactivate: this.deactivateFactory<MeasurementUnit>('measurement-units', cancellationToken$)
+      activate: this.activateFactory<Unit>('units', cancellationToken$),
+      deactivate: this.deactivateFactory<Unit>('units', cancellationToken$)
     };
   }
 

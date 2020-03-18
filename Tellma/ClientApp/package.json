@@ -1,6 +1,6 @@
 {
   "name": "tellma",
-  "version": "10.9.0",
+  "version": "10.9.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

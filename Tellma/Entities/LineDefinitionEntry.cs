@@ -11,6 +11,8 @@ namespace Tellma.Entities
 
         public string AgentDefinitionId { get; set; }
 
+        public string NotedAgentDefinitionId { get; set; }
+
         public string EntryTypeCode { get; set; }
     }
 
@@ -37,6 +39,9 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(AgentDefinitionId))]
         public AgentDefinition AgentDefinition { get; set; }
+
+        [ForeignKey(nameof(NotedAgentDefinitionId))]
+        public AgentDefinition NotedAgentDefinition { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

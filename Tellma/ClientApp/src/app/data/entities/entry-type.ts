@@ -45,7 +45,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService,
   if (!_cache) {
 
     const entityDesc: EntityDescriptor = {
-      collection: 'MeasurementUnit',
+      collection: 'Unit',
       titleSingular: () => trx.instant('EntryType'),
       titlePlural: () => trx.instant('EntryTypes'),
       select: _select,

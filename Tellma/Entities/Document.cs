@@ -13,9 +13,8 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? SerialNumber { get; set; }
 
-        [Display(Name = "Document_DocumentDate")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        public DateTime? DocumentDate { get; set; }
+        [Display(Name = "Document_PostingDate")]
+        public DateTime? PostingDate { get; set; }
 
         [Display(Name = "Document_Clearance")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
@@ -87,6 +86,13 @@ namespace Tellma.Entities
 
         [Display(Name = "Document_UnitIsCommon")]
         public bool? UnitIsCommon { get; set; }
+
+        [Display(Name = "Document_Currency")]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        public string CurrencyId { get; set; }
+
+        [Display(Name = "Document_CurrencyIsCommon")]
+        public bool? CurrencyIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
@@ -187,7 +193,11 @@ namespace Tellma.Entities
 
         [Display(Name = "Document_Unit")]
         [ForeignKey(nameof(UnitId))]
-        public MeasurementUnit Unit { get; set; }
+        public Unit Unit { get; set; }
+
+        [Display(Name = "Document_Currency")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; }
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]

@@ -6,7 +6,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 
-export interface MeasurementUnitForSave extends EntityForSave {
+export interface UnitForSave extends EntityForSave {
   UnitType?: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'MonetaryValue';
   Name?: string;
   Name2?: string;
@@ -19,7 +19,7 @@ export interface MeasurementUnitForSave extends EntityForSave {
   BaseAmount?: number;
 }
 
-export interface MeasurementUnit extends MeasurementUnitForSave {
+export interface Unit extends UnitForSave {
   IsActive?: boolean;
   CreatedAt?: string;
   CreatedById?: number | string;
@@ -31,18 +31,18 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_MeasurementUnit(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Unit(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
     _settings = ws.settings;
     _cache = {
-      collection: 'MeasurementUnit',
-      titleSingular: () => trx.instant('MeasurementUnit'),
-      titlePlural: () => trx.instant('MeasurementUnits'),
+      collection: 'Unit',
+      titleSingular: () => trx.instant('Unit'),
+      titlePlural: () => trx.instant('Units'),
       select: _select,
-      apiEndpoint: 'measurement-units',
-      screenUrl: 'measurement-units',
+      apiEndpoint: 'units',
+      screenUrl: 'units',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {

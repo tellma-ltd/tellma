@@ -403,8 +403,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>አስተያየት</value>
   </data>
-  <data name="Document_DocumentDate" xml:space="preserve">
-    <value>ቀን</value>
+  <data name="Document_Currency" xml:space="preserve">
+    <value>ገንዘብ</value>
+  </data>
+  <data name="Document_CurrencyIsCommon" xml:space="preserve">
+    <value>ምንዛሬ ነው ኮመን</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>አይነታ 1</value>
@@ -432,6 +435,9 @@
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>ላይ የተከፈተው</value>
+  </data>
+  <data name="Document_PostingDate" xml:space="preserve">
+    <value>ቀን</value>
   </data>
   <data name="Document_PostingState" xml:space="preserve">
     <value>የመለጠፍ መንግስት</value>
@@ -631,8 +637,11 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>በራስዎ ተጠቃሚ መሰረዝ አይችሉም.</value>
   </data>
-  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
-    <value>የተለጠፈ ወይም የተሰረዙ ሰነዶችን ሊቀየሩ አይችሉም</value>
+  <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
+    <value>የተሰረዙ ሰነዶችን ሊቀየሩ አይችሉም</value>
+  </data>
+  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
+    <value>የተለጠፉ ሰነዶች ሊቀየሩ አይችሉም</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>አንድ የቀዘቀዘ ንጥል ማስተካከል አይቻልም.</value>
@@ -1002,12 +1011,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>ማውጫ ደርድር ቁልፍ</value>
-  </data>
-  <data name="MeasurementUnit" xml:space="preserve">
-    <value>የመለኪያ አሃድ</value>
-  </data>
-  <data name="MeasurementUnits" xml:space="preserve">
-    <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>አባላት</value>
@@ -1872,6 +1875,12 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA ተሰናክሏል. አንድ አረጋጋጭ መተግበሪያ በማዋቀር 2FA ዳግም ማንቃት ይችላሉ</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>የመለኪያ አሃድ</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>ተጠቃሚ</value>

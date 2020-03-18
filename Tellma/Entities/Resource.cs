@@ -192,19 +192,19 @@ namespace Tellma.Entities
 
         //[Display(Name = "Resource_MassUnit")]
         //[ForeignKey(nameof(MassUnitId))]
-        //public MeasurementUnit MassUnit { get; set; }
+        //public Unit MassUnit { get; set; }
 
         //[Display(Name = "Resource_VolumeUnit")]
         //[ForeignKey(nameof(VolumeUnitId))]
-        //public MeasurementUnit VolumeUnit { get; set; }
+        //public Unit VolumeUnit { get; set; }
 
         //[Display(Name = "Resource_TimeUnit")]
         //[ForeignKey(nameof(TimeUnitId))]
-        //public MeasurementUnit TimeUnit { get; set; }
+        //public Unit TimeUnit { get; set; }
 
         //[Display(Name = "Resource_CountUnit")]
         //[ForeignKey(nameof(CountUnitId))]
-        //public MeasurementUnit CountUnit { get; set; }
+        //public Unit CountUnit { get; set; }
 
         [Display(Name = "Resource_Lookup1")]
         [ForeignKey(nameof(Lookup1Id))]

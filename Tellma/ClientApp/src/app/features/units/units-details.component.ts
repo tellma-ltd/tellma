@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { MeasurementUnit, MeasurementUnitForSave, metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
+import { Unit, UnitForSave, metadata_Unit } from '~/app/data/entities/unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -10,18 +10,18 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
-  selector: 't-measurement-units-details',
-  templateUrl: './measurement-units-details.component.html'
+  selector: 't-units-details',
+  templateUrl: './units-details.component.html'
 })
-export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
+export class UnitsDetailsComponent extends DetailsBaseComponent {
 
   private _unitTypeChoices: SelectorChoice[];
-  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+  private unitsApi = this.api.unitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   create = () => {
-    const result: MeasurementUnitForSave = { };
+    const result: UnitForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -37,13 +37,13 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
+    this.unitsApi = this.api.unitsApi(this.notifyDestruct$);
   }
 
   get unitTypeChoices(): SelectorChoice[] {
 
     if (!this._unitTypeChoices) {
-      const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+      const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
       this._unitTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
@@ -55,7 +55,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
       return '';
     }
 
-    const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
@@ -63,27 +63,27 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  public onActivate = (model: MeasurementUnit): void => {
+  public onActivate = (model: Unit): void => {
     if (!!model && !!model.Id) {
-      this.measurementUnitsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.unitsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: MeasurementUnit): void => {
+  public onDeactivate = (model: Unit): void => {
     if (!!model && !!model.Id) {
-      this.measurementUnitsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.unitsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
-  public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
+  public showActivate = (model: Unit) => !!model && !model.IsActive;
+  public showDeactivate = (model: Unit) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canDo('measurement-units', 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Unit) => this.ws.canDo('units', 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: MeasurementUnit) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Unit) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

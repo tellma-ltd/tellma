@@ -448,11 +448,11 @@
                 <ng-template #row_Unit let-item="item" let-index="index" let-update="update">
                     <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
                         <div *ngIf="!isEdit">
-                            {{ ws.getMultilingualValue('MeasurementUnit', item.UnitId, 'Name') }}
+                            {{ ws.getMultilingualValue('Unit', item.UnitId, 'Name') }}
                         </div>
-                        <t-measurement-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
+                        <t-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
                             (ngModelChange)="update.call(null, item);">
-                        </t-measurement-units-picker>
+                        </t-units-picker>
                     </t-form-group-cell>
                 </ng-template>
 

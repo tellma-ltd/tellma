@@ -75,7 +75,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                     },
                     new PermissionForSave
                     {
-                        View = "measurement-units",
+                        View = "units",
                         Action = "Update"
                     }
                 },

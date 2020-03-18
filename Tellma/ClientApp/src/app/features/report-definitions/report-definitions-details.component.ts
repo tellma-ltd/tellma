@@ -99,7 +99,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.ShowInMainMenu = false;
-    // result.Collection = 'MeasurementUnit';
+    // result.Collection = 'Unit';
     result.Type = 'Summary';
     result.Rows = [];
     result.Columns = [];

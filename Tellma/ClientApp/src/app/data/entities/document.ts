@@ -15,7 +15,7 @@ export type DocumentClearance = 0 | 1 | 2;
 
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     SerialNumber?: number;
-    DocumentDate?: string;
+    PostingDate?: string;
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
@@ -33,6 +33,8 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     QuantityIsCommon?: boolean;
     UnitId?: number;
     UnitIsCommon?: boolean;
+    CurrencyId?: string;
+    CurrencyIsCommon?: boolean;
 
     Lines?: TLine[];
     Attachments?: TAttachment[];
@@ -104,7 +106,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
-                DocumentDate: { control: 'date', label: () => trx.instant('Document_DocumentDate') },
+                PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
                 Clearance: {
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
@@ -127,8 +129,11 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Quantity: { control: 'number', label: () => trx.instant('Document_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Document_QuantityIsCommon') },
                 UnitId:  { control: 'number', label: () => `${trx.instant('Document_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: () => trx.instant('Document_Unit'), type: 'MeasurementUnit', foreignKeyName: 'UnitId' },
+                Unit: { control: 'navigation', label: () => trx.instant('Document_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
                 UnitIsCommon: { control: 'boolean', label: () => trx.instant('Document_UnitIsCommon') },
+                CurrencyId:  { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
+                Currency: { control: 'navigation', label: () => trx.instant('Document_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
+                CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Document_CurrencyIsCommon') },
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
