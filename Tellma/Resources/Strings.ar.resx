@@ -403,8 +403,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_DocumentDate" xml:space="preserve">
-    <value>التاريخ</value>
+  <data name="Document_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="Document_CurrencyIsCommon" xml:space="preserve">
+    <value>العملة مشتركة</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -432,6 +435,9 @@
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
+  </data>
+  <data name="Document_PostingDate" xml:space="preserve">
+    <value>التاريخ</value>
   </data>
   <data name="Document_PostingState" xml:space="preserve">
     <value>حالة الترحيل</value>
@@ -631,8 +637,11 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>لا يمكنك حذف المستخدم خاصتك</value>
   </data>
-  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
-    <value>لا يمكن تعديل المستندات المرحلة أو الملغاة</value>
+  <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
+    <value>لا يمكن تعديل المستندات الملغاة</value>
+  </data>
+  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
+    <value>لا يمكن تعديل المستندات المرحلة</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
@@ -1002,12 +1011,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>الترتيب في القائمة الرئيسية</value>
-  </data>
-  <data name="MeasurementUnit" xml:space="preserve">
-    <value>وحدة قياس</value>
-  </data>
-  <data name="MeasurementUnits" xml:space="preserve">
-    <value>وحدات قياس</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>أعضاء</value>
@@ -1872,6 +1875,12 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>وحدة</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>وحدات</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>مستخدم</value>

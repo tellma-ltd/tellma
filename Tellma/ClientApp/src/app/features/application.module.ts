@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
-import { MeasurementUnitsMasterComponent } from './measurement-units/measurement-units-master.component';
+import { UnitsMasterComponent } from './units/units-master.component';
 import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
-import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
-import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
+import { UnitsImportComponent } from './units/units-import.component';
+import { UnitsDetailsComponent } from './units/units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
 import { AgentsMasterComponent } from './agents/agents-master.component';
@@ -45,7 +45,7 @@ import { CurrenciesImportComponent } from './currencies/currencies-import.compon
 import { ResourcesMasterComponent } from './resources/resources-master.component';
 import { ResourcesImportComponent } from './resources/resources-import.component';
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
-import { MeasurementUnitsPickerComponent } from './measurement-units/measurement-units-picker.component';
+import { UnitsPickerComponent } from './units/units-picker.component';
 import { LookupsPickerComponent } from './lookups/lookups-picker.component';
 import { LegacyClassificationsMasterComponent } from './legacy-classifications/legacy-classifications-master.component';
 import { LegacyClassificationsDetailsComponent } from './legacy-classifications/legacy-classifications-details.component';
@@ -87,20 +87,20 @@ const routes: Routes = [
     canActivate: [TenantResolverGuard],
     canActivateChild: [AuthGuard],
     children: [
-      // Measurement Units
+      // Units
       {
-        path: 'measurement-units',
-        component: MeasurementUnitsMasterComponent,
+        path: 'units',
+        component: UnitsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'measurement-units/import',
-        component: MeasurementUnitsImportComponent,
+        path: 'units/import',
+        component: UnitsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'measurement-units/:id',
-        component: MeasurementUnitsDetailsComponent,
+        path: 'units/:id',
+        component: UnitsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -394,9 +394,9 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ApplicationShellComponent,
-    MeasurementUnitsMasterComponent,
-    MeasurementUnitsDetailsComponent,
-    MeasurementUnitsImportComponent,
+    UnitsMasterComponent,
+    UnitsDetailsComponent,
+    UnitsImportComponent,
     ApplicationPageNotFoundComponent,
     MainMenuComponent,
     AgentsMasterComponent,
@@ -422,7 +422,7 @@ const routes: Routes = [
     ResourcesMasterComponent,
     ResourcesDetailsComponent,
     ResourcesImportComponent,
-    MeasurementUnitsPickerComponent,
+    UnitsPickerComponent,
     LookupsPickerComponent,
     LegacyClassificationsMasterComponent,
     LegacyClassificationsDetailsComponent,

@@ -107,7 +107,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name = "HR 1000x0.8",
                 Name2 = "HR 1000x0.8",
                 Code = "HR 1000x0.8",
-                MassUnitId = Shared.Get<MeasurementUnit>("MeasurementUnit_kg").Id,
             };
 
             // Save it
@@ -133,7 +132,6 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
-            Assert.Equal(dtoForSave.MassUnitId, responseDto.MassUnitId);
 
             Shared.Set("Resource_HR1000x0.8", responseDto);
         }
@@ -159,7 +157,6 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Code, responseDto.Code);
-            Assert.Equal(entity.MassUnitId, responseDto.MassUnitId);
         }
 
         [Fact(DisplayName = "08 Saving a ResourceForSave with an existing code returns a 422 Unprocessable Entity")]

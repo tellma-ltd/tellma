@@ -65,6 +65,7 @@ namespace Tellma.Entities
         public string UnitLabel { get; set; }
         public string UnitLabel2 { get; set; }
         public string UnitLabel3 { get; set; }
+        public string CurrencyVisibility { get; set; }
 
         // End: New stuff
 

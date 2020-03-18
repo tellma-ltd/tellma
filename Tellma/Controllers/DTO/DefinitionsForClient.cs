@@ -154,6 +154,7 @@ namespace Tellma.Controllers.Dto
         public string UnitLabel { get; set; }
         public string UnitLabel2 { get; set; }
         public string UnitLabel3 { get; set; }
+        public string CurrencyVisibility { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
     }
 
@@ -183,6 +184,7 @@ namespace Tellma.Controllers.Dto
         public short Direction { get; set; } // Is it needed??
         public string AccountTypeParentCode { get; set; }
         public string AgentDefinitionId { get; set; }
+        public string NotedAgentDefinitionId { get; set; }
         public string EntryTypeCode { get; set; }
 
 

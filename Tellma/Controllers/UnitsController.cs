@@ -13,9 +13,9 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
-    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int>
+    public class UnitsController : CrudControllerBase<UnitForSave, Unit, int>
     {
-        public const string BASE_ADDRESS = "measurement-units";
+        public const string BASE_ADDRESS = "units";
 
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
@@ -23,8 +23,8 @@ namespace Tellma.Controllers
 
         private string View => BASE_ADDRESS;
 
-        public MeasurementUnitsController(
-            ILogger<MeasurementUnitsController> logger,
+        public UnitsController(
+            ILogger<UnitsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -34,7 +34,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Unit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -47,7 +47,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Unit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -59,7 +59,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Unit>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -70,7 +70,7 @@ namespace Tellma.Controllers
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.MeasurementUnits__Activate(ids, isActive);
+            await _repo.Units__Activate(ids, isActive);
 
             if (returnEntities)
             {
@@ -96,20 +96,20 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<MeasurementUnit> Search(Query<MeasurementUnit> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Unit> Search(Query<Unit> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(MeasurementUnit.Name);
-                var name2 = nameof(MeasurementUnit.Name2);
-                var name3 = nameof(MeasurementUnit.Name3);
-                var code = nameof(MeasurementUnit.Code);
-                var desc = nameof(MeasurementUnit.Description);
-                var desc2 = nameof(MeasurementUnit.Description2);
-                var desc3 = nameof(MeasurementUnit.Description3);
+                var name = nameof(Unit.Name);
+                var name2 = nameof(Unit.Name2);
+                var name3 = nameof(Unit.Name3);
+                var code = nameof(Unit.Code);
+                var desc = nameof(Unit.Description);
+                var desc2 = nameof(Unit.Description2);
+                var desc3 = nameof(Unit.Description3);
 
                 var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
@@ -118,26 +118,26 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<MeasurementUnitForSave> entities)
+        protected override async Task SaveValidateAsync(List<UnitForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.MeasurementUnits_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Units_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<MeasurementUnitForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<UnitForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.MeasurementUnits__Save(entities, returnIds: returnIds);
+            return await _repo.Units__Save(entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.MeasurementUnits_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Units_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -147,17 +147,17 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.MeasurementUnits__Delete(ids);
+                await _repo.Units__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Unit"]]);
             }
         }
 
-        protected override Query<MeasurementUnit> GetAsQuery(List<MeasurementUnitForSave> entities)
+        protected override Query<Unit> GetAsQuery(List<UnitForSave> entities)
         {
-            return _repo.MeasurementUnits__AsQuery(entities);
+            return _repo.Units__AsQuery(entities);
         }
     }
 }

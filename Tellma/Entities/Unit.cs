@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class MeasurementUnitForSave : EntityWithKey<int>
+    public class UnitForSave : EntityWithKey<int>
     {
         [Display(Name = "MU_UnitType")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
@@ -60,7 +60,7 @@ namespace Tellma.Entities
         public double? BaseAmount { get; set; }
     }
 
-    public class MeasurementUnit : MeasurementUnitForSave
+    public class Unit : UnitForSave
     {
         [AlwaysAccessible]
         [Display(Name = "IsActive")]

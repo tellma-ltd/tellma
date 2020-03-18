@@ -74,7 +74,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             var dtoForSave = new ReportDefinitionForSave
             {
                 // Basics
-                Collection = "MeasurementUnit",
+                Collection = "Unit",
 
                 // Data
                 Type = "Summary",
@@ -372,7 +372,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ReportDefinitionForSave
             {
-                Collection = "MeasurementUnit",
+                Collection = "Unit",
                 Type = "Details",
                 Id = "report-2",
                 Title = "  Report 2", // Leading space

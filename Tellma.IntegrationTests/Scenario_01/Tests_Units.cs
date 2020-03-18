@@ -13,18 +13,18 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_05_MeasurementUnits : Scenario_01
+    public class Tests_05_Units : Scenario_01
     {
-        public Tests_05_MeasurementUnits(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_05_Units(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "measurement-units";
+        public readonly string _baseAddress = "units";
 
         public string Url => $"/api/{_baseAddress}";
         private string View => _baseAddress;
 
-        [Fact(DisplayName = "01 Getting all measurement units before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting all units before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -36,7 +36,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all measurement units before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "02 Getting all units before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
@@ -49,16 +49,16 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<MeasurementUnit>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Unit>>();
 
             // Assert the result makes sense
-            Assert.Equal("MeasurementUnit", responseData.CollectionName);
+            Assert.Equal("Unit", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "03 Getting a non-existent measurement unit id returns a 404 Not Found")]
+        [Fact(DisplayName = "03 Getting a non-existent unit id returns a 404 Not Found")]
         public async Task Test03()
         {
             int nonExistentId = 1;
@@ -68,11 +68,11 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "04 Saving a single well-formed MeasurementUnitForSave returns a 200 OK result")]
+        [Fact(DisplayName = "04 Saving a single well-formed UnitForSave returns a 200 OK result")]
         public async Task Test04()
         {
             // Prepare a well formed entity
-            var dtoForSave = new MeasurementUnitForSave
+            var dtoForSave = new UnitForSave
             {
                 Name = "KG",
                 Name2 = "كج",
@@ -85,19 +85,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Save it
-            var dtosForSave = new List<MeasurementUnitForSave> { dtoForSave };
+            var dtosForSave = new List<UnitForSave> { dtoForSave };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of MeasurementUnit
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            // Assert that the response is well-formed singleton of Unit
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Unit>>();
             Assert.Single(responseData.Result);
 
             // Assert that the result matches the saved entity
-            Assert.Equal("MeasurementUnit", responseData.CollectionName);
+            Assert.Equal("Unit", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDto = responseData.Result.SingleOrDefault();
@@ -111,23 +111,23 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.UnitAmount, responseDto.UnitAmount);
 
 
-            Shared.Set("MeasurementUnit_kg", responseDto);
+            Shared.Set("Unit_kg", responseDto);
         }
 
-        [Fact(DisplayName = "05 Getting the Id of the MeasurementUnitForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "05 Getting the Id of the UnitForSave just saved returns a 200 OK result")]
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<Unit>("Unit_kg");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of measurement unit
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<MeasurementUnit>>();
-            Assert.Equal("MeasurementUnit", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of unit
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Unit>>();
+            Assert.Equal("Unit", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
@@ -139,12 +139,12 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.UnitAmount, responseDto.UnitAmount);
         }
 
-        [Fact(DisplayName = "06 Saving a MeasurementUnitForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "06 Saving a UnitForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
-            var list = new List<MeasurementUnitForSave> {
-                new MeasurementUnitForSave
+            var list = new List<UnitForSave> {
+                new UnitForSave
                 {
                     Name = "Another Name",
                     Name2 = "Another Name",
@@ -175,12 +175,12 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "07 Saving a MeasurementUnitForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "07 Saving a UnitForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new MeasurementUnitForSave
+            var dtoForSave = new UnitForSave
             {
                 Name = "  KM", // Leading space
                 Name2 = "كم",
@@ -193,11 +193,11 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<MeasurementUnitForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<UnitForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Unit>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -208,16 +208,16 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("MeasurementUnit_km", responseDto);
+            Shared.Set("Unit_km", responseDto);
         }
 
-        [Fact(DisplayName = "08 Deleting an existing measurement unit Id returns a 200 OK")]
+        [Fact(DisplayName = "08 Deleting an existing unit Id returns a 200 OK")]
         public async Task Test08()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
+            var entity = Shared.Get<Unit>("Unit_km");
             var id = entity.Id;
 
             // Query the delete API
@@ -231,7 +231,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test09()
         {
             // Get the Id
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
+            var entity = Shared.Get<Unit>("Unit_km");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -242,13 +242,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "10 Deactivating an active measurement unit returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "10 Deactivating an active unit returns a 200 OK inactive entity")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<Unit>("Unit_kg");
             var id = entity.Id;
 
             // Call the API
@@ -259,19 +259,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Unit>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The Measurement Unit was not deactivated");
+            Assert.False(responseDto.IsActive, "The Unit was not deactivated");
         }
 
-        [Fact(DisplayName = "11 Activating an inactive measurement unit returns a 200 OK active entity")]
+        [Fact(DisplayName = "11 Activating an inactive unit returns a 200 OK active entity")]
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<Unit>("Unit_kg");
             var id = entity.Id;
 
             // Call the API
@@ -282,19 +282,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Unit>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The Measurement Unit was not activated");
+            Assert.True(responseDto.IsActive, "The Unit was not activated");
         }
 
         [Fact(DisplayName = "12 Using Select argument works as expected")]
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<Unit>("Unit_kg");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -302,9 +302,9 @@ namespace Tellma.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of measurement unit
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<MeasurementUnit>>();
-            Assert.Equal("MeasurementUnit", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of unit
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Unit>>();
+            Assert.Equal("Unit", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);

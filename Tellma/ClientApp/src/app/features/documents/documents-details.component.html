@@ -120,13 +120,13 @@
 
     </t-form-group>
 
-    <!-- Document Date -->
-    <t-form-group class="t-form-group" [label]="'Document_DocumentDate' | translate"
-        [serverErrors]="model?.serverErrors?.DocumentDate">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DocumentDate">
-            <div>{{ model?.DocumentDate | date:'yyyy-MM-dd' }}</div>
+    <!-- Posting Date -->
+    <t-form-group class="t-form-group" [label]="'Document_PostingDate' | translate"
+        [serverErrors]="model?.serverErrors?.PostingDate">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
+            <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
         </t-restricted>
-        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.DocumentDate" [ngModelOptions]="{ updateOn: 'blur' }"
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.PostingDate" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="true">
         </t-date-picker>
     </t-form-group>
@@ -326,7 +326,7 @@
                                 {{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}
                             </div>
                             <span
-                                *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('MeasurementUnit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
+                                *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
                             <div *ngSwitchCase="'Value'" style="float:right">
                                 {{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}
                             </div>
@@ -418,12 +418,12 @@
                                 [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
                                 [textAlignment]="isForm ? null : 'right'">
                             </t-decimal-editor>
-                            <t-measurement-units-picker *ngSwitchCase="'UnitId'"
+                            <t-units-picker *ngSwitchCase="'UnitId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-measurement-units-picker>
+                            </t-units-picker>
                             <t-decimal-editor *ngSwitchCase="'Value'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -461,6 +461,7 @@
                             <t-agents-picker *ngSwitchCase="'NotedAgentId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                [definitionIds]="notedAgentDefinitionIds(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
                             </t-agents-picker>
@@ -652,17 +653,17 @@
                             <t-form-group-dynamic [label]="'Entry_Unit' | translate"
                                 [serverErrors]="entry.serverErrors?.UnitId">
                                 <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.UnitId">
-                                    <!-- <t-view-link link="../../../measurement-units" [itemId]="entry.UnitId"> -->
-                                    {{ ws.getMultilingualValue('MeasurementUnit', entry.UnitId, 'Name') }}
+                                    <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->
+                                    {{ ws.getMultilingualValue('Unit', entry.UnitId, 'Name') }}
                                     <!-- </t-view-link> -->
                                 </t-restricted>
                                 <ng-container *ngIf="isEdit">
                                     <t-restricted *ngIf="readonlyUnit(entry)" [metadata]="entry.EntityMetadata?.UnitId">
-                                        {{ ws.getMultilingualValue('MeasurementUnit', readonlyValueUnitId(entry), 'Name') }}
+                                        {{ ws.getMultilingualValue('Unit', readonlyValueUnitId(entry), 'Name') }}
                                     </t-restricted>
-                                    <t-measurement-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
+                                    <t-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
                                         (ngModelChange)="update.call(null, item);" [filter]="filterUnitId(entry)">
-                                    </t-measurement-units-picker>
+                                    </t-units-picker>
                                 </ng-container>
                                 &nbsp;&nbsp;
                             </t-form-group-dynamic>

@@ -66,8 +66,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('Read', false)
         ]
     },
-    'measurement-units': {
-        name: 'MeasurementUnits',
+    'units': {
+        name: 'Units',
         read: true,
         update: true,
         delete: true,

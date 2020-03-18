@@ -416,7 +416,7 @@ namespace Tellma.Controllers
 
                 var query = _repo.Query<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp)
-                    .Expand("Role,SignedBy,OnBehalfOfUser,ProxyRole")
+                    .Expand("Role,User,SignedBy,OnBehalfOfUser,ProxyRole")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync();
@@ -464,6 +464,7 @@ namespace Tellma.Controllers
                 doc.Time2IsCommon ??= docDef.Time2Visibility != null;
                 doc.QuantityIsCommon ??= docDef.QuantityVisibility != null;
                 doc.UnitIsCommon ??= docDef.UnitVisibility != null;
+                doc.CurrencyIsCommon ??= docDef.CurrencyVisibility != null;
 
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
@@ -489,6 +490,7 @@ namespace Tellma.Controllers
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
                 doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
                 doc.UnitId = doc.UnitIsCommon.Value ? doc.UnitId : null;
+                doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
 
                 // All fields that are marked as common, copy the common value across to the 
                 // lines and entries, we deal with the lines one definitionId at a time
@@ -604,6 +606,13 @@ namespace Tellma.Controllers
                                         {
                                             line.Entries[columnDef.EntryIndex].UnitId = doc.UnitId;
                                         }
+                                        break;
+
+                                    case nameof(Entry.CurrencyId):
+                                        if (doc.CurrencyIsCommon.Value)
+                                        {
+                                            line.Entries[columnDef.EntryIndex].CurrencyId = doc.CurrencyId;
+                                        }
 
                                         break;
 
@@ -698,16 +707,16 @@ namespace Tellma.Controllers
                 }
 
                 // Date cannot be in the future
-                if (doc.DocumentDate > DateTime.Today.AddDays(1))
+                if (doc.PostingDate > DateTime.Today.AddDays(1))
                 {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.DocumentDate)}",
+                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
                         _localizer["Error_DateCannotBeInTheFuture"]);
                 }
 
                 // Date cannot be before archive date
-                if (doc.DocumentDate <= settings.ArchiveDate)
+                if (doc.PostingDate <= settings.ArchiveDate)
                 {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.DocumentDate)}",
+                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
                         _localizer["Error_DateCannotBeBeforeArchiveDate0", settings.ArchiveDate.ToString("yyyy-MM-dd")]);
                 }
 
@@ -1001,7 +1010,7 @@ namespace Tellma.Controllers
 
         protected override OrderByExpression DefaultOrderBy()
         {
-            return OrderByExpression.Parse($"{nameof(Document.DocumentDate)} desc");
+            return OrderByExpression.Parse($"{nameof(Document.PostingDate)} desc");
         }
     }
 
@@ -1041,7 +1050,7 @@ namespace Tellma.Controllers
 
                     var memoProp = nameof(Document.Memo);
                     var serialNumberProp = nameof(Document.SerialNumber);
-                    var documentDateProp = nameof(Document.DocumentDate);
+                    var postingDateProp = nameof(Document.PostingDate);
 
                     // Prepare the filter string
                     var filterString = $"{memoProp} {Ops.contains} '{search}'";
@@ -1055,7 +1064,7 @@ namespace Tellma.Controllers
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {documentDateProp} eq {searchDate.ToString("yyyy-MM-dd")}";
+                        filterString = $"{filterString} or {postingDateProp} eq {searchDate.ToString("yyyy-MM-dd")}";
                     }
 
                     // Apply the filter

@@ -22,7 +22,7 @@ DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM [dbo].[Settings]);
 
 DELETE FROM [dbo].[Lookups];
-DELETE FROM [dbo].[MeasurementUnits];
+DELETE FROM [dbo].[Units];
 DELETE FROM [dbo].[LegacyClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];

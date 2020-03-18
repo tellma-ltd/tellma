@@ -22,7 +22,7 @@ import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
-import { MeasurementUnit } from '~/app/data/entities/measurement-unit';
+import { Unit } from '~/app/data/entities/unit';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -76,7 +76,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesSummary: RequiredSignature[];
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'SignedById', 'SignedAt',
+    'ToState', 'RuleType', 'RoleId', 'UserId', 'SignedById', 'SignedAt',
     'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     'ReasonId', 'ReasonDetails'];
 
@@ -243,7 +243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   create = () => {
     const result: DocumentForSave = {
-      DocumentDate: toLocalDateISOString(new Date()),
+      PostingDate: toLocalDateISOString(new Date()),
       Clearance: 0,
       Lines: [],
       Attachments: []
@@ -264,6 +264,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.Time2IsCommon = false;
       result.QuantityIsCommon = false;
       result.UnitIsCommon = false;
+      result.CurrencyIsCommon = false;
 
       // result.AgentIsCommon = !!def.AgentDefinitionId;
       // result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility;
@@ -271,6 +272,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // result.Time2IsCommon = !!def.Time2Visibility;
       // result.QuantityIsCommon = !!def.QuantityVisibility;
       // result.UnitIsCommon = !!def.UnitVisibility;
+      // result.CurrencyIsCommon = !!def.CurrencyVisibility;
     }
 
     return result;
@@ -649,9 +651,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  private unit(entry: Entry): MeasurementUnit {
+  private unit(entry: Entry): Unit {
     const unitId = this.readonlyUnit(entry) ? this.readonlyValueUnitId(entry) : entry.UnitId;
-    return this.ws.get('MeasurementUnit', unitId) as MeasurementUnit;
+    return this.ws.get('Unit', unitId) as Unit;
   }
 
   // DueDate
@@ -1145,6 +1147,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           diff = (a.RoleId || 0) - (b.RoleId || 0);
         }
 
+        // Then by user ID
+        if (diff === 0) {
+          diff = (a.UserId || 0) - (b.UserId || 0);
+        }
+
         // Return result
         return diff;
       });
@@ -1569,6 +1576,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public agentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.AgentDefinitionId ? [entryDef.AgentDefinitionId] : [];
+  }
+
+  public notedAgentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.NotedAgentDefinitionId ? [entryDef.NotedAgentDefinitionId] : [];
   }
 
   public resourcesFilter(lineDefId: string, columnIndex: number): string {

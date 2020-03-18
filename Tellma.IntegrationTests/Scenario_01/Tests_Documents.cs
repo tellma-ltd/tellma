@@ -102,7 +102,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new DocumentForSave
             {
-                DocumentDate = DateTime.Today,
+                PostingDate = DateTime.Today,
                 Memo = "Capital investment",
                 MemoIsCommon = true,
                 Lines = new List<LineForSave>
@@ -166,7 +166,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.NotNull(responseDto.SerialNumber);
             Assert.NotEqual(0, responseDto.SerialNumber);
             Assert.Equal((short)0, responseDto.State);
-            Assert.Equal(dtoForSave.DocumentDate, responseDto.DocumentDate);
+            Assert.Equal(dtoForSave.PostingDate, responseDto.PostingDate);
             Assert.Equal(dtoForSave.Memo, responseDto.Memo);
             Assert.Equal(dtoForSave.MemoIsCommon, responseDto.MemoIsCommon);
             Assert.Collection(responseDto.Lines,

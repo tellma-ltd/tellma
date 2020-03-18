@@ -1,4 +1,4 @@
-import { metadata_MeasurementUnit } from '../measurement-unit';
+import { metadata_Unit } from '../unit';
 import { WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
@@ -31,7 +31,7 @@ export const metadata: {
         definitionId?: string) => EntityDescriptor
 } = {
     // Application
-    MeasurementUnit: metadata_MeasurementUnit,
+    Unit: metadata_Unit,
     User: metadata_User,
     Agent: metadata_Agent,
     Role: metadata_Role,

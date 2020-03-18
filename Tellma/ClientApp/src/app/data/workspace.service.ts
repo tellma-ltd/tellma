@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-import { MeasurementUnit } from './entities/measurement-unit';
+import { Unit } from './entities/unit';
 import { Injectable } from '@angular/core';
 import { Role } from './entities/role';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
@@ -316,7 +316,7 @@ export class TenantWorkspace extends SpecificWorkspace {
    */
   reportState: { [key: string]: ReportStore };
 
-  MeasurementUnit: EntityWorkspace<MeasurementUnit>;
+  Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
@@ -344,7 +344,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.mdState = {};
     this.reportState = {};
 
-    this.MeasurementUnit = {};
+    this.Unit = {};
     this.Role = {};
     this.User = {};
     this.Agent = {};

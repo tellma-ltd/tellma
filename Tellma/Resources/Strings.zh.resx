@@ -403,8 +403,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_DocumentDate" xml:space="preserve">
-    <value>日期</value>
+  <data name="Document_Currency" xml:space="preserve">
+    <value>货币</value>
+  </data>
+  <data name="Document_CurrencyIsCommon" xml:space="preserve">
+    <value>货币是通用</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -432,6 +435,9 @@
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
+  </data>
+  <data name="Document_PostingDate" xml:space="preserve">
+    <value>日期</value>
   </data>
   <data name="Document_PostingState" xml:space="preserve">
     <value>写入状况</value>
@@ -631,8 +637,11 @@
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>您无法删除自己的用户。</value>
   </data>
-  <data name="Error_CannotEditPostedOrCanceledDocuments" xml:space="preserve">
-    <value>发布或取消的文件不能被修改</value>
+  <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
+    <value>取消的文件不能被修改</value>
+  </data>
+  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
+    <value>发布的文件不能被修改</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>无法修改非活动项目。</value>
@@ -1002,12 +1011,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>菜单排序关键字</value>
-  </data>
-  <data name="MeasurementUnit" xml:space="preserve">
-    <value>计量单位</value>
-  </data>
-  <data name="MeasurementUnits" xml:space="preserve">
-    <value>测量单位</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>会员</value>
@@ -1872,6 +1875,12 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA已被禁用。通过建立一个认证程序，你可以重新启用2FA</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>计量单位</value>
+  </data>
+  <data name="Units" xml:space="preserve">
+    <value>测量单位</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>用户</value>

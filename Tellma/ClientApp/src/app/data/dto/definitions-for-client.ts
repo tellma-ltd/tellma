@@ -112,6 +112,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     UnitLabel: string;
     UnitLabel2: string;
     UnitLabel3: string;
+    CurrencyVisibility: Visibility;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
 }
 
@@ -138,6 +139,7 @@ export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
     AccountTypeParentCode: string;
     AgentDefinitionId: string;
+    NotedAgentDefinitionId: string;
     EntryTypeCode: string;
 
     // Computed

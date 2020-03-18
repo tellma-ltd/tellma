@@ -25,8 +25,8 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "measurement-units",
-                        Name = "MeasurementUnits",
+                        Id = "units",
+                        Name = "Units",
                         Read = true,
                         Update = true,
                         Delete = true,

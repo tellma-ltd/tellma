@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
+import { metadata_Unit } from '~/app/data/entities/unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
@@ -10,22 +10,22 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
-  selector: 't-measurement-units-master',
-  templateUrl: './measurement-units-master.component.html'
+  selector: 't-units-master',
+  templateUrl: './units-master.component.html'
 })
-export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
+export class UnitsMasterComponent extends MasterBaseComponent {
 
-  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+  private unitsApi = this.api.unitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
+    this.unitsApi = this.api.unitsApi(this.notifyDestruct$);
   }
 
   public get c() {
-    return this.ws.MeasurementUnit;
+    return this.ws.Unit;
   }
 
   public get ws() {
@@ -33,12 +33,12 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public unitTypeLookup(value: string): string {
-    const descriptor = metadata_MeasurementUnit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.unitsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -47,7 +47,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.unitsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -55,7 +55,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('measurement-units', 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('units', 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
