@@ -27,6 +27,7 @@ SET NOCOUNT ON;
 			UPDATE SET
 				--t.[IsOperatingSegment]	= s.[IsOperatingSegment],
 				t.[ManagerId]			= s.[ManagerId],
+				t.[CenterType]			= s.[CenterType],
 				t.[ParentId]			= s.[ParentId],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],

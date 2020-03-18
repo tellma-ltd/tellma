@@ -8,23 +8,23 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 't-responsibility-centers-master',
-  templateUrl: './responsibility-centers-master.component.html',
+  selector: 't-centers-master',
+  templateUrl: './centers-master.component.html',
   styles: []
 })
-export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
+export class CentersMasterComponent extends MasterBaseComponent {
 
-  private responsibilityCenterApi = this.api.responsibilityCenterApi(this.notifyDestruct$); // for intellisense
+  private centersApi = this.api.centersApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    this.responsibilityCenterApi = this.api.responsibilityCenterApi(this.notifyDestruct$);
+    this.centersApi = this.api.centersApi(this.notifyDestruct$);
   }
 
   public get c() {
-    return this.ws.ResponsibilityCenter;
+    return this.ws.Center;
   }
 
   public get ws() {
@@ -32,7 +32,7 @@ export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.responsibilityCenterApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.centersApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -41,7 +41,7 @@ export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.responsibilityCenterApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.centersApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -49,7 +49,7 @@ export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('responsibility-centers', 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('centers', 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

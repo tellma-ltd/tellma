@@ -113,10 +113,10 @@
                                 (ngModelChange)="onArgumentChange()">
                             </t-legacy-types-picker>
 
-                            <t-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenter'"
+                            <t-centers-picker *ngSwitchCase="'Center'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-responsibility-centers-picker>
+                            </t-centers-picker>
 
                             <t-roles-picker *ngSwitchCase="'Role'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">

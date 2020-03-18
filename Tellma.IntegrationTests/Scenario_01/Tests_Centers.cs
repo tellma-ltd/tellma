@@ -13,19 +13,19 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_07_ResponsibilityCenters : Scenario_01
+    public class Tests_07_Centers : Scenario_01
     {
-        public Tests_07_ResponsibilityCenters(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_07_Centers(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "responsibility-centers";
+        public readonly string _baseAddress = "centers";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific account definition
         public string View => $"{_baseAddress}"; // For permissions
 
 
-        [Fact(DisplayName = "01 Getting all responsibility centers before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting all centers before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -37,7 +37,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all responsibility centers before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "02 Getting all centers before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id ge 0");
@@ -50,16 +50,16 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<ResponsibilityCenter>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Center>>();
 
             // Assert the result makes sense
-            Assert.Equal("ResponsibilityCenter", responseData.CollectionName);
+            Assert.Equal("Center", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "03 Getting a non-existent responsibility center id returns a 404 Not Found")]
+        [Fact(DisplayName = "03 Getting a non-existent center id returns a 404 Not Found")]
         public async Task Test03()
         {
             int nonExistentId = 1;
@@ -69,13 +69,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "04 Saving a single well-formed ResponsibilityCenterForSave returns a 200 OK result")]
+        [Fact(DisplayName = "04 Saving a single well-formed CenterForSave returns a 200 OK result")]
         public async Task Test04()
         {
             // Prepare a well formed entity
-            var dtoForSaveParent = new ResponsibilityCenterForSave
+            var dtoForSaveParent = new CenterForSave
             {
-                ResponsibilityType = "Cost",
+                CenterType = "Cost",
                 Name = "Walia Steel Industry",
                 Name2 = "واليا الحديد",
                 Code = "110",
@@ -83,9 +83,9 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Prepare a well formed entity
-            var dtoForSaveChild = new ResponsibilityCenterForSave
+            var dtoForSaveChild = new CenterForSave
             {
-                ResponsibilityType = "Investment",
+                CenterType = "Investment",
                 Name = "Best Paint",
                 Name2 = "بست بينت",
                 Code = "1101",
@@ -93,19 +93,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Save it
-            var dtosForSave = new List<ResponsibilityCenterForSave> { dtoForSaveParent, dtoForSaveChild };
+            var dtosForSave = new List<CenterForSave> { dtoForSaveParent, dtoForSaveChild };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of ResponsibilityCenter
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ResponsibilityCenter>>();
+            // Assert that the response is well-formed singleton of Center
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Center>>();
             Assert.Equal(2, responseData.Result.Count());
 
             // Assert that the result matches the saved entity
-            Assert.Equal("ResponsibilityCenter", responseData.CollectionName);
+            Assert.Equal("Center", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDtoParent = responseData.Result.FirstOrDefault();
@@ -126,24 +126,24 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSaveParent.IsLeaf, responseDtoParent.IsLeaf);
 
 
-            Shared.Set("ResponsibilityCenter_Parent", responseDtoParent);
-            Shared.Set("ResponsibilityCenter_Child", responseDtoChild);
+            Shared.Set("Center_Parent", responseDtoParent);
+            Shared.Set("Center_Child", responseDtoChild);
         }
 
-        [Fact(DisplayName = "05 Getting the Id of the ResponsibilityCenterForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "05 Getting the Id of the CenterForSave just saved returns a 200 OK result")]
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child");
+            var entity = Shared.Get<Center>("Center_Child");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of responsibility center
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<ResponsibilityCenter>>();
-            Assert.Equal("ResponsibilityCenter", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of center
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Center>>();
+            Assert.Equal("Center", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
@@ -153,14 +153,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.ParentId, responseDto.ParentId);
         }
 
-        [Fact(DisplayName = "06 Saving a ResponsibilityCenterForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "06 Saving a CenterForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
             // Prepare a record with the same code 'kg' as one that has been saved already
-            var list = new List<ResponsibilityCenterForSave> {
-                new ResponsibilityCenterForSave
+            var list = new List<CenterForSave> {
+                new CenterForSave
                 {
-                    ResponsibilityType = "Profit",
+                    CenterType = "Profit",
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "110",
@@ -187,14 +187,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "07 Saving a ResponsibilityCenterForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "07 Saving a CenterForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new ResponsibilityCenterForSave
+            var dtoForSave = new CenterForSave
             {
-                ResponsibilityType = "Profit",
+                CenterType = "Profit",
                 Name = "  Best Plastic", // Leading space
                 Name2 = "بست بلاستيك",
                 Code = "1102  ", // Trailing space
@@ -202,11 +202,11 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<ResponsibilityCenterForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<CenterForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ResponsibilityCenter>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Center>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -217,16 +217,16 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("ResponsibilityCenter_Child2", responseDto);
+            Shared.Set("Center_Child2", responseDto);
         }
 
-        [Fact(DisplayName = "08 Deleting an existing responsibility center Id returns a 200 OK")]
+        [Fact(DisplayName = "08 Deleting an existing center Id returns a 200 OK")]
         public async Task Test08()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child2");
+            var entity = Shared.Get<Center>("Center_Child2");
             var id = entity.Id;
 
             // Query the delete API
@@ -240,7 +240,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test09()
         {
             // Get the Id
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child2");
+            var entity = Shared.Get<Center>("Center_Child2");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -251,13 +251,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "10 Deactivating an active responsibility center returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "10 Deactivating an active center returns a 200 OK inactive entity")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child");
+            var entity = Shared.Get<Center>("Center_Child");
             var id = entity.Id;
 
             // Call the API
@@ -268,19 +268,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ResponsibilityCenter>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Center>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The responsibility center was not deactivated");
+            Assert.False(responseDto.IsActive, "The center was not deactivated");
         }
 
-        [Fact(DisplayName = "11 Activating an inactive responsibility center returns a 200 OK active entity")]
+        [Fact(DisplayName = "11 Activating an inactive center returns a 200 OK active entity")]
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child");
+            var entity = Shared.Get<Center>("Center_Child");
             var id = entity.Id;
 
             // Call the API
@@ -291,19 +291,19 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ResponsibilityCenter>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Center>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The responsibility center was not activated");
+            Assert.True(responseDto.IsActive, "The center was not activated");
         }
 
         [Fact(DisplayName = "12 Using Select argument works as expected")]
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Child");
+            var entity = Shared.Get<Center>("Center_Child");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -311,9 +311,9 @@ namespace Tellma.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of responsibility center
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<ResponsibilityCenter>>();
-            Assert.Equal("ResponsibilityCenter", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of center
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Center>>();
+            Assert.Equal("Center", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);

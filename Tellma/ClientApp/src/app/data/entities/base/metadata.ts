@@ -15,7 +15,7 @@ import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
-import { metadata_ResponsibilityCenter } from '../responsibility-center';
+import { metadata_Center } from '../center';
 import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
 import { metadata_SummaryEntry } from '../summary-entry';
@@ -43,7 +43,7 @@ export const metadata: {
     AccountType: metadata_AccountType,
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,
-    ResponsibilityCenter: metadata_ResponsibilityCenter,
+    Center: metadata_Center,
     EntryType: metadata_EntryType,
     Document: metadata_Document,
     Line: metadata_Line,

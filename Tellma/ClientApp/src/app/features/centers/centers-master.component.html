@@ -1,0 +1,50 @@
+<t-master collection="Center" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+    [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate"
+    [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+    selectDefault="Code,CenterType" selectForTiles="Code,CenterType" [multiselectActions]="[
+          { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+          { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ],
+            'CenterType' : [
+                { template: investment, expression: 'CenterType eq \'Investment\''},
+                { template: profit, expression: 'CenterType eq \'Profit\''},
+                { template: revenue, expression: 'CenterType eq \'Revenue\''},
+                { template: cost, expression: 'CenterType eq \'Cost\''}
+            ]
+          }">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex justify-content-between">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('Center', id, 'Name') }}</span>
+    </div>
+    <div class="d-flex justify-content-between mt-1 small">
+        <span>{{ c[id].Code }}</span>
+    </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Center' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('Center', id, 'Name') }}</span>
+</ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #investment> {{ 'Center_CenterType_Investment' | translate }} </ng-template>
+<ng-template #profit> {{ 'Center_CenterType_Profit' | translate }} </ng-template>
+<ng-template #revenue> {{ 'Center_CenterType_Revenue' | translate }} </ng-template>
+<ng-template #cost> {{ 'Center_CenterType_Cost' | translate }} </ng-template>

@@ -7,8 +7,8 @@ namespace Tellma.Entities
     [StrongEntity]
     public class AccountForSave : EntityWithKey<int>
     {
-        [Display(Name = "Account_ResponsibilityCenter")]
-        public int? ResponsibilityCenterId { get; set; }
+        [Display(Name = "Account_Center")]
+        public int? CenterId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
@@ -127,9 +127,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
 
-        [Display(Name = "Account_ResponsibilityCenter")]
-        [ForeignKey(nameof(ResponsibilityCenterId))]
-        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+        [Display(Name = "Account_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
 
         [Display(Name = "Account_AgentDefinition")]
         [ForeignKey(nameof(AgentDefinitionId))]

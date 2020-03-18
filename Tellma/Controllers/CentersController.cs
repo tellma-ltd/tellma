@@ -15,9 +15,9 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
-    public class ResponsibilityCentersController : CrudTreeControllerBase<ResponsibilityCenterForSave, ResponsibilityCenter, int>
+    public class CentersController : CrudTreeControllerBase<CenterForSave, Center, int>
     {
-        public const string BASE_ADDRESS = "responsibility-centers";
+        public const string BASE_ADDRESS = "centers";
 
         private readonly ApplicationRepository _repo;
         private readonly ILogger _logger;
@@ -25,8 +25,8 @@ namespace Tellma.Controllers
 
         private string View => BASE_ADDRESS;
 
-        public ResponsibilityCentersController(
-            ILogger<ResponsibilityCentersController> logger,
+        public CentersController(
+            ILogger<CentersController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -36,7 +36,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<ResponsibilityCenter>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Center>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -49,7 +49,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<ResponsibilityCenter>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Center>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -61,7 +61,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<ResponsibilityCenter>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Center>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -72,7 +72,7 @@ namespace Tellma.Controllers
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.ResponsibilityCenters__Activate(ids, isActive);
+            await _repo.Centers__Activate(ids, isActive);
 
             if (returnEntities)
             {
@@ -98,17 +98,17 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<ResponsibilityCenter> Search(Query<ResponsibilityCenter> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Center> Search(Query<Center> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(ResponsibilityCenter.Name);
-                var name2 = nameof(ResponsibilityCenter.Name2);
-                var name3 = nameof(ResponsibilityCenter.Name3);
-                var code = nameof(ResponsibilityCenter.Code);
+                var name = nameof(Center.Name);
+                var name2 = nameof(Center.Name2);
+                var name3 = nameof(Center.Name3);
+                var code = nameof(Center.Code);
 
                 query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
@@ -116,14 +116,14 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<ResponsibilityCenterForSave> entities)
+        protected override async Task SaveValidateAsync(List<CenterForSave> entities)
         {
             // Check that codes are not duplicated within the arriving collection
             var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
             if (duplicateCodes.Any())
             {
                 // Hash the entities' indices for performance
-                Dictionary<ResponsibilityCenterForSave, int> indices = entities.ToIndexDictionary();
+                Dictionary<CenterForSave, int> indices = entities.ToIndexDictionary();
 
                 foreach (var groupWithDuplicateCodes in duplicateCodes)
                 {
@@ -144,22 +144,22 @@ namespace Tellma.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResponsibilityCenters_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Centers_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ResponsibilityCenterForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<CenterForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.ResponsibilityCenters__Save(entities, returnIds: returnIds);
+            return await _repo.Centers__Save(entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResponsibilityCenters_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Centers_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -169,11 +169,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.ResponsibilityCenters__Delete(ids);
+                await _repo.Centers__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {               
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResponsibilityCenter"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Center"]]);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResponsibilityCenters_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Centers_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -191,17 +191,17 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.ResponsibilityCenters__DeleteWithDescendants(ids);
+                await _repo.Centers__DeleteWithDescendants(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResponsibilityCenter"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Center"]]);
             }
         }
 
-        protected override Query<ResponsibilityCenter> GetAsQuery(List<ResponsibilityCenterForSave> entities)
+        protected override Query<Center> GetAsQuery(List<CenterForSave> entities)
         {
-            return _repo.ResponsibilityCenters__AsQuery(entities);
+            return _repo.Centers__AsQuery(entities);
         }
     }
 }

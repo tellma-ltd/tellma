@@ -168,11 +168,11 @@ namespace Tellma.Entities
 
         [Display(Name = "Resource_ExpenseCenter")]
         [ForeignKey(nameof(ExpenseCenterId))]
-        public ResponsibilityCenter ExpenseCenter { get; set; }
+        public Center ExpenseCenter { get; set; }
 
         [Display(Name = "Resource_InvestmentCenter")]
         [ForeignKey(nameof(InvestmentCenterId))]
-        public ResponsibilityCenter InvestmentCenter { get; set; }
+        public Center InvestmentCenter { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -76,6 +76,9 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>تعريف الذمة</value>
   </data>
+  <data name="Account_Center" xml:space="preserve">
+    <value>المركز</value>
+  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
@@ -123,9 +126,6 @@
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
@@ -228,6 +228,30 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
+  </data>
+  <data name="Center" xml:space="preserve">
+    <value>مركز</value>
+  </data>
+  <data name="Center_CenterType" xml:space="preserve">
+    <value>نوع المركز</value>
+  </data>
+  <data name="Center_CenterType_Cost" xml:space="preserve">
+    <value>تكلفة</value>
+  </data>
+  <data name="Center_CenterType_Investment" xml:space="preserve">
+    <value>استثمار</value>
+  </data>
+  <data name="Center_CenterType_Profit" xml:space="preserve">
+    <value>ربح</value>
+  </data>
+  <data name="Center_CenterType_Revenue" xml:space="preserve">
+    <value>إيراد</value>
+  </data>
+  <data name="Center_Manager" xml:space="preserve">
+    <value>المدير</value>
+  </data>
+  <data name="Centers" xml:space="preserve">
+    <value>مراكز</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>تغير كلمة المرور</value>
@@ -541,6 +565,9 @@
   <data name="Entry_Agent" xml:space="preserve">
     <value>الذمّة</value>
   </data>
+  <data name="Entry_Center" xml:space="preserve">
+    <value>المركز</value>
+  </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>نوع العقد</value>
   </data>
@@ -588,9 +615,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>الزمن 1</value>
@@ -1575,30 +1599,6 @@
   </data>
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>الوحدة</value>
-  </data>
-  <data name="ResponsibilityCenter" xml:space="preserve">
-    <value>مركز مسؤولية</value>
-  </data>
-  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
-    <value>المدير</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
-    <value>نوع المركز</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
-    <value>تكلفة</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
-    <value>استثمار</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
-    <value>ربح</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
-    <value>إيراد</value>
-  </data>
-  <data name="ResponsibilityCenters" xml:space="preserve">
-    <value>مراكز مسؤولية</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>

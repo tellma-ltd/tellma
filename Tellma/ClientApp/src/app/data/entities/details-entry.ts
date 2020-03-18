@@ -9,7 +9,7 @@ import { EntityWithKey } from './base/entity-with-key';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
-    ResponsibilityCenterId?: number;
+    CenterId?: number;
     Direction?: number;
     AccountId?: number;
     AgentId: number;
@@ -63,8 +63,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 LineId: { control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Line: { control: 'navigation', label: () => trx.instant('Entry_Line'), type: 'Line', foreignKeyName: 'LineId' },
-                ResponsibilityCenterId: { control: 'number', label: () => `${trx.instant('Entry_ResponsibilityCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResponsibilityCenter: { control: 'navigation', label: () => trx.instant('Entry_ResponsibilityCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'ResponsibilityCenterId' },
+                CenterId: { control: 'number', label: () => `${trx.instant('Entry_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { control: 'navigation', label: () => trx.instant('Entry_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 Direction: {
                     control: 'choice',
                     label: () => trx.instant('Entry_Direction'),

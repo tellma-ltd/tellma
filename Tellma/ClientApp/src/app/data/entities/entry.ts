@@ -8,7 +8,7 @@ export interface EntryForSave extends EntityForSave {
     CurrencyId?: string;
     AgentId?: number;
     ResourceId?: number;
-    ResponsibilityCenterId?: number;
+    CenterId?: number;
     EntryTypeId?: number;
     DueDate?: string;
     MonetaryValue?: number;

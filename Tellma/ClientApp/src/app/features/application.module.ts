@@ -65,9 +65,9 @@ import { ReportResultsComponent } from './report-results/report-results.componen
 import { ReportDefinitionsMasterComponent } from './report-definitions/report-definitions-master.component';
 import { ReportDefinitionsDetailsComponent } from './report-definitions/report-definitions-details.component';
 import { ReportDefinitionsImportComponent } from './report-definitions/report-definitions-import.component';
-import { ResponsibilityCentersMasterComponent } from './responsibility-centers/responsibility-centers-master.component';
-import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
-import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
+import { CentersMasterComponent } from './centers/centers-master.component';
+import { CentersDetailsComponent } from './centers/centers-details.component';
+import { CentersPickerComponent } from './centers/centers-picker.component';
 import { LegacyTypesPickerComponent } from './legacy-types/legacy-types-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
@@ -338,13 +338,13 @@ const routes: Routes = [
 
       // Report Definitions
       {
-        path: 'responsibility-centers',
-        component: ResponsibilityCentersMasterComponent,
+        path: 'centers',
+        component: CentersMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'responsibility-centers/:id',
-        component: ResponsibilityCentersDetailsComponent,
+        path: 'centers/:id',
+        component: CentersDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -442,9 +442,9 @@ const routes: Routes = [
     ReportDefinitionsMasterComponent,
     ReportDefinitionsDetailsComponent,
     ReportDefinitionsImportComponent,
-    ResponsibilityCentersMasterComponent,
-    ResponsibilityCentersDetailsComponent,
-    ResponsibilityCentersPickerComponent,
+    CentersMasterComponent,
+    CentersDetailsComponent,
+    CentersPickerComponent,
     UsersPickerComponent,
     RolesPickerComponent,
     CurrenciesPickerComponent,

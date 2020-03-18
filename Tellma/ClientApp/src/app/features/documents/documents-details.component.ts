@@ -139,12 +139,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
     ['Currency', /* 'Resource/Currency', */ 'Resource/Units', 'Agent',
-      'EntryType', 'AccountType', 'ResponsibilityCenter']
+      'EntryType', 'AccountType', 'Center']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
     ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
-      'EntryType', 'NotedAgent', 'ResponsibilityCenter', 'Unit']
+      'EntryType', 'NotedAgent', 'Center', 'Unit']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
     // Attachments
@@ -1471,8 +1471,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (lineDefId === 'ManualLine') {
       const paths = ['AccountId', 'Debit', 'Credit'];
 
-      if (this.ws.settings.IsMultiResponsibilityCenter) {
-        paths.splice(1, 0, 'ResponsibilityCenter');
+      if (this.ws.settings.IsMultiCenter) {
+        paths.splice(1, 0, 'Center');
       }
 
       if (!model.MemoIsCommon || this.definitionId !== 'manual-journal-vouchers') {
@@ -1483,9 +1483,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } else {
       // All line definitions other than 'ManualLine'
       const lineDef = this.ws.definitions.Lines[lineDefId];
-      const isMultiRS = this.ws.settings.IsMultiResponsibilityCenter;
+      const isMultiRS = this.ws.settings.IsMultiCenter;
       return !!lineDef && !!lineDef.Columns ? lineDef.Columns
-        .filter(e => isMultiRS || e.ColumnName !== 'ResponsibilityCenterId') // Hide Responsibility Centers columns when there is only one
+        .filter(e => isMultiRS || e.ColumnName !== 'CenterId') // Hide Center columns when there is only one
         .map((_, index) => index + '') : [];
     }
   }

@@ -259,7 +259,7 @@
                         'AccountId' : { headerTemplate : header_AccountId, rowTemplate : row_AccountId, weight : 3 },
                         'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
                         'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
-                        'ResponsibilityCenter' : { headerTemplate : header_ResponsibilityCenter, rowTemplate : row_ResponsibilityCenter, weight : 1 }
+                        'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 }
                     }" [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
                         (delete)="onDelete($event, model)">
                     </t-table>
@@ -309,9 +309,9 @@
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
-                            <t-view-link *ngSwitchCase="'ResponsibilityCenterId'" link="../../../responsibility-centers"
+                            <t-view-link *ngSwitchCase="'CenterId'" link="../../../centers"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('ResponsibilityCenter', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'EntryTypeId'" link="../../../entry-types"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
@@ -380,12 +380,12 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
                             </t-resources-picker>
-                            <t-responsibility-centers-picker *ngSwitchCase="'ResponsibilityCenterId'"
+                            <t-centers-picker *ngSwitchCase="'CenterId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-responsibility-centers-picker>
+                            </t-centers-picker>
                             <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -526,7 +526,7 @@
                             </t-restricted>
                             <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
                                 (ngModelChange)="update.call(null, item)"
-                                additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,ResponsibilityCenter/Name,ResponsibilityCenter/Name2,ResponsibilityCenter/Name3,HasNotedAmount,HasNotedDate,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/Units/Unit/Name,Resource/Units/Unit/Name2,Resource/Units/Unit/Name3,Resource/Units/Multiplier">
+                                additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,Center/Name,Center/Name2,Center/Name3,HasNotedAmount,HasNotedDate,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/Units/Unit/Name,Resource/Units/Unit/Name2,Resource/Units/Unit/Name3,Resource/Units/Multiplier">
                             </t-accounts-picker>
                         </t-form-group-dynamic>
                     </div>
@@ -827,27 +827,27 @@
                     </div>
                 </ng-template>
 
-                <!-- ResponsibilityCenter -->
-                <ng-template #header_ResponsibilityCenter>
-                    <div>{{ 'Entry_ResponsibilityCenter' | translate }}</div>
+                <!-- Center -->
+                <ng-template #header_Center>
+                    <div>{{ 'Entry_Center' | translate }}</div>
                 </ng-template>
-                <ng-template #row_ResponsibilityCenter let-item="item" let-entry="item.Entries[0]" let-index="index"
+                <ng-template #row_Center let-item="item" let-entry="item.Entries[0]" let-index="index"
                     let-update="update">
-                    <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ResponsibilityCenterId">
-                        <t-view-link link="../../../responsibility-centers" [itemId]="entry.ResponsibilityCenterId">
-                            {{ ws.getMultilingualValue('ResponsibilityCenter', entry.ResponsibilityCenterId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.CenterId">
+                        <t-view-link link="../../../centers" [itemId]="entry.CenterId">
+                            {{ ws.getMultilingualValue('Center', entry.CenterId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <ng-container *ngIf="isEdit">
                         <t-form-group-dynamic class="t-form-group"
-                            [serverErrors]="entry.serverErrors?.ResponsibilityCenterId">
-                            <t-responsibility-centers-picker *ngIf="!account(entry)?.ResponsibilityCenterId"
-                                [(ngModel)]="entry.ResponsibilityCenterId" (ngModelChange)="update.call(null, item);"
+                            [serverErrors]="entry.serverErrors?.CenterId">
+                            <t-centers-picker *ngIf="!account(entry)?.CenterId"
+                                [(ngModel)]="entry.CenterId" (ngModelChange)="update.call(null, item);"
                                 filter="IsLeaf eq true">
-                            </t-responsibility-centers-picker>
-                            <t-restricted *ngIf="!!account(entry)?.ResponsibilityCenterId"
-                                [metadata]="entry.EntityMetadata?.ResponsibilityCenterId">
-                                {{ ws.getMultilingualValue('ResponsibilityCenter', account(entry)?.ResponsibilityCenterId, 'Name') }}
+                            </t-centers-picker>
+                            <t-restricted *ngIf="!!account(entry)?.CenterId"
+                                [metadata]="entry.EntityMetadata?.CenterId">
+                                {{ ws.getMultilingualValue('Center', account(entry)?.CenterId, 'Name') }}
                             </t-restricted>
                         </t-form-group-dynamic>
                     </ng-container>

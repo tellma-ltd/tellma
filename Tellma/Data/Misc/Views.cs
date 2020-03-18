@@ -122,8 +122,8 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "responsibility-centers",
-                        Name = "ResponsibilityCenters",
+                        Id = "centers",
+                        Name = "Centers",
                         Read = true,
                         Update = true,
                         Delete = true,

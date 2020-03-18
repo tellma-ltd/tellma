@@ -15,9 +15,7 @@ namespace Tellma.Entities
         public string DefinitionId { get; set; }
 
         // HIDDEN
-
-        public int? ResponsibilityCenterId { get; set; } // TODO: Display
-
+        
         [Display(Name = "Line_Agent")]
         public int? AgentId { get; set; }
 

@@ -121,8 +121,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'currencies', sortKey: 200
         },
         {
-          label: 'ResponsibilityCenters', icon: 'sitemap', link: '../responsibility-centers',
-          view: 'responsibility-centers', sortKey: 300
+          label: 'Centers', icon: 'sitemap', link: '../centers',
+          view: 'centers', sortKey: 300
         },
         {
           label: 'Settings', icon: 'cog', link: '../settings',

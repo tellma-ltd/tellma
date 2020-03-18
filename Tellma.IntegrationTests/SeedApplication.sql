@@ -26,7 +26,7 @@ DELETE FROM [dbo].[Units];
 DELETE FROM [dbo].[LegacyClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
-DELETE FROM [dbo].[ResponsibilityCenters];
+DELETE FROM [dbo].[Centers];
 DELETE FROM [dbo].[AccountTypes];
 DELETE FROM [dbo].[EntryTypes];
 

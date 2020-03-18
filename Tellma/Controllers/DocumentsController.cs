@@ -569,10 +569,10 @@ namespace Tellma.Controllers
 
                                         break;
 
-                                    case nameof(Entry.ResponsibilityCenterId):
+                                    case nameof(Entry.CenterId):
                                         if (doc.InvestmentCenterIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].ResponsibilityCenterId = doc.InvestmentCenterId;
+                                            line.Entries[columnDef.EntryIndex].CenterId = doc.InvestmentCenterId;
                                         }
 
                                         break;

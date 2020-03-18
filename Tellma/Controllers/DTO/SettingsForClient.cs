@@ -51,6 +51,6 @@ namespace Tellma.Controllers.Dto
 
         public DateTimeOffset CreatedAt { get; set; }
 
-        public bool IsMultiResponsibilityCenter { get; set; }
+        public bool IsMultiCenter { get; set; }
     }
 }
