@@ -16,8 +16,8 @@ SET NOCOUNT ON;
 	
 	 [✓] The SerialNumber is required if original document
 	 [✓] The SerialNumber is not duplicated in the uploaded list
-	 [✓] The DocumentDate is not after 1 day in the future
-	 [✓] The DocumentDate cannot be before archive date
+	 [✓] The PostingDate is not after 1 day in the future
+	 [✓] The PostingDate cannot be before archive date
 	 [✓] If Entry.CurrencyId is functional, the value must be the same as monetary value
 
 	*/
@@ -60,11 +60,11 @@ SET NOCOUNT ON;
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	--SELECT
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
+	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
 	--	N'Error_TheTransactionDateIsBeforeArchiveDate0',
 	--	(SELECT TOP 1 ArchiveDate FROM dbo.Settings)
 	--FROM @Documents
-	--WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
+	--WHERE [PostingDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
 	-- (FE Check, DB IU trigger) Cannot save a CLOSED document
 	-- TODO: if it is not allowed to change a line once (Requested), report error

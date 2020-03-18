@@ -23,7 +23,7 @@ BEGIN
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	WHERE (@fromDate <= D.DocumentDate) AND (D.DocumentDate < DATEADD(DAY, 1, @toDate))
+	WHERE (@fromDate <= D.[PostingDate]) AND (D.[PostingDate] < DATEADD(DAY, 1, @toDate))
 	
 	AND [AT].[Code]  = N'CashAndCashEquivalents' -- TODO: Or below
 	AND E.[EntryTypeId] <> (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InternalCashTransfer')

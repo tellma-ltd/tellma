@@ -125,6 +125,6 @@ BEGIN
 	--FROM @Entries
 	--GROUP BY [LineIndex];
 
-	--INSERT INTO @Documents([DocumentDate]) VALUES(DEFAULT);
+	--INSERT INTO @Documents([PostingDate]) VALUES(DEFAULT);
 	--SELECT * FROM @Documents; SELECT *,  N'PaysheetLine' AS [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;
 END

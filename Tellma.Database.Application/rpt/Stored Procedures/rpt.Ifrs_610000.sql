@@ -28,7 +28,7 @@ BEGIN
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
-	WHERE (@fromDate <= D.DocumentDate) AND (D.DocumentDate < DATEADD(DAY, 1, @toDate))
+	WHERE (@fromDate <= D.[PostingDate]) AND (D.[PostingDate] < DATEADD(DAY, 1, @toDate))
 	-- TODO: consider subtypes of the ones below
 	AND [AT].[Code] IN (
 		N'IssuedCapital',

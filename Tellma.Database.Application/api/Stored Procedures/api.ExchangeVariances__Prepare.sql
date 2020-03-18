@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[ExchangeVariances__Prepare]
-@DocumentDate DATE,
+@PostingDate DATE,
 -- TODO: Allow a list of currencies and their rates?
 @CurrencyId NCHAR(3),
 @Rate FLOAT(53),
@@ -40,7 +40,7 @@ BEGIN
 		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		AND L.[State] = 4 AND D.[PostingState] = 1
-		AND D.[DocumentDate] <= @DocumentDate
+		AND D.[PostingDate] <= @PostingDate
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId]
 		HAVING SUM(E.[AlgebraicValue]) * @Rate <> SUM(E.[AlgebraicMonetaryValue])
 	),
@@ -58,6 +58,6 @@ BEGIN
 	FROM @Entries
 	GROUP BY [LineIndex];
 
-	INSERT INTO @Documents([DocumentDate]) VALUES(@DocumentDate);
+	INSERT INTO @Documents([PostingDate]) VALUES(@PostingDate);
 	SELECT * FROM @Documents; SELECT *, N'ManualLine' As [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;
 END

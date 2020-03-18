@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[AssetsDepreciation__Populate]
 	@DocumentIndex	INT = 0,
-	@DocumentDate	DATE = N'2020.01.31',
+	@PostingDate	DATE = N'2020.01.31',
 	@Quantity		DECIMAL (19,4) = 1, -- Used Capacity
 	@UnitId			INT = 8, -- select * from measurementunits
 	@Time1			DATETIME2 (2) = N'2020.01.01',
@@ -58,7 +58,7 @@ AS
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	WHERE A.AccountTypeId IN (SELECT [Id] FROM @PPETypeIds)
 	AND L.[State] = 4 AND D.PostingState = 1
-	AND D.DocumentDate <= @DocumentDate
+	AND D.[PostingDate] <= @PostingDate
 	GROUP BY E.[ResourceId]
 	HAVING SUM(E.[Direction] * E.[Quantity]) <> 0 OR SUM(E.[Direction] * E.[MonetaryValue]) <> 0 OR  SUM(E.[Direction] * E.[Value]) <> 0
 	),

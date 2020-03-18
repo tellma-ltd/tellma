@@ -4,7 +4,7 @@
 IF @DB IN (N'102', N'103', N'104')  -- ACME, USD, en/ar/zh
 BEGIN -- Inserting
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Memo]) VALUES
+	([Index],	[PostingDate], [Memo]) VALUES
 	(0,			'2018.01.01',	N'Capital investment'),
 	(1,			'2018.01.01',	N'Exchange of $50000'),
 	(2,			'2018.01.05',	N'Vehicles purchase receipt on account'),
@@ -21,7 +21,7 @@ BEGIN -- Inserting
 	(17,		'2018.02.28',	N'Feb 2018 Month Closing');
 
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Frequency], [Repetitions],	[Memo]) VALUES
+	([Index],	[PostingDate], [Frequency], [Repetitions],	[Memo]) VALUES
 	(7,			@d1,			N'Monthly',		60,			N'Vehicles Depreciation'),
 	(8,			'2017.02.01',	N'Monthly',		60,			N'Sales Point Rental'),
 	(10,		@dU,			N'Monthly',		48,			N'Reverse Depreciation'),
@@ -202,11 +202,11 @@ BEGIN -- Inserting
 			J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 			FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
 			FORMAT(SUM(J.[NotedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
-			J.DocumentDate As [Invoice Date]
+			J.[PostingDate] As [Invoice Date]
 		FROM [rpt].[Entries]('2018.01.02', '2019.01.01') J
 
 		LEFT JOIN [dbo].[Agents] A ON J.[NotedAgentId] = A.Id
 		WHERE J.[AccountId] = @VATInput
-		GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
+		GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.[PostingDate];
 	END
 END

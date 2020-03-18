@@ -176,7 +176,7 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN dbo.ExchangeRatesView ER ON E.CurrencyId = ER.CurrencyId
-	WHERE D.DocumentDate >= ER.ValidAsOf AND D.DocumentDate < ER.ValidTill
+	WHERE D.[PostingDate] >= ER.ValidAsOf AND D.[PostingDate] < ER.ValidTill
 	AND L.[DefinitionId] <> N'ManualLine';
 
 	-- TODO: Currently it sets the account to the first conformant

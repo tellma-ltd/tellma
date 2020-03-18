@@ -4,7 +4,7 @@
 IF @DB = (N'105')  -- Simpex, SAR, en/ar
 BEGIN -- Inserting
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Memo]) VALUES
+	([Index],	[PostingDate], [Memo]) VALUES
 	(0,			'2019.12.31',	N'ترحيل أرصدة افتتاحية'),
 	(1,			'2020.01.04',	N'فتح اعتماد 100 ألف دولار رقم 760 لصالح ستورا'),
 	(2,			'2020.01.05',	N'استلام مستندات الشحن من ستورا'),

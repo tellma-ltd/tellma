@@ -7,7 +7,7 @@ IF @DB = N'101' -- Banan SD, USD, en
 BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Memo]) VALUES
+	([Index],	[PostingDate], [Memo]) VALUES
 	(12,		'2019.01.06',	N'Recognize Washim Revenue 6/1/19')
 	;
 --(0,7,	N'Entries', N'AgentId',				0,	N'Customer',	N'الزبون',		1,4,0),

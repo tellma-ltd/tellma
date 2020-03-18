@@ -2,7 +2,7 @@
 BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Memo]) VALUES
+	([Index],	[PostingDate], [Memo]) VALUES
 	(0,			'2019.01.01',	N'Meals 1'),
 	(4,			'2019.01.03',	N'Maintenance'),
 	(5,			'2019.01.03',	N'Meals 2'),
@@ -229,8 +229,8 @@ BEGIN -- Inserting
 	END;
 
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
-	INSERT INTO @D([Index], [Id], [DocumentDate], [Memo], [MemoIsCommon])
-	SELECT [Id], [Id],[DocumentDate], [Memo], [MemoIsCommon]
+	INSERT INTO @D([Index], [Id], [PostingDate], [Memo], [MemoIsCommon])
+	SELECT [Id], [Id],[PostingDate], [Memo], [MemoIsCommon]
 	FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
 
 	INSERT INTO @L([Index],	[DocumentIndex], [Id], [DefinitionId], [Memo])

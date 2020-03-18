@@ -5,7 +5,7 @@ BEGIN
 WITH Docs AS (
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
-			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
+			CAST(D.[PostingDate] AS NVARCHAR(30)) AS [PostingDate],
 			D.[DefinitionId] AS DocumentDefinitionId,
 			[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 			D.[State],
@@ -41,7 +41,7 @@ WITH Docs AS (
 	)
 	SELECT 
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN Docs.[Id] ELSE '' END) AS [Id],
-		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [PostingDate] ELSE '' END) AS [PostingDate],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [S/N] ELSE '' END) AS [S/N],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [State] ELSE '' END) AS [State],

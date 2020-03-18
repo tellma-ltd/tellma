@@ -34,7 +34,7 @@ RETURN
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 
-			(@fromDate IS NOT NULL AND D.[DocumentDate] < @fromDate)
+			(@fromDate IS NOT NULL AND D.[PostingDate] < @fromDate)
 		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY E.AccountId, E.[CurrencyId]
 	),
@@ -57,8 +57,8 @@ RETURN
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 
-			(@fromDate IS NULL OR D.[DocumentDate] >= @fromDate)
-		AND (@toDate IS NULL OR D.[DocumentDate] < DATEADD(DAY, 1, @toDate))
+			(@fromDate IS NULL OR D.[PostingDate] >= @fromDate)
+		AND (@toDate IS NULL OR D.[PostingDate] < DATEADD(DAY, 1, @toDate))
 		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY E.AccountId, E.[EntryTypeId], E.[CurrencyId]
 	),

@@ -23,7 +23,7 @@ BEGIN
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	WHERE @fromDate <= D.DocumentDate AND D.DocumentDate < DATEADD(DAY, 1, @toDate)
+	WHERE @fromDate <= D.[PostingDate] AND D.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	-- TODO: replace with IsDescendantOf, to cater for possible customer extensions
 	-- The #Mapping table can be persisted and used to add the column IFRS320000_ConceptId to the fact table.
 	AND [AT].[Code] IN (

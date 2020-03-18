@@ -39,28 +39,29 @@ BEGIN
 	(0, 8, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 	(0, 9, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
-		INSERT INTO @Workflows([Index],
+	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
 	(10, N'LeaseOutIssueAndSalesInvoiceNoVAT',	+3),-- Requested
 	(11, N'LeaseOutIssueAndSalesInvoiceNoVAT',	+4);-- Reviewed
-
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
 	[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 	(0, 10, N'ByRole',	@1AccountManager,	NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 	(0, 11, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+	--CashTransferExchange
+	INSERT INTO @Workflows([Index],
+	[LineDefinitionId], ToState) Values
+	(12, N'CashTransferExchange',	+1),-- Requested
+	(13, N'CashTransferExchange',	+2),-- Authorized
+	(14, N'CashTransferExchange',	+3),-- Completed
+	(15, N'CashTransferExchange',	+4);-- Reviewed
+	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
+	[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+	(0, 12, N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+	(0, 13, N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+	(0, 14, N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+	(1, 14, N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+	(0, 15, N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 
-
-	--INSERT INTO @Workflows([Index],
-	--[LineDefinitionId],		ToState) Values
-	--(6, N'PettyCashPayment',+2),
-	--(7, N'PettyCashPayment',+3),
-	--(8, N'PettyCashPayment',+4);
-
-	--INSERT INTO @WorkflowSignatures([Index], [HeaderIndex],
-	--[RuleType],			[RoleId],	[RuleTypeEntryIndex],	[PredicateType],[PredicateTypeEntryIndex], [Value]) VALUES
-	--(0, 6, N'ByRole',	@1GeneralManager,	NULL,			N'ValueGreaterOrEqual',0,					500),
-	--(0, 7, N'ByAgent',	NULL,				0,				NULL,			NULL,						NULL), -- Agent0: Cash custodian
-	--(0, 8, N'ByRole',	@1Comptroller,		NULL,			NULL,			NULL,						NULL);
 END
 IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

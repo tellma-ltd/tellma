@@ -53,7 +53,7 @@ BEGIN
 	(3,9,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
 	(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
 	(5,9,N'Read',	NULL,				N'entry-types'),
-	(6,9,N'Read',	NULL,				N'agents/it-manufacturers'),
+	(6,9,N'Read',	NULL,				N'lookups/it-equipment-manufacturers'),
 	(7,9,N'Read',	NULL,				N'measurement-units'),
 	(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
 	(9,9,N'Read',	NULL,				N'responsibility-centers'),

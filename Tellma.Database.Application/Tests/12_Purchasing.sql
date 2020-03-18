@@ -4,7 +4,7 @@ DECLARE @D21Ids dbo.[IdList], @D22Ids dbo.[IdList], @D23Ids dbo.[IdList];
 
 BEGIN -- Inserting
 	INSERT INTO @D21 ([Index],
-			[DocumentDate],	[Memo]) VALUES
+			[PostingDate],	[Memo]) VALUES
 		(0,	'2017.01.05',	N'Purchase of hot and cold coils');
 	INSERT INTO @L21([Index], [DocumentIndex],
 				[LineDefinitionId],				[SortKey]) VALUES
@@ -21,7 +21,7 @@ BEGIN -- Inserting
 		(5,2,0,2,	-1,			@CBELC,			N'PaymentsToSuppliersForGoodsAndServices',@ETB,	9000000,		0,		0);
 
 	INSERT INTO @D21 ([Index],
-			[DocumentDate],	[Memo]) VALUES
+			[PostingDate],	[Memo]) VALUES
 		(1,	'2017.01.06',	N'Purchase of fuel On Credit');
 	INSERT INTO @L21([Index], [DocumentIndex],
 				[LineDefinitionId], [SortKey]) VALUES
@@ -36,7 +36,7 @@ BEGIN -- Inserting
 		(9,4,1,2,	-1,			@NocJimmaAccount,	NULL,							@ETB,		562.5,			0,		0);
 
 	--INSERT INTO @D21
-	--([DocumentDate],	[Memo]) VALUES
+	--([PostingDate],	[Memo]) VALUES
 	--('2017.01.07',		N'Purchase of fixed assets by check and cash');
 	--INSERT INTO @L21(
 	--[DocumentIndex], [LineTypeId], [SortKey]) VALUES
@@ -99,8 +99,8 @@ END
 	
 /*
 BEGIN -- Updating document and deleting lines/entries
-	INSERT INTO @D22([Id], [DocumentDate],	[Memo])
-	SELECT [Id], [DocumentDate],	[Memo] 
+	INSERT INTO @D22([Id], [PostingDate],	[Memo])
+	SELECT [Id], [PostingDate],	[Memo] 
 	FROM dbo.Documents
 	WHERE [DocumentTypeId] = N'purchasing-international' AND [SerialNumber] = 1;
 

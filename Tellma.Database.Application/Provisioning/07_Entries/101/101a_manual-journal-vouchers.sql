@@ -2,7 +2,7 @@
 BEGIN -- Inserting
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D
-	([Index],	[DocumentDate], [Memo]) VALUES
+	([Index],	[PostingDate], [Memo]) VALUES
 	(2,			'2019.01.02',	N'Received 10,000 USD from MA - Dec'),
 	(3,			'2019.01.02',	N'Yahoo Business Mail Subscription Jan 2019'),
 	(7,			'2019.01.05',	N'Charged phone for PR and Marketing'),

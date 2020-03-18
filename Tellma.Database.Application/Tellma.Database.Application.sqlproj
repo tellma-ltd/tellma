@@ -580,7 +580,6 @@
     <None Include="Provisioning\06_Accounts\101_Accounts.sql" />
     <None Include="Provisioning\07_Entries\101\101a_manual-journal-vouchers.sql" />
     <None Include="Provisioning\07_Entries\101\101b_cash-payment-vouchers.sql" />
-    <None Include="Provisioning\07_Entries\101\101c_petty-cash-vouchers.sql" />
     <None Include="Provisioning\00_Common\f_RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_PostingState__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />

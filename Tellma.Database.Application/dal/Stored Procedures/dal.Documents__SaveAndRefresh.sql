@@ -22,7 +22,7 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id],
-				[DocumentDate],
+				[PostingDate],
 				[Clearance],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
@@ -50,7 +50,7 @@ BEGIN
 				t.[SerialNumber]			= IIF(@IsOriginalDocument = 1, 
 												t.[SerialNumber],
 												s.[ManualSerialNumber]),
-				t.[DocumentDate]			= s.[DocumentDate],
+				t.[PostingDate]			= s.[PostingDate],
 				t.[Clearance]				= s.[Clearance],
 				t.[Memo]					= s.[Memo],
 				t.[MemoIsCommon]			= s.[MemoIsCommon],
@@ -72,7 +72,7 @@ BEGIN
 			INSERT (
 				[DefinitionId],
 				[SerialNumber], 
-				[DocumentDate],
+				[PostingDate],
 				[Clearance],
 				[Memo],
 				[MemoIsCommon],
@@ -92,7 +92,7 @@ BEGIN
 			VALUES (
 				@DefinitionId,
 				IIF(@IsOriginalDocument = 1, s.[AutoSerialNumber], s.[ManualSerialNumber]),
-				s.[DocumentDate],
+				s.[PostingDate],
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],

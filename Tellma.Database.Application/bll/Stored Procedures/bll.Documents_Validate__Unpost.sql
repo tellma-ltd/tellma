@@ -12,10 +12,10 @@ SET NOCOUNT ON;
 	-- TODO: Might be useful to define a separate archive date for each operating segment
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
 		N'Error_FallsinArchivedPeriod'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[DocumentDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
+	WHERE D.[PostingDate] < (SELECT [ArchiveDate] FROM dbo.Settings)
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

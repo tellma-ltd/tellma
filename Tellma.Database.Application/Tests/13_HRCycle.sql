@@ -1,6 +1,6 @@
 ﻿-- N'Salaries Accruals'
 	INSERT INTO @DM2([Index], [SortKey],
-	[Memo],				[DocumentDate]) VALUES
+	[Memo],				[PostingDate]) VALUES
 (4,6,N'Payroll Calculation','2018.02.01');
 INSERT INTO @LM2 ([Index], [DocumentIndex],	
 			[LineTypeId],				[SortKey]) VALUES
@@ -28,7 +28,7 @@ INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 
 -- N'Payroll Calculation'
 	INSERT INTO @DM3([Index], [SortKey],
-	[Memo],				[DocumentDate]) VALUES
+	[Memo],				[PostingDate]) VALUES
 (0,7,N'Paysheet Jan 2019','2017.02.01');
 
 	WITH EmployeesAccruals AS (
