@@ -2,7 +2,7 @@
 	@DocumentIndex	INT = 0,
 	@PostingDate	DATE = N'2020.01.31',
 	@Quantity		DECIMAL (19,4) = 1, -- Used Capacity
-	@UnitId			INT = 8, -- select * from measurementunits
+	@UnitId			INT = 8, -- select * from Units
 	@Time1			DATETIME2 (2) = N'2020.01.01',
 	@Time2			DATETIME2 (2) = N'2020.01.31',
 	@InvestmentCenterId	INT = 1
@@ -84,7 +84,7 @@ AS
 	JOIN PPEBalances PB ON WL.ResourceId1 = PB.ResourceId
 
 	SELECT [Index], [DocumentIndex], ResourceId1 AS [Asset], Quantity1 AS [UsedCapacity],
-			(SELECT [Name] FROM dbo.MeasurementUnits WHERE [Id] = WL.UnitId1) AS Unit, MonetaryValue1 As UsedMonetaryValue, Value1 As UsedValue, 
+			(SELECT [Name] FROM dbo.[Units] WHERE [Id] = WL.UnitId1) AS Unit, MonetaryValue1 As UsedMonetaryValue, Value1 As UsedValue, 
 			AgentId0 AS [System],
 			(select [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,

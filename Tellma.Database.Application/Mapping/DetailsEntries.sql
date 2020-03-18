@@ -6,7 +6,7 @@ With RU AS
 (
 	select ResourceId, MU.UnitType, Multiplier * BaseAmount AS Multiplier
 	from dbo.ResourceUnits RU
-	JOIN dbo.MeasurementUnits MU ON RU.UnitId = MU.Id
+	JOIN dbo.[Units] MU ON RU.UnitId = MU.Id
 ),
 E AS
 (
@@ -37,7 +37,7 @@ E AS
 		E.[NotedDate]
 	FROM
 		[dbo].[Entries] E
-		LEFT JOIN dbo.MeasurementUnits MU ON E.UnitId = MU.[Id]
+		LEFT JOIN dbo.[Units] MU ON E.UnitId = MU.[Id]
 ),
 -- TODO: Check performance and see if using PIVOT improves the performance
 EA AS (

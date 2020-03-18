@@ -1,8 +1,8 @@
-﻿DECLARE @MeasurementUnits [dbo].MeasurementUnitList;
+﻿DECLARE @Units [dbo].UnitList;
 
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
 (1, N'share', NULL,		NULL,		N'Count',	N'Shares',		1,				1),
@@ -35,7 +35,7 @@ INSERT INTO @MeasurementUnits ([Index],
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
 (1, N'share', NULL,		NULL,		N'Count',	N'Shares',		1,				1),
@@ -53,7 +53,7 @@ INSERT INTO @MeasurementUnits ([Index],
 (11, N'wmo',NULL,		NULL,		N'Time',	N'work month',	1,				1248),
 (12, N'wwk',NULL,		NULL,		N'Time',	N'work week',	1,				48),
 (13, N'wyr', NULL,		NULL,		N'Time',	N'work year',	1,				14976);
-UPDATE @MeasurementUnits SET [Code] = 
+UPDATE @Units SET [Code] = 
 	CASE
 		WHEN [Index] = 6 THEN N'DAY'
 		WHEN [Index] = 7 THEN N'MONTH'
@@ -61,7 +61,7 @@ UPDATE @MeasurementUnits SET [Code] =
 	END
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
 (1, N'share', NULL,		NULL,		N'Count',	N'Shares',		1,				1),
@@ -81,7 +81,7 @@ INSERT INTO @MeasurementUnits ([Index],
 (13, N'wyr', NULL,		NULL,		N'Time',	N'work year',	1,				14976);
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
 (1, N'share', NULL,		NULL,		N'Count',	N'Shares',		1,				1),
@@ -113,7 +113,7 @@ INSERT INTO @MeasurementUnits ([Index],
 (24, N'in', NULL,		NULL,		N'Distance',N'inch',		100,			2.541);
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name], [Name2],	[Name3],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',	NULL,		NULL,		N'Count',	N'Each',		1,				1),
 (1, N'share', NULL,		NULL,		N'Count',	N'Shares',		1,				1),
@@ -145,7 +145,7 @@ INSERT INTO @MeasurementUnits ([Index],
 (24, N'in', NULL,		NULL,		N'Distance',N'inch',		100,			2.541);
 
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
-INSERT INTO @MeasurementUnits ([Index],
+INSERT INTO @Units ([Index],
 	[Name],		[Name2],	[UnitType], [Description],	[UnitAmount],	[BaseAmount]) VALUES
 (0, N'ea',		N'وحدة',	N'Count',	N'Each',		1,				1),
 --(1, N'pcs',		N'قطعة',	N'Count',	N'Pieces',	1,				1),
@@ -176,18 +176,18 @@ INSERT INTO @MeasurementUnits ([Index],
 --(23, N'km', N'كم',		N'Distance',N'Kilometer',	1,				1000),
 --(24, N'in', N'إنش',		N'Distance',N'inch',		100,			2.541);
 
-EXEC [api].[MeasurementUnits__Save]
-	@Entities = @MeasurementUnits,
+EXEC [api].[Units__Save]
+	@Entities = @Units,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'MeasurementUnits: Inserting: ' + @ValidationErrorsJson
+	Print 'Units: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 
 DECLARE @WorkMonth INT, @Hour INT, @Month INT, @Year INT;
-SELECT @WorkMonth = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'wmo';
-SELECT @Month = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'mo';
-SELECT @Hour = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'hr';
-SELECT @Year = [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'yr';
+SELECT @WorkMonth = [Id] FROM dbo.[Units] WHERE [Name] = N'wmo';
+SELECT @Month = [Id] FROM dbo.[Units] WHERE [Name] = N'mo';
+SELECT @Hour = [Id] FROM dbo.[Units] WHERE [Name] = N'hr';
+SELECT @Year = [Id] FROM dbo.[Units] WHERE [Name] = N'yr';

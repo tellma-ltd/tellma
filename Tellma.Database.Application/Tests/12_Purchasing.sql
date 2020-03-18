@@ -87,8 +87,8 @@ BEGIN -- Inserting
 	CAST([Value] AS DECIMAL (19,4)) AS [Value]
 	FROM CompactLines CL
 	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
-	LEFT JOIN dbo.MeasurementUnits MUV ON R.VolumeUnitId = MUV.Id
+	LEFT JOIN dbo.[Units] MUM ON R.MassUnitId = MUM.Id
+	LEFT JOIN dbo.[Units] MUV ON R.VolumeUnitId = MUV.Id
 	JOIN dbo.[LegacyClassifications] A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.[EntryTypes] IEC ON CL.[EntryTypeId] = IEC.[Code]
 	WHERE CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 

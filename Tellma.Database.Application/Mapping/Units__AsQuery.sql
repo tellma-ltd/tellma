@@ -1,5 +1,5 @@
-﻿CREATE FUNCTION [map].[MeasurementUnits__AsQuery] (
-	@Entities [dbo].[MeasurementUnitList] READONLY
+﻿CREATE FUNCTION [map].[Units__AsQuery] (
+	@Entities [dbo].[UnitList] READONLY
 )
 RETURNS TABLE
 AS

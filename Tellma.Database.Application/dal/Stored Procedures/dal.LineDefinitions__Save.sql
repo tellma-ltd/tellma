@@ -100,6 +100,7 @@ SET NOCOUNT ON;
 			LDE.[AccountTypeParentCode]	,
 			LDE.[IsCurrent],
 			LDE.[AgentDefinitionId],
+			LDE.[NotedAgentDefinitionId],
 			LDE.[EntryTypeCode]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -112,6 +113,7 @@ SET NOCOUNT ON;
 			t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
 			t.[IsCurrent]				= s.[IsCurrent],
 			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
+			t.[NotedAgentDefinitionId]	= s.[NotedAgentDefinitionId],
 			t.[EntryTypeCode]			= s.[EntryTypeCode],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -124,6 +126,7 @@ SET NOCOUNT ON;
 			[AccountTypeParentCode],
 			[IsCurrent],
 			[AgentDefinitionId],
+			[NotedAgentDefinitionId],
 			[EntryTypeCode]
 		)
 		VALUES (
@@ -133,6 +136,7 @@ SET NOCOUNT ON;
 			s.[AccountTypeParentCode],
 			s.[IsCurrent],
 			s.[AgentDefinitionId],
+			s.[NotedAgentDefinitionId],
 			s.[EntryTypeCode]
 		);
 

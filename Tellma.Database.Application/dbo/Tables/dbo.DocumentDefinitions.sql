@@ -34,13 +34,14 @@
 	[Time2Label2]				NVARCHAR (50),
 	[Time2Label3]				NVARCHAR (50),
 	[QuantityVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([QuantityVisibility] IN (N'None', N'Optional', N'Required')),
-	[QuantityLabel]			NVARCHAR (50),
+	[QuantityLabel]				NVARCHAR (50),
 	[QuantityLabel2]			NVARCHAR (50),
 	[QuantityLabel3]			NVARCHAR (50),
 	[UnitVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([UnitVisibility] IN (N'None', N'Optional', N'Required')),
-	[UnitLabel]				NVARCHAR (50),
+	[UnitLabel]					NVARCHAR (50),
 	[UnitLabel2]				NVARCHAR (50),
 	[UnitLabel3]				NVARCHAR (50),
+	[CurrencyVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu

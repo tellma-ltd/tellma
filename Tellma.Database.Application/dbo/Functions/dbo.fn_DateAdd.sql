@@ -10,11 +10,11 @@ BEGIN
 	RETURN 
 		CASE 
 		WHEN @UnitID IN (
-			SELECT [Id] FROM dbo.MeasurementUnits WHERE [Code] = N'MONTH'
+			SELECT [Id] FROM dbo.[Units] WHERE [Code] = N'MONTH'
 			)
 			THEN DATEADD(MONTH, @Quantity, @Time1)
 		WHEN @UnitID IN (
-			SELECT [Id] FROM dbo.MeasurementUnits WHERE [Code] = N'YEAR'
+			SELECT [Id] FROM dbo.[Units] WHERE [Code] = N'YEAR'
 			)
 			THEN DATEADD(YEAR, @Quantity, @Time1)
 		END

@@ -12,24 +12,17 @@
 	[Memo]							NVARCHAR (255),	
 	[MemoIsCommon]					BIT				DEFAULT 1,
 	[AgentId]						INT,
-	[AgentIsCommon]					BIT				NOT NULL DEFAULT 1,
+	[AgentIsCommon]					BIT				NOT NULL DEFAULT 0,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),
-	[Time1IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),
-	[Time2IsCommon]					BIT				NOT NULL DEFAULT 1,
+	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Quantity]						DECIMAL (19,4)	NULL,
-	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 1,
+	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[UnitId]						INT,
-	[UnitIsCommon]					BIT				NOT NULL DEFAULT 1
-	--[CurrencyId]							INT, 
-	--[CurrencyIsCommon]						BIT				DEFAULT 1,
-	--[InvoiceReference]						NVARCHAR (255),
-	--[InvoiceReferenceIsCommon]				BIT				DEFAULT 1,
-
-	--[Frequency]			NVARCHAR (30)		NOT NULL DEFAULT (N'OneTime'), -- an easy way to define a recurrent document
-	--[Repetitions]		INT					NOT NULL DEFAULT 0, -- time unit is function of frequency
-
-	--CHECK ([Frequency] IN (N'OneTime', N'Daily', N'Weekly', N'Monthly', N'Quarterly', N'Yearly'))
+	[UnitIsCommon]					BIT				NOT NULL DEFAULT 0,
+	[CurrencyId]					INT, 
+	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0
 );

@@ -4,7 +4,7 @@
 -- Optional screens, can pre-populate table with data
 	CustomAccountClassifications -- screen shows list of accounts
 	IfrsDisclosures
-	MeasurementUnits
+	Units
 	IfrsEntryClassifications
 	IfrsAccountClassifications -- screen shows list of accounts
 	JobTitles
@@ -24,8 +24,8 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Lines]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Entries]', RESEED, 0) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[EntryClassifications]', RESEED, 179) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[EntryTypes]', RESEED, 179) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Units]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[AccountTypes]', RESEED, 72) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
@@ -43,7 +43,7 @@ BEGIN TRY
 		:r ..\Samples\00_Setup\z_LookupDefinitions.sql
 
 		:r ..\Samples\01_Basic\a_Currencies.sql
-		:r ..\Samples\01_Basic\b_MeasurementUnits.sql
+		:r ..\Samples\01_Basic\b_Units.sql
 		:r ..\Samples\01_Basic\c_Lookups.sql
 		
 		:r ..\Samples\02_Agents\01_ResponsibilityCenters.sql

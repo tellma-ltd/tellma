@@ -20,7 +20,6 @@
 	[DocumentLookup3Id]				INT,
 	[DocumentText1]					NVARCHAR (255),
 	[DocumentText2]					NVARCHAR (255),
-	--[SortKey]						DECIMAL (9,4)	NOT NULL,
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
@@ -35,8 +34,10 @@
 	[Time2IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Quantity]						DECIMAL (19,4)	NULL,
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,
-	[UnitId]						INT CONSTRAINT [FK_Documents__UnitId] REFERENCES dbo.MeasurementUnits([Id]),
+	[UnitId]						INT CONSTRAINT [FK_Documents__UnitId] REFERENCES dbo.[Units]([Id]),
 	[UnitIsCommon]					BIT				NOT NULL DEFAULT 0,
+	[CurrencyId]					NCHAR (3) CONSTRAINT [FK_Documents__CurrencyId] REFERENCES dbo.Currencies([Id]),
+	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0,
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]					INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__CreatedById] REFERENCES [dbo].[Users] ([Id]),

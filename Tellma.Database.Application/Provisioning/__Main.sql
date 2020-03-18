@@ -42,7 +42,7 @@ IF @ProvisionData = N'0' RETURN;
 :r .\02_Security\c_Workflows.sql
 
 :r .\03_Basic\a_Currencies.sql
-:r .\03_Basic\b_MeasurementUnits.sql
+:r .\03_Basic\b_Units.sql
 :r .\03_Basic\c_Lookups.sql
 
 :r .\04_Resources\101_property-plant-and-equipment.sql

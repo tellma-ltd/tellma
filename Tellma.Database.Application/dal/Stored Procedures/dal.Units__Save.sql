@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [dal].[MeasurementUnits__Save]
-	@Entities [MeasurementUnitList] READONLY,
+﻿CREATE PROCEDURE [dal].[Units__Save]
+	@Entities [UnitList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[MeasurementUnits] AS t
+		MERGE INTO [dbo].[Units] AS t
 		USING (
 			SELECT
 				[Index], [Id], [Code], [UnitType], [Name], [Name2], [Name3],

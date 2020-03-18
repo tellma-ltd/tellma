@@ -54,7 +54,7 @@ BEGIN
 	(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
 	(5,9,N'Read',	NULL,				N'entry-types'),
 	(6,9,N'Read',	NULL,				N'lookups/it-equipment-manufacturers'),
-	(7,9,N'Read',	NULL,				N'measurement-units'),
+	(7,9,N'Read',	NULL,				N'units'),
 	(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
 	(9,9,N'Read',	NULL,				N'responsibility-centers'),
 	(10,9,N'Read',	NULL,				N'resources/services-expenses'),

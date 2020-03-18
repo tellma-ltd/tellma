@@ -20,7 +20,7 @@
 	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
 -- Tracking additive measures, the data type is to be decided by AA
 	[Quantity]					DECIMAL (19,4),
-	[UnitId]					INT CONSTRAINT [FK_Lines__UnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitId]					INT CONSTRAINT [FK_Lines__UnitId] REFERENCES [dbo].[Units] ([Id]),
 
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- Additional information to satisfy reporting requirements

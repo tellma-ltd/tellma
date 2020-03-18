@@ -313,4 +313,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[PostingDate]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b4702ff0-c2e1-4ea5-9b74-204f2225b448" ChangeDateTime="03/18/2020 04:08:06">
+    <Property Name="ElementName" Value="[dbo].[MeasurementUnits]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8f979327-8040-42c0-9f2b-7948ba972802" ChangeDateTime="03/18/2020 04:09:36">
+    <Property Name="ElementName" Value="[dbo].[MeasurementUnitList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[UnitList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ad263bb9-957a-41cb-86e8-3bf091b5c520" ChangeDateTime="03/18/2020 04:11:10">
+    <Property Name="ElementName" Value="[bll].[MeasurementUnits_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="525f885b-7864-4e07-af05-6447aaf3ae4a" ChangeDateTime="03/18/2020 04:11:51">
+    <Property Name="ElementName" Value="[bll].[MeasurementUnits_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="97ee9038-3123-48ff-bc63-e847654883ea" ChangeDateTime="03/18/2020 04:13:05">
+    <Property Name="ElementName" Value="[dal].[MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5f176c0b-d4f0-4e71-affd-a7afb1f6e17a" ChangeDateTime="03/18/2020 04:13:48">
+    <Property Name="ElementName" Value="[dal].[MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="72ff06a0-07c1-44eb-a930-4f4ef7037ea1" ChangeDateTime="03/18/2020 04:14:29">
+    <Property Name="ElementName" Value="[dal].[MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1b2a666e-bda7-4c06-b576-11135fa44bf1" ChangeDateTime="03/18/2020 04:15:10">
+    <Property Name="ElementName" Value="[api].[MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab6747d4-1f05-4f99-ad52-60c9ceda784f" ChangeDateTime="03/18/2020 04:15:31">
+    <Property Name="ElementName" Value="[api].[MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="908fbf40-d853-46b9-8590-0d274237f0c2" ChangeDateTime="03/18/2020 04:15:56">
+    <Property Name="ElementName" Value="[api].[MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3611bba2-e409-42ed-b3ff-9c32639d7c4a" ChangeDateTime="03/18/2020 04:19:19">
+    <Property Name="ElementName" Value="[map].[MeasurementUnits]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f96c88d6-2f8f-447f-ac21-6b6500e97c55" ChangeDateTime="03/18/2020 04:19:52">
+    <Property Name="ElementName" Value="[map].[MeasurementUnits__AsQuery]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Units__AsQuery]" />
+  </Operation>
 </Operations>

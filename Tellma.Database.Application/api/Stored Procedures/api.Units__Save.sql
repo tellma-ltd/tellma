@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [api].[MeasurementUnits__Save]
-	@Entities [MeasurementUnitList] READONLY,
+﻿CREATE PROCEDURE [api].[Units__Save]
+	@Entities [UnitList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[MeasurementUnits_Validate__Save]
+	EXEC [bll].[Units_Validate__Save]
 		@Entities = @Entities;
 	
 	SELECT @ValidationErrorsJson = 
@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[MeasurementUnits__Save]
+	EXEC [dal].[Units__Save]
 		@Entities = @Entities,
 		@ReturnIds = @ReturnIds;
 END;

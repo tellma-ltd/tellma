@@ -36,6 +36,7 @@
 	[UnitLabel]					NVARCHAR (50),
 	[UnitLabel2]				NVARCHAR (50),
 	[UnitLabel3]				NVARCHAR (50),
+	[CurrencyVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),	-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4)

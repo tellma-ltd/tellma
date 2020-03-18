@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[MeasurementUnits_Validate__Delete]
+﻿CREATE PROCEDURE [bll].[Units_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

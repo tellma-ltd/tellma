@@ -1,5 +1,5 @@
 ﻿BEGIN -- Cleanup & Declarations
-	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
+	DECLARE @MU1 [dbo].UnitList, @MU2 [dbo].UnitList, @MU3 [dbo].UnitList,
 			@MUIndexedIds dbo.[IndexedIdList];
 	DECLARE @ETBUnit NCHAR (3) = N'ETB', @USDUnit NCHAR (3) = N'USD'
 	DECLARE @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT, @KmUnit INT,
@@ -12,7 +12,7 @@ BEGIN -- Inserting
 	(1, N'dozen', N'Count', N'Dozen', 1, 12, NULL);
 
 
-	EXEC [api].[MeasurementUnits__Save]
+	EXEC [api].[Units__Save]
 		@Entities = @MU1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
@@ -20,7 +20,7 @@ BEGIN -- Inserting
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'MeasurementUnits: Inserting: ' + @ValidationErrorsJson
+		Print 'Units: Inserting: ' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END
 END
@@ -29,7 +29,7 @@ END
 INSERT INTO @MU2 ([Index], [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
 SELECT ROW_NUMBER() OVER(ORDER BY [Id]),
 	[Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
-FROM [dbo].MeasurementUnits
+FROM [dbo].[Units]
 WHERE [Name] Like 'm%';
 SET @RowCount = @@ROWCOUNT;
 
@@ -51,45 +51,45 @@ WHERE [Name] = N'mt';
 -- SELECT * FROM @MU2;
 DELETE FROM @MU2 WHERE [Name] Like 'm%' AND [Name] <> N'mt';
 -- Calling Save API
-EXEC [api].[MeasurementUnits__Save]
+EXEC [api].[Units__Save]
 	@Entities = @MU2,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Updating: ' + @ValidationErrorsJson
+	Print 'Units: Updating: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END
 
 INSERT INTO @MU3 ([Index], [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
 SELECT ROW_NUMBER() OVER(ORDER BY [Id]),
 	[Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
-FROM [dbo].MeasurementUnits
+FROM [dbo].[Units]
 WHERE [UnitType] = N'Distance' AND [Name] <> N'Km';
 
 -- Calling Delete API
 INSERT INTO @MUIndexedIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;
-EXEC [api].[MeasurementUnits__Delete]
+EXEC [api].[Units__Delete]
 	@IndexedIds = @MUIndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
---SELECT * FROM [dbo].[fs_MeasurementUnits]();
+--SELECT * FROM [dbo].[fs_Units]();
 
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Deleting: ' + @ValidationErrorsJson
+	Print 'Units: Deleting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END
 
 SELECT
-	@KgUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Kg'),
-	@LiterUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ltr'),
-	@KmUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Km'),
-	@pcsUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'pcs'),
-	@eaUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ea'),
-	@shareUnit = (SELECT [Id] FROM [dbo].MeasurementUnits WHERE [Name] = N'share'),
-	@wmoUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'wmo'),
-	@hrUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'hr'),
-	@yrUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'yr'),
-	@dayUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'd'),
-	@moUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'mo');
+	@KgUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'Kg'),
+	@LiterUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'ltr'),
+	@KmUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'Km'),
+	@pcsUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'pcs'),
+	@eaUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'ea'),
+	@shareUnit = (SELECT [Id] FROM [dbo].[Units] WHERE [Name] = N'share'),
+	@wmoUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'wmo'),
+	@hrUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'hr'),
+	@yrUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'yr'),
+	@dayUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'd'),
+	@moUnit = (SELECT [Id] FROM [dbo].[Units]	WHERE [Name] = N'mo');

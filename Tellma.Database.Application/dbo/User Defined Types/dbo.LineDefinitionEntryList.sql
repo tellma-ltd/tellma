@@ -7,5 +7,6 @@
 	[AccountTypeParentCode]		NVARCHAR (255)		NOT NULL,
 	[IsCurrent]					BIT,
 	[AgentDefinitionId]			NVARCHAR (50),
+	[NotedAgentDefinitionId]	NVARCHAR (50),
 	[EntryTypeCode]				NVARCHAR (255)
 );

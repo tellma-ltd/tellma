@@ -43,9 +43,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[EntryTypeCode]) VALUES
-(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL),
-(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'PaymentsToSuppliersForGoodsAndServices');
+[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
+(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				N'suppliers',			NULL),
+(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	NULL,					N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],

@@ -38,6 +38,8 @@ BEGIN
 				[QuantityIsCommon],
 				[UnitId],
 				[UnitIsCommon],
+				[CurrencyId],
+				[CurrencyIsCommon],
 				[SerialNumber] As ManualSerialNumber,
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
@@ -64,8 +66,10 @@ BEGIN
 				t.[Time2IsCommon]			= s.[Time2IsCommon],
 				t.[Quantity]				= s.[Quantity],
 				t.[QuantityIsCommon]		= s.[QuantityIsCommon],
-				t.[UnitId]		= s.[UnitId],
-				t.[UnitIsCommon]	= s.[UnitIsCommon],
+				t.[UnitId]					= s.[UnitId],
+				t.[UnitIsCommon]			= s.[UnitIsCommon],
+				t.[CurrencyId]				= s.[CurrencyId],
+				t.[CurrencyIsCommon]		= s.[CurrencyIsCommon],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -87,7 +91,9 @@ BEGIN
 				[Quantity],
 				[QuantityIsCommon],
 				[UnitId],
-				[UnitIsCommon]
+				[UnitIsCommon],
+				[CurrencyId],
+				[CurrencyIsCommon]
 			)
 			VALUES (
 				@DefinitionId,
@@ -107,7 +113,9 @@ BEGIN
 				s.[Quantity],
 				s.[QuantityIsCommon],
 				s.[UnitId],
-				s.[UnitIsCommon]
+				s.[UnitIsCommon],
+				s.[CurrencyId],
+				s.[CurrencyIsCommon]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;

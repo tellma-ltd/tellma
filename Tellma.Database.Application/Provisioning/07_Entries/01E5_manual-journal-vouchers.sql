@@ -42,8 +42,8 @@ BEGIN -- Inserting
 	(2,			4,				N'ManualLine');
 		;
 		*/
-	DECLARE @500Pkt INT = (SELECT [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'500pkt');
-	DECLARE @mt INT = (SELECT [Id] FROM dbo.MeasurementUnits WHERE [Name] = N'mt');
+	DECLARE @500Pkt INT = (SELECT [Id] FROM dbo.Units WHERE [Name] = N'500pkt');
+	DECLARE @mt INT = (SELECT [Id] FROM dbo.Units WHERE [Name] = N'mt');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Index], [Direction],
 				[AccountId],	[EntryTypeId],							[AgentId],	[ResourceId],	[Quantity], [UnitId],	[Value]) VALUES

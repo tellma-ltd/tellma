@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [bll].[MeasurementUnits_Validate__Save]
-	@Entities [MeasurementUnitList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
+﻿CREATE PROCEDURE [bll].[Units_Validate__Save]
+	@Entities [UnitList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[MeasurementUnits]);
+	AND Id NOT IN (SELECT Id from [dbo].[Units]);
 
 	-- Code must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
 	FROM @Entities FE 
-	JOIN [dbo].[MeasurementUnits] BE ON FE.Code = BE.Code
+	JOIN [dbo].[Units] BE ON FE.Code = BE.Code
 	WHERE
 		FE.[Code] IS NOT NULL
 	AND BE.[Code] IS NOT NULL
@@ -50,7 +50,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[MeasurementUnits] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[Units] BE ON FE.[Name] = BE.[Name]
 	WHERE FE.Id <> BE.Id
 	OPTION (HASH JOIN);
 
@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[MeasurementUnits] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[Units] BE ON FE.[Name2] = BE.[Name2]
 	WHERE FE.Id <> BE.Id
 	OPTION (HASH JOIN);
 
@@ -72,7 +72,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[MeasurementUnits] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[Units] BE ON FE.[Name3] = BE.[Name3]
 	WHERE FE.Id <> BE.Id
 	OPTION (HASH JOIN);
 

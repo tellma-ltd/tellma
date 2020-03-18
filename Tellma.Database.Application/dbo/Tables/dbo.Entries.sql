@@ -21,7 +21,7 @@
 -- Tracking additive measures
 	-- Quantity & Unit are the ones in which the transaction is held (purchase, sales, production)
 	[Quantity]					DECIMAL (19,4)	NULL,
-	[UnitId]					INT				NULL CONSTRAINT [FK_Entries__UnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitId]					INT				NULL CONSTRAINT [FK_Entries__UnitId] REFERENCES [dbo].[Units] ([Id]),
 	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 

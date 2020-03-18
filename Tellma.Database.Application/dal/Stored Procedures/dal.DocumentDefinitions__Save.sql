@@ -40,6 +40,7 @@ WHEN MATCHED THEN
 		t.[UnitLabel]			= s.[UnitLabel],
 		t.[UnitLabel2]			= s.[UnitLabel2],
 		t.[UnitLabel3]			= s.[UnitLabel3],
+		t.[CurrencyVisibility]	= s.[CurrencyVisibility],
 		t.[MainMenuIcon]		= s.[MainMenuIcon],
 		t.[MainMenuSection]		= s.[MainMenuSection],
 		t.[MainMenuSortKey]		= s.[MainMenuSortKey]
@@ -73,6 +74,7 @@ WHEN NOT MATCHED BY TARGET THEN
 		[UnitLabel],
 		[UnitLabel2],
 		[UnitLabel3],
+		[CurrencyVisibility],
 		[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]
 	) VALUES (
 		s.[Id], s.[IsOriginalDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
@@ -100,6 +102,7 @@ WHEN NOT MATCHED BY TARGET THEN
 		s.[UnitLabel],
 		s.[UnitLabel2],
 		s.[UnitLabel3],
+		s.[CurrencyVisibility],
 		s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey]
 	);
 
