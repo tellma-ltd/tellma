@@ -29,6 +29,7 @@ import { Document } from './entities/document';
 import { isSpecified } from './util';
 import { DetailsEntry } from './entities/details-entry';
 import { Line } from './entities/line';
+import { ExchangeRate } from './entities/exchange-rate';
 import { AdminSettingsForClient } from './dto/admin-settings-for-client';
 import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
@@ -332,7 +333,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
   Line: EntityWorkspace<Line>;
-  ExchangeRate: EntityWorkspace<Line>;
+  ExchangeRate: EntityWorkspace<ExchangeRate>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
