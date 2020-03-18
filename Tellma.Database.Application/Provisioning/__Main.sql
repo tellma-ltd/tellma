@@ -25,21 +25,22 @@ IF @ProvisionData = N'0' RETURN;
 :r .\00_Common\e101_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
 
-:r .\01_Definitions\a_LookupDefinitions.sql
-:r .\01_Definitions\b_ResourceDefinitions.sql
-:r .\01_Definitions\c_AgentDefinitions.sql
+:r .\01_Security\a_Users.sql
+:r .\01_Security\b_RolesMemberships.sql
+
+:r .\02_Definitions\a_LookupDefinitions.sql
+:r .\02_Definitions\b_ResourceDefinitions.sql
+:r .\02_Definitions\c_AgentDefinitions.sql
+
 
 --:r .\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\101_LineDefinitions.sql
+:r .\02_Definitions\e_LineDefinitions\101_LineDefinitions.sql
 --:r .\01_Definitions\e_LineDefinitions\102_LineDefinitions.sql
 --:r .\01_Definitions\e_LineDefinitions\103_LineDefinitions.sql
 --:r .\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql
 --:r .\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql
-:r .\01_Definitions\e_LineDefinitions\999_LineDefinitions.sql
-:r .\01_Definitions\f_DocumentDefinitions.sql
-:r .\02_Security\a_Users.sql
-:r .\02_Security\b_RolesMemberships.sql
-:r .\02_Security\c_Workflows.sql
+:r .\02_Definitions\e_LineDefinitions\999_LineDefinitions.sql
+:r .\02_Definitions\f_DocumentDefinitions.sql
 
 :r .\03_Basic\a_Currencies.sql
 :r .\03_Basic\b_Units.sql

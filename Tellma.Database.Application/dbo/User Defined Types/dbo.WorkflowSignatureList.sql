@@ -1,7 +1,8 @@
 ﻿CREATE TYPE [dbo].[WorkflowSignatureList] AS TABLE (
 	[Index]						INT				DEFAULT 0,
-	[HeaderIndex]				INT				DEFAULT 0,
-	PRIMARY KEY ([Index], [HeaderIndex]),
+	[WorkflowIndex]				INT				DEFAULT 0,
+	[LineDefinitionIndex]		INT				DEFAULT 0,
+	PRIMARY KEY ([Index], [WorkflowIndex], [LineDefinitionIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[RuleType]					NVARCHAR (50)	NOT NULL DEFAULT N'ByRole',
 	[RuleTypeEntryIndex]		INT,

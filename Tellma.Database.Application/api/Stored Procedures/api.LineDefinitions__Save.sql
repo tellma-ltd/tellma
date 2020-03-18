@@ -3,6 +3,8 @@
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
+	@Workflows [WorkflowList] READONLY,
+	@WorkflowSignatures [WorkflowSignatureList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -15,7 +17,9 @@ SET NOCOUNT ON;
 		@Entities = @Entities,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionStateReasons = @LineDefinitionStateReasons;
+		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
+		@Workflows = @Workflows,
+		@WorkflowSignatures = @WorkflowSignatures;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -31,5 +35,7 @@ SET NOCOUNT ON;
 		@Entities = @Entities,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionStateReasons = @LineDefinitionStateReasons;
+		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
+		@Workflows = @Workflows,
+		@WorkflowSignatures = @WorkflowSignatures;
 END;

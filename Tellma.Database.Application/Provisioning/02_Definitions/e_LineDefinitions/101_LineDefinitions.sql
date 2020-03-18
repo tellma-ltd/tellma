@@ -21,6 +21,12 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
+INSERT INTO @Workflows([Index],[LineDefinitionIndex], 
+[ToState]) Values
+(0,0,+4);
+INSERT INTO @WorkflowSignatures([Index],[WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId]) VALUES
+(0,0,0,N'ByRole',	@1Comptroller);
 --CashPaymentToSupplierAndPurchaseInvoiceVAT
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES
@@ -62,6 +68,18 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,1,	N'Entries',	N'ExternalReference',	1,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
 (10,1,	N'Entries',	N'NotedDate',			1,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
 (11,1,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,1,+1),
+(1,1,+2),
+(2,1,+3),
+(3,1,+4);
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,1,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,1,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 --CashPaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
@@ -86,6 +104,18 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
 (1,2,-3,	N'Other reasons',		N'أسباب أخرى');
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,2,+1),
+(1,2,+2),
+(2,2,+3),
+(3,2,+4);
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,2,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 --CashTransferExchange
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
@@ -122,6 +152,19 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (5,103,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
 (6,103,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
 (7,103,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,103,+1),
+(1,103,+2),
+(2,103,+3),
+(3,103,+4);
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,103,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,103,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,103,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,103,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,103,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
 --CashReceiptFromOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
@@ -308,6 +351,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,7,	N'Entries', N'MonetaryValue',		0,	N'Amount',		N'المطالبة',	1,4,0),
 (9,7,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
 (10,7,	N'Entries',	N'CenterId',			1,	N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,7,+3),-- Completed
+(1,7,+4);-- Reviewed
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,7,N'ByRole',	@1AccountManager,	NULL,			NULL), -- 
+(0,1,7,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+
 --PPEDepreciation
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],			[TitleSingular],		[TitleSingular2],		[TitlePlural],				[TitlePlural2],

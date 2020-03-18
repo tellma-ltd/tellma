@@ -3,6 +3,8 @@
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
+	@Workflows [WorkflowList] READONLY,
+	@WorkflowSignatures [WorkflowSignatureList] READONLY,
 	@Top INT = 10
 AS
 	SET NOCOUNT ON;

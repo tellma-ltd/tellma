@@ -215,7 +215,7 @@ BEGIN
 			t.[CurrencyId]				= s.[CurrencyId],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
-			t.[CenterId]	= s.[CenterId],
+			t.[CenterId]				= s.[CenterId],
 			--t.[AccountIdentifier]		= s.[AccountIdentifier],
 			--t.[ResourceIdentifier]		= s.[ResourceIdentifier],
 			t.[EntryTypeId]				= s.[EntryTypeId],

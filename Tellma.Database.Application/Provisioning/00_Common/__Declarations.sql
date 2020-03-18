@@ -38,3 +38,7 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
+
+	DECLARE @WorkflowId INT;
+	DECLARE @Workflows dbo.[WorkflowList];
+	DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;

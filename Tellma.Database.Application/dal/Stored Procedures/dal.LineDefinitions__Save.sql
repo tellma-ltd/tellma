@@ -2,11 +2,14 @@
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY
+	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
+	@Workflows [WorkflowList] READONLY,
+	@WorkflowSignatures [WorkflowSignatureList] READONLY
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @WorkflowIndexedIds [dbo].[IndexIdWithStringHeaderList];
 
 	MERGE INTO [dbo].[LineDefinitions] AS t
 	USING (
@@ -139,7 +142,6 @@ SET NOCOUNT ON;
 			s.[NotedAgentDefinitionId],
 			s.[EntryTypeCode]
 		);
-
 	MERGE [dbo].[LineDefinitionColumns] AS t
 	USING (
 		SELECT
@@ -177,7 +179,6 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
 		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
-
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
 		SELECT
@@ -206,3 +207,100 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[State], [Name],		[Name2], [Name3], [IsActive])
 		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive]);
+
+	WITH BW AS (
+		SELECT * FROM dbo.[Workflows]
+		WHERE LineDefinitionId IN (SELECT [Id] FROM @Entities)
+	)
+	INSERT INTO @WorkflowIndexedIds([Index], [HeaderId], [Id])
+	SELECT x.[Index], x.[LineDefinitionId], x.[Id]
+	FROM
+	(
+		MERGE [dbo].[Workflows] AS t
+		USING (
+			SELECT
+				W.[Index],
+				W.[Id],
+				LD.[Id] AS [LineDefinitionId],
+				W.[ToState]
+			FROM @Workflows W
+			JOIN @Entities LD ON W.[LineDefinitionIndex] = LD.[Index]
+		) AS s
+		ON s.[Id] = t.[Id]
+		WHEN MATCHED THEN
+			UPDATE SET
+				t.[ToState]		= s.[ToState],
+				t.[SavedById]	= @UserId
+		WHEN NOT MATCHED BY SOURCE THEN
+			DELETE
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (
+				[LineDefinitionId],
+				[ToState]
+			)
+			VALUES (
+				s.[LineDefinitionId],
+				s.[ToState]
+			)
+		OUTPUT s.[Index], inserted.[LineDefinitionId], inserted.[Id]
+	) AS x;
+
+	WITH BWS AS (
+		SELECT * FROM dbo.[WorkflowSignatures]
+		WHERE [WorkflowId] IN (SELECT [Id] FROM @WorkflowIndexedIds)
+	)
+	MERGE [dbo].[WorkflowSignatures] AS t
+	USING (
+		SELECT
+			WS.[Index],
+			WS.[Id],
+			LD.[Id] AS [LineDefinitionId],
+			WS.[RuleType],
+			WS.[RuleTypeEntryIndex],
+			WS.[RoleId],
+			WS.[Userid],
+			WS.[PredicateType],
+			WS.[PredicateTypeEntryIndex],
+			WS.[Value],
+			WS.[ProxyRoleId]
+		FROM @WorkflowSignatures WS
+		JOIN @WorkflowIndexedIds WI ON WS.[WorkflowIndex] = WI.[Index]
+		JOIN @Entities LD ON 
+			WI.[HeaderId] = LD.[Id]
+		AND WS.[LineDefinitionIndex] = LD.[Index]
+	) AS s
+	ON s.[Id] = t.[Id]
+	WHEN MATCHED THEN
+		UPDATE SET
+			t.[RuleType]				= s.[RuleType],
+			t.[RuleTypeEntryIndex]		= s.[RuleTypeEntryIndex],
+			t.[RoleId]					= s.[RoleId],
+			t.[Userid]					= s.[Userid],
+			t.[PredicateType]			= s.[PredicateType],
+			t.[PredicateTypeEntryIndex]	= s.[PredicateTypeEntryIndex],
+			t.[Value]					= s.[Value],
+			t.[ProxyRoleId]				= s.[ProxyRoleId],
+			t.[SavedById]	= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[RuleType],
+			[RuleTypeEntryIndex],
+			[RoleId],
+			[Userid],
+			[PredicateType],
+			[PredicateTypeEntryIndex],
+			[Value],
+			[ProxyRoleId]
+		)
+		VALUES (
+			s.[RuleType],
+			s.[RuleTypeEntryIndex],
+			s.[RoleId],
+			s.[Userid],
+			s.[PredicateType],
+			s.[PredicateTypeEntryIndex],
+			s.[Value],
+			s.[ProxyRoleId]
+		);

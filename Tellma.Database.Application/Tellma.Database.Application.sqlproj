@@ -85,14 +85,14 @@
     <Folder Include="bll\Functions" />
     <Folder Include="Mapping" />
     <Folder Include="Provisioning\00_Common" />
-    <Folder Include="Provisioning\02_Security" />
-    <Folder Include="Provisioning\01_Definitions" />
+    <Folder Include="Provisioning\01_Security" />
+    <Folder Include="Provisioning\02_Definitions" />
     <Folder Include="Provisioning\03_Basic" />
     <Folder Include="Provisioning\05_Agents" />
     <Folder Include="Provisioning\04_Resources" />
     <Folder Include="Provisioning\06_Accounts" />
     <Folder Include="Provisioning\07_Entries" />
-    <Folder Include="Provisioning\01_Definitions\e_LineDefinitions" />
+    <Folder Include="Provisioning\02_Definitions\e_LineDefinitions" />
     <Folder Include="Provisioning\07_Entries\101" />
   </ItemGroup>
   <ItemGroup>
@@ -394,9 +394,9 @@
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
-    <None Include="Provisioning\01_Definitions\a_LookupDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\f_DocumentDefinitions.sql" />
-    <None Include="Provisioning\02_Security\c_Workflows.sql" />
+    <None Include="Provisioning\02_Definitions\a_LookupDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\f_DocumentDefinitions.sql" />
+    <None Include="Provisioning\01_Security\c_Workflows.sql" />
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
     <None Include="Provisioning\03_Basic\b_Units.sql" />
     <None Include="Provisioning\03_Basic\c_Lookups.sql" />
@@ -503,13 +503,13 @@
     <Build Include="dbo\Tables\dbo.Registers.sql" />
     <Build Include="dbo\Tables\dbo.AgentRates.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentRateList.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\101_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\103_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\102_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_LineDefinitions\999_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\100_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\101_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\103_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\102_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\104_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\105_LineDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_LineDefinitions\999_LineDefinitions.sql" />
     <None Include="Provisioning\05_Agents\09a_Warehouses.sql" />
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="Mapping\AgentRates.sql" />
@@ -546,6 +546,7 @@
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
     <Build Include="dbo\Views\dbo.ExchangeRatesView.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -563,10 +564,10 @@
     <None Include="104.WaliaSteel.publish.xml" />
     <None Include="102.BananET.publish.xml" />
     <None Include="Provisioning\00_Common\__Declarations.sql" />
-    <None Include="Provisioning\02_Security\b_RolesMemberships.sql" />
-    <None Include="Provisioning\02_Security\a_Users.sql" />
-    <None Include="Provisioning\01_Definitions\b_ResourceDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\c_AgentDefinitions.sql" />
+    <None Include="Provisioning\01_Security\b_RolesMemberships.sql" />
+    <None Include="Provisioning\01_Security\a_Users.sql" />
+    <None Include="Provisioning\02_Definitions\b_ResourceDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\c_AgentDefinitions.sql" />
     <None Include="Provisioning\05_Agents\01_CostObjects.sql" />
     <None Include="Provisioning\05_Agents\02_Creditors.sql" />
     <None Include="Provisioning\05_Agents\04_Debtors.sql" />
