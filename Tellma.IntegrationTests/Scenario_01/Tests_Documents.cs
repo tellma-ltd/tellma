@@ -114,7 +114,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                          {
                              new EntryForSave
                              {
-                                 EntryNumber = 1,
                                  Direction = 1,
                                  AccountId = accountId,
                                  EntryTypeId = entryClassificationId,
@@ -131,7 +130,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                          {
                              new EntryForSave
                              {
-                                 EntryNumber = 1,
                                  Direction = -1,
                                  AccountId = accountId,
                                  EntryTypeId = entryClassificationId,
@@ -178,7 +176,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                             {
                                 var entryForSave = dtoForSave.Lines[0].Entries[0];
 
-                                Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
                                 Assert.Null(entry.EntryTypeId);
@@ -196,7 +193,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                             {
                                 var entryForSave = dtoForSave.Lines[1].Entries[0];
 
-                                Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
                                 Assert.Null(entry.EntryTypeId);

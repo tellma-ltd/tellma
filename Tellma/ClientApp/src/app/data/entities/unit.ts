@@ -56,22 +56,22 @@ export function metadata_Unit(wss: WorkspaceService, trx: TranslateService, _: s
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         UnitType: {
           control: 'choice',
-          label: () => trx.instant('MU_UnitType'),
+          label: () => trx.instant('Unit_UnitType'),
           choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume'],
           format: (c: string) => {
             switch (c) {
-              case 'Pure': return trx.instant('MU_Pure');
-              case 'Time': return trx.instant('MU_Time');
-              case 'Distance': return trx.instant('MU_Distance');
-              case 'Count': return trx.instant('MU_Count');
-              case 'Mass': return trx.instant('MU_Mass');
-              case 'Volume': return trx.instant('MU_Volume');
+              case 'Pure': return trx.instant('Unit_Pure');
+              case 'Time': return trx.instant('Unit_Time');
+              case 'Distance': return trx.instant('Unit_Distance');
+              case 'Count': return trx.instant('Unit_Count');
+              case 'Mass': return trx.instant('Unit_Mass');
+              case 'Volume': return trx.instant('Unit_Volume');
               default: return c;
             }
           }
         },
-        UnitAmount: { control: 'number', label: () => trx.instant('MU_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
-        BaseAmount: { control: 'number', label: () => trx.instant('MU_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
+        UnitAmount: { control: 'number', label: () => trx.instant('Unit_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
+        BaseAmount: { control: 'number', label: () => trx.instant('Unit_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

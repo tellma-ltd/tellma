@@ -23,7 +23,7 @@ import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
 import { Aggregation, ReportDefinition, Modifier } from './entities/report-definition';
-import { ResponsibilityCenter } from './entities/responsibility-center';
+import { Center } from './entities/center';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
 import { isSpecified } from './util';
@@ -328,10 +328,11 @@ export class TenantWorkspace extends SpecificWorkspace {
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
-  ResponsibilityCenter: EntityWorkspace<ResponsibilityCenter>;
+  Center: EntityWorkspace<Center>;
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
   Line: EntityWorkspace<Line>;
+  ExchangeRate: EntityWorkspace<Line>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
@@ -356,10 +357,11 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.AccountType = {};
     this.Account = {};
     this.ReportDefinition = {};
-    this.ResponsibilityCenter = {};
+    this.Center = {};
     this.EntryType = {};
     this.Document = {};
     this.Line = {};
+    this.ExchangeRate = {};
     this.DetailsEntry = {};
 
     this.notifyStateChanged();
@@ -1047,7 +1049,7 @@ export class WorkspaceService {
 
   notifyStateChanged() {
     // This notifies OnPush components to mark for check
-    // It is the responsibility for anyone modifying the
+    // It is the duty for anyone modifying the
     // workspace to remember to call this method
     (this.stateChanged$ as Subject<void>).next();
   }

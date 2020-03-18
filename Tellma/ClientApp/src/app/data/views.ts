@@ -135,8 +135,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: []
     },
-    'responsibility-centers': {
-        name: 'ResponsibilityCenters',
+    'centers': {
+        name: 'Centers',
         read: true,
         update: true,
         delete: true,
@@ -157,6 +157,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         actions: [
             li('IsActive', false)
         ]
+    },
+    'exchange-rates': {
+        name: 'ExchangeRates',
+        read: true,
+        update: true,
+        delete: true,
+        actions: []
     },
     'details-entries': {
         name: 'DetailsEntries',

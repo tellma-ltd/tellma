@@ -9,8 +9,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Line")]
         public int? LineId { get; set; }
 
-        [Display(Name = "Entry_ResponsibilityCenter")]
-        public int? ResponsibilityCenterId { get; set; }
+        [Display(Name = "Entry_Center")]
+        public int? CenterId { get; set; }
 
         [Display(Name = "Entry_Direction")]
         [ChoiceList(new object[] { (short)-1, (short)1 })]
@@ -110,9 +110,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AgentId))]
         public Agent Agent { get; set; }
 
-        [Display(Name = "Entry_ResponsibilityCenter")]
-        [ForeignKey(nameof(ResponsibilityCenterId))]
-        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+        [Display(Name = "Entry_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
 
         [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]

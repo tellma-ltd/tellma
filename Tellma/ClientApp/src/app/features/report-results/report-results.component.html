@@ -9,7 +9,7 @@
                         <th style="width:10px"></th>
                         <th *ngFor="let col of select">
                             <t-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
-                                [definition]="definitionId">
+                                [definition]="definitionId" [useAlignment]="true">
                             </t-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
                         </th>
                     </tr>

@@ -8,7 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
 export interface AccountForSave extends EntityWithKey {
-    ResponsibilityCenterId?: number;
+    CenterId?: number;
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -64,8 +64,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResponsibilityCenterId: { control: 'number', label: () => `${trx.instant('Account_ResponsibilityCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResponsibilityCenter: { control: 'navigation', label: () => trx.instant('Account_ResponsibilityCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'ResponsibilityCenterId' },
+                CenterId: { control: 'number', label: () => `${trx.instant('Account_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { control: 'navigation', label: () => trx.instant('Account_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },

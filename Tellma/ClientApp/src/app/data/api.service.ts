@@ -36,7 +36,7 @@ import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
 import { GetAggregateResponse } from './dto/get-aggregate-response';
-import { ResponsibilityCenter } from './entities/responsibility-center';
+import { Center } from './entities/center';
 import { friendlify } from './util';
 import { EntryType } from './entities/entry-type';
 import { Document } from './entities/document';
@@ -455,10 +455,10 @@ export class ApiService {
     };
   }
 
-  public responsibilityCenterApi(cancellationToken$: Observable<void>) {
+  public centersApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<ResponsibilityCenter>('responsibility-centers', cancellationToken$),
-      deactivate: this.deactivateFactory<ResponsibilityCenter>('responsibility-centers', cancellationToken$)
+      activate: this.activateFactory<Center>('centers', cancellationToken$),
+      deactivate: this.deactivateFactory<Center>('centers', cancellationToken$)
     };
   }
 

@@ -107,11 +107,19 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name = "HR 1000x0.8",
                 Name2 = "HR 1000x0.8",
                 Code = "HR 1000x0.8",
+                Units = new List<ResourceUnitForSave>
+                {
+                    new ResourceUnitForSave
+                    {
+                        UnitId = Shared.Get<Unit>("Unit_kg").Id,
+                        Multiplier = 1,
+                    }
+                }
             };
 
             // Save it
             var dtosForSave = new List<ResourceForSave> { dtoForSave };
-            var response = await Client.PostAsJsonAsync(Url, dtosForSave);
+            var response = await Client.PostAsJsonAsync(Url + "?expand=Units", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -133,6 +141,17 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
 
+            Assert.Collection(responseDto.Units,
+                (responseRu) =>
+                {
+
+                    Assert.NotNull(responseRu?.Id);
+
+                    var ruForSave = dtoForSave.Units[0];
+                    Assert.Equal(ruForSave.UnitId, responseRu.UnitId);
+                    Assert.Equal(ruForSave.Multiplier, responseRu.Multiplier);
+                });
+
             Shared.Set("Resource_HR1000x0.8", responseDto);
         }
 
@@ -142,7 +161,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<Resource>("Resource_HR1000x0.8");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{Url}/{id}");
+            var response = await Client.GetAsync($"{Url}/{id}?expand=Units");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -170,11 +189,19 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "HR 1000x0.8",
+                    Units = new List<ResourceUnitForSave>
+                    {
+                        new ResourceUnitForSave
+                        {
+                            UnitId = Shared.Get<Unit>("Unit_kg").Id,
+                            Multiplier = 1,
+                        }
+                    }
                 }
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, list);
+            var response = await Client.PostAsJsonAsync(Url + "?expand=Units", list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -203,10 +230,18 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name = "  HR 1000x0.9", // Leading space
                 Name2 = "HR 1000x0.9",
                 Code = "0HR 1000x0.9  ", // Trailing space
+                Units = new List<ResourceUnitForSave>
+                {
+                    new ResourceUnitForSave
+                    {
+                        UnitId = Shared.Get<Unit>("Unit_kg").Id,
+                        Multiplier = 1,
+                    }
+                }
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<ResourceForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url + "?expand=Units", new List<ResourceForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed

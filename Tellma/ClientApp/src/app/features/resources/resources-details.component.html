@@ -153,26 +153,26 @@
     <t-form-group *ngIf="ExpenseCenter_isVisible" class="t-form-group" [label]="'Resource_ExpenseCenter' | translate"
         [serverErrors]="model?.serverErrors?.ExpenseCenterId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseCenter">
-            <t-view-link link="../../../responsibility-centers" [itemId]="model?.ExpenseCenterId">
-                {{ ws.getMultilingualValue('ResponsibilityCenter', model.ExpenseCenterId, 'Name') }}
+            <t-view-link link="../../../centers" [itemId]="model?.ExpenseCenterId">
+                {{ ws.getMultilingualValue('Center', model.ExpenseCenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseCenterId" filter="IsLeaf eq true"
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseCenterId" filter="IsLeaf eq true"
             [required]="ExpenseCenter_isRequired">
-        </t-responsibility-centers-picker>
+        </t-centers-picker>
     </t-form-group>
 
     <!-- Investment Center -->
     <t-form-group *ngIf="InvestmentCenter_isVisible" class="t-form-group"
         [label]="'Resource_InvestmentCenter' | translate" [serverErrors]="model?.serverErrors?.InvestmentCenterId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InvestmentCenter">
-            <t-view-link link="../../../responsibility-centers" [itemId]="model?.InvestmentCenterId">
-                {{ ws.getMultilingualValue('ResponsibilityCenter', model.InvestmentCenterId, 'Name') }}
+            <t-view-link link="../../../centers" [itemId]="model?.InvestmentCenterId">
+                {{ ws.getMultilingualValue('Center', model.InvestmentCenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId"
-            [required]="InvestmentCenter_isRequired" filter="ResponsibilityType eq 'Investment' and IsLeaf eq true">
-        </t-responsibility-centers-picker>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId"
+            [required]="InvestmentCenter_isRequired" filter="CenterType eq 'Investment' and IsLeaf eq true">
+        </t-centers-picker>
     </t-form-group>
 
     <!-- ResidualMonetaryValue -->

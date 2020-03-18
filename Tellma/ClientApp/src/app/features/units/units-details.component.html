@@ -85,7 +85,7 @@
   </t-form-group>
 
   <!-- Unit Type -->
-  <t-form-group class="t-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
+  <t-form-group class="t-form-group" [label]="'Unit_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
     <div *ngIf="!isEdit">
       <t-restricted [metadata]="model?.EntityMetadata?.UnitType"> {{ unitTypeLookup(model?.UnitType) | translate }}
       </t-restricted>
@@ -94,7 +94,7 @@
   </t-form-group>
 
   <!-- Unit Amount -->
-  <t-form-group class="t-form-group" [label]="'MU_UnitAmount' | translate"
+  <t-form-group class="t-form-group" [label]="'Unit_UnitAmount' | translate"
     [serverErrors]="model?.serverErrors?.UnitAmount">
     <div *ngIf="!isEdit">
       <t-restricted [metadata]="model?.EntityMetadata?.UnitAmount"> {{model?.UnitAmount | number}}</t-restricted>
@@ -104,7 +104,7 @@
   </t-form-group>
 
   <!-- Base Amount -->
-  <t-form-group class="t-form-group" [label]="'MU_BaseAmount' | translate"
+  <t-form-group class="t-form-group" [label]="'Unit_BaseAmount' | translate"
     [serverErrors]="model?.serverErrors?.BaseAmount">
     <div *ngIf="!isEdit">
       <t-restricted [metadata]="model?.EntityMetadata?.BaseAmount"> {{model?.BaseAmount | number}}</t-restricted>

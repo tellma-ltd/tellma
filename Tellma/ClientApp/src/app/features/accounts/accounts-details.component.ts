@@ -21,7 +21,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType,LegacyClassification,Currency,ResponsibilityCenter,
+  public expand = `AccountType,LegacyClassification,Currency,Center,
   LegacyType,Agent,Resource/Currency,EntryType`;
 
   constructor(
@@ -95,10 +95,10 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   /////////////// New stuff
 
-  // ResponsibilityCenterId
+  // CenterId
 
-  public showResponsibilityCenter(_: AccountForSave): boolean {
-    return this.ws.settings.IsMultiResponsibilityCenter;
+  public showCenter(_: AccountForSave): boolean {
+    return this.ws.settings.IsMultiCenter;
   }
 
   // IsCurrent

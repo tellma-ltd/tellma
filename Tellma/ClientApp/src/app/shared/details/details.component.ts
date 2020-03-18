@@ -505,7 +505,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
     // This handles 422 ModelState errors
     if (friendlyError.status === 422) {
-      console.log(friendlyError);
       this._unboundServerErrors = [];
       const serverErrors = applyServerErrors([this.activeModel], friendlyError.error);
       const keys = Object.keys(serverErrors);
@@ -1014,7 +1013,7 @@ export function applyServerErrors(
 
         if (isNaN(indexPart)) {
           // ignore a malformed error path (a later step will add the errors to leftovers)
-          console.error(`Badly formatted server error path '${path}'`);
+          console.error(`Badly formatted server error path '${p}'`);
           current = null;
           break;
         }
@@ -1044,7 +1043,7 @@ export function applyServerErrors(
       }
 
       const lastStep = steps[steps.length - 1];
-      currentEntity.serverErrors[lastStep] = errors[path];
+      currentEntity.serverErrors[lastStep] = errors[p];
 
     } else {
       leftovers[path] = errors[path];

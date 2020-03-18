@@ -76,6 +76,9 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>Agent Definition</value>
   </data>
+  <data name="Account_Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -123,9 +126,6 @@
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>Responsibility Center</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>Type</value>
@@ -228,6 +228,30 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Center_CenterType" xml:space="preserve">
+    <value>Center Type</value>
+  </data>
+  <data name="Center_CenterType_Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="Center_CenterType_Investment" xml:space="preserve">
+    <value>Investment</value>
+  </data>
+  <data name="Center_CenterType_Profit" xml:space="preserve">
+    <value>Profit</value>
+  </data>
+  <data name="Center_CenterType_Revenue" xml:space="preserve">
+    <value>Revenue</value>
+  </data>
+  <data name="Center_Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="Centers" xml:space="preserve">
+    <value>Centers</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>Change Password</value>
@@ -541,6 +565,9 @@
   <data name="Entry_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
+  <data name="Entry_Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>Contract Type</value>
   </data>
@@ -588,9 +615,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
-  </data>
-  <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>Responsibility Center</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>Time 1</value>
@@ -736,6 +760,12 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>The amount {0} does not match the value {1} even though both are in {2}</value>
   </data>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>The amount must be greater than or equal to 1</value>
+  </data>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>The equivalent amount must be greater than or equal to 1</value>
+  </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>The code '{0}' does not exist.</value>
   </data>
@@ -745,8 +775,14 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>The code '{0}' is already used.</value>
   </data>
+  <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
+    <value>The exchange rate for currency '{0}' on date {1} is duplicated</value>
+  </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>The Currency '{0}' is used in '{1}'</value>
+  </data>
+  <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
+    <value>The currency should be different than the functional currency</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>The email '{0}' is duplicated.</value>
@@ -805,6 +841,9 @@
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>The user '{0}' is not active.</value>
   </data>
+  <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
+    <value>The Valid As Of date cannot be in the future</value>
+  </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>The value '{0}' is not valid for the {1} field.</value>
   </data>
@@ -825,6 +864,24 @@
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>The value '{0}' is not valid for the {1} field, acceptable values are: {2}.</value>
+  </data>
+  <data name="ExchangeRate" xml:space="preserve">
+    <value>Exchange Rate</value>
+  </data>
+  <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="ExchangeRate_AmountInFunctional" xml:space="preserve">
+    <value>Equivalent</value>
+  </data>
+  <data name="ExchangeRate_Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
+    <value>Valid As Of</value>
+  </data>
+  <data name="ExchangeRates" xml:space="preserve">
+    <value>Exchange Rates</value>
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
@@ -1110,33 +1167,6 @@
   </data>
   <data name="Modifier_year" xml:space="preserve">
     <value>Year</value>
-  </data>
-  <data name="MU_BaseAmount" xml:space="preserve">
-    <value>Amount in base Unit</value>
-  </data>
-  <data name="MU_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="MU_Distance" xml:space="preserve">
-    <value>Distance</value>
-  </data>
-  <data name="MU_Mass" xml:space="preserve">
-    <value>Mass</value>
-  </data>
-  <data name="MU_Pure" xml:space="preserve">
-    <value>Pure</value>
-  </data>
-  <data name="MU_Time" xml:space="preserve">
-    <value>Time</value>
-  </data>
-  <data name="MU_UnitAmount" xml:space="preserve">
-    <value>Amount in this Unit</value>
-  </data>
-  <data name="MU_UnitType" xml:space="preserve">
-    <value>Unit Type</value>
-  </data>
-  <data name="MU_Volume" xml:space="preserve">
-    <value>Volume</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
@@ -1576,30 +1606,6 @@
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>Unit</value>
   </data>
-  <data name="ResponsibilityCenter" xml:space="preserve">
-    <value>Responsibility Center</value>
-  </data>
-  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
-    <value>Manager</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
-    <value>Responsibility Type</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
-    <value>Cost</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
-    <value>Investment</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
-    <value>Profit</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
-    <value>Revenue</value>
-  </data>
-  <data name="ResponsibilityCenters" xml:space="preserve">
-    <value>Responsibility Centers</value>
-  </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>
   </data>
@@ -1878,6 +1884,33 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>Unit</value>
+  </data>
+  <data name="Unit_BaseAmount" xml:space="preserve">
+    <value>Amount in base Unit</value>
+  </data>
+  <data name="Unit_Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="Unit_Distance" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="Unit_Mass" xml:space="preserve">
+    <value>Mass</value>
+  </data>
+  <data name="Unit_Pure" xml:space="preserve">
+    <value>Pure</value>
+  </data>
+  <data name="Unit_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Unit_UnitAmount" xml:space="preserve">
+    <value>Amount in this Unit</value>
+  </data>
+  <data name="Unit_UnitType" xml:space="preserve">
+    <value>Unit Type</value>
+  </data>
+  <data name="Unit_Volume" xml:space="preserve">
+    <value>Volume</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>Units</value>

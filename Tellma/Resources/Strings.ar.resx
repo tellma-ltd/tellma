@@ -76,6 +76,9 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>تعريف الذمة</value>
   </data>
+  <data name="Account_Center" xml:space="preserve">
+    <value>المركز</value>
+  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
@@ -123,9 +126,6 @@
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
@@ -228,6 +228,30 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
+  </data>
+  <data name="Center" xml:space="preserve">
+    <value>مركز</value>
+  </data>
+  <data name="Center_CenterType" xml:space="preserve">
+    <value>نوع المركز</value>
+  </data>
+  <data name="Center_CenterType_Cost" xml:space="preserve">
+    <value>تكلفة</value>
+  </data>
+  <data name="Center_CenterType_Investment" xml:space="preserve">
+    <value>استثمار</value>
+  </data>
+  <data name="Center_CenterType_Profit" xml:space="preserve">
+    <value>ربح</value>
+  </data>
+  <data name="Center_CenterType_Revenue" xml:space="preserve">
+    <value>إيراد</value>
+  </data>
+  <data name="Center_Manager" xml:space="preserve">
+    <value>المدير</value>
+  </data>
+  <data name="Centers" xml:space="preserve">
+    <value>مراكز</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>تغير كلمة المرور</value>
@@ -541,6 +565,9 @@
   <data name="Entry_Agent" xml:space="preserve">
     <value>الذمّة</value>
   </data>
+  <data name="Entry_Center" xml:space="preserve">
+    <value>المركز</value>
+  </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>نوع العقد</value>
   </data>
@@ -588,9 +615,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز المسؤولية</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>الزمن 1</value>
@@ -736,6 +760,12 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما</value>
   </data>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>المبلغ ينبغي أن يكون أكبر من أو يساوي 1</value>
+  </data>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>المبلغ المقابل ينبغي أن يكون أكبر من أو يساوي 1</value>
+  </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>
   </data>
@@ -745,8 +775,14 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>الكود ({0}) مستخدم حاليا</value>
   </data>
+  <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
+    <value>سعر صرف العملة ({0}) في التاريخ {1} مكرر أكثر من مرة</value>
+  </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>العملة ({0}) مستخدمة في ({1})</value>
+  </data>
+  <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
+    <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>
@@ -805,6 +841,9 @@
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>المستخدم ({0}) غير منشط</value>
   </data>
+  <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
+    <value>تاريخ صالح ابتداء من لا يمكن أن يكون في المستقبل</value>
+  </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>القيمة ({0}) ليست صالحة لحقل {1}</value>
   </data>
@@ -825,6 +864,24 @@
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>القيمة ({0}) ليست صالحة لحقل {1}، القيم الصالحة هي: {2}</value>
+  </data>
+  <data name="ExchangeRate" xml:space="preserve">
+    <value>سعر صرف</value>
+  </data>
+  <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="ExchangeRate_AmountInFunctional" xml:space="preserve">
+    <value>المقابل</value>
+  </data>
+  <data name="ExchangeRate_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
+    <value>صالح ابتداء من</value>
+  </data>
+  <data name="ExchangeRates" xml:space="preserve">
+    <value>أسعار الصرف</value>
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
@@ -1110,33 +1167,6 @@
   </data>
   <data name="Modifier_year" xml:space="preserve">
     <value>السنة</value>
-  </data>
-  <data name="MU_BaseAmount" xml:space="preserve">
-    <value>الكمية بالوحدة الأساسية</value>
-  </data>
-  <data name="MU_Count" xml:space="preserve">
-    <value>عدد</value>
-  </data>
-  <data name="MU_Distance" xml:space="preserve">
-    <value>مسافة</value>
-  </data>
-  <data name="MU_Mass" xml:space="preserve">
-    <value>كتلة</value>
-  </data>
-  <data name="MU_Pure" xml:space="preserve">
-    <value>محض</value>
-  </data>
-  <data name="MU_Time" xml:space="preserve">
-    <value>زمن</value>
-  </data>
-  <data name="MU_UnitAmount" xml:space="preserve">
-    <value>الكمية بالوحدة الحالية</value>
-  </data>
-  <data name="MU_UnitType" xml:space="preserve">
-    <value>التصنيف</value>
-  </data>
-  <data name="MU_Volume" xml:space="preserve">
-    <value>حجم</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>الاسم</value>
@@ -1576,30 +1606,6 @@
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>الوحدة</value>
   </data>
-  <data name="ResponsibilityCenter" xml:space="preserve">
-    <value>مركز مسؤولية</value>
-  </data>
-  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
-    <value>المدير</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
-    <value>نوع المركز</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
-    <value>تكلفة</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
-    <value>استثمار</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
-    <value>ربح</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
-    <value>إيراد</value>
-  </data>
-  <data name="ResponsibilityCenters" xml:space="preserve">
-    <value>مراكز مسؤولية</value>
-  </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>
   </data>
@@ -1878,6 +1884,33 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>وحدة</value>
+  </data>
+  <data name="Unit_BaseAmount" xml:space="preserve">
+    <value>الكمية بالوحدة الأساسية</value>
+  </data>
+  <data name="Unit_Count" xml:space="preserve">
+    <value>عدد</value>
+  </data>
+  <data name="Unit_Distance" xml:space="preserve">
+    <value>مسافة</value>
+  </data>
+  <data name="Unit_Mass" xml:space="preserve">
+    <value>كتلة</value>
+  </data>
+  <data name="Unit_Pure" xml:space="preserve">
+    <value>محض</value>
+  </data>
+  <data name="Unit_Time" xml:space="preserve">
+    <value>زمن</value>
+  </data>
+  <data name="Unit_UnitAmount" xml:space="preserve">
+    <value>الكمية بالوحدة الحالية</value>
+  </data>
+  <data name="Unit_UnitType" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
+  <data name="Unit_Volume" xml:space="preserve">
+    <value>حجم</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>وحدات</value>

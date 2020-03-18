@@ -6,9 +6,9 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export interface ResponsibilityCenterForSave extends EntityForSave {
+export interface CenterForSave extends EntityForSave {
     ParentId?: number;
-    ResponsibilityCenterId?: string;
+    CenterType?: string;
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -17,7 +17,7 @@ export interface ResponsibilityCenterForSave extends EntityForSave {
     IsLeaf?: boolean;
 }
 
-export interface ResponsibilityCenter extends ResponsibilityCenterForSave {
+export interface Center extends CenterForSave {
     Level?: number;
     ActiveChildCount?: number;
     ChildCount?: number;
@@ -32,7 +32,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor = null;
 
-export function metadata_ResponsibilityCenter(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Center(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
@@ -45,12 +45,12 @@ export function metadata_ResponsibilityCenter(wss: WorkspaceService, trx: Transl
     if (!_cache) {
         _settings = ws.settings;
         const entityDesc: EntityDescriptor = {
-            collection: 'ResponsibilityCenter',
-            titleSingular: () => trx.instant('ResponsibilityCenter'),
-            titlePlural: () => trx.instant('ResponsibilityCenters'),
+            collection: 'Center',
+            titleSingular: () => trx.instant('Center'),
+            titlePlural: () => trx.instant('Centers'),
             select: _select,
-            apiEndpoint: 'responsibility-centers',
-            screenUrl: 'responsibility-centers',
+            apiEndpoint: 'centers',
+            screenUrl: 'centers',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] :
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
@@ -60,18 +60,18 @@ export function metadata_ResponsibilityCenter(wss: WorkspaceService, trx: Transl
                     control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
                     minDecimalPlaces: 0, maxDecimalPlaces: 0
                 },
-                ResponsibilityType: {
+                CenterType: {
                     control: 'choice',
-                    label: () => trx.instant('ResponsibilityCenter_ResponsibilityType'),
+                    label: () => trx.instant('Center_CenterType'),
                     choices: ['Investment', 'Profit', 'Revenue', 'Cost'],
-                    format: (c: string) => trx.instant(`ResponsibilityCenter_ResponsibilityType_${c}`)
+                    format: (c: string) => trx.instant(`Center_CenterType_${c}`)
                 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 ManagerId: {
                     control: 'number',
-                    label: () => `${trx.instant('ResponsibilityCenter_Manager')} (${trx.instant('Id')})`,
+                    label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`,
                     minDecimalPlaces: 0,
                     maxDecimalPlaces: 0
                 },
@@ -79,7 +79,7 @@ export function metadata_ResponsibilityCenter(wss: WorkspaceService, trx: Transl
                 IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
                 Manager: {
-                    control: 'navigation', label: () => trx.instant('ResponsibilityCenter_Manager'), type: 'Agent',
+                    control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent',
                     foreignKeyName: 'ManagerId'
                 },
 
@@ -97,7 +97,7 @@ export function metadata_ResponsibilityCenter(wss: WorkspaceService, trx: Transl
                     alignment: 'right'
                 },
                 Parent: {
-                    control: 'navigation', label: () => trx.instant('TreeParent'), type: 'ResponsibilityCenter',
+                    control: 'navigation', label: () => trx.instant('TreeParent'), type: 'Center',
                     foreignKeyName: 'ParentId'
                 },
 

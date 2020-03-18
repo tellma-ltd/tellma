@@ -24,8 +24,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Resource")]
         public int? ResourceId { get; set; }
 
-        [Display(Name = "Entry_ResponsibilityCenter")]
-        public int? ResponsibilityCenterId { get; set; }
+        [Display(Name = "Entry_Center")]
+        public int? CenterId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; } // EntryTypeId
@@ -109,9 +109,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AgentId))]
         public Agent Agent { get; set; }
 
-        [Display(Name = "Entry_ResponsibilityCenter")]
-        [ForeignKey(nameof(ResponsibilityCenterId))]
-        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+        [Display(Name = "Entry_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
 
         [Display(Name = "Entry_Currency")]
         [ForeignKey(nameof(CurrencyId))]

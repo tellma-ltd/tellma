@@ -19,11 +19,12 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCurrency0Date1IsDuplicated',
-		FE.[CurrencyId],
-		FORMAT(FE.[ValidAsOf], 'd', 'de-de') -- DD.MM.YYYY
+		N'Error_TheCurrency0Date1AreDuplicated',
+		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
+		FORMAT(FE.[ValidAsOf], 'yyyy-MM-dd')
 	FROM @Entities FE
-	JOIN dbo.ExchangeRates ER ON FE.[CurrencyId] = ER.CurrencyId AND FE.[ValidAsOf] = ER.[ValidAsOf]
-	WHERE FE.[Id] = 0;
+	JOIN [dbo].[ExchangeRates] BE ON FE.[CurrencyId] = BE.CurrencyId AND FE.[ValidAsOf] = BE.[ValidAsOf]
+	JOIN [dbo].[Currencies] C ON FE.CurrencyId = C.Id
+	WHERE FE.Id = 0 OR FE.Id <> BE.Id;
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

@@ -189,7 +189,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Document_InvestmentCenter")]
         [ForeignKey(nameof(InvestmentCenterId))]
-        public ResponsibilityCenter InvestmentCenter { get; set; }
+        public Center InvestmentCenter { get; set; }
 
         [Display(Name = "Document_Unit")]
         [ForeignKey(nameof(UnitId))]

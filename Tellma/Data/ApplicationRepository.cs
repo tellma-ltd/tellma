@@ -168,6 +168,7 @@ namespace Tellma.Data
         public Query<Settings> Settings => Query<Settings>();
         public Query<User> Users => Query<User>();
         public Query<Agent> Agents => Query<Agent>();
+        public Query<Currency> Currencies => Query<Currency>();
 
         /// <summary>
         /// Creates and returns a new <see cref="Queries.Query{T}"/>
@@ -262,8 +263,8 @@ namespace Tellma.Data
                 case nameof(LookupDefinition):
                     return "[map].[LookupDefinitions]()";
 
-                case nameof(ResponsibilityCenter):
-                    return "[map].[ResponsibilityCenters]()";
+                case nameof(Center):
+                    return "[map].[Centers]()";
 
                 case nameof(EntryType):
                     return "[map].[EntryTypes]()";
@@ -300,6 +301,9 @@ namespace Tellma.Data
 
                 case nameof(ReportMeasureDefinition):
                     return "[map].[ReportMeasureDefinitions]()";
+
+                case nameof(ExchangeRate):
+                    return "[map].[ExchangeRates]()";
 
                 // Fact tables
 
@@ -540,10 +544,10 @@ namespace Tellma.Data
         public async Task<(bool, Settings)> Settings__Load()
         {
             // Returns 
-            // (1) whether active leaf responsibility centers are multiple or single
+            // (1) whether active leaf centers are multiple or single
             // (2) the settings with the functional currency expanded
 
-            bool isMultiResonsibilityCenter = false;
+            bool isMultiCenter = false;
             Settings settings = new Settings();
 
             var conn = await GetConnectionAsync();
@@ -558,7 +562,7 @@ namespace Tellma.Data
                 // Load the version
                 if (await reader.ReadAsync())
                 {
-                    isMultiResonsibilityCenter = reader.GetBoolean(0);
+                    isMultiCenter = reader.GetBoolean(0);
                 }
                 else
                 {
@@ -610,7 +614,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (isMultiResonsibilityCenter, settings);
+            return (isMultiCenter, settings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
@@ -3237,9 +3241,9 @@ namespace Tellma.Data
 
         #endregion
 
-        #region ResponsibilityCenters
+        #region Centers
 
-        public Query<ResponsibilityCenter> ResponsibilityCenters__AsQuery(List<ResponsibilityCenterForSave> entities)
+        public Query<Center> Centers__AsQuery(List<CenterForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
@@ -3248,16 +3252,16 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(ResponsibilityCenter)}List]",
+                TypeName = $"[dbo].[{nameof(Center)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             // Query
-            var query = Query<ResponsibilityCenter>();
-            return query.FromSql($"[map].[{nameof(ResponsibilityCenters__AsQuery)}] (@Entities)", null, entitiesTvp);
+            var query = Query<Center>();
+            return query.FromSql($"[map].[{nameof(Centers__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__Save(List<ResponsibilityCenterForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Centers_Validate__Save(List<CenterForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3265,7 +3269,7 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(ResponsibilityCenter)}List]",
+                TypeName = $"[dbo].[{nameof(Center)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -3274,13 +3278,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(Centers_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> ResponsibilityCenters__Save(List<ResponsibilityCenterForSave> entities, bool returnIds)
+        public async Task<List<int>> Centers__Save(List<CenterForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -3290,7 +3294,7 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ResponsibilityCenter)}List]",
+                    TypeName = $"[dbo].[{nameof(Center)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -3298,7 +3302,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(Centers__Save)}]";
 
                 if (returnIds)
                 {
@@ -3329,7 +3333,7 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task ResponsibilityCenters__Activate(List<int> ids, bool isActive)
+        public async Task Centers__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3346,13 +3350,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Activate)}]";
+            cmd.CommandText = $"[dal].[{nameof(Centers__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Centers_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3369,13 +3373,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(Centers_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ResponsibilityCenters__Delete(IEnumerable<int> ids)
+        public async Task Centers__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3391,7 +3395,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(Centers__Delete)}]";
 
             // Execute
             try
@@ -3404,7 +3408,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ResponsibilityCenters_Validate__DeleteWithDescendants(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Centers_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3421,13 +3425,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(ResponsibilityCenters_Validate__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[bll].[{nameof(Centers_Validate__DeleteWithDescendants)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ResponsibilityCenters__DeleteWithDescendants(IEnumerable<int> ids)
+        public async Task Centers__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3443,7 +3447,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(ResponsibilityCenters__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[dal].[{nameof(Centers__DeleteWithDescendants)}]";
 
             // Execute
             try
@@ -4481,6 +4485,135 @@ namespace Tellma.Data
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
+
+        #endregion
+
+        #region ExchangeRates
+
+        public async Task<IEnumerable<ValidationError>> ExchangeRates_Validate__Save(List<ExchangeRateForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(ExchangeRate)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ExchangeRates_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> ExchangeRates__Save(List<ExchangeRateForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ExchangeRate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(ExchangeRates__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task<IEnumerable<ValidationError>> ExchangeRates_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ExchangeRates_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task ExchangeRates__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ExchangeRates__Delete)}]";
 
             // Execute
             try

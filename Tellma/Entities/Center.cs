@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class ResponsibilityCenterForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class CenterForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -14,16 +14,16 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ParentId { get; set; }
 
-        [Display(Name = "ResponsibilityCenter_ResponsibilityType")]
+        [Display(Name = "Center_CenterType")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
             new string[] {
-                "ResponsibilityCenter_ResponsibilityType_Investment",
-                "ResponsibilityCenter_ResponsibilityType_Profit",
-                "ResponsibilityCenter_ResponsibilityType_Revenue",
-                "ResponsibilityCenter_ResponsibilityType_Cost" })]
-        public string ResponsibilityType { get; set; }
+                "Center_CenterType_Investment",
+                "Center_CenterType_Profit",
+                "Center_CenterType_Revenue",
+                "Center_CenterType_Cost" })]
+        public string CenterType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
@@ -41,7 +41,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
-        [Display(Name = "ResponsibilityCenter_Manager")]
+        [Display(Name = "Center_Manager")]
         public int? ManagerId { get; set; }
 
         [Display(Name = "Code")]
@@ -55,7 +55,7 @@ namespace Tellma.Entities
         public bool? IsLeaf { get; set; } = true;
     }
 
-    public class ResponsibilityCenter : ResponsibilityCenterForSave, ITreeEntity<int>
+    public class Center : CenterForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
@@ -84,7 +84,7 @@ namespace Tellma.Entities
 
         // For Query
 
-        [Display(Name = "ResponsibilityCenter_Manager")]
+        [Display(Name = "Center_Manager")]
         [ForeignKey(nameof(ManagerId))]
         public Agent Manager { get; set; }
 
@@ -96,7 +96,7 @@ namespace Tellma.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public ResponsibilityCenter Parent { get; set; }
+        public Center Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

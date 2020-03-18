@@ -65,9 +65,9 @@ import { ReportResultsComponent } from './report-results/report-results.componen
 import { ReportDefinitionsMasterComponent } from './report-definitions/report-definitions-master.component';
 import { ReportDefinitionsDetailsComponent } from './report-definitions/report-definitions-details.component';
 import { ReportDefinitionsImportComponent } from './report-definitions/report-definitions-import.component';
-import { ResponsibilityCentersMasterComponent } from './responsibility-centers/responsibility-centers-master.component';
-import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
-import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
+import { CentersMasterComponent } from './centers/centers-master.component';
+import { CentersDetailsComponent } from './centers/centers-details.component';
+import { CentersPickerComponent } from './centers/centers-picker.component';
 import { LegacyTypesPickerComponent } from './legacy-types/legacy-types-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
@@ -79,6 +79,8 @@ import { EntryTypesPickerComponent } from './entry-types/entry-types-picker.comp
 import { DocumentsMasterComponent } from './documents/documents-master.component';
 import { DocumentsDetailsComponent } from './documents/documents-details.component';
 import { DetailsEntriesComponent } from './details-entries/details-entries.component';
+import { ExchangeRatesMasterComponent } from './exchange-rates/exchange-rates-master.component';
+import { ExchangeRatesDetailsComponent } from './exchange-rates/exchange-rates-details.component';
 
 const routes: Routes = [
   {
@@ -336,15 +338,27 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Report Definitions
+      // Centers
       {
-        path: 'responsibility-centers',
-        component: ResponsibilityCentersMasterComponent,
+        path: 'centers',
+        component: CentersMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'responsibility-centers/:id',
-        component: ResponsibilityCentersDetailsComponent,
+        path: 'centers/:id',
+        component: CentersDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Exchange Rates
+      {
+        path: 'exchange-rates',
+        component: ExchangeRatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'exchange-rates/:id',
+        component: ExchangeRatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -442,9 +456,9 @@ const routes: Routes = [
     ReportDefinitionsMasterComponent,
     ReportDefinitionsDetailsComponent,
     ReportDefinitionsImportComponent,
-    ResponsibilityCentersMasterComponent,
-    ResponsibilityCentersDetailsComponent,
-    ResponsibilityCentersPickerComponent,
+    CentersMasterComponent,
+    CentersDetailsComponent,
+    CentersPickerComponent,
     UsersPickerComponent,
     RolesPickerComponent,
     CurrenciesPickerComponent,
@@ -455,6 +469,8 @@ const routes: Routes = [
     DocumentsMasterComponent,
     DocumentsDetailsComponent,
     DetailsEntriesComponent,
+    ExchangeRatesMasterComponent,
+    ExchangeRatesDetailsComponent,
   ],
   imports: [
     SharedModule,

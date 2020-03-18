@@ -257,7 +257,7 @@ namespace Tellma.Controllers
 
         public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo)
         {
-            var (isMultiResponsibilityCenter, settings) = await repo.Settings__Load();
+            var (isMultiCenter, settings) = await repo.Settings__Load();
             if (settings == null)
             {
                 // This should never happen
@@ -276,8 +276,8 @@ namespace Tellma.Controllers
                 }
             }
 
-            // Is Multi Responsibility Center
-            settingsForClient.IsMultiResponsibilityCenter = isMultiResponsibilityCenter;
+            // Is Multi Center
+            settingsForClient.IsMultiCenter = isMultiCenter;
 
             // Functional currency
             settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;

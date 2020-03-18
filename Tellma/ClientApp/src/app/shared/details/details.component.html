@@ -191,16 +191,19 @@
             </ng-container>
           </div>
           <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
-            <ng-container
-              *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
-            </ng-container>
-
             <!-- Errors -->
-            <div class="w-100 mt-3" *ngIf="unboundServerErrors.length">
+            <div class="w-100 mb-3" *ngIf="unboundServerErrors.length || activeModel?.serverErrors?._Self">
               <div class="m-1" *ngFor="let error of unboundServerErrors">
                 <t-error-message> {{ error }} </t-error-message>
               </div>
+              <div class="m-1" *ngFor="let error of activeModel?.serverErrors?._Self">
+                <t-error-message> {{ error }} </t-error-message>
+              </div>
             </div>
+            <!-- Details -->
+            <ng-container
+              *ngTemplateOutlet="documentTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+            </ng-container>
           </div>
         </div>
       </div>

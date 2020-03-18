@@ -230,7 +230,7 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public get ExpenseCenter_isVisible(): boolean {
-    return !!this.definition.ExpenseCenterVisibility && this.ws.settings.IsMultiResponsibilityCenter;
+    return !!this.definition.ExpenseCenterVisibility && this.ws.settings.IsMultiCenter;
   }
 
   public get ExpenseCenter_isRequired(): boolean {
@@ -238,7 +238,7 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   }
 
   public get InvestmentCenter_isVisible(): boolean {
-    return !!this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiResponsibilityCenter;
+    return !!this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
   }
 
   public get InvestmentCenter_isRequired(): boolean {

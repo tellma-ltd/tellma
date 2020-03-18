@@ -74,18 +74,18 @@
             <ng-template ngbNavContent>
                 <div class="row m-0 pt-2 pt-sm-3">
 
-                    <!-- Responsibility Center -->
-                    <t-form-group class="t-form-group" *ngIf="showResponsibilityCenter(model)"
-                        [label]="'Account_ResponsibilityCenter' | translate"
-                        [serverErrors]="model?.serverErrors?.ResponsibilityCenterId">
-                        <t-view-link *ngIf="!isEdit" link="../../responsibility-centers"
-                            [itemId]="model?.ResponsibilityCenterId">
-                            <t-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
+                    <!-- Center -->
+                    <t-form-group class="t-form-group" *ngIf="showCenter(model)"
+                        [label]="'Account_Center' | translate"
+                        [serverErrors]="model?.serverErrors?.CenterId">
+                        <t-view-link *ngIf="!isEdit" link="../../centers"
+                            [itemId]="model?.CenterId">
+                            <t-auto-cell collection="Account" path="Center" [entity]="model">
                             </t-auto-cell>
                         </t-view-link>
-                        <t-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId"
+                        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId"
                             filter="IsLeaf eq true">
-                        </t-responsibility-centers-picker>
+                        </t-centers-picker>
                     </t-form-group>
 
                     <!-- Type -->

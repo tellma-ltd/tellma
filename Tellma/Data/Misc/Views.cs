@@ -122,8 +122,8 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "responsibility-centers",
-                        Name = "ResponsibilityCenters",
+                        Id = "centers",
+                        Name = "Centers",
                         Read = true,
                         Update = true,
                         Delete = true,
@@ -150,6 +150,14 @@
                         {
                             Li("IsActive")
                         }
+                    },
+                    new ViewInfo {
+                        Id = "exchange-rates",
+                        Name = "ExchangeRates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[] { }
                     },
                     new ViewInfo {
                         Id = "summary-entries",

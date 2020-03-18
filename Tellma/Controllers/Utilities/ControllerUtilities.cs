@@ -164,10 +164,10 @@ namespace Tellma.Controllers.Utilities
                     return str;
                 }
 
-                if (DateTime.TryParse(str, out DateTime dResult))
-                {
-                    return dResult;
-                }
+                //if (DateTime.TryParse(str, out DateTime dResult))
+                //{
+                //    return dResult;
+                //}
 
                 return str;
             }

@@ -76,6 +76,9 @@
   <data name="Account_AgentDefinition" xml:space="preserve">
     <value>代理定义</value>
   </data>
+  <data name="Account_Center" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
@@ -123,9 +126,6 @@
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>责任中心</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>
@@ -228,6 +228,30 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
+  </data>
+  <data name="Center" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
+  <data name="Center_CenterType" xml:space="preserve">
+    <value>责任类型</value>
+  </data>
+  <data name="Center_CenterType_Cost" xml:space="preserve">
+    <value>成本</value>
+  </data>
+  <data name="Center_CenterType_Investment" xml:space="preserve">
+    <value>投资</value>
+  </data>
+  <data name="Center_CenterType_Profit" xml:space="preserve">
+    <value>利润</value>
+  </data>
+  <data name="Center_CenterType_Revenue" xml:space="preserve">
+    <value>收入</value>
+  </data>
+  <data name="Center_Manager" xml:space="preserve">
+    <value>经理</value>
+  </data>
+  <data name="Centers" xml:space="preserve">
+    <value>责任中心</value>
   </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>更改密码</value>
@@ -541,6 +565,9 @@
   <data name="Entry_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
+  <data name="Entry_Center" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>合同类型</value>
   </data>
@@ -588,9 +615,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
-  </data>
-  <data name="Entry_ResponsibilityCenter" xml:space="preserve">
-    <value>责任中心</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>时间1</value>
@@ -736,6 +760,12 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>量{0}的值{1}不匹配，即使两者在{2}</value>
   </data>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>量必须大于或等于1</value>
+  </data>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>等效量必须大于或等于1</value>
+  </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>该代码“{0}”不存在。</value>
   </data>
@@ -745,8 +775,14 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>该代码已经被使用“{0}”。</value>
   </data>
+  <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
+    <value>汇率货币“{0}”上日期{1}被复制</value>
+  </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>货币 '{0}' 中使用的 '{1}'</value>
+  </data>
+  <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
+    <value>货币应该比功能货币不同</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>
@@ -805,6 +841,9 @@
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>用户“{0}”不活跃。</value>
   </data>
+  <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
+    <value>有效截止日期不能是未来</value>
+  </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>值“{0}”是无效的{1}字段。</value>
   </data>
@@ -825,6 +864,24 @@
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>值 '{0}' 是无效的{1}字段中，可接受的值是：{2}。</value>
+  </data>
+  <data name="ExchangeRate" xml:space="preserve">
+    <value>汇率</value>
+  </data>
+  <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
+    <value>量</value>
+  </data>
+  <data name="ExchangeRate_AmountInFunctional" xml:space="preserve">
+    <value>当量</value>
+  </data>
+  <data name="ExchangeRate_Currency" xml:space="preserve">
+    <value>货币</value>
+  </data>
+  <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
+    <value>有效的作为</value>
+  </data>
+  <data name="ExchangeRates" xml:space="preserve">
+    <value>汇率</value>
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
@@ -1110,33 +1167,6 @@
   </data>
   <data name="Modifier_year" xml:space="preserve">
     <value>年</value>
-  </data>
-  <data name="MU_BaseAmount" xml:space="preserve">
-    <value>金额基本单元</value>
-  </data>
-  <data name="MU_Count" xml:space="preserve">
-    <value>计数</value>
-  </data>
-  <data name="MU_Distance" xml:space="preserve">
-    <value>距离</value>
-  </data>
-  <data name="MU_Mass" xml:space="preserve">
-    <value>块</value>
-  </data>
-  <data name="MU_Pure" xml:space="preserve">
-    <value>纯</value>
-  </data>
-  <data name="MU_Time" xml:space="preserve">
-    <value>时间</value>
-  </data>
-  <data name="MU_UnitAmount" xml:space="preserve">
-    <value>金额该股</value>
-  </data>
-  <data name="MU_UnitType" xml:space="preserve">
-    <value>单位类型</value>
-  </data>
-  <data name="MU_Volume" xml:space="preserve">
-    <value>体积</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>名称</value>
@@ -1576,30 +1606,6 @@
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>单元</value>
   </data>
-  <data name="ResponsibilityCenter" xml:space="preserve">
-    <value>责任中心</value>
-  </data>
-  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
-    <value>经理</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
-    <value>责任类型</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
-    <value>成本</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
-    <value>投资</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
-    <value>利润</value>
-  </data>
-  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
-    <value>收入</value>
-  </data>
-  <data name="ResponsibilityCenters" xml:space="preserve">
-    <value>责任中心</value>
-  </data>
   <data name="Role" xml:space="preserve">
     <value>角色</value>
   </data>
@@ -1878,6 +1884,33 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>计量单位</value>
+  </data>
+  <data name="Unit_BaseAmount" xml:space="preserve">
+    <value>金额基本单元</value>
+  </data>
+  <data name="Unit_Count" xml:space="preserve">
+    <value>计数</value>
+  </data>
+  <data name="Unit_Distance" xml:space="preserve">
+    <value>距离</value>
+  </data>
+  <data name="Unit_Mass" xml:space="preserve">
+    <value>块</value>
+  </data>
+  <data name="Unit_Pure" xml:space="preserve">
+    <value>纯</value>
+  </data>
+  <data name="Unit_Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Unit_UnitAmount" xml:space="preserve">
+    <value>金额该股</value>
+  </data>
+  <data name="Unit_UnitType" xml:space="preserve">
+    <value>单位类型</value>
+  </data>
+  <data name="Unit_Volume" xml:space="preserve">
+    <value>体积</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>测量单位</value>
