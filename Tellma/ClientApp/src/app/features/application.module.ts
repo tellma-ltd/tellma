@@ -79,6 +79,8 @@ import { EntryTypesPickerComponent } from './entry-types/entry-types-picker.comp
 import { DocumentsMasterComponent } from './documents/documents-master.component';
 import { DocumentsDetailsComponent } from './documents/documents-details.component';
 import { DetailsEntriesComponent } from './details-entries/details-entries.component';
+import { ExchangeRatesMasterComponent } from './exchange-rates/exchange-rates-master.component';
+import { ExchangeRatesDetailsComponent } from './exchange-rates/exchange-rates-details.component';
 
 const routes: Routes = [
   {
@@ -336,7 +338,7 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Report Definitions
+      // Centers
       {
         path: 'centers',
         component: CentersMasterComponent,
@@ -345,6 +347,18 @@ const routes: Routes = [
       {
         path: 'centers/:id',
         component: CentersDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Exchange Rates
+      {
+        path: 'exchange-rates',
+        component: ExchangeRatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'exchange-rates/:id',
+        component: ExchangeRatesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -455,6 +469,8 @@ const routes: Routes = [
     DocumentsMasterComponent,
     DocumentsDetailsComponent,
     DetailsEntriesComponent,
+    ExchangeRatesMasterComponent,
+    ExchangeRatesDetailsComponent,
   ],
   imports: [
     SharedModule,

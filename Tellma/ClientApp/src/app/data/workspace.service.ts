@@ -332,6 +332,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
   Line: EntityWorkspace<Line>;
+  ExchangeRate: EntityWorkspace<Line>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
 
   constructor(private workspaceService: WorkspaceService) {
@@ -360,6 +361,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.EntryType = {};
     this.Document = {};
     this.Line = {};
+    this.ExchangeRate = {};
     this.DetailsEntry = {};
 
     this.notifyStateChanged();

@@ -49,7 +49,7 @@
             [class.t-less-dark]="isDark">
 
             <!-- Include Inactive -->
-            <li *ngIf="showIncludeInactive" class="dropdown-item t-transparent-background" 
+            <li *ngIf="showIncludeInactive" class="dropdown-item t-transparent-background"
               [class.t-text-whitish]="isDark" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
                 includeInactiveLabel }} </span></li>
             <li *ngIf="showIncludeInactive">
@@ -356,7 +356,8 @@
               <th class="t-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
                 [style.width]="colWidth(colPath)" [class.dropdown-toggle]="isOrderedBy(colPath)"
                 (click)="onOrderBy(colPath)" cdkDrag>
-                <t-auto-label [collection]="collection" [path]="colPath" [definition]="definition">
+                <t-auto-label [collection]="collection" [path]="colPath" [definition]="definition"
+                  [useAlignment]="true">
                 </t-auto-label>
               </th>
 

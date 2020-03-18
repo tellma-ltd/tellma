@@ -760,6 +760,12 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>መጠን {0} በሁለቱም ውስጥ እንኳ ዋጋ {1} አይዛመድም {2}</value>
   </data>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>መጠን የበለጠ መሆን ወይም 1 ጋር እኩል መሆን አለባቸው</value>
+  </data>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
+    <value>ተመጣጣኝ መጠን የበለጠ መሆን ወይም 1 ጋር እኩል መሆን አለባቸው</value>
+  </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>ኮድ «{0}» የለም.</value>
   </data>
@@ -769,8 +775,14 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>ኮድ «{0}» አስቀድሞ ጥቅም ላይ ውሏል.</value>
   </data>
+  <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
+    <value>ቀን ላይ የገንዘብ ምንዛሪ የምንዛሬ ተመን «{0}« {1} የተባዙ ነው</value>
+  </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>ምንዛሬ ውስጥ ጥቅም ላይ «{0} '' {1}»</value>
+  </data>
+  <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
+    <value>ምንዛሬ ወደ ተግባራዊ ምንዛሪ የተለየ መሆን አለበት</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>በ ኢሜይል «{0}» የተባዙ ነው.</value>
@@ -829,6 +841,9 @@
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>ተጠቃሚው «{0} 'ንቁ አይደለም.</value>
   </data>
+  <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
+    <value>ቀን ላይ የሚሰራ እንደመሆኑ ወደፊት ላይ መሆን አይችልም</value>
+  </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>ዋጋ «{0}» በ {1} መስክ ትክክል አይደለም.</value>
   </data>
@@ -849,6 +864,24 @@
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>ዋጋ «{0}» በ {1} መስክ ትክክል አይደለም, ተቀባይነት እሴቶች ናቸው: {2}.</value>
+  </data>
+  <data name="ExchangeRate" xml:space="preserve">
+    <value>የምንዛሬ ዋጋ</value>
+  </data>
+  <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
+    <value>መጠን</value>
+  </data>
+  <data name="ExchangeRate_AmountInFunctional" xml:space="preserve">
+    <value>እኩል የሆነ</value>
+  </data>
+  <data name="ExchangeRate_Currency" xml:space="preserve">
+    <value>ገንዘብ</value>
+  </data>
+  <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
+    <value>ውስጥ የሚሰራ እንደ</value>
+  </data>
+  <data name="ExchangeRates" xml:space="preserve">
+    <value>ምንዛሬ ተመኖችን</value>
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>facebook</value>
@@ -1134,33 +1167,6 @@
   </data>
   <data name="Modifier_year" xml:space="preserve">
     <value>አመት</value>
-  </data>
-  <data name="MU_BaseAmount" xml:space="preserve">
-    <value>ቤዝ ዩኒት ውስጥ መጠን</value>
-  </data>
-  <data name="MU_Count" xml:space="preserve">
-    <value>ቁጠር</value>
-  </data>
-  <data name="MU_Distance" xml:space="preserve">
-    <value>ርቀት</value>
-  </data>
-  <data name="MU_Mass" xml:space="preserve">
-    <value>ቅዳሴ</value>
-  </data>
-  <data name="MU_Pure" xml:space="preserve">
-    <value>ንጹሕ</value>
-  </data>
-  <data name="MU_Time" xml:space="preserve">
-    <value>ጊዜ</value>
-  </data>
-  <data name="MU_UnitAmount" xml:space="preserve">
-    <value>በዚህ ክፍል ውስጥ መጠን</value>
-  </data>
-  <data name="MU_UnitType" xml:space="preserve">
-    <value>ዩኒት አይነት</value>
-  </data>
-  <data name="MU_Volume" xml:space="preserve">
-    <value>ድምጽ</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>ስም</value>
@@ -1878,6 +1884,33 @@
   </data>
   <data name="Unit" xml:space="preserve">
     <value>የመለኪያ አሃድ</value>
+  </data>
+  <data name="Unit_BaseAmount" xml:space="preserve">
+    <value>ቤዝ ዩኒት ውስጥ መጠን</value>
+  </data>
+  <data name="Unit_Count" xml:space="preserve">
+    <value>ቁጠር</value>
+  </data>
+  <data name="Unit_Distance" xml:space="preserve">
+    <value>ርቀት</value>
+  </data>
+  <data name="Unit_Mass" xml:space="preserve">
+    <value>ቅዳሴ</value>
+  </data>
+  <data name="Unit_Pure" xml:space="preserve">
+    <value>ንጹሕ</value>
+  </data>
+  <data name="Unit_Time" xml:space="preserve">
+    <value>ጊዜ</value>
+  </data>
+  <data name="Unit_UnitAmount" xml:space="preserve">
+    <value>በዚህ ክፍል ውስጥ መጠን</value>
+  </data>
+  <data name="Unit_UnitType" xml:space="preserve">
+    <value>ዩኒት አይነት</value>
+  </data>
+  <data name="Unit_Volume" xml:space="preserve">
+    <value>ድምጽ</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>

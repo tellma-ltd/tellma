@@ -152,6 +152,14 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "exchange-rates",
+                        Name = "ExchangeRates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[] { }
+                    },
+                    new ViewInfo {
                         Id = "summary-entries",
                         Name = "SummaryEntries",
                         Read = true,

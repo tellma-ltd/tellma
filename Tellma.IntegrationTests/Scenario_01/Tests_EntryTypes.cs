@@ -81,9 +81,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name2 = "صفائح المعدن",
                 Code = "SM",
                 ParentId = parentId,
-                IsAssignable = true,
-                ForDebit = true,
-                ForCredit = true
+                IsAssignable = true
             };
 
             // Save it
@@ -110,8 +108,6 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.ParentId, responseDto.ParentId);
             Assert.Equal(dtoForSave.IsAssignable, responseDto.IsAssignable);
-            Assert.Equal(dtoForSave.ForDebit, responseDto.ForDebit);
-            Assert.Equal(dtoForSave.ForCredit, responseDto.ForCredit);
 
 
             Shared.Set("EntryType_SM", responseDto);
@@ -138,8 +134,6 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Code, responseDto.Code);
             Assert.Equal(entity.ParentId, responseDto.ParentId);
-            Assert.Equal(entity.ForDebit, responseDto.ForDebit);
-            Assert.Equal(entity.ForCredit, responseDto.ForCredit);
         }
 
         [Fact(DisplayName = "06 Saving a EntryTypeForSave with an existing code returns a 422 Unprocessable Entity")]
@@ -153,8 +147,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Name2 = "Another Name",
                     Code = "SM",
                     IsAssignable = true,
-                    ForDebit = true,
-                    ForCredit = true
                 }
             };
 
@@ -189,8 +181,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Code = "HS  ", // Trailing space
                 ParentId = null,
                 IsAssignable = false,
-                ForDebit = true,
-                ForCredit = true
             };
 
             // Call the API

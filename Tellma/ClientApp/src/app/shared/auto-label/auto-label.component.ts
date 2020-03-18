@@ -22,8 +22,12 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   path: string;
 
+  @Input()
+  useAlignment: boolean;
+
   _subscription: Subscription;
   _label: string;
+  _alignment: 'left' | 'right' | 'center';
   _errorMessage: string;
 
   constructor(private workspace: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
@@ -103,6 +107,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           labelArray.push(currentPropDesc.label());
         }
 
+        this._alignment = !!currentPropDesc ? currentPropDesc.alignment : null;
         this._label = labelArray.join(' / ');
       }
     } catch (ex) {
@@ -117,6 +122,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
   get label(): string {
     return this._label;
+  }
+
+  get alignment(): string {
+    return this.useAlignment ? this._alignment : null;
   }
 
   get errorMessage(): string {

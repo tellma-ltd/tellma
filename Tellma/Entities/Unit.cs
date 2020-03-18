@@ -7,11 +7,11 @@ namespace Tellma.Entities
     [StrongEntity]
     public class UnitForSave : EntityWithKey<int>
     {
-        [Display(Name = "MU_UnitType")]
+        [Display(Name = "Unit_UnitType")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume" },
-            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume" })]
+            new string[] { "Unit_Pure", "Unit_Time", "Unit_Distance", "Unit_Count", "Unit_Mass", "Unit_Volume" })]
         public string UnitType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
@@ -52,11 +52,11 @@ namespace Tellma.Entities
         public string Description3 { get; set; }
 
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [Display(Name = "MU_UnitAmount")]
+        [Display(Name = "Unit_UnitAmount")]
         public double? UnitAmount { get; set; }
 
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [Display(Name = "MU_BaseAmount")]
+        [Display(Name = "Unit_BaseAmount")]
         public double? BaseAmount { get; set; }
     }
 

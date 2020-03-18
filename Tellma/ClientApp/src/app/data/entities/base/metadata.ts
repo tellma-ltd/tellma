@@ -23,6 +23,7 @@ import { metadata_DetailsEntry } from '../details-entry';
 import { metadata_Line } from '../line';
 import { metadata_AdminUser } from '../admin-user';
 import { metadata_IdentityServerUser } from '../identity-server-user';
+import { metadata_ExchangeRate } from '../exchange-rate';
 
 export const metadata: {
     [collection: string]: (
@@ -47,6 +48,7 @@ export const metadata: {
     EntryType: metadata_EntryType,
     Document: metadata_Document,
     Line: metadata_Line,
+    ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
     SummaryEntry: metadata_SummaryEntry,
 

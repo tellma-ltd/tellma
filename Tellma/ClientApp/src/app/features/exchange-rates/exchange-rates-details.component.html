@@ -1,0 +1,56 @@
+<t-details collection="ExchangeRate" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
+    [documentTemplate]="document" [actions]="[]" [isInactive]="isInactive">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    {{ (model?.ValidAsOf | date:'yyyy-MM-dd') + '-' + model?.CurrencyId }}
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <!-- Currency -->
+    <t-form-group class="t-form-group" [label]="'ExchangeRate_Currency' | translate"
+        [serverErrors]="model?.serverErrors?.CurrencyId">
+        <t-view-link *ngIf="!isEdit" link="../../currencies" [itemId]="model?.CurrencyId">
+            {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
+        </t-view-link>
+        <ng-container *ngIf="isEdit">
+            <t-currencies-picker [(ngModel)]="model.CurrencyId" [filter]="currenciesFilter" additionalSelect="E"
+                required>
+            </t-currencies-picker>
+        </ng-container>
+    </t-form-group>
+
+    <!-- Valid As Of -->
+    <t-form-group class="t-form-group" [label]="'ExchangeRate_ValidAsOf' | translate"
+        [serverErrors]="model?.serverErrors?.ValidAsOf">
+        <div *ngIf="!isEdit">{{ model?.ValidAsOf | date:'yyyy-MM-dd' }}</div>
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ValidAsOf" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="true">
+        </t-date-picker>
+    </t-form-group>
+
+    <!-- Amount In Currency -->
+    <t-form-group class="t-form-group"
+        [label]="('ExchangeRate_AmountInCurrency' | translate) + AmountInCurrency_postfix(model)"
+        [serverErrors]="model?.serverErrors?.AmountInCurrency">
+        <span *ngIf="!isEdit"
+            [title]="model?.AmountInCurrency">{{ model?.AmountInCurrency | number:AmountInCurrency_format(model) }}</span>
+        <t-decimal-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.AmountInCurrency"
+            [minDecimalPlaces]="AmountInCurrency_decimals(model)" [maxDecimalPlaces]="AmountInCurrency_decimals(model)"
+            [ngModelOptions]="{ updateOn: 'blur' }" required></t-decimal-editor>
+    </t-form-group>
+
+    <!-- Amount In Functional -->
+    <t-form-group class="t-form-group" [label]="('ExchangeRate_AmountInFunctional' | translate) + functional_postfix"
+        [serverErrors]="model?.serverErrors?.AmountInFunctional">
+        <span *ngIf="!isEdit"
+            [title]="model?.AmountInFunctional">{{ model?.AmountInFunctional| number:functional_format }}</span>
+        <t-decimal-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.AmountInFunctional"
+            [minDecimalPlaces]="functional_decimals" [maxDecimalPlaces]="functional_decimals"
+            [ngModelOptions]="{ updateOn: 'blur' }" required></t-decimal-editor>
+    </t-form-group>
+</ng-template>

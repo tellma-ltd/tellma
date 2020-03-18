@@ -1037,7 +1037,7 @@ namespace Tellma.Controllers
                     var definitionIdProp = nameof(Document.DefinitionId);
 
                     // Prepare the filter string
-                    var filterString = $"{serialNumberProp} eq {serial} and {definitionIdProp} eq '{definitionId}'";
+                    var filterString = $"{serialNumberProp} {Ops.eq} {serial} and {definitionIdProp} {Ops.eq} '{definitionId}'";
 
                     // Apply the filter
                     query = query.Filter(filterString);
@@ -1058,13 +1058,13 @@ namespace Tellma.Controllers
                     // If the search is a number, include documents with that serial number
                     if (int.TryParse(search.Trim(), out int searchNumber))
                     {
-                        filterString = $"{filterString} or {serialNumberProp} eq {searchNumber}";
+                        filterString = $"{filterString} or {serialNumberProp} {Ops.eq} {searchNumber}";
                     }
 
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {postingDateProp} eq {searchDate.ToString("yyyy-MM-dd")}";
+                        filterString = $"{filterString} or {postingDateProp} {Ops.eq} {searchDate.ToString("yyyy-MM-dd")}";
                     }
 
                     // Apply the filter
