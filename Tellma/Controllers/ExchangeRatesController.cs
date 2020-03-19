@@ -75,17 +75,17 @@ namespace Tellma.Controllers
                 }
 
                 // Amounts must be >= 1
-                if (entity.AmountInCurrency < 1m)
+                if (entity.AmountInCurrency <= 0m)
                 {
                     ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.AmountInCurrency)}",
-                        _localizer["Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne"]);
+                        _localizer["Error_TheAmountInCurrencyMustBeGreaterThanZero"]);
                 }
 
                 // Amounts must be >= 1
-                if (entity.AmountInFunctional < 1m)
+                if (entity.AmountInFunctional <= 0m)
                 {
                     ModelState.AddModelError($"[{index}].{nameof(ExchangeRate.AmountInFunctional)}",
-                        _localizer["Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne"]);
+                        _localizer["Error_TheAmountInFunctionalMustBeGreaterThanZero"]);
                 }
 
                 // Currency and date must not be duplicated in the uploaded list

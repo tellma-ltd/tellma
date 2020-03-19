@@ -294,7 +294,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   }
 
   public get canDelete(): boolean {
-    return !!this.dataUrl;
+    return !!this.dataUrl || this.status === ImageStatus.error;
   }
 
   public onFileSelected(input: any) {
@@ -323,5 +323,10 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
     }, (err) => {
       console.error(err);
     });
+  }
+
+  public get errorSize(): number {
+    // in rem
+    return (this.size / 90) * 3;
   }
 }

@@ -291,13 +291,11 @@
                         <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{
-                                        ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{
-                                        ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'AgentId'"
                                 [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
@@ -320,15 +318,15 @@
                             <span
                                 *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
                             <div *ngSwitchCase="'MonetaryValue'" style="float:right">
-                                {{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                             </div>
                             <div *ngSwitchCase="'Quantity'" style="float:right">
-                                {{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
                             <div *ngSwitchCase="'Value'" style="float:right">
-                                {{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
@@ -346,7 +344,7 @@
                             <span
                                 *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             <div *ngSwitchCase="'NotedAmount'" style="float:right">
-                                {{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}
+                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
@@ -839,11 +837,9 @@
                         </t-view-link>
                     </t-restricted>
                     <ng-container *ngIf="isEdit">
-                        <t-form-group-dynamic class="t-form-group"
-                            [serverErrors]="entry.serverErrors?.CenterId">
-                            <t-centers-picker *ngIf="!account(entry)?.CenterId"
-                                [(ngModel)]="entry.CenterId" (ngModelChange)="update.call(null, item);"
-                                filter="IsLeaf eq true">
+                        <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
+                            <t-centers-picker *ngIf="!account(entry)?.CenterId" [(ngModel)]="entry.CenterId"
+                                (ngModelChange)="update.call(null, item);" filter="IsLeaf eq true">
                             </t-centers-picker>
                             <t-restricted *ngIf="!!account(entry)?.CenterId"
                                 [metadata]="entry.EntityMetadata?.CenterId">
@@ -979,9 +975,12 @@
                                         [itemId]="signature.RoleId">
                                         {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
                                     </t-view-link>
-                                    <t-view-link
-                                        *ngIf="signature.RuleType === 'ByAgent' || signature.RuleType === 'ByUser'"
-                                        link="../../../users" [itemId]="signature.UserId">
+                                    <t-view-link *ngIf="signature.RuleType === 'ByAgent'" link="../../../agents"
+                                        [itemId]="signature.AgentId">
+                                        {{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}
+                                    </t-view-link>
+                                    <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
+                                        [itemId]="signature.UserId">
                                         {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
                                     </t-view-link>
 
@@ -1017,8 +1016,10 @@
         </li>
 
         <li class="{{ attachmentsClass }}" [ngbNavItem]="'Attachment'">
-            <a ngbNavLink><span
-                    class="small t-slightly-bold">{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}</span>
+            <a ngbNavLink><span class="small t-slightly-bold">
+                    <fa-icon icon="paperclip"></fa-icon>
+                    &nbsp;&nbsp;{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}
+                </span>
             </a>
             <ng-template ngbNavContent>
                 <!-- No Attachments Message -->

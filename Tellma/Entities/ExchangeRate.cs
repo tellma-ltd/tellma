@@ -31,6 +31,9 @@ namespace Tellma.Entities
 
     public class ExchangeRate : ExchangeRateForSave
     {
+        [Display(Name = "ExchangeRate_Rate")]
+        public decimal? Rate { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 

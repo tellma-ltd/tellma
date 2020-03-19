@@ -760,11 +760,11 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>量{0}的值{1}不匹配，即使两者在{2}</value>
   </data>
-  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>量必须大于或等于1</value>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
+    <value>量必须大于0</value>
   </data>
-  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>等效量必须大于或等于1</value>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
+    <value>等效量必须大于1</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>该代码“{0}”不存在。</value>
@@ -876,6 +876,9 @@
   </data>
   <data name="ExchangeRate_Currency" xml:space="preserve">
     <value>货币</value>
+  </data>
+  <data name="ExchangeRate_Rate" xml:space="preserve">
+    <value>率</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>有效的作为</value>

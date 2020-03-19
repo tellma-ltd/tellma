@@ -760,11 +760,11 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>መጠን {0} በሁለቱም ውስጥ እንኳ ዋጋ {1} አይዛመድም {2}</value>
   </data>
-  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>መጠን የበለጠ መሆን ወይም 1 ጋር እኩል መሆን አለባቸው</value>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
+    <value>መጠን ከ 0 መብለጥ አለበት</value>
   </data>
-  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>ተመጣጣኝ መጠን የበለጠ መሆን ወይም 1 ጋር እኩል መሆን አለባቸው</value>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
+    <value>ተመጣጣኝ መጠን 1 የበለጠ መሆን አለበት</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>ኮድ «{0}» የለም.</value>
@@ -876,6 +876,9 @@
   </data>
   <data name="ExchangeRate_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
+  </data>
+  <data name="ExchangeRate_Rate" xml:space="preserve">
+    <value>ደረጃ ይስጡ</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>ውስጥ የሚሰራ እንደ</value>

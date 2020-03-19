@@ -13,6 +13,7 @@ export interface ExchangeRateForSave extends EntityWithKey {
 }
 
 export interface ExchangeRate extends ExchangeRateForSave {
+    Rate?: number;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
@@ -41,14 +42,15 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
                 CurrencyId: { control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('ExchangeRate_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 ValidAsOf: { control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
-                AmountInCurrency: { control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                AmountInCurrency: { control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
                 AmountInFunctional: {
                     control: 'number',
                     label: () => `${trx.instant('ExchangeRate_AmountInFunctional')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
                     minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
-                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: 6,
                     alignment: 'right'
                 },
+                Rate: { control: 'number', label: () => trx.instant('ExchangeRate_Rate'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
                 ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
