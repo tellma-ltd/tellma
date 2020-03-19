@@ -12,10 +12,6 @@ export type LineState = 0 | -1 | 1 | -2 | 2 | -3 | 3 | -4 | 4;
 
 export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: string;
-    CurrencyId?: string;
-    AgentId?: number;
-    ResourceId?: number;
-    MonetaryValue?: number;
     Memo?: string;
     Entries?: TEntry[];
 }
@@ -50,13 +46,6 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
                 DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
                 DefinitionId: { control: 'text', label: () => trx.instant('Line_Definition') },
-                CurrencyId: { control: 'text', label: () => `${trx.instant('Line_Currency')} (${trx.instant('Id')})` },
-                Currency: { control: 'navigation', label: () => trx.instant('Line_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                AgentId: { control: 'number', label: () => `${trx.instant('Line_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Agent: { control: 'navigation', label: () => trx.instant('Line_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
-                ResourceId: { control: 'number', label: () => `${trx.instant('Line_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Resource: { control: 'navigation', label: () => trx.instant('Line_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-                MonetaryValue: { control: 'number', label: () => trx.instant('Line_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 State: {
                     control: 'state',

@@ -764,7 +764,7 @@
     <value>المبلغ ينبغي أن يكون أكبر من 0</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
-    <value>المبلغ المقابل ينبغي أن يكون أكبر من 0</value>
+    <value>المقابل ينبغي أن يكون أكبر من 0</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>

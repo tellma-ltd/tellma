@@ -1361,6 +1361,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     if (friendlyError.status === 422) {
       const keys = Object.keys(friendlyError.error);
+      const tracker: { [id: string]: { [error: string]: true }} = {};
       keys.forEach(key => {
         // Validation error keys are expected to look like this '[33].XYZ'
         // The code below extracts the index and maps it back to the correct id
@@ -1377,9 +1378,16 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
                 this.actionValidationErrors[id] = [];
               }
 
-              friendlyError.error[key].forEach(errorMessage => {
+              if (!tracker[id]) {
+                tracker[id] = {};
+              }
+
+              friendlyError.error[key].forEach((errorMessage: string) => {
                 // action errors map ids to list of errors messages
-                this.actionValidationErrors[id].push(errorMessage);
+                if (!tracker[id][errorMessage]) {
+                  tracker[id][errorMessage] = true; // Don't add the same message more than once
+                  this.actionValidationErrors[id].push(errorMessage);
+                }
               });
             } else {
               // Developer mistake

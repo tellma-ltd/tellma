@@ -764,7 +764,7 @@
     <value>量必须大于0</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
-    <value>等效量必须大于1</value>
+    <value>等效必须大于1</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>该代码“{0}”不存在。</value>

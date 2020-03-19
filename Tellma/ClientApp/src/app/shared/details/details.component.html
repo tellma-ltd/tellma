@@ -152,10 +152,10 @@
     <!-- Modal Breadcrumb -->
     <div class="p-2">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item" style="z-index: 1">
+        <li class="breadcrumb-item active" style="z-index: 1">
           {{ masterCrumb }}
         </li>
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item active">
           <ng-container *ngIf="(!showSpinner); else loading">
             <ng-container *ngIf="(!isNew); else new">
               <ng-container *ngTemplateOutlet="detailsCrumb; context: { model: activeModel, extras: extras }">

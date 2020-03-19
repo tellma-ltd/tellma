@@ -83,11 +83,11 @@
     <!-- Permissions -->
     <li *ngIf="showPermissions" ngbNavItem="permissions">
       <a ngbNavLink>
+        <span *ngIf="showPermissionsError(model)" class="text-danger"><fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
         <span
           class="small t-slightly-bold">{{ ('Permissions' | translate) + (!model.Id || model?.EntityMetadata?.Permissions === 2 ? ' (' + (permissionsCount(model) | number) + ')' : '') }}</span>
-        <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
-          </fa-icon>
-        </span>
       </a>
       <ng-template ngbNavContent>
         <t-restricted [metadata]="model?.EntityMetadata?.Permissions"
@@ -163,11 +163,11 @@
     <!-- Members -->
     <li *ngIf="showMembersTab(model)" ngbNavItem="members">
       <a ngbNavLink>
+        <span *ngIf="showMembersError(model)" class="text-danger"><fa-icon icon="exclamation-triangle">
+          </fa-icon>&nbsp;
+        </span>
         <span
           class="small t-slightly-bold">{{ ('Members' | translate) + (!model.Id || model?.EntityMetadata?.Members == 2 ? ' (' + (membersCount(model) | number) + ')' : '') }}</span>
-        <span *ngIf="showMembersError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
-          </fa-icon>
-        </span>
       </a>
       <ng-template ngbNavContent>
         <t-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members === 1">

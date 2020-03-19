@@ -218,20 +218,20 @@
                                     </ng-container>
                                 </ng-container>
                                 <ng-template #noFormMessage>
-                                    <div class="px-3 text-muted font-italic">
+                                    <div class="px-3 text-muted font-italic" *ngIf="!isEdit">
                                         {{ 'NotAdded' | translate }}
                                     </div>
                                 </ng-template>
                             </div>
 
-                            <div class="col-12 py-1 px-3 mt-3 d-flex" *ngIf="isEdit">
+                            <div class="col-12 py-1 px-3 d-flex" *ngIf="isEdit">
                                 <!-- Add button -->
                                 <button *ngIf="lines(lineDefId, model).length === 0" class="btn btn-sm btn-primary"
                                     (click)="onCreateForm(lineDefId, model)">
                                     <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                                 </button>
                                 <!-- Actions dropdown -->
-                                <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group" ngbDropdown
+                                <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
                                     [placement]="actionsDropdownPlacement">
                                     <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
                                         ngbDropdownToggle>
@@ -1033,55 +1033,78 @@
                 </div>
 
                 <!-- Attachments List -->
-                <div *ngIf="!!model?.Attachments?.length">
-                    <div class="p-13 col-122 t-dynamic-container2 text-nowrap"
+                <div class="row flex-row-reverse mx-0 mb-1" *ngIf="!!model?.Attachments?.length">
+                    <div class="text-nowrap col-12 col-md-6 px-2"
                         *ngFor="let att of model?.Attachments; let i = index;">
-                        <div class="p-2 bg-light border-bottom d-flex" [class.bg-light]="i % 2 === 0">
-                            <!-- Icon and Name -->
-                            <div class="flex-grow-1 text-truncate">
-                                <div class="d-flex t-borderless-input2 align-items-center">
-                                    <fa-icon class="px-1 text-muted" style="font-size: 150%;"
-                                        [icon]="iconFromExtension(att.FileExtension)">
-                                    </fa-icon>
-                                    <span>&nbsp;&nbsp;&nbsp;</span>
-                                    <span *ngIf="!isEdit">{{ att.FileName }}</span>
-                                    <t-form-group class="w-100" [serverErrors]="att?.serverErrors?.FileName">
+                        <div class="border bg-light mt-3 mb-0 d-flex align-items-stretch">
+                            <!-- Icon -->
+                            <div class="px-3 pt-0 pb-1">
+                                <fa-icon [style.color]="colorFromExtension(att.FileExtension)" style="font-size: 250%;"
+                                    [icon]="iconFromExtension(att.FileExtension)">
+                                </fa-icon>
+                            </div>
+
+                            <!-- Everything After Icon -->
+                            <div class="d-flex flex-column justify-content-center flex-grow-1 px-1"
+                                style="min-width: 0px;">
+                                <!-- Name -->
+                                <div class="mb-12 w-75" [class.text-truncate]="!isEdit">
+                                    <span *ngIf="!isEdit">{{ att.FileName + '.' + att.FileExtension }}</span>
+                                    <t-form-group *ngIf="isEdit" [serverErrors]="att?.serverErrors?.FileName">
                                         <t-text-editor [(ngModel)]="att.FileName"
-                                            [ngModelOptions]="{ updateOn: 'blur' }" *ngIf="isEdit" [required]="true">
+                                            [ngModelOptions]="{ updateOn: 'blur' }" required>
                                         </t-text-editor>
                                     </t-form-group>
                                 </div>
-                            </div>
+                                <div class="d-flex align-items-baseline">
 
-                            <!-- Commands -->
-                            <div class="d-flex align-items-center">
-                                <span class="px-2 small text-muted">{{ size(att) }}</span>
-                                <button *ngIf="!att.downloading"
-                                    class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
-                                    (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
-                                    <fa-icon icon="download"></fa-icon>
-                                </button>
-                                <div class="px-2 t-toolbar-button" *ngIf="att.downloading">
-                                    <t-spinner class="text-black"></t-spinner>
+                                    <!-- Size -->
+                                    <div style="direction: ltr;">
+                                        <span class="small text-muted">{{ size(att) }}</span>
+                                    </div>
+
+                                    <!-- Uploaded By -->
+                                    <div class="flex-grow-1 text-truncate small" style="min-width: 0px;">
+                                        <ng-container *ngIf="att.CreatedById">
+                                            <span>&nbsp;&nbsp;&nbsp;</span>
+                                            <t-view-link link="../../../users" [itemId]="att.CreatedById"
+                                                *ngIf="!isEdit">
+                                                <span>{{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}</span>
+                                            </t-view-link>
+                                            <span *ngIf="isEdit">
+                                                {{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}
+                                            </span>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Commands -->
+                                    <button *ngIf="!att.downloading"
+                                        class="btn text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        (click)="onDownloadAttachment(model, i)" [title]="'Download' | translate">
+                                        <fa-icon icon="download"></fa-icon>
+                                    </button>
+                                    <div class="px-1 t-toolbar-button" *ngIf="att.downloading">
+                                        <t-spinner class="text-black"></t-spinner>
+                                    </div>
+                                    <button
+                                        class="btn btn-sm2 text-primary p-0 px-1 t-toolbar-button btn-light t-white-button"
+                                        *ngIf="isEdit" (click)="onDeleteAttachment(model, i)"
+                                        [title]="'Delete' | translate">
+                                        <fa-icon icon="trash"></fa-icon>
+                                    </button>
                                 </div>
-                                <button
-                                    class="btn btn-sm2 text-primary p-0 px-2 t-toolbar-button btn-light t-white-button"
-                                    *ngIf="isEdit" (click)="onDeleteAttachment(model, i)"
-                                    [title]="'Delete' | translate">
-                                    <fa-icon icon="trash"></fa-icon>
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Upload Button -->
-                <div class="p-2" *ngIf="isEdit">
-                    <button class="btn btn-sm text-primary btn-light t-white-button" (click)="fileInput.click()">
+                <div class="py-2 px-3 col-12 d-flex align-items-center justify-content-end" *ngIf="isEdit">
+                    <button class="btn btn-sm btn-primary text-primary2 btn-light2 t-white-button2"
+                        (click)="fileInput.click()">
                         <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Upload' | translate }}
                     </button>
                 </div>
-
             </ng-template>
         </li>
     </ul>
@@ -1090,7 +1113,7 @@
     </div>
 
     <!-- for the file dialog -->
-    <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" />
+    <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" multiple />
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">
@@ -1129,7 +1152,8 @@
                             placeholder="{{ 'OptionalMessage' | translate }}" [(ngModel)]="comment"></textarea>
                     </div>
                     <button class="btn btn-primary btn-sm" (click)="onAssign(model)"
-                        [disabled]="!canAssign(model, isEdit)">{{ 'Assign' | translate }}</button>
+                        [disabled]="!canAssign(model, isEdit)">{{ 'Assign' | translate }}&nbsp;&nbsp;<fa-icon
+                            [icon]="assignIcon"></fa-icon></button>
                 </div>
             </div>
 

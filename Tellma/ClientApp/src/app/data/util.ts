@@ -260,7 +260,7 @@ export function getDataURL(blob: Blob): Observable<string> {
   return obs$;
 }
 
-export function fileSizeDisplay(fileSize: number) {
+export function fileSizeDisplay(fileSize: number): string {
   if (fileSize === null || fileSize === undefined) {
     return '';
   }

@@ -867,12 +867,6 @@ namespace Tellma.Controllers
                 attachments: attachments,
                 returnIds: returnIds);
 
-            // Assign new documents to the current user
-            var userInfo = await _repo.GetUserInfoAsync();
-            var currentUserId = userInfo.UserId.Value;
-            var newDocIds = entities.Select((doc, index) => (doc, index)).Where(e => e.doc.Id == 0).Select(e => ids[e.index]);
-            await _repo.Documents__Assign(newDocIds, currentUserId, null);
-
             // Delete the file Ids retrieved earlier if any
             if (fileIdsToDelete.Any())
             {

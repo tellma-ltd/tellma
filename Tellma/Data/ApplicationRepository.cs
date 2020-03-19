@@ -4022,6 +4022,8 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@AssigneeId", assigneeId);
+            cmd.Parameters.Add("@Comment", comment);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;

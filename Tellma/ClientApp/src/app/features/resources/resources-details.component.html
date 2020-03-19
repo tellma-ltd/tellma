@@ -170,14 +170,15 @@
                 {{ ws.getMultilingualValue('Center', model.InvestmentCenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId"
-            [required]="InvestmentCenter_isRequired" filter="CenterType eq 'Investment' and IsLeaf eq true">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId" [required]="InvestmentCenter_isRequired"
+            filter="CenterType eq 'Investment' and IsLeaf eq true">
         </t-centers-picker>
     </t-form-group>
 
     <!-- ResidualMonetaryValue -->
     <t-form-group *ngIf="ResidualMonetaryValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualMonetaryValue' | translate) + currencyPostfix(model)" [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
+        [label]="('Resource_ResidualMonetaryValue' | translate) + currencyPostfix(model)"
+        [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualMonetaryValue">
             <div>
                 {{ model?.ResidualMonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
@@ -191,15 +192,16 @@
 
     <!-- ResidualValue -->
     <t-form-group *ngIf="ResidualValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualValue' | translate) + functionalPostfix" [serverErrors]="model?.serverErrors?.ResidualValue">
+        [label]="('Resource_ResidualValue' | translate) + functionalPostfix"
+        [serverErrors]="model?.serverErrors?.ResidualValue">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
             <div>
                 {{ model?.ResidualValue | number:'1.' + functionalDecimals + '-' + functionalDecimals }}
             </div>
         </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue"
-            [ngModelOptions]="{ updateOn: 'blur' }" [required]="ResidualValue_isRequired"
-            [minDecimalPlaces]="functionalDecimals" [maxDecimalPlaces]="functionalDecimals">
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ResidualValue_isRequired" [minDecimalPlaces]="functionalDecimals"
+            [maxDecimalPlaces]="functionalDecimals">
         </t-decimal-editor>
     </t-form-group>
 
@@ -426,11 +428,12 @@
         <!-- Units -->
         <li ngbNavItem="units">
             <a ngbNavLink>
+                <span *ngIf="Units_showError(model)" class="text-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
                 <span
                     class="small t-slightly-bold">{{ ('Resource_Units' | translate) + (!model.Id || model?.EntityMetadata?.Units === 2 ? ' (' + (Units_count(model) | number) + ')' : '') }}</span>
-                <span *ngIf="Units_showError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
-                    </fa-icon>
-                </span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Units"

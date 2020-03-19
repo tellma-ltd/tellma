@@ -243,7 +243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   create = () => {
     const result: DocumentForSave = {
-      PostingDate: toLocalDateISOString(new Date()),
+     // PostingDate: toLocalDateISOString(new Date()),
       Clearance: 0,
       Lines: [],
       Attachments: []
@@ -476,6 +476,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           addToWorkspace(res, this.workspace);
           this.details.state.extras = res.Extras;
           this.handleFreshExtras(res.Extras);
+
+          // Clear the selection
+          this.assigneeId = null;
+          this.comment = null;
         })
       ).subscribe({ error: this.details.handleActionError });
     }
@@ -805,67 +809,80 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public onFileSelected(input: any, model: DocumentForSave) {
     const files = input.files as FileList;
-
-    if (!files || files.length === 0) {
+    if (!files) {
       return;
     }
 
-    const file = files[0];
+    // Convert the FileList to an array
+    const filesArray: File[] = [];
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < files.length; i++) {
+      filesArray.push(files[i]);
+    }
+
+    // Clear the input field
     input.value = '';
-    if (file.size > this._maxAttachmentSize) {
+
+    // Calculate total size of files
+    const totalSize = filesArray
+      .map(e => e.size || 0)
+      .reduce((total, v) => total + v, 0);
+
+    // Make sure total size of selected files doesn't exceed maximum size
+    if (totalSize > this._maxAttachmentSize) {
       this.details.displayModalError(this.translate.instant('Error_FileSizeExceedsMaximumSizeOf0',
-        {
-          size: fileSizeDisplay(this._maxAttachmentSize)
-        }));
+        { size: fileSizeDisplay(this._maxAttachmentSize) }));
+
       return;
     }
 
-    // Make sure pending attachments don't exceed max file size
+    // Make sure pending attachments don't exceed maximum size
     model.Attachments = model.Attachments || [];
     const sumOfAttachmentSizesPendingSave = model.Attachments
       .map(a => !!a.file ? a.file.size : 0)
       .reduce((total, v) => total + v, 0);
 
-    if (sumOfAttachmentSizesPendingSave + file.size > this._maxAttachmentSize) {
+    if (sumOfAttachmentSizesPendingSave + totalSize > this._maxAttachmentSize) {
       this.details.displayModalError(this.translate.instant('Error_PendingFilesExceedMaximumSizeOf0',
-        {
-          size: fileSizeDisplay(this._maxAttachmentSize)
-        }));
+        { size: fileSizeDisplay(this._maxAttachmentSize) }));
       return;
     }
 
-    getDataURL(file).pipe(
-      takeUntil(this.notifyDestruct$),
-      tap(dataUrl => {
+    for (const file of filesArray) {
 
-        // Get the base64 value from the data URL
-        const commaIndex = dataUrl.indexOf(',');
-        const fileBytes = dataUrl.substr(commaIndex + 1);
-        const fileNamePieces = file.name.split('.');
-        const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
-        const fileName = fileNamePieces.join('.') || '???';
-        model.Attachments.push({
-          Id: 0,
-          File: fileBytes,
-          FileName: fileName,
-          FileExtension: extension,
-          file,
+      getDataURL(file).pipe(
+        takeUntil(this.notifyDestruct$),
+        tap(dataUrl => {
 
-          toJSON() {
-            return {
-              Id: this.Id,
-              File: this.File,
-              FileName: this.FileName,
-              FileExtension: this.FileExtension
-            };
-          }
-        });
-      }),
-      catchError(err => {
-        console.error(err);
-        return throwError(err);
-      })
-    ).subscribe();
+          // Get the base64 value from the data URL
+          const commaIndex = dataUrl.indexOf(',');
+          const fileBytes = dataUrl.substr(commaIndex + 1);
+          const fileNamePieces = file.name.split('.');
+          const extension = fileNamePieces.length > 1 ? fileNamePieces.pop() : null;
+          const fileName = fileNamePieces.join('.') || '???';
+          model.Attachments.push({
+            Id: 0,
+            File: fileBytes,
+            FileName: fileName,
+            FileExtension: extension,
+            file,
+
+            toJSON() {
+              return {
+                Id: this.Id,
+                File: this.File,
+                FileName: this.FileName,
+                FileExtension: this.FileExtension
+              };
+            }
+          });
+        }),
+        catchError(err => {
+          console.error(err);
+          return throwError(err);
+        })
+      ).subscribe();
+    }
   }
 
   public onDeleteAttachment(model: DocumentForSave, index: number) {
@@ -905,6 +922,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public size(att: Attachment): string {
     return fileSizeDisplay(att.Size || (!!att.file ? att.file.size : null));
+  }
+
+  public colorFromExtension(extension: string): string {
+    const icon = this.iconFromExtension(extension);
+    switch (icon) {
+      case 'file-pdf': return '#CA342B';
+      case 'file-word': return '#345692';
+      case 'file-excel': return '#316F3E';
+      case 'file-powerpoint': return '#BD4D2D';
+      case 'file-archive': return '#E5BE36';
+      case 'file-image': return '#A12F5E';
+      case 'file-video': return '#CC5747';
+      case 'file-audio': return '#BA7D27';
+
+      case 'file-alt': // text files
+      case 'file': return '#6c757d';
+    }
+
+    return null;
   }
 
   public iconFromExtension(extension: string): string {
@@ -1287,6 +1323,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case -4: return 'times';
       default: return '';
     }
+  }
+
+  public get assignIcon(): string {
+    return this.workspace.ws.isRtl ? 'angle-left' : 'angle-right';
   }
 
   public actionDisplay(toState: number): string {

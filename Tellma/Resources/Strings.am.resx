@@ -764,7 +764,7 @@
     <value>መጠን ከ 0 መብለጥ አለበት</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
-    <value>ተመጣጣኝ መጠን 1 የበለጠ መሆን አለበት</value>
+    <value>ተመጣጣኝ 1 የበለጠ መሆን አለበት</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>ኮድ «{0}» የለም.</value>
