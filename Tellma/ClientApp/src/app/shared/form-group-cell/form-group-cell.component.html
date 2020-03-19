@@ -2,19 +2,21 @@
   A form group in a table cell, this will not have a label, only content that streches 100% of the width
   any input in the content will typically be borderless (the table cell border suffices), but a thin red 
   border appears when the input is invalid, and a thick teal border appears when the input is focused (or
-  a red one if the input is invalid).
+  a red one if the input is invalid). A red exclamation triangle appears next to the input field when server errors
 -->
-<div class="form-group-container w-100 t-borderless-input" [class.is-invalid]="invalid"
-    [ngbPopover]="invalid ? errorsPopover : null" container="body" [placement]="popoverPlacement"
-    triggers="mouseenter:mouseleave">
+<div class="form-group-container w-100 t-borderless-input d-flex" [class.is-invalid]="invalid"
+    [ngbPopover]="invalid ? errorsPopover : null" popoverClass="t-error-popover" container="body"
+    [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
+    <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="areServerErrors"></fa-icon>
     <ng-content></ng-content>
 </div>
 
 <ng-template #errorsPopover>
     <div style="width: 250px">
         <p class="m-0 p-0" *ngFor="let error of errors">
-            <fa-icon icon="exclamation-triangle" class="text-danger"></fa-icon>
-            &nbsp;{{ error() }}
+            <fa-icon icon="exclamation-triangle"></fa-icon>
+            &nbsp;
+            {{ error() }}
         </p>
     </div>
 </ng-template>

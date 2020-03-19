@@ -181,12 +181,12 @@
         [activeId]="getActiveTab(model)" (activeIdChange)="onTabChange($event, isEdit)">
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
             <a ngbNavLink>
+                <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
                 <span
                     class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
-                <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">&nbsp;<fa-icon
-                        icon="exclamation-triangle">
-                    </fa-icon>
-                </span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
@@ -1017,6 +1017,10 @@
 
         <li class="{{ attachmentsClass }}" [ngbNavItem]="'Attachment'">
             <a ngbNavLink><span class="small t-slightly-bold">
+                    <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
                     <fa-icon icon="paperclip"></fa-icon>
                     &nbsp;&nbsp;{{ ('Document_Attachments' | translate) + (!model.Id || model?.EntityMetadata?.Attachments === 2 ? ' (' + (model?.Attachments?.length | number) + ')' : '')}}
                 </span>

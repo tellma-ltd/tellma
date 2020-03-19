@@ -1657,3 +1657,32 @@ select.t-input::-ms-expand {
   width: 100%;
   overflow-x: auto;
 }
+
+// Error popovers
+$bg-alert-danger: #f8d7da;
+$color-alert-danger: #721c24;
+
+.t-error-popover {
+  background: $bg-alert-danger;
+}
+
+.t-error-popover.bs-popover-bottom > .arrow::after {
+  border-bottom-color: $bg-alert-danger;
+}
+
+.t-error-popover.bs-popover-top > .arrow::after {
+  border-top-color: $bg-alert-danger;
+}
+
+.t-error-popover.bs-popover-right > .arrow::after {
+  border-right-color: $bg-alert-danger;
+}
+
+.t-error-popover.bs-popover-left > .arrow::after {
+  border-left-color: $bg-alert-danger;
+}
+
+.t-error-popover .popover-body { 
+  color: $color-alert-danger;
+  box-shadow: 0 5px 20px -12px black;
+}

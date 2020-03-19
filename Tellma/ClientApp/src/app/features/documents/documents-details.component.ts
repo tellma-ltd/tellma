@@ -1467,6 +1467,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
   }
 
+  public showAttachmentsErrors(model: Document) {
+    return !!model && !!model.Attachments &&
+      model.Attachments.some(att => !!att.serverErrors);
+  }
+
   public columnPaths(lineDefId: string, model: DocumentForSave): string[] {
     if (lineDefId === 'ManualLine') {
       const paths = ['AccountId', 'Debit', 'Credit'];

@@ -7,7 +7,8 @@
         <tr style="height:41px">
           <th class="border-top-0 text-align-right text-muted t-line-number-th"> # </th>
           <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
-            <ng-container *ngTemplateOutlet="columnTemplates[path]?.headerTemplate; context: { argument: columnTemplates[path]?.argument }">
+            <ng-container
+              *ngTemplateOutlet="columnTemplates[path]?.headerTemplate; context: { argument: columnTemplates[path]?.argument }">
             </ng-container>
           </th>
           <th class="border-top-0" style="width:1px">
@@ -37,9 +38,9 @@
               </ng-container>
             </td>
             <td>
-              <button class="btn btn-light text-primary t-white-button btn-sm p-0 pl-1 pr-1" (click)="onDeleteLine(i)"
-                *ngIf="isEdit">
-                <fa-icon icon="trash" [class.t-transparent]="item.PH" [title]="item.PH ? '' : ('Delete' | translate)">
+              <button class="btn btn-light text-primary t-white-button btn-sm p-0 pl-1 pr-1"
+                [style.opacity]="item.PH ? 0 : null" (click)="onDeleteLine(i)" *ngIf="isEdit">
+                <fa-icon icon="trash" [title]="item.PH ? '' : ('Delete' | translate)">
                 </fa-icon>
               </button>
             </td>
