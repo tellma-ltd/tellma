@@ -53,11 +53,11 @@ BEGIN
 	(0,0,	N'ManualLine',						1),
 	-- cash-payment-vouchers
 	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- to recognize expenses, fill a separate GRN/GRIV
-	(1,1,	N'CashPaymentToOther',				0), -- for non-suppliers
-	(2,1,	N'CashTransferExchange',			0),
-	(3,1,	N'ManualLine',						0),
+	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
+	(2,1,	N'CashTransferExchange',			1),
+	(3,1,	N'ManualLine',						1),
 	-- cash-receipt-vouchers
-	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
+	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',0),  -- for tax visible customers
 	(1,2,	N'CashReceiptFromCustomer',			0), -- for tax invisible customers
 	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
 	(3,2,	N'ManualLine',						0),

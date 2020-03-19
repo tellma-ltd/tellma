@@ -244,7 +244,6 @@ SET NOCOUNT ON;
 			)
 		OUTPUT s.[Index], inserted.[LineDefinitionId], inserted.[Id]
 	) AS x;
-
 	WITH BWS AS (
 		SELECT * FROM dbo.[WorkflowSignatures]
 		WHERE [WorkflowId] IN (SELECT [Id] FROM @WorkflowIndexedIds)
@@ -254,6 +253,7 @@ SET NOCOUNT ON;
 		SELECT
 			WS.[Index],
 			WS.[Id],
+			WI.[Id] AS WorkflowId,
 			LD.[Id] AS [LineDefinitionId],
 			WS.[RuleType],
 			WS.[RuleTypeEntryIndex],
@@ -268,8 +268,7 @@ SET NOCOUNT ON;
 		JOIN @Entities LD ON 
 			WI.[HeaderId] = LD.[Id]
 		AND WS.[LineDefinitionIndex] = LD.[Index]
-	) AS s
-	ON s.[Id] = t.[Id]
+	) AS s ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[RuleType]				= s.[RuleType],
@@ -285,6 +284,7 @@ SET NOCOUNT ON;
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
+			[WorkflowId],
 			[RuleType],
 			[RuleTypeEntryIndex],
 			[RoleId],
@@ -295,6 +295,7 @@ SET NOCOUNT ON;
 			[ProxyRoleId]
 		)
 		VALUES (
+			s.[WorkflowId],
 			s.[RuleType],
 			s.[RuleTypeEntryIndex],
 			s.[RoleId],

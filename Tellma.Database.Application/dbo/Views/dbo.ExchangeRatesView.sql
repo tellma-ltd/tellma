@@ -9,6 +9,5 @@ SELECT
 		FROM dbo.ExchangeRates
 		WHERE [CurrencyId] = ER.[CurrencyId] AND [ValidAsOf] > ER.[ValidAsOf]
 	) AS [ValidTill],
-	[AmountInCurrency],
-	[AmountInFunctional]
+	[ExchangeRate]
 FROM dbo.ExchangeRates ER;

@@ -3,6 +3,8 @@
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionEntries = @LineDefinitionEntries,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
+	@Workflows = @Workflows,
+	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 

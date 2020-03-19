@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Workflows] (
 	[Id]				INT					CONSTRAINT [PK_Workflows] PRIMARY KEY IDENTITY,
-	[LineDefinitionId]	NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Workflows__LineDefinitions] REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE,
+	[LineDefinitionId]	NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Workflows__LineDefinitionId] REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE,
 	-- Must be a positive state
 	[ToState]			SMALLINT			NOT NULL CONSTRAINT [CK_Workflows__ToState] CHECK(0 < [ToState]),
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',

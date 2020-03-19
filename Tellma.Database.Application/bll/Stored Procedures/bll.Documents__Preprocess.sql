@@ -22,6 +22,7 @@ BEGIN
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
 	DECLARE @PreprocessedLines dbo.LineList, @PreprocessedEntries dbo.EntryList;
+	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	Declare @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
 	DECLARE @ProcessedWideLines WideLineList;
@@ -171,12 +172,14 @@ BEGIN
 
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
-	SET E.[Value] = ER.AmountInFunctional * E.[MonetaryValue] / ER.AmountInCurrency
+	SET E.[Value] = ER.[ExchangeRate] * E.[MonetaryValue]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN dbo.ExchangeRatesView ER ON E.CurrencyId = ER.CurrencyId
-	WHERE D.[PostingDate] >= ER.ValidAsOf AND D.[PostingDate] < ER.ValidTill
+	WHERE
+		ER.ValidAsOf <= ISNULL(D.[PostingDate], @Today)
+	AND ER.ValidTill >	ISNULL(D.[PostingDate], @Today)
 	AND L.[DefinitionId] <> N'ManualLine';
 
 	-- TODO: Currently it sets the account to the first conformant

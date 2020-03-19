@@ -547,6 +547,7 @@
     <Build Include="dbo\Views\dbo.ExchangeRatesView.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
+    <Build Include="Mapping\map.ExchangeRates.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

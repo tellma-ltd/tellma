@@ -65,7 +65,7 @@ SELECT @aasalam = [Id] FROM dbo.Users WHERE [Email] = N'Elhelalaby1@gmail.com';
 SELECT @alaeldin = [Id] FROM dbo.Users WHERE [Email] = N'alaeldin.ismail@ebanan.com';
 SELECT @omer = [Id] FROM dbo.Users WHERE [Email] = N'omer.alsamani@ebanan.com';
 
-IF @DB = N'101'
+IF @DB = N'101' AND HOST_NAME() = N'TRUSTED' --	AZURE
 BEGIN
 	update dbo.Users Set ImageId = N'12bd9b52-3166-4e4c-a352-c0aced6dfb99' WHERE [Id] = @mohamad_akra
 	update dbo.Users Set ImageId = N'0299190d-b960-457b-bd83-c12aaf1fb138' WHERE [Id] = @Jiad_akra

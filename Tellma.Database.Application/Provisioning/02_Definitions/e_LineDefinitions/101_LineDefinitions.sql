@@ -79,7 +79,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,0,1,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,1,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+(0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --CashPaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
@@ -115,7 +115,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,2,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+(0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --CashTransferExchange
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
@@ -164,7 +164,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,1,103,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,103,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (1,2,103,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,103,N'ByRole',	@1Comptroller,		NULL,			NULL); -- Comptroller only can review
+(0,3,103,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --CashReceiptFromOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (

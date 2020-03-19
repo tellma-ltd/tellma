@@ -6,14 +6,19 @@ AS
 RETURN (
 	WITH ApplicableSignatures AS
 	(
-		SELECT L.Id As LineId, WS.RuleType, WS.[RuleTypeEntryIndex],  WS.RoleId, COALESCE(
+		SELECT L.Id As LineId, WS.RuleType, WS.[RuleTypeEntryIndex], 
+			WS.RoleId,
+			COALESCE(
 				WS.UserId,
 				(SELECT UserId FROM dbo.Agents WHERE [Id] IN (
 					SELECT AgentId FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)
 			) AS UserId,
-			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value], W.ToState, WS.ProxyRoleId
+			(SELECT AgentId FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+			) AS AgentId,
+			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value],
+			W.ToState, WS.ProxyRoleId
 		FROM dbo.Lines L
 		JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId
 		JOIN dbo.WorkflowSignatures WS ON WS.WorkflowId = W.[Id]
@@ -35,7 +40,7 @@ RETURN (
 		SELECT
 			RS.[LineId],
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -53,7 +58,11 @@ RETURN (
 		) RM2 ON RS.ProxyRoleId = RM.RoleId
 		WHERE RS.RuleType = N'ByRole'
 		UNION
-		SELECT RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState, RS.RuleType, RS.RoleId, RS.UserId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
+		SELECT
+			RS.[LineId],
+			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
+			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSignOnBehalf,
@@ -67,7 +76,9 @@ RETURN (
 		WHERE RS.RuleType IN(N'ByUser', N'ByAgent')
 		UNION
 		SELECT
-			RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState, RS.RuleType, RS.RoleId, RS.UserId, LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
+			RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
+			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(1 AS BIT) AS CanSign,
 			RS.ProxyRoleId,
 			CAST(1 AS BIT) AS CanSignOnBehalf,
@@ -77,9 +88,14 @@ RETURN (
 		WHERE RS.RuleType = N'Public'
 	)
 	SELECT
-		LineId, ToState, RuleType, RoleId, UserId, SignedById, SignedAt, OnBehalfOfUserId,
-		(SELECT MIN(ToState) FROM AvailableSignatures WHERE LineId = S.LineId AND ToState < S.ToState AND ToState > 0 AND SignedById IS NULL) AS LastUnsignedState,
-		-(SELECT MAX(ABS(ToState)) FROM AvailableSignatures WHERE LineId = S.LineId AND ABS(ToState) < ABS(S.ToState) AND ToState < 0 AND SignedById IS NULL) AS LastNegativeState,
+		LineId, ToState, RuleType, RoleId, UserId, AgentId,
+		SignedById, SignedAt, OnBehalfOfUserId,
+		(SELECT MIN(ToState) FROM AvailableSignatures
+		WHERE LineId = S.LineId AND ToState < S.ToState AND ToState > 0
+		AND SignedById IS NULL) AS LastUnsignedState,
+		-(SELECT MAX(ABS(ToState)) FROM AvailableSignatures
+		WHERE LineId = S.LineId AND ABS(ToState) < ABS(S.ToState) AND ToState < 0
+		AND SignedById IS NULL) AS LastNegativeState,
 		CanSign, ProxyRoleId, CanSignOnBehalf, ReasonId, ReasonDetails
 	FROM AvailableSignatures S
 );
