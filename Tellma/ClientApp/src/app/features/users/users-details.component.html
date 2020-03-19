@@ -120,11 +120,12 @@
       <!-- Roles -->
       <li [disabled]="true" ngbNavItem="roles">
         <a ngbNavLink>
+          <span *ngIf="showRolesError(model)" class="text-danger">
+            <fa-icon icon="exclamation-triangle">
+            </fa-icon>&nbsp;
+          </span>
           <span
             class="small t-slightly-bold">{{ ('User_Roles' | translate) + (!model.Id || model?.EntityMetadata?.Roles === 2 ? ' (' + (model?.Roles?.length | number) + ')' : '') }}</span>
-          <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
-            </fa-icon>
-          </span>
         </a>
         <ng-template ngbNavContent>
           <t-restricted [metadata]="model?.EntityMetadata?.Roles" [class.p-4]="model?.EntityMetadata?.Roles === 1">

@@ -1,12 +1,12 @@
-<div class="d-flex align-items-center text-nowrap">
+<div class="d-flex align-items-center text-nowrap" [ngbPopover]="invalid ? errorsPopover : null" container="body"
+    popoverClass="t-error-popover" [placement]="popoverPlacement" triggers="mouseenter:mouseleave">
     <ng-container *ngIf="showLabel">
         <span class="t-vertical-align-middle font-weight-bold" [class.text-danger]="invalid"
             [title]="label">{{ label }}</span>
         &nbsp;&nbsp;
     </ng-container>
-    <div class="d-flex flex-grow-1 form-group-container t-dynamic-container" [class.is-invalid]="invalid"
-        [ngbPopover]="invalid ? errorsPopover : null" container="body" [placement]="popoverPlacement"
-        triggers="mouseenter:mouseleave">
+    <div class="d-flex flex-grow-1 form-group-container t-dynamic-container" [class.is-invalid]="invalid">
+        <!-- <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="areServerErrors"></fa-icon> -->
         <ng-content></ng-content>
     </div>
 </div>
@@ -14,7 +14,7 @@
 <ng-template #errorsPopover>
     <div class="" style="width: 250px">
         <p class="m-0 p-0" *ngFor="let error of errors">
-            <fa-icon icon="exclamation-triangle" class="text-danger"></fa-icon>
+            <fa-icon icon="exclamation-triangle"></fa-icon>
             &nbsp;{{ error() }}
         </p>
     </div>

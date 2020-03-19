@@ -37,7 +37,9 @@ import {
   faLaptop, faMicrochip, faLaptopCode, faUser, faUserTie, faUserTag, faUserShield,
   faUsersCog,
   faFemale,
-  faMale
+  faMale,
+  faPaperclip,
+  faBook
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -482,7 +484,7 @@ export class ApplicationModule {
     // Icons to be used in the web app
     library.addIcons(
       // Document icons
-      faThumbsUp, faThumbsDown,
+      faThumbsUp, faThumbsDown, faPaperclip,
 
       // File icons
       faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt,
@@ -492,7 +494,7 @@ export class ApplicationModule {
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
-      faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale
+      faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale, faBook
     );
   }
 }

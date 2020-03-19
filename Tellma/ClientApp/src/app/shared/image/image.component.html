@@ -2,13 +2,16 @@
 
   <div class="d-flex align-items-center justify-content-center w-100 h-100">
     <!-- image -->
-    <img *ngIf="showImg" [src]="dataUrl" alt="" [class.t-image-round]="isRound" [style.max-width]="size + sizeUnit" [style.max-height]="size + sizeUnit" alt="Picture">
+    <img *ngIf="showImg" [src]="dataUrl" alt="" [class.t-image-round]="isRound" [style.max-width]="size + sizeUnit"
+      [style.max-height]="size + sizeUnit" alt="Picture">
 
     <!-- placeholder if image is null -->
-    <fa-icon class="t-image-placeholder" *ngIf="showIcon" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'"></fa-icon>
+    <fa-icon class="t-image-placeholder" *ngIf="showIcon" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'">
+    </fa-icon>
 
     <!-- error -->
-    <fa-icon class="text-danger" *ngIf="showError" icon="exclamation-triangle" style="font-size: 1.5rem"></fa-icon>
+    <fa-icon class="text-danger" *ngIf="showError" icon="exclamation-triangle" [style.font-size.rem]="errorSize"
+      style="font-size: 1.5rem" [title]="'Error_FailedToLoadImage' | translate"></fa-icon>
   </div>
 
   <!-- edit controls -->
@@ -29,26 +32,26 @@
 <!-- Error Modal -->
 <ng-template #errorModal let-modal>
 
-    <!-- header -->
-    <div class="modal-header">
-      <h5 class="modal-title">
-        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
-      </h5>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  
-    <!-- body -->
-    <div class="modal-body">
-      {{ 'Error_ImageExceedsTheMaximumSizeOfX' | translate: { maxSize: maxSize / (1024 * 1024) } }}
-    </div>
-  
-    <!-- footer -->
-    <div class="modal-footer">
-      <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
-        <fa-icon icon="times"></fa-icon>
-        &nbsp;{{ 'Dismiss' | translate }}
-      </button>
-    </div>
-  </ng-template>
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">
+      <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ 'Error_ImageExceedsTheMaximumSizeOfX' | translate: { maxSize: maxSize / (1024 * 1024) } }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Dismiss' | translate }}
+    </button>
+  </div>
+</ng-template>

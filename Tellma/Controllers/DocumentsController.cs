@@ -416,24 +416,12 @@ namespace Tellma.Controllers
 
                 var query = _repo.Query<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp)
-                    .Expand("Role,User,SignedBy,OnBehalfOfUser,ProxyRole")
+                    .Expand("Role,Agent,User,SignedBy,OnBehalfOfUser,ProxyRole")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync();
                 var relatedEntities = FlattenAndTrim(requiredSignatures, null);
                 requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
-
-                // Delete this
-                //var now = DateTimeOffset.Now;
-                //var me = await _repo.Users.Filter("Id eq me").FirstOrDefaultAsync();
-                //me.CreatedBy = null;
-                //me.ModifiedBy = null;
-                //relatedEntities["User"] = new List<User> { me };
-                //requiredSignatures = lineIds.SelectMany(id => new List<RequiredSignature>
-                //    {
-                //        new RequiredSignature { LineId = id.Id, RoleId = 3, ToState = 3, SignedAt = now, CanSign = false, SignedById = _repo.GetUserInfo().UserId },
-                //        new RequiredSignature { LineId = id.Id, RoleId = 2, ToState = 3, CanSign = true },
-                //    }).ToList();
 
                 return new Dictionary<string, object>
                 {

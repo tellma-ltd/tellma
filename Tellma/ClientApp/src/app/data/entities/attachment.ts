@@ -1,6 +1,6 @@
-import { EntityWithKey } from './base/entity-with-key';
+import { EntityForSave } from './base/entity-for-save';
 
-export interface AttachmentForSave extends EntityWithKey {
+export interface AttachmentForSave extends EntityForSave {
     FileName?: string;
     FileExtension?: string;
     File?: string;

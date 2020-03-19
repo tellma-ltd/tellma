@@ -760,11 +760,11 @@
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
     <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما</value>
   </data>
-  <data name="Error_TheAmountInCurrencyMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>المبلغ ينبغي أن يكون أكبر من أو يساوي 1</value>
+  <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
+    <value>المبلغ ينبغي أن يكون أكبر من 0</value>
   </data>
-  <data name="Error_TheAmountInFunctionalMustBeGreaterThanOrEqualToOne" xml:space="preserve">
-    <value>المبلغ المقابل ينبغي أن يكون أكبر من أو يساوي 1</value>
+  <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
+    <value>المبلغ المقابل ينبغي أن يكون أكبر من 0</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>
@@ -876,6 +876,9 @@
   </data>
   <data name="ExchangeRate_Currency" xml:space="preserve">
     <value>العملة</value>
+  </data>
+  <data name="ExchangeRate_Rate" xml:space="preserve">
+    <value>المعدل</value>
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>صالح ابتداء من</value>

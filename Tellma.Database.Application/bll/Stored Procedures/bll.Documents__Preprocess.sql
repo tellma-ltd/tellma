@@ -172,7 +172,7 @@ BEGIN
 
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
-	SET E.[Value] = ER.[ExchangeRate] * E.[MonetaryValue]
+	SET E.[Value] = ER.[Rate] * E.[MonetaryValue]
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]

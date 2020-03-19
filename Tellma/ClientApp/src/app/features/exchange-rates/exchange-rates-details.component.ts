@@ -58,7 +58,7 @@ export class ExchangeRatesDetailsComponent extends DetailsBaseComponent {
 
   public AmountInCurrency_format(model: ExchangeRate): string {
     const decimals = this.AmountInCurrency_decimals(model);
-    return `1.${decimals}-${decimals}`;
+    return `1.${decimals}-6`;
   }
 
   // Amount in Functional
@@ -69,7 +69,7 @@ export class ExchangeRatesDetailsComponent extends DetailsBaseComponent {
 
   public get functional_format(): string {
     const decimals = this.functional_decimals;
-    return `1.${decimals}-${decimals}`;
+    return `1.${decimals}-6`;
   }
 
   public get functional_postfix(): string {

@@ -225,6 +225,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'user-tie',
                         'user-tag',
                         'user-shield',
+                        'book',
 
                         'camera',
                         'camera-retro',
@@ -241,6 +242,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
 
                         'thumbs-up',
                         'thumbs-down',
+                        'paperclip',
                         'file',
                         'file-pdf',
                         'file-word',

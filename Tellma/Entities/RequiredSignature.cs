@@ -12,6 +12,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Signature_Role")]
         public int? RoleId { get; set; }
+        public int? AgentId { get; set; }
         public int? UserId { get; set; }
         public int? SignedById { get; set; }
 
@@ -35,6 +36,9 @@ namespace Tellma.Entities
         [Display(Name = "Signature_Role")]
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
+
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
 
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

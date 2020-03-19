@@ -76,7 +76,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesSummary: RequiredSignature[];
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'UserId', 'SignedById', 'SignedAt',
+    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt',
     'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     'ReasonId', 'ReasonDetails'];
 
@@ -1467,6 +1467,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         (!!line.Entries && line.Entries.some(entry => !!entry.serverErrors))));
   }
 
+  public showAttachmentsErrors(model: Document) {
+    return !!model && !!model.Attachments &&
+      model.Attachments.some(att => !!att.serverErrors);
+  }
+
   public columnPaths(lineDefId: string, model: DocumentForSave): string[] {
     if (lineDefId === 'ManualLine') {
       const paths = ['AccountId', 'Debit', 'Credit'];
@@ -1791,7 +1796,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === 0 &&
-      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State === 4 || e.State < 0));
+      (!requiredSignatures || requiredSignatures.length === 0 ||
+        (doc.Lines.some(e => e.State === 4) && doc.Lines.every(e => e.State === 4 || e.State < 0)));
   }
 
   public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
