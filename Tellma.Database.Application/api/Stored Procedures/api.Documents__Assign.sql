@@ -11,17 +11,11 @@ SET NOCOUNT ON;
 	IF @AssigneeId IS NULL
 		RAISERROR(N'Assignee is required', 16, 1)
 
-	-- if all documents are already assigned to the assignee, return
-	IF NOT EXISTS(
-		SELECT * FROM [dbo].[DocumentAssignments]
-		WHERE [DocumentId] IN (SELECT [Id] FROM @IndexedIds)
-		AND AssigneeId <> @AssigneeId
-	)
-		RETURN;
-
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Assign]
-		@Ids = @IndexedIds;
+		@Ids = @IndexedIds,
+		@AssigneeId = @AssigneeId,
+		@Comment = @Comment;
 
 	SELECT @ValidationErrorsJson = 
 	(

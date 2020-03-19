@@ -6,8 +6,6 @@ BEGIN
 		@Ids = @Ids,
 		@PostingState = 1;
 
-	-- TODO: Update all lines that don't have a workflow to FINALIZED and refresh document state
-
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
 		@AssigneeId = NULL;

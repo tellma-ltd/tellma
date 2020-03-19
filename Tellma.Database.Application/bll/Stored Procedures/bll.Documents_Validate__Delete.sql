@@ -12,17 +12,17 @@ SET NOCOUNT ON;
 	-- Cannot delete unless in Draft state or negative states
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].State',
-		N'Error_TheDocumentState0IsNotDraft',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheDocumentIsPosted',
 		CAST(D.[State] AS NVARCHAR(50))
 	FROM @Ids FE 
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[State] > 0
+	WHERE D.[PostingState] = +1
 
 	-- Cannot delete If there are completed lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHascompletedLines',
 		CAST(L.[State] AS NVARCHAR(50))
 	FROM @Ids FE 

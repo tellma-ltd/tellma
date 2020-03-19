@@ -77,9 +77,9 @@ AS
 	-- Linear Depreciation Model, and units of production model
 	UPDATE WL
 	SET
-		[Quantity] = PB.[UsedCapacity],
-		[MonetaryValue] = PB.[DepreciableRemainingMonetaryValue] * PB.[UsedCapacity] / PB.[RemainingCapacity],
-		[Value] = PB.[DepreciableRemainingValue] * PB.[UsedCapacity] / PB.[RemainingCapacity]
+		[Quantity1] = PB.[UsedCapacity],
+		[MonetaryValue1] = PB.[DepreciableRemainingMonetaryValue] * PB.[UsedCapacity] / PB.[RemainingCapacity],
+		[Value1] = PB.[DepreciableRemainingValue] * PB.[UsedCapacity] / PB.[RemainingCapacity]
 	FROM @WideLines WL
 	JOIN PPEBalances PB ON WL.ResourceId1 = PB.ResourceId
 

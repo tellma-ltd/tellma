@@ -5,14 +5,9 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	---- soft delete the signature
-	--UPDATE dbo.[LineSignatures]
-	--SET [RevokedAt] = @Now
-	--WHERE [OnBehalfOfUserId] = @UserId
-	--AND [Id] IN (SELECT [Id] FROM @Ids);
-
-	-- and last signed by same user, hard delete the signature
-	DELETE FROM dbo.[LineSignatures]
+	-- For last signed by same user, soft delete the signature
+	UPDATE dbo.[LineSignatures]
+	SET [RevokedAt] = @Now
 	WHERE [SignedAt] IN (
 		SELECT Max([SignedAt]) FROM dbo.[LineSignatures]
 		WHERE [LineId] IN (SELECT [Id] FROM @Ids)

@@ -509,4 +509,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fe_Center__FirstSibling]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9e50982a-1478-4055-98ba-cf2497795ccd" ChangeDateTime="03/19/2020 06:23:53">
+    <Property Name="ElementName" Value="[dbo].[Lines].[SortKey]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Lines]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Index]" />
+  </Operation>
 </Operations>

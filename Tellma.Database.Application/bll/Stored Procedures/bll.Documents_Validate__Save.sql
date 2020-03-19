@@ -39,37 +39,9 @@ SET NOCOUNT ON;
 		FE.[SerialNumber] IS NOT NULL
 	AND BE.DefinitionId = @DefinitionId
 	AND FE.Id <> BE.Id;
-
 	-- TODO: Validate that all non-zero attachment Ids exist in the DB
-
-	-- TODO: validate that the CenterType is conformant with the AccountType
-
-	-- (FE Check) If CurrencyId = functional currency, the value must match the DECIMAL (19,4) amount
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	--SELECT
-	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([Index] AS NVARCHAR(255)),
-	--	N'Error_TheAmount0DoesNotMatchTheValue1',
-	--	[MonetaryValue],
-	--	[Value]
-	--FROM @Entries E
-	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	--WHERE (E.[CurrencyId] = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
-	--AND ([Value] <> [MonetaryValue] )
-
-	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
-	--	N'Error_TheTransactionDateIsBeforeArchiveDate0',
-	--	(SELECT TOP 1 ArchiveDate FROM dbo.Settings)
-	--FROM @Documents
-	--WHERE [PostingDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
-	-- (FE Check, DB IU trigger) Cannot save a CLOSED document
-	-- TODO: if it is not allowed to change a line once (Requested), report error
-
-	-- Must not edit a document that is already posted
+	-- Must not edit a document that is already posted/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -79,165 +51,59 @@ SET NOCOUNT ON;
 		END
 	FROM @Documents FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 0; -- Posted or Canceled
+	WHERE D.[PostingState] <> 0;
 
-	-- TODO: For the cases below, add the condition that Entry Type is enforced
-
-	
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	--                 JV Validation
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-	-- Some Accounts of some Account Types require an Entry Type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_ThePurposeIsRequiredBecauseAccountTypeIs0',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS [AccountType]
-	FROM @Entries [E]
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[Accounts] [A] ON [E].[AccountId] = [A].[Id]
-	JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE ([E].[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId = N'ManualLine';
-		
-	-- The Entry Type must be compatible with the Account Type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-		N'Error_IncompatibleAccountType0AndEntryType1',
-		dbo.fn_Localize([AT].[Name], [AT].[Name2], [AT].[Name3]) AS AccountType,
-		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
-	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
-	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] = N'ManualLine';
-	
-	-- If Account AgentDefinitionId IS NOT NULL, then AgentId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AgentId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([AD].[TitleSingular], [AD].[TitleSingular2], [AD].[TitleSingular3]) AS [FieldName]
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[Accounts] A On E.AccountId = A.Id
-	JOIN [dbo].[AgentDefinitions] AD ON A.AgentDefinitionId = AD.Id -- Means there is A.AgentDefinitionId IS NOT NULL
-	WHERE (E.[AgentId] IS NULL) AND (L.[DefinitionId] = N'ManualLine');
-	
-	-- If Account HasResource = 1, then ResourceId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
-		N'Error_TheResourceIsRequired'
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[ResourceId] IS NULL)
-	AND (A.[HasResource] = 1) AND L.[DefinitionId] <> N'ManualLine';
-
-	
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-		
-	-- The CurrencyId is required if Line State >= RequiredState of line def column
+	DECLARE @FieldList StringList;
+	INSERT INTO @FieldList([Id]) VALUES
+	(N'CurrencyId'),(N'AgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
+	(N'DueDate'),( N'MonetaryValue'),( N'Quantity'),( N'UnitId'),( N'Time1'),
+	(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),(N'NotedAgentId'),
+	(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate');
+	-- The @Field is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].CurrencyId',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].' + FL.[Id],
 		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
+		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
+	FROM @Entries E
+	CROSS JOIN @FieldList FL
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'CurrencyId'
 	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[CurrencyId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The AgentId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AgentId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'AgentId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE 
-	(E.[AgentId] IS NULL) AND ISNULL(BEL.[State], 
-		IIF(L.[DefinitionId] IN (SELECT DISTINCT W.[LineDefinitionId] FROM [dbo].[Workflows] W JOIN [dbo].[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]), 0, 4)
-	) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-	
-	-- The ResourceId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResourceId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[ResourceId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- TODO: Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
-	
-	-- The CenterId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].CenterId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'CenterId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[CenterId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-	
-	-- The EntryTypeId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].EntryTypeId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[EntryTypeId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-	
-	---- Some Entry Definitions with some Account Types require an Entry Type
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	--SELECT TOP (@Top)
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-	--	N'Error_TheField0IsRequired',
-	--	dbo.fn_Localize([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [EntryTypeFieldName]
-	--FROM @Entries E
-	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
-	--JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
-	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> N'ManualLine';
-
+	WHERE ISNULL(BEL.[State], 0) >= LDC.[RequiredState]
+	AND L.[DefinitionId] <> N'ManualLine'
+	AND	(
+		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
+		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL OR
+		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
+		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
+		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
+		FL.Id = N'DueDate'				AND E.[DueDate] IS NULL OR
+		FL.Id = N'MonetaryValue'		AND E.[MonetaryValue] IS NULL OR
+		FL.Id = N'Quantity'				AND E.[Quantity] IS NULL OR
+		FL.Id = N'UnitId'				AND E.[UnitId] IS NULL OR
+		FL.Id = N'Time1'				AND E.[Time1] IS NULL OR
+		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
+		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
+		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
+		FL.Id = N'NotedAgentId'			AND E.[NotedAgentId] IS NULL OR
+		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
+		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
+		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
+	) ;
+-- TODO: validate that the CenterType is conformant with the AccountType
+--	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) VALUES(DEFAULT,DEFAULT,DEFAULT);
 	-- The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_TheField0Value1IsIncompatible',
-		dbo.fn_Localize([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [EntryTypeFieldName],
+		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
 		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
 	FROM @Entries E
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -247,209 +113,25 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The DueDate is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	-- Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].DueDate',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
+		N'Error_TheField01Classification2IsIncompatibleWith3',
+		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName],
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
+		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceClassification],
+		dbo.fn_Localize(ATP.[Name], ATP.[Name2], ATP.[Name3]) AS [DefinitionAccountClassification]
 	FROM @Entries E	
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'DueDate'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[DueDate] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The MonetaryValue is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].MonetaryValue',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'MonetaryValue'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[MonetaryValue] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The Quantity is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Quantity',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'Quantity'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[Quantity] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The UnitId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].UnitId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'UnitId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[UnitId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The Value is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Value',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'Value'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[Value] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The Time1 is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Time1',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'Time1'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[Time1] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The Time2 is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].Time2',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'Time2'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[Time2] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The ExternalReference is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ExternalReference',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ExternalReference'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[ExternalReference] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The AdditionalReference is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].AdditionalReference',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'AdditionalReference'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[AdditionalReference] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-	
-	-- The NotedAgentId is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].NotedAgentId',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'NotedAgentId'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[NotedAgentId] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-	
-	-- The NotedAgentName is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].NotedAgentName',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'NotedAgentName'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[NotedAgentName] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The NotedAmount is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].NotedAmount',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'NotedAmount'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[NotedAmount] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	-- The NotedDate is required if Line State >= RequiredState of line def column
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].NotedDate',
-		N'Error_TheField0IsRequired',
-		[dbo].[fn_Localize]([LDC].[Label], [LDC].[Label2], [LDC].[Label3]) AS [FieldName]
-	FROM @Entries E	
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'NotedDate'
-	LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	WHERE (E.[NotedDate] IS NULL) AND ISNULL(BEL.[State], 0) >= LDC.[RequiredState] AND L.[DefinitionId] <> N'ManualLine';
-
-	
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	--                 Pending Review
-	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=		
-
-	-- Validate W-less lines can be moved to state 4
-	-- TODO: refactor code from here and bll.Lines_Validate__Sign
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
-	SELECT TOP (@Top)
-		'[' + CAST(E.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
-		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Agent3Resource4',
-		E.[Index],
-		LDE.[AccountTypeParentCode],
-		E.[CurrencyId],
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	LEFT JOIN dbo.Agents AG ON E.AgentId = AG.Id
-	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE L.[DefinitionId] NOT IN (SELECT [LineDefinitionId] FROM [dbo].[Workflows] WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures]))
-	AND E.[AccountId] IS NULL
-	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0);
-
-	-- TODO: refactor code from here and bll.Lines_Validate__Sign
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + ISNULL(CAST(E.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheAccount0IsDeprecated',
-		A.[Name]
-	FROM @Entries E
-	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
-	WHERE (A.[IsDeprecated] = 1);
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResourceId'
+	JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
+	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+	JOIN dbo.AccountTypes RC ON R.AccountTypeId = RC.[Id]
+	JOIN dbo.AccountTypes ATP ON LDE.AccountTypeParentCode = ATP.[Code]
+	WHERE RC.[Node].IsDescendantOf(ATP.[Node]) = 0
+	AND ATP.[IsResourceClassification] = 1
+	AND L.[DefinitionId] <> N'ManualLine';
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

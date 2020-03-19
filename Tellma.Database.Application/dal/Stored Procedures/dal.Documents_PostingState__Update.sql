@@ -11,3 +11,14 @@ SET
 						[PostingDate])
 WHERE Id IN (SELECT [Id] FROM @Ids)
 AND [PostingState] <> @PostingState;
+
+-- Make sure Non-workflow lines are updated
+UPDATE dbo.Lines
+SET [State] = 4 * @PostingState
+WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
+AND [State] <> 4 * @PostingState
+AND [DefinitionId] IN (
+	SELECT [Id]
+	FROM dbo.[LineDefinitions]
+	WHERE [HasWorkflow] = 0
+);

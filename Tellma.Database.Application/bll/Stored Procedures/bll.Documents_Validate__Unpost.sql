@@ -6,11 +6,17 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- Cannot open it if it is not closed (C#)
-	-- cannot open if the document posting date falls in an archived period.
+	-- Cannot unpost it if it is not posted
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentIsNotPosted'
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	WHERE D.[PostingState] <> 1;	
 
-	-- TODO: Might be useful to define a separate archive date for each operating segment
-INSERT INTO @ValidationErrors([Key], [ErrorName])
+	-- [C#] cannot open if the document posting date falls in an archived period.
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].PostingDate',
 		N'Error_FallsinArchivedPeriod'

@@ -131,17 +131,10 @@ BEGIN
 		MERGE INTO BL AS t
 		USING (
 			SELECT
-				L.[Index],
 				L.[Id],
 				DI.Id AS DocumentId,
 				L.[DefinitionId],
-				L.[AgentId],
-				L.[ResourceId],
-				L.[CurrencyId],
-				L.[MonetaryValue],
-				L.[Quantity],
-				L.[UnitId],
-				L.[Value],
+				L.[Index],
 				L.[Memo]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
@@ -149,37 +142,13 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
-				t.[AgentId]				= s.[AgentId],
-				t.[ResourceId]			= s.[ResourceId],
-				t.[CurrencyId]			= s.[CurrencyId],
-				t.[MonetaryValue]		= s.[MonetaryValue],
-				t.[Quantity]			= s.[Quantity],
-				t.[UnitId]				= s.[UnitId],
-				t.[Value]				= s.[Value],
+				t.[Index]				= s.[Index],
 				t.[Memo]				= s.[Memo],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [DefinitionId], [SortKey],
-				[AgentId],
-				[ResourceId],
-				[CurrencyId],
-				[MonetaryValue],
-				[Quantity],
-				[UnitId],
-				[Value],
-				[Memo]
-			)
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
-				s.[AgentId],
-				s.[ResourceId],
-				s.[CurrencyId],
-				s.[MonetaryValue],
-				s.[Quantity],
-				s.[UnitId],
-				s.[Value],
-				s.[Memo]
-			)
+			INSERT ([DocumentId], [DefinitionId], [Index], [Memo])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[Memo])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -298,12 +267,6 @@ BEGIN
 		
 	--SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
 	
-	-- Make sure Nonworkflow lines are stored with State = 4 (Finalized)
-	UPDATE dbo.Lines
-	SET [State] = 4
-	WHERE [Id] IN (SELECT [Id] FROM @LinesIndexedIds)
-	AND [DefinitionId] NOT IN (SELECT [LineDefinitionId] FROM dbo.[Workflows] WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures]))
-
 	-- if we added/deleted draft lines, the document state should change
 	DECLARE @DocIds dbo.IdList;
 	INSERT INTO @DocIds([Id])

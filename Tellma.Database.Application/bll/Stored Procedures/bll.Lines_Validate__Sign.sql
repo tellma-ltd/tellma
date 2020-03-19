@@ -136,37 +136,9 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
 
-	-- No Null account when moving to state 4
-	IF @ToState = 4 -- reviewed
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
-		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Agent3Resource4',
-		E.[Index],
-		LDE.[AccountTypeParentCode],
-		E.[CurrencyId],
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
-	FROM @Ids FE
-	JOIN dbo.Entries E ON FE.[Id] = E.LineId
-	JOIN dbo.Lines L ON L.[Id] = FE.[Id]
-	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	LEFT JOIN dbo.Agents AG ON E.AgentId = AG.Id
-	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE E.AccountId IS NULL
-	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Lines_Validate__State_Update] @Ids = @Ids, @ToState = @ToState;
 
-	-- No deprecated account, for any positive state
-	IF @ToState > 0
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheAccount0IsDeprecated',
-		A.[Name]
-	FROM @Ids FE
-	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
-	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
-	WHERE (A.[IsDeprecated] = 1);
 
 	-- Not allowed to cause negative balance in conservative accounts
 	--DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 

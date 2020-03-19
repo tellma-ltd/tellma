@@ -6,15 +6,26 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- All lines must be in negative states.
+	-- Cannot cancel it if it is not draft
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentIsNotDraft'
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	WHERE D.[PostingState] <> 0;
+
+	-- All workflow lines must be in negative states.
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
+		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_State0IsNotNegative',
-		dbo.fn_StateId__State(DL.[State])
+		dbo.fn_StateId__State(L.[State])
 	FROM @Ids D
-	JOIN dbo.[Lines] DL ON DL.[DocumentId] = D.[Id]
-	WHERE DL.[State] >= 0
+	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
+	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
+	WHERE (L.[State] >= 0 AND LD.[HasWorkflow] = 1)
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+	

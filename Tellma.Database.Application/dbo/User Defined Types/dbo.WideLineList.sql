@@ -4,14 +4,6 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
-	[CurrencyId]				NCHAR (3),
-	[AgentId]					INT,
-	[ResourceId]				INT,
-	[MonetaryValue]				DECIMAL (19,4),
-	[Quantity]					DECIMAL (19,4),
-	[UnitId]					INT,
-	
-	[Value]						DECIMAL (19,4),
 	[Memo]						NVARCHAR (255),
 	
 	[Id0]						INT,

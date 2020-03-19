@@ -334,7 +334,6 @@
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
     <Build Include="api\Stored Procedures\api.Lines__Unsign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Close.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Post.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_Lines__Ready.sql" />
@@ -548,6 +547,7 @@
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
     <Build Include="Mapping\map.ExchangeRates.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
