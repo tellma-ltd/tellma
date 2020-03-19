@@ -136,8 +136,28 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
 
+	DECLARE @Lines LineList, @Entries EntryList;
+	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
+	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
+	FROM dbo.Lines L
+--	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
+	WHERE L.[Id] IN (SELECT [ID] FROM @Ids) 
+--	AND LD.HasWorkflow = 0;
+	INSERT INTO @Entries ([Index],[LineIndex],[DocumentIndex],[Id],
+	[Direction],[AccountId],[CurrencyId],[AgentId],[ResourceId],[CenterId],
+	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
+	[Time2]	,[ExternalReference],[AdditionalReference],[NotedAgentId],[NotedAgentName],
+	[NotedAmount],[NotedDate])
+	SELECT E.[Index],E.[LineId],L.[DocumentId],E.[Id],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[ResourceId],E.[CenterId],
+	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
+	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentId],E.[NotedAgentName],
+	E.[NotedAmount],E.[NotedDate]
+	FROM dbo.Entries E
+	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__State_Update] @Ids = @Ids, @ToState = @ToState;
+	EXEC [bll].[Lines_Validate__State_Update]
+	@Lines = @Lines, @Entries = @Entries, @ToState = 4;
 
 
 	-- Not allowed to cause negative balance in conservative accounts
