@@ -683,8 +683,7 @@ table tr .t-form-group {
 }
 
 .is-invalid .t-input:focus {
-  border-bottom-width: 0px;  
-  box-shadow: 0 2px $danger;
+  box-shadow: 0 1px #dc3545;
 }
 
 // the style for the "Saving" indicator at the bottom right
