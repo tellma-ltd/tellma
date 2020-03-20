@@ -44,6 +44,11 @@
           </button>
         </div>
 
+        <!-- Custom injected stuff -->
+        <ng-container
+          *ngTemplateOutlet="toolbarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
+        </ng-container>
+
         <!-- Create -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip"
           *ngIf="showCreate" container="body">
@@ -91,9 +96,6 @@
             </div>
           </div>
         </div>
-        <ng-container
-          *ngTemplateOutlet="toolbarTemplate;context: { model: activeModel, extras: extras, isEdit: isEdit }">
-        </ng-container>
       </div>
 
       <!-- Edit Toolbar -->

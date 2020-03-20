@@ -944,14 +944,22 @@
 
                             <!-- No signature but can sign -->
                             <ng-container *ngIf="!signature.SignedById && signature.CanSign">
-                                <button class="btn btn-danger px-2 w-50" (click)="onSignNo(lineDefId, signature)">
-                                    <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
-                                    <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
-                                </button>&nbsp;&nbsp;
-                                <button class="btn btn-success px-2 w-50" (click)="onSignYes(signature)">
-                                    <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
-                                    <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
-                                </button>
+                                <div class="w-50 px-1" placement="bottom"
+                                    [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
+                                    <button class="btn btn-danger px-2 w-100 h-100"
+                                        (click)="onSignNo(lineDefId, signature)" [disabled]="disableSign(signature, lineDefId, model)">
+                                        <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
+                                        <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
+                                    </button>
+                                </div>
+                                <div class="w-50 px-1" placement="bottom"
+                                    [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
+                                    <button class="btn btn-success px-2 w-100 h-100" (click)="onSignYes(signature)"
+                                        [disabled]="disableSign(signature, lineDefId, model)">
+                                        <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
+                                        <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
+                                    </button>
+                                </div>
                             </ng-container>
 
                             <!-- No signature and cannot sign -->
@@ -993,11 +1001,14 @@
                                 <span class="text-muted" *ngIf="signature.SignedAt">
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
                                 </span>
-                                <button class="btn btn-sm btn-light text-primary t-white-button btn-sm py-0 px-1"
-                                    (click)="onUnsign(signature)" *ngIf="canUnsign(signature)" style="margin-top:-4px"
-                                    [title]="'Delete' | translate">
-                                    <fa-icon icon="trash"></fa-icon>
-                                </button>
+                                <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)" container="body">
+                                    <button class="btn btn-sm btn-light text-primary t-white-button btn-sm h-100 py-0 px-1"
+                                        (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
+                                        style="margin-top:-4px" [title]="disableUnsign(signature, model) ? '' : ('Delete' | translate)"
+                                        [disabled]="disableUnsign(signature, model)">
+                                        <fa-icon icon="trash"></fa-icon>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1033,13 +1044,12 @@
                 </div>
 
                 <!-- Attachments List -->
-                <div class="row flex-row-reverse mx-0 mb-1" *ngIf="!!model?.Attachments?.length">
-                    <div class="text-nowrap col-12 col-md-6 px-2"
-                        *ngFor="let att of model?.Attachments; let i = index;">
-                        <div class="border bg-light mt-3 mb-0 d-flex align-items-stretch">
+                <div class="w-100 mx-0 mb-1" *ngIf="!!model?.Attachments?.length">
+                    <div class="text-nowrap" *ngFor="let att of model?.Attachments; let i = index;">
+                        <div class="border bg-light mt-1 mt-sm-2 mb-0 d-flex align-items-stretch">
                             <!-- Icon -->
-                            <div class="px-3 pt-0 pb-1">
-                                <fa-icon [style.color]="colorFromExtension(att.FileExtension)" style="font-size: 250%;"
+                            <div class="px-3 pt-1 pb-2">
+                                <fa-icon [style.color]="colorFromExtension(att.FileExtension)" style="font-size: 200%;"
                                     [icon]="iconFromExtension(att.FileExtension)">
                                 </fa-icon>
                             </div>
@@ -1048,7 +1058,7 @@
                             <div class="d-flex flex-column justify-content-center flex-grow-1 px-1"
                                 style="min-width: 0px;">
                                 <!-- Name -->
-                                <div class="mb-12 w-75" [class.text-truncate]="!isEdit">
+                                <div class="mb-12 w-75" style="max-width: 500px;" [class.text-truncate]="!isEdit">
                                     <span *ngIf="!isEdit">{{ att.FileName + '.' + att.FileExtension }}</span>
                                     <t-form-group *ngIf="isEdit" [serverErrors]="att?.serverErrors?.FileName">
                                         <t-text-editor [(ngModel)]="att.FileName"
@@ -1063,17 +1073,18 @@
                                         <span class="small text-muted">{{ size(att) }}</span>
                                     </div>
 
-                                    <!-- Uploaded By -->
-                                    <div class="flex-grow-1 text-truncate small" style="min-width: 0px;">
+                                    <!-- Uploaded By and Uploaded At -->
+                                    <div class="flex-grow-1 text-truncate small text-muted" style="min-width: 0px;">
                                         <ng-container *ngIf="att.CreatedById">
                                             <span>&nbsp;&nbsp;&nbsp;</span>
                                             <t-view-link link="../../../users" [itemId]="att.CreatedById"
                                                 *ngIf="!isEdit">
                                                 <span>{{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}</span>
                                             </t-view-link>
-                                            <span *ngIf="isEdit">
-                                                {{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}
-                                            </span>
+                                            <span
+                                                *ngIf="isEdit">{{ ws.getMultilingualValue('User', att.CreatedById, 'Name') }}</span>
+                                            <span>&nbsp;&nbsp;&nbsp;</span>
+                                            <span>{{ att.CreatedAt | date:'yyyy-MM-dd HH:mm' }}</span>
                                         </ng-container>
                                     </div>
 

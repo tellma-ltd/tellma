@@ -76,8 +76,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesSummary: RequiredSignature[];
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt',
-    'OnBehalfOfUserId', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
+    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
+    'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     'ReasonId', 'ReasonDetails'];
 
   private _requiredSignaturesForLineDefModel: Document;
@@ -243,7 +243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   create = () => {
     const result: DocumentForSave = {
-     // PostingDate: toLocalDateISOString(new Date()),
+      // PostingDate: toLocalDateISOString(new Date()),
       Clearance: 0,
       Lines: [],
       Attachments: []
@@ -932,8 +932,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       case 'file-excel': return '#316F3E';
       case 'file-powerpoint': return '#BD4D2D';
       case 'file-archive': return '#E5BE36';
-      case 'file-image': return '#A12F5E';
-      case 'file-video': return '#CC5747';
+      case 'file-image': return '#3E7A7E';
+      case 'file-video': return '#A12F5E'; // CC5747
       case 'file-audio': return '#BA7D27';
 
       case 'file-alt': // text files
@@ -1287,6 +1287,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public canUnsign(signature: RequiredSignature) {
     return !!signature.SignedById && signature.SignedById === this.ws.userSettings.UserId;
+  }
+
+  public disableUnsign(_: RequiredSignature, model: Document) {
+    return !!model ? !!model.PostingState : true;
+  }
+
+  public unsignTooltip(_: RequiredSignature, model: Document) {
+    if (!model) {
+      return null;
+    } else if (model.PostingState === 1) {
+      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
+    } else if (model.PostingState === -1) {
+      return this.translate.instant('Error_UncancelDocumentBeforeEdit');
+    } else {
+      return null;
+    }
   }
 
   public positiveActionDisplay(toState: number): string {
@@ -1855,6 +1871,52 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public postingStateTooltip(doc: Document): string {
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+
+  // TODO: Move next to required signatures stuff
+
+  private isTooEarlyForThisSignature(signature: RequiredSignature): boolean {
+    return signature.LastUnsignedState < signature.ToState;
+  }
+
+  private areNegativeLines(signature: RequiredSignature): boolean {
+    return !!signature.LastNegativeState;
+  }
+
+  public disableSign(signature: RequiredSignature, lineDefId: string, model: Document): boolean {
+    if (!model) {
+      return false;
+    }
+
+    return model.PostingState === -1 ||
+      model.PostingState === 1 ||
+      this.isTooEarlyForThisSignature(signature) ||
+      this.areNegativeLines(signature);
+  }
+
+  public signTooltip(signature: RequiredSignature, lineDefId: string, model: Document) {
+    if (!model) {
+      return null;
+    } else if (model.PostingState === 1) {
+      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
+    } else if (model.PostingState === -1) {
+      return this.translate.instant('Error_UncancelDocumentBeforeEdit');
+    } else if (this.areNegativeLines(signature)) {
+      // These lines are already in a negative state, it's pointless to sign them again
+      const stateDisplay = this.actionDisplay(signature.LastNegativeState);
+      const lines = this.lineIds(signature) || [];
+      return this.translate.instant(lines.length === 1 ? 'LineAlreadyInState0' : 'LinesAlreadyInState0', { 0: stateDisplay });
+
+    } else if (this.isTooEarlyForThisSignature(signature)) {
+      // There is a preceding positive state that hasn't been reached yet, so not yet the time to sign for this state
+      const stateDisplay = this.actionDisplay(signature.LastUnsignedState);
+      const lines = this.lineIds(signature) || [];
+      return this.translate.instant(lines.length === 1 ? 'LineIsNotYetInState0' : 'LinesAreNotYetInState0', { 0: stateDisplay });
+
+    } else {
+      return null;
+    }
   }
 }
 

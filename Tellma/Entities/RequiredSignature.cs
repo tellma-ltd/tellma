@@ -7,7 +7,7 @@ namespace Tellma.Entities
     public class RequiredSignature : Entity
     {
         public int LineId { get; set; }
-        public int ToState { get; set; }
+        public short ToState { get; set; }
         public string RuleType { get; set; }
 
         [Display(Name = "Signature_Role")]
@@ -21,6 +21,10 @@ namespace Tellma.Entities
 
         [Display(Name = "Signature_OnBehalfOfUser")]
         public int? OnBehalfOfUserId { get; set; }
+
+        public short? LastUnsignedState { get; set; }
+        public short? LastNegativeState { get; set; }
+
         public bool CanSign { get; set; }
         public int? ProxyRoleId { get; set; }
         public bool CanSignOnBehalf { get; set; }
