@@ -3,10 +3,10 @@ RETURNS TABLE
 AS
 RETURN (
 	SELECT DD.*, 
-		IIF([1] > 0, 1, 0) AS Has_1,
-		IIF([2] > 1, 1, 0) AS Has_2,
-		IIF([3] > 0, 1, 0) AS Has_3,
-		IIF([4] > 0, 1, 0) AS Has_4
+		CAST(IIF([1] > 0, 1, 0) AS BIT) AS [CanReachState1],
+		CAST(IIF([2] > 1, 1, 0) AS BIT) AS [CanReachState2],
+		CAST(IIF([3] > 0, 1, 0) AS BIT) AS [CanReachState3],
+		CAST(IIF([4] > 0, 1, 0) AS BIT) AS [CanReachState4]
 	FROM dbo.DocumentDefinitions DD
 	LEFT JOIN
 	(

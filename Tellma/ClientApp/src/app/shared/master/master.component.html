@@ -70,7 +70,7 @@
                   </div>
                 </li>
               </ng-container>
-              <li>
+              <li *ngIf="!!filterTemplates(groupName).length">
                 <hr />
               </li>
             </ng-container>

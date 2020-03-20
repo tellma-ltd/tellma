@@ -4,7 +4,7 @@ import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/dat
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { DocumentForSave, Document, serialNumber, DocumentClearance, metadata_Document } from '~/app/data/entities/document';
+import { DocumentForSave, Document, serialNumber, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
@@ -1115,7 +1115,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._requiredSignaturesDetailed = requiredSignaturesDetailed;
       this._requiredSignaturesLineIds = lineIds;
 
-      // Put all included line IDs in a hash table for quick lookup
+      // Put all included line Ids in a hash table for quick lookup
       const includedLineIds: { [id: number]: true } = {};
       for (const lineId of lineIds) {
         includedLineIds[lineId] = true;
@@ -1123,7 +1123,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       const lineIdsHash: HashTable = {};
       const result: RequiredSignature[] = [];
-      for (const signature of requiredSignaturesDetailed.filter(e => includedLineIds[e.LineId])) {
+
+      // Filter away signatures that don't belong to the provided line Ids,
+      // And also filter away pending signatures of already negative lines
+      const filteredSignatures = requiredSignaturesDetailed
+        .filter(e => (!e.LastNegativeState || !!e.SignedById) && includedLineIds[e.LineId]);
+
+      for (const signature of filteredSignatures) {
         let currentHash = lineIdsHash;
         let newGroup = false;
         for (const prop of this._requiredSignatureProps) {
@@ -1786,31 +1792,78 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.IsOriginalDocument;
   }
 
-  // The state chart
+  // To work around a bug in Angular compiler
+  public isNegativeStateActive = (state: LineState, model: Document) =>
+    this.isStateActive(-state as LineState, model)
 
-  public isState(state: LineState, model: Document): boolean {
+  // To work around a bug in Angular compiler
+  public isNegativePostingStateActive = (state: DocumentState, model: Document) =>
+    this.isPostingStateActive(-state as DocumentState, model)
+
+  // The state chart
+  public isStateActive(state: LineState, model: Document): boolean {
     if (!model) {
       return false;
     }
 
-    // New unsaved docs have a null state
-    return (model.State || 0) === state && model.PostingState !== 1 && model.PostingState !== -1;
-  }
-
-  public showState(model: Document, requiredSignatures: RequiredSignature[], state: LineState) {
-    if (!model || !model.Id) {
+    const def = this.definition;
+    if (!def) {
       return false;
     }
 
-    if (this.isState(state, model)) {
-      return true;
-    }
-
-    return !!requiredSignatures && requiredSignatures.some(e => Math.abs(e.ToState) === state);
+    return !model.PostingState && def.CanReachState4 && (model.State || 0) === state;
   }
 
-  public showLoneState(model: Document) {
-    return !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
+  public isPostingStateActive(state: DocumentState, model: Document): boolean {
+    if (!model) {
+      return false;
+    }
+
+    const def = this.definition;
+    if (!def) {
+      return false;
+    }
+
+    if (state === 0) { // Current
+      return !model.PostingState && !def.CanReachState4;
+    } else { // Posted + Canceled
+      return model.PostingState === state;
+    }
+  }
+
+  public isStateVisible(state: LineState, model: Document): boolean {
+    // Returns if a positive state is visible on the wide screen flow chart
+    if (!!model && (model.PostingState < 0 || model.State < 0)) { // <-- Review
+      return false;
+    }
+
+    const def = this.definition;
+    if (state === 0) {
+      return !!def && def.CanReachState4;
+    } else { // 1 + 2 + 3 + 4
+      return this.isStateActive(state, model) ||
+        (!!def && def.CanReachState4 && def['CanReachState' + state]);
+    }
+  }
+
+  public isPostingStateVisible(state: DocumentState, _: Document): boolean {
+    // Returns if a positive state is visible on the wide screen flow chart
+    const def = this.definition;
+    if (state === 0) { // Current
+      return !def || !def.CanReachState4;
+    } else { // Posted
+      return true;
+    }
+  }
+
+  public isPositiveState(model: Document): boolean {
+    const states: LineState[] = [0, 1, 2, 3, 4];
+    const postingStates: DocumentState[] = [0, 1];
+
+    return states.some(state => this.isStateActive(state, model)) ||
+      postingStates.some(state => this.isPostingStateActive(state, model));
+
+    //// !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
   }
 
   // Posting State
@@ -1847,22 +1900,78 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public hasPermissionToUpdateState(doc: Document): boolean {
-    return this.ws.canDo(this.view, 'PostingState', doc.CreatedById);
+    return this.ws.canDo(this.view, 'PostingState', !!doc ? doc.CreatedById : null);
   }
 
-  public showPost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !!doc && !!doc.Id && doc.PostingState === 0 &&
-      (!requiredSignatures || requiredSignatures.length === 0 ||
-        (doc.Lines.some(e => e.State === 4) && doc.Lines.every(e => e.State === 4 || e.State < 0)));
+  private missingSignatures(_: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !!requiredSignatures && requiredSignatures.length > 0 &&
+      requiredSignatures.some(e => !e.SignedById);
   }
+
+  private pendingLines(_: Document, requiredSignatures: RequiredSignature[]): boolean {
+    // There are pending lines either if some of the lines have state > 0 OR if some signatures are still pending
+    return (!!requiredSignatures && requiredSignatures.length > 0 &&
+      requiredSignatures.some(e => !e.LastNegativeState));
+  }
+
+  // Post
+
+  public showPost(doc: Document, _: RequiredSignature[]): boolean {
+    return !doc || !doc.PostingState;
+  }
+
+  public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+
+    return !doc || !doc.Id || // Missing document
+      // OR missing permissions
+      !this.hasPermissionToUpdateState(doc) ||
+      // OR missing signatures
+      this.missingSignatures(doc, requiredSignatures);
+  }
+
+  public postTooltip(doc: Document, requiredSignatures: RequiredSignature[]): string {
+
+    if (!this.hasPermissionToUpdateState(doc)) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    } else if (this.missingSignatures(doc, requiredSignatures)) {
+      return this.translate.instant('Error_DocumentIsMissingSignatures');
+    }
+
+    return null;
+  }
+
+  // Cancel
+
+  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+    return !doc || !doc.PostingState;
+    // return !!doc && !!doc.Id && doc.PostingState === 0 &&
+    //   (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
+  }
+
+  public disableCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+
+    return !doc || !doc.Id || // Missing document
+      // OR missing permissions
+      !this.hasPermissionToUpdateState(doc) ||
+      // OR some lines are still pending
+      this.pendingLines(doc, requiredSignatures);
+  }
+
+  public cancelTooltip(doc: Document, requiredSignatures: RequiredSignature[]): string {
+
+    if (!this.hasPermissionToUpdateState(doc)) {
+      return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    } else if (this.pendingLines(doc, requiredSignatures)) {
+      return this.translate.instant('Error_SomeٍSignaturesArePending');
+    }
+
+    return null;
+  }
+
+  // Unpost & Uncancel
 
   public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.PostingState === 1;
-  }
-
-  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !!doc && !!doc.Id && doc.PostingState === 0 &&
-      (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
   }
 
   public showUncancel(doc: Document, _: RequiredSignature[]): boolean {
@@ -1872,7 +1981,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public postingStateTooltip(doc: Document): string {
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
-
 
   // TODO: Move next to required signatures stuff
 

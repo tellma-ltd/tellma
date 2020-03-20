@@ -176,7 +176,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility
-            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity']) {
+            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'ResidualMonetaryValue', 'ResidualValue']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 }
@@ -194,7 +194,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency']) {
+            for (const propName of ['Currency', 'CostObject', 'ExpenseEntryType', 'ExpenseCenter', 'InvestmentCenter']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

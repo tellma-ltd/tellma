@@ -327,6 +327,10 @@ namespace Tellma.Controllers
                 UnitLabel2 = def.UnitLabel2,
                 UnitLabel3 = def.UnitLabel3,
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
+                CanReachState1 = def.CanReachState1 ?? false,
+                CanReachState2 = def.CanReachState2 ?? false,
+                CanReachState3 = def.CanReachState3 ?? false,
+                CanReachState4 = def.CanReachState4 ?? false,
 
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
