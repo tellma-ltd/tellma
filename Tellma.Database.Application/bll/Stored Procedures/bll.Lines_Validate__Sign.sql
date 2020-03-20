@@ -62,12 +62,15 @@ SET NOCOUNT ON;
 	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
 
 	-- Cannot sign a current state, if it is already signed negatively in a previous state.
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])		
-	SELECT TOP (@Top)
+	INSERT INTO @ValidationErrors([Key], [ErrorName])		
+	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-			N'Error_Line0IsAlreadyInState1',
-			FE.Id AS LineId,
-			[dbo].[fn_StateId__State](LastNegativeState)
+			CASE
+				WHEN LastNegativeState = -1 THEN N'Error_LineIsAlready_minus_1'
+				WHEN LastNegativeState = -2 THEN N'Error_LineIsAlready_minus_2'
+				WHEN LastNegativeState = -3 THEN N'Error_LineIsAlready_minus_3'
+				WHEN LastNegativeState = -4 THEN N'Error_LineIsAlready_minus_4'
+			END
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE LastNegativeState IS NOT NULL
