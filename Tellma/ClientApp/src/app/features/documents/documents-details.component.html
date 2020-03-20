@@ -31,19 +31,21 @@
         </button>
     </div>
     <!-- Cancel -->
-    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
-        container="body" *ngIf="!isEdit && showCancel(model, extras?.RequiredSignatures)">
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement"
+        [ngbTooltip]="cancelTooltip(model, extras?.RequiredSignatures)" container="body"
+        *ngIf="!isEdit && showCancel(model, extras?.RequiredSignatures)">
         <button class="btn btn-sm btn-danger t-toolbar-button" (click)="onCancel(model)"
-            [disabled]="!hasPermissionToUpdateState(model)">
+            [disabled]="disableCancel(model, extras?.RequiredSignatures)">
             <fa-icon icon="times"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Cancel" | translate }}</span>
         </button>
     </div>
     <!-- Post -->
-    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
-        container="body" *ngIf="!isEdit && showPost(model, extras?.RequiredSignatures)">
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement"
+        [ngbTooltip]="postTooltip(model, extras?.RequiredSignatures)" container="body"
+        *ngIf="!isEdit && showPost(model, extras?.RequiredSignatures)">
         <button class="btn btn-sm btn-success t-toolbar-button" (click)="onPost(model)"
-            [disabled]="!hasPermissionToUpdateState(model)">
+            [disabled]="disablePost(model, extras?.RequiredSignatures)">
             <fa-icon icon="check"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Post" | translate }}</span>
         </button>
@@ -61,47 +63,51 @@
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
     <div class="w-100 t-document-header d-flex justify-content-end">
-        <!-- Positive state in wide screen -->
-        <div>
-            <div class="t-flow-chart small d-none d-lg-block" *ngIf="!showLoneState(model)">
-                <div [class.active]="isState(0, model)">
+        
+        <!-- +ve states on wide screen -->
+        <ng-container *ngIf="isPositiveState(model); else negativeStates">
+            <div class="t-flow-chart small d-none d-lg-block">
+                <div [class.active]="isStateActive(0, model)" *ngIf="isStateVisible(0, model)">
                     <span>{{'Document_State_0' | translate}}</span></div>
-                <div [class.active]="isState(1, model)" *ngIf="showState(model, extras?.RequiredSignatures, 1)">
+                <div [class.active]="isStateActive(1, model)" *ngIf="isStateVisible(1, model)">
                     <span>{{'Document_State_1' | translate}}</span></div>
-                <div [class.active]="isState(2, model)" *ngIf="showState(model, extras?.RequiredSignatures, 2)">
+                <div [class.active]="isStateActive(2, model)" *ngIf="isStateVisible(2, model)">
                     <span>{{'Document_State_2' | translate}}</span></div>
-                <div [class.active]="isState(3, model)" *ngIf="showState(model, extras?.RequiredSignatures, 3)">
+                <div [class.active]="isStateActive(3, model)" *ngIf="isStateVisible(3, model)">
                     <span>{{'Document_State_3' | translate}}</span></div>
-                <div [class.active]="isState(4, model)" *ngIf="showState(model, extras?.RequiredSignatures, 4)">
+                <div [class.active]="isStateActive(4, model)" *ngIf="isStateVisible(4, model)">
                     <span>{{'Document_State_4' | translate}}</span></div>
-                <div [class.active]="model?.PostingState === 1">
+
+                <div [class.active]="isPostingStateActive(0, model)" *ngIf="isPostingStateVisible(0, model)">
+                    <span>{{'Document_PostingState_0' | translate}}</span></div>
+                <div [class.active]="isPostingStateActive(1, model)" *ngIf="isPostingStateVisible(1, model)">
                     <span>{{'Document_PostingState_1' | translate}}</span></div>
             </div>
-            <div class="small t-lone-state active d-none d-lg-block" *ngIf="showLoneState(model)">
-                <!-- Negative state in wide screen-->
-                <ng-container *ngTemplateOutlet="loneState">
 
-                </ng-container>
-            </div>
+            <!-- +ve states on narrow screen -->
             <div class="small t-lone-state active d-block d-lg-none">
-                <!-- Narrow screen -->
-                <ng-container *ngTemplateOutlet="loneState"> </ng-container>
-            </div>
-        </div>
+                <span *ngIf="isStateActive(0, model)">{{ 'Document_State_0' | translate }}</span>
+                <span *ngIf="isStateActive(1, model)">{{ 'Document_State_1' | translate }}</span>
+                <span *ngIf="isStateActive(2, model)">{{ 'Document_State_2' | translate }}</span>
+                <span *ngIf="isStateActive(3, model)">{{ 'Document_State_3' | translate }}</span>
+                <span *ngIf="isStateActive(4, model)">{{ 'Document_State_4' | translate }}</span>
 
-        <ng-template #loneState>
-            <span>{{ (model?.PostingState === 1 ? 'Document_PostingState_1' :
-                            model?.PostingState === -1 ? 'Document_PostingState_minus_1' :
-                            !model?.State ? 'Document_State_0' :
-                            model?.State === -1 ? 'Document_State_minus_1' :
-                            model?.State === 1 ? 'Document_State_1' :
-                            model?.State === -2 ? 'Document_State_minus_2' :
-                            model?.State === 2 ? 'Document_State_2' :
-                            model?.State === -3 ? 'Document_State_minus_3' :
-                            model?.State === 3 ? 'Document_State_3' :
-                            model?.State === -4 ? 'Document_State_minus_4' :
-                            model?.State === 4 ? 'Document_State_4' :
-                             model?.State) | translate }}</span>
+                <span *ngIf="isPostingStateActive(0, model)">{{ 'Document_PostingState_0' | translate }}</span>
+                <span *ngIf="isPostingStateActive(1, model)">{{ 'Document_PostingState_1' | translate }}</span>
+            </div>
+        </ng-container>
+
+        <!-- -ve states -->
+        <ng-template #negativeStates>
+            <div class="small t-lone-state active d-block">
+                <span *ngIf="isNegativeStateActive(1, model)">{{ 'Document_State_minus_1' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(2, model)">{{ 'Document_State_minus_2' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(3, model)">{{ 'Document_State_minus_3' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(4, model)">{{ 'Document_State_minus_4' | translate }}</span>
+
+                <span
+                    *ngIf="isNegativePostingStateActive(1, model)">{{ 'Document_PostingState_minus_1' | translate }}</span>
+            </div>
         </ng-template>
     </div>
 </ng-template>
@@ -947,7 +953,8 @@
                                 <div class="w-50 px-1" placement="bottom"
                                     [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
                                     <button class="btn btn-danger px-2 w-100 h-100"
-                                        (click)="onSignNo(lineDefId, signature)" [disabled]="disableSign(signature, lineDefId, model)">
+                                        (click)="onSignNo(lineDefId, signature)"
+                                        [disabled]="disableSign(signature, lineDefId, model)">
                                         <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
                                         <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
                                     </button>
@@ -1001,10 +1008,13 @@
                                 <span class="text-muted" *ngIf="signature.SignedAt">
                                     &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
                                 </span>
-                                <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)" container="body">
-                                    <button class="btn btn-sm btn-light text-primary t-white-button btn-sm h-100 py-0 px-1"
+                                <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)"
+                                    container="body">
+                                    <button
+                                        class="btn btn-sm btn-light text-primary t-white-button btn-sm h-100 py-0 px-1"
                                         (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
-                                        style="margin-top:-4px" [title]="disableUnsign(signature, model) ? '' : ('Delete' | translate)"
+                                        style="margin-top:-4px"
+                                        [title]="disableUnsign(signature, model) ? '' : ('Delete' | translate)"
                                         [disabled]="disableUnsign(signature, model)">
                                         <fa-icon icon="trash"></fa-icon>
                                     </button>

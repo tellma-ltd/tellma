@@ -197,6 +197,10 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete entityDesc.properties.DefinitionId;
             delete entityDesc.properties.Definition;
 
+            if (!definition.CanReachState4) {
+                delete entityDesc.properties.State;
+            }
+
             // TODO: adjust properties as per definition
         }
 

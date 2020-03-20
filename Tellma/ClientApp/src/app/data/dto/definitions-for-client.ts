@@ -113,6 +113,10 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     UnitLabel2: string;
     UnitLabel3: string;
     CurrencyVisibility: Visibility;
+    CanReachState1: boolean;
+    CanReachState2: boolean;
+    CanReachState3: boolean;
+    CanReachState4: boolean;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
 }
 

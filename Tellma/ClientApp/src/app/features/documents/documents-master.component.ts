@@ -20,6 +20,11 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
+  // For caching
+  private _filterDefinitionArg: any[];
+  private _filterDefinitionDocDef: DocumentDefinitionForClient;
+  private _filterDefinitionResult: any;
+
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
@@ -88,6 +93,13 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this.translate.instant('Document');
   }
 
+  public get defaultSelect(): string {
+    // This shows the State column only when there is a workflow
+    const def = this.definition;
+    const stateColumn = !!def && def.CanReachState4 ? ',State' : '';
+    return `PostingDate,PostingState${stateColumn},Memo`;
+  }
+
   // Posting State
 
   public onPost = (ids: (number | string)[]): Observable<any> => {
@@ -130,32 +142,53 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.PostingState === 0;
-     });
+    });
   }
 
   public showCancel = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.PostingState === 0;
-     });
+    });
   }
 
   public showUnpost = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.PostingState === 1;
-     });
+    });
   }
 
   public showUncancel = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.PostingState === -1;
-     });
+    });
   }
 
   public hasPostingStatePermission = (_: (number | string)[]) => this.ws.canDo(this.view, 'PostingState', null);
 
   public postingStateTooltip = (ids: (number | string)[]) => this.hasPostingStatePermission(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  public adjustFilterDefinition(filterDefinition: any): any {
+    const def = this.definition;
+    if (this._filterDefinitionArg !== filterDefinition ||
+      this._filterDefinitionDocDef !== def) {
+
+      this._filterDefinitionArg = filterDefinition;
+      this._filterDefinitionDocDef = def;
+
+      const result = { ...filterDefinition };
+      if (def.CanReachState4) {
+        result.State = result.State.filter((e: any) => e.state === 0 || def['CanReachState' + Math.abs(e.state)]);
+      } else {
+        delete result.State;
+      }
+
+      this._filterDefinitionResult = result;
+    }
+
+    return this._filterDefinitionResult;
+  }
 }

@@ -155,6 +155,10 @@ namespace Tellma.Controllers.Dto
         public string UnitLabel2 { get; set; }
         public string UnitLabel3 { get; set; }
         public string CurrencyVisibility { get; set; }
+        public bool CanReachState1 { get; set; }
+        public bool CanReachState2 { get; set; }
+        public bool CanReachState3 { get; set; }
+        public bool CanReachState4 { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
     }
 

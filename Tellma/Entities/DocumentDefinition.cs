@@ -97,6 +97,11 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
+        public bool? CanReachState1 { get; set; }
+        public bool? CanReachState2 { get; set; }
+        public bool? CanReachState3 { get; set; }
+        public bool? CanReachState4 { get; set; }
+
         // For Query
 
         [Display(Name = "ModifiedBy")]

@@ -1,35 +1,34 @@
 <t-master *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="PostingDate,PostingState,State,Memo"
-  selectForTiles="PostingDate,State,Memo" [includeInactiveLabel]="'IncludeCanceled' | translate"
-  inactiveFilter="PostingState ne -1" [multiselectActions]="[
+  [tableSummaryHeaderTemplate]="summaryHeader" [selectDefault]="defaultSelect" selectForTiles="PostingDate,State,Memo"
+  [includeInactiveLabel]="'IncludeCanceled' | translate" inactiveFilter="PostingState ne -1" [multiselectActions]="[
                 { template: post, action: onPost, showAction: showPost, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
                 { template: unpost, action: onUnpost, showAction: showUnpost, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip },
                 { template: uncancel, action: onUncancel, showAction: showUncancel, canAction: hasPostingStatePermission, actionTooltip: postingStateTooltip }
-            ]" [filterDefinition]="{
+            ]" [filterDefinition]="adjustFilterDefinition({
             'CreatedBy' : [
-                { template: createdByMe, expression: 'CreatedById eq me'},
-                { template: assignedToMe, expression: 'AssigneeId eq me'}
+                { template: createdByMe, expression: 'CreatedById eq me' },
+                { template: assignedToMe, expression: 'AssigneeId eq me' }
             ],
             'PostingState' : [
-                { template: postingState_0, expression: 'PostingState eq 0'},
-                { template: postingState_1, expression: 'PostingState eq 1'},
-                { template: postingState_minus_1, expression: 'PostingState eq -1'}
+                { template: postingState_0, expression: 'PostingState eq 0' },
+                { template: postingState_1, expression: 'PostingState eq 1' },
+                { template: postingState_minus_1, expression: 'PostingState eq -1' }
             ],
             'State' : [
-                { template: state_0, expression: 'State eq 0'},
-                { template: state_1, expression: 'State eq 1'},
-                { template: state_minus_1, expression: 'State eq -1'},
-                { template: state_2, expression: 'State eq 2'},
-                { template: state_minus_2, expression: 'State eq -2'},
-                { template: state_3, expression: 'State eq 3'},
-                { template: state_minus_3, expression: 'State eq -3'},
-                { template: state_4, expression: 'State eq 4'},
-                { template: state_minus_4, expression: 'State eq -4'}
+                { template: state_0, expression: 'State eq 0', state: 0 },
+                { template: state_1, expression: 'State eq 1', state: 1 },
+                { template: state_minus_1, expression: 'State eq -1', state: -1 },
+                { template: state_2, expression: 'State eq 2', state: 2 },
+                { template: state_minus_2, expression: 'State eq -2', state: -2 },
+                { template: state_3, expression: 'State eq 3', state: 3 },
+                { template: state_minus_3, expression: 'State eq -3', state: -3 },
+                { template: state_4, expression: 'State eq 4', state: 4 },
+                { template: state_minus_4, expression: 'State eq -4', state: -4 }
             ]
-          }">
+          })">
 </t-master>
 
 <!-- If definitionId is invalid -->

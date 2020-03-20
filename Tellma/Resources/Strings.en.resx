@@ -475,6 +475,9 @@
   <data name="Document_PostingState_minus_1" xml:space="preserve">
     <value>Canceled</value>
   </data>
+  <data name="Document_PostingStateAt" xml:space="preserve">
+    <value>Posting State At</value>
+  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
