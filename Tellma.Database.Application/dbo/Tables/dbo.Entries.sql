@@ -5,7 +5,7 @@
 	[Index]						INT				NOT NULL DEFAULT 0,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
-	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	[CurrencyId]				NCHAR (3)		NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	-- Agent Id is required in Entries only if we have Agent Definition in the account
 	[AgentId]					INT				NULL REFERENCES dbo.Agents([Id]),
 	-- Resource Id is Required in Entries only if we have resource classification in the account

@@ -50,12 +50,12 @@ SET NOCOUNT ON;
 
 	-- Cannot sign a current state, unless all states < abs (current state) are positive and signed.	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])		
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 			'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 			N'Error_Line0MustBeSignedForState1BeforeState2',
 			FE.Id AS LineId,
-			[dbo].[fn_StateId__State](LastUnsignedState),
-			[dbo].[fn_StateId__State](@ToState)
+			[dbo].[fn_StateId__State](LastUnsignedState) AS LasUnsignedState,
+			[dbo].[fn_StateId__State](@ToState) AS ToState
 	FROM map.[LinesRequiredSignatures](@LineIds) RS
 	JOIN @Ids FE ON RS.LineId = FE.Id
 	WHERE ToState = ABS(@ToState) AND LastUnsignedState IS NOT NULL
@@ -148,7 +148,7 @@ SET NOCOUNT ON;
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
 	[Time2]	,[ExternalReference],[AdditionalReference],[NotedAgentId],[NotedAgentName],
 	[NotedAmount],[NotedDate])
-	SELECT E.[Index],E.[LineId],L.[DocumentId],E.[Id],
+	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentId],E.[NotedAgentName],
@@ -157,7 +157,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Update]
-	@Lines = @Lines, @Entries = @Entries, @ToState = 4;
+	@Lines = @Lines, @Entries = @Entries, @ToState = @ToState;
 
 
 	-- Not allowed to cause negative balance in conservative accounts

@@ -138,8 +138,8 @@ BEGIN
 	JOIN RU ON E.ResourceId = RU.ResourceId;
 
 	-- When currency is null, set it to functional currency
-	UPDATE @PreprocessedEntries
-	SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
+	--UPDATE @PreprocessedEntries
+	--SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
 	
 	DECLARE @BalanceSheetRoot HIERARCHYID = (
 			SELECT [Node] FROM dbo.AccountTypes

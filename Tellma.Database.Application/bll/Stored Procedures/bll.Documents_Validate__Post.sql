@@ -55,7 +55,7 @@ SET NOCOUNT ON;
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
 	[Time2]	,[ExternalReference],[AdditionalReference],[NotedAgentId],[NotedAgentName],
 	[NotedAmount],[NotedDate])
-	SELECT E.[Index],E.[LineId],L.[DocumentId],E.[Id],
+	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
 	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentId],E.[NotedAgentName],
