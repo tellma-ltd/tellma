@@ -146,7 +146,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     return (this.isScreenMode && this.route.snapshot.paramMap.get('id') === 'new') || (this.isPopupMode && this.idString === 'new');
   }
 
-  // public invoke(f: () => {}) {
-  //   return f.
-  // }
+  public get showPreferredLanguage(): boolean {
+    return !!this.ws.settings.SecondaryLanguageId || !!this.ws.settings.TernaryLanguageId;
+  }
 }

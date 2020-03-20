@@ -89,13 +89,13 @@
 
   <!-- Preferred Language -->
   <t-form-group class="t-form-group" [label]="'User_PreferredLanguage' | translate"
-    [serverErrors]="model?.serverErrors?.PreferredLanguage">
+    [serverErrors]="model?.serverErrors?.PreferredLanguage" *ngIf="showPreferredLanguage">
     <div *ngIf="!isEdit">
       <t-restricted [metadata]="model?.EntityMetadata?.PreferredLanguage">
         {{ languageLookup(model?.PreferredLanguage) | translate }}
       </t-restricted>
     </div>
-    <t-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices" required></t-selector>
+    <t-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices"></t-selector>
   </t-form-group>
 
   <!-- Last Activity -->

@@ -1021,29 +1021,11 @@
   <data name="Line" xml:space="preserve">
     <value>سطر</value>
   </data>
-  <data name="Line_Agent" xml:space="preserve">
-    <value>الذمة</value>
-  </data>
-  <data name="Line_Currency" xml:space="preserve">
-    <value>العملة</value>
-  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>التعريف</value>
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>المستند</value>
-  </data>
-  <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>المبلغ</value>
-  </data>
-  <data name="Line_Quantity" xml:space="preserve">
-    <value>الكمية</value>
-  </data>
-  <data name="Line_Resource" xml:space="preserve">
-    <value>المورد</value>
-  </data>
-  <data name="Line_Unit" xml:space="preserve">
-    <value>الوحدة</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>أسطر</value>

@@ -10,6 +10,8 @@ export interface RequiredSignature extends Entity {
     SignedById?: number;
     SignedAt?: string;
     OnBehalfOfUserId?: number;
+    LastUnsignedState?: number;
+    LastNegativeState?: number;
     CanSign?: boolean;
     ProxyRoleId?: number;
     CanSignOnBehalf?: boolean;

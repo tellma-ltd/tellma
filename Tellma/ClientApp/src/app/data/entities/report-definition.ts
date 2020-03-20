@@ -205,6 +205,8 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'sitemap',
                         'chart-pie',
                         'chart-line',
+                        'chart-bar',
+                        'chart-area',
                         'bars',
                         'coins',
                         'landmark',
@@ -226,6 +228,8 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'user-tag',
                         'user-shield',
                         'book',
+                        'project-diagram',
+                        'shopping-cart',
 
                         'camera',
                         'camera-retro',

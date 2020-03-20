@@ -7,6 +7,7 @@ $gray-500: #adb5bd;
 $gray-600: #6c757d;
 $gray-650: #5a636a;
 $gray-700: #495057;
+$gray-750: #3E454B;
 $gray-800: #343a40;
 $gray-900: #212529;
 
@@ -560,12 +561,16 @@ input.t-h2,
   font-size: 80%;
 }
 
+// .t-studio-section {
+//   background-color: $gray-700;
+// }
+
 .t-studio-section-header {
   border-bottom: 1px solid $gray-800;
   border-top: 1px solid $gray-800;
   margin-top: -1px;
   padding: 0.5rem;
-  background-color: $gray-700;
+  background-color: $gray-750;
 }
 .t-studio-section-header:hover {
   background-color: $gray-650;

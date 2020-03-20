@@ -6,7 +6,7 @@ import { ActivatedRoute, Params, Router, ParamMap } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse, EntitiesResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
@@ -297,7 +297,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         // Inactive
-        const urlInactive = params.get('inactive') === 'true';
+        const urlInactiveString = params.get('inactive');
+        const urlInactive = !!urlInactiveString ? (urlInactiveString.toString() === 'true') : false;
         if (urlInactive !== !!this.state.inactive) {
           this.state.inactive = urlInactive;
           hasChanged = true;
@@ -317,8 +318,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     };
 
-    this._subscriptions.add(this.route.paramMap.subscribe(handleUrlStateChange));
-    // handleUrlStateChange(this.route.snapshot.paramMap);
+    this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleUrlStateChange));
+    handleUrlStateChange(this.route.snapshot.paramMap);
   }
 
   ngOnDestroy() {
@@ -411,7 +412,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     } else {
       const top = DEFAULT_PAGE_SIZE;
-      const skip = s.skip;
+      const skipParam = s.skip;
       const orderby = isTree ? 'Node' : s.orderby;
       const search = s.search;
 
@@ -428,7 +429,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // Retrieve the entities
       obs$ = this.crud.get({
         top,
-        skip,
+        skip: skipParam,
         orderby,
         search,
         select,

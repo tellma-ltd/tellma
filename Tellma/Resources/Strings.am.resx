@@ -1021,29 +1021,11 @@
   <data name="Line" xml:space="preserve">
     <value>መሥመር</value>
   </data>
-  <data name="Line_Agent" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Line_Currency" xml:space="preserve">
-    <value>ገንዘብ</value>
-  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>መግለጫ</value>
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>የሰነድ</value>
-  </data>
-  <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>መጠን</value>
-  </data>
-  <data name="Line_Quantity" xml:space="preserve">
-    <value>ብዛት</value>
-  </data>
-  <data name="Line_Resource" xml:space="preserve">
-    <value>ምንጭ</value>
-  </data>
-  <data name="Line_Unit" xml:space="preserve">
-    <value>መለኪያ</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>መስመሮች</value>

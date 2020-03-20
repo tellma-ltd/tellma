@@ -1021,29 +1021,11 @@
   <data name="Line" xml:space="preserve">
     <value>线</value>
   </data>
-  <data name="Line_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Line_Currency" xml:space="preserve">
-    <value>货币</value>
-  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>定义</value>
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>文献</value>
-  </data>
-  <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>量</value>
-  </data>
-  <data name="Line_Quantity" xml:space="preserve">
-    <value>数量</value>
-  </data>
-  <data name="Line_Resource" xml:space="preserve">
-    <value>资源</value>
-  </data>
-  <data name="Line_Unit" xml:space="preserve">
-    <value>单元</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>行</value>

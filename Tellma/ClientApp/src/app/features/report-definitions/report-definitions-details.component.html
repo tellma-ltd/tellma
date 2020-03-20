@@ -135,7 +135,7 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="dataSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2" [class.d-none]="!showSection('Data')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Data')">
 
                     <!-- Summary/Details -->
                     <div class="form-group">
@@ -359,7 +359,7 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="filterSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2" [class.d-none]="!showSection('Filter')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Filter')">
 
                     <!-- Filter -->
                     <div class="form-group" [class.is-invalid]="invalid(filter, model.serverErrors?.Filter)">
@@ -416,7 +416,7 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="chartSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2" [class.d-none]="!showSection('Chart')" *ngIf="model.Type === 'Summary'">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')" *ngIf="model.Type === 'Summary'">
 
                     <!-- Chart -->
                     <div class="form-group" [class.is-invalid]="invalid(chart, model.serverErrors?.Chart)">
@@ -453,7 +453,7 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="titleSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2" [class.d-none]="!showSection('Title')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
                     <!-- Id -->
                     <div class="form-group" [class.is-invalid]="invalid(id, model.serverErrors?.Id)">
                         <label class="small" for="id">{{ 'Id' }}</label>
@@ -548,7 +548,7 @@
                         *ngIf="mainMenuSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2" [class.d-none]="!showSection('MainMenu')">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('MainMenu')">
 
                     <!-- Show In Main Menu -->
                     <div class="custom-control custom-checkbox">

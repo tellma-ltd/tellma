@@ -1021,29 +1021,11 @@
   <data name="Line" xml:space="preserve">
     <value>Line</value>
   </data>
-  <data name="Line_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="Line_Currency" xml:space="preserve">
-    <value>Currency</value>
-  </data>
   <data name="Line_Definition" xml:space="preserve">
     <value>Definition</value>
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>Document</value>
-  </data>
-  <data name="Line_MonetaryValue" xml:space="preserve">
-    <value>Amount</value>
-  </data>
-  <data name="Line_Quantity" xml:space="preserve">
-    <value>Quantity</value>
-  </data>
-  <data name="Line_Resource" xml:space="preserve">
-    <value>Resource</value>
-  </data>
-  <data name="Line_Unit" xml:space="preserve">
-    <value>Unit</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>Lines</value>
