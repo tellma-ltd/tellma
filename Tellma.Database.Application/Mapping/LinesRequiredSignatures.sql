@@ -95,7 +95,7 @@ RETURN (
 		AND SignedById IS NULL) AS LastUnsignedState,
 		-(SELECT MAX(ABS(ToState)) FROM AvailableSignatures
 		WHERE LineId = S.LineId AND ABS(ToState) < ABS(S.ToState) AND ToState < 0
-		AND SignedById IS NULL) AS LastNegativeState,
+		AND SignedById IS NOT NULL) AS LastNegativeState,
 		CanSign, ProxyRoleId, CanSignOnBehalf, ReasonId, ReasonDetails
 	FROM AvailableSignatures S
 );
