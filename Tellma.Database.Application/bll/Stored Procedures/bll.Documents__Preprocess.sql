@@ -22,6 +22,7 @@ BEGIN
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
 	DECLARE @PreprocessedLines dbo.LineList, @PreprocessedEntries dbo.EntryList;
+	DECLARE @L [dbo].[LineList], @E [dbo].EntryList;
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	Declare @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -36,34 +37,174 @@ BEGIN
 	-----
 	SELECT * FROM @ProcessedWideLines;
 	';
-	-- C#: Fill entries from Document header, if LineDefinitionColumns dictates it
-	-- SQL prevents running this code since Entries is READONLY
-	--UPDATE E
-	--	SET E.AgentId = (SELECT AgentId FROM @Documents WHERE [Index] = E.DocumentIndex)
-	--FROM @Entries E
-	--JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.DocumentIndex
-	--JOIN @Documents D ON L.[DocumentIndex] = D.[Index]
-	--JOIN dbo.LineDefinitionColumns LDC ON L.DefinitionId = LDC.LineDefinitionId AND E.[Index] = LDC.[EntryIndex]
-	--WHERE D.AgentIsCommon = 1 AND LDC.ColumnName = N'AgentId' AND LDC.[InheritsFromHeader] = 1
-
+	INSERT INTO @L SELECT * FROM @Lines;
+	INSERT INTO @E SELECT * FROM @Entries;
+BEGIN --  Overwrite input with DB data that is read only
+	UPDATE E
+	SET E.CurrencyId = BE.CurrencyId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'CurrencyId';
+	UPDATE E
+	SET E.AgentId = BE.AgentId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'AgentId';
+	UPDATE E
+	SET E.ResourceId = BE.ResourceId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'ResourceId';
+	UPDATE E
+	SET E.AgentId = BE.AgentId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'AgentId';
+	UPDATE E
+	SET E.CenterId = BE.CenterId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'CenterId';
+	UPDATE E
+	SET E.AgentId = BE.AgentId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'AgentId';
+	UPDATE E
+	SET E.DueDate = BE.DueDate
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'DueDate';
+	UPDATE E
+	SET E.MonetaryValue = BE.MonetaryValue
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'MonetaryValue';
+	UPDATE E
+	SET E.Quantity = BE.Quantity
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'Quantity';
+	UPDATE E
+	SET E.UnitId = BE.UnitId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'UnitId';
+	UPDATE E
+	SET E.Time1 = BE.Time1
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'Time1';
+	UPDATE E
+	SET E.Time2 = BE.Time2
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'Time2';
+	UPDATE E
+	SET E.ExternalReference = BE.ExternalReference
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'ExternalReference';
+	UPDATE E
+	SET E.AdditionalReference = BE.AdditionalReference
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'AdditionalReference';
+	UPDATE E
+	SET E.NotedAgentId = BE.NotedAgentId
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'NotedAgentId';
+	UPDATE E
+	SET E.NotedAgentName = BE.NotedAgentName
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'NotedAgentName';
+	UPDATE E
+	SET E.NotedAmount = BE.NotedAmount
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'NotedAmount';
+	UPDATE E
+	SET E.NotedDate = BE.NotedDate
+	FROM @E E
+	JOIN dbo.Entries BE ON E.Id = BE.Id
+	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
+	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
+	WHERE LDC.ReadOnlyState <= BL.[State]
+	AND LDC.ColumnName = N'NotedDate';
+END
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
-	SELECT DISTINCT DefinitionId FROM @Lines
+	SELECT DISTINCT DefinitionId FROM @L
 	WHERE DefinitionId IN (
 		SELECT [Id] FROM dbo.LineDefinitions
 		WHERE [Script] IS NOT NULL
 	);
 	-- Copy lines and entries with no script as they are
-	INSERT INTO @PreprocessedLines SELECT * FROM @Lines WHERE DefinitionId NOT IN (SELECT [Id] FROM @ScriptLineDefinitions)
+	INSERT INTO @PreprocessedLines
+	SELECT * FROM @L WHERE DefinitionId NOT IN (SELECT [Id] FROM @ScriptLineDefinitions)
 	INSERT INTO @PreprocessedEntries
-	SELECT E.* FROM @Entries E
+	SELECT E.*
+	FROM @E E
 	JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	-- Populate PreprocessedLines and PreprocessedEntries using script
 	IF EXISTS (SELECT * FROM @ScriptLineDefinitions)
 	BEGIN
-		INSERT INTO @ScriptLines SELECT * FROM @Lines WHERE DefinitionId IN (SELECT [Id] FROM @ScriptLineDefinitions)
+		INSERT INTO @ScriptLines SELECT * FROM @L WHERE DefinitionId IN (SELECT [Id] FROM @ScriptLineDefinitions)
 		INSERT INTO @ScriptEntries
-		SELECT E.* FROM @Entries E
+		SELECT E.* FROM @E E
 		JOIN @ScriptLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		-- Flatten lines/entries
 		INSERT INTO @ScriptWideLines--** causes nested INSERT EXEC
@@ -89,7 +230,6 @@ BEGIN
 		INSERT INTO @PreprocessedEntries	
 		EXEC bll.WideLines__Unpivot @PreprocessedWideLines
 	END
-
 	-- Copy information from Line definitions to Entries
 	UPDATE E
 	SET
@@ -100,7 +240,6 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> N'ManualLine';
-
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
@@ -114,7 +253,6 @@ BEGIN
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE L.DefinitionId = N'ManualLine';
-
 	-- for all lines, Get currency and identifier from Resources if available.
 	UPDATE E 
 	SET
@@ -124,7 +262,6 @@ BEGIN
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Resources R ON E.ResourceId = R.Id;
-
 	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
 	WITH RU AS (
 		SELECT [ResourceId], MIN(UnitId) AS UnitId
@@ -136,11 +273,10 @@ BEGIN
 	SET E.[UnitId] = RU.UnitId
 	FROM @PreprocessedEntries E
 	JOIN RU ON E.ResourceId = RU.ResourceId;
-
 	-- When currency is null, set it to functional currency
 	--UPDATE @PreprocessedEntries
 	--SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
-	
+
 	DECLARE @BalanceSheetRoot HIERARCHYID = (
 			SELECT [Node] FROM dbo.AccountTypes
 			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
@@ -157,19 +293,6 @@ BEGIN
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
-
-	-- C#, for financial amounts in functional currency, the value is known
-	--UPDATE E 
-	--SET
-	--	[Value]		= [MonetaryValue]
-	--FROM @PreprocessedEntries E
-	--WHERE
-	--	[CurrencyId] = @FunctionalCurrencyId
-	--	AND (
-	--		[Value] IS NULL OR 
-	--		[Value] IS NOT NULL AND [Value] <> [MonetaryValue]
-	--	);
-
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ER.[Rate] * E.[MonetaryValue]
@@ -220,9 +343,7 @@ BEGIN
 		SELECT *
 		FROM @PreprocessedEntries
 		FOR JSON PATH
-	);
-	
-	--PRINT N'bll.Documents__Preprocess: PreprocessedEntriesJson = ' + ISNULL(@PreprocessedEntriesJson, N'');
+	);	
 	SELECT * FROM @PreprocessedEntries;
 END
 

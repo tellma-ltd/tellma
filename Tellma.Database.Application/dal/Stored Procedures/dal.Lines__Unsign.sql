@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Lines__Unsign]
-	@Ids [dbo].[IdList] READONLY
+-- TODO: pass signature Ids as input instead of Line ids
+	@Ids [dbo].[IdList] READONLY -- currently, these are Ids of Lines 
 AS
 BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -7,14 +8,18 @@ BEGIN
 
 	-- For last signed by same user, soft delete the signature
 	UPDATE dbo.[LineSignatures]
-	SET [RevokedAt] = @Now
+	SET [RevokedAt] = @Now,
+		[RevokedById] = @UserId
 	WHERE [SignedAt] IN (
 		SELECT Max([SignedAt]) FROM dbo.[LineSignatures]
 		WHERE [LineId] IN (SELECT [Id] FROM @Ids)
+		AND RevokedById IS NULL
 	)
 	AND [LineId] IN (SELECT [Id] FROM @Ids)
 	AND [OnBehalfOfUserId] = @UserId;
 
+
+	-- TODO: Move this logic to dal.Lines__UnsignAndRefresh to look similar to SignAndRefresh
 	WITH NewLineStates AS
 	(
 		SELECT LineId, ToState

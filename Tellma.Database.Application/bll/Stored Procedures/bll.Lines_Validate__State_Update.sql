@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Update]
+-- @Lines and @Entries are read from the database just before calling.
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@ToState SMALLINT,
@@ -113,7 +114,7 @@ BEGIN
 	WHERE A.HasResource = 1 AND E.ResourceId IS NULL
 END
 	-- No deprecated account, for any positive state
-	IF @ToState > 0
+IF @ToState > 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
@@ -124,8 +125,6 @@ END
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
 	
-	SELECT TOP (@Top) * FROM @ValidationErrors;
-
 	---- Some Entry Definitions with some Account Types require an Entry Type
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	--SELECT TOP (@Top)
@@ -179,18 +178,54 @@ END
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
 	AND L.[DefinitionId] = N'ManualLine';
-	
-	
-	-- If Account HasResource = 1, then ResourceId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].ResourceId',
-		N'Error_TheResourceIsRequired'
-	FROM @Entries E
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	WHERE (E.[ResourceId] IS NULL)
-	AND (A.[HasResource] = 1) AND L.[DefinitionId] <> N'ManualLine';
+
 
 	*/
+
+-- Not allowed to cause negative balance in conservative accounts
+IF @ToState = 3 
+BEGIN
+	DECLARE @InventoriesTotal HIERARCHYID = 
+		(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'InventoriesTotal');
+	WITH
+	ConservativeAccounts AS (
+		SELECT [Id] FROM dbo.[Accounts] A
+		WHERE A.[AccountTypeId] IN (
+			SELECT [Id] FROM dbo.[AccountTypes]
+			WHERE [Node].IsDescendantOf(@InventoriesTotal) = 1
+		)
+		AND [Id] IN (SELECT [Id] FROM @Entries)
+	),
+	OffendingEntries AS (
+		SELECT MAX([Id]) AS [Index],
+			AccountId,
+			ResourceId,
+			AgentId,
+			DueDate,
+			--[AccountIdentifier],
+			--[ResourceIdentifier],
+			SUM([NormalizedQuantity]) AS [Quantity]			
+		FROM map.DetailsEntries() E
+		WHERE AccountId IN (SELECT [Id] FROM ConservativeAccounts)
+		GROUP BY
+			AccountId,
+			ResourceId,
+			AgentId,
+			DueDate--,
+			--[AccountIdentifier],
+			--[ResourceIdentifier]
+		HAVING
+			SUM([NormalizedQuantity]) < 0
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	SELECT TOP (@Top)
+		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
+		N'Error_TheResource0Account1Shortage2',
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource], 
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account],
+		D.[Quantity] -- 
+	FROM OffendingEntries D
+	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
+	JOIN dbo.Resources R ON A.ResourceId = R.Id
+END
+	SELECT TOP (@Top) * FROM @ValidationErrors;
