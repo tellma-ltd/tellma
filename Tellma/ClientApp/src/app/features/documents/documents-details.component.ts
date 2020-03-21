@@ -1164,10 +1164,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }
 
         if (!currentHash.lineIds) {
-          currentHash.lineIds = [signature.LineId];
-        } else {
-          currentHash.lineIds.push(signature.LineId);
+          currentHash.lineIds = [];
         }
+
+        if (!currentHash.signatureIds) {
+          currentHash.signatureIds = [];
+        }
+
+        currentHash.lineIds.push(signature.LineId);
+        currentHash.signatureIds.push(signature.SignatureId);
 
         if (newGroup) {
           // The signature clone will represent this group
@@ -1212,6 +1217,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return [];
     }
 
+    return this.getHash(requiredSignature).lineIds;
+  }
+
+  public signatureIds(requiredSignature: RequiredSignature): number[] {
+    if (!requiredSignature) {
+      return [];
+    }
+
+    return this.getHash(requiredSignature).signatureIds;
+  }
+
+  private getHash(requiredSignature: RequiredSignature): HashTable {
+    if (!requiredSignature) {
+      return null;
+    }
+
     let currentHash: HashTable = this._requiredSignaturesLineIdsHash;
     for (const prop of this._requiredSignatureProps) {
       const value = requiredSignature[prop];
@@ -1222,7 +1243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     }
 
-    return currentHash.lineIds;
+    return currentHash;
   }
 
   public onSignYes(signature: RequiredSignature): void {
@@ -1922,7 +1943,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Post
 
   public showPost(doc: Document, _: RequiredSignature[]): boolean {
-    return !!doc && !doc.PostingState && this.hasPermissionToUpdateState(doc);
+    return !!doc && !doc.PostingState;
   }
 
   public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -1951,8 +1972,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Cancel
 
-  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !!doc && !doc.PostingState && this.hasPermissionToUpdateState(doc);
+  public showCancel(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !doc.PostingState;
   }
 
   public disableCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -2043,4 +2064,5 @@ interface HashTable {
   undefined?: HashTable;
 
   lineIds?: number[];
+  signatureIds?: number[];
 }
