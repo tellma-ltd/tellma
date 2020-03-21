@@ -38,7 +38,7 @@ RETURN (
 	AvailableSignatures AS
 	(
 		SELECT
-			RS.[LineId],
+			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
@@ -59,7 +59,7 @@ RETURN (
 		WHERE RS.RuleType = N'ByRole'
 		UNION
 		SELECT
-			RS.[LineId],
+			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
@@ -76,7 +76,8 @@ RETURN (
 		WHERE RS.RuleType IN(N'ByUser', N'ByAgent')
 		UNION
 		SELECT
-			RS.[LineId], COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
+			RS.[LineId], LS.Id AS LineSignatureId,
+			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
 			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(1 AS BIT) AS CanSign,
@@ -88,7 +89,7 @@ RETURN (
 		WHERE RS.RuleType = N'Public'
 	)
 	SELECT
-		LineId, ToState, RuleType, RoleId, UserId, AgentId,
+		LineId, LineSignatureId, ToState, RuleType, RoleId, UserId, AgentId,
 		SignedById, SignedAt, OnBehalfOfUserId,
 		(SELECT MIN(ToState) FROM AvailableSignatures
 		WHERE LineId = S.LineId AND ToState < S.ToState AND ToState > 0
