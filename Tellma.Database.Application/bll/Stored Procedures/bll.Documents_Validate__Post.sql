@@ -5,8 +5,26 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @WflessLines LineList, @WflessEntries EntryList;
-	-- Document Date not before last archive date (C#)
+	DECLARE @WflessLines LineList, @WflessEntries EntryList, @ArchiveDate DATE;
+	
+	-- Posting Date not null
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentPostingDateIsRequired'
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	WHERE D.[PostingDate] IS NULL;
+
+	-- Posting  Date not before last archive date
+	SELECT @ArchiveDate = [ArchiveDate] FROM dbo.Settings;
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_DocumentPostingDateMustBeAfterArchiveDate'
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	WHERE D.[PostingDate] <= @ArchiveDate;
 
 	-- Cannot post it if it is not draft
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
