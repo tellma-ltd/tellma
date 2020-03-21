@@ -310,7 +310,7 @@ SET NOCOUNT ON;
 		UPDATE dbo.LineDefinitions
 		Set HasWorkflow = 
 		CASE
-			WHEN [Id] NOT IN (
+			WHEN [Id] IN (
 				SELECT [LineDefinitionId]
 				FROM dbo.[Workflows]
 				WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures])

@@ -53,8 +53,8 @@
     <!-- Uncancel -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUncancel(model, extras?.RequiredSignatures)">
-        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
-            (click)="!isEdit && onUncancel(model)" [disabled]="!hasPermissionToUpdateState(model)">
+        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="!isEdit && onUncancel(model)"
+            [disabled]="!hasPermissionToUpdateState(model)">
             <fa-icon icon="undo"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
         </button>
@@ -63,7 +63,7 @@
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
     <div class="w-100 t-document-header d-flex justify-content-end">
-        
+
         <!-- +ve states on wide screen -->
         <ng-container *ngIf="isPositiveState(model); else negativeStates">
             <div class="t-flow-chart small d-none d-lg-block">
@@ -132,16 +132,9 @@
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
             <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
         </t-restricted>
-        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.PostingDate" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="true">
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.PostingDate" [ngModelOptions]="{ updateOn: 'blur' }">
         </t-date-picker>
     </t-form-group>
-
-    <!-- TODO: Remove -->
-    <!-- <t-form-group-cell class="t-form-group" [label]="'Document_Agent' | translate">
-        <t-agents-picker [required]="isEdit" [definitionIds]="['customers']" [(ngModel)]="model.AgentId">
-        </t-agents-picker>
-    </t-form-group-cell> -->
 
     <!-- Clearance -->
     <t-form-group class="t-form-group" [label]="'Document_Clearance' | translate"

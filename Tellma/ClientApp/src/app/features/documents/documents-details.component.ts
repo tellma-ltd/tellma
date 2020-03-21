@@ -252,8 +252,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (this.definitionId === 'manual-journal-vouchers') {
       result.MemoIsCommon = true;
       result.Memo = this.initialText;
+      result.PostingDate = toLocalDateISOString(new Date());
     } else {
       const def = this.definition;
+      if (!def.CanReachState4) {
+        result.PostingDate = toLocalDateISOString(new Date());
+      }
+
       result.MemoIsCommon = false; // TODO
       if (result.MemoIsCommon) {
         result.Memo = this.initialText;
@@ -1917,12 +1922,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Post
 
   public showPost(doc: Document, _: RequiredSignature[]): boolean {
-    return !doc || !doc.PostingState;
+    return !!doc && !doc.PostingState && this.hasPermissionToUpdateState(doc);
   }
 
   public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
 
     return !doc || !doc.Id || // Missing document
+      // Missing posting date
+      !doc.PostingDate ||
       // OR missing permissions
       !this.hasPermissionToUpdateState(doc) ||
       // OR missing signatures
@@ -1935,6 +1942,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.missingSignatures(doc, requiredSignatures)) {
       return this.translate.instant('Error_DocumentIsMissingSignatures');
+    } else if (!!doc && !doc.PostingDate) {
+      return this.translate.instant('Error_ThePostingDateIsRequiredForPosting');
     }
 
     return null;
@@ -1943,9 +1952,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Cancel
 
   public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !doc || !doc.PostingState;
-    // return !!doc && !!doc.Id && doc.PostingState === 0 &&
-    //   (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
+    return !!doc && !doc.PostingState && this.hasPermissionToUpdateState(doc);
   }
 
   public disableCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -1962,7 +1969,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!this.hasPermissionToUpdateState(doc)) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.pendingLines(doc, requiredSignatures)) {
-      return this.translate.instant('Error_SomeٍSignaturesArePending');
+      return this.translate.instant('Error_AllLinesMustBeInNegativeState');
     }
 
     return null;
