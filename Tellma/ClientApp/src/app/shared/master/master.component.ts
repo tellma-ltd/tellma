@@ -218,7 +218,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this._parentIdsFromUserSettings = null;
 
     // use the default
-    this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
+    this.searchView = (!!window && window.innerWidth >= 992) ? SearchView.table : SearchView.tiles;
 
     // default display mode
     let displayMode: MasterDisplayMode = this.enableTreeView ?

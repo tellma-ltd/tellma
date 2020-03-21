@@ -1172,7 +1172,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }
 
         currentHash.lineIds.push(signature.LineId);
-        currentHash.signatureIds.push(signature.SignatureId);
+        if (!!signature.LineSignatureId) {
+          currentHash.signatureIds.push(signature.LineSignatureId);
+        }
 
         if (newGroup) {
           // The signature clone will represent this group
@@ -1300,7 +1302,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     modalRef.result.then(
       (confirmed: boolean) => {
         if (confirmed) {
-          this.documentsApi.unsign(this.lineIds(signature), {
+          this.documentsApi.unsign(this.signatureIds(signature), {
             returnEntities: true,
             expand: this.expand,
             select: undefined

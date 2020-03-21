@@ -119,18 +119,38 @@ namespace Tellma.Controllers
                 // Parse parameters
                 var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var returnEntities = args.ReturnEntities ?? false;
                 var idsArray = ids.ToArray();
 
-                // TODO: Check user permissions
-                // await CheckActionPermissions("IsActive", idsArray);
+                // User permissions
+                // TODO: Check the user can read the document
+                await CheckActionPermissions("Read", idsArray);
+
+                // C# Validation 
+                // Goes here
 
                 // Execute and return
                 using var trx = ControllerUtilities.CreateTransaction();
-                // TODO: Validate assign
 
+                // Validate
+                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+                var errors = await _repo.Documents_Validate__Assign(
+                    ids,
+                    args.AssigneeId,
+                    args.Comment,
+                    top: remainingErrorCount
+                    );
+
+                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+                if (!ModelState.IsValid)
+                {
+                    throw new UnprocessableEntityException(ModelState);
+                }
+
+                // Actual Assignment
                 await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
 
-                if (args.ReturnEntities ?? false)
+                if (returnEntities)
                 {
                     var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
 
@@ -147,7 +167,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("sign-lines")]
-        public async Task<ActionResult<EntitiesResponse<Document>>> SignLines([FromBody] List<int> ids, [FromQuery] SignArguments args)
+        public async Task<ActionResult<EntitiesResponse<Document>>> SignLines([FromBody] List<int> lineIds, [FromQuery] SignArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -155,13 +175,9 @@ namespace Tellma.Controllers
                 var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
                 var returnIds = args.ReturnEntities ?? false;
-                var idsArray = ids.ToArray();
-
-                // TODO: Check user permissions
-                // await CheckActionPermissions("IsActive", idsArray);
 
                 // C# Validation 
-                // TODO
+                // Goes here
 
                 // Execute and return
                 using var trx = ControllerUtilities.CreateTransaction();
@@ -169,7 +185,7 @@ namespace Tellma.Controllers
                 // Validate
                 int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
                 var errors = await _repo.Lines_Validate__Sign(
-                    ids,
+                    lineIds,
                     args.OnBehalfOfUserId,
                     args.RuleType,
                     args.RoleId,
@@ -185,7 +201,7 @@ namespace Tellma.Controllers
 
                 // Sign
                 var documentIds = await _repo.Lines__SignAndRefresh(
-                    ids,
+                    lineIds,
                     args.ToState,
                     args.ReasonId,
                     args.ReasonDetails,
@@ -212,7 +228,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("unsign-lines")]
-        public async Task<ActionResult<EntitiesResponse<Document>>> UnsignLines([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<ActionResult<EntitiesResponse<Document>>> UnsignLines([FromBody] List<int> signatureIds, [FromQuery] ActionArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -220,20 +236,16 @@ namespace Tellma.Controllers
                 var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
                 var returnIds = args.ReturnEntities ?? false;
-                var idsArray = ids.ToArray();
-
-                // TODO: Check user permissions
-                // await CheckActionPermissions("IsActive", idsArray);
 
                 // C# Validation 
-                // TODO
+                // Goes here
 
                 // Execute and return
                 using var trx = ControllerUtilities.CreateTransaction();
 
                 // Validate
                 int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-                var errors = await _repo.Lines_Validate__Unsign(ids, top: remainingErrorCount);
+                var errors = await _repo.LineSignatures_Validate__Delete(signatureIds, top: remainingErrorCount);
                 ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
 
                 if (!ModelState.IsValid)
@@ -242,7 +254,7 @@ namespace Tellma.Controllers
                 }
 
                 // Unsign
-                var documentIds = await _repo.Lines__UnsignAndRefresh(ids, returnIds: returnIds);
+                var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnIds);
                 if (returnIds)
                 {
                     var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);

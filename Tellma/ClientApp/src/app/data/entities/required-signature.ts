@@ -7,7 +7,7 @@ export interface RequiredSignature extends Entity {
     RoleId?: number;
     AgentId?: number;
     UserId?: number;
-    SignatureId?: number; // Not grouped by
+    LineSignatureId?: number; // Not grouped by
     SignedById?: number;
     SignedAt?: string;
     OnBehalfOfUserId?: number;

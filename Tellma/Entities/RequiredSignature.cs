@@ -14,6 +14,7 @@ namespace Tellma.Entities
         public int? RoleId { get; set; }
         public int? AgentId { get; set; }
         public int? UserId { get; set; }
+        public int? LineSignatureId { get; set; }
         public int? SignedById { get; set; }
 
         [Display(Name = "Signature_SignedAt")]

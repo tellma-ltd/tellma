@@ -3706,6 +3706,7 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
@@ -3762,6 +3763,7 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
@@ -3883,6 +3885,7 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -3946,10 +3949,11 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<IEnumerable<ValidationError>> Lines_Validate__Unsign(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> LineSignatures_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -3963,13 +3967,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Lines_Validate__Unsign)}]";
+            cmd.CommandText = $"[bll].[{nameof(LineSignatures_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<IEnumerable<int>> Lines__UnsignAndRefresh(IEnumerable<int> ids, bool returnIds)
+        public async Task<IEnumerable<int>> LineSignatures__DeleteAndRefresh(IEnumerable<int> ids, bool returnIds)
         {
             var result = new List<int>();
 
@@ -3989,7 +3993,7 @@ namespace Tellma.Data
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Lines__UnsignAndRefresh)}]";
+                cmd.CommandText = $"[dal].[{nameof(LineSignatures__DeleteAndRefresh)}]";
 
                 // Execute     
                 if (returnIds)
@@ -4009,25 +4013,27 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                TypeName = $"[dbo].[IdList]",
+                TypeName = $"[dbo].[IndexedIdList]",
                 SqlDbType = SqlDbType.Structured
             };
 
             cmd.Parameters.Add(idsTvp);
             cmd.Parameters.Add("@AssigneeId", assigneeId);
             cmd.Parameters.Add("@Comment", comment);
+            cmd.Parameters.Add("@Top", top);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents_Validate__Assign)}]";
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Assign)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
@@ -4037,6 +4043,7 @@ namespace Tellma.Data
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
@@ -4099,9 +4106,9 @@ namespace Tellma.Data
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
         {
-            // TODO
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
+
             // Parameters
             DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)

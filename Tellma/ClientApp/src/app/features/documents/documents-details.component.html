@@ -889,7 +889,7 @@
                 <div class="row mx-0"
                     *ngIf="!isEdit && requiredSignaturesForLineDef(model, lineDefId, extras)?.length > 0">
                     <div class="col-12 mt-3">
-                        <span class="small font-weight-bold">{{ 'Document_Signatures' | translate }}</span>
+                        <span class="small font-weight-bold">{{ 'SignaturesAndStamps' | translate }}</span>
                     </div>
                     <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3 mb-1"
                         *ngFor="let signature of requiredSignaturesForLineDef(model, lineDefId, extras)">
@@ -983,7 +983,7 @@
                                         [itemId]="signature.RoleId">
                                         {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
                                     </t-view-link>
-                                    <t-view-link *ngIf="signature.RuleType === 'ByAgent'" link="../../../agents"
+                                    <t-view-link *ngIf="signature.RuleType === 'ByAgent'" [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
                                         [itemId]="signature.AgentId">
                                         {{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}
                                     </t-view-link>
