@@ -1,12 +1,13 @@
 import { Entity } from './base/entity';
 
 export interface RequiredSignature extends Entity {
-    LineId?: number;
+    LineId?: number; // Not grouped by
     ToState?: number;
     RuleType?: string;
     RoleId?: number;
     AgentId?: number;
     UserId?: number;
+    SignatureId?: number; // Not grouped by
     SignedById?: number;
     SignedAt?: string;
     OnBehalfOfUserId?: number;

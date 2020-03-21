@@ -252,8 +252,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (this.definitionId === 'manual-journal-vouchers') {
       result.MemoIsCommon = true;
       result.Memo = this.initialText;
+      result.PostingDate = toLocalDateISOString(new Date());
     } else {
       const def = this.definition;
+      if (!def.CanReachState4) {
+        result.PostingDate = toLocalDateISOString(new Date());
+      }
+
       result.MemoIsCommon = false; // TODO
       if (result.MemoIsCommon) {
         result.Memo = this.initialText;
@@ -1159,10 +1164,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         }
 
         if (!currentHash.lineIds) {
-          currentHash.lineIds = [signature.LineId];
-        } else {
-          currentHash.lineIds.push(signature.LineId);
+          currentHash.lineIds = [];
         }
+
+        if (!currentHash.signatureIds) {
+          currentHash.signatureIds = [];
+        }
+
+        currentHash.lineIds.push(signature.LineId);
+        currentHash.signatureIds.push(signature.SignatureId);
 
         if (newGroup) {
           // The signature clone will represent this group
@@ -1207,6 +1217,22 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return [];
     }
 
+    return this.getHash(requiredSignature).lineIds;
+  }
+
+  public signatureIds(requiredSignature: RequiredSignature): number[] {
+    if (!requiredSignature) {
+      return [];
+    }
+
+    return this.getHash(requiredSignature).signatureIds;
+  }
+
+  private getHash(requiredSignature: RequiredSignature): HashTable {
+    if (!requiredSignature) {
+      return null;
+    }
+
     let currentHash: HashTable = this._requiredSignaturesLineIdsHash;
     for (const prop of this._requiredSignatureProps) {
       const value = requiredSignature[prop];
@@ -1217,7 +1243,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     }
 
-    return currentHash.lineIds;
+    return currentHash;
   }
 
   public onSignYes(signature: RequiredSignature): void {
@@ -1917,12 +1943,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Post
 
   public showPost(doc: Document, _: RequiredSignature[]): boolean {
-    return !doc || !doc.PostingState;
+    return !!doc && !doc.PostingState;
   }
 
   public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
 
     return !doc || !doc.Id || // Missing document
+      // Missing posting date
+      !doc.PostingDate ||
       // OR missing permissions
       !this.hasPermissionToUpdateState(doc) ||
       // OR missing signatures
@@ -1935,6 +1963,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.missingSignatures(doc, requiredSignatures)) {
       return this.translate.instant('Error_DocumentIsMissingSignatures');
+    } else if (!!doc && !doc.PostingDate) {
+      return this.translate.instant('Error_ThePostingDateIsRequiredForPosting');
     }
 
     return null;
@@ -1942,10 +1972,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   // Cancel
 
-  public showCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
-    return !doc || !doc.PostingState;
-    // return !!doc && !!doc.Id && doc.PostingState === 0 &&
-    //   (!requiredSignatures || requiredSignatures.length === 0 || doc.Lines.every(e => e.State < 0));
+  public showCancel(doc: Document, _: RequiredSignature[]): boolean {
+    return !!doc && !doc.PostingState;
   }
 
   public disableCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -1962,7 +1990,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!this.hasPermissionToUpdateState(doc)) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.pendingLines(doc, requiredSignatures)) {
-      return this.translate.instant('Error_SomeٍSignaturesArePending');
+      return this.translate.instant('Error_AllLinesMustBeInNegativeState');
     }
 
     return null;
@@ -2036,4 +2064,5 @@ interface HashTable {
   undefined?: HashTable;
 
   lineIds?: number[];
+  signatureIds?: number[];
 }
