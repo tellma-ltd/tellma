@@ -70,7 +70,7 @@ SET NOCOUNT ON;
 -- TODO: validate that the CenterType is conformant with the AccountType
 --	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) VALUES(DEFAULT,DEFAULT,DEFAULT);
 	
-	CONTINUE;
+	--CONTINUE;
 	-- The Entry Type must be compatible with the LDE Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
@@ -119,7 +119,7 @@ SET NOCOUNT ON;
 	BEGIN
 		DELETE FROM @L; DELETE FROM @E;
 		INSERT INTO @L SELECT * FROM @Lines WHERE [Id] IN (SELECT [Id] FROM dbo.Lines WHERE [State] = @LineState);
-		INSERT INTO @E SELECT * FROM @Entries WHERE [LineId] IN (SELECT [Id] FROM @L);
+		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Update]
 		@Lines = @Lines, @Entries = @Entries, @ToState = @LineState;
