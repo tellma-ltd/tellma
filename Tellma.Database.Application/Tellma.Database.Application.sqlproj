@@ -548,6 +548,8 @@
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
     <Build Include="Mapping\map.ExchangeRates.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Update.sql" />
+    <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

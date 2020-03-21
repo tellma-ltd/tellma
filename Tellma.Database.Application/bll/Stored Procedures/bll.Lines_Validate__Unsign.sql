@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Unsign]
+-- TODO: Will pass signature ids instead of Line Ids
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -19,5 +20,6 @@ SET NOCOUNT ON;
 	WHERE (D.[PostingState] <> 0);
 
 	-- TODO: cannot unsign unless it was part of the last transition
+
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
