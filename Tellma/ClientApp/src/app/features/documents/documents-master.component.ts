@@ -180,7 +180,9 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this._filterDefinitionDocDef = def;
 
       const result = { ...filterDefinition };
-      if (def.CanReachState4) {
+      if (!def) {
+        // Leave it as is
+      } else if (def.CanReachState4) {
         result.State = result.State.filter((e: any) => e.state === 0 || def['CanReachState' + Math.abs(e.state)]);
       } else {
         delete result.State;
