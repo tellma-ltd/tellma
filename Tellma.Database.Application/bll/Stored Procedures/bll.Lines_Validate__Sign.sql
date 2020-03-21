@@ -18,10 +18,9 @@ SET NOCOUNT ON;
 	-- No inactive Resource, No inactive User
 
 	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
-
-	-- Must not sign a document that is already posted
+	-- Must not sign a document that is already posted/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
 			WHEN D.[PostingState] = 1 THEN N'Error_CannotSignPostedDocuments'
@@ -144,9 +143,7 @@ SET NOCOUNT ON;
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
 	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
 	FROM dbo.Lines L
---	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
 	WHERE L.[Id] IN (SELECT [ID] FROM @Ids) 
---	AND LD.HasWorkflow = 0;
 	INSERT INTO @Entries ([Index],[LineIndex],[DocumentIndex],[Id],
 	[Direction],[AccountId],[CurrencyId],[AgentId],[ResourceId],[CenterId],
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],

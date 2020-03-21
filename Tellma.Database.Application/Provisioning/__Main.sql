@@ -14,7 +14,6 @@
 	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
-IF @ProvisionData = N'0' RETURN;
 
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
@@ -77,6 +76,7 @@ IF @ProvisionData = N'0' RETURN;
 :r .\06_Accounts\a_LegacyTypes.sql
 :r .\06_Accounts\b_LegacyClassifications.sql
 :r .\06_Accounts\101_Accounts.sql
+
 --:r .\06_Accounts\105_Accounts.sql
 --:r .\07_Entries\101\101a_manual-journal-vouchers.sql
 --:r .\07_Entries\101\101b_cash-payment-vouchers.sql

@@ -52,6 +52,16 @@ SET NOCOUNT ON;
 	FROM @Documents FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
 	WHERE D.[PostingState] <> 0;
+	-- Must not delete a line not in draft state
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_CanOnlyDeleteDraftLines'
+	FROM @Documents FE
+	JOIN [dbo].[Lines] BL ON FE.[Id] = BL.[DocumentId]
+	LEFT JOIN @Lines L ON L.[Id] = BL.[Id]
+	WHERE BL.[State] <> 0 AND L.Id IS NULL;
+
 
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	--             Smart Screen Validation
@@ -59,14 +69,16 @@ SET NOCOUNT ON;
 	
 -- TODO: validate that the CenterType is conformant with the AccountType
 --	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) VALUES(DEFAULT,DEFAULT,DEFAULT);
-	-- The Entry Type must be compatible with the Account Type
+	
+	CONTINUE;
+	-- The Entry Type must be compatible with the LDE Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
 		N'Error_TheField0Value1IsIncompatible',
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName],
-		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS AccountType
+		dbo.fn_Localize([ETE].[Name], [ETE].[Name2], [ETE].[Name3]) AS EntryType
 	FROM @Entries E
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
@@ -96,4 +108,27 @@ SET NOCOUNT ON;
 	AND ATP.[IsResourceClassification] = 1
 	AND L.[DefinitionId] <> N'ManualLine';
 
+	-- verify that all required fields are available
+	DECLARE @LineState SMALLINT, @L LineList, @E EntryList;
+	SELECT @LineState = MIN([State])
+	FROM dbo.Lines
+	WHERE [State] > 0
+	AND [Id] IN (SELECT [Id] FROM @Lines)
+	
+	WHILE @LineState IS NOT NULL
+	BEGIN
+		DELETE FROM @L; DELETE FROM @E;
+		INSERT INTO @L SELECT * FROM @Lines WHERE [Id] IN (SELECT [Id] FROM dbo.Lines WHERE [State] = @LineState);
+		INSERT INTO @E SELECT * FROM @Entries WHERE [LineId] IN (SELECT [Id] FROM @L);
+		INSERT INTO @ValidationErrors
+		EXEC [bll].[Lines_Validate__State_Update]
+		@Lines = @Lines, @Entries = @Entries, @ToState = @LineState;
+
+		SET @LineState = (
+			SELECT MIN([State])
+			FROM dbo.Lines
+			WHERE [State] > @LineState
+			AND [Id] IN (SELECT [Id] FROM @Lines)
+		)
+	END
 	SELECT TOP (@Top) * FROM @ValidationErrors;
