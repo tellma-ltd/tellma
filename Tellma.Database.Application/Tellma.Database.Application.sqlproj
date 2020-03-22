@@ -285,7 +285,7 @@
     <Build Include="dal\Stored Procedures\dal.Action_ViewPrefix__Permissions.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
-    <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
+    <Build Include="api\Stored Procedures\api.GainLossOnExchange__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Save.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
