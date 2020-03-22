@@ -53,8 +53,8 @@
     <!-- Uncancel -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUncancel(model, extras?.RequiredSignatures)">
-        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="!isEdit && onUncancel(model)"
-            [disabled]="!hasPermissionToUpdateState(model)">
+        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
+            (click)="!isEdit && onUncancel(model)" [disabled]="!hasPermissionToUpdateState(model)">
             <fa-icon icon="undo"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Uncancel" | translate }}</span>
         </button>
@@ -62,7 +62,23 @@
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
-    <div class="w-100 t-document-header d-flex justify-content-end">
+    <div class="w-100 t-document-header d-flex justify-content-between">
+
+        <!-- Managerial/Accounting Toggle -->
+        <div class="btn-group btn-group-toggle border-right nav-tabs nav">
+            <label class="btn btn-sm btn-light t-pointer d-flex align-items-center px-3 nav-item"
+                [class.active]="isManagerial" (click)="onManagerialView()">
+                <input type="radio" name="displayMode">
+                <fa-icon icon="user-tie"></fa-icon>
+                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Managerial' | translate }}</span>
+            </label>
+            <label class="btn btn-sm btn-light t-pointer d-flex align-items-center px-3 nav-item"
+                [class.active]="isAccounting" (click)="onAccountingView()">
+                <input type="radio" name="displayMode">
+                <fa-icon icon="coins"></fa-icon>
+                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Accounting' | translate }}</span>
+            </label>
+        </div>
 
         <!-- +ve states on wide screen -->
         <ng-container *ngIf="isPositiveState(model); else negativeStates">
@@ -112,7 +128,6 @@
     </div>
 </ng-template>
 
-
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-extras="extras" let-isEdit="isEdit">
 
@@ -123,7 +138,6 @@
         <t-serial-editor *ngIf="isEdit && !isOriginalDocument" [(ngModel)]="model.SerialNumber"
             [ngModelOptions]="{ updateOn: 'blur' }" [codeWidth]="codeWidth" [prefix]="serialPrefix" required>
         </t-serial-editor>
-
     </t-form-group>
 
     <!-- Posting Date -->
@@ -177,858 +191,507 @@
     </t-form-group>
 
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true"
-        [activeId]="getActiveTab(model)" (activeIdChange)="onTabChange($event, isEdit)">
-        <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
+        [activeId]="getActiveTab(model)" (activeIdChange)="setActiveTab($event)">
+        <ng-container *ngIf="isManagerial">
+            <!-- Smart Tabs -->
+            <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
+                <a ngbNavLink>
+                    <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span
+                        class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <t-restricted [metadata]="model?.EntityMetadata?.Lines"
+                        [class.p-4]="model?.EntityMetadata?.Lines === 1">
+
+                        <!-- Smart Tab -->
+                        <ng-container *ngIf="lineDefId !== 'ManualLine'">
+
+                            <!-- Table -->
+                            <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
+                                [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model)"
+                                [columnTemplates]="columnTemplates(lineDefId, model, smartHeader, smartRow)"
+                                [onNewItem]="onNewSmartLineFactory(lineDefId)"
+                                (insert)="onInsertSmartLine($event, model)" (delete)="onDeleteSmartLine($event, model)">
+                            </t-table>
+
+                            <!-- Form -->
+                            <ng-container *ngIf="showAsForm(lineDefId, model)">
+                                <div class="row m-0 mt-2">
+                                    <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
+                                        <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model)">
+                                            <ng-container *ngTemplateOutlet="smartRow; context: { 
+                                                    item: lines(lineDefId, model)[0], 
+                                                    argument: colPath, 
+                                                    index: 0, 
+                                                    update: dummyUpdate, 
+                                                    isForm: true }">
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-template #noFormMessage>
+                                        <div class="px-3 text-muted font-italic" *ngIf="!isEdit">
+                                            {{ 'NotAdded' | translate }}
+                                        </div>
+                                    </ng-template>
+                                </div>
+
+                                <div class="col-12 py-1 px-3 d-flex" *ngIf="isEdit">
+                                    <!-- Add button -->
+                                    <button *ngIf="lines(lineDefId, model).length === 0" class="btn btn-sm btn-primary"
+                                        (click)="onCreateForm(lineDefId, model)">
+                                        <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
+                                    </button>
+                                    <!-- Actions dropdown -->
+                                    <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
+                                        [placement]="actionsDropdownPlacement">
+                                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
+                                            ngbDropdownToggle>
+                                            {{ 'Actions' | translate }}
+                                        </button>
+                                        <div class="dropdown-menu shadow small" ngbDropdownMenu
+                                            aria-labelledby="action">
+                                            <button ngbDropdownItem class="dropdown-item t-transparent-background"
+                                                (click)="onDeleteForm(lineDefId, model)">
+                                                {{ ('Delete' | translate) + ' ' + tabTitle(lineDefId, model) }}
+                                            </button>
+                                            <button ngbDropdownItem class="dropdown-item t-transparent-background"
+                                                (click)="onCreateForm(lineDefId, model)">
+                                                {{ 'AddAnotherSwitchToTable' | translate }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Manual Lines Tab -->
+                        <ng-container *ngIf="lineDefId === 'ManualLine'">
+                            <ng-container *ngTemplateOutlet="manualLines">
+
+                            </ng-container>
+                        </ng-container>
+                    </t-restricted>
+
+                    <!----------- Smart Lines ----------->
+                    <ng-template #smartHeader let-columnIndex="argument">
+                        <div [style.text-align]="columnLabelAlignment(lineDefId, columnIndex)"
+                            [style.min-width.px]="isEdit ? 120 : 0">
+                            {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
+                    </ng-template>
+                    <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index"
+                        let-update="update" let-isForm="isForm">
+
+                        <t-form-group-cell *ngIf="!isForm" class="t-form-group"
+                            [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
+                            <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
+                        </t-form-group-cell>
+                        <t-form-group *ngIf="isForm" class="t-form-group"
+                            [serverErrors]="serverErrors(lineDefId, columnIndex, line)"
+                            [label]="columnLabel(lineDefId, columnIndex)">
+                            <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
+                        </t-form-group>
+
+                        <ng-template #formGroupContents>
+                            <!-- <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
+                                [ngSwitch]="columnName(lineDefId, columnIndex)"> -->
+                            <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
+                                <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <t-view-link *ngSwitchCase="'AgentId'"
+                                    [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <t-view-link *ngSwitchCase="'ResourceId'"
+                                    [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <t-view-link *ngSwitchCase="'CenterId'" link="../../../centers"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <t-view-link *ngSwitchCase="'EntryTypeId'" link="../../../entry-types"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <span
+                                    *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                                <div *ngSwitchCase="'MonetaryValue'" style="float:right">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
+                                </div>
+                                <div *ngSwitchCase="'Quantity'" style="float:right">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
+                                <div *ngSwitchCase="'Value'" style="float:right">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                                <span
+                                    *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                                <span
+                                    *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                                <span
+                                    *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                                <t-view-link *ngSwitchCase="'NotedAgentId'"
+                                    [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                                    [itemId]="getFieldValue(lineDefId, columnIndex, line)">
+                                    {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                </t-view-link>
+                                <span
+                                    *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                                <div *ngSwitchCase="'NotedAmount'" style="float:right">
+                                    <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
+                                </div>
+                                <span
+                                    *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
+                                <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                                <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
+                            </ng-container>
+                            <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
+                                <t-accounts-picker *ngSwitchCase="'AccountId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-accounts-picker>
+                                <t-currencies-picker *ngSwitchCase="'CurrencyId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-currencies-picker>
+                                <t-agents-picker *ngSwitchCase="'AgentId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [definitionIds]="agentDefinitionIds(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-agents-picker>
+                                <t-resources-picker *ngSwitchCase="'ResourceId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [filter]="resourcesFilter(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-resources-picker>
+                                <t-centers-picker *ngSwitchCase="'CenterId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-centers-picker>
+                                <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [filter]="entryTypeFilter(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-entry-types-picker>
+                                <t-date-picker *ngSwitchCase="'DueDate'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }"
+                                    [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-decimal-editor *ngSwitchCase="'Quantity'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0"
+                                    [maxDecimalPlaces]="4" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-units-picker *ngSwitchCase="'UnitId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-units-picker>
+                                <t-decimal-editor *ngSwitchCase="'Value'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="functional_decimals"
+                                    [maxDecimalPlaces]="functional_decimals" [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-date-picker *ngSwitchCase="'Time1'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-date-picker *ngSwitchCase="'Time2'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-text-editor *ngSwitchCase="'ExternalReference'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-text-editor *ngSwitchCase="'AdditionalReference'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-agents-picker *ngSwitchCase="'NotedAgentId'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [definitionIds]="notedAgentDefinitionIds(lineDefId, columnIndex)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
+                                </t-agents-picker>
+                                <t-text-editor *ngSwitchCase="'NotedAgentName'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                                <t-decimal-editor *ngSwitchCase="'NotedAmount'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }"
+                                    [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
+                                    [textAlignment]="isForm ? null : 'right'">
+                                </t-decimal-editor>
+                                <t-date-picker *ngSwitchCase="'NotedDate'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-date-picker>
+                                <t-text-editor *ngSwitchCase="'Memo'"
+                                    [disabled]="isReadOnly(lineDefId, columnIndex, line)"
+                                    [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
+                                    [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                    (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
+                                    [ngModelOptions]="{ updateOn: 'blur' }">
+                                </t-text-editor>
+                            </ng-container>
+                        </ng-template>
+                    </ng-template>
+
+                    <!----------- Signatures ------------>
+                    <div class="row mx-0"
+                        *ngIf="!isEdit && requiredSignaturesForLineDef(model, lineDefId, extras)?.length > 0">
+                        <div class="col-12 mt-3">
+                            <span class="small font-weight-bold">{{ 'SignaturesAndStamps' | translate }}</span>
+                        </div>
+                        <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3 mb-1"
+                            *ngFor="let signature of requiredSignaturesForLineDef(model, lineDefId, extras)">
+                            <div class="border-bottom d-flex align-items-stretch p-2 bg-light">
+
+                                <!-- just to keep the height when the parent div is empty-->
+                                <div style="height: 37px;"></div>
+
+                                <!-- Signature exists -->
+                                <ng-container *ngIf="!!signature.SignedById">
+                                    <!-- Profile Picture -->
+                                    <div class="d-flex align-items-center justify-content">
+                                        <t-image [src]="'users/' + signature.SignedById + '/image'"
+                                            [imageId]="ws.get('User', signature.SignedById)?.ImageId" [size]="36"
+                                            shape="circle">
+                                        </t-image>
+                                    </div>
+                                    <!-- User Name -->
+                                    <div class="p-2 flex-grow-1 text-truncate d-flex align-items-center">
+                                        <span>
+                                            <t-view-link link="../../../users" [itemId]="signature.SignedById">
+                                                {{ ws.getMultilingualValue('User', signature.SignedById, 'Name') }}
+                                            </t-view-link>
+                                            <span
+                                                *ngIf="!!signature.OnBehalfOfUserId && signature.SignedById !== signature.OnBehalfOfUserId">
+                                                {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
+                                                    [itemId]="signature.OnBehalfOfUserId">
+                                                    {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
+                                                </t-view-link></span>
+                                        </span>
+                                    </div>
+                                    <!-- Stamp -->
+                                    <div class="d-flex align-items-center" [class.text-success]="signature.ToState > 0"
+                                        [class.text-danger]="signature.ToState < 0">
+                                        <div class="px-1 font-weight-bold t-large"
+                                            [class.t-positive-stamp]="signature.ToState > 0"
+                                            [class.t-negative-stamp]="signature.ToState < 0">
+                                            <span>{{ actionDisplay(signature.ToState) }}</span>
+                                        </div>
+                                    </div>
+                                    <!-- Reason if any -->
+                                    <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
+                                        &nbsp;&nbsp;
+                                        <div class="text-danger small align-items-center" style="max-width: 120px;">
+                                            <span
+                                                class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
+                                            <span>{{ signature.ReasonDetails }}</span>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+
+                                <!-- No signature but can sign -->
+                                <ng-container *ngIf="!signature.SignedById && signature.CanSign">
+                                    <div class="w-50 px-1" placement="bottom"
+                                        [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
+                                        <button class="btn btn-danger px-2 w-100 h-100"
+                                            (click)="onSignNo(lineDefId, signature)"
+                                            [disabled]="disableSign(signature, lineDefId, model)">
+                                            <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
+                                            <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
+                                        </button>
+                                    </div>
+                                    <div class="w-50 px-1" placement="bottom"
+                                        [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
+                                        <button class="btn btn-success px-2 w-100 h-100" (click)="onSignYes(signature)"
+                                            [disabled]="disableSign(signature, lineDefId, model)">
+                                            <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
+                                            <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
+                                        </button>
+                                    </div>
+                                </ng-container>
+
+                                <!-- No signature and cannot sign -->
+                                <ng-container *ngIf="!signature.SignedById && !signature.CanSign">
+
+                                </ng-container>
+                            </div>
+
+                            <!-- Footer: type of signature and signing time -->
+                            <div class="px-2 small p-1 d-flex justify-content-between">
+                                <div class="text-truncate">
+                                    <span>
+                                        <!-- Action -->
+                                        <span
+                                            *ngIf="signature.RuleType !== 'Public'">{{ requiredSignatureDisplay(signature) }}&nbsp;</span>
+                                        <span
+                                            *ngIf="signature.RuleType === 'Public'">{{ requiredSignatoryDisplay(signature) }}</span>
+
+                                        <!-- Who's signing -->
+                                        <t-view-link *ngIf="signature.RuleType === 'ByRole'" link="../../../roles"
+                                            [itemId]="signature.RoleId">
+                                            <span>{{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
+                                        </t-view-link>
+                                        <t-view-link *ngIf="signature.RuleType === 'ByAgent'"
+                                            [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
+                                            [itemId]="signature.AgentId">
+                                            <span>{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span>
+                                        </t-view-link>
+                                        <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
+                                            [itemId]="signature.UserId">
+                                            <span>{{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}</span>
+                                        </t-view-link>
+
+                                        <!-- # of lines -->
+                                        <span
+                                            *ngIf="lineIds(signature).length !== lines(lineDefId, model).length">({{ 'Count0Lines' | translate: { '0': (lineIds(signature).length | number) } }})</span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-muted" *ngIf="signature.SignedAt">
+                                        &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                                    </span>
+                                    <div class="d-inline" placement="bottom"
+                                        [ngbTooltip]="unsignTooltip(signature, model)" container="body">
+                                        <button
+                                            class="btn btn-sm btn-light text-primary t-white-button btn-sm h-100 py-0 px-1"
+                                            (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
+                                            style="margin-top:-4px"
+                                            [title]="disableUnsign(signature, model) ? '' : ('Delete' | translate)"
+                                            [disabled]="disableUnsign(signature, model)">
+                                            <fa-icon icon="trash"></fa-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </li>
+
+            <!-- Hidden Tabs Dropdown -->
+            <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
+                <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span
+                        class="small t-slightly-bold">
+                        <fa-icon icon="ellipsis-h"></fa-icon>
+                    </span></a>
+                <div ngbDropdownMenu>
+                    <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)"
+                        ngbDropdownItem (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId, model) }}</button>
+                </div>
+            </li>
+        </ng-container>
+
+        <!-- Entries (Accounting View) -->
+        <li [ngbNavItem]="'_Entries'" *ngIf="isAccounting">
             <a ngbNavLink>
-                <span *ngIf="showLineErrors(lineDefId, model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
+                <span class="small t-slightly-bold">
+                    {{ ('Entries' | translate) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (entriesCount(model) | number) + ')' : '')}}
                 </span>
-                <span
-                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lines(lineDefId, model).length | number) + ')' : '') }}</span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
-
-                    <!-- Smart Lines -->
-                    <ng-container *ngIf="lineDefId !== 'ManualLine'">
-
-                        <!-- Table -->
-                        <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
-                            [isEdit]="isEdit" [columnPaths]="columnPaths(lineDefId, model)"
-                            [columnTemplates]="columnTemplates(lineDefId, model, smartHeader, smartRow)"
-                            [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
-                            (delete)="onDelete($event, model)">
-                        </t-table>
-
-                        <!-- Form -->
-                        <ng-container *ngIf="showAsForm(lineDefId, model)">
-                            <div class="row m-0 mt-2">
-                                <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
-                                    <ng-container *ngFor="let colPath of columnPaths(lineDefId, model)">
-                                        <ng-container *ngTemplateOutlet="smartRow; context: { 
-                                                item: lines(lineDefId, model)[0], 
-                                                argument: colPath, 
-                                                index: 0, 
-                                                update: dummyUpdate, 
-                                                isForm: true }">
-                                        </ng-container>
-                                    </ng-container>
-                                </ng-container>
-                                <ng-template #noFormMessage>
-                                    <div class="px-3 text-muted font-italic" *ngIf="!isEdit">
-                                        {{ 'NotAdded' | translate }}
-                                    </div>
-                                </ng-template>
-                            </div>
-
-                            <div class="col-12 py-1 px-3 d-flex" *ngIf="isEdit">
-                                <!-- Add button -->
-                                <button *ngIf="lines(lineDefId, model).length === 0" class="btn btn-sm btn-primary"
-                                    (click)="onCreateForm(lineDefId, model)">
-                                    <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
-                                </button>
-                                <!-- Actions dropdown -->
-                                <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
-                                    [placement]="actionsDropdownPlacement">
-                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
-                                        ngbDropdownToggle>
-                                        {{ 'Actions' | translate }}
-                                    </button>
-                                    <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
-                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
-                                            (click)="onDeleteForm(lineDefId, model)">
-                                            {{ ('Delete' | translate) + ' ' + tabTitle(lineDefId, model) }}
-                                        </button>
-                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
-                                            (click)="onCreateForm(lineDefId, model)">
-                                            {{ 'AddAnotherSwitchToTable' | translate }}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-
-                    <!-- Manual Lines -->
-                    <t-table *ngIf="lineDefId === 'ManualLine'" [dataSource]="lines(lineDefId, model)" [isEdit]="isEdit"
-                        [itemSize]="80" [columnPaths]="columnPaths(lineDefId, model)" [columnTemplates]="{
-                        'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 },
-                        'AccountId' : { headerTemplate : header_AccountId, rowTemplate : row_AccountId, weight : 3 },
-                        'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
-                        'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
-                        'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 }
-                    }" [onNewItem]="onNewLineFactory(lineDefId)" (insert)="onInsert($event, model)"
-                        (delete)="onDelete($event, model)">
+                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="80"
+                        [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
+                                'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3, argument: true },
+                                'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1, argument: true },
+                                'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1, argument: true },
+                                'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1, argument: true },
+                                'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2, argument: true }
+                            }" [onNewItem]="onNewManualEntry" (insert)="onInsertSmartLine($event, model)"
+                        (delete)="onDeleteSmartLine($event, model)">
                     </t-table>
-                </t-restricted>
 
-                <!-- Smart Line -->
-                <ng-template #smartHeader let-columnIndex="argument">
-                    <div [style.text-align]="columnLabelAlignment(lineDefId, columnIndex)"
-                        [style.min-width.px]="isEdit ? 120 : 0">
-                        <!-- 32 + 19 + [7 x (9.6 + X)] < 961 -->
-                        {{ columnLabel(lineDefId, columnIndex) }}&nbsp;&nbsp;</div>
-                </ng-template>
-                <ng-template #smartRow let-line="item" let-columnIndex="argument" let-rowIndex="index"
-                    let-update="update" let-isForm="isForm">
-
-                    <t-form-group-cell *ngIf="!isForm" class="t-form-group"
-                        [serverErrors]="serverErrors(lineDefId, columnIndex, line)">
-                        <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
-                    </t-form-group-cell>
-                    <t-form-group *ngIf="isForm" class="t-form-group"
-                        [serverErrors]="serverErrors(lineDefId, columnIndex, line)"
-                        [label]="columnLabel(lineDefId, columnIndex)">
-                        <ng-container *ngTemplateOutlet="formGroupContents"> </ng-container>
-                    </t-form-group>
-
-                    <ng-template #formGroupContents>
-                        <!-- <t-restricted *ngIf="!isEdit" [metadata]="entityMetadata(lineDefId, columnIndex, line)"
-                            [ngSwitch]="columnName(lineDefId, columnIndex)"> -->
-                        <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
-                            <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <t-view-link *ngSwitchCase="'AgentId'"
-                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <t-view-link *ngSwitchCase="'ResourceId'"
-                                [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Resource', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <t-view-link *ngSwitchCase="'CenterId'" link="../../../centers"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Center', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <t-view-link *ngSwitchCase="'EntryTypeId'" link="../../../entry-types"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('EntryType', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <span
-                                *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                            <div *ngSwitchCase="'MonetaryValue'" style="float:right">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
-                            </div>
-                            <div *ngSwitchCase="'Quantity'" style="float:right">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
-                            </div>
-                            <span
-                                *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
-                            <div *ngSwitchCase="'Value'" style="float:right">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
-                            </div>
-                            <span
-                                *ngSwitchCase="'Time1'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                            <span
-                                *ngSwitchCase="'Time2'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                            <span
-                                *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <span
-                                *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <t-view-link *ngSwitchCase="'NotedAgentId'"
-                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
-                                [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
-                            </t-view-link>
-                            <span
-                                *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <div *ngSwitchCase="'NotedAmount'" style="float:right">
-                                <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
-                            </div>
-                            <span
-                                *ngSwitchCase="'NotedDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                            <span *ngSwitchCase="'Memo'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <span *ngSwitchDefault>{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                        </ng-container>
-                        <ng-container *ngIf="isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
-                            <t-accounts-picker *ngSwitchCase="'AccountId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-accounts-picker>
-                            <t-currencies-picker *ngSwitchCase="'CurrencyId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-currencies-picker>
-                            <t-agents-picker *ngSwitchCase="'AgentId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="agentDefinitionIds(lineDefId, columnIndex)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-agents-picker>
-                            <t-resources-picker *ngSwitchCase="'ResourceId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [filter]="resourcesFilter(lineDefId, columnIndex)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-resources-picker>
-                            <t-centers-picker *ngSwitchCase="'CenterId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-centers-picker>
-                            <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [filter]="entryTypeFilter(lineDefId, columnIndex)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-entry-types-picker>
-                            <t-date-picker *ngSwitchCase="'DueDate'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
-                            <t-decimal-editor *ngSwitchCase="'MonetaryValue'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }"
-                                [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                [textAlignment]="isForm ? null : 'right'">
-                            </t-decimal-editor>
-                            <t-decimal-editor *ngSwitchCase="'Quantity'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4"
-                                [textAlignment]="isForm ? null : 'right'">
-                            </t-decimal-editor>
-                            <t-units-picker *ngSwitchCase="'UnitId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-units-picker>
-                            <t-decimal-editor *ngSwitchCase="'Value'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="functional_decimals"
-                                [maxDecimalPlaces]="functional_decimals" [textAlignment]="isForm ? null : 'right'">
-                            </t-decimal-editor>
-                            <t-date-picker *ngSwitchCase="'Time1'" [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
-                            <t-date-picker *ngSwitchCase="'Time2'" [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
-                            <t-text-editor *ngSwitchCase="'ExternalReference'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-text-editor>
-                            <t-text-editor *ngSwitchCase="'AdditionalReference'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-text-editor>
-                            <t-agents-picker *ngSwitchCase="'NotedAgentId'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="notedAgentDefinitionIds(lineDefId, columnIndex)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);">
-                            </t-agents-picker>
-                            <t-text-editor *ngSwitchCase="'NotedAgentName'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-text-editor>
-                            <t-decimal-editor *ngSwitchCase="'NotedAmount'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }"
-                                [minDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                [maxDecimalPlaces]="MonetaryValue_decimals(entry(lineDefId, columnIndex, line))"
-                                [textAlignment]="isForm ? null : 'right'">
-                            </t-decimal-editor>
-                            <t-date-picker *ngSwitchCase="'NotedDate'"
-                                [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-date-picker>
-                            <t-text-editor *ngSwitchCase="'Memo'" [disabled]="isReadOnly(lineDefId, columnIndex, line)"
-                                [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); update.call(null, line);"
-                                [ngModelOptions]="{ updateOn: 'blur' }">
-                            </t-text-editor>
-                        </ng-container>
-                    </ng-template>
-                </ng-template>
-
-                <!-- Manual Line -->
-                <!-- Memo -->
-                <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-                <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
-                    <t-form-group-dynamic class="t-form-group" [serverErrors]="item.serverErrors?.Memo">
-                        <div *ngIf="!isEdit">
-                            <t-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</t-restricted>
+                    <ng-container *ngIf="hasManualLines">
+                        <div class="col-12 mt-3 pb-2 border-bottom">
+                            <span class="small font-weight-bold">{{ tabTitle('ManualLine', model) }}</span>
                         </div>
-                        <t-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
-                            [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-                    </t-form-group-dynamic>
-                </ng-template>
+                        <ng-container *ngTemplateOutlet="manualLines">
 
-                <!-- AccountId -->
-                <ng-template #header_AccountId>{{ 'Entry_Account' | translate }}</ng-template>
-                <ng-template #row_AccountId let-item="item" let-entry="item.Entries[0]" let-index="index"
-                    let-update="update">
-                    <div>
-                        <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
-                            <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
-                            <t-restricted [metadata]="entry.EntityMetadata?.AccountId">
-                                <t-view-link *ngIf="!isEdit" link="../../../accounts" [itemId]="entry?.AccountId">{{
-                      ws.getMultilingualValue('Account',
-                      entry.AccountId, 'Name') }}</t-view-link>
-                            </t-restricted>
-                            <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
-                                (ngModelChange)="update.call(null, item)"
-                                additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,Center/Name,Center/Name2,Center/Name3,HasNotedAmount,HasNotedDate,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/Units/Unit/Name,Resource/Units/Unit/Name2,Resource/Units/Unit/Name3,Resource/Units/Multiplier">
-                            </t-accounts-picker>
-                        </t-form-group-dynamic>
-                    </div>
-
-                    <div class="small d-flex flex-wrap p-2">
-
-                        <!-- Currency -->
-                        <ng-container *ngIf="showCurrency(entry)">
-                            <t-form-group-dynamic [label]="'Entry_Currency' | translate"
-                                [serverErrors]="entry.serverErrors?.CurrencyId">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.CurrencyId">
-                                    <t-view-link link="../../../currencies" [itemId]="entry.CurrencyId">
-                                        {{ ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name') }}
-                                    </t-view-link>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-currencies-picker *ngIf="isEdit" [(ngModel)]="entry.CurrencyId"
-                                    (ngModelChange)="update.call(null, item);" required>
-                                </t-currencies-picker>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
                         </ng-container>
-
-                        <!-- Monetary Value -->
-                        <ng-container *ngIf="showMonetaryValue(entry)">
-                            <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate"
-                                [serverErrors]="entry.serverErrors?.MonetaryValue">
-                                <!-- View -->
-                                <ng-container *ngIf="!isEdit">
-                                    <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
-                                        {{ entry.MonetaryValue | number:MonetaryValue_format(entry) }}
-                                    </t-restricted>
-                                </ng-container>
-                                <!-- Edit -->
-                                <ng-container *ngIf="isEdit">
-                                    <t-decimal-editor [(ngModel)]="entry.MonetaryValue"
-                                        [maxDecimalPlaces]="MonetaryValue_decimals(entry)"
-                                        [minDecimalPlaces]="MonetaryValue_decimals(entry)"
-                                        (ngModelChange)="update.call(null, item);"
-                                        [ngModelOptions]="{ updateOn: 'blur' }" textAlignment="right" required>
-                                    </t-decimal-editor>
-                                </ng-container>
-                                <!-- Readonly Currency -->
-                                <ng-container *ngIf="!showCurrency(entry)">
-                                    &nbsp;
-                                    <t-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
-                                        {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
-                                    </t-restricted>
-
-                                </ng-container>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Agent -->
-                        <ng-container *ngIf="showAgent(entry)">
-                            <t-form-group-dynamic [label]="labelAgent(entry)"
-                                [serverErrors]="entry.serverErrors?.AgentId">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.AgentId">
-                                    <t-view-link
-                                        [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
-                                        [itemId]="entry.AgentId">
-                                        {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
-                                    </t-view-link>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <ng-container *ngIf="isEdit">
-                                    <t-agents-picker *ngIf="!readonlyAgent(entry)" [(ngModel)]="entry.AgentId"
-                                        (ngModelChange)="update.call(null, item);"
-                                        [definitionIds]="[account(entry)?.AgentDefinitionId]" required>
-                                    </t-agents-picker>
-                                    <t-restricted *ngIf="readonlyAgent(entry)"
-                                        [metadata]="entry.EntityMetadata?.AgentId">
-                                        {{ ws.getMultilingualValue('Agent', readonlyValueAgentId(entry), 'Name') }}
-                                    </t-restricted>
-                                </ng-container>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Resource -->
-                        <ng-container *ngIf="showResource(entry)">
-                            <t-form-group-dynamic [label]="labelResource(entry)"
-                                [serverErrors]="entry.serverErrors?.ResourceId">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ResourceId">
-                                    <t-view-link
-                                        [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
-                                        [itemId]="entry.ResourceId">
-                                        {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
-                                    </t-view-link>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <ng-container *ngIf="isEdit">
-                                    <t-resources-picker *ngIf="!readonlyResource(entry)" [(ngModel)]="entry.ResourceId"
-                                        (ngModelChange)="update.call(null, item);"
-                                        additionalSelect="Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier"
-                                        [filter]="filterResource(entry)" required>
-                                    </t-resources-picker>
-                                    <t-restricted *ngIf="readonlyResource(entry)"
-                                        [metadata]="entry.EntityMetadata?.ResourceId">
-                                        {{ ws.getMultilingualValue('Resource', readonlyValueResourceId(entry), 'Name') }}
-                                    </t-restricted>
-                                </ng-container>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Quantity + UnitId -->
-                        <ng-container *ngIf="showQuantityAndUnit(entry)">
-                            <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
-                                [serverErrors]="entry.serverErrors?.Quantity">
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Quantity">
-                                    <span>{{ entry.Quantity | number:'1.0-4'}}</span>
-                                </t-restricted>
-                                <t-decimal-editor *ngIf="isEdit" [(ngModel)]="entry.Quantity" [maxDecimalPlaces]="4"
-                                    [minDecimalPlaces]="0" (ngModelChange)="update.call(null, item);"
-                                    [ngModelOptions]="{ updateOn: 'blur' }" required>
-                                </t-decimal-editor>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                            <t-form-group-dynamic [label]="'Entry_Unit' | translate"
-                                [serverErrors]="entry.serverErrors?.UnitId">
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.UnitId">
-                                    <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->
-                                    {{ ws.getMultilingualValue('Unit', entry.UnitId, 'Name') }}
-                                    <!-- </t-view-link> -->
-                                </t-restricted>
-                                <ng-container *ngIf="isEdit">
-                                    <t-restricted *ngIf="readonlyUnit(entry)" [metadata]="entry.EntityMetadata?.UnitId">
-                                        {{ ws.getMultilingualValue('Unit', readonlyValueUnitId(entry), 'Name') }}
-                                    </t-restricted>
-                                    <t-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
-                                        (ngModelChange)="update.call(null, item);" [filter]="filterUnitId(entry)">
-                                    </t-units-picker>
-                                </ng-container>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- DueDate -->
-                        <ng-container *ngIf="showDueDate(entry)">
-                            <t-form-group-dynamic [label]="labelDueDate(entry)"
-                                [serverErrors]="entry.serverErrors?.DueDate">
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.DueDate">
-                                    {{ entry.DueDate | date:'yyyy-MM-dd'}}
-                                </t-restricted>
-                                <t-date-picker *ngIf="isEdit" [(ngModel)]="entry.DueDate"
-                                    (ngModelChange)="update.call(null, item);" [ngModelOptions]="{ updateOn: 'blur' }"
-                                    [required]="requireDueDate(entry)">
-                                </t-date-picker>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Entry Type -->
-                        <ng-container *ngIf="showEntryType(entry)">
-                            <t-form-group-dynamic [label]="'Entry_EntryType' | translate"
-                                [serverErrors]="entry.serverErrors?.EntryTypeId">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.EntryTypeId">
-                                    <t-view-link link="../../../entry-types" [itemId]="entry.EntryTypeId">
-                                        <div class="text-truncate">
-                                            {{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}
-                                        </div>
-                                    </t-view-link>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <ng-container *ngIf="isEdit">
-                                    <t-entry-types-picker *ngIf="!readonlyEntryType(entry)"
-                                        [(ngModel)]="entry.EntryTypeId" (ngModelChange)="update.call(null, item);"
-                                        [filter]="filterEntryType(entry)" required>
-                                    </t-entry-types-picker>
-                                    <t-restricted *ngIf="readonlyEntryType(entry)"
-                                        [metadata]="entry.EntityMetadata?.EntryTypeId">
-                                        <div class="text-truncate">
-                                            {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId(entry), 'Name') }}
-                                        </div>
-                                    </t-restricted>
-                                </ng-container>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- External Reference -->
-                        <ng-container *ngIf="showExternalReference(entry)">
-                            <t-form-group-dynamic [label]="'Entry_ExternalReference' | translate"
-                                [serverErrors]="entry.serverErrors?.ExternalReference">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.ExternalReference">
-                                    <div class="text-truncate">
-                                        {{ entry.ExternalReference }}
-                                    </div>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.ExternalReference"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-text-editor>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Additional Reference -->
-                        <ng-container *ngIf="showAdditionalReference(entry)">
-                            <t-form-group-dynamic [label]="'Entry_AdditionalReference' | translate"
-                                [serverErrors]="entry.serverErrors?.AdditionalReference">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.AdditionalReference">
-                                    <div class="text-truncate">
-                                        {{ entry.AdditionalReference }}
-                                    </div>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.AdditionalReference"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-text-editor>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Noted Agent -->
-                        <ng-container *ngIf="showNotedAgent(entry)">
-                            <t-form-group-dynamic [label]="'Entry_NotedAgent' | translate"
-                                [serverErrors]="entry.serverErrors?.NotedAgent">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAgentId">
-                                    <t-view-link
-                                        [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
-                                        [itemId]="entry.NotedAgentId">
-                                        {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
-                                    </t-view-link>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-agents-picker *ngIf="isEdit" [(ngModel)]="entry.NotedAgentId"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-agents-picker>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Noted Agent Name -->
-                        <ng-container *ngIf="showNotedAgentName(entry)">
-                            <t-form-group-dynamic [label]="'Entry_NotedAgentName' | translate"
-                                [serverErrors]="entry.serverErrors?.NotedAgentName">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAgentName">
-                                    <div class="text-truncate">
-                                        {{ entry.NotedAgentName }}
-                                    </div>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-text-editor *ngIf="isEdit" [(ngModel)]="entry.NotedAgentName"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-text-editor>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Noted Amount -->
-                        <ng-container *ngIf="showNotedAmount(entry)">
-                            <t-form-group-dynamic [label]="'Entry_NotedAmount' | translate"
-                                [serverErrors]="entry.serverErrors?.NotedAmount">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedAmount">
-                                    <div class="text-truncate">
-                                        {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
-                                    </div>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-decimal-editor *ngIf="isEdit" [minDecimalPlaces]="MonetaryValue_decimals(entry)"
-                                    [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="entry.NotedAmount"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-decimal-editor>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                        <!-- Noted Date -->
-                        <ng-container *ngIf="showNotedDate(entry)">
-                            <t-form-group-dynamic [label]="'Entry_NotedDate' | translate"
-                                [serverErrors]="entry.serverErrors?.NotedDate">
-                                <!-- View -->
-                                <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.NotedDate">
-                                    <div class="text-truncate">
-                                        {{ entry.NotedDate | date:'yyyy-MM-dd' }}
-                                    </div>
-                                </t-restricted>
-                                <!-- Edit -->
-                                <t-date-picker *ngIf="isEdit" [(ngModel)]="entry.NotedDate"
-                                    (ngModelChange)="update.call(null, item);">
-                                </t-date-picker>
-                                &nbsp;&nbsp;
-                            </t-form-group-dynamic>
-                        </ng-container>
-
-                    </div>
-                </ng-template>
-
-                <!-- Center -->
-                <ng-template #header_Center>
-                    <div>{{ 'Entry_Center' | translate }}</div>
-                </ng-template>
-                <ng-template #row_Center let-item="item" let-entry="item.Entries[0]" let-index="index"
-                    let-update="update">
-                    <t-restricted *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.CenterId">
-                        <t-view-link link="../../../centers" [itemId]="entry.CenterId">
-                            {{ ws.getMultilingualValue('Center', entry.CenterId, 'Name') }}
-                        </t-view-link>
-                    </t-restricted>
-                    <ng-container *ngIf="isEdit">
-                        <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
-                            <t-centers-picker *ngIf="!account(entry)?.CenterId" [(ngModel)]="entry.CenterId"
-                                (ngModelChange)="update.call(null, item);" filter="IsLeaf eq true">
-                            </t-centers-picker>
-                            <t-restricted *ngIf="!!account(entry)?.CenterId"
-                                [metadata]="entry.EntityMetadata?.CenterId">
-                                {{ ws.getMultilingualValue('Center', account(entry)?.CenterId, 'Name') }}
-                            </t-restricted>
-                        </t-form-group-dynamic>
                     </ng-container>
-                </ng-template>
-
-                <!-- Debit -->
-                <ng-template #header_Debit>
-                    <div style="float: right">{{ ('Debit' | translate) + functionalPostfix }}</div>
-                </ng-template>
-                <ng-template #row_Debit let-item="item" let-entry="item.Entries[0]" let-index="index"
-                    let-update="update">
-                    <t-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
-                        <div style="float: right">{{ getDebit(entry) | number:functional_format }}</div>
-                    </t-restricted>
-                    <t-form-group-dynamic *ngIf="isEdit" class="t-form-group"
-                        [serverErrors]="entry.serverErrors?.Value">
-                        <t-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="functional_decimals"
-                            [minDecimalPlaces]="functional_decimals" textAlignment="right"
-                            (ngModelChange)="setDebit(entry, $event); update.call(null, item);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-decimal-editor>
-                    </t-form-group-dynamic>
-                </ng-template>
-
-                <!-- Credit -->
-                <ng-template #header_Credit>
-                    <div style="float: right">{{ ('Credit' | translate) + functionalPostfix }}</div>
-                </ng-template>
-                <ng-template #row_Credit let-item="item" let-entry="item.Entries[0]" let-index="index"
-                    let-update="update">
-                    <t-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
-                        <div style="float: right">{{ getCredit(entry) | number:functional_format }}</div>
-                    </t-restricted>
-                    <t-form-group-dynamic *ngIf="isEdit" class="t-form-group"
-                        [serverErrors]="entry.serverErrors?.Value">
-                        <t-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="functional_decimals"
-                            [minDecimalPlaces]="functional_decimals" textAlignment="right"
-                            (ngModelChange)="setCredit(entry, $event); update.call(null, item);"
-                            [ngModelOptions]="{ updateOn: 'blur' }">
-                        </t-decimal-editor>
-                    </t-form-group-dynamic>
-                </ng-template>
-
-                <div class="row mx-0"
-                    *ngIf="!isEdit && requiredSignaturesForLineDef(model, lineDefId, extras)?.length > 0">
-                    <div class="col-12 mt-3">
-                        <span class="small font-weight-bold">{{ 'SignaturesAndStamps' | translate }}</span>
-                    </div>
-                    <div class="col-12 col-lg-6 px-2 px-lg-5 mt-3 mb-1"
-                        *ngFor="let signature of requiredSignaturesForLineDef(model, lineDefId, extras)">
-                        <div class="border-bottom d-flex align-items-stretch p-2 bg-light">
-
-                            <!-- just to keep the height when the parent div is empty-->
-                            <div style="height: 37px;"></div>
-
-                            <!-- Signature exists -->
-                            <ng-container *ngIf="!!signature.SignedById">
-                                <!-- Profile Picture -->
-                                <div class="d-flex align-items-center justify-content">
-                                    <t-image [src]="'users/' + signature.SignedById + '/image'"
-                                        [imageId]="ws.get('User', signature.SignedById)?.ImageId" [size]="36"
-                                        shape="circle">
-                                    </t-image>
-                                </div>
-                                <!-- User Name -->
-                                <div class="p-2 flex-grow-1 text-truncate d-flex align-items-center">
-                                    <span>
-                                        <t-view-link link="../../../users" [itemId]="signature.SignedById">
-                                            {{ ws.getMultilingualValue('User', signature.SignedById, 'Name') }}
-                                        </t-view-link>
-                                        <span
-                                            *ngIf="!!signature.OnBehalfOfUserId && signature.SignedById !== signature.OnBehalfOfUserId">
-                                            {{ 'OnBehalfOf' | translate }}<t-view-link link="../../../users"
-                                                [itemId]="signature.OnBehalfOfUserId">
-                                                {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
-                                            </t-view-link></span>
-                                    </span>
-                                </div>
-                                <!-- Stamp -->
-                                <div class="d-flex align-items-center" [class.text-success]="signature.ToState > 0"
-                                    [class.text-danger]="signature.ToState < 0">
-                                    <div class="px-1 font-weight-bold t-large"
-                                        [class.t-positive-stamp]="signature.ToState > 0"
-                                        [class.t-negative-stamp]="signature.ToState < 0">
-                                        <span>{{ actionDisplay(signature.ToState) }}</span>
-                                    </div>
-                                </div>
-                                <!-- Reason if any -->
-                                <ng-container *ngIf="!!signature.ReasonDetails || !!signature.ReasonId">
-                                    &nbsp;&nbsp;
-                                    <div class="text-danger small align-items-center" style="max-width: 120px;">
-                                        <span
-                                            class="font-weight-bold">{{ 'Signature_Reason' | translate }}:&nbsp;</span>
-                                        <span>{{ signature.ReasonDetails }}</span>
-                                    </div>
-                                </ng-container>
-                            </ng-container>
-
-                            <!-- No signature but can sign -->
-                            <ng-container *ngIf="!signature.SignedById && signature.CanSign">
-                                <div class="w-50 px-1" placement="bottom"
-                                    [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
-                                    <button class="btn btn-danger px-2 w-100 h-100"
-                                        (click)="onSignNo(lineDefId, signature)"
-                                        [disabled]="disableSign(signature, lineDefId, model)">
-                                        <fa-icon [icon]="negativeActionIcon(signature.ToState)"></fa-icon>
-                                        <span>&nbsp;&nbsp;{{ negativeActionDisplay(signature.ToState) }}</span>
-                                    </button>
-                                </div>
-                                <div class="w-50 px-1" placement="bottom"
-                                    [ngbTooltip]="signTooltip(signature, lineDefId, model)" container="body">
-                                    <button class="btn btn-success px-2 w-100 h-100" (click)="onSignYes(signature)"
-                                        [disabled]="disableSign(signature, lineDefId, model)">
-                                        <fa-icon [icon]="positiveActionIcon(signature.ToState)"></fa-icon>
-                                        <span>&nbsp;&nbsp;{{ positiveActionDisplay(signature.ToState) }}</span>
-                                    </button>
-                                </div>
-                            </ng-container>
-
-                            <!-- No signature and cannot sign -->
-                            <ng-container *ngIf="!signature.SignedById && !signature.CanSign">
-
-                            </ng-container>
-                        </div>
-
-                        <!-- Footer: type of signature and signing time -->
-                        <div class="px-2 small p-1 d-flex justify-content-between">
-                            <div class="text-truncate">
-                                <span>
-                                    <!-- Action -->
-                                    <span
-                                        *ngIf="signature.RuleType !== 'Public'">{{ requiredSignatureDisplay(signature) }}</span>
-                                    <span
-                                        *ngIf="signature.RuleType === 'Public'">{{ requiredSignatoryDisplay(signature) }}</span>
-
-                                    <!-- Who's signing -->
-                                    <t-view-link *ngIf="signature.RuleType === 'ByRole'" link="../../../roles"
-                                        [itemId]="signature.RoleId">
-                                        {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}
-                                    </t-view-link>
-                                    <t-view-link *ngIf="signature.RuleType === 'ByAgent'" [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
-                                        [itemId]="signature.AgentId">
-                                        {{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}
-                                    </t-view-link>
-                                    <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
-                                        [itemId]="signature.UserId">
-                                        {{ ws.getMultilingualValue('User', signature.UserId, 'Name') }}
-                                    </t-view-link>
-
-                                    <!-- # of lines -->
-                                    <span
-                                        *ngIf="lineIds(signature).length !== lines(lineDefId, model).length">({{ 'Count0Lines' | translate: { '0': (lineIds(signature).length | number) } }})</span>
-                                </span>
-                            </div>
-                            <div>
-                                <span class="text-muted" *ngIf="signature.SignedAt">
-                                    &nbsp;{{ signature.SignedAt | date:'yyyy-MM-dd HH:mm' }}
-                                </span>
-                                <div class="d-inline" placement="bottom" [ngbTooltip]="unsignTooltip(signature, model)"
-                                    container="body">
-                                    <button
-                                        class="btn btn-sm btn-light text-primary t-white-button btn-sm h-100 py-0 px-1"
-                                        (click)="onUnsign(signature)" *ngIf="canUnsign(signature)"
-                                        style="margin-top:-4px"
-                                        [title]="disableUnsign(signature, model) ? '' : ('Delete' | translate)"
-                                        [disabled]="disableUnsign(signature, model)">
-                                        <fa-icon icon="trash"></fa-icon>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                </t-restricted>
             </ng-template>
         </li>
-        <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
-            <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span class="small t-slightly-bold">
-                    <fa-icon icon="ellipsis-h"></fa-icon>
-                </span></a>
-            <div ngbDropdownMenu>
-                <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)" ngbDropdownItem
-                    (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId, model) }}</button>
-            </div>
-        </li>
 
+        <!-- Attachments -->
         <li class="{{ attachmentsClass }}" [ngbNavItem]="'Attachment'">
             <a ngbNavLink><span class="small t-slightly-bold">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
@@ -1122,12 +785,400 @@
             </ng-template>
         </li>
     </ul>
+
+    <!-- Tab Contents -->
     <div class="w-100" [ngbNavOutlet]="tabs">
 
     </div>
 
     <!-- for the file dialog -->
     <input type="file" class="d-none" #fileInput (change)="onFileSelected(fileInput, model)" multiple />
+
+    <!------------ Templates for Manual Lines ----------->
+    <ng-template #manualLines>
+        <!-- Manual Lines Table -->
+        <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="80"
+            [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
+                            'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3 },
+                            'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
+                            'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
+                            'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 },
+                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 }
+                        }" [onNewItem]="onNewManualEntry" (insert)="onInsertManualEntry($event, model)"
+            (delete)="onDeleteManualEntry($event, model)">
+        </t-table>
+    </ng-template>
+
+    <!-- Account + Dynamic Properties -->
+    <ng-template #header_Account>{{ 'Entry_Account' | translate }}</ng-template>
+    <ng-template #row_Account let-pair="item" let-entry="item.entry" let-index="index" let-update="update" let-readonly="argument">
+
+        <!-- Account -->
+        <div>
+            <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
+                <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
+                <t-restricted [metadata]="entry.EntityMetadata?.AccountId">
+                    <t-view-link *ngIf="!isEdit || readonly" link="../../../accounts" [itemId]="entry?.AccountId">{{
+                        ws.getMultilingualValue('Account',
+                        entry.AccountId, 'Name') }}</t-view-link>
+                </t-restricted>
+                <t-accounts-picker *ngIf="isEdit && !readonly" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
+                    (ngModelChange)="update.call(null, pair);"
+                    additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,Center/Name,Center/Name2,Center/Name3,HasNotedAmount,HasNotedDate,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/Units/Unit/Name,Resource/Units/Unit/Name2,Resource/Units/Unit/Name3,Resource/Units/Multiplier">
+                </t-accounts-picker>
+            </t-form-group-dynamic>
+        </div>
+
+        <!-- Dynamic Properties -->
+        <div class="small d-flex flex-wrap p-2">
+            <!-- Currency -->
+            <ng-container *ngIf="showCurrency(entry)">
+                <t-form-group-dynamic [label]="'Entry_Currency' | translate"
+                    [serverErrors]="entry.serverErrors?.CurrencyId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.CurrencyId">
+                        <t-view-link link="../../../currencies" [itemId]="entry.CurrencyId">
+                            {{ ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-currencies-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.CurrencyId"
+                        (ngModelChange)="update.call(null, pair);" required>
+                    </t-currencies-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Monetary Value -->
+            <ng-container *ngIf="showMonetaryValue(entry)">
+                <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate"
+                    [serverErrors]="entry.serverErrors?.MonetaryValue">
+                    <!-- View -->
+                    <ng-container *ngIf="!isEdit || readonly">
+                        <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
+                            {{ entry.MonetaryValue | number:MonetaryValue_format(entry) }}
+                        </t-restricted>
+                    </ng-container>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !readonly">
+                        <t-decimal-editor [(ngModel)]="entry.MonetaryValue"
+                            [maxDecimalPlaces]="MonetaryValue_decimals(entry)"
+                            [minDecimalPlaces]="MonetaryValue_decimals(entry)"
+                            (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }"
+                            textAlignment="right" required>
+                        </t-decimal-editor>
+                    </ng-container>
+                    <!-- Readonly Currency -->
+                    <ng-container *ngIf="!showCurrency(entry)">
+                        &nbsp;
+                        <t-restricted [metadata]="entry.EntityMetadata?.CurrencyId">
+                            {{ ws.getMultilingualValue('Currency', isEdit ? readonlyValueCurrencyId(entry) : entry.CurrencyId, 'Name') }}
+                        </t-restricted>
+
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Agent -->
+            <ng-container *ngIf="showAgent(entry)">
+                <t-form-group-dynamic [label]="labelAgent(entry)" [serverErrors]="entry.serverErrors?.AgentId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.AgentId">
+                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
+                            [itemId]="entry.AgentId">
+                            {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !readonly">
+                        <t-agents-picker *ngIf="!readonlyAgent(entry)" [(ngModel)]="entry.AgentId"
+                            (ngModelChange)="update.call(null, pair);"
+                            [definitionIds]="[account(entry)?.AgentDefinitionId]" required>
+                        </t-agents-picker>
+                        <t-restricted *ngIf="readonlyAgent(entry)" [metadata]="entry.EntityMetadata?.AgentId">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId(entry), 'Name') }}
+                        </t-restricted>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Resource -->
+            <ng-container *ngIf="showResource(entry)">
+                <t-form-group-dynamic [label]="labelResource(entry)" [serverErrors]="entry.serverErrors?.ResourceId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.ResourceId">
+                        <t-view-link [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
+                            [itemId]="entry.ResourceId">
+                            {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !readonly">
+                        <t-resources-picker *ngIf="!readonlyResource(entry)" [(ngModel)]="entry.ResourceId"
+                            (ngModelChange)="update.call(null, pair);"
+                            additionalSelect="Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier"
+                            [filter]="filterResource(entry)" required>
+                        </t-resources-picker>
+                        <t-restricted *ngIf="readonlyResource(entry)" [metadata]="entry.EntityMetadata?.ResourceId">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId(entry), 'Name') }}
+                        </t-restricted>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Quantity + Unit -->
+            <ng-container *ngIf="showQuantityAndUnit(entry)">
+                <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
+                    [serverErrors]="entry.serverErrors?.Quantity">
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Quantity">
+                        <span>{{ entry.Quantity | number:'1.0-4'}}</span>
+                    </t-restricted>
+                    <t-decimal-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.Quantity" [maxDecimalPlaces]="4"
+                        [minDecimalPlaces]="0" (ngModelChange)="update.call(null, pair);"
+                        [ngModelOptions]="{ updateOn: 'blur' }" required>
+                    </t-decimal-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+                <t-form-group-dynamic [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.UnitId">
+                        <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->
+                        {{ ws.getMultilingualValue('Unit', entry.UnitId, 'Name') }}
+                        <!-- </t-view-link> -->
+                    </t-restricted>
+                    <ng-container *ngIf="isEdit && !readonly">
+                        <t-restricted *ngIf="readonlyUnit(entry)" [metadata]="entry.EntityMetadata?.UnitId">
+                            {{ ws.getMultilingualValue('Unit', readonlyValueUnitId(entry), 'Name') }}
+                        </t-restricted>
+                        <t-units-picker *ngIf="!readonlyUnit(entry)" [(ngModel)]="entry.UnitId"
+                            (ngModelChange)="update.call(null, pair);" [filter]="filterUnitId(entry)">
+                        </t-units-picker>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- DueDate -->
+            <ng-container *ngIf="showDueDate(entry)">
+                <t-form-group-dynamic [label]="labelDueDate(entry)" [serverErrors]="entry.serverErrors?.DueDate">
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.DueDate">
+                        {{ entry.DueDate | date:'yyyy-MM-dd'}}
+                    </t-restricted>
+                    <t-date-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.DueDate"
+                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }"
+                        [required]="requireDueDate(entry)">
+                    </t-date-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Entry Type -->
+            <ng-container *ngIf="showEntryType(entry)">
+                <t-form-group-dynamic [label]="'Entry_EntryType' | translate"
+                    [serverErrors]="entry.serverErrors?.EntryTypeId">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.EntryTypeId">
+                        <t-view-link link="../../../entry-types" [itemId]="entry.EntryTypeId">
+                            <div class="text-truncate">
+                                {{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}
+                            </div>
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <ng-container *ngIf="isEdit && !readonly">
+                        <t-entry-types-picker *ngIf="!readonlyEntryType(entry)" [(ngModel)]="entry.EntryTypeId"
+                            (ngModelChange)="update.call(null, pair);" [filter]="filterEntryType(entry)" required>
+                        </t-entry-types-picker>
+                        <t-restricted *ngIf="readonlyEntryType(entry)" [metadata]="entry.EntityMetadata?.EntryTypeId">
+                            <div class="text-truncate">
+                                {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId(entry), 'Name') }}
+                            </div>
+                        </t-restricted>
+                    </ng-container>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- External Reference -->
+            <ng-container *ngIf="showExternalReference(entry)">
+                <t-form-group-dynamic [label]="'Entry_ExternalReference' | translate"
+                    [serverErrors]="entry.serverErrors?.ExternalReference">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.ExternalReference">
+                        <div class="text-truncate">
+                            {{ entry.ExternalReference }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.ExternalReference"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-text-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Additional Reference -->
+            <ng-container *ngIf="showAdditionalReference(entry)">
+                <t-form-group-dynamic [label]="'Entry_AdditionalReference' | translate"
+                    [serverErrors]="entry.serverErrors?.AdditionalReference">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.AdditionalReference">
+                        <div class="text-truncate">
+                            {{ entry.AdditionalReference }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.AdditionalReference"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-text-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Noted Agent -->
+            <ng-container *ngIf="showNotedAgent(entry)">
+                <t-form-group-dynamic [label]="'Entry_NotedAgent' | translate"
+                    [serverErrors]="entry.serverErrors?.NotedAgent">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAgentId">
+                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
+                            [itemId]="entry.NotedAgentId">
+                            {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
+                        </t-view-link>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-agents-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedAgentId"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-agents-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Noted Agent Name -->
+            <ng-container *ngIf="showNotedAgentName(entry)">
+                <t-form-group-dynamic [label]="'Entry_NotedAgentName' | translate"
+                    [serverErrors]="entry.serverErrors?.NotedAgentName">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAgentName">
+                        <div class="text-truncate">
+                            {{ entry.NotedAgentName }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedAgentName"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-text-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Noted Amount -->
+            <ng-container *ngIf="showNotedAmount(entry)">
+                <t-form-group-dynamic [label]="'Entry_NotedAmount' | translate"
+                    [serverErrors]="entry.serverErrors?.NotedAmount">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAmount">
+                        <div class="text-truncate">
+                            {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-decimal-editor *ngIf="isEdit && !readonly" [minDecimalPlaces]="MonetaryValue_decimals(entry)"
+                        [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="entry.NotedAmount"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-decimal-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Noted Date -->
+            <ng-container *ngIf="showNotedDate(entry)">
+                <t-form-group-dynamic [label]="'Entry_NotedDate' | translate"
+                    [serverErrors]="entry.serverErrors?.NotedDate">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedDate">
+                        <div class="text-truncate">
+                            {{ entry.NotedDate | date:'yyyy-MM-dd' }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-date-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedDate"
+                        (ngModelChange)="update.call(null, pair);">
+                    </t-date-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+        </div>
+    </ng-template>
+
+    <!-- Center -->
+    <ng-template #header_Center>{{ 'Entry_Center' | translate }}</ng-template>
+    <ng-template #row_Center let-pair="item" let-entry="item.entry" let-index="index" let-update="update" let-readonly="argument">
+        <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.CenterId">
+            <t-view-link link="../../../centers" [itemId]="entry.CenterId">
+                {{ ws.getMultilingualValue('Center', entry.CenterId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <ng-container *ngIf="isEdit && !readonly">
+            <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
+                <t-centers-picker *ngIf="!account(entry)?.CenterId" [(ngModel)]="entry.CenterId"
+                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true">
+                </t-centers-picker>
+                <t-restricted *ngIf="!!account(entry)?.CenterId" [metadata]="entry.EntityMetadata?.CenterId">
+                    {{ ws.getMultilingualValue('Center', account(entry)?.CenterId, 'Name') }}
+                </t-restricted>
+            </t-form-group-dynamic>
+        </ng-container>
+    </ng-template>
+
+    <!-- Debit -->
+    <ng-template #header_Debit>
+        <div style="float: right">{{ ('Debit' | translate) + functionalPostfix }}</div>
+    </ng-template>
+    <ng-template #row_Debit let-pair="item" let-entry="item.entry" let-index="index" let-update="update" let-readonly="argument">
+        <t-restricted class="h-100" *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Value">
+            <div style="float: right">{{ getDebit(entry) | number:functional_format }}</div>
+        </t-restricted>
+        <t-form-group-dynamic *ngIf="isEdit && !readonly" class="t-form-group" [serverErrors]="entry.serverErrors?.Value">
+            <t-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="functional_decimals"
+                [minDecimalPlaces]="functional_decimals" textAlignment="right"
+                (ngModelChange)="setDebit(entry, $event); update.call(null, pair);"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-decimal-editor>
+        </t-form-group-dynamic>
+    </ng-template>
+
+    <!-- Credit -->
+    <ng-template #header_Credit>
+        <div style="float: right">{{ ('Credit' | translate) + functionalPostfix }}</div>
+    </ng-template>
+    <ng-template #row_Credit let-pair="item" let-entry="item.entry" let-index="index" let-update="update" let-readonly="argument">
+        <t-restricted class="h-100" *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Value">
+            <div style="float: right">{{ getCredit(entry) | number:functional_format }}</div>
+        </t-restricted>
+        <t-form-group-dynamic *ngIf="isEdit && !readonly" class="t-form-group" [serverErrors]="entry.serverErrors?.Value">
+            <t-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="functional_decimals"
+                [minDecimalPlaces]="functional_decimals" textAlignment="right"
+                (ngModelChange)="setCredit(entry, $event); update.call(null, pair);"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-decimal-editor>
+        </t-form-group-dynamic>
+    </ng-template>
+
+    <!-- Memo -->
+    <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+    <ng-template #row_Memo let-pair="item" let-line="item.line" let-index="index" let-update="update" let-readonly="argument">
+        <t-form-group-dynamic class="t-form-group" [serverErrors]="line.serverErrors?.Memo">
+            <div *ngIf="!isEdit || readonly">
+                <t-restricted [metadata]="line.EntityMetadata?.Memo">{{ line.Memo }}</t-restricted>
+            </div>
+            <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="line.Memo" (ngModelChange)="update.call(null, pair)"
+                [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+        </t-form-group-dynamic>
+    </ng-template>
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">

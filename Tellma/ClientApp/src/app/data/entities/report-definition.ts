@@ -312,11 +312,13 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
         };
 
         if (!ws.settings.SecondaryLanguageId) {
-            delete _cache.properties.Name2;
+            delete _cache.properties.Title2;
+            delete _cache.properties.Description2;
         }
 
         if (!ws.settings.TernaryLanguageId) {
-            delete _cache.properties.Name3;
+            delete _cache.properties.Title3;
+            delete _cache.properties.Description3;
         }
     }
 

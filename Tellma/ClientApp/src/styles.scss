@@ -709,7 +709,7 @@ input::-ms-clear {
 
 // the below code styles the state flow chart, credit goes to
 // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
-$flow-state-active: #f1f2f3; // #eaebec; // $hover-highlight-color;
+$flow-state-active: #f1f2f3; // #e0e0e0; // #eaebec; // $hover-highlight-color;
 $flow-border: $gray-300;
 $flow-state: white;
 $flow-text: $secondary;

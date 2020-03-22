@@ -56,8 +56,8 @@ namespace Tellma.Entities
         public string ExternalId { get; set; }
 
         [Display(Name = "State")]
-        [ChoiceList(new object[] { "New", "Confirmed" }, 
-            new string[] { "User_New", "User_Confirmed" })]
+        [ChoiceList(new object[] { "Invited", "Member" }, 
+            new string[] { "User_Invited", "User_Member" })]
         public string State { get; set; }
 
         [Display(Name = "User_LastActivity")]

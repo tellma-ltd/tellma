@@ -91,11 +91,11 @@ export class TableComponent implements OnInit, OnChanges {
 
     if (!!this._dataSourceCopy) {
       let placeholder: EntityForSave = {};
+      placeholder[this.PH] = true;
       if (this.onNewItem) {
         placeholder = this.onNewItem(placeholder);
       }
 
-      placeholder[this.PH] = true;
       this._dataSourceCopy.push(placeholder);
 
       if (updateArrayRef) {

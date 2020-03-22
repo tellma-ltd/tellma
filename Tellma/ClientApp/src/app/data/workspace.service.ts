@@ -697,8 +697,8 @@ export class MasterDetailsStore {
   detailsId: string | number;
   detailsStatus: DetailsStatus;
 
-  cloneId?: string; // when cloning
-  tab?: string; // details that have tabs may store the tab value here
+  // custom details state
+  detailsState: { [key: string]: any } = {}; // Stores other miscellaneous
 
   public get isTreeMode(): boolean {
     return this.displayMode === MasterDisplayMode.tree && (!this.orderby || this.orderby === 'Node');
@@ -974,6 +974,16 @@ export class WorkspaceService {
    * Indicates that the client appears to be offline, signals the root shell to show an offline indicator
    */
   public offline = false;
+
+  /**
+   * To communicate to a details component that it should launch in edit mode
+   */
+  public isEdit?: boolean;
+
+  /**
+   * To communicate to a details component that it should clone the provided Id
+   */
+  public cloneId?: number | string;
 
   /**
    * Notifies that something has changed in workspace.

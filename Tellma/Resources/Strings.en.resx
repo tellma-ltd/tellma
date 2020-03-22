@@ -1912,17 +1912,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>Companies</value>
   </data>
-  <data name="User_Confirmed" xml:space="preserve">
-    <value>Confirmed</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>Email</value>
+  </data>
+  <data name="User_Invited" xml:space="preserve">
+    <value>Invited</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>Last Activity</value>
   </data>
-  <data name="User_New" xml:space="preserve">
-    <value>Invited</value>
+  <data name="User_Member" xml:space="preserve">
+    <value>Member</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>Permissions</value>

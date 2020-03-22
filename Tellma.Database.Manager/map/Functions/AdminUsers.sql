@@ -2,5 +2,5 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[AdminUsers]
+	SELECT *, IIF(ExternalId IS NULL, 'Invited', 'Member') As [State] FROM [dbo].[AdminUsers]
 );

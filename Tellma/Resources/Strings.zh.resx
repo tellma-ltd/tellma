@@ -1912,17 +1912,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>公司</value>
   </data>
-  <data name="User_Confirmed" xml:space="preserve">
-    <value>确认</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>电子邮件</value>
+  </data>
+  <data name="User_Invited" xml:space="preserve">
+    <value>邀请</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>最近活动</value>
   </data>
-  <data name="User_New" xml:space="preserve">
-    <value>邀请</value>
+  <data name="User_Member" xml:space="preserve">
+    <value>确认</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>权限</value>

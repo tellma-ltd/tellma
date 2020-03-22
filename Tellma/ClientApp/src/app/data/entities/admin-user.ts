@@ -48,18 +48,18 @@ export function metadata_AdminUser(wss: WorkspaceService, trx: TranslateService)
                 State: {
                     control: 'state',
                     label: () => trx.instant('State'),
-                    choices: ['New', 'Confirmed'],
+                    choices: ['Invited', 'Member'],
                     format: (c: string) => {
                         switch (c) {
-                            case 'New': return trx.instant('User_New');
-                            case 'Confirmed': return trx.instant('User_Confirmed');
+                            case 'Invited': return trx.instant('User_Invited');
+                            case 'Member': return trx.instant('User_Member');
                             default: return c;
                         }
                     },
                     color: (c: string) => {
                         switch (c) {
-                            case 'New': return '#6c757d';
-                            case 'Confirmed': return '#28a745';
+                            case 'Invited': return '#6c757d';
+                            case 'Member': return '#28a745';
                             default: return c;
                         }
                     }

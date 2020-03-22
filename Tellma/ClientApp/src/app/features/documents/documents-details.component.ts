@@ -15,7 +15,7 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, toLocalDateISOString } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError, Observable } from 'rxjs';
+import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -29,6 +29,25 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+
+type DocumentDetailsView = 'Managerial' | 'Accounting';
+interface LineEntryPair { entry: EntryForSave; line: LineForSave; }
+
+interface DocumentDetailsState {
+  tab: string;
+  view: DocumentDetailsView;
+}
+
+/**
+ * Hashes one dimension of an aggregate result for the pivot table
+ */
+interface HashTable {
+  values?: { [value: string]: HashTable };
+  undefined?: HashTable;
+
+  lineIds?: number[];
+  signatureIds?: number[];
+}
 
 interface DocumentEventBase {
   time: string;
@@ -102,16 +121,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public comment: string;
   public picSize = 36;
 
-  public get activeTab(): string {
-    return this.state.tab;
-  }
-
-  public set activeTab(v: string) {
-    if (this.state.tab !== v) {
-      this.state.tab = v;
-    }
-  }
-
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
@@ -164,39 +173,88 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   ngOnInit() {
 
     const handleFreshStateFromUrl = (params: ParamMap) => {
-      if (this.isScreenMode) {
-        // Definitoin Id
-        const definitionId = params.get('definitionId');
 
-        if (this.definitionId !== definitionId) {
-          this.definitionId = definitionId;
-        }
+      if (this.isScreenMode) {
+        // Definitoin Id, must set before retrieving the state
+        this.definitionId = params.get('definitionId') || '';
+
+        // When set to true, it means the url is out of step with the state
+        let needsUrlStateChange = false;
+        const s = this.state.detailsState as DocumentDetailsState;
 
         // Active tab
-        if (params.has('tab')) {
-          this.activeTab = params.get('tab');
+        const urlTab = params.get('tab');
+        if (!!urlTab) {
+          s.tab = urlTab;
+        } else if (!!s.tab) { // Prevents infinite loop
+          needsUrlStateChange = true;
+        }
+
+        const urlView = params.get('view') as DocumentDetailsView;
+        if (urlView === 'Managerial' || urlView === 'Accounting') {
+          s.view = urlView;
         } else {
-          if (!!this.activeTab) {
-            this.onTabChange(this.activeTab, false);
+          if (!s.view) {
+            s.view = 'Managerial'; // Default
           }
+          needsUrlStateChange = true;
+        }
+
+        // The URL is out of step with the state => sync the two
+        // This happens when we navigate to the screen again 2nd time
+        if (needsUrlStateChange) {
+          this.urlStateChange();
         }
       }
     };
 
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl)); // future changes
     handleFreshStateFromUrl(this.route.snapshot.paramMap); // right now
-    this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl); // future changes
   }
 
-  public onTabChange(newTabId: string, isEdit: boolean) {
-    this.activeTab = newTabId;
-
-    if (this.isScreenMode && !isEdit) {
-      // Capture the new tab id in the URL
+  private urlStateChange(): void {
+    if (this.isScreenMode) {
       const params: Params = {
-        tab: newTabId
       };
 
+      const s = this.state.detailsState as DocumentDetailsState;
+      if (!!s.tab) {
+        params.tab = s.tab;
+      }
+
+      if (!!s.view) {
+        params.view = s.view;
+      }
+
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    }
+  }
+
+  public setActiveTab(newTab: string) {
+    (this.state.detailsState as DocumentDetailsState).tab = newTab;
+    this.urlStateChange();
+  }
+
+  public getActiveTab(model: Document): string {
+    // Special tabs, TODO: Remove
+    const s = this.state.detailsState as DocumentDetailsState;
+    if (s.tab === 'Attachment') {
+      return 'Attachment';
+    }
+
+    if (this.isAccounting) {
+      // Accounting view only has 1 tab
+      return '_Entries';
+    } else {
+      // Managerial view can have multiple tabs, make sure the selected one is visible
+      const visibleTabs = this.visibleTabs(model);
+      if (visibleTabs.some(e => e === s.tab)) {
+        return s.tab;
+      } else {
+        // Get the first visible tab
+        return visibleTabs[0];
+      }
     }
   }
 
@@ -1397,17 +1455,62 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.translate.instant('RequiredSigner_' + Math.abs(signature.ToState));
   }
 
-  /////////// New stuff
-
-  public onInsert(line: LineForSave, model: Document): void {
-    model.Lines.push(line);
+  private isTooEarlyForThisSignature(signature: RequiredSignature): boolean {
+    return signature.LastUnsignedState < signature.ToState;
   }
 
-  public onDelete(line: LineForSave, model: Document): void {
+  private areNegativeLines(signature: RequiredSignature): boolean {
+    return !!signature.LastNegativeState;
+  }
+
+  public disableSign(signature: RequiredSignature, lineDefId: string, model: Document): boolean {
+    if (!model) {
+      return false;
+    }
+
+    return model.PostingState === -1 ||
+      model.PostingState === 1 ||
+      this.isTooEarlyForThisSignature(signature) ||
+      this.areNegativeLines(signature);
+  }
+
+  public signTooltip(signature: RequiredSignature, lineDefId: string, model: Document) {
+    if (!model) {
+      return null;
+    } else if (model.PostingState === 1) {
+      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
+    } else if (model.PostingState === -1) {
+      return this.translate.instant('Error_UncancelDocumentBeforeEdit');
+    } else if (this.areNegativeLines(signature)) {
+      // These lines are already in a negative state, it's pointless to sign them again
+      const stateDisplay = this.actionDisplay(signature.LastNegativeState);
+      const lines = this.lineIds(signature) || [];
+      return this.translate.instant(lines.length === 1 ? 'LineAlreadyInState0' : 'LinesAlreadyInState0', { 0: stateDisplay });
+
+    } else if (this.isTooEarlyForThisSignature(signature)) {
+      // There is a preceding positive state that hasn't been reached yet, so not yet the time to sign for this state
+      const stateDisplay = this.actionDisplay(signature.LastUnsignedState);
+      const lines = this.lineIds(signature) || [];
+      return this.translate.instant(lines.length === 1 ? 'LineIsNotYetInState0' : 'LinesAreNotYetInState0', { 0: stateDisplay });
+
+    } else {
+      return null;
+    }
+  }
+
+  /////////// Lines and Tabs
+
+  public onInsertSmartLine(line: LineForSave, model: Document): void {
+    model.Lines.push(line);
+    this._computeEntriesModel = null; // Force refresh the entries view
+  }
+
+  public onDeleteSmartLine(line: LineForSave, model: Document): void {
     const index = model.Lines.indexOf(line);
     if (index > -1) {
       model.Lines.splice(index, 1);
     }
+    this._computeEntriesModel = null; // Force refresh the entries view
   }
 
   private computeTabs(model: Document): void {
@@ -1484,11 +1587,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public visibleTabs(model: Document): string[] {
+
     this.computeTabs(model);
     return this._visibleTabs;
   }
 
   public invisibleTabs(model: Document): string[] {
+
     this.computeTabs(model);
     return this._invisibleTabs;
   }
@@ -1497,26 +1602,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._visibleTabs.push(lineDefId);
     this._visibleTabs = this._visibleTabs.slice();
     this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
-    this.activeTab = lineDefId;
-  }
 
-  public getActiveTab(model: Document) {
-    // Special tabs, TODO: Remove
-    if (this.activeTab === 'Attachment') {
-      return 'Attachment';
-    }
-
-    const visibleTabs = this.visibleTabs(model);
-    if (visibleTabs.some(e => e === this.activeTab)) {
-      return this.activeTab;
-    } else {
-      return visibleTabs[0];
-    }
+    this.setActiveTab(lineDefId);
   }
 
   public tabTitle(lineDefId: string, model: DocumentForSave): string {
     if (lineDefId === 'ManualLine' && this.definitionId === 'manual-journal-vouchers') {
-      return this.translate.instant('Lines');
+      return this.translate.instant('Entries');
     }
 
     const def = this.lineDefinition(lineDefId);
@@ -1551,6 +1643,84 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._lines[lineDefId];
   }
 
+  // WIP
+
+
+  public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
+    // Called when the user inserts a new entry
+    model.Lines.push(pair.line);
+  }
+
+  public onDeleteManualEntry(pair: LineEntryPair, model: Document): void {
+    // Called when the user deletes an entry
+    const index = model.Lines.indexOf(pair.line);
+    if (index > -1) {
+      model.Lines.splice(index, 1);
+    }
+  }
+
+  public onNewManualEntry = (pair: LineEntryPair) => {
+    // Called when a new entry is created, including placeholder entry
+
+    // Set the entry
+    pair.entry = {
+      Direction: 1
+    };
+
+    // Set the line
+    pair.line = {
+      DefinitionId: 'ManualLine',
+      Entries: [pair.entry]
+    };
+
+    return pair;
+  }
+
+  // tslint:disable:member-ordering
+  private _smartEntries: LineEntryPair[];
+  private _manualEntries: LineEntryPair[];
+  private _computeEntriesModel: DocumentForSave;
+
+  private computeEntries(model: Document): void {
+    if (!model) {
+      return;
+    }
+
+    if (this._computeEntriesModel !== model) {
+      this._computeEntriesModel = model;
+      this._smartEntries = [];
+      this._manualEntries = [];
+
+      if (!!model.Lines) {
+        model.Lines.forEach(line => {
+          if (!!line.Entries) {
+            line.Entries.forEach(entry => {
+              if (line.DefinitionId === 'ManualLine') {
+                this._manualEntries.push({ entry, line });
+              } else {
+                this._smartEntries.push({ entry, line });
+              }
+            });
+          }
+        });
+      }
+    }
+  }
+
+  public smartEntries(model: Document): LineEntryPair[] {
+    this.computeEntries(model);
+    return this._smartEntries;
+  }
+
+  public manualEntries(model: Document): LineEntryPair[] {
+    this.computeEntries(model);
+    return this._manualEntries;
+  }
+
+
+
+
+
   public showLineErrors(lineDefId: string, model: Document) {
     return !!model && !!model.Lines &&
       model.Lines.some(line => lineDefId === line.DefinitionId && (!!line.serverErrors ||
@@ -1562,27 +1732,27 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       model.Attachments.some(att => !!att.serverErrors);
   }
 
-  public columnPaths(lineDefId: string, model: DocumentForSave): string[] {
-    if (lineDefId === 'ManualLine') {
-      const paths = ['AccountId', 'Debit', 'Credit'];
+  public smartColumnPaths(lineDefId: string, model: DocumentForSave): string[] {
+    // All line definitions other than 'ManualLine'
+    const lineDef = this.ws.definitions.Lines[lineDefId];
+    const isMultiRS = this.ws.settings.IsMultiCenter;
+    return !!lineDef && !!lineDef.Columns ? lineDef.Columns
+      .filter(e => isMultiRS || e.ColumnName !== 'CenterId') // Hide Center columns when there is only one
+      .map((_, index) => index + '') : [];
+  }
 
-      if (this.ws.settings.IsMultiCenter) {
-        paths.splice(1, 0, 'Center');
-      }
+  public manualColumnPaths(model: DocumentForSave): string[] {
+    const paths = ['AccountId', 'Debit', 'Credit'];
 
-      if (!model.MemoIsCommon || this.definitionId !== 'manual-journal-vouchers') {
-        paths.unshift('Memo');
-      }
-
-      return paths;
-    } else {
-      // All line definitions other than 'ManualLine'
-      const lineDef = this.ws.definitions.Lines[lineDefId];
-      const isMultiRS = this.ws.settings.IsMultiCenter;
-      return !!lineDef && !!lineDef.Columns ? lineDef.Columns
-        .filter(e => isMultiRS || e.ColumnName !== 'CenterId') // Hide Center columns when there is only one
-        .map((_, index) => index + '') : [];
+    if (this.ws.settings.IsMultiCenter) {
+      paths.splice(1, 0, 'Center');
     }
+
+    if (!model.MemoIsCommon || this.definitionId !== 'manual-journal-vouchers') {
+      paths.push('Memo');
+    }
+
+    return paths;
   }
 
   public columnTemplates(lineDefId: string, model: DocumentForSave, header: TemplateRef<any>, row: TemplateRef<any>): {
@@ -1604,7 +1774,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } = {};
 
     // Add as many templates as there are columns
-    const columnCount = this.columnPaths(lineDefId, model).length;
+    const columnCount = this.smartColumnPaths(lineDefId, model).length;
     for (let colIndex = 0; colIndex < columnCount; colIndex++) {
       templates[colIndex + ''] = {
         headerTemplate: header,
@@ -1728,30 +1898,28 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return (line.State || 0) >= colDef.RequiredState;
   }
 
-  public onNewLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
+  public onNewSmartLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
     if (this._onNewLineFactoryLineDefId !== lineDefId) {
       this._onNewLineFactoryLineDefId = lineDefId;
       this._onNewLineFactoryResult = (item) => {
+        // set the definition Id
         item.DefinitionId = lineDefId;
-        if (lineDefId === 'ManualLine') {
-          item.Entries = [{ Direction: 1 }];
-        } else {
-          // Add the specified number of entries
-          item.Entries = [];
-          const lineDef = this.lineDefinition(lineDefId);
-          if (!!lineDef) {
-            if (lineDef.Entries) {
-              for (let i = 0; i < lineDef.Entries.length; i++) {
-                const entryDef = lineDef.Entries[i];
-                item.Entries[i] = { Direction: entryDef.Direction };
-              }
-            } else {
-              console.error(`Line definition ${lineDefId} is missing its Entries`);
+        // Add the specified number of entries
+        item.Entries = [];
+        const lineDef = this.lineDefinition(lineDefId);
+        if (!!lineDef) {
+          if (lineDef.Entries) {
+            for (let i = 0; i < lineDef.Entries.length; i++) {
+              const entryDef = lineDef.Entries[i];
+              item.Entries[i] = { Direction: entryDef.Direction };
             }
           } else {
-            console.error(`Missing line definition ${lineDefId}`);
+            console.error(`Line definition ${lineDefId} is missing its Entries`);
           }
+        } else {
+          console.error(`Missing line definition ${lineDefId}`);
         }
+
         return item;
       };
     }
@@ -1794,9 +1962,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     let newLine: LineForSave = {};
-    newLine = this.onNewLineFactory(lineDefId)(newLine);
+    newLine = this.onNewSmartLineFactory(lineDefId)(newLine);
     this.lines(lineDefId, model).push(newLine);
-    this.onInsert(newLine, model);
+    this.onInsertSmartLine(newLine, model);
   }
 
   public onDeleteForm(lineDefId: string, model: DocumentForSave) {
@@ -1807,7 +1975,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lines = this.lines(lineDefId, model);
     if (lines.length === 1) {
       const line = lines.pop();
-      this.onDelete(line, model);
+      this.onDeleteSmartLine(line, model);
     }
   }
 
@@ -1894,7 +2062,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     //// !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
   }
 
-  // Posting State
+  ////////////// Posting State
 
   public onPostingState(
     doc: Document,
@@ -1936,7 +2104,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       requiredSignatures.some(e => !e.SignedById);
   }
 
-  private pendingLines(_: Document, requiredSignatures: RequiredSignature[]): boolean {
+  private someWorkflowLinesAreNotNegative(_: Document, requiredSignatures: RequiredSignature[]): boolean {
     // There are pending lines either if some of the lines have state > 0 OR if some signatures are still pending
     return (!!requiredSignatures && requiredSignatures.length > 0 &&
       requiredSignatures.some(e => !e.LastNegativeState));
@@ -1984,14 +2152,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // OR missing permissions
       !this.hasPermissionToUpdateState(doc) ||
       // OR some lines are still pending
-      this.pendingLines(doc, requiredSignatures);
+      this.someWorkflowLinesAreNotNegative(doc, requiredSignatures);
   }
 
   public cancelTooltip(doc: Document, requiredSignatures: RequiredSignature[]): string {
 
     if (!this.hasPermissionToUpdateState(doc)) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
-    } else if (this.pendingLines(doc, requiredSignatures)) {
+    } else if (this.someWorkflowLinesAreNotNegative(doc, requiredSignatures)) {
       return this.translate.instant('Error_AllLinesMustBeInNegativeState');
     }
 
@@ -2012,59 +2180,72 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  // TODO: Move next to required signatures stuff
+  ////////////// Accounting vs. Managerial
 
-  private isTooEarlyForThisSignature(signature: RequiredSignature): boolean {
-    return signature.LastUnsignedState < signature.ToState;
+  public get isManagerial(): boolean {
+    return (this.state.detailsState as DocumentDetailsState).view === 'Managerial';
   }
 
-  private areNegativeLines(signature: RequiredSignature): boolean {
-    return !!signature.LastNegativeState;
+  public get isAccounting(): boolean {
+    return (this.state.detailsState as DocumentDetailsState).view === 'Accounting';
   }
 
-  public disableSign(signature: RequiredSignature, lineDefId: string, model: Document): boolean {
-    if (!model) {
-      return false;
-    }
-
-    return model.PostingState === -1 ||
-      model.PostingState === 1 ||
-      this.isTooEarlyForThisSignature(signature) ||
-      this.areNegativeLines(signature);
+  public onManagerialView() {
+    const s = this.state.detailsState as DocumentDetailsState;
+    s.view = 'Managerial';
+    this.urlStateChange();
   }
 
-  public signTooltip(signature: RequiredSignature, lineDefId: string, model: Document) {
-    if (!model) {
-      return null;
-    } else if (model.PostingState === 1) {
-      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
-    } else if (model.PostingState === -1) {
-      return this.translate.instant('Error_UncancelDocumentBeforeEdit');
-    } else if (this.areNegativeLines(signature)) {
-      // These lines are already in a negative state, it's pointless to sign them again
-      const stateDisplay = this.actionDisplay(signature.LastNegativeState);
-      const lines = this.lineIds(signature) || [];
-      return this.translate.instant(lines.length === 1 ? 'LineAlreadyInState0' : 'LinesAlreadyInState0', { 0: stateDisplay });
+  public onAccountingView() {
+    const s = this.state.detailsState as DocumentDetailsState;
+    s.view = 'Accounting';
+    this.urlStateChange();
+  }
 
-    } else if (this.isTooEarlyForThisSignature(signature)) {
-      // There is a preceding positive state that hasn't been reached yet, so not yet the time to sign for this state
-      const stateDisplay = this.actionDisplay(signature.LastUnsignedState);
-      const lines = this.lineIds(signature) || [];
-      return this.translate.instant(lines.length === 1 ? 'LineIsNotYetInState0' : 'LinesAreNotYetInState0', { 0: stateDisplay });
+  // Accounting View
 
+  public entriesCount(doc: DocumentForSave) {
+    if (!!doc && !!doc.Lines) {
+      return doc.Lines
+        .map(line => !!line.Entries ? line.Entries.length : 0)
+        .reduce((total, v) => total + v, 0);
     } else {
-      return null;
+      return 0;
     }
+  }
+
+  public get hasManualLines(): boolean {
+    return this.ws.definitions.Documents[this.definitionId].LineDefinitions
+      .some(e => e.LineDefinitionId === 'ManualLine');
   }
 }
 
-/**
- * Hashes one dimension of an aggregate result for the pivot table
- */
-interface HashTable {
-  values?: { [value: string]: HashTable };
-  undefined?: HashTable;
+/* Rules for showing and hiding chart states
 
-  lineIds?: number[];
-  signatureIds?: number[];
-}
+-------- IsActive
+[-4] !PostingState and !!CanReachState4 and State === -4
+[-3] !PostingState and !!CanReachState4 and State === -3
+[-2] !PostingState and !!CanReachState4 and State === -2
+[-1] !PostingState and !!CanReachState4 and State === -1
+[0] !PostingState and !!CanReachState4 and State === 0
+[1] !PostingState and !!CanReachState4 and State === 1
+[2] !PostingState and !!CanReachState4 and State === 2
+[3] !PostingState and !!CanReachState4 and State === 3
+[4] !PostingState and !!CanReachState4 and State === 4
+[Current] !PostingState and !CanReachState4
+[Posted] PostingState === 1
+[Canceled] PostingState === -1
+
+--------- IsVisible (In +ve state and wide screen)
+[0] !!CanReachState4
+[1] (!!CanReachState4 && CanReachState1) || isActive(1)
+[2] (!!CanReachState4 && CanReachState2) || isActive(2)
+[3] (!!CanReachState4 && CanReachState3) || isActive(3)
+[4] !!CanReachState4 || isActive(4)
+[Current] !CanReachState4
+[Posted] Always
+
+--------- IsVisible (In -ve state or narrow screen)
+IsVisible = IsActive
+
+*/

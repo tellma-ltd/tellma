@@ -1912,17 +1912,17 @@
   <data name="User_Companies" xml:space="preserve">
     <value>ኩባንያዎች</value>
   </data>
-  <data name="User_Confirmed" xml:space="preserve">
-    <value>ተረጋግጧል</value>
-  </data>
   <data name="User_Email" xml:space="preserve">
     <value>ኢሜይል</value>
+  </data>
+  <data name="User_Invited" xml:space="preserve">
+    <value>የተጋበዙ</value>
   </data>
   <data name="User_LastActivity" xml:space="preserve">
     <value>የመጨረሻው እንቅስቃሴ</value>
   </data>
-  <data name="User_New" xml:space="preserve">
-    <value>የተጋበዙ</value>
+  <data name="User_Member" xml:space="preserve">
+    <value>ተረጋግጧል</value>
   </data>
   <data name="User_Permissions" xml:space="preserve">
     <value>ፍቃዶች</value>

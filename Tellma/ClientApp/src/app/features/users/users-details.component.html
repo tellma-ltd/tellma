@@ -17,11 +17,11 @@
   <div class="w-100 t-document-header d-flex justify-content-end">
     <t-restricted [metadata]="model?.EntityMetadata?.ExternalId">
       <div class="t-flow-chart small">
-        <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
-        <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
+        <div [class.active]="!model?.ExternalId"><span>{{'User_Invited' | translate}}</span></div>
+        <div [class.active]="!!model?.ExternalId"><span>{{'User_Member' | translate}}</span></div>
       </div>
       <div class="small t-lone-state active d-none">
-        <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
+        <span>{{ (!!model?.ExternalId ? 'User_Member' : 'User_Invited') | translate }}</span>
       </div>
     </t-restricted>
   </div>

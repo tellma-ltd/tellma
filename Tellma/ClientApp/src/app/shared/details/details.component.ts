@@ -266,22 +266,20 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return !!meta ? meta.apiEndpoint : null;
   }
 
-  private fetch() {
-    this.notifyFetch$.next(null);
-  }
-
-  private getAndCleanCloneId(): string {
-    const cloneId = this.state.cloneId;
-    delete this.state.cloneId;
+  private getAndClearCloneId() {
+    const cloneId = this.workspace.cloneId;
+    delete this.workspace.cloneId;
     return cloneId;
   }
 
-  private getAndCleanShowInEditMode(): boolean {
-    return false;
+  private getAndClearIsEdit() {
+    const isEdit = this.workspace.isEdit;
+    delete this.workspace.isEdit;
+    return isEdit;
+  }
 
-    // const showInEditMode = this.state.showInEditMode;
-    // delete this.state.showInEditMode;
-    // return showInEditMode;
+  private fetch() {
+    this.notifyFetch$.next(null);
   }
 
   private doFetch(): Observable<void> {
@@ -292,8 +290,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     const s = this.state;
 
     // calculate some logical values
-    const cloneId = this.getAndCleanCloneId();
-    const showInEditMode = this.getAndCleanShowInEditMode();
+    const cloneId = this.getAndClearCloneId();
+    const showInEditMode = this.getAndClearIsEdit();
     const isCloning = !!cloneId;
     const isNewNotClone = this.isNew && !isCloning;
     const isCloneOfAvailableItem = isCloning && !!this.workspace.current[this.collection][cloneId];
@@ -333,6 +331,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     } else {
       // IF it's the last viewed item also don't do anything
       if (!!s.detailsId && s.detailsId.toString() === this.idString && s.detailsStatus === DetailsStatus.loaded) {
+        if (showInEditMode) {
+          this.onEdit();
+        }
+
         // the application caches the last record that was viewed by the user
         // if the new id is equal to the Id of the last record then just display
         // that last record. This is helpful when navigating to Id after a create new
@@ -417,8 +419,24 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return this.workspace.current.mdState[this.apiEndpoint];
   }
 
-  public canDeactivate(): boolean | Observable<boolean> {
-    if (this.isDirty) {
+  public canDeactivate(currentUrl?: string, nextUrl?: string): boolean | Observable<boolean> {
+    // When the details screen changes its url state, the guard calls canDeactivate, and that
+    // normally triggers a confirmation modal if the model is dirty, here we fix this
+    let justUrlStateUpdate = false;
+    if (!!currentUrl && !!nextUrl) {
+      const currentPieces = currentUrl.split('/');
+      const nextPieces = nextUrl.split('/');
+
+      const currentIdPiece = currentPieces.pop().split(';')[0];
+      const nextIdPiece = nextPieces.pop().split(';')[0];
+
+      const currentPath = currentPieces.join('/');
+      const nextPath = currentPieces.join('/');
+
+      justUrlStateUpdate = currentPath === nextPath && currentIdPiece === nextIdPiece;
+    }
+
+    if (this.isDirty && !justUrlStateUpdate) {
 
       // IF there are unsaved changes, prompt the user asking if they would like them discarded
       const modal = this.modalService.open(this.unsavedChangesModal);
@@ -665,8 +683,15 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       return;
     }
 
-    this.state.cloneId = this.activeModel.Id.toString();
-    this.router.navigate(['..', 'new'], { relativeTo: this.route });
+    const ws = this.workspace;
+    ws.cloneId = this.activeModel.Id.toString();
+    this.router.navigate(['..', 'new'], { relativeTo: this.route })
+      .then(success => {
+        if (!success) {
+          delete ws.cloneId;
+        }
+      })
+      .catch(_ => delete ws.cloneId);
   }
 
   get canClone(): boolean {

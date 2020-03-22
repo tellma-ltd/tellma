@@ -245,7 +245,6 @@ namespace Tellma.Controllers
                 CollectionName = GetCollectionName(typeof(User)),
                 RelatedEntities = relatedEntities
             };
-
         }
 
         private async Task<GetByIdResponse<User>> SaveMyUserImpl([FromBody] MyUserForSave me)

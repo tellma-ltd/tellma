@@ -36,6 +36,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
+  public _subscriptions: Subscription;
 
   @ViewChild(DetailsComponent, { static: false })
   set details(v: DetailsComponent) {
@@ -84,11 +85,15 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
     }
 
     this.notifyDestruct$.next();
+
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
+    }
   }
 
   // triggers the user confirmation modal
-  canDeactivate(): boolean | Observable<boolean> {
-    return !!this.details ? this.details.canDeactivate() : true;
+  canDeactivate(currentUrl: string, nextUrl: string): boolean | Observable<boolean> {
+    return !!this.details ? this.details.canDeactivate(currentUrl, nextUrl) : true;
   }
 
   getMultilingualValue(item: any, propName: string, ws: TenantWorkspace) {

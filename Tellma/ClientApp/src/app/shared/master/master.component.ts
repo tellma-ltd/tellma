@@ -224,102 +224,102 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     let displayMode: MasterDisplayMode = this.enableTreeView ?
       MasterDisplayMode.tree : MasterDisplayMode.flat; // Default search view
 
-    // here we handle the URL parameters
-    // taking a snapshot is enough as this is only required first time the screen loads
-    // subsequent changes (while the component is alive) are set in the state before the url
-    // is updated, to handle popup mode (where the URL params are not used)
-    let hasChanged = false;
+
     // const params = this.route.snapshot.paramMap;
-    const handleUrlStateChange = (params: ParamMap) => {
+    const handleFreshStateFromUrl = (params: ParamMap) => {
+
+      // here we handle the URL parameters
+      let hasChanged = false;
+      const s = this.state;
 
       if (this.isPopupMode) {
 
         // select
         const select = this.selectFromUserSettings || this.selectDefault || '';
-        if (select !== this.state.select) {
-          this.state.select = select;
+        if (select !== s.select) {
+          s.select = select;
           hasChanged = true;
         }
 
         // filter
         const filter = this.filterDefault || null;
-        if (filter !== this.state.customFilter) {
-          this.state.customFilter = filter;
+        if (filter !== s.customFilter) {
+          s.customFilter = filter;
           hasChanged = true;
         }
 
-      } else {
+      } else { // this is only in screen mode
 
-        // this is only in screen mode
+        // view: tiles vs table
         const view = params.get('view');
         if (!!view && !!SearchView[view]) {
           this.searchView = SearchView[view];
         }
 
-        // display mode: has a precise default value
+        // display mode (flat vs tree): has a precise default value
         displayMode = !!params.get('display') && !!MasterDisplayMode[params.get('display')] ?
           MasterDisplayMode[params.get('display')] : displayMode; // Default search view
 
         // select
         const urlSelect = params.get('select') || this.selectFromUserSettings || this.selectDefault || '';
-        if (urlSelect !== this.state.select) {
-          this.state.select = urlSelect;
+        if (urlSelect !== s.select) {
+          s.select = urlSelect;
           hasChanged = true;
         }
 
         // filter
         const urlFilter = params.get('filter') || null;
-        if (urlFilter !== this.state.customFilter) {
-          this.state.customFilter = urlFilter;
+        if (urlFilter !== s.customFilter) {
+          s.customFilter = urlFilter;
           hasChanged = true;
         }
 
         // search
         const urlSearch = params.get('search') || null;
-        if (urlSearch !== this.state.search) {
-          this.state.search = urlSearch;
+        if (urlSearch !== s.search) {
+          s.search = urlSearch;
           hasChanged = true;
         }
 
         // orderby
         const urlOrderby = params.get('orderby') || null;
-        if (urlOrderby !== this.state.orderby) {
-          this.state.orderby = urlOrderby;
+        if (urlOrderby !== s.orderby) {
+          s.orderby = urlOrderby;
           hasChanged = true;
         }
 
         // skip
         let urlSkip = +params.get('skip') || 0;
         urlSkip = urlSkip < 0 ? 0 : urlSkip;
-        if (urlSkip !== this.state.skip) {
-          this.state.skip = urlSkip;
+        if (urlSkip !== s.skip) {
+          s.skip = urlSkip;
           hasChanged = true;
         }
 
         // Inactive
         const urlInactiveString = params.get('inactive');
         const urlInactive = !!urlInactiveString ? (urlInactiveString.toString() === 'true') : false;
-        if (urlInactive !== !!this.state.inactive) {
-          this.state.inactive = urlInactive;
+        if (urlInactive !== !!s.inactive) {
+          s.inactive = urlInactive;
           hasChanged = true;
         }
       }
 
       // display mode: has a precise default value
-      if (this.state.displayMode !== displayMode) {
-        this.state.displayMode = displayMode;
+      if (s.displayMode !== displayMode) {
+        s.displayMode = displayMode;
         hasChanged = true;
       }
 
       // (hasChanged === true) means we navigated to this screen with different url params than last time
       // (masterStatus !== loaded) means we navigated to this master screen for the first time or after another screen
-      if (hasChanged || this.state.masterStatus !== MasterStatus.loaded) {
+      if (hasChanged || s.masterStatus !== MasterStatus.loaded) {
         this.fetch();
       }
     };
 
-    this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleUrlStateChange));
-    handleUrlStateChange(this.route.snapshot.paramMap);
+    this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl));
+    handleFreshStateFromUrl(this.route.snapshot.paramMap);
   }
 
   ngOnDestroy() {
@@ -1362,7 +1362,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     if (friendlyError.status === 422) {
       const keys = Object.keys(friendlyError.error);
-      const tracker: { [id: string]: { [error: string]: true }} = {};
+      const tracker: { [id: string]: { [error: string]: true } } = {};
       keys.forEach(key => {
         // Validation error keys are expected to look like this '[33].XYZ'
         // The code below extracts the index and maps it back to the correct id
