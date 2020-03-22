@@ -516,4 +516,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Index]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="721b4a95-75b7-46e4-bc5e-280d0442825c" ChangeDateTime="03/22/2020 06:31:35">
+    <Property Name="ElementName" Value="[api].[ExchangeVariances__Prepare]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GainLossOnExchange__Prepare]" />
+  </Operation>
 </Operations>

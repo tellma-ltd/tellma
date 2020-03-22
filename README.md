@@ -10,8 +10,8 @@ Follow the steps below to setup the solution for the first time.
 - Deploy the Tellma.Database.Application sql project in a separate database `[Tellma.101]` on the same server "."
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
 	`SqlDatabases: Id=101, ServerId=1, DatabaseName=(Name of application database), CreatedById=1, ModifiedById=1`
-	`GlobalUsers: Id=1, Email='admin@tellma.com'`
-	`GlobalUserMemberships: UserId=1, DatabaseId=101`
+	`DirectoryUsers: Id=1, Email='admin@tellma.com'`
+	`DirectoryUserMemberships: UserId=1, DatabaseId=101`
 - Repeat the steps above for the integration tests databases: `[Tellma.IntegrationTests]` and `[Tellma.IntegrationTests.101]`, this time without deploying Tellma.Database.Identity
 
 ### Application Tier

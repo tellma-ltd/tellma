@@ -21,12 +21,12 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
-INSERT INTO @Workflows([Index],[LineDefinitionIndex], 
-[ToState]) Values
-(0,0,+4);
-INSERT INTO @WorkflowSignatures([Index],[WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId]) VALUES
-(0,0,0,N'ByRole',	@1Comptroller);
+--INSERT INTO @Workflows([Index],[LineDefinitionIndex], 
+--[ToState]) Values
+--(0,0,+4);
+--INSERT INTO @WorkflowSignatures([Index],[WorkflowIndex],[LineDefinitionIndex],
+--[RuleType],			[RoleId]) VALUES
+--(0,0,0,N'ByRole',	@1Comptroller);
 --CashPaymentToSupplierAndPurchaseInvoiceVAT
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES

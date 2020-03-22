@@ -14,7 +14,7 @@
 	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
-
+IF @ProvisionData = 0 RETURN;
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
 :r .\00_Common\b_FunctionalCurrency.sql

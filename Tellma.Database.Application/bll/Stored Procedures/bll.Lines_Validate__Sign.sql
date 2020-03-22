@@ -5,6 +5,9 @@
 	@RoleId INT = NULL,
 	@ToState SMALLINT,
 	@Top INT = 10
+	--'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
+   -- 'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
+    --'ReasonId', 'ReasonDetails'
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -43,14 +46,15 @@ SET NOCOUNT ON;
 
 	DECLARE @LineIds IdList;
 	INSERT INTO @LineIds([Id]) SELECT [Id] FROM @Ids;
-	-- Cannot sign a line where CanSign = 0
-	INSERT INTO @ValidationErrors([Key], [ErrorName])		
-	SELECT DISTINCT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_UserCannotSignLine'
-	FROM map.[LinesRequiredSignatures](@LineIds) RS
-	JOIN @Ids FE ON RS.LineId = FE.Id
-	WHERE RS.CanSign = 0;
+	-- TODO: Cannot sign a line where CanSign = 0
+	--INSERT INTO @ValidationErrors([Key], [ErrorName])		
+	--SELECT DISTINCT TOP (@Top)
+	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+	--	N'Error_UserCannotSignLine'
+	--FROM map.[LinesRequiredSignatures](@LineIds) RS
+	--JOIN @Ids FE ON RS.LineId = FE.Id
+	--WHERE RS.CanSign = 0;
+
 	-- Cannot sign a current state, unless all states < abs (current state) are positive and signed.	
 	INSERT INTO @ValidationErrors([Key], [ErrorName])		
 	SELECT DISTINCT TOP (@Top)
