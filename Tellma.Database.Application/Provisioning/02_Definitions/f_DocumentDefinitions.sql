@@ -52,8 +52,8 @@ BEGIN
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',						1),
 	-- cash-payment-vouchers
-	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- to recognize expenses, fill a separate GRN/GRIV
-	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
+	(0,1,	N'CashPurchase',1), -- to recognize expenses, fill a separate GRN/GRIV
+	(1,1,	N'PaymentToOther',				1), -- for non-suppliers
 	(2,1,	N'CashTransferExchange',			1),
 	(3,1,	N'ManualLine',						1),
 	-- cash-receipt-vouchers
@@ -117,8 +117,8 @@ BEGIN
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',						1),
 	-- cash-payment-vouchers
-	(0,1,	N'CashPaymentToSupplierAndPurchaseInvoiceVAT',1), -- if goods were received, then fill a separate GRN/GRIV
-	(1,1,	N'CashPaymentToOther',				1), -- for non-suppliers
+	(0,1,	N'CashPurchase',1), -- if goods were received, then fill a separate GRN/GRIV
+	(1,1,	N'PaymentToOther',				1), -- for non-suppliers
 	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
 	(3,1,	N'ManualLine',						0),
 	-- cash-receipt-vouchers

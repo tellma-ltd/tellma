@@ -523,4 +523,23 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[GainLossOnExchange__Prepare]" />
   </Operation>
+  <Operation Name="Move Schema" Key="a70bc658-d0fb-4059-bec8-ade0b4831ded" ChangeDateTime="03/22/2020 12:30:31">
+    <Property Name="ElementName" Value="[api].[GainLossOnExchange__Prepare]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="wiz" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="515844a9-a0d6-412f-b524-3ec7d174c5b5" ChangeDateTime="03/23/2020 04:32:01">
+    <Property Name="ElementName" Value="[dbo].[ExchangeRatesView]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="NewSchema" Value="map" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e48cdc6b-4ae2-4924-9da6-3082b706a97d" ChangeDateTime="03/23/2020 04:32:39">
+    <Property Name="ElementName" Value="[map].[ExchangeRatesView]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ExchangeRates]" />
+  </Operation>
 </Operations>

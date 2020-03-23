@@ -94,6 +94,9 @@
     <Folder Include="Provisioning\07_Entries" />
     <Folder Include="Provisioning\02_Definitions\e_LineDefinitions" />
     <Folder Include="Provisioning\07_Entries\101" />
+    <Folder Include="wiz" />
+    <Folder Include="wiz\Functions" />
+    <Folder Include="wiz\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -285,7 +288,6 @@
     <Build Include="dal\Stored Procedures\dal.Action_ViewPrefix__Permissions.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
-    <Build Include="api\Stored Procedures\api.GainLossOnExchange__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Delete.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__Save.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
@@ -543,13 +545,16 @@
     <Build Include="dal\Stored Procedures\dal.ExchangeRates__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
-    <Build Include="dbo\Views\dbo.ExchangeRatesView.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
-    <Build Include="Mapping\map.ExchangeRates.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Update.sql" />
     <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
+    <Build Include="wiz\Stored Procedures\wiz.GainLossOnExchange__Prepare.sql" />
+    <Build Include="wiz\Functions\wiz.fn_MonetaryValue__Exchange.sql" />
+    <Build Include="Security\wiz.sql" />
+    <Build Include="Mapping\ExchangeRates.sql" />
+    <Build Include="Mapping\LineDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

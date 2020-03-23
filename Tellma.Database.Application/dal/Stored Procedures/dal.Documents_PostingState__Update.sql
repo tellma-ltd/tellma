@@ -16,6 +16,6 @@ WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
 AND [State] <> 4 * @PostingState
 AND [DefinitionId] IN (
 	SELECT [Id]
-	FROM dbo.[LineDefinitions]
+	FROM map.[LineDefinitions]()
 	WHERE [HasWorkflow] = 0
 );

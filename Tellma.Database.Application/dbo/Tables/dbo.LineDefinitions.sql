@@ -9,7 +9,6 @@
 	[TitlePlural]						NVARCHAR (255) NOT NULL,
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[HasWorkflow]						BIT DEFAULT 0,
 	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[ViewDefaultsToForm]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX), -- to store SQL code that populates the line

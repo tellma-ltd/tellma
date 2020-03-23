@@ -2,12 +2,17 @@
 	@ShortCompanyName NVARCHAR(255),
 	@ShortCompanyName2 NVARCHAR(255) = NULL,
 	@ShortCompanyName3 NVARCHAR(255) = NULL,
+	@FunctionalCurrencyId NCHAR(3),
 	@PrimaryLanguageId NVARCHAR(255),
-	@SecondaryLanguageId NVARCHAR(255),
-	@TernaryLanguageId NVARCHAR(255),
+	@PrimaryLanguageSymbol NVARCHAR (5) = NULL,
+	@SecondaryLanguageId NVARCHAR(255) = NULL,
+	@SecondaryLanguageSymbol NVARCHAR (5) = NULL,
+	@TernaryLanguageId NVARCHAR(255) = NULL,
+	@TernaryLanguageSymbol NVARCHAR (5) = NULL,
+	@BrandColor NCHAR (7) = NULL,
 	@DefinitionsVersion UNIQUEIDENTIFIER,
 	@SettingsVersion UNIQUEIDENTIFIER,
-	@FunctionalCurrencyId NCHAR(3),
+	@ArchiveDate DATE = '1900.01.01',
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -17,12 +22,21 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Settings_Validate__Save]
 		@ShortCompanyName = @ShortCompanyName,
+		@ShortCompanyName2 = @ShortCompanyName2,
+		@ShortCompanyName3 = @ShortCompanyName3,
+		@FunctionalCurrencyId = @FunctionalCurrencyId,
 		@PrimaryLanguageId = @PrimaryLanguageId,
+		@PrimaryLanguageSymbol = @PrimaryLanguageSymbol,
 		@SecondaryLanguageId = @SecondaryLanguageId,
+		@SecondaryLanguageSymbol = @SecondaryLanguageSymbol,
 		@TernaryLanguageId = @TernaryLanguageId,
+		@TernaryLanguageSymbol = @TernaryLanguageSymbol,
+		@BrandColor = @BrandColor,
 		@DefinitionsVersion = @DefinitionsVersion,
 		@SettingsVersion = @SettingsVersion,
-		@FunctionalCurrencyId = @FunctionalCurrencyId;
+		@ArchiveDate = @ArchiveDate,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
+;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -30,7 +44,7 @@ SET NOCOUNT ON;
 		FROM @ValidationErrors
 		FOR JSON PATH
 	);
--- TODO: use Setting data type not Table type
+
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 	

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[GainLossOnExchange__Prepare]
+﻿CREATE PROCEDURE [wiz].[GainLossOnExchange__Prepare]
 @Documents dbo.DocumentList READONLY, -- only one item in the list
 @LineDefinitionId NVARCHAR (50) = N'ManualLine'
 AS
@@ -61,7 +61,7 @@ BEGIN
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-		JOIN dbo.ExchangeRatesView ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
+		JOIN [map].[ExchangeRates] ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
 		AND E.[AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		AND L.[State] = 4 AND D.[PostingState] = 1
 		AND D.[PostingDate] <= @PostingDate

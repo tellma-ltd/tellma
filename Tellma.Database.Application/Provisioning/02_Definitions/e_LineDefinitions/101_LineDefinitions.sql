@@ -1,6 +1,6 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
---ManualLine 
+--0:ManualLine 
 INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitlePlural]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments');
@@ -11,26 +11,19 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 																[ReadOnlyState],
 																[InheritsFromHeader]) VALUES
-(0,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4,1), -- only if it appears,
-(1,0,	N'Entries',	N'Account',		0,			N'Account',		3,4,0),
-(2,0,	N'Entries',	N'Value',		0,			N'Debit',		3,4,0), -- see special case
-(3,0,	N'Entries',	N'Value',		0,			N'Credit',		3,4,0),
-(4,0,	N'Entries',	N'Dynamic',		0,			N'Properties',	3,4,0);
+(0,0,	N'Entries',	N'Account',		0,			N'Account',		4,4,0), -- together with properties
+(1,0,	N'Entries',	N'Value',		0,			N'Debit',		4,4,0), -- see special case
+(2,0,	N'Entries',	N'Value',		0,			N'Credit',		4,4,0),
+(3,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears,
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
 (2,0,-4,	N'Other reasons',		N'أسباب أخرى');
---INSERT INTO @Workflows([Index],[LineDefinitionIndex], 
---[ToState]) Values
---(0,0,+4);
---INSERT INTO @WorkflowSignatures([Index],[WorkflowIndex],[LineDefinitionIndex],
---[RuleType],			[RoleId]) VALUES
---(0,0,0,N'ByRole',	@1Comptroller);
---CashPaymentToSupplierAndPurchaseInvoiceVAT
+--1:CashPurchase
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],			[TitlePlural2]) VALUES
-(1,1,N'CashPaymentToSupplierAndPurchaseInvoiceVAT',
+(1,1,N'CashPurchase',
 						N'Cash Purchase',	N'شراء نقدي',	N'Cash Purchases',N'مشتريات نقدية');
 UPDATE @LineDefinitions
 SET [Script] = N'
@@ -42,7 +35,8 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId1] = [CurrencyId0],
+		[CurrencyId0] = [CurrencyId1],
+		[NotedAgentId0] = [NotedAgentId1],
 		[MonetaryValue1] = ISNULL([MonetaryValue0],0) + ISNULL([NotedAmount0],0),
 		[CenterId0] = [CenterId1]
 	-----
@@ -50,24 +44,24 @@ SET [Script] = N'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				N'suppliers',			NULL),
-(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	NULL,					N'PaymentsToSuppliersForGoodsAndServices');
+(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,			NULL),
+(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',					N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
 																								[InheritsFromHeader]) VALUES
-(0,1,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5,1),
-(1,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
-(2,1,	N'Entries',	N'ExternalReference',	0,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
-(3,1,	N'Entries',	N'NotedAgentId',		0,	N'Supplier',			N'المورد',				3,4,0),-- may inherit
-(4,1,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
-(5,1,	N'Entries',	N'NotedAmount',			0,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
-(6,1,	N'Entries',	N'MonetaryValue',		0,	N'VAT',					N'ق.م.',				3,4,0),
-(7,1,	N'Entries',	N'MonetaryValue',		1,	N'Total',				N'الإجمالي',				3,0,0),
-(8,1,	N'Entries',	N'AgentId',				1,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,0),
-(9,1,	N'Entries',	N'ExternalReference',	1,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
-(10,1,	N'Entries',	N'NotedDate',			1,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(11,1,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1);
+(0,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
+(1,1,	N'Entries',	N'ExternalReference',	0,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
+(2,1,	N'Entries',	N'NotedAgentId',		1,	N'Supplier',			N'المورد',				3,4,1),
+(3,1,	N'Entries',	N'CurrencyId',			1,	N'Currency',			N'العملة',				1,2,1),
+(4,1,	N'Entries',	N'NotedAmount',			0,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
+(5,1,	N'Entries',	N'MonetaryValue',		0,	N'VAT',					N'ق.م.',				3,4,0),
+(6,1,	N'Entries',	N'MonetaryValue',		1,	N'Total',				N'الإجمالي',				3,0,0),
+(7,1,	N'Entries',	N'AgentId',				1,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,0),
+(8,1,	N'Entries',	N'ExternalReference',	1,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
+(9,1,	N'Entries',	N'NotedDate',			1,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
+(10,1,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
+(11,1,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,5,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
 (0,1,+1),
@@ -78,32 +72,70 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,1,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,1,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,1,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL);
---CashPaymentToOther
+--2:PaymentToSupplier
 INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
-2,1,N'CashPaymentToOther',	N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES
+(2,1,N'PaymentToSupplier',N'Rental Payment',	N'دفع إيجار',		N'Rental Payments',	N'دفعيات إيجارات');
+UPDATE @LineDefinitions
+SET [Script] = N'
+	--SET NOCOUNT ON
+	--DECLARE @ProcessedWideLines WideLineList;
+
+	--INSERT INTO @ProcessedWideLines
+	--SELECT * FROM @WideLines;
+	-----
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId0] = [CurrencyId2],
+		[CurrencyId1] = [CurrencyId2],
+
+		[AgentId0]	= [NotedAgentId2]
+		[NotedAgentId1] = [NotedAgentId2],
+		[MonetaryValue2] = ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
+		
+		[CenterId0] = [CenterId2],
+		[CenterId1] = [CenterId2]
+
+	UPDATE PWL -- Show the due balance for each agent
+		SET PWL.[NotedAmount0] = T.Balance
+	FROM @ProcessedWideLines PWL
+	JOIN (
+		SELECT E.AgentId, E.CurrencyId, SUM(E.[Direction] * E.[MonetaryValue]) AS [Balance]
+		FROM dbo.Entries E
+		JOIN db.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+		JOIN dbo.Accounts ON E.[AccountId] = A.[Id]
+		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+		WHERE AC.Code IN (N''TradeAndOtherPayablesToTradeSuppliers'') -- may be more
+		WHERE D.[PostingDate] <= PWL.[NotedDate1]
+	) T ON T.AgentId = PWL.AgentId AND T.CurrencyId = PWL.CurrencyId
+	-----
+	--SELECT * FROM @ProcessedWideLines;'
+WHERE [Index] = 2;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,2,	-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians');
+[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
+(0,2,+1,	N'TradeAndOtherPayablesToTradeSuppliers',
+										1,		NULL,				NULL,			NULL),
+(1,2,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,			NULL),
+(2,2,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',					N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
 																								[InheritsFromHeader]) VALUES
-(0,2,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1),
-(1,2,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
-(2,2,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',			N'المبلغ',				1,2,0),
-(3,2,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',			N'المستفيد',			3,4,0),
-(4,2,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',				N'الغرض',				4,4,0),
-(5,2,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,0),
-(6,2,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,4,0),
-(7,2,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
-(8,2,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1)
-INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
-[State],	[Name],					[Name2]) VALUES
-(0,2,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
-(1,2,-3,	N'Other reasons',		N'أسباب أخرى');
+(0,2,	N'Entries',	N'NotedDate',			1,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
+(1,2,	N'Entries',	N'ExternalReference',	1,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
+(2,2,	N'Entries',	N'NotedAgentId',		2,	N'Supplier',			N'المورد',				3,4,1),
+(3,2,	N'Entries',	N'CurrencyId',			2,	N'Currency',			N'العملة',				1,2,1),
+(4,2,	N'Entries',	N'NotedAmount',			1,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
+(5,2,	N'Entries',	N'MonetaryValue',		1,	N'VAT',					N'ق.م.',				3,4,0),
+(6,2,	N'Entries',	N'MonetaryValue',		2,	N'Total',				N'الإجمالي',				3,0,0),
+(7,2,	N'Entries',	N'AgentId',				2,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,0),
+(8,2,	N'Entries',	N'ExternalReference',	2,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
+(9,2,	N'Entries',	N'NotedDate',			2,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
+(10,2,	N'Entries',	N'CenterId',			2,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
+(11,2,	N'Lines',	N'Memo',				1,	N'Memo',				N'البيان',				1,5,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
 (0,2,+1),
@@ -114,12 +146,54 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,2,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,2,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
---CashTransferExchange
+--3:GoodReceiptNote
+--4:GRIV
+--5:Consumables&Services
+--6:PaymentToEmployee (in Banan SD, we will have a dedicated voucher for that)
+--7:PaymentToPartner
+--8:RefundToCustomer
+--9:PaymentToOther
+INSERT @LineDefinitions([Index],
+[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
+9,1,N'PaymentToOther',	N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,9,	-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians');
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
+																								[ReadOnlyState],
+																								[InheritsFromHeader]) VALUES
+(0,9,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
+(1,9,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',			N'المبلغ',				1,2,0),
+(2,9,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',			N'المستفيد',			3,4,0),
+(3,9,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',				N'الغرض',				4,4,0),
+(4,9,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,0),
+(5,9,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,4,0),
+(6,9,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
+(7,9,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
+(8,9,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1);
+INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
+[State],	[Name],					[Name2]) VALUES
+(0,9,-3,	N'Insufficient Balance',N'الرصيد غير كاف'),
+(1,9,-3,	N'Other reasons',		N'أسباب أخرى');
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,9,+1),
+(1,9,+2),
+(2,9,+3),
+(3,9,+4);
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,9,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,9,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,9,N'ByAgent',	NULL,				0,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,9,N'ByRole',	@1Comptroller,		NULL,			NULL);
+--10:CashTransferExchange
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
-103,1,N'CashTransferExchange',	N'Transfer/Exchange',	N'تحويل\صرف',		N'Transfers/Exchanges',	N'تحويلات\صرف');
+10,1,N'CashTransferExchange',	N'Transfer/Exchange',	N'تحويل\صرف',		N'Transfers/Exchanges',	N'تحويلات\صرف');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -135,56 +209,43 @@ SET [Script] = N'
 		[CenterId1] = [CenterId0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
-WHERE [Index] = 103;
+WHERE [Index] = 10;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId], [EntryTypeCode]) VALUES
-(0,103,+1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension'),
-(1,103,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension');
+(0,10,+1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension'),
+(1,10,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],			[Label2],			[RequiredState],
 																						[ReadOnlyState],
 																						[InheritsFromHeader]) VALUES
-(0,103,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1),
-(1,103,	N'Entries',	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
-(2,103,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
-(3,103,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
-(4,103,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
-(5,103,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
-(6,103,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
-(7,103,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+(0,10,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1),
+(1,10,	N'Entries',	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
+(2,10,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
+(3,10,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
+(4,10,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
+(5,10,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
+(6,10,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
+(7,10,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
-(0,103,+1),
-(1,103,+2),
-(2,103,+3),
-(3,103,+4);
+(0,10,+1),
+(1,10,+2),
+(2,10,+3),
+(3,10,+4);
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,103,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,103,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,103,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(1,2,103,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,103,N'ByRole',	@1Comptroller,		NULL,			NULL);
---CashReceiptFromOther
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
-3,1,N'CashReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,3,-1,	N'CashAndCashEquivalents',	1,		 N'cash-custodians');
-INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
-																						[ReadOnlyState],
-																						[InheritsFromHeader]) VALUES
-(0,3,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1),
-(1,3,	N'Entries',	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
-(2,3,	N'Entries',	N'MonetaryValue',		0,	N'Amount',			N'المبلغ',			1,2,0),
-(3,3,	N'Entries',	N'NotedAgentName',		0,	N'Received from',	N'مستلم من',		3,4,0),
-(4,3,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',			N'الغرض',			4,4,0),
-(5,3,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',	N'البنك/الخزنة',	3,4,1),
-(6,3,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',	N'رقم الشيك/الإيصال',3,4,0),
-(7,3,	N'Entries',	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,5,0),
-(8,3,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+(0,0,10,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,10,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,10,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,10,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,10,N'ByRole',	@1Comptroller,		NULL,			NULL);
+
+--11:CashSale
+--12:ReceiptFromCustomer
+--13:GoodDeliveryNote
+--14:
+
+
 --CashReceiptFromCustomerAndSalesInvoiceVAT
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],			[TitlePlural],	[TitlePlural2]) VALUES (
@@ -231,6 +292,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (11,4,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',	N'رقم الشيك\الإيصال',	3,4,0),
 (12,4,	N'Entries',	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',			5,5,0),
 (13,4,	N'Entries',	N'CenterId',			0,N'Invest. Ctr',		N'مركز الاستثمار',		4,4,1)
+
 --CashReceiptFromCustomer
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],		[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2],
@@ -269,6 +331,29 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (7,5,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',		N'رقم الشيك\الإيصال',	3,4,0),
 (8,5,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
 (9,5,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',			N'مركز الاستثمار',		4,4,0)
+
+--19:CashReceiptFromOther
+INSERT @LineDefinitions([Index],
+[ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
+19,1,N'CashReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,19,-1,	N'CashAndCashEquivalents',	1,		 N'cash-custodians');
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
+																						[ReadOnlyState],
+																						[InheritsFromHeader]) VALUES
+(0,19,	N'Entries',	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
+(1,19,	N'Entries',	N'MonetaryValue',		0,	N'Amount',			N'المبلغ',			1,2,0),
+(2,19,	N'Entries',	N'NotedAgentName',		0,	N'Received from',	N'مستلم من',		3,4,0),
+(3,19,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',	N'البنك/الخزنة',	3,4,1),
+(4,19,	N'Entries',	N'ExternalReference',	0,	N'Check/Receipt #',	N'رقم الشيك/الإيصال',3,4,0),
+(5,19,	N'Entries',	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,5,0),
+(6,19,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
+(7,19,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',			N'الغرض',			4,4,0),
+(8,19,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);
+
+
 --LeaseOutIssue. TODO: Auto calculate Revenue based on AgentRates
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],

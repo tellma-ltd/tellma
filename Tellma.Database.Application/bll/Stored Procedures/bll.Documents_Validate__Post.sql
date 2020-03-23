@@ -43,29 +43,28 @@ SET NOCOUNT ON;
 	WHERE [Id] NOT IN (
 		SELECT DISTINCT [DocumentId] 
 		FROM dbo.[Lines] L
-		JOIN dbo.[LineDefinitions] LD ON L.[DefinitionId] = LD.[Id]
+		JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 		WHERE
 			LD.[HasWorkflow] = 1 AND L.[State] = 4
 		OR	LD.[HasWorkflow] = 0 AND L.[State] = 0
 	);
 
 	-- All workflow lines must be in their final states or Wfless Draft.
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
 		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(D.[Id] AS NVARCHAR (255)) + ']',
-		N'Error_State0IsNotFinal',
-		dbo.fn_StateId__State(L.[State])
+			CAST(L.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_LineIsMissingSignatures'
 	FROM @Ids D
 	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
-	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
+	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE L.[State] Between 0 AND 3
 	AND LD.[HasWorkflow] = 1
 	-- validate that WflessLines can move to state 4
 	INSERT INTO @WflessLines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
 	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
 	FROM dbo.Lines L
-	JOIN dbo.LineDefinitions LD ON L.[DefinitionId] = LD.[Id]
+	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE L.[DocumentId] IN (SELECT [ID] FROM @Ids) 
 	AND LD.HasWorkflow = 0;
 	INSERT INTO @WflessEntries ([Index],[LineIndex],[DocumentIndex],[Id],
@@ -91,7 +90,7 @@ SET NOCOUNT ON;
 		FORMAT(SUM(E.[Direction] * E.[Value]), '##,#;(##,#);-', 'en-us') AS NetDifference
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
-	JOIN dbo.[LineDefinitions] LD ON L.[DefinitionId] = LD.[Id]
+	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
 	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 	WHERE
 		LD.[HasWorkflow] = 1 AND L.[State] = 4

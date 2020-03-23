@@ -19,7 +19,7 @@ BEGIN -- Inserting
 	EXEC sys.sp_set_session_context 'UserId', @mohamad_akra;
 	-- 0
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[Memo] = N'Shawarma',
@@ -32,7 +32,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
 	-- 4
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
@@ -44,7 +44,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
 	-- 5
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
@@ -69,7 +69,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 6 AND [Index] = 0;
 	-- 21
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @USD,
@@ -81,7 +81,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
 	-- 22
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @USD,
@@ -93,7 +93,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
 	-- 23
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,
@@ -105,7 +105,7 @@ BEGIN -- Inserting
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
 	-- 24
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'CashPaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'PaymentToOther';
 	UPDATE @WL
 	SET
 		[CurrencyId0] = @SDG,

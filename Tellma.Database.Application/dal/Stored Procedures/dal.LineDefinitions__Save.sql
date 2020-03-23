@@ -305,20 +305,3 @@ SET NOCOUNT ON;
 			s.[Value],
 			s.[ProxyRoleId]
 		);
-
-		-- Update the denormalized column (HasWorkflow)
-		UPDATE dbo.LineDefinitions
-		Set HasWorkflow = 
-		CASE
-			WHEN [Id] IN (
-				SELECT [LineDefinitionId]
-				FROM dbo.[Workflows]
-				WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures])
-			) THEN 1 ELSE 0 END
-		WHERE [Id] IN (SELECT [Id] FROM @Entities)
-		AND HasWorkflow <> CASE
-			WHEN [Id] IN (
-				SELECT [LineDefinitionId]
-				FROM dbo.[Workflows]
-				WHERE [Id] IN (SELECT [WorkflowId] FROM [dbo].[WorkflowSignatures])
-			) THEN 1 ELSE 0 END;

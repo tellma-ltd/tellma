@@ -17,29 +17,29 @@ BEGIN
 	SELECT	N'NameOfReportingEntityOrOtherMeansOfIdentification',
 			dbo.fn_Localize([ShortCompanyName], [ShortCompanyName2], [ShortCompanyName3]) FROM dbo.Settings
 	UNION
-	SELECT	N'DomicileOfEntity',
-			dbo.fn_Localize([DomicileOfEntity], [DomicileOfEntity2], [DomicileOfEntity3]) FROM dbo.Settings
-	UNION
-	SELECT	N'LegalFormOfEntity',
-			dbo.fn_Localize([LegalFormOfEntity], [LegalFormOfEntity2], [LegalFormOfEntity3]) FROM dbo.Settings
-	UNION
-	SELECT	N'CountryOfIncorporation',
-			dbo.fn_Localize([CountryOfIncorporation], [CountryOfIncorporation2], [CountryOfIncorporation3]) FROM dbo.Settings
-	UNION
-	SELECT	N'AddressOfRegisteredOfficeOfEntity',
-			dbo.fn_Localize([AddressOfRegisteredOffice], [AddressOfRegisteredOffice2], [AddressOfRegisteredOffice3]) FROM dbo.Settings
-	UNION
-	SELECT	N'PrincipalPlaceOfBusiness',
-			dbo.fn_Localize([PrincipalPlaceOfBusiness], [PrincipalPlaceOfBusiness2], [PrincipalPlaceOfBusiness3]) FROM dbo.Settings
-	UNION
-	SELECT	N'DescriptionOfNatureOfEntitysOperationsAndPrincipalActivities',
-			dbo.fn_Localize([NatureOfOperations], [NatureOfOperations2], [NatureOfOperations3]) FROM dbo.Settings
-	UNION
-	SELECT	N'NameOfParentEntity',
-			dbo.fn_Localize([NameOfParentEntity], [NameOfParentEntity2], [NameOfParentEntity3]) FROM dbo.Settings
-	UNION
-	SELECT	N'NameOfUltimateParentOfGroup',
-			dbo.fn_Localize([NameOfUltimateParentOfGroup], [NameOfUltimateParentOfGroup2], [NameOfUltimateParentOfGroup3]) FROM dbo.Settings
+	--SELECT	N'DomicileOfEntity',
+	--		dbo.fn_Localize([DomicileOfEntity], [DomicileOfEntity2], [DomicileOfEntity3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'LegalFormOfEntity',
+	--		dbo.fn_Localize([LegalFormOfEntity], [LegalFormOfEntity2], [LegalFormOfEntity3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'CountryOfIncorporation',
+	--		dbo.fn_Localize([CountryOfIncorporation], [CountryOfIncorporation2], [CountryOfIncorporation3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'AddressOfRegisteredOfficeOfEntity',
+	--		dbo.fn_Localize([AddressOfRegisteredOffice], [AddressOfRegisteredOffice2], [AddressOfRegisteredOffice3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'PrincipalPlaceOfBusiness',
+	--		dbo.fn_Localize([PrincipalPlaceOfBusiness], [PrincipalPlaceOfBusiness2], [PrincipalPlaceOfBusiness3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'DescriptionOfNatureOfEntitysOperationsAndPrincipalActivities',
+	--		dbo.fn_Localize([NatureOfOperations], [NatureOfOperations2], [NatureOfOperations3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'NameOfParentEntity',
+	--		dbo.fn_Localize([NameOfParentEntity], [NameOfParentEntity2], [NameOfParentEntity3]) FROM dbo.Settings
+	--UNION
+	--SELECT	N'NameOfUltimateParentOfGroup',
+	--		dbo.fn_Localize([NameOfUltimateParentOfGroup], [NameOfUltimateParentOfGroup2], [NameOfUltimateParentOfGroup3]) FROM dbo.Settings
 /*	TODO: Add all the following
 	LengthOfLifeOfLimitedLifeEntity
 	StatementOfIFRSCompliance

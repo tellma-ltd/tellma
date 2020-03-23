@@ -1,13 +1,10 @@
-﻿CREATE VIEW [dbo].[ExchangeRatesView]
+﻿CREATE VIEW [map].[ExchangeRates]
 AS
 SELECT 
-	[Id],
-	[CurrencyId],
-	[ValidAsOf],
+	ER.*,
 	(
 		SELECT ISNULL(MIN([ValidAsOf]), DATEADD(DAY, 1, GETDATE()))
 		FROM dbo.ExchangeRates
 		WHERE [CurrencyId] = ER.[CurrencyId] AND [ValidAsOf] > ER.[ValidAsOf]
-	) AS [ValidTill],
-	[Rate]
+	) AS [ValidTill]
 FROM dbo.ExchangeRates ER;

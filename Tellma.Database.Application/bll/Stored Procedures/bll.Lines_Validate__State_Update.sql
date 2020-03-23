@@ -6,13 +6,6 @@
 	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList]
-
-	DECLARE @FieldList StringList;
-	INSERT INTO @FieldList([Id]) VALUES
-	(N'CurrencyId'),(N'AgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),
-	(N'DueDate'),( N'MonetaryValue'),( N'Quantity'),( N'UnitId'),( N'Time1'),
-	(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),(N'NotedAgentId'),
-	(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate');
 	-- The @Field is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -21,11 +14,13 @@ AS
 		N'Error_TheField0IsRequired',
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
-	CROSS JOIN @FieldList FL
+	CROSS JOIN (VALUES
+		(N'CurrencyId'),(N'AgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'DueDate'),(N'MonetaryValue'),
+		(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
+		(N'NotedAgentId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
+	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
-	--LEFT JOIN [dbo].[Lines] BEL ON L.Id = BEL.Id
-	--WHERE ISNULL(BEL.[State], 0) >= LDC.[RequiredState]
 	WHERE @ToState >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> N'ManualLine'
 	AND	(
@@ -69,49 +64,26 @@ BEGIN
 	WHERE L.DefinitionId <> N'ManualLine' 
 	AND E.AccountId IS NULL
 	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
-	-- for manual JV, account must be entered
+
+	-- for manual JV, account/currency/center/ must be entered
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
-		N'Error_AccountIsRequired'
+		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
+		N'Error_TheFieldIsRequired'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	CROSS JOIN (VALUES
+		(N'AccountId'),(N'CurrencyId'),(N'AgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue')
+	) FL([Id])
+	LEFT JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	WHERE L.DefinitionId = N'ManualLine' 
-	AND E.AccountId IS NULL
-	-- currency is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].CurrencyId',
-		N'Error_CurrencyIsRequired'
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	WHERE E.CurrencyId IS NULL
-	-- Center is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].CenterId',
-		N'Error_CenterIsRequired'
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	WHERE E.CenterId IS NULL
-	-- if Account / AgentDefinition is specified, AgentId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AgentId',
-		N'Error_AgentIsRequired'
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	WHERE A.AgentDefinitionId IS NOT NULL AND E.AgentId IS NULL
-	-- if Account / HasResource = 1, ResourceId is required
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].ResourceId',
-		N'Error_ResourceIsRequired'
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	WHERE A.HasResource = 1 AND E.ResourceId IS NULL
+	AND	(
+		FL.Id = N'AccountId'		AND E.[AccountId] IS NULL OR
+		FL.Id = N'CurrencyId'		AND E.[CurrencyId] IS NULL OR
+		FL.Id = N'CenterId'			AND E.[CenterId] IS NULL OR
+		FL.Id = N'AgentId'			AND A.AgentDefinitionId IS NOT NULL AND E.[AgentId] IS NULL OR
+		FL.Id = N'ResourceId'		AND A.[HasResource] = 1 AND E.[ResourceId] IS NULL 
+	)
 END
 	-- No deprecated account, for any positive state
 IF @ToState > 0

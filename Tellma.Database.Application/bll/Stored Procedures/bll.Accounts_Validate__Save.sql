@@ -151,8 +151,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.[Centers] RC ON RC.Id = E.[CenterId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[CenterId] IS NOT NULL
 	AND FE.[CenterId] <> E.[CenterId]
@@ -175,8 +173,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Agents AG ON AG.Id = E.[AgentId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[AgentId] IS NOT NULL
 	AND FE.[AgentId] <> E.[AgentId]
@@ -199,8 +195,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[ResourceId] IS NOT NULL
 	AND FE.[ResourceId] <> E.[ResourceId]
@@ -223,8 +217,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Currencies R ON R.Id = E.[CurrencyId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[CurrencyId] IS NOT NULL
 	AND FE.[CurrencyId] <> E.[CurrencyId]
@@ -249,8 +241,6 @@ SET NOCOUNT ON;
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
 	JOIN dbo.[AccountTypes] ERC ON ERC.[Id] = R.[AccountTypeId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND ERC.[Node].IsDescendantOf(ARC.[Node]) = 0;
 
@@ -273,8 +263,6 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.[EntryTypes] EEC ON EEC.[Id] = E.[EntryTypeId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
 
@@ -295,8 +283,6 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
-	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
 	AND FE.[CenterId] IS NOT NULL
 	AND FE.[CenterId] <> E.[CenterId]
