@@ -62,11 +62,20 @@
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
-    <div class="w-100 t-document-header d-flex justify-content-between">
+    <div class="w-100 t-document-header d-flex justify-content-end">
 
         <!-- Managerial/Accounting Toggle -->
-        <div class="btn-group btn-group-toggle border-right nav-tabs nav">
-            <label class="btn btn-sm btn-light t-pointer d-flex align-items-center px-3 nav-item"
+        <!-- <div class="btn-group btn-group-toggle px-2 small">
+            <div class="d-flex align-items-center px-2 t-pointer text-primary" (click)="onManagerialView()">
+                <fa-icon icon="user-tie"></fa-icon>
+                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Managerial' | translate }}</span>
+            </div>
+            <div class="d-flex align-items-center px-2 t-pointer font-weight-bold" (click)="onAccountingView()">
+                <fa-icon icon="coins"></fa-icon>
+                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Accounting' | translate }}</span>
+            </div> -->
+
+            <!-- <label class="btn btn-sm btn-light t-pointer d-flex align-items-center px-3 nav-item"
                 [class.active]="isManagerial" (click)="onManagerialView()">
                 <input type="radio" name="displayMode">
                 <fa-icon icon="user-tie"></fa-icon>
@@ -77,8 +86,8 @@
                 <input type="radio" name="displayMode">
                 <fa-icon icon="coins"></fa-icon>
                 <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Accounting' | translate }}</span>
-            </label>
-        </div>
+            </label> -->
+        <!-- </div> -->
 
         <!-- +ve states on wide screen -->
         <ng-container *ngIf="isPositiveState(model); else negativeStates">
@@ -668,7 +677,7 @@
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
-                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="80"
+                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="70"
                         [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
                                 'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3, argument: true },
                                 'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1, argument: true },
@@ -797,7 +806,7 @@
     <!------------ Templates for Manual Lines ----------->
     <ng-template #manualLines>
         <!-- Manual Lines Table -->
-        <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="80"
+        <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="70"
             [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
                             'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3 },
                             'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
@@ -830,7 +839,7 @@
         </div>
 
         <!-- Dynamic Properties -->
-        <div class="small d-flex flex-wrap p-2">
+        <div class="small d-flex flex-wrap px-2 pt-1">
             <!-- Currency -->
             <ng-container *ngIf="showCurrency(entry)">
                 <t-form-group-dynamic [label]="'Entry_Currency' | translate"

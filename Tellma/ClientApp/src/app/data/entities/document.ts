@@ -197,7 +197,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             delete entityDesc.properties.DefinitionId;
             delete entityDesc.properties.Definition;
 
-            if (!definition.CanReachState4) {
+            if (!definition.HasWorkflow) {
                 delete entityDesc.properties.State;
             }
 

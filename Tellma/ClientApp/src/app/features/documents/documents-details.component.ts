@@ -313,7 +313,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.PostingDate = toLocalDateISOString(new Date());
     } else {
       const def = this.definition;
-      if (!def.CanReachState4) {
+      if (!def.HasWorkflow) {
         result.PostingDate = toLocalDateISOString(new Date());
       }
 
@@ -1697,7 +1697,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
             line.Entries.forEach(entry => {
               if (line.DefinitionId === 'ManualLine') {
                 this._manualEntries.push({ entry, line });
-              } else {
+              } else if ((line.State || 0) >= 0) {
                 this._smartEntries.push({ entry, line });
               }
             });
@@ -2007,7 +2007,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return false;
     }
 
-    return !model.PostingState && def.CanReachState4 && (model.State || 0) === state;
+    return !model.PostingState && def.HasWorkflow && (model.State || 0) === state;
   }
 
   public isPostingStateActive(state: DocumentState, model: Document): boolean {
@@ -2021,7 +2021,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     if (state === 0) { // Current
-      return !model.PostingState && !def.CanReachState4;
+      return !model.PostingState && !def.HasWorkflow;
     } else { // Posted + Canceled
       return model.PostingState === state;
     }
@@ -2034,11 +2034,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     const def = this.definition;
-    if (state === 0) {
-      return !!def && def.CanReachState4;
-    } else { // 1 + 2 + 3 + 4
+    if (state === 0 || state === 4) {
+      return !!def && def.HasWorkflow;
+    } else { // 1 + 2 + 3
       return this.isStateActive(state, model) ||
-        (!!def && def.CanReachState4 && def['CanReachState' + state]);
+        (!!def && def.HasWorkflow && def['CanReachState' + state]);
     }
   }
 
@@ -2046,7 +2046,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Returns if a positive state is visible on the wide screen flow chart
     const def = this.definition;
     if (state === 0) { // Current
-      return !def || !def.CanReachState4;
+      return !def || !def.HasWorkflow;
     } else { // Posted
       return true;
     }
@@ -2132,7 +2132,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!this.hasPermissionToUpdateState(doc)) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.missingSignatures(doc, requiredSignatures)) {
-      return this.translate.instant('Error_DocumentIsMissingSignatures');
+      return this.translate.instant('Error_LineIsMissingSignatures');
     } else if (!!doc && !doc.PostingDate) {
       return this.translate.instant('Error_ThePostingDateIsRequiredForPosting');
     }
@@ -2205,13 +2205,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Accounting View
 
   public entriesCount(doc: DocumentForSave) {
-    if (!!doc && !!doc.Lines) {
-      return doc.Lines
-        .map(line => !!line.Entries ? line.Entries.length : 0)
-        .reduce((total, v) => total + v, 0);
-    } else {
-      return 0;
-    }
+    return this.smartEntries(doc).length + this.manualEntries(doc).length;
   }
 
   public get hasManualLines(): boolean {

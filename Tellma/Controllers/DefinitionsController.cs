@@ -330,7 +330,7 @@ namespace Tellma.Controllers
                 CanReachState1 = def.CanReachState1 ?? false,
                 CanReachState2 = def.CanReachState2 ?? false,
                 CanReachState3 = def.CanReachState3 ?? false,
-                CanReachState4 = def.CanReachState4 ?? false,
+                HasWorkflow = def.HasWorkflow ?? false,
 
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {

@@ -116,7 +116,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CanReachState1: boolean;
     CanReachState2: boolean;
     CanReachState3: boolean;
-    CanReachState4: boolean;
+    HasWorkflow: boolean;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
 }
 

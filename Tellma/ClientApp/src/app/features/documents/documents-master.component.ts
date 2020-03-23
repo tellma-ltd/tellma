@@ -96,7 +96,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   public get defaultSelect(): string {
     // This shows the State column only when there is a workflow
     const def = this.definition;
-    const stateColumn = !!def && def.CanReachState4 ? ',State' : '';
+    const stateColumn = !!def && def.HasWorkflow ? ',State' : '';
     return `PostingDate,PostingState${stateColumn},Memo`;
   }
 
@@ -182,8 +182,8 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       const result = { ...filterDefinition };
       if (!def) {
         // Leave it as is
-      } else if (def.CanReachState4) {
-        result.State = result.State.filter((e: any) => e.state === 0 || def['CanReachState' + Math.abs(e.state)]);
+      } else if (def.HasWorkflow) {
+        result.State = result.State.filter((e: any) => e.state === 0 || e.state === 4 || def['CanReachState' + Math.abs(e.state)]);
       } else {
         delete result.State;
       }

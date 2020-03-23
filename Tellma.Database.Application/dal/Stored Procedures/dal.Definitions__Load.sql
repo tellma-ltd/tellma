@@ -26,8 +26,8 @@ SELECT * FROM [map].[DocumentDefinitions]();
 SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index];
 
 -- Get the line definitions
-SELECT * FROM [dbo].[LineDefinitions];
+SELECT * FROM [map].[LineDefinitions]();
 
-SELECT * FROM [map].[LineDefinitionEntries]();
+SELECT * FROM [map].[LineDefinitionEntries]() ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;

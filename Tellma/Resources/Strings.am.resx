@@ -718,6 +718,9 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>በመለያ-ውስጥ ልክ ያልኾነ ሙከራ. በእርስዎ ኢሜይል አረጋግጧል አይደለም ከሆነ እስካሁን የኢሜይል ገቢ መልዕክት ሳጥን ምልክት ያድርጉ</value>
   </data>
+  <data name="Error_LineIsMissingSignatures" xml:space="preserve">
+    <value>አንዳንድ ፊርማዎች ይጎድላሉ</value>
+  </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>በመጫን ላይ ስህተት ከውጫዊ የመግቢያ መረጃ.</value>
   </data>

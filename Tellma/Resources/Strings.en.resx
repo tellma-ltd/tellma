@@ -718,6 +718,9 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
   </data>
+  <data name="Error_LineIsMissingSignatures" xml:space="preserve">
+    <value>Some signatures are missing</value>
+  </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>Error loading external login information.</value>
   </data>

@@ -718,6 +718,9 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
   </data>
+  <data name="Error_LineIsMissingSignatures" xml:space="preserve">
+    <value>المستند ينقصه بعض التوقيعات</value>
+  </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>
   </data>

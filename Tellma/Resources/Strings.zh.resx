@@ -718,6 +718,9 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>无效的登录尝试。如果你还没有确认您的电子邮件了，请检查您的电子邮件收件箱</value>
   </data>
+  <data name="Error_LineIsMissingSignatures" xml:space="preserve">
+    <value>一些签名失踪</value>
+  </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>错误加载外部登录信息。</value>
   </data>
