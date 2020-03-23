@@ -48,6 +48,12 @@ export class TableComponent implements OnInit, OnChanges {
     }
   } = {};
 
+  @Input()
+  visibleRows: number;
+
+  @Input()
+  highlightFunc: (entity: EntityForSave) => true;
+
   @Output()
   insert = new EventEmitter<EntityForSave>();
 
@@ -163,13 +169,18 @@ export class TableComponent implements OnInit, OnChanges {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
     // Get the weight of this column
-    const weight = this.columnTemplates[colPath].weight || 1;
+    const weight = this.columnTemplates[colPath].weight;
+
+    // 0 width indicates a column that fits its contents
+    if (!weight) {
+      return '0px';
+    }
 
     // Get the total weight of the other columns
     let totalWeight = 0;
     for (const path of this.columnPaths) {
       if (this.columnTemplates[path]) {
-        totalWeight = totalWeight + (this.columnTemplates[path].weight || 1);
+        totalWeight = totalWeight + (this.columnTemplates[path].weight || 0);
       }
     }
 
@@ -187,7 +198,7 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   public get maxVisibleRows(): number {
-    return Math.ceil(9 * 30 / this.itemSize);
+    return this.visibleRows || Math.ceil(9 * 30 / this.itemSize);
   }
 
   public get tableHeight(): number {
@@ -207,5 +218,9 @@ export class TableComponent implements OnInit, OnChanges {
     const maxVisibleRows = this.maxVisibleRows;
     const height = headerHeight + maxVisibleRows * rowHeight;
     return height + 1;
+  }
+
+  public highlight(entity: EntityForSave): boolean {
+    return !!this.highlightFunc ? this.highlightFunc(entity) : false;
   }
 }

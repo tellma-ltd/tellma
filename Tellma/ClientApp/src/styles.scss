@@ -939,6 +939,7 @@ $dark-flow-text: $whitish;
     height: 100%;
     width: 67% !important;
     overflow-y: auto;
+    overflow-y: overlay;
   }
 
   .t-sidebar {

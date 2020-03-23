@@ -9,12 +9,12 @@ import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
 } from '~/app/data/dto/definitions-for-client';
-import { LineForSave, Line, LineState } from '~/app/data/entities/line';
+import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, toLocalDateISOString } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
@@ -36,6 +36,15 @@ interface LineEntryPair { entry: EntryForSave; line: LineForSave; }
 interface DocumentDetailsState {
   tab: string;
   view: DocumentDetailsView;
+}
+
+interface ColumnTemplates {
+  [index: string]: {
+    headerTemplate?: TemplateRef<any>,
+    rowTemplate: TemplateRef<any>,
+    weight?: number,
+    argument?: number
+  };
 }
 
 /**
@@ -190,15 +199,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           needsUrlStateChange = true;
         }
 
-        const urlView = params.get('view') as DocumentDetailsView;
-        if (urlView === 'Managerial' || urlView === 'Accounting') {
-          s.view = urlView;
-        } else {
-          if (!s.view) {
-            s.view = 'Managerial'; // Default
-          }
-          needsUrlStateChange = true;
-        }
+        // const urlView = params.get('view') as DocumentDetailsView;
+        // if (urlView === 'Managerial' || urlView === 'Accounting') {
+        //   s.view = urlView;
+        // } else {
+        //   if (!s.view) {
+        //     s.view = 'Managerial'; // Default
+        //   }
+        //   needsUrlStateChange = true;
+        // }
 
         // The URL is out of step with the state => sync the two
         // This happens when we navigate to the screen again 2nd time
@@ -223,9 +232,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         params.tab = s.tab;
       }
 
-      if (!!s.view) {
-        params.view = s.view;
-      }
+      // if (!!s.view) {
+      //   params.view = s.view;
+      // }
 
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
     }
@@ -239,23 +248,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public getActiveTab(model: Document): string {
     // Special tabs, TODO: Remove
     const s = this.state.detailsState as DocumentDetailsState;
-    if (s.tab === 'Attachment') {
-      return 'Attachment';
+    if (s.tab === '_Attachments' || (!this.isJV && s.tab === '_Entries')) {
+      return s.tab;
     }
 
-    if (this.isAccounting) {
-      // Accounting view only has 1 tab
-      return '_Entries';
+    // if (this.isAccounting) {
+    //   // Accounting view only has 1 tab
+    //   return '_Entries';
+    // } else {
+    // Managerial view can have multiple tabs, make sure the selected one is visible
+    const visibleTabs = this.visibleTabs(model);
+    if (visibleTabs.some(e => e === s.tab)) {
+      return s.tab;
     } else {
-      // Managerial view can have multiple tabs, make sure the selected one is visible
-      const visibleTabs = this.visibleTabs(model);
-      if (visibleTabs.some(e => e === s.tab)) {
-        return s.tab;
-      } else {
-        // Get the first visible tab
-        return visibleTabs[0];
-      }
+      // Get the first visible tab
+      return visibleTabs[0];
     }
+    // }
   }
 
   public get state(): MasterDetailsStore {
@@ -562,7 +571,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get attachmentsClass(): string {
-    return this.workspace.ws.isRtl ? 'mr-auto' : 'ml-auto';
+    return this.workspace.ws.isRtl ? 'mr-md-auto' : 'ml-md-auto';
   }
 
   ////////////// Properties of the document
@@ -1670,7 +1679,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Set the line
     pair.line = {
       DefinitionId: 'ManualLine',
-      Entries: [pair.entry]
+      Entries: [pair.entry],
+      _flags: { isModified: true }
     };
 
     return pair;
@@ -1717,10 +1727,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._manualEntries;
   }
 
-
-
-
-
   public showLineErrors(lineDefId: string, model: Document) {
     return !!model && !!model.Lines &&
       model.Lines.some(line => lineDefId === line.DefinitionId && (!!line.serverErrors ||
@@ -1732,17 +1738,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       model.Attachments.some(att => !!att.serverErrors);
   }
 
-  public smartColumnPaths(lineDefId: string, model: DocumentForSave): string[] {
-    // All line definitions other than 'ManualLine'
-    const lineDef = this.ws.definitions.Lines[lineDefId];
-    const isMultiRS = this.ws.settings.IsMultiCenter;
-    return !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => isMultiRS || e.column.ColumnName !== 'CenterId') // Hide Center columns when there is only one
-      .map(e => e.index + '') : [];
-  }
-
-  public manualColumnPaths(model: DocumentForSave): string[] {
+  public manualColumnPaths(model: DocumentForSave, smart = false): string[] {
     const paths = ['AccountId', 'Debit', 'Credit'];
 
     if (this.ws.settings.IsMultiCenter) {
@@ -1753,39 +1749,69 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       paths.push('Memo');
     }
 
+    if (smart) {
+      paths.push('ModifiedWarning');
+      paths.push('Commands');
+    }
+
     return paths;
   }
 
-  public columnTemplates(lineDefId: string, model: DocumentForSave, header: TemplateRef<any>, row: TemplateRef<any>): {
-    [index: string]: {
-      headerTemplate: TemplateRef<any>,
-      rowTemplate: TemplateRef<any>,
-      weight: number,
-      argument: number
-    }
-  } {
+  public smartColumnPaths(lineDefId: string, isForm: boolean): string[] {
+    // All line definitions other than 'ManualLine'
+    const lineDef = this.ws.definitions.Lines[lineDefId];
+    const isMultiRS = this.ws.settings.IsMultiCenter;
+    const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
+      .map((column, index) => ({ column, index })) // Capture the index first thing
+      .filter(e => isMultiRS || e.column.ColumnName !== 'CenterId') // Hide Center columns when there is only one
+      .map(e => e.index + '') : [];
 
-    const templates: {
-      [index: string]: {
-        headerTemplate: TemplateRef<any>,
-        rowTemplate: TemplateRef<any>,
-        weight: number,
-        argument: number
+    if (!isForm) {
+      result.push('Commands');
+    }
+
+    return result;
+  }
+
+  private _columnTemplatesLineDefId: string;
+  private _columnTemplatesResult: ColumnTemplates;
+
+  public columnTemplates(
+    lineDefId: string,
+    header: TemplateRef<any>,
+    row: TemplateRef<any>,
+    commandsTemplate: TemplateRef<any>): ColumnTemplates {
+
+    if (this._columnTemplatesLineDefId !== lineDefId) {
+      this._columnTemplatesLineDefId = lineDefId;
+      this._columnTemplatesResult = null;
+    }
+
+    if (!this._columnTemplatesResult) {
+      const templates: ColumnTemplates = {};
+
+      // Add as many templates as there are columns
+      const lineDef = this.ws.definitions.Lines[lineDefId];
+      const columns = !!lineDef ? lineDef.Columns : [];
+      const columnCount = columns.length;
+      for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+        templates[colIndex + ''] = {
+          headerTemplate: header,
+          rowTemplate: row,
+          weight: 1,
+          argument: colIndex
+        };
       }
-    } = {};
 
-    // Add as many templates as there are columns
-    const columnCount = this.smartColumnPaths(lineDefId, model).length;
-    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
-      templates[colIndex + ''] = {
-        headerTemplate: header,
-        rowTemplate: row,
-        weight: 1,
-        argument: colIndex
+      // Add the commands template
+      templates.Commands = {
+        rowTemplate: commandsTemplate,
       };
+
+      this._columnTemplatesResult = templates;
     }
 
-    return templates;
+    return this._columnTemplatesResult;
   }
 
   private lineDefinition(lineDefId: string) {
@@ -1902,17 +1928,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public onNewSmartLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
     if (this._onNewLineFactoryLineDefId !== lineDefId) {
       this._onNewLineFactoryLineDefId = lineDefId;
-      this._onNewLineFactoryResult = (item) => {
+      this._onNewLineFactoryResult = (line) => {
         // set the definition Id
-        item.DefinitionId = lineDefId;
+        line.DefinitionId = lineDefId;
+        line._flags = { isModified: true };
         // Add the specified number of entries
-        item.Entries = [];
+        line.Entries = [];
         const lineDef = this.lineDefinition(lineDefId);
         if (!!lineDef) {
           if (lineDef.Entries) {
             for (let i = 0; i < lineDef.Entries.length; i++) {
               const entryDef = lineDef.Entries[i];
-              item.Entries[i] = { Direction: entryDef.Direction };
+              line.Entries[i] = { Direction: entryDef.Direction, Value: 0 };
             }
           } else {
             console.error(`Line definition ${lineDefId} is missing its Entries`);
@@ -1921,7 +1948,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           console.error(`Missing line definition ${lineDefId}`);
         }
 
-        return item;
+        return line;
       };
     }
 
@@ -1980,8 +2007,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public get actionsDropdownPlacement() {
+  public get actionsDropdownPlacement(): Placement {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
+  }
+
+  public get modifiedTooltipPlacement(): Placement {
+    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+  }
+
+  public get commandsDropdownPlacement(): Placement {
+    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
   // Serial Number
@@ -2183,25 +2218,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   ////////////// Accounting vs. Managerial
 
-  public get isManagerial(): boolean {
-    return (this.state.detailsState as DocumentDetailsState).view === 'Managerial';
-  }
+  // public get isManagerial(): boolean {
+  //   return (this.state.detailsState as DocumentDetailsState).view === 'Managerial';
+  // }
 
-  public get isAccounting(): boolean {
-    return (this.state.detailsState as DocumentDetailsState).view === 'Accounting';
-  }
+  // public get isAccounting(): boolean {
+  //   return (this.state.detailsState as DocumentDetailsState).view === 'Accounting';
+  // }
 
-  public onManagerialView() {
-    const s = this.state.detailsState as DocumentDetailsState;
-    s.view = 'Managerial';
-    this.urlStateChange();
-  }
+  // public onManagerialView() {
+  //   const s = this.state.detailsState as DocumentDetailsState;
+  //   s.view = 'Managerial';
+  //   this.urlStateChange();
+  // }
 
-  public onAccountingView() {
-    const s = this.state.detailsState as DocumentDetailsState;
-    s.view = 'Accounting';
-    this.urlStateChange();
-  }
+  // public onAccountingView() {
+  //   const s = this.state.detailsState as DocumentDetailsState;
+  //   s.view = 'Accounting';
+  //   this.urlStateChange();
+  // }
 
   // Accounting View
 
@@ -2213,34 +2248,135 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.definitions.Documents[this.definitionId].LineDefinitions
       .some(e => e.LineDefinitionId === 'ManualLine');
   }
+
+  private _flagsModel: DocumentForSave;
+  private _flags: { [id: number]: LineFlags } = {};
+
+  private flags(line: LineForSave, doc: DocumentForSave): LineFlags {
+    if (this._flagsModel !== doc) {
+      this._flagsModel = doc;
+      this._flags = {};
+    }
+    if (!!line.Id) {
+      return this._flags[line.Id] || (this._flags[line.Id] = {});
+    } else {
+      return line._flags || (line._flags = {});
+    }
+  }
+
+  public getIsModified(line: LineForSave, doc: DocumentForSave): boolean {
+    return this.flags(line, doc).isModified;
+  }
+
+  public setModified(line: LineForSave, doc: DocumentForSave) {
+    this.flags(line, doc).isModified = true;
+  }
+
+  public get isJV(): boolean {
+    return this.definitionId === 'manual-journal-vouchers';
+  }
+
+  public onSmartLineUpdated(update: (item: LineForSave) => void, line: LineForSave, doc: DocumentForSave) {
+    this.setModified(line, doc); // Flags the line as modified
+    update(line);
+  }
+
+  private _highlightPairFactoryModel: DocumentForSave;
+  private _highlightPairFactoryResult: (pair: LineEntryPair) => boolean;
+
+  public highlightPairFactory(doc: DocumentForSave) {
+    if (this._highlightPairFactoryModel !== doc) {
+      this._highlightPairFactoryModel = doc;
+      this._highlightPairFactoryResult = null;
+    }
+
+    if (!this._highlightPairFactoryResult) {
+      this._highlightPairFactoryResult = (pair: LineEntryPair) => this.flags(pair.line, doc).isHighlighted;
+    }
+
+    return this._highlightPairFactoryResult;
+  }
+
+  private _highlightLineFactoryModel: DocumentForSave;
+  private _highlightLineFactoryResult: (line: LineForSave) => boolean;
+
+  public highlightLineFactory(doc: DocumentForSave) {
+    if (this._highlightLineFactoryModel !== doc) {
+      this._highlightLineFactoryModel = doc;
+      this._highlightLineFactoryResult = null;
+    }
+
+    if (!this._highlightLineFactoryResult) {
+      this._highlightLineFactoryResult = (line: LineForSave) => this.flags(line, doc).isHighlighted;
+    }
+
+    return this._highlightLineFactoryResult;
+  }
+
+  public toggleHighlight(line: LineForSave, doc: DocumentForSave) {
+    const flags = this.flags(line, doc);
+    flags.isHighlighted = !flags.isHighlighted;
+
+    // To trigger OnPush change detection of t-table
+    this._highlightLineFactoryResult = null;
+    this._highlightPairFactoryResult = null;
+  }
+
+  public isHighlighted(line: LineForSave, doc: DocumentForSave): boolean {
+    const isHighlightedLine = this.highlightLineFactory(doc);
+    return isHighlightedLine(line);
+  }
+
+  public highlightSmartTab(lineDefId: string, doc: DocumentForSave): boolean {
+    const isHighlightedLine = this.highlightLineFactory(doc);
+    return this.lines(lineDefId, doc).some(isHighlightedLine);
+  }
+
+  public smartTabColor(lineDefId: string, doc: DocumentForSave): string {
+    return this.highlightSmartTab(lineDefId, doc) ? '#FFFF33' : null;
+  }
+  public highlightBookkeepingTab(doc: DocumentForSave): boolean {
+    const isHighlightedLine = this.highlightLineFactory(doc);
+    return !!doc && !!doc.Lines && doc.Lines.some(isHighlightedLine);
+  }
+
+  public bookkeepingTabColor(doc: DocumentForSave): string {
+    return this.highlightBookkeepingTab(doc) ? '#FFFF33' : null;
+  }
+
+  public formColor(lineDefId: string, doc: DocumentForSave): string {
+    const isHighlightedLine = this.highlightLineFactory(doc);
+    const lines = this.lines(lineDefId, doc);
+    return lines.length === 1 && isHighlightedLine(lines[0]) ? '#FFFF33' : null;
+  }
 }
 
 /* Rules for showing and hiding chart states
 
--------- IsActive
-[-4] !PostingState and !!CanReachState4 and State === -4
-[-3] !PostingState and !!CanReachState4 and State === -3
-[-2] !PostingState and !!CanReachState4 and State === -2
-[-1] !PostingState and !!CanReachState4 and State === -1
-[0] !PostingState and !!CanReachState4 and State === 0
-[1] !PostingState and !!CanReachState4 and State === 1
-[2] !PostingState and !!CanReachState4 and State === 2
-[3] !PostingState and !!CanReachState4 and State === 3
-[4] !PostingState and !!CanReachState4 and State === 4
-[Current] !PostingState and !CanReachState4
-[Posted] PostingState === 1
-[Canceled] PostingState === -1
+  -------- IsActive
+  [-4] !PostingState and !!CanReachState4 and State === -4
+  [-3] !PostingState and !!CanReachState4 and State === -3
+  [-2] !PostingState and !!CanReachState4 and State === -2
+  [-1] !PostingState and !!CanReachState4 and State === -1
+  [0] !PostingState and !!CanReachState4 and State === 0
+  [1] !PostingState and !!CanReachState4 and State === 1
+  [2] !PostingState and !!CanReachState4 and State === 2
+  [3] !PostingState and !!CanReachState4 and State === 3
+  [4] !PostingState and !!CanReachState4 and State === 4
+  [Current] !PostingState and !CanReachState4
+  [Posted] PostingState === 1
+  [Canceled] PostingState === -1
 
---------- IsVisible (In +ve state and wide screen)
-[0] !!CanReachState4
-[1] (!!CanReachState4 && CanReachState1) || isActive(1)
-[2] (!!CanReachState4 && CanReachState2) || isActive(2)
-[3] (!!CanReachState4 && CanReachState3) || isActive(3)
-[4] !!CanReachState4 || isActive(4)
-[Current] !CanReachState4
-[Posted] Always
+  --------- IsVisible (In +ve state and wide screen)
+  [0] !!CanReachState4
+  [1] (!!CanReachState4 && CanReachState1) || isActive(1)
+  [2] (!!CanReachState4 && CanReachState2) || isActive(2)
+  [3] (!!CanReachState4 && CanReachState3) || isActive(3)
+  [4] !!CanReachState4 || isActive(4)
+  [Current] !CanReachState4
+  [Posted] Always
 
---------- IsVisible (In -ve state or narrow screen)
-IsVisible = IsActive
+  --------- IsVisible (In -ve state or narrow screen)
+  IsVisible = IsActive
 
 */

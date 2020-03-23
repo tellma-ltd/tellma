@@ -719,7 +719,7 @@
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
   </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
-    <value>المستند ينقصه بعض التوقيعات</value>
+    <value>بعض التوقيعات ناقصة</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>

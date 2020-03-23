@@ -14,6 +14,9 @@ export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: string;
     Memo?: string;
     Entries?: TEntry[];
+
+    // Only for client side tracking of new lines
+    _flags?: LineFlags;
 }
 
 export interface Line extends LineForSave<Entry> {
@@ -24,6 +27,12 @@ export interface Line extends LineForSave<Entry> {
     ModifiedAt?: string;
     ModifiedById?: number | string;
     SortKey?: number;
+}
+
+
+export interface LineFlags {
+    isModified?: boolean;
+    isHighlighted?: boolean;
 }
 
 let _settings: SettingsForClient;
