@@ -1737,8 +1737,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineDef = this.ws.definitions.Lines[lineDefId];
     const isMultiRS = this.ws.settings.IsMultiCenter;
     return !!lineDef && !!lineDef.Columns ? lineDef.Columns
-      .filter(e => isMultiRS || e.ColumnName !== 'CenterId') // Hide Center columns when there is only one
-      .map((_, index) => index + '') : [];
+      .map((column, index) => ({ column, index })) // Capture the index first thing
+      .filter(e => isMultiRS || e.column.ColumnName !== 'CenterId') // Hide Center columns when there is only one
+      .map(e => e.index + '') : [];
   }
 
   public manualColumnPaths(model: DocumentForSave): string[] {
