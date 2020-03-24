@@ -832,6 +832,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية</value>
   </data>
+  <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
+    <value>بين المدين والدائن فرق {{0}}</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
   </data>

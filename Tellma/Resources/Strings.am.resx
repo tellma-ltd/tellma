@@ -832,6 +832,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>ርዕስ በዋናው ምናሌ ውስጥ ያለውን ሪፖርት ለማሳየት ያስፈልጋል</value>
   </data>
+  <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
+    <value>ዴቢት እና የብድር በማድረግ የተለያዩ ናቸው {0}</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>አንድ ያልታወቀ ስህተት ውጫዊ አቅራቢ በመጠቀም ውስጥ ለመግባት ሲሞከር ተከስቷል.</value>
   </data>
