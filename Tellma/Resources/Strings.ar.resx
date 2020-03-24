@@ -463,21 +463,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
-  <data name="Document_PostingState" xml:space="preserve">
-    <value>حالة الترحيل</value>
-  </data>
-  <data name="Document_PostingState_0" xml:space="preserve">
-    <value>جار</value>
-  </data>
-  <data name="Document_PostingState_1" xml:space="preserve">
-    <value>مرحّل</value>
-  </data>
-  <data name="Document_PostingState_minus_1" xml:space="preserve">
-    <value>ملغى</value>
-  </data>
-  <data name="Document_PostingStateAt" xml:space="preserve">
-    <value>زمن حالة الترحيل</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>الكمية</value>
   </data>
@@ -486,6 +471,24 @@
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Document_State_0" xml:space="preserve">
+    <value>جار</value>
+  </data>
+  <data name="Document_State_1" xml:space="preserve">
+    <value>مرحّل</value>
+  </data>
+  <data name="Document_State_minus_1" xml:space="preserve">
+    <value>ملغى</value>
+  </data>
+  <data name="Document_StateAt" xml:space="preserve">
+    <value>زمن الحالة</value>
+  </data>
+  <data name="Document_StatesHistory" xml:space="preserve">
+    <value>تاريخ الأِحوال</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>الزمن 1</value>
@@ -1210,6 +1213,9 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>حذف</value>
   </data>
+  <data name="Permission_DocumentState" xml:space="preserve">
+    <value>ترحيل/إلغاء</value>
+  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>
   </data>
@@ -1218,9 +1224,6 @@
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>حجاب</value>
-  </data>
-  <data name="Permission_PostingState" xml:space="preserve">
-    <value>ترحيل/إلغاء</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>اطلاع</value>
@@ -1791,6 +1794,12 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>الحالة</value>
+  </data>
+  <data name="StateHistory_FromState" xml:space="preserve">
+    <value>من حالة</value>
+  </data>
+  <data name="StateHistory_ToState" xml:space="preserve">
+    <value>إلى حالة</value>
   </data>
   <data name="StringLengthAttribute" xml:space="preserve">
     <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا</value>

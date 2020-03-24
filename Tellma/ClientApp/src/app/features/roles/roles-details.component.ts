@@ -327,7 +327,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
               Read: { supportsCriteria: true, supportsMask: true },
               Update: { supportsCriteria: true, supportsMask: true },
               Delete: { supportsCriteria: true, supportsMask: false },
-              PostingState: { supportsCriteria: true, supportsMask: false }
+              State: { supportsCriteria: true, supportsMask: false }
             }
           };
         }

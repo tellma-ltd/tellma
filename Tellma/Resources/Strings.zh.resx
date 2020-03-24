@@ -463,21 +463,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>日期</value>
   </data>
-  <data name="Document_PostingState" xml:space="preserve">
-    <value>写入状况</value>
-  </data>
-  <data name="Document_PostingState_0" xml:space="preserve">
-    <value>当前</value>
-  </data>
-  <data name="Document_PostingState_1" xml:space="preserve">
-    <value>发布</value>
-  </data>
-  <data name="Document_PostingState_minus_1" xml:space="preserve">
-    <value>取消</value>
-  </data>
-  <data name="Document_PostingStateAt" xml:space="preserve">
-    <value>发布国家在</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>数量</value>
   </data>
@@ -486,6 +471,24 @@
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>写入状况</value>
+  </data>
+  <data name="Document_State_0" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="Document_State_1" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="Document_State_minus_1" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Document_StateAt" xml:space="preserve">
+    <value>国家在</value>
+  </data>
+  <data name="Document_StatesHistory" xml:space="preserve">
+    <value>美国历史</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>时间1</value>
@@ -1210,6 +1213,9 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>删除</value>
   </data>
+  <data name="Permission_DocumentState" xml:space="preserve">
+    <value>邮政/取消</value>
+  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>激活/停用</value>
   </data>
@@ -1218,9 +1224,6 @@
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>面具</value>
-  </data>
-  <data name="Permission_PostingState" xml:space="preserve">
-    <value>邮政/取消</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>读</value>
@@ -1791,6 +1794,12 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>州</value>
+  </data>
+  <data name="StateHistory_FromState" xml:space="preserve">
+    <value>从国家</value>
+  </data>
+  <data name="StateHistory_ToState" xml:space="preserve">
+    <value>为了国家</value>
   </data>
   <data name="StringLengthAttribute" xml:space="preserve">
     <value>字段{0}必须用的最大长度的字符串{1}</value>

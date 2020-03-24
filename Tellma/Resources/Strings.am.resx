@@ -463,21 +463,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
   </data>
-  <data name="Document_PostingState" xml:space="preserve">
-    <value>የመለጠፍ መንግስት</value>
-  </data>
-  <data name="Document_PostingState_0" xml:space="preserve">
-    <value>የአሁኑ</value>
-  </data>
-  <data name="Document_PostingState_1" xml:space="preserve">
-    <value>የተለጠፈው</value>
-  </data>
-  <data name="Document_PostingState_minus_1" xml:space="preserve">
-    <value>ተትቷል</value>
-  </data>
-  <data name="Document_PostingStateAt" xml:space="preserve">
-    <value>መንግስት ላይ መለጠፍ</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>ብዛት</value>
   </data>
@@ -486,6 +471,24 @@
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>ተከታታይ ቁጥር</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>የመለጠፍ መንግስት</value>
+  </data>
+  <data name="Document_State_0" xml:space="preserve">
+    <value>የአሁኑ</value>
+  </data>
+  <data name="Document_State_1" xml:space="preserve">
+    <value>የተለጠፈው</value>
+  </data>
+  <data name="Document_State_minus_1" xml:space="preserve">
+    <value>ተትቷል</value>
+  </data>
+  <data name="Document_StateAt" xml:space="preserve">
+    <value>መንግስት ላይ</value>
+  </data>
+  <data name="Document_StatesHistory" xml:space="preserve">
+    <value>ስቴትስ ታሪክ</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>የጊዜ 1</value>
@@ -1210,6 +1213,9 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>ሰርዝ</value>
   </data>
+  <data name="Permission_DocumentState" xml:space="preserve">
+    <value>ልጥፍ / ሰርዝ</value>
+  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>አንቃ / አቦዝንን</value>
   </data>
@@ -1218,9 +1224,6 @@
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>ሽፉን</value>
-  </data>
-  <data name="Permission_PostingState" xml:space="preserve">
-    <value>ልጥፍ / ሰርዝ</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>አንብብ</value>
@@ -1791,6 +1794,12 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>ሁኔታ</value>
+  </data>
+  <data name="StateHistory_FromState" xml:space="preserve">
+    <value>ክልል ከ</value>
+  </data>
+  <data name="StateHistory_ToState" xml:space="preserve">
+    <value>ወደ ስቴት</value>
   </data>
   <data name="StringLengthAttribute" xml:space="preserve">
     <value>መስኩ {0} ከፍተኛ ርዝመት ጋር ሕብረቁምፊ መሆን አለበት {1}</value>
