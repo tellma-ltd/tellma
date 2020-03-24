@@ -8,10 +8,10 @@
 	[DefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	CONSTRAINT [IX_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
-	[PostingState]					SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__PostingState] CHECK ([PostingState] BETWEEN -1 AND +1),
-	[PostingStateAt]				DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[State]							SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__State] CHECK ([State] BETWEEN -1 AND +1),
+	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[PostingDate]					DATE			CONSTRAINT [CK_Documents__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
-	CONSTRAINT [Documents__PostingDate_PostingState] CHECK([PostingState] < 1 OR [PostingDate] IS NOT NULL),
+	CONSTRAINT [Documents__PostingDate_State] CHECK([State] < 1 OR [PostingDate] IS NOT NULL),
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),
 	-- Dynamic properties defined by document type specification
 	[DocumentLookup1Id]				INT, -- e.g., cash machine serial in the case of a sale
@@ -46,4 +46,13 @@
 	-- So, the user will not be able to enter transactions unless PostingDate is allowed 1d future 	
  );
 GO
--- TODO: Add trigger to fill DocumentsStatesHistory automatically, or use temporal
+CREATE TRIGGER TRG_Documents__State ON dbo.Documents
+FOR UPDATE
+AS
+IF UPDATE([State])
+	INSERT INTO dbo.DocumentStatesHistory([DocumentId], [FromState], [ToState])
+	SELECT I.[Id], D.[State], I.[State]
+	FROM INSERTED I 
+	JOIN DELETED D ON I.[Id] = D.[Id]
+	WHERE D.[State] <> I.[State];
+GO

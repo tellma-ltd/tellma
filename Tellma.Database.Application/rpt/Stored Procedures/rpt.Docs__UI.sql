@@ -8,7 +8,7 @@ WITH Docs AS (
 			CAST(D.[PostingDate] AS NVARCHAR(30)) AS [PostingDate],
 			D.[DefinitionId] AS DocumentDefinitionId,
 			[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-			D.[PostingState],
+			D.[State],
 			ISNULL(DD.[Prefix], '') +
 			ISNULL(CAST(D.[SerialNumber] AS NVARCHAR(30)), '') AS [VoucherRef],
 			U.[Name] AS [AssignedTo],
@@ -44,7 +44,7 @@ WITH Docs AS (
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [PostingDate] ELSE '' END) AS [PostingDate],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [S/N] ELSE '' END) AS [S/N],
-		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [PostingState] ELSE '' END) AS [PostingState],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [State] ELSE '' END) AS [DocumentState],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [VoucherRef] ELSE '' END) AS [V. Ref],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [Memo] ELSE '' END) AS [Memo],
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [AssignedTo] ELSE '' END) AS [AssignedTo],

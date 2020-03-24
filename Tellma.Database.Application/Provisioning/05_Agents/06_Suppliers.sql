@@ -16,7 +16,8 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 	(1,		N'Salanco', N'سلانكو'),
 	(2,		N'Canar', N'كنار'),
 	(3,		N'Car Rental', N'شركة تأجير السيارات'),
-	(4,		N'The Family Shawerma', N'شاورما العائلة')
+	(4,		N'The Family Shawerma', N'شاورما العائلة'),
+	(99,	N'Generic Supplier',	N'مورد عام')
 	;
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Suppliers

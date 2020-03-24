@@ -63,7 +63,7 @@ BEGIN
 		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 		JOIN [map].[ExchangeRates] ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
 		AND E.[AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
-		AND L.[State] = 4 AND D.[PostingState] = 1
+		AND L.[State] = 4 AND D.[State] = 1
 		AND D.[PostingDate] <= @PostingDate
 		GROUP BY E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId], ER.Rate
 		HAVING SUM(E.[Direction] * E.[Value]) * ER.Rate <> SUM(E.[Direction] * E.[MonetaryValue])

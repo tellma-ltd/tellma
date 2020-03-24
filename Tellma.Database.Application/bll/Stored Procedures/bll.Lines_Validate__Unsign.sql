@@ -11,13 +11,13 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[PostingState] = 1 THEN N'Error_TheDocumentIsInPostedState'
-			WHEN D.[PostingState] = -1 THEN N'Error_TheDocumentIsInCancelledState'
+			WHEN D.[State] = 1 THEN N'Error_TheDocumentIsInPostedState'
+			WHEN D.[State] = -1 THEN N'Error_TheDocumentIsInCancelledState'
 		END
 	FROM @Ids FE
 	JOIN [dbo].[Lines] L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
-	WHERE (D.[PostingState] <> 0);
+	WHERE (D.[State] <> 0);
 
 	-- TODO: cannot unsign unless it was part of the last transition
 

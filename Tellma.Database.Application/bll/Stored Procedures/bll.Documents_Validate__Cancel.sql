@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		N'Error_DocumentIsNotDraft'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 0;
+	WHERE D.[State] <> 0;
 
 	-- All workflow lines must be in negative states.
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

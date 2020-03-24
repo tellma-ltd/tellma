@@ -33,7 +33,7 @@ SET NOCOUNT ON;
 		N'Error_DocumentIsNotDraft'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 0;
+	WHERE D.[State] <> 0;
 	-- Cannot post a document which does not have at lease one line that is (Finalized)
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)

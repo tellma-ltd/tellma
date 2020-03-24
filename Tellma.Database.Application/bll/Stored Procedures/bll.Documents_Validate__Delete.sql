@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 		N'Error_TheDocumentIsPosted'
 	FROM @Ids FE 
 	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] = +1
+	WHERE D.[State] = +1
 
 	-- Cannot delete If there are completed lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

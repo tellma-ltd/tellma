@@ -93,7 +93,7 @@ DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (
 ); -- ON DELETE CASCADE
 
 INSERT INTO dbo.ReportDefinitions([Id], [Title], [Type], [Collection], [Filter], [OrderBy], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
-(N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/PostingDate >= @fromDate and Line/Document/DocumentDate <= @toDate and Account/AccountType/Node DescOf 121',NULL,0,1,0),
+(N'0c46cb52-739f-4308-82dd-7cd578bb04ff',N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/PostingDate >= @fromDate and Line/Document/PostingDate <= @toDate and Account/AccountType/Node DescOf 121',NULL,0,1,0),
 (N'281dba1b-7e3d-4497-b396-877ba91087c8',N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',NULL,0,1,0),
 (N'5aeec2a2-3008-4c62-8559-16896c17cc3f',N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/Document/PostingDate <= @Date and Account/AccountType/Node DescOf 1',NULL,0,1,0),
 (N'6c7ba5e1-4f2d-4882-829e-406d71137ad4',N'Statement of cash flow - Direct Method',N'Summary',N'DetailsEntry',N'Account/AccountType/Code = ''CashAndCashEquivalents'' and EntryType/Code <> ''InternalCashTransferExtension''',NULL,0,1,0),
@@ -148,7 +148,6 @@ SET IDENTITY_INSERT dbo.ReportParameterDefinitions OFF
 
 SET IDENTITY_INSERT dbo.ReportSelectDefinitions ON
 INSERT INTO dbo.ReportSelectDefinitions([Id], [Index], ReportDefinitionId, [Path]) VALUES
-(1,	0,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Line/Document/State'),
 (3,	2,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Line/Document/SerialNumber'),
 (4,	3,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Line/State'),
 (5,	4,	N'9ce0a0e3-772d-406a-8aef-46684b757eac',	N'Account'),

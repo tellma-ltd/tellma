@@ -9,7 +9,7 @@ SELECT *
 	WITH (
 		[Id] INT '$.Id',
 		[PostingDate] DATETIME2 (7) '$.DocumentDate',
-		[PostingState] NVARCHAR (255) '$.PostingState',
+		[State] NVARCHAR (255) '$.State',
 		[SerialNumber] INT '$.SerialNumber',
 		[Reference] NVARCHAR (255) '$.Reference',
 		[Memo] NVARCHAR (255) '$.Memo',

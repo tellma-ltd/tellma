@@ -12,12 +12,12 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[PostingState] = 1 THEN N'Error_CannotAssignPostedDocuments'
-			WHEN D.[PostingState] = -1 THEN N'Error_CannotAssignCanceledDocuments'
+			WHEN D.[State] = 1 THEN N'Error_CannotAssignPostedDocuments'
+			WHEN D.[State] = -1 THEN N'Error_CannotAssignCanceledDocuments'
 		END
 	FROM @Ids FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 0; -- Posted or Canceled
+	WHERE D.[State] <> 0; -- Posted or Canceled
 
 	-- Must not assign a document to the same assignee
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

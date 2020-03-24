@@ -2,9 +2,9 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 BEGIN
-	EXEC [dal].[Documents_PostingState__Update]
+	EXEC [dal].[Documents_State__Update]
 		@Ids = @Ids,
-		@PostingState = 0;
+		@State = 0;
 
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]

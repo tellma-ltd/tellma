@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Assign]
 	@Ids [dbo].[IdList] READONLY,
 	@AssigneeId INT,
-	@Comment NVARCHAR(1024) = NULL
+	@Comment NVARCHAR(1024) = NULL,
+	@RecordInHistory BIT = 0
 AS
 BEGIN
 	IF @AssigneeId IS NULL
@@ -24,13 +25,10 @@ BEGIN
 			INSERT ([DocumentId], [AssigneeId], [Comment])
 			VALUES (s.[Id], @AssigneeId, @Comment);
 
-		INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])
-		SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById]
-		FROM dbo.DocumentAssignments
-		WHERE DocumentId IN (SELECT [Id] FROM @Ids)
-		AND ( -- do not add the first assignment to history. It is redundant.
-			[AssigneeId] <> [CreatedById] OR 
-			DocumentId IN (SELECT [DocumentId] FROM dbo.DocumentAssignmentsHistory)
-		)
+		IF (@RecordInHistory = 1)
+			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])
+			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById]
+			FROM dbo.DocumentAssignments
+			WHERE DocumentId IN (SELECT [Id] FROM @Ids)
 	END
 END;

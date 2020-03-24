@@ -22,7 +22,7 @@ AS
 
 	DECLARE @Ids [dbo].[IdList];
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Documents_PostingState__Update] @Ids = @Ids, @PostingState = 0;
+	EXEC [dal].[Documents_State__Update] @Ids = @Ids, @State = 0;
 
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]

@@ -10,14 +10,14 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[PostingState] = 1 THEN N'Error_TheDocumentIsInPostedState'
-			WHEN D.[PostingState] = -1 THEN N'Error_TheDocumentIsInCancelledState'
+			WHEN D.[State] = 1 THEN N'Error_TheDocumentIsInPostedState'
+			WHEN D.[State] = -1 THEN N'Error_TheDocumentIsInCancelledState'
 		END
 	FROM @Ids FE
 	JOIN dbo.[LineSignatures] LS ON FE.[Id] = LS.[Id]
 	JOIN [dbo].[Lines] L ON LS.[LineId] = L.[Id]
 	JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
-	WHERE (D.[PostingState] <> 0);
+	WHERE (D.[State] <> 0);
 
 	-- cannot unsign if there are subsequent signatures
 		INSERT INTO @ValidationErrors([Key], [ErrorName])

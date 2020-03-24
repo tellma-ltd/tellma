@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		N'Error_DocumentIsNotPosted'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 1;	
+	WHERE D.[State] <> 1;	
 
 	-- [C#] cannot open if the document posting date falls in an archived period.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

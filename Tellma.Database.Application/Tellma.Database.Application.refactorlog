@@ -542,4 +542,32 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ExchangeRates]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="8337c462-f44a-4175-96d5-2f09a1cd10af" ChangeDateTime="03/24/2020 09:37:56">
+    <Property Name="ElementName" Value="[dbo].[Documents].[PostingState]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[State]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9fb3f97d-ffc9-4723-a441-e71c576b8909" ChangeDateTime="03/24/2020 09:38:26">
+    <Property Name="ElementName" Value="[dbo].[Documents].[PostingStateAt]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StateAt]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="29a39e21-cdd0-4153-86ef-fb35310949a0" ChangeDateTime="03/24/2020 09:40:40">
+    <Property Name="ElementName" Value="[dal].[Documents_PostingState__Update]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_State__Update]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1fd317a1-3af2-499f-b006-f2cbd1f62bbe" ChangeDateTime="03/24/2020 09:53:05">
+    <Property Name="ElementName" Value="[dbo].[DocumentStatesHistory].[State]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentStatesHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromState]" />
+  </Operation>
 </Operations>

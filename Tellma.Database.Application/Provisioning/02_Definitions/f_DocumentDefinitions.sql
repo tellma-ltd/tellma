@@ -25,20 +25,18 @@ BEGIN
 	(1,1,	N'ManualLine',						1),
 	(2,1,	N'PurchaseInvoice',					0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',				1),
-	(0,3,	N'LeaseOutInvoiceAndIssueWithVAT',	1),
-	(1,3,	N'LeaseOutInvoiceAndIssueNoVAT',	1),
-	(2,3,	N'ManualLine',						0);
+	(0,3,	N'LeaseOut',						1),
+	(1,3,	N'ManualLine',						0);
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],		[TitlePlural],				[TitlePlural2],			[Prefix], [AgentDefinitionId],	[MainMenuIcon],		[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',		N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV',		NULL,					N'book',		N'Financials',		0),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'قيد دفع نقدي',		N'Cash Payment Vouchers',	N'قيود دفع نقدية',		N'CPV',		N'cash-custodians',		N'money-check-alt',	N'Cash',			20),
-	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'قيد قبض نقدي',		N'Cash Receipt Vouchers',	N'قيود قبض نقدية',		N'CRV',		N'cash-custodians',		N'file-invoice-dollar',	N'Cash',		50),
-	(3,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'قيد إثبات إيرادات',N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',N'RRV',	NULL,					N'money-bill-wave',	N'Sales',			75),
-	(4,	N'asset-depreciation-vouchers',	N'Asset Depreciation Voucher',N'قيد إهلاك أصول',	N'Asset Depreciation Vouchers',	N'قيود إهلاك أصول',	N'ADV',		NULL,					N'file-contract',	N'FixedAssets',		20);
-
+		[Id],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[AgentDefinitionId],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		NULL,					N'book',				N'Financials',		0),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPV',		N'cash-custodians',		N'money-check-alt',		N'Cash',			20),
+	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'cash-custodians',		N'file-invoice-dollar',	N'Cash',			50),
+	(3,	N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		NULL,					N'file-contract',		N'Purchasing',		20),
+	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		NULL,					N'money-bill-wave',		N'Sales',			75);
 	UPDATE @DocumentDefinitions
 	SET
 		Time1Visibility = N'Required',
@@ -49,25 +47,26 @@ BEGIN
 		UnitLabel = N'', UnitLabel2 = N''
 	WHERE [Id] = N'asset-depreciation-vouchers'
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',						1),
+			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',				1),
 	-- cash-payment-vouchers
-	(0,1,	N'CashPurchase',1), -- to recognize expenses, fill a separate GRN/GRIV
-	(1,1,	N'PaymentToOther',				1), -- for non-suppliers
-	(2,1,	N'CashTransferExchange',			1),
-	(3,1,	N'ManualLine',						1),
+	(0,1,	N'CashPurchase',			1), -- to recognize expenses, fill a separate GRN/GRIV
+	(1,1,	N'PaymentToSupplier',		1),
+	(2,1,	N'PaymentToOther',			1), -- for non-suppliers
+	(3,1,	N'CashTransferExchange',	1),
+	(4,1,	N'ManualLine',				1),
 	-- cash-receipt-vouchers
-	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',0),  -- for tax visible customers
-	(1,2,	N'CashReceiptFromCustomer',			0), -- for tax invisible customers
-	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
-	(3,2,	N'ManualLine',						0),
+	(0,2,	N'ReceiptFromCustomer',		1),  -- for tax visible customers
+	(1,2,	N'ReceiptFromOther',		1), -- for non-customers
+	(2,2,	N'ManualLine',				1),
+	-- 	expense-recognition-vouchers, for depreciation expenses and rental recognition
+	(0,3,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
+	(1,3,	N'LeaseIn',					1),-- software subscription, domain registration, office rental...
+	(9,3,	N'ManualLine',				0),
 	-- revenue-recognition-vouchers, for revenue recognition
-	(0,3,	N'LeaseOutIssue',					1), -- for tax visible customers
-	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
-	(2,3,	N'ManualLine',						0),
-	-- 	asset-depreciation-vouchers, for depreciation expenses recognition
-	(0,4,	N'PPEDepreciation',					1), -- where depreciation is calculated by days
-	(1,4,	N'ManualLine',						0);
+	(0,4,	N'LeaseOut',				1), -- for tax visible customers
+	(1,4,	N'ManualLine',				0);
+
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

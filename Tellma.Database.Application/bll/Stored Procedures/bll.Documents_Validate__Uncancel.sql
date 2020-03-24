@@ -13,6 +13,6 @@ SET NOCOUNT ON;
 		N'Error_DocumentIsNotCanceled'
 	FROM @Ids FE
 	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> -1;	
+	WHERE D.[State] <> -1;	
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

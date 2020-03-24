@@ -46,12 +46,12 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[PostingState] = 1 THEN N'Error_CannotEditPostedDocuments'
-			WHEN D.[PostingState] = -1 THEN N'Error_CannotEditCanceledDocuments'
+			WHEN D.[State] = 1 THEN N'Error_CannotEditPostedDocuments'
+			WHEN D.[State] = -1 THEN N'Error_CannotEditCanceledDocuments'
 		END
 	FROM @Documents FE
 	JOIN [dbo].[Documents] D ON FE.[Id] = D.[Id]
-	WHERE D.[PostingState] <> 0;
+	WHERE D.[State] <> 0;
 	-- Must not delete a line not in draft state
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)

@@ -1,19 +1,19 @@
-﻿CREATE PROCEDURE [dal].[Documents_PostingState__Update]
+﻿CREATE PROCEDURE [dal].[Documents_State__Update]
 	@Ids dbo.IdList READONLY,
-	@PostingState SMALLINT
+	@State SMALLINT
 AS
 UPDATE dbo.Documents
 SET
-	[PostingState]	= @PostingState,
-	[PostingStateAt] = SYSDATETIMEOFFSET()
+	[State]	= @State,
+	[StateAt] = SYSDATETIMEOFFSET()
 WHERE Id IN (SELECT [Id] FROM @Ids)
-AND [PostingState] <> @PostingState;
+AND [State] <> @State;
 
 -- Make sure Non-workflow lines are updated
 UPDATE dbo.Lines
-SET [State] = 4 * @PostingState
+SET [State] = 4 * @State
 WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
-AND [State] <> 4 * @PostingState
+AND [State] <> 4 * @State
 AND [DefinitionId] IN (
 	SELECT [Id]
 	FROM map.[LineDefinitions]()

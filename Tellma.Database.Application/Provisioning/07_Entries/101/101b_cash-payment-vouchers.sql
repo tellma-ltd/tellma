@@ -341,7 +341,7 @@ GOTO DONE
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents
-	WHERE DefinitionId = N'cash-payment-vouchers' AND [PostingState] = 0;
+	WHERE DefinitionId = N'cash-payment-vouchers' AND [State] = 0;
 
 	DELETE FROM @LinesIndexedIds;
 	INSERT INTO @LinesIndexedIds([Index], [Id])

@@ -23,13 +23,13 @@ SET NOCOUNT ON;
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[PostingState] = 1 THEN N'Error_CannotSignPostedDocuments'
-			WHEN D.[PostingState] = -1 THEN N'Error_CannotSignCanceledDocuments'
+			WHEN D.[State] = 1 THEN N'Error_CannotSignPostedDocuments'
+			WHEN D.[State] = -1 THEN N'Error_CannotSignCanceledDocuments'
 		END
 	FROM @Ids FE
 	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
-	WHERE D.[PostingState] <> 0; -- Posted or Canceled
+	WHERE D.[State] <> 0; -- Posted or Canceled
 
 	IF @RuleType = N'ByRole'
 	IF @RoleId NOT IN (

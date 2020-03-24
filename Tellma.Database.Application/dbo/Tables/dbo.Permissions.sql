@@ -2,7 +2,7 @@
 	[Id]			INT					CONSTRAINT [PK_Permissions] PRIMARY KEY IDENTITY,
 	[RoleId]		INT					NOT NULL CONSTRAINT [FK_Permissions__Roles] REFERENCES [dbo].[Roles] ([Id]) ON DELETE CASCADE,
 	[View]			NVARCHAR (255)		NOT NULL,
-	[Action]		NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Permissions__Level] CHECK ([Action] IN (N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'PostingState', N'All')),
+	[Action]		NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Permissions__Level] CHECK ([Action] IN (N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All')),
 	[Criteria]		NVARCHAR(1024),		-- compiles into LINQ expression to filter the applicability
 	[Mask]			NVARCHAR(1024),
 	[Memo]			NVARCHAR (255),
