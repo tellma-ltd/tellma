@@ -299,7 +299,7 @@ END
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
-	JOIN [map].[ExchangeRates] ER ON E.CurrencyId = ER.CurrencyId
+	JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId
 	JOIN dbo.Currencies C ON E.CurrencyId = C.[Id]
 	WHERE
 		ER.ValidAsOf <= ISNULL(D.[PostingDate], @Today)

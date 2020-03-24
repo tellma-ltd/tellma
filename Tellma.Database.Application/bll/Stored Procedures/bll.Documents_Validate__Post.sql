@@ -87,7 +87,7 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TransactionHasDebitCreditDifference0',
-		FORMAT(SUM(E.[Direction] * E.[Value]), '##,#;(##,#);-', 'en-us') AS NetDifference
+		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
 	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]

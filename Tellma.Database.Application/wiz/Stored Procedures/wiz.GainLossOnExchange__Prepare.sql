@@ -25,6 +25,8 @@ BEGIN
 		)
 	);
 
+	DECLARE @E INT;
+	SELECT @E = E FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId();
 	WITH 
 	ExchangeVarianceAccountTypes AS
 	(
@@ -57,11 +59,11 @@ BEGIN
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY E.[AccountId]) AS [Index],
 		E.[AccountId], E.[AgentId], E.[ResourceId], E.[CurrencyId],
-		ER.[Rate] * SUM(E.[Direction] * E.[MonetaryValue]) - SUM(E.[Direction] * E.[Value]) AS [NetGainLoss]
+		ROUND(ER.[Rate] * SUM(E.[Direction] * E.[MonetaryValue]) - SUM(E.[Direction] * E.[Value]), @E) AS [NetGainLoss]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-		JOIN [map].[ExchangeRates] ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
+		JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
 		AND E.[AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		AND L.[State] = 4 AND D.[State] = 1
 		AND D.[PostingDate] <= @PostingDate

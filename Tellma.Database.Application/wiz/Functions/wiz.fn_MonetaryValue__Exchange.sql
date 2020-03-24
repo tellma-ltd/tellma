@@ -1,16 +1,19 @@
-﻿CREATE FUNCTION [wiz].[fn_MonetaryValue__Exchange]
+﻿CREATE FUNCTION [wiz].[fn_ConvertToFunctional]
 (
-	@PostingDate DATE,
+	@Date DATE,
 	@CurrencyId NCHAR (3),
-	@MonetaryValue DECIMAL (19,4)
+	@Amount DECIMAL (19,4)
 )
 RETURNS DECIMAL (19,4)
 AS
-BEGIN RETURN (
-			SELECT @MonetaryValue * [Rate]
-			FROM [map].[ExchangeRates]
-			WHERE CurrencyId = @CurrencyId
-			AND @PostingDate >= ValidAsOf
-			AND @PostingDate < ValidTill
-			)
+BEGIN
+	DECLARE @E INT;
+	SELECT @E = E FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId();
+	RETURN (
+		SELECT ROUND(@Amount * [Rate], @E)
+		FROM [map].[ExchangeRates]()
+		WHERE CurrencyId = @CurrencyId
+		AND @Date >= ValidAsOf
+		AND @Date < ValidTill
+	)
 END;

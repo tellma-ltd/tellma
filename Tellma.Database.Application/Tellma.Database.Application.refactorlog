@@ -570,4 +570,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FromState]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="114725ec-353f-43d1-b65e-48f51341fdb9" ChangeDateTime="03/24/2020 14:52:32">
+    <Property Name="ElementName" Value="[wiz].[fn_MonetaryValue__Exchange]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[wiz]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_ConvertToFunctional]" />
+  </Operation>
 </Operations>

@@ -1,5 +1,7 @@
-﻿CREATE VIEW [map].[ExchangeRates]
+﻿CREATE FUNCTION [map].[ExchangeRates]()
+RETURNS TABLE
 AS
+RETURN (
 SELECT 
 	ER.*,
 	(
@@ -7,4 +9,5 @@ SELECT
 		FROM dbo.ExchangeRates
 		WHERE [CurrencyId] = ER.[CurrencyId] AND [ValidAsOf] > ER.[ValidAsOf]
 	) AS [ValidTill]
-FROM dbo.ExchangeRates ER;
+FROM dbo.ExchangeRates ER
+);
