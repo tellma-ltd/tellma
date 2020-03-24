@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[DocumentStatesHistory] (
-	[Id]			INT					CONSTRAINT [PK_DocumentsStateHistory] PRIMARY KEY,
+	[Id]			INT					CONSTRAINT [PK_DocumentsStateHistory] PRIMARY KEY IDENTITY,
 	[DocumentId]	INT					NOT NULL CONSTRAINT [FK_DocumentStatesHistory__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[FromState]		SMALLINT			NOT NULL,
 	[ToState]		SMALLINT			NOT NULL,
