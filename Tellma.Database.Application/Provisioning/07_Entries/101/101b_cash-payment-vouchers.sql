@@ -134,7 +134,12 @@ BEGIN -- Inserting
 
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 0;
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
+		FROM dbo.Documents 
+	WHERE DefinitionId = N'cash-payment-vouchers'
+	AND Id IN (
+		SELECT DocumentId FROM dbo.Lines WHERE [State] = 0
+	);
 		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
@@ -163,7 +168,12 @@ BEGIN -- Inserting
 
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 1;
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
+	FROM dbo.Documents 
+	WHERE DefinitionId = N'cash-payment-vouchers'
+	AND Id IN (
+		SELECT DocumentId FROM dbo.Lines WHERE [State] = 1
+	);
 
 	-- Approving
 	EXEC sys.sp_set_session_context 'UserId', @amtaam;		
@@ -210,8 +220,12 @@ BEGIN -- Inserting
 
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 3;
-
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
+	FROM dbo.Documents 
+	WHERE DefinitionId = N'cash-payment-vouchers'
+	AND Id IN (
+		SELECT DocumentId FROM dbo.Lines WHERE [State] = 3
+	);
 	-- Reviewing
 	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;		
 	EXEC [api].[Documents__Sign]
@@ -327,7 +341,7 @@ GOTO DONE
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents
-	WHERE DefinitionId = N'cash-payment-vouchers' AND [State] = 0;
+	WHERE DefinitionId = N'cash-payment-vouchers' AND [PostingState] = 0;
 
 	DELETE FROM @LinesIndexedIds;
 	INSERT INTO @LinesIndexedIds([Index], [Id])

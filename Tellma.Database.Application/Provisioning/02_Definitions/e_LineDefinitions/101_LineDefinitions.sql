@@ -50,8 +50,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
 																								[InheritsFromHeader]) VALUES
-(0,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
-(1,1,	N'Entries',	N'ExternalReference',	0,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
+(0,1,	N'Entries',	N'NotedDate',			0,	N'Invoice Date',		N'تاريخ الفاتورة',		4,5,0), 
+(1,1,	N'Entries',	N'ExternalReference',	0,	N'Invoice #',			N'رقم الفاتورة',		4,5,0), 
 (2,1,	N'Entries',	N'NotedAgentId',		1,	N'Supplier',			N'المورد',				3,4,1),
 (3,1,	N'Entries',	N'CurrencyId',			1,	N'Currency',			N'العملة',				1,2,1),
 (4,1,	N'Entries',	N'NotedAmount',			0,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
@@ -149,11 +149,14 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,2,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --3:GoodReceiptNote
---4:GRIV
+--Dr. Warehouse
+
+
+--4:GRIV Dr.
 --5:Consumables&Services
 --6:PaymentToEmployee (in Banan SD, we will have a dedicated voucher for that)
 --7:PaymentToPartner
---8:RefundToCustomer
+--8:RefundToCustomer. Can we use negative? bad workflow
 --9:PaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
@@ -167,11 +170,11 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 																								[InheritsFromHeader]) VALUES
 (0,9,	N'Entries',	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
 (1,9,	N'Entries',	N'MonetaryValue',		0,	N'Pay Amount',			N'المبلغ',				1,2,0),
-(2,9,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',			N'المستفيد',			3,4,0),
+(2,9,	N'Entries',	N'NotedAgentName',		0,	N'Beneficiary',			N'المستفيد',			3,3,0),
 (3,9,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',				N'الغرض',				4,4,0),
-(4,9,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,4,0),
-(5,9,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,4,0),
-(6,9,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,5,0),
+(4,9,	N'Entries',	N'AgentId',				0,	N'Bank/Cashier',		N'البنك/الخزنة',		3,3,0),
+(5,9,	N'Entries',	N'ExternalReference',	0,	N'Check #/Receipt #',	N'رقم الشيك/الإيصال',	3,3,0),
+(6,9,	N'Entries',	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,3,0),
 (7,9,	N'Entries',	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
 (8,9,	N'Lines',	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1);
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
@@ -206,7 +209,8 @@ SET [Script] = N'
 	SET
 		[NotedAgentId0]	= [AgentId1],
 		[NotedAgentId1]	= [AgentId0],
-		[CenterId1] = [CenterId0]
+		[CenterId1] = [CenterId0],
+		[MonetaryValue0] = =IIF([CurrencyId0]=Currency[Id1],[MonetaryValue1],[MonetaryValue0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 10;
@@ -243,8 +247,10 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 --11:CashSale
 --12:ReceiptFromCustomer
 --13:GoodDeliveryNote
---14:
-
+--14:ServiceDeliveryNote <recognition of revenues, Lease out Issue>
+--17:ReceiptFromPartner
+--18:RefundFromSupplier. Can we use negative in PaymentToSupplier?! bad workflow!
+--19:ReceiptFromOther
 
 --CashReceiptFromCustomerAndSalesInvoiceVAT
 INSERT @LineDefinitions([Index],
@@ -352,7 +358,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,19,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (7,19,	N'Entries',	N'EntryTypeId',			0,	N'Purpose',			N'الغرض',			4,4,0),
 (8,19,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);
-
 
 --LeaseOutIssue. TODO: Auto calculate Revenue based on AgentRates
 INSERT @LineDefinitions([Index],

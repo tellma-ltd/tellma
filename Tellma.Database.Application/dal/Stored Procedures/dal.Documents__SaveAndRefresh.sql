@@ -268,10 +268,11 @@ BEGIN
 	--SELECT @ReturnResult = (SELECT * FROM @DocumentsIndexedIds FOR JSON PATH);
 	
 	-- if we added/deleted draft lines, the document state should change
-	DECLARE @DocIds dbo.IdList;
-	INSERT INTO @DocIds([Id])
-	SELECT [Id] FROM @DocumentsIndexedIds;
-	EXEC dal.Documents_State__Refresh @DocIds;
+
+	--DECLARE @DocIds dbo.IdList;
+	--INSERT INTO @DocIds([Id])
+	--SELECT [Id] FROM @DocumentsIndexedIds;
+	--EXEC dal.Documents_State__Refresh @DocIds;
 
 	---- Assign the new ones to self
 	DECLARE @NewDocumentsIds dbo.IdList;
