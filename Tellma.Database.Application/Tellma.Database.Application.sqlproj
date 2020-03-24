@@ -317,7 +317,6 @@
     <Build Include="Mapping\Accounts.sql" />
     <Build Include="Mapping\Accounts__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__Unsign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Lines__Unsign.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
     <Build Include="Mapping\EntryTypes.sql" />
@@ -335,7 +334,6 @@
     <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
-    <Build Include="api\Stored Procedures\api.Lines__Unsign.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Post.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_Lines__Ready.sql" />
@@ -373,7 +371,6 @@
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.LegacyTypes.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents_State__Refresh.sql" />
     <Build Include="Mapping\Documents.sql" />
     <Build Include="Mapping\Lines.sql" />
     <Build Include="Mapping\Entries.sql" />
@@ -418,7 +415,6 @@
     <None Include="Provisioning\04_Resources\e1_CCE_received-checks.sql" />
     <None Include="Provisioning\04_Resources\101_employee-benefits.sql" />
     <None Include="Provisioning\06_Accounts\b_LegacyClassifications.sql" />
-    <None Include="Provisioning\07_Entries\01_manual-journal-vouchers.sql" />
     <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentDefinitionList.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionList.sql" />
@@ -523,7 +519,6 @@
     <Build Include="dbo\Tables\dbo.RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines__SignAndRefresh.sql" />
     <Build Include="dbo\Tables\dbo.PredicateTypes.sql" />
-    <Build Include="dal\Stored Procedures\dal.Lines__UnsignAndRefresh.sql" />
     <Build Include="Mapping\DocumentsRequiredSignatures.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Uncancel.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Uncancel.sql" />

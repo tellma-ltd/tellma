@@ -72,7 +72,12 @@ BEGIN -- Inserting
 
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]
+	FROM dbo.Documents 
+	WHERE DefinitionId = N'cash-payment-vouchers'
+	AND Id IN (
+		SELECT DocumentId FROM dbo.Lines WHERE [State] BETWEEN 0 AND 4
+	);
 		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,

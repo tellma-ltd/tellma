@@ -110,10 +110,10 @@ SET NOCOUNT ON;
 
 	-- verify that all required fields are available
 	DECLARE @LineState SMALLINT, @L LineList, @E EntryList;
-	SELECT @LineState = MIN([State])
-	FROM dbo.Lines
-	WHERE [State] > 0
-	AND [Id] IN (SELECT [Id] FROM @Lines)
+		SELECT @LineState = MIN([State])
+		FROM dbo.Lines
+		WHERE [State] > 0
+		AND [Id] IN (SELECT [Id] FROM @Lines)
 	
 	WHILE @LineState IS NOT NULL
 	BEGIN
@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Update]
-		@Lines = @Lines, @Entries = @Entries, @ToState = @LineState;
+		@Lines = @L, @Entries = @E, @ToState = @LineState;
 
 		SET @LineState = (
 			SELECT MIN([State])

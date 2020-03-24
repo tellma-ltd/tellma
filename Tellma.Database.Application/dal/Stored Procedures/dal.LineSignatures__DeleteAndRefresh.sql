@@ -52,7 +52,5 @@ AS
 	SELECT DISTINCT DocumentId FROM dbo.Lines
 	WHERE [Id] IN (SELECT [Id] FROM @LineIds);
 
-	EXEC dal.Documents_State__Refresh @DocIds;
-
 	IF @ReturnIds = 1
 		SELECT [Id] FROM @DocIds;

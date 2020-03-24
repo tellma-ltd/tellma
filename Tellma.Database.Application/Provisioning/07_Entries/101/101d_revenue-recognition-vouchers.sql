@@ -55,7 +55,7 @@ BEGIN -- Inserting
 
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [State] = 0;
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents WHERE [PostingState] = 0;
 	-- Executing
 
 	-- TODO: Bug Fix: elAmin is not getting the accoutn manager role
