@@ -11,10 +11,6 @@ BEGIN
 	(4,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,	NULL,			N'cash-custodians',	@KRTBank),
 
 	(5,1,0,		@TradeReceivables,			N'Trade Receivables',		NULL,			@RC_Inv,					NULL,			N'customers',	NULL),
-	--(4,1,0,		@TradeReceivables,			N'Tier-3 A/R - SDG',		@SDG,			@RC_Inv,					NULL,			N'customers',	NULL),
-	--(5,1,0,		@TradeReceivables,			N'Tier-3 A/R - USD',		@USD,			@RC_Inv,					NULL,			N'customers',	NULL),
-	--(6,1,0,		@TradeReceivables,			N'Tier-2 A/R - USD',		@USD,			@RC_Inv,					NULL,			N'customers',	NULL),
-	--(7,1,0,		@TradeReceivables,			N'Tier-2 A/R - SAR',		N'SAR',			@RC_Inv,					NULL,			N'customers',	NULL),
 	(8,1,0,		@TradeAndOtherReceivables,	N'Banan ET',				@USD,			@RC_Inv,					NULL,			NULL,				NULL),
 	(9,1,0,		@TradeAndOtherReceivables,	N'PrimeLedgers A/R',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
 	(10,1,0,	@TradeAndOtherReceivables,	N'Partners Withdrawals',	@USD,			@RC_Inv,					NULL,			N'partners',		NULL),
@@ -33,6 +29,7 @@ BEGIN
 	(22,0,0,	@TradeAndOtherReceivables,	N'M. Ali Car Loan - NC',	@USD,			@RC_Inv,					NULL,			N'employees',		@M_Ali),
 	(23,0,0,	@TradeAndOtherReceivables,	N'El-Amin Car Loan - NC',	@USD,			@RC_Inv,					NULL,			N'employees',		@el_Amin),
 --	(24,0,0,	@TradeAndOtherReceivables,	N'Abdurrahman Loan',		@USD,			@RC_Inv,					NULL,			N'employees',		@el_Amin),
+	(25,1,0,	@AccruedIncome,				N'Accrued Income',			NULL,			@RC_Inv,					NULL,			N'customers',		NULL),
 
 	-- Equity and Liabilities accounts
 	(30,0,0,	@IssuedCapital,				N'Issued Capital',			@USD,			@RC_Inv,					NULL,			NULL,				NULL),
@@ -42,7 +39,7 @@ BEGIN
 	(33,1,0,	@TradeAndOtherPayables,		N'10% Retained Salaries',	@USD,			@RC_Inv,					NULL,			N'employees',		NULL),
 	(34,1,0,	@TradeAndOtherPayables,		N'PrimeLedgers A/P',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
 	(35,1,0,	@TradeAndOtherPayablesToTradeSuppliers,N'Trade Payables',NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
-	(36,1,0,	@Accruals,					N'Accruals',				NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
+	(36,1,0,	@Accruals,					N'Accrued Expenses',		NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
 	(37,1,0,	@TradeAndOtherPayables,		N'Dividends Payables',		@USD,			@RC_Inv,					NULL,			N'partners',		NULL),
 	(38,1,0,	@TradeAndOtherPayables,		N'Borrowings from M/A',		@USD,			@RC_Inv,					NULL,			N'partners',		@PartnerMA),
 

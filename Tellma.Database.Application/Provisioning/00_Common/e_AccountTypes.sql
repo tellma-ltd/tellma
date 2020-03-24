@@ -268,22 +268,31 @@ DECLARE @TradeAndOtherReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE
 DECLARE @ValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ValueAddedTaxReceivables'); 
 DECLARE @TradeReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeReceivables');
 DECLARE @Prepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Prepayments');
+DECLARE @AccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'AccruedIncome');
 
 DECLARE @InventoriesTotal INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'InventoriesTotal');
 DECLARE @Merchandise INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Merchandise');
 DECLARE @CurrentInventoriesInTransit INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentInventoriesInTransit');
 DECLARE @OtherInventories INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherInventories');
 DECLARE @CashAndCashEquivalents INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashAndCashEquivalents');
+DECLARE @CashOnHand INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashOnHand');
+DECLARE @BalancesWithBanks INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'BalancesWithBanks');
+
 
 DECLARE @IssuedCapital INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IssuedCapital'); 
 DECLARE @RetainedEarnings INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'RetainedEarnings');
 
 DECLARE @TradeAndOtherPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherPayables'); 
+DECLARE @TradeAndOtherPayablesToTradeSuppliers INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherPayablesToTradeSuppliers'); 
+DECLARE @Accruals INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Accruals'); 
+DECLARE @DeferredIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'DeferredIncome'); 
+
 DECLARE @SocialSecurityPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'SocialSecurityPayablesExtension'); 
 DECLARE @ValueAddedTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ValueAddedTaxPayables'); 
 DECLARE @ZakatPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ZakatPayablesExtension'); 
 DECLARE @EmployeeIncomeTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'EmployeeIncomeTaxPayablesExtension'); 
 DECLARE @EmployeeStampTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'EmployeeStampTaxPayablesExtension'); 
+DECLARE @PayablesToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'PayablesToEmployeesExtension'); 
 
 DECLARE @Revenue INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Revenue');
 DECLARE @OtherIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherIncome');
@@ -305,6 +314,7 @@ DECLARE @OtherShorttermEmployeeBenefits INT = (SELECT [Id] FROM dbo.AccountTypes
 
 DECLARE @TerminationBenefitsExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TerminationBenefitsExpense');
 DECLARE @DepreciationExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'DepreciationExpense');
+DECLARE @GainLossOnDisposalOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'GainLossOnDisposalOfPropertyPlantAndEquipmentExtension');
 
 DECLARE @OtherExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherExpenseByNature');
 /*

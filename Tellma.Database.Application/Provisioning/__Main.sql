@@ -21,7 +21,7 @@ IF @ProvisionData = 0 RETURN;
 :r .\00_Common\c_Settings.sql
 
 :r .\00_Common\d_EntryTypes.sql
-:r .\00_Common\e101_AccountTypes.sql
+:r .\00_Common\e_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
 
 :r .\01_Security\a_Users.sql

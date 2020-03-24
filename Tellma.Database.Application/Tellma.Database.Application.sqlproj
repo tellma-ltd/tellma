@@ -511,7 +511,6 @@
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="Mapping\AgentRates.sql" />
     <Build Include="Mapping\ResourceUnits.sql" />
-    <None Include="Provisioning\00_Common\e101_AccountTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithHeaderList.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountTypes_Validate__DeleteWithDescendants.sql" />
     <Build Include="api\Stored Procedures\api.AccountTypes__DeleteWithDescendants.sql" />
