@@ -417,31 +417,31 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[MonetaryValue1]	= [MonetaryValue0],
+		[MonetaryValue0]	= [MonetaryValue1],
 		[Time20]			= dbo.fn_DateAdd([UnitId0],[Quantity0],[Time10]) 
-		[CurrencyId1]		= [CurrencyId0]
+		[CurrencyId0]		= [CurrencyId1]
 		-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 34;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,34,+1,	N'AccruedIncome',			1,		N'customers'),
-(1,34,-1,	N'Revenue',					1,		N'cost-objects');
+(0,34,+1,	N'ServicesExpense',			1,		N'cost-objects'),
+(1,34,-1,	N'Accruals',				1,		N'suppliers');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState],
 																				[InheritsFromHeader]) VALUES
-(0,34,	N'Entries', N'AgentId',				0,	N'Customer',	N'الزبون',		1,4,0),
-(1,34,	N'Entries', N'AgentId',				1,	N'System',		N'النظام',		1,4,0),
-(2,34,	N'Entries', N'ResourceId',			0,	N'Service',		N'الخدمة',		1,4,0),
-(3,34,	N'Entries', N'Quantity',			0,	N'Duration',	N'الفترة',		1,4,1),
-(4,34,	N'Entries', N'UnitId',				0,	N'',			N'',			1,4,1),
-(5,34,	N'Entries', N'Time1',				0,	N'From',		N'ابتداء من',	1,4,1),
-(6,34,	N'Entries', N'Time2',				0,	N'Till',		N'حتى',			1,1,1),
-(7,34,	N'Entries', N'CurrencyId',			0,	N'Currency',	N'العملة',		1,4,0),
-(8,34,	N'Entries', N'MonetaryValue',		0,	N'Amount',		N'المطالبة',	1,4,0),
-(9,34,	N'Entries',	N'CenterId',			0,N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
-(10,34,	N'Entries',	N'CenterId',			1,N'Rev./Profit Ctr',	N'مركز الإيراد\الربح',4,4,0);
+(0,34,	N'Entries', N'AgentId',				1,	N'Supplier',	N'المؤجر',		1,4,0),
+(1,34,	N'Entries', N'AgentId',				0,	N'System',		N'النظام',		1,4,0),
+(2,34,	N'Entries', N'ResourceId',			1,	N'Service',		N'الخدمة',		1,4,0),
+(3,34,	N'Entries', N'Quantity',			1,	N'Duration',	N'الفترة',		1,4,1),
+(4,34,	N'Entries', N'UnitId',				1,	N'',			N'',			1,4,1),
+(5,34,	N'Entries', N'Time1',				1,	N'From',		N'ابتداء من',	1,4,1),
+(6,34,	N'Entries', N'Time2',				1,	N'Till',		N'حتى',			1,1,1),
+(7,34,	N'Entries', N'CurrencyId',			1,	N'Currency',	N'العملة',		1,4,0),
+(8,34,	N'Entries', N'MonetaryValue',		1,	N'Amount',		N'المطالبة',	1,4,0),
+(9,34,	N'Entries',	N'CenterId',			1,	N'Inv. Ctr',	N'مركز الاستثمار',4,4,1),
+(10,34,	N'Entries',	N'CenterId',			0,	N'Cost Ctr',	N'مركز التكلفة',4,4,0);
 
 -- 41:
 INSERT @LineDefinitions([Index],
