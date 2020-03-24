@@ -29,6 +29,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ActionArguments } from '~/app/data/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair { entry: EntryForSave; line: LineForSave; }
@@ -73,15 +74,13 @@ interface DocumentCreationEvent extends DocumentEventBase {
   type: 'creation';
 }
 
-interface DocumentPostingEvent extends DocumentEventBase {
-  type: 'posting';
+interface DocumentStateChangeEvent extends DocumentEventBase {
+  type: 'state';
+  fromState: DocumentState;
+  toState: DocumentState;
 }
 
-interface DocumentCancellationEvent extends DocumentEventBase {
-  type: 'cancellation';
-}
-
-type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentPostingEvent | DocumentCancellationEvent;
+type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent | DocumentStateChangeEvent;
 
 @Component({
   selector: 't-documents-details',
@@ -168,6 +167,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Attachments
     ['CreatedBy', 'ModifiedBy']
       .map(prop => `Attachments/${prop}`).join(',') + ',' +
+
+    // Attachments
+    ['ModifiedBy']
+      .map(prop => `StatesHistory/${prop}`).join(',') + ',' +
 
     // Assignment history
     ['Assignee', 'CreatedBy']
@@ -373,8 +376,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete clone.CreatedById;
       delete clone.ModifiedById;
       delete clone.SerialNumber;
-      delete clone.PostingState;
-      delete clone.PostingStateAt;
+      delete clone.State;
+      delete clone.StateAt;
 
       return clone;
     } else {
@@ -417,11 +420,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return '';
     }
 
-    if (model.PostingState === 1) {
+    if (model.State === 1) {
       return 'Error_UnpostDocumentBeforeEdit';
     }
 
-    if (model.PostingState === -1) {
+    if (model.State === -1) {
       return 'Error_UncancelDocumentBeforeEdit';
     }
 
@@ -479,31 +482,33 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     if (model !== this._currentDoc) {
       this._currentDoc = model;
-      const history = model.AssignmentsHistory || [];
+      const assignmentsHistory: DocumentAssignment[] = model.AssignmentsHistory || [];
+      const statesHistory: DocumentStateChange[] = model.StatesHistory || [];
 
-      const filteredHistory: DocumentAssignment[] = history; // .filter(e => e.CreatedById !== e.AssigneeId);
+      const mappedAssignmentsHistory: DocumentEvent[] = assignmentsHistory
+        .map(e =>
+          ({
+            type: 'reassignment',
+            time: e.CreatedAt,
+            userId: e.CreatedById,
+            assigneeId: e.AssigneeId,
+            comment: e.Comment,
+          }));
 
-      const mappedHistory: DocumentEvent[] = filteredHistory.map(e =>
-        ({
-          type: 'reassignment',
-          time: e.CreatedAt,
-          userId: e.CreatedById,
-          assigneeId: e.AssigneeId,
-          comment: e.Comment,
-        }));
+      const mappedStatesHistory: DocumentEvent[] = statesHistory
+        .map(e =>
+          ({
+            type: 'state',
+            userId: e.ModifiedById,
+            time: e.ModifiedAt,
+            fromState: e.FromState,
+            toState: e.ToState
+          }));
 
+      const mappedHistory = mappedAssignmentsHistory.concat(mappedStatesHistory);
       if (!!model.CreatedById) {
         mappedHistory.push({ type: 'creation', userId: model.CreatedById, time: model.CreatedAt });
       }
-
-      // if (!!model.PostingStateById && !!model.PostingStateAt) {
-      //   if (model.PostingState === 1) {
-      //     mappedHistory.push({ type: 'posting', userId: model.PostingStateById, time: model.PostingStateAt });
-      //   }
-      //   if (model.PostingState === -1) {
-      //     mappedHistory.push({ type: 'cancellation', userId: model.PostingStateById, time: model.PostingStateAt });
-      //   }
-      // }
 
       const sortedHistory: DocumentEvent[] = mappedHistory.sort((a, b) => {
         return a.time < b.time ? 1 :
@@ -533,6 +538,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public showAssignDocument(doc: Document) {
     // return true;
     return !!doc && !!doc.AssigneeId; // === this.ws.userSettings.UserId;
+  }
+
+  public stateUpdateDisplay(event: DocumentStateChangeEvent) {
+    if (event.toState === 1) {
+      return 'PostedThisDocument';
+    } else if (event.toState === -1) {
+      return 'CanceledThisDocument';
+    } else {
+      if (event.fromState === 1) {
+        return 'UnpostedThisDocument';
+      } else {
+        return 'UncanceledThisDocument';
+      }
+    }
   }
 
   public onAssign(doc: Document): void {
@@ -1390,15 +1409,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public disableUnsign(_: RequiredSignature, model: Document) {
-    return !!model ? !!model.PostingState : true;
+    return !!model ? !!model.State : true;
   }
 
   public unsignTooltip(_: RequiredSignature, model: Document) {
     if (!model) {
       return null;
-    } else if (model.PostingState === 1) {
+    } else if (model.State === 1) {
       return this.translate.instant('Error_UnpostDocumentBeforeEdit');
-    } else if (model.PostingState === -1) {
+    } else if (model.State === -1) {
       return this.translate.instant('Error_UncancelDocumentBeforeEdit');
     } else {
       return null;
@@ -1476,8 +1495,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return false;
     }
 
-    return model.PostingState === -1 ||
-      model.PostingState === 1 ||
+    return model.State === -1 ||
+      model.State === 1 ||
       this.isTooEarlyForThisSignature(signature) ||
       this.areNegativeLines(signature);
   }
@@ -1485,9 +1504,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public signTooltip(signature: RequiredSignature, lineDefId: string, model: Document) {
     if (!model) {
       return null;
-    } else if (model.PostingState === 1) {
+    } else if (model.State === 1) {
       return this.translate.instant('Error_UnpostDocumentBeforeEdit');
-    } else if (model.PostingState === -1) {
+    } else if (model.State === -1) {
       return this.translate.instant('Error_UncancelDocumentBeforeEdit');
     } else if (this.areNegativeLines(signature)) {
       // These lines are already in a negative state, it's pointless to sign them again
@@ -2028,8 +2047,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this.isStateActive(-state as LineState, model)
 
   // To work around a bug in Angular compiler
-  public isNegativePostingStateActive = (state: DocumentState, model: Document) =>
-    this.isPostingStateActive(-state as DocumentState, model)
+  public isNegativeDocumentStateActive = (state: DocumentState, model: Document) =>
+    this.isDocumentStateActive(-state as DocumentState, model)
 
   // The state chart
   public isStateActive(state: LineState, model: Document): boolean {
@@ -2042,10 +2061,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return false;
     }
 
-    return !model.PostingState && def.HasWorkflow && this.getDocState(model) === state;
+    return !model.State && def.HasWorkflow && this.getDocState(model) === state;
   }
 
-  public isPostingStateActive(state: DocumentState, model: Document): boolean {
+  public isDocumentStateActive(state: DocumentState, model: Document): boolean {
     if (!model) {
       return false;
     }
@@ -2056,15 +2075,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     if (state === 0) { // Current
-      return !model.PostingState && !def.HasWorkflow;
+      return !model.State && !def.HasWorkflow;
     } else { // Posted + Canceled
-      return model.PostingState === state;
+      return model.State === state;
     }
   }
 
   public isStateVisible(state: LineState, model: Document): boolean {
     // Returns if a positive state is visible on the wide screen flow chart
-    if (!!model && (model.PostingState < 0 || this.getDocState(model) < 0)) { // <-- Review
+    if (!!model && (model.State < 0 || this.getDocState(model) < 0)) { // <-- Review
       return false;
     }
 
@@ -2077,7 +2096,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public isPostingStateVisible(state: DocumentState, _: Document): boolean {
+  public isDocumentStateVisible(state: DocumentState, _: Document): boolean {
     // Returns if a positive state is visible on the wide screen flow chart
     const def = this.definition;
     if (state === 0) { // Current
@@ -2089,17 +2108,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public isPositiveState(model: Document): boolean {
     const states: LineState[] = [0, 1, 2, 3, 4];
-    const postingStates: DocumentState[] = [0, 1];
+    const documentStates: DocumentState[] = [0, 1];
 
     return states.some(state => this.isStateActive(state, model)) ||
-      postingStates.some(state => this.isPostingStateActive(state, model));
-
-    //// !!model && ((model.State < 0 && model.PostingState <= 0) || model.PostingState === -1);
+      documentStates.some(state => this.isDocumentStateActive(state, model));
   }
 
   ////////////// Posting State
 
-  public onPostingState(
+  public onDocumentState(
     doc: Document,
     fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
     fn([doc.Id], {
@@ -2115,23 +2132,23 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onPost(doc: Document): void {
-    this.onPostingState(doc, this.documentsApi.post);
+    this.onDocumentState(doc, this.documentsApi.post);
   }
 
   public onUnpost(doc: Document): void {
-    this.onPostingState(doc, this.documentsApi.unpost);
+    this.onDocumentState(doc, this.documentsApi.unpost);
   }
 
   public onCancel(doc: Document): void {
-    this.onPostingState(doc, this.documentsApi.cancel);
+    this.onDocumentState(doc, this.documentsApi.cancel);
   }
 
   public onUncancel(doc: Document): void {
-    this.onPostingState(doc, this.documentsApi.uncancel);
+    this.onDocumentState(doc, this.documentsApi.uncancel);
   }
 
   public hasPermissionToUpdateState(doc: Document): boolean {
-    return this.ws.canDo(this.view, 'PostingState', !!doc ? doc.CreatedById : null);
+    return this.ws.canDo(this.view, 'State', !!doc ? doc.CreatedById : null);
   }
 
   private missingSignatures(_: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -2148,7 +2165,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Post
 
   public showPost(doc: Document, _: RequiredSignature[]): boolean {
-    return !!doc && !doc.PostingState;
+    return !!doc && !doc.State;
   }
 
   public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -2178,7 +2195,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Cancel
 
   public showCancel(doc: Document, _: RequiredSignature[]): boolean {
-    return !!doc && !doc.PostingState;
+    return !!doc && !doc.State;
   }
 
   public disableCancel(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
@@ -2204,14 +2221,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Unpost & Uncancel
 
   public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
-    return !!doc && !!doc.Id && doc.PostingState === 1;
+    return !!doc && !!doc.Id && doc.State === 1;
   }
 
   public showUncancel(doc: Document, _: RequiredSignature[]): boolean {
-    return !!doc && !!doc.Id && doc.PostingState === -1;
+    return !!doc && !!doc.Id && doc.State === -1;
   }
 
-  public postingStateTooltip(doc: Document): string {
+  public updateStateTooltip(doc: Document): string {
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
@@ -2369,11 +2386,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         const positiveStates = allLineStates.filter(state => state >= 0);
         if (positiveStates.length > 0) {
           // Result is the smallest positive state
-          this._documentStateResult = Math.min(... positiveStates) as LineState;
+          this._documentStateResult = Math.min(...positiveStates) as LineState;
         } else if (allLineStates.length > 0) {
           // Result is the smallest (negative) state
           const negativeState = allLineStates.filter(state => state < 0);
-          this._documentStateResult = Math.min(... negativeState) as LineState;
+          this._documentStateResult = Math.min(...negativeState) as LineState;
         } else {
           // Result is Draft
           this._documentStateResult = 0;
@@ -2388,26 +2405,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 /* Rules for showing and hiding chart states
 
   -------- IsActive
-  [-4] !PostingState and !!CanReachState4 and State === -4
-  [-3] !PostingState and !!CanReachState4 and State === -3
-  [-2] !PostingState and !!CanReachState4 and State === -2
-  [-1] !PostingState and !!CanReachState4 and State === -1
-  [0] !PostingState and !!CanReachState4 and State === 0
-  [1] !PostingState and !!CanReachState4 and State === 1
-  [2] !PostingState and !!CanReachState4 and State === 2
-  [3] !PostingState and !!CanReachState4 and State === 3
-  [4] !PostingState and !!CanReachState4 and State === 4
-  [Current] !PostingState and !CanReachState4
-  [Posted] PostingState === 1
-  [Canceled] PostingState === -1
+  [-4] !State and !!HasWorkflow and State === -4
+  [-3] !State and !!HasWorkflow and State === -3
+  [-2] !State and !!HasWorkflow and State === -2
+  [-1] !State and !!HasWorkflow and State === -1
+  [0] !State and !!HasWorkflow and State === 0
+  [1] !State and !!HasWorkflow and State === 1
+  [2] !State and !!HasWorkflow and State === 2
+  [3] !State and !!HasWorkflow and State === 3
+  [4] !State and !!HasWorkflow and State === 4
+  [Current] !State and !HasWorkflow
+  [Posted] State === 1
+  [Canceled] State === -1
 
   --------- IsVisible (In +ve state and wide screen)
-  [0] !!CanReachState4
-  [1] (!!CanReachState4 && CanReachState1) || isActive(1)
-  [2] (!!CanReachState4 && CanReachState2) || isActive(2)
-  [3] (!!CanReachState4 && CanReachState3) || isActive(3)
-  [4] !!CanReachState4 || isActive(4)
-  [Current] !CanReachState4
+  [0] !!HasWorkflow
+  [1] (!!HasWorkflow && CanReachState1) || isActive(1)
+  [2] (!!HasWorkflow && CanReachState2) || isActive(2)
+  [3] (!!HasWorkflow && CanReachState3) || isActive(3)
+  [4] !!HasWorkflow || isActive(4)
+  [Current] !HasWorkflow
   [Posted] Always
 
   --------- IsVisible (In -ve state or narrow screen)

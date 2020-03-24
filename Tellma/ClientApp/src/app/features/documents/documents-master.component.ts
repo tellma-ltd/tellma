@@ -20,11 +20,6 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
-  // For caching
-  private _filterDefinitionArg: any[];
-  private _filterDefinitionDocDef: DocumentDefinitionForClient;
-  private _filterDefinitionResult: any;
-
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
@@ -93,7 +88,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this.translate.instant('Document');
   }
 
-  // Posting State
+  // State
 
   public onPost = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.documentsApi.post(ids, { returnEntities: true }).pipe(
@@ -134,33 +129,33 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   public showPost = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
-      return !!doc && doc.PostingState === 0;
+      return !!doc && doc.State === 0;
     });
   }
 
   public showCancel = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
-      return !!doc && doc.PostingState === 0;
+      return !!doc && doc.State === 0;
     });
   }
 
   public showUnpost = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
-      return !!doc && doc.PostingState === 1;
+      return !!doc && doc.State === 1;
     });
   }
 
   public showUncancel = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
-      return !!doc && doc.PostingState === -1;
+      return !!doc && doc.State === -1;
     });
   }
 
-  public hasPostingStatePermission = (_: (number | string)[]) => this.ws.canDo(this.view, 'PostingState', null);
+  public hasStatePermission = (_: (number | string)[]) => this.ws.canDo(this.view, 'State', null);
 
-  public postingStateTooltip = (ids: (number | string)[]) => this.hasPostingStatePermission(ids) ? '' :
+  public stateTooltip = (ids: (number | string)[]) => this.hasStatePermission(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

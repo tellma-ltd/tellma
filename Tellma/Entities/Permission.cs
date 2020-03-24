@@ -19,8 +19,8 @@ namespace Tellma.Entities
 
         [Display(Name = "Permission_Action")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [ChoiceList(new object[] { Constants.Read, Constants.Update, "Delete", "IsActive", "IsDeprecated", "UpdateState", "ResendInvitationEmail", "PostingState", "All" },
-            new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "Permission_IsDeprecated", "Permission_UpdateState", "ResendInvitationEmail", "Permission_PostingState", "View_All" })]
+        [ChoiceList(new object[] { Constants.Read, Constants.Update, "Delete", "IsActive", "IsDeprecated", "UpdateState", "ResendInvitationEmail", "State", "All" },
+            new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "Permission_IsDeprecated", "Permission_UpdateState", "ResendInvitationEmail", "Permission_DocumentState", "View_All" })]
         [AlwaysAccessible]
         public string Action { get; set; }
 

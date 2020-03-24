@@ -550,6 +550,7 @@
     <Build Include="Security\wiz.sql" />
     <Build Include="Mapping\ExchangeRates.sql" />
     <Build Include="Mapping\LineDefinitions.sql" />
+    <Build Include="Mapping\DocumentStatesHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

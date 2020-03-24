@@ -463,21 +463,6 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="Document_PostingState" xml:space="preserve">
-    <value>Posting State</value>
-  </data>
-  <data name="Document_PostingState_0" xml:space="preserve">
-    <value>Current</value>
-  </data>
-  <data name="Document_PostingState_1" xml:space="preserve">
-    <value>Posted</value>
-  </data>
-  <data name="Document_PostingState_minus_1" xml:space="preserve">
-    <value>Canceled</value>
-  </data>
-  <data name="Document_PostingStateAt" xml:space="preserve">
-    <value>Posting State At</value>
-  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
@@ -486,6 +471,24 @@
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Document_State_0" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Document_State_1" xml:space="preserve">
+    <value>Posted</value>
+  </data>
+  <data name="Document_State_minus_1" xml:space="preserve">
+    <value>Canceled</value>
+  </data>
+  <data name="Document_StateAt" xml:space="preserve">
+    <value>State At</value>
+  </data>
+  <data name="Document_StatesHistory" xml:space="preserve">
+    <value>States History</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>Time 1</value>
@@ -1210,6 +1213,9 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Permission_DocumentState" xml:space="preserve">
+    <value>Post/Cancel</value>
+  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>Activate/Deactivate</value>
   </data>
@@ -1218,9 +1224,6 @@
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>Mask</value>
-  </data>
-  <data name="Permission_PostingState" xml:space="preserve">
-    <value>Post/Cancel</value>
   </data>
   <data name="Permission_Read" xml:space="preserve">
     <value>Read</value>
@@ -1791,6 +1794,12 @@
   </data>
   <data name="State" xml:space="preserve">
     <value>State</value>
+  </data>
+  <data name="StateHistory_FromState" xml:space="preserve">
+    <value>From State</value>
+  </data>
+  <data name="StateHistory_ToState" xml:space="preserve">
+    <value>To State</value>
   </data>
   <data name="StringLengthAttribute" xml:space="preserve">
     <value>The field {0} must be a string with a maximum length of {1}</value>

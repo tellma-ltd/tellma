@@ -22,7 +22,7 @@
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
     <!-- Unpost -->
-    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUnpost(model, extras?.RequiredSignatures)">
         <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="onUnpost(model)"
             [disabled]="!hasPermissionToUpdateState(model)">
@@ -51,7 +51,7 @@
         </button>
     </div>
     <!-- Uncancel -->
-    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="postingStateTooltip(model)"
+    <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUncancel(model, extras?.RequiredSignatures)">
         <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button"
             (click)="!isEdit && onUncancel(model)" [disabled]="!hasPermissionToUpdateState(model)">
@@ -106,10 +106,10 @@
                 <div [class.active]="isStateActive(4, model)" *ngIf="isStateVisible(4, model)">
                     <span>{{'Line_State_4' | translate}}</span></div>
 
-                <div [class.active]="isPostingStateActive(0, model)" *ngIf="isPostingStateVisible(0, model)">
-                    <span>{{'Document_PostingState_0' | translate}}</span></div>
-                <div [class.active]="isPostingStateActive(1, model)" *ngIf="isPostingStateVisible(1, model)">
-                    <span>{{'Document_PostingState_1' | translate}}</span></div>
+                <div [class.active]="isDocumentStateActive(0, model)" *ngIf="isDocumentStateVisible(0, model)">
+                    <span>{{'Document_State_0' | translate}}</span></div>
+                <div [class.active]="isDocumentStateActive(1, model)" *ngIf="isDocumentStateVisible(1, model)">
+                    <span>{{'Document_State_1' | translate}}</span></div>
             </div>
 
             <!-- +ve states on narrow screen -->
@@ -120,8 +120,8 @@
                 <span *ngIf="isStateActive(3, model)">{{ 'Line_State_3' | translate }}</span>
                 <span *ngIf="isStateActive(4, model)">{{ 'Line_State_4' | translate }}</span>
 
-                <span *ngIf="isPostingStateActive(0, model)">{{ 'Document_PostingState_0' | translate }}</span>
-                <span *ngIf="isPostingStateActive(1, model)">{{ 'Document_PostingState_1' | translate }}</span>
+                <span *ngIf="isDocumentStateActive(0, model)">{{ 'Document_State_0' | translate }}</span>
+                <span *ngIf="isDocumentStateActive(1, model)">{{ 'Document_State_1' | translate }}</span>
             </div>
         </ng-container>
 
@@ -133,8 +133,7 @@
                 <span *ngIf="isNegativeStateActive(3, model)">{{ 'Line_State_minus_3' | translate }}</span>
                 <span *ngIf="isNegativeStateActive(4, model)">{{ 'Line_State_minus_4' | translate }}</span>
 
-                <span
-                    *ngIf="isNegativePostingStateActive(1, model)">{{ 'Document_PostingState_minus_1' | translate }}</span>
+                <span *ngIf="isNegativeDocumentStateActive(1, model)">{{ 'Document_State_minus_1' | translate }}</span>
             </div>
         </ng-template>
     </div>
@@ -1305,6 +1304,25 @@
                 <ng-container *ngFor="let event of dayEvents.events; let i = index;">
                     <div class="t-biege border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
                         [ngSwitch]="event.type">
+
+                        <!-- State Update -->
+                        <ng-container *ngSwitchCase="'state'">
+                            <div class="d-flex">
+                                <t-image [src]="'users/' + event.userId + '/image'"
+                                    [imageId]="ws.get('User', event.userId)?.ImageId" [size]="36" shape="circle">
+                                </t-image>
+                                <div class="p-2 text-truncate">
+                                    <t-view-link link="../../../users" [itemId]="event.userId">
+                                        {{ ws.getMultilingualValue('User', event.userId, 'Name') }}</t-view-link>
+                                    {{ stateUpdateDisplay(event) | translate }}
+                                </div>
+                                <div class="py-2 text-truncate">
+                                    <span class="small text-muted">
+                                        {{ event.time | date:'HH:mm' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-container>
 
                         <!-- Reassignment -->
                         <ng-container *ngSwitchCase="'reassignment'">

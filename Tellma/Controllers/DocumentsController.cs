@@ -148,7 +148,7 @@ namespace Tellma.Controllers
                 }
 
                 // Actual Assignment
-                await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
+                await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
 
                 if (returnEntities)
                 {
@@ -274,28 +274,28 @@ namespace Tellma.Controllers
         [HttpPut("post")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Post([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdatePostingState(ids, args, nameof(Post));
+            return await UpdateDocumentState(ids, args, nameof(Post));
         }
 
         [HttpPut("unpost")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Unpost([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdatePostingState(ids, args, nameof(Unpost));
+            return await UpdateDocumentState(ids, args, nameof(Unpost));
         }
 
         [HttpPut("cancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Cancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdatePostingState(ids, args, nameof(Cancel));
+            return await UpdateDocumentState(ids, args, nameof(Cancel));
         }
 
         [HttpPut("uncancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Uncancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdatePostingState(ids, args, nameof(Uncancel));
+            return await UpdateDocumentState(ids, args, nameof(Uncancel));
         }
 
-        private async Task<ActionResult<EntitiesResponse<Document>>> UpdatePostingState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
+        private async Task<ActionResult<EntitiesResponse<Document>>> UpdateDocumentState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -306,7 +306,7 @@ namespace Tellma.Controllers
                 var idsArray = ids.ToArray();
 
                 // Check user permissions
-                await CheckActionPermissions("PostingState", idsArray);
+                await CheckActionPermissions("State", idsArray);
 
                 // C# Validation 
                 // TODO

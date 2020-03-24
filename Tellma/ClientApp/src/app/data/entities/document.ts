@@ -9,6 +9,7 @@ import { LineForSave, Line, LineState } from './line';
 import { DocumentAssignment } from './document-assignment';
 import { AttachmentForSave, Attachment } from './attachment';
 import { EntityForSave } from './base/entity-for-save';
+import { DocumentStateChange } from './document-state-change';
 
 export type DocumentState = 0 | 1 | -1;
 export type DocumentClearance = 0 | 1 | 2;
@@ -42,8 +43,8 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 
 export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: string;
-    PostingState?: DocumentState;
-    PostingStateAt?: string;
+    State?: DocumentState;
+    StateAt?: string;
     Comment?: string;
     AssigneeId?: number;
     AssignedAt?: string;
@@ -54,6 +55,7 @@ export interface Document extends DocumentForSave<Line, Attachment> {
     ModifiedAt?: string;
     ModifiedById?: number;
     AssignmentsHistory?: DocumentAssignment[];
+    StatesHistory?: DocumentStateChange[];
 }
 
 const _select = ['SerialNumber'];
@@ -137,15 +139,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
-                PostingState: {
+                State: {
                     control: 'state',
-                    label: () => trx.instant('Document_PostingState'),
+                    label: () => trx.instant('Document_State'),
                     choices: [0, -1, 1],
                     format: (state: number) => {
                         if (state >= 0) {
-                            return trx.instant('Document_PostingState_' + state);
+                            return trx.instant('Document_State_' + state);
                         } else {
-                            return trx.instant('Document_PostingState_minus_' + (-state));
+                            return trx.instant('Document_State_minus_' + (-state));
                         }
                     },
                     color: (c: number) => {
@@ -157,7 +159,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                         }
                     }
                 },
-                PostingStateAt: { control: 'datetime', label: () => trx.instant('Document_PostingStateAt') },
+                StateAt: { control: 'datetime', label: () => trx.instant('Document_StateAt') },
 
                 AssigneeId: { control: 'number', label: () => `${trx.instant('Document_Assignee')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Assignee: { control: 'navigation', label: () => trx.instant('Document_Assignee'), type: 'User', foreignKeyName: 'AssigneeId' },

@@ -112,33 +112,7 @@ namespace Tellma.Entities
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }
 
-        //[Display(Name = "Document_State")]
-        //[AlwaysAccessible]
-        //[ChoiceList(new object[] {
-        //    LineState.Draft,
-        //    LineState.Void,
-        //    LineState.Requested,
-        //    LineState.Rejected,
-        //    LineState.Authorized,
-        //    LineState.Failed,
-        //    LineState.Completed,
-        //    LineState.Invalid,
-        //    LineState.Finalized
-        //},
-        //    new string[] {
-        //    LineStateName.Draft,
-        //    LineStateName.Void,
-        //    LineStateName.Requested,
-        //    LineStateName.Rejected,
-        //    LineStateName.Authorized,
-        //    LineStateName.Failed,
-        //    LineStateName.Completed,
-        //    LineStateName.Invalid,
-        //    LineStateName.Finalized
-        //})]
-        //public short? State { get; set; }
-
-        [Display(Name = "Document_PostingState")]
+        [Display(Name = "Document_State")]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
             DocState.Current,
@@ -150,10 +124,10 @@ namespace Tellma.Entities
             DocStateName.Posted,
             DocStateName.Canceled,
         })]
-        public short? PostingState { get; set; }
+        public short? State { get; set; }
 
-        [Display(Name = "Document_PostingStateAt")]
-        public DateTimeOffset? PostingStateAt { get; set; }
+        [Display(Name = "Document_StateAt")]
+        public DateTimeOffset? StateAt { get; set; }
 
         [Display(Name = "Document_Comment")]
         public string Comment { get; set; }
@@ -219,6 +193,10 @@ namespace Tellma.Entities
         [ForeignKey(nameof(DocumentAssignment.DocumentId))]
         public List<DocumentAssignment> AssignmentsHistory { get; set; }
 
+        [Display(Name = "Document_StatesHistory")]
+        [ForeignKey(nameof(DocumentStateChange.DocumentId))]
+        public List<DocumentStateChange> StatesHistory { get; set; }
+
         // HIDDEN
 
         [Display(Name = "Document_DocumentLookup1")]
@@ -245,7 +223,7 @@ namespace Tellma.Entities
 
     public static class DocStateName
     {
-        private const string _prefix = "Document_PostingState_";
+        private const string _prefix = "Document_State_";
 
         public const string Current = _prefix + "0";
         public const string Posted = _prefix + "1";

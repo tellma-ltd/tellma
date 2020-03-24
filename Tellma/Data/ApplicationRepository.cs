@@ -284,6 +284,9 @@ namespace Tellma.Data
                 case nameof(DocumentAssignment):
                     return "[map].[DocumentAssignmentsHistory]()";
 
+                case nameof(DocumentStateChange):
+                    return "[map].[DocumentStatesHistory]()";
+
                 case nameof(ReportDefinition):
                     return "[map].[ReportDefinitions]()";
 
@@ -4039,7 +4042,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment)
+        public async Task Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool recordInHistory)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4055,6 +4058,7 @@ namespace Tellma.Data
             cmd.Parameters.Add(idsTvp);
             cmd.Parameters.Add("@AssigneeId", assigneeId);
             cmd.Parameters.Add("@Comment", comment);
+            cmd.Parameters.Add("@RecordInHistory", recordInHistory);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
