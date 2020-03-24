@@ -832,6 +832,9 @@
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
     <value>标题需要显示在主菜单中的报告</value>
   </data>
+  <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
+    <value>借记卡和信用卡是由不同的{0}</value>
+  </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>而尝试登录您在使用外部提供商出现未知错误。</value>
   </data>
