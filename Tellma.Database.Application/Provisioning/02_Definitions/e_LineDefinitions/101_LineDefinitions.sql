@@ -2,8 +2,8 @@
 BEGIN
 --0:ManualLine 
 INSERT @LineDefinitions([Index],
-[Id],			[TitleSingular], [TitlePlural]) VALUES
-(0,N'ManualLine', N'Adjustment', N'Adjustments');
+[Id],			[TitleSingular], [TitlePlural], [TitleSingular2], [TitlePlural3]) VALUES
+(0,N'ManualLine', N'Adjustment', N'Adjustments',N'تسوية',			N'تسويات');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode]) VALUES
 (0,0,+1,	N'StatementOfFinancialPositionAbstract');
@@ -74,7 +74,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,1,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL);
---2:PaymentToSupplier (against invocie)
+--2:PaymentToSupplier (against invoice)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES
 (2,1,N'PaymentToSupplier',N'Rental Payment',	N'دفع إيجار',		N'Rental Payments',	N'دفعيات إيجارات');
@@ -88,29 +88,30 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId0] = [CurrencyId2],
-		[CurrencyId1] = [CurrencyId2],
+		[CurrencyId0]	= [CurrencyId2],
+		[CurrencyId1]	= [CurrencyId2],
 
-		[AgentId0]	= [NotedAgentId2]
+		[AgentId0]		= [NotedAgentId2],
 		[NotedAgentId1] = [NotedAgentId2],
-		[MonetaryValue2] = ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
+		[MonetaryValue0]= ISNULL([NotedAmount1],0),
+		[MonetaryValue2]= ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
 		
-		[CenterId0] = [CenterId2],
-		[CenterId1] = [CenterId2]
+		[CenterId0]		= [CenterId2],
+		[CenterId1]		= [CenterId2]
 
-	UPDATE PWL -- Show the due balance for each agent
-		SET PWL.[NotedAmount0] = T.Balance
-	FROM @ProcessedWideLines PWL
-	JOIN (
-		SELECT E.AgentId, E.CurrencyId, SUM(E.[Direction] * E.[MonetaryValue]) AS [Balance]
-		FROM dbo.Entries E
-		JOIN db.Lines L ON E.[LineId] = L.[Id]
-		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-		JOIN dbo.Accounts ON E.[AccountId] = A.[Id]
-		JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
-		WHERE AC.Code IN (N''TradeAndOtherPayablesToTradeSuppliers'') -- may be more
-		WHERE D.[PostingDate] <= PWL.[NotedDate1]
-	) T ON T.AgentId = PWL.AgentId AND T.CurrencyId = PWL.CurrencyId
+	--UPDATE PWL -- Show the due balance for each agent
+	--	SET PWL.[NotedAmount0] = T.Balance
+	--FROM @ProcessedWideLines PWL
+	--JOIN (
+	--	SELECT E.AgentId, E.CurrencyId, SUM(E.[Direction] * E.[MonetaryValue]) AS [Balance]
+	--	FROM dbo.Entries E
+	--	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+	--	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+	--	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	--	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
+	--	WHERE AC.Code IN (N''TradeAndOtherPayablesToTradeSuppliers'') -- may be more
+	--	AND D.[PostingDate] <= PWL.[NotedDate1]
+	--) T ON T.AgentId = PWL.AgentId2 AND T.CurrencyId = PWL.CurrencyId2
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 2;
@@ -145,7 +146,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,2,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --3:GoodReceiptNote, (from Cash Purchase), (from Supplier on Account in SRV)
 --4:GRIV Dr. (from Cash Purchase), (from Supplier on Account in GRIV)
@@ -206,7 +207,7 @@ SET [Script] = N'
 		[NotedAgentId0]	= [AgentId1],
 		[NotedAgentId1]	= [AgentId0],
 		[CenterId1] = [CenterId0],
-		[MonetaryValue0] = =IIF([CurrencyId0]=Currency[Id1],[MonetaryValue1],[MonetaryValue0]
+		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0])
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 10;
@@ -218,14 +219,14 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],			[Label2],			[RequiredState],
 																						[ReadOnlyState],
 																						[InheritsFromHeader]) VALUES
-(0,10,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1),
-(1,10,	N'Entries',	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
-(2,10,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
-(3,10,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
-(4,10,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
-(5,10,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
-(6,10,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
-(7,10,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1);
+(0,10,	N'Entries',	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
+(1,10,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
+(2,10,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
+(3,10,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
+(4,10,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
+(5,10,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
+(6,10,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
+(7,10,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
 (0,10,+1),

@@ -295,11 +295,12 @@ END
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
-	SET E.[Value] = ER.[Rate] * E.[MonetaryValue]
+	SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN [map].[ExchangeRates] ER ON E.CurrencyId = ER.CurrencyId
+	JOIN dbo.Currencies C ON E.CurrencyId = C.[Id]
 	WHERE
 		ER.ValidAsOf <= ISNULL(D.[PostingDate], @Today)
 	AND ER.ValidTill >	ISNULL(D.[PostingDate], @Today)

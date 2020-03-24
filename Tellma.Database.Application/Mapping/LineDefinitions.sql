@@ -3,7 +3,10 @@ RETURNS TABLE
 AS
 RETURN (
 	SELECT LD.*,
-		IIF(W.[Id] IS NULL, 0, 1) AS HasWorkflow
+		IIF(W.[LineDefinitionId] IS NULL, 0, 1) AS HasWorkflow
 	FROM [dbo].[LineDefinitions] LD
-	LEFT JOIN dbo.Workflows W ON W.LineDefinitionId = LD.[Id]
+	LEFT JOIN (
+		Select DISTINCT LineDefinitionId
+		FROM dbo.Workflows
+	) W ON W.LineDefinitionId = LD.[Id]
 );
