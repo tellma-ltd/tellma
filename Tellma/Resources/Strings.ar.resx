@@ -487,36 +487,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
-  <data name="Document_State" xml:space="preserve">
-    <value>حالة القيد</value>
-  </data>
-  <data name="Document_State_0" xml:space="preserve">
-    <value>جديد</value>
-  </data>
-  <data name="Document_State_1" xml:space="preserve">
-    <value>مطلوب</value>
-  </data>
-  <data name="Document_State_2" xml:space="preserve">
-    <value>معتمد</value>
-  </data>
-  <data name="Document_State_3" xml:space="preserve">
-    <value>منفذ</value>
-  </data>
-  <data name="Document_State_4" xml:space="preserve">
-    <value>جاهز</value>
-  </data>
-  <data name="Document_State_minus_1" xml:space="preserve">
-    <value>ملغى</value>
-  </data>
-  <data name="Document_State_minus_2" xml:space="preserve">
-    <value>مرفوض</value>
-  </data>
-  <data name="Document_State_minus_3" xml:space="preserve">
-    <value>متعذر</value>
-  </data>
-  <data name="Document_State_minus_4" xml:space="preserve">
-    <value>خطأ</value>
-  </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>الزمن 1</value>
   </data>
@@ -1032,6 +1002,33 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>المستند</value>
+  </data>
+  <data name="Line_State_0" xml:space="preserve">
+    <value>جديد</value>
+  </data>
+  <data name="Line_State_1" xml:space="preserve">
+    <value>مطلوب</value>
+  </data>
+  <data name="Line_State_2" xml:space="preserve">
+    <value>معتمد</value>
+  </data>
+  <data name="Line_State_3" xml:space="preserve">
+    <value>منفذ</value>
+  </data>
+  <data name="Line_State_4" xml:space="preserve">
+    <value>جاهز</value>
+  </data>
+  <data name="Line_State_minus_1" xml:space="preserve">
+    <value>ملغى</value>
+  </data>
+  <data name="Line_State_minus_2" xml:space="preserve">
+    <value>مرفوض</value>
+  </data>
+  <data name="Line_State_minus_3" xml:space="preserve">
+    <value>متعذر</value>
+  </data>
+  <data name="Line_State_minus_4" xml:space="preserve">
+    <value>خطأ</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>أسطر</value>

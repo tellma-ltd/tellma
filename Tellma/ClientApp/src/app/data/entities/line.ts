@@ -62,9 +62,9 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
                     choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
                     format: (state: number) => {
                         if (state >= 0) {
-                            return trx.instant('Document_State_' + state);
+                            return trx.instant('Line_State_' + state);
                         } else {
-                            return trx.instant('Document_State_minus_' + (-state));
+                            return trx.instant('Line_State_minus_' + (-state));
                         }
                     },
                     color: (c: number) => {

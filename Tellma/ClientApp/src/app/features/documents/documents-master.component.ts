@@ -93,13 +93,6 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this.translate.instant('Document');
   }
 
-  public get defaultSelect(): string {
-    // This shows the State column only when there is a workflow
-    const def = this.definition;
-    const stateColumn = !!def && def.HasWorkflow ? ',State' : '';
-    return `PostingDate,PostingState${stateColumn},Memo`;
-  }
-
   // Posting State
 
   public onPost = (ids: (number | string)[]): Observable<any> => {
@@ -170,27 +163,4 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
 
   public postingStateTooltip = (ids: (number | string)[]) => this.hasPostingStatePermission(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
-
-  public adjustFilterDefinition(filterDefinition: any): any {
-    const def = this.definition;
-    if (this._filterDefinitionArg !== filterDefinition ||
-      this._filterDefinitionDocDef !== def) {
-
-      this._filterDefinitionArg = filterDefinition;
-      this._filterDefinitionDocDef = def;
-
-      const result = { ...filterDefinition };
-      if (!def) {
-        // Leave it as is
-      } else if (def.HasWorkflow) {
-        result.State = result.State.filter((e: any) => e.state === 0 || e.state === 4 || def['CanReachState' + Math.abs(e.state)]);
-      } else {
-        delete result.State;
-      }
-
-      this._filterDefinitionResult = result;
-    }
-
-    return this._filterDefinitionResult;
-  }
 }

@@ -487,36 +487,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>ተከታታይ ቁጥር</value>
   </data>
-  <data name="Document_State" xml:space="preserve">
-    <value>ሁኔታ</value>
-  </data>
-  <data name="Document_State_0" xml:space="preserve">
-    <value>ረቂቅ</value>
-  </data>
-  <data name="Document_State_1" xml:space="preserve">
-    <value>ተጠይቋል</value>
-  </data>
-  <data name="Document_State_2" xml:space="preserve">
-    <value>የተፈቀዱ</value>
-  </data>
-  <data name="Document_State_3" xml:space="preserve">
-    <value>የተጠናቀቁ</value>
-  </data>
-  <data name="Document_State_4" xml:space="preserve">
-    <value>ይጠናቀቃል</value>
-  </data>
-  <data name="Document_State_minus_1" xml:space="preserve">
-    <value>ባዶነት</value>
-  </data>
-  <data name="Document_State_minus_2" xml:space="preserve">
-    <value>ተቀባይነት አላገኘም</value>
-  </data>
-  <data name="Document_State_minus_3" xml:space="preserve">
-    <value>አልተሳካም</value>
-  </data>
-  <data name="Document_State_minus_4" xml:space="preserve">
-    <value>ዋጋ ቢስ</value>
-  </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>የጊዜ 1</value>
   </data>
@@ -1032,6 +1002,33 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>የሰነድ</value>
+  </data>
+  <data name="Line_State_0" xml:space="preserve">
+    <value>ረቂቅ</value>
+  </data>
+  <data name="Line_State_1" xml:space="preserve">
+    <value>ተጠይቋል</value>
+  </data>
+  <data name="Line_State_2" xml:space="preserve">
+    <value>የተፈቀዱ</value>
+  </data>
+  <data name="Line_State_3" xml:space="preserve">
+    <value>የተጠናቀቁ</value>
+  </data>
+  <data name="Line_State_4" xml:space="preserve">
+    <value>ይጠናቀቃል</value>
+  </data>
+  <data name="Line_State_minus_1" xml:space="preserve">
+    <value>ባዶነት</value>
+  </data>
+  <data name="Line_State_minus_2" xml:space="preserve">
+    <value>ተቀባይነት አላገኘም</value>
+  </data>
+  <data name="Line_State_minus_3" xml:space="preserve">
+    <value>አልተሳካም</value>
+  </data>
+  <data name="Line_State_minus_4" xml:space="preserve">
+    <value>ዋጋ ቢስ</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>መስመሮች</value>

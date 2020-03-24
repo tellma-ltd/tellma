@@ -133,6 +133,9 @@ namespace Tellma.Controllers
                 result.HasNotedAgentName ??= false;
                 result.HasNotedAmount ??= false;
                 result.HasNotedDate ??= false;
+
+                // TODO: Remove
+                result.HasIdentifier ??= false;
             });
 
             // SQL Preprocessing

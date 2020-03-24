@@ -373,7 +373,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       delete clone.CreatedById;
       delete clone.ModifiedById;
       delete clone.SerialNumber;
-      delete clone.State;
       delete clone.PostingState;
       delete clone.PostingStateAt;
 
@@ -1448,9 +1447,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public actionDisplay(toState: number): string {
     if (toState >= 0) {
-      return this.translate.instant('Document_State_' + toState);
+      return this.translate.instant('Line_State_' + toState);
     } else {
-      return this.translate.instant('Document_State_minus_' + (-toState));
+      return this.translate.instant('Line_State_minus_' + (-toState));
     }
   }
 
@@ -2043,7 +2042,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return false;
     }
 
-    return !model.PostingState && def.HasWorkflow && (model.State || 0) === state;
+    return !model.PostingState && def.HasWorkflow && this.getDocState(model) === state;
   }
 
   public isPostingStateActive(state: DocumentState, model: Document): boolean {
@@ -2065,7 +2064,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public isStateVisible(state: LineState, model: Document): boolean {
     // Returns if a positive state is visible on the wide screen flow chart
-    if (!!model && (model.PostingState < 0 || model.State < 0)) { // <-- Review
+    if (!!model && (model.PostingState < 0 || this.getDocState(model) < 0)) { // <-- Review
       return false;
     }
 
@@ -2333,7 +2332,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public smartTabColor(lineDefId: string, doc: DocumentForSave): string {
-    return this.highlightSmartTab(lineDefId, doc) ? '#FFFF33' : null;
+    return this.highlightSmartTab(lineDefId, doc) ? '#eeff44' : null;
   }
   public highlightBookkeepingTab(doc: DocumentForSave): boolean {
     const isHighlightedLine = this.highlightLineFactory(doc);
@@ -2341,13 +2340,48 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public bookkeepingTabColor(doc: DocumentForSave): string {
-    return this.highlightBookkeepingTab(doc) ? '#FFFF33' : null;
+    return this.highlightBookkeepingTab(doc) ? '#eeff44' : null;
   }
 
   public formColor(lineDefId: string, doc: DocumentForSave): string {
     const isHighlightedLine = this.highlightLineFactory(doc);
     const lines = this.lines(lineDefId, doc);
-    return lines.length === 1 && isHighlightedLine(lines[0]) ? '#FFFF33' : null;
+    return lines.length === 1 && isHighlightedLine(lines[0]) ? '#eeff44' : null;
+  }
+
+  private _documentStateDoc: Document;
+  private _documentStateResult: LineState = null;
+
+  /**
+   * Returns a summary of the states of all the lines
+   */
+  public getDocState(doc: Document): LineState {
+    if (this._documentStateDoc !== doc) {
+      this._documentStateDoc = doc;
+      this._documentStateResult = null;
+    }
+
+    if (this._documentStateResult === null) {
+      if (!doc || !doc.Lines) {
+        this._documentStateResult = 0;
+      } else {
+        const allLineStates = doc.Lines.map(line => line.State || 0);
+        const positiveStates = allLineStates.filter(state => state >= 0);
+        if (positiveStates.length > 0) {
+          // Result is the smallest positive state
+          this._documentStateResult = Math.min(... positiveStates) as LineState;
+        } else if (allLineStates.length > 0) {
+          // Result is the smallest (negative) state
+          const negativeState = allLineStates.filter(state => state < 0);
+          this._documentStateResult = Math.min(... negativeState) as LineState;
+        } else {
+          // Result is Draft
+          this._documentStateResult = 0;
+        }
+      }
+    }
+
+    return this._documentStateResult;
   }
 }
 

@@ -487,36 +487,6 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
   </data>
-  <data name="Document_State" xml:space="preserve">
-    <value>州</value>
-  </data>
-  <data name="Document_State_0" xml:space="preserve">
-    <value>草案</value>
-  </data>
-  <data name="Document_State_1" xml:space="preserve">
-    <value>要求</value>
-  </data>
-  <data name="Document_State_2" xml:space="preserve">
-    <value>合法</value>
-  </data>
-  <data name="Document_State_3" xml:space="preserve">
-    <value>已完成</value>
-  </data>
-  <data name="Document_State_4" xml:space="preserve">
-    <value>发布</value>
-  </data>
-  <data name="Document_State_minus_1" xml:space="preserve">
-    <value>空虚</value>
-  </data>
-  <data name="Document_State_minus_2" xml:space="preserve">
-    <value>被拒绝</value>
-  </data>
-  <data name="Document_State_minus_3" xml:space="preserve">
-    <value>失败</value>
-  </data>
-  <data name="Document_State_minus_4" xml:space="preserve">
-    <value>无效</value>
-  </data>
   <data name="Document_Time1" xml:space="preserve">
     <value>时间1</value>
   </data>
@@ -1032,6 +1002,33 @@
   </data>
   <data name="Line_Document" xml:space="preserve">
     <value>文献</value>
+  </data>
+  <data name="Line_State_0" xml:space="preserve">
+    <value>草案</value>
+  </data>
+  <data name="Line_State_1" xml:space="preserve">
+    <value>要求</value>
+  </data>
+  <data name="Line_State_2" xml:space="preserve">
+    <value>合法</value>
+  </data>
+  <data name="Line_State_3" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="Line_State_4" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="Line_State_minus_1" xml:space="preserve">
+    <value>空虚</value>
+  </data>
+  <data name="Line_State_minus_2" xml:space="preserve">
+    <value>被拒绝</value>
+  </data>
+  <data name="Line_State_minus_3" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="Line_State_minus_4" xml:space="preserve">
+    <value>无效</value>
   </data>
   <data name="Lines" xml:space="preserve">
     <value>行</value>

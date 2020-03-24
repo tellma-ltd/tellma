@@ -42,7 +42,6 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 
 export interface Document extends DocumentForSave<Line, Attachment> {
     DefinitionId?: string;
-    State?: LineState;
     PostingState?: DocumentState;
     PostingStateAt?: string;
     Comment?: string;
@@ -138,18 +137,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
                     format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
-                State: {
-                    control: 'choice',
-                    label: () => trx.instant('Document_State'),
-                    choices: [0, -1, 1, -2, 2, -3, 3, -4, 4],
-                    format: (state: number) => {
-                        if (state >= 0) {
-                            return trx.instant('Document_State_' + state);
-                        } else {
-                            return trx.instant('Document_State_minus_' + (-state));
-                        }
-                    }
-                },
                 PostingState: {
                     control: 'state',
                     label: () => trx.instant('Document_PostingState'),
@@ -196,10 +183,6 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
         } else {
             delete entityDesc.properties.DefinitionId;
             delete entityDesc.properties.Definition;
-
-            if (!definition.HasWorkflow) {
-                delete entityDesc.properties.State;
-            }
 
             // TODO: adjust properties as per definition
         }

@@ -112,31 +112,31 @@ namespace Tellma.Entities
         [Display(Name = "Definition")]
         public string DefinitionId { get; set; }
 
-        [Display(Name = "Document_State")]
-        [AlwaysAccessible]
-        [ChoiceList(new object[] {
-            LineState.Draft,
-            LineState.Void,
-            LineState.Requested,
-            LineState.Rejected,
-            LineState.Authorized,
-            LineState.Failed,
-            LineState.Completed,
-            LineState.Invalid,
-            LineState.Finalized
-        },
-            new string[] {
-            LineStateName.Draft,
-            LineStateName.Void,
-            LineStateName.Requested,
-            LineStateName.Rejected,
-            LineStateName.Authorized,
-            LineStateName.Failed,
-            LineStateName.Completed,
-            LineStateName.Invalid,
-            LineStateName.Finalized
-        })]
-        public short? State { get; set; }
+        //[Display(Name = "Document_State")]
+        //[AlwaysAccessible]
+        //[ChoiceList(new object[] {
+        //    LineState.Draft,
+        //    LineState.Void,
+        //    LineState.Requested,
+        //    LineState.Rejected,
+        //    LineState.Authorized,
+        //    LineState.Failed,
+        //    LineState.Completed,
+        //    LineState.Invalid,
+        //    LineState.Finalized
+        //},
+        //    new string[] {
+        //    LineStateName.Draft,
+        //    LineStateName.Void,
+        //    LineStateName.Requested,
+        //    LineStateName.Rejected,
+        //    LineStateName.Authorized,
+        //    LineStateName.Failed,
+        //    LineStateName.Completed,
+        //    LineStateName.Invalid,
+        //    LineStateName.Finalized
+        //})]
+        //public short? State { get; set; }
 
         [Display(Name = "Document_PostingState")]
         [AlwaysAccessible]
@@ -234,34 +234,6 @@ namespace Tellma.Entities
         public Lookup DocumentLookup3 { get; set; }
 
         // END HIDDEN
-    }
-
-    public static class LineState
-    {
-        public const short Draft = 0;
-        public const short Void = -1;
-        public const short Requested = 1;
-        public const short Rejected = -2;
-        public const short Authorized = 2;
-        public const short Failed = -3;
-        public const short Completed = 3;
-        public const short Invalid = -4;
-        public const short Finalized = 4;
-    }
-
-    public static class LineStateName
-    {
-        private const string _prefix = "Document_State_";
-
-        public const string Draft = _prefix + "0";
-        public const string Void = _prefix + "minus_1";
-        public const string Requested = _prefix + "1";
-        public const string Rejected = _prefix + "minus_2";
-        public const string Authorized = _prefix + "2";
-        public const string Failed = _prefix + "minus_3";
-        public const string Completed = _prefix + "3";
-        public const string Invalid = _prefix + "minus_4";
-        public const string Finalized = _prefix + "4";
     }
 
     public static class DocState

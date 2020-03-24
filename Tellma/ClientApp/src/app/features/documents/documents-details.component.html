@@ -96,15 +96,15 @@
         <ng-container *ngIf="isPositiveState(model); else negativeStates">
             <div class="t-flow-chart small d-none d-lg-block">
                 <div [class.active]="isStateActive(0, model)" *ngIf="isStateVisible(0, model)">
-                    <span>{{'Document_State_0' | translate}}</span></div>
+                    <span>{{'Line_State_0' | translate}}</span></div>
                 <div [class.active]="isStateActive(1, model)" *ngIf="isStateVisible(1, model)">
-                    <span>{{'Document_State_1' | translate}}</span></div>
+                    <span>{{'Line_State_1' | translate}}</span></div>
                 <div [class.active]="isStateActive(2, model)" *ngIf="isStateVisible(2, model)">
-                    <span>{{'Document_State_2' | translate}}</span></div>
+                    <span>{{'Line_State_2' | translate}}</span></div>
                 <div [class.active]="isStateActive(3, model)" *ngIf="isStateVisible(3, model)">
-                    <span>{{'Document_State_3' | translate}}</span></div>
+                    <span>{{'Line_State_3' | translate}}</span></div>
                 <div [class.active]="isStateActive(4, model)" *ngIf="isStateVisible(4, model)">
-                    <span>{{'Document_State_4' | translate}}</span></div>
+                    <span>{{'Line_State_4' | translate}}</span></div>
 
                 <div [class.active]="isPostingStateActive(0, model)" *ngIf="isPostingStateVisible(0, model)">
                     <span>{{'Document_PostingState_0' | translate}}</span></div>
@@ -114,11 +114,11 @@
 
             <!-- +ve states on narrow screen -->
             <div class="small t-lone-state active d-block d-lg-none">
-                <span *ngIf="isStateActive(0, model)">{{ 'Document_State_0' | translate }}</span>
-                <span *ngIf="isStateActive(1, model)">{{ 'Document_State_1' | translate }}</span>
-                <span *ngIf="isStateActive(2, model)">{{ 'Document_State_2' | translate }}</span>
-                <span *ngIf="isStateActive(3, model)">{{ 'Document_State_3' | translate }}</span>
-                <span *ngIf="isStateActive(4, model)">{{ 'Document_State_4' | translate }}</span>
+                <span *ngIf="isStateActive(0, model)">{{ 'Line_State_0' | translate }}</span>
+                <span *ngIf="isStateActive(1, model)">{{ 'Line_State_1' | translate }}</span>
+                <span *ngIf="isStateActive(2, model)">{{ 'Line_State_2' | translate }}</span>
+                <span *ngIf="isStateActive(3, model)">{{ 'Line_State_3' | translate }}</span>
+                <span *ngIf="isStateActive(4, model)">{{ 'Line_State_4' | translate }}</span>
 
                 <span *ngIf="isPostingStateActive(0, model)">{{ 'Document_PostingState_0' | translate }}</span>
                 <span *ngIf="isPostingStateActive(1, model)">{{ 'Document_PostingState_1' | translate }}</span>
@@ -128,10 +128,10 @@
         <!-- -ve states -->
         <ng-template #negativeStates>
             <div class="small t-lone-state active d-block">
-                <span *ngIf="isNegativeStateActive(1, model)">{{ 'Document_State_minus_1' | translate }}</span>
-                <span *ngIf="isNegativeStateActive(2, model)">{{ 'Document_State_minus_2' | translate }}</span>
-                <span *ngIf="isNegativeStateActive(3, model)">{{ 'Document_State_minus_3' | translate }}</span>
-                <span *ngIf="isNegativeStateActive(4, model)">{{ 'Document_State_minus_4' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(1, model)">{{ 'Line_State_minus_1' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(2, model)">{{ 'Line_State_minus_2' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(3, model)">{{ 'Line_State_minus_3' | translate }}</span>
+                <span *ngIf="isNegativeStateActive(4, model)">{{ 'Line_State_minus_4' | translate }}</span>
 
                 <span
                     *ngIf="isNegativePostingStateActive(1, model)">{{ 'Document_PostingState_minus_1' | translate }}</span>
