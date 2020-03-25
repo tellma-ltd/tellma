@@ -44,8 +44,8 @@ SET [Script] = N'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,			NULL),
-(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',					N'PaymentsToSuppliersForGoodsAndServices');
+(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,					NULL),
+(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',			N'PaymentsToSuppliersForGoodsAndServices');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -149,6 +149,10 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --3:GoodReceiptNote, (from Cash Purchase), (from Supplier on Account in SRV)
+--INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+--[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
+--(0,3,+1,	N'InventoriesTotal',	1,			N'warehouses',		NULL,					N'InventoryPurchaseExtension'),--ET= purchasing
+
 --4:GRIV Dr. (from Cash Purchase), (from Supplier on Account in GRIV)
 --5:Consumables&Services (from Cash Purchase), (from Supplier on Account in C&S RV)
 --6:PaymentToEmployee (in Banan SD, we will have a dedicated voucher for that)
@@ -220,10 +224,10 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 																						[ReadOnlyState],
 																						[InheritsFromHeader]) VALUES
 (0,10,	N'Entries',	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
-(1,10,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
-(2,10,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
-(3,10,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
-(4,10,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
+(1,10,	N'Entries',	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
+(2,10,	N'Entries',	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
+(3,10,	N'Entries',	N'CurrencyId',			0,	N'To Currency',		N'إلى عملة',		1,2,0),
+(4,10,	N'Entries',	N'MonetaryValue',		1,	N'From Amount',		N'من مبلغ',			1,3,0),
 (5,10,	N'Entries',	N'MonetaryValue',		0,	N'To Amount',		N'إلى مبلغ',		1,3,0),
 (6,10,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (7,10,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);

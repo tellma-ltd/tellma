@@ -52,7 +52,6 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
 
-
 DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 EXEC [dal].[Users__Save]
 	@Entities = @Users

@@ -577,4 +577,32 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_ConvertToFunctional]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1174cf8a-3223-4055-8de9-16e0ddabb164" ChangeDateTime="03/25/2020 06:34:33">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[AgentDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aad8a289-909a-4c3c-8027-a8328ede5538" ChangeDateTime="03/25/2020 06:35:03">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[AgentLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ff898b7-7bfb-4fd1-95a0-92ab0c456620" ChangeDateTime="03/25/2020 06:36:07">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[AgentLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8f4e5712-65f5-4119-8a77-6c4fd8a4c5d8" ChangeDateTime="03/25/2020 06:36:38">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[AgentLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentLabel2]" />
+  </Operation>
 </Operations>
