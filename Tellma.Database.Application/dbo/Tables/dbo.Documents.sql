@@ -23,8 +23,10 @@
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- Agent Definition is specified in DocumentDefinition
-	[AgentId]						INT	CONSTRAINT [FK_Documents__AgentId] REFERENCES dbo.Agents([Id]), 
-	[AgentIsCommon]					BIT				NOT NULL DEFAULT 0,
+	[DebitAgentId]					INT	CONSTRAINT [FK_Documents__DebitAgentId] REFERENCES dbo.Agents([Id]), 
+	[DebitAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[CreditAgentId]					INT	CONSTRAINT [FK_Documents__CreditAgentId] REFERENCES dbo.Agents([Id]), 
+	[CreditAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),

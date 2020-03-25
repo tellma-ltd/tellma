@@ -605,4 +605,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DebitAgentLabel2]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9ea33b8c-4ebc-482e-ac6d-fe2d566b14fe" ChangeDateTime="03/25/2020 10:36:35">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="038780ce-4380-475d-889f-5b4bd9be3932" ChangeDateTime="03/25/2020 10:37:01">
+    <Property Name="ElementName" Value="[dbo].[Documents].[AgentIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitAgentIsCommon]" />
+  </Operation>
 </Operations>
