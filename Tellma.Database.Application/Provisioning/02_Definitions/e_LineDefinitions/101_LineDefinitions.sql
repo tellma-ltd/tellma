@@ -149,10 +149,24 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --3:GoodReceiptNote, (from Cash Purchase), (from Supplier on Account in SRV)
---INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
---[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
---(0,3,+1,	@InventoriesTotal,	1,			N'warehouses',		NULL,					@InventoryPurchaseExtension),
-
+INSERT @LineDefinitions([Index],
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],				[TitlePlural2]) VALUES
+(3,0,N'GoodReceiptNote',N'Inventory Purchase',	N'شراء صنف',		N'Inventories Purchases',	N'مشتريات أصناف');
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+(0,3,+1,	@InventoriesTotal,		1,			N'warehouses',		NULL,					@InventoryPurchaseExtension);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
+																						[ReadOnlyState],
+																						[InheritsFromHeader]) VALUES
+(0,3,	N'Entries',	N'ResourceId',			0,	N'Item',			N'الصنف',			3,4,0),
+(1,3,	N'Entries',	N'Quantity',			0,	N'Quantity',		N'الكمية',			1,2,0),
+(2,3,	N'Entries',	N'UnitId',				0,	N'UnitId',			N'الوحدة',			1,2,0),
+(3,3,	N'Entries',	N'MonetaryValue',		0,	N'Price (b/f VAT)',	N'السعر (بلا ق.م.)',1,2,0),
+(4,3,	N'Entries',	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
+(5,3,	N'Entries',	N'AgentId',				0,	N'Warehouse',		N'المخزن',			3,3,1),
+(6,3,	N'Entries',	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
+(7,3,	N'Lines',	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);
 --4:GRIV Dr. (from Cash Purchase), (from Supplier on Account in GRIV)
 --5:Consumables&Services (from Cash Purchase), (from Supplier on Account in C&S RV)
 --6:PaymentToEmployee (in Banan SD, we will have a dedicated voucher for that)
