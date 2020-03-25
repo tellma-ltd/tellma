@@ -391,12 +391,6 @@
   <data name="Document" xml:space="preserve">
     <value>文献</value>
   </data>
-  <data name="Document_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Document_AgentIsCommon" xml:space="preserve">
-    <value>代理是很常见</value>
-  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>在分配</value>
   </data>
@@ -427,11 +421,23 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
+  <data name="Document_CreditAgent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
+    <value>债权代理人是常有的事</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>货币是通用</value>
+  </data>
+  <data name="Document_DebitAgent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
+    <value>借记代理是很常见</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -864,6 +870,9 @@
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>有效的作为</value>
+  </data>
+  <data name="ExchangeRate_ValidTill" xml:space="preserve">
+    <value>有效期至</value>
   </data>
   <data name="ExchangeRates" xml:space="preserve">
     <value>汇率</value>

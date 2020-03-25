@@ -34,6 +34,9 @@ namespace Tellma.Entities
         [Display(Name = "ExchangeRate_Rate")]
         public decimal? Rate { get; set; }
 
+        [Display(Name = "ExchangeRate_ValidTill")]
+        public DateTime? ValidTill { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 

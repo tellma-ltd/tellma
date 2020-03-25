@@ -132,29 +132,28 @@ namespace Tellma.Controllers.Dto
         public bool IsOriginalDocument { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
-        public string AgentDefinitionId { get; set; }
-        public string AgentLabel { get; set; }
-        public string AgentLabel2 { get; set; }
-        public string AgentLabel3 { get; set; }
+        public string MemoVisibility { get; set; }
+        public string DebitAgentDefinitionId { get; set; }
+        public string DebitAgentLabel { get; set; }
+        public string DebitAgentLabel2 { get; set; }
+        public string DebitAgentLabel3 { get; set; }
+        public string CreditAgentDefinitionId { get; set; }
+        public string CreditAgentLabel { get; set; }
+        public string CreditAgentLabel2 { get; set; }
+        public string CreditAgentLabel3 { get; set; }
         public string ClearanceVisibility { get; set; }
-        public string InvestmentCenterVisibility { get; set; }
-        public string Time1Visibility { get; set; }
         public string Time1Label { get; set; }
         public string Time1Label2 { get; set; }
         public string Time1Label3 { get; set; }
-        public string Time2Visibility { get; set; }
         public string Time2Label { get; set; }
         public string Time2Label2 { get; set; }
         public string Time2Label3 { get; set; }
-        public string QuantityVisibility { get; set; }
         public string QuantityLabel { get; set; }
         public string QuantityLabel2 { get; set; }
         public string QuantityLabel3 { get; set; }
-        public string UnitVisibility { get; set; }
         public string UnitLabel { get; set; }
         public string UnitLabel2 { get; set; }
         public string UnitLabel3 { get; set; }
-        public string CurrencyVisibility { get; set; }
         public bool CanReachState1 { get; set; }
         public bool CanReachState2 { get; set; }
         public bool CanReachState3 { get; set; }
@@ -186,14 +185,13 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public string AccountTypeParentCode { get; set; }
+        public int? AccountTypeParentId { get; set; }
         public string AgentDefinitionId { get; set; }
         public string NotedAgentDefinitionId { get; set; }
-        public string EntryTypeCode { get; set; }
+        public int? EntryTypeId { get; set; }
 
 
         // Computed
-        public int? AccountTypeParentId { get; set; }
         public bool AccountTypeParentIsResourceClassification { get; set; }
         public int? EntryTypeParentId { get; set; }
     }

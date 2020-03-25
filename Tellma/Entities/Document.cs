@@ -51,11 +51,17 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-        [Display(Name = "Document_Agent")]
-        public int? AgentId { get; set; }
+        [Display(Name = "Document_DebitAgent")]
+        public int? DebitAgentId { get; set; }
 
-        [Display(Name = "Document_AgentIsCommon")]
-        public bool? AgentIsCommon { get; set; }
+        [Display(Name = "Document_DebitAgentIsCommon")]
+        public bool? DebitAgentIsCommon { get; set; }
+
+        [Display(Name = "Document_CreditAgent")]
+        public int? CreditAgentId { get; set; }
+
+        [Display(Name = "Document_CreditAgentIsCommon")]
+        public bool? CreditAgentIsCommon { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]
         public int? InvestmentCenterId { get; set; }
@@ -158,7 +164,7 @@ namespace Tellma.Entities
 
         // For Query
         [Display(Name = "Document_Agent")]
-        [ForeignKey(nameof(AgentId))]
+        [ForeignKey(nameof(DebitAgentId))]
         public Agent Agent { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]

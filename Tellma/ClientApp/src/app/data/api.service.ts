@@ -455,6 +455,29 @@ export class ApiService {
     };
   }
 
+  public exchangeRatesApi(cancellationToken$: Observable<void>) {
+    return {
+      convertToFunctional: (date: string, currencyId: string, amount: number) => {
+        const paramsArray: string[] = [];
+
+        paramsArray.push(`date=${encodeURIComponent(date)}`);
+        paramsArray.push(`currencyId=${encodeURIComponent(currencyId)}`);
+        paramsArray.push(`amount=${amount}`);
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/exchange-rates/convert-to-functional?${params}`;
+        const obs$ = this.http.get<number>(url).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      }
+    };
+  }
+
   public centersApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Center>('centers', cancellationToken$),

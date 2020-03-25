@@ -201,7 +201,7 @@ export class TableComponent implements OnInit, OnChanges {
     return this.visibleRows || Math.ceil(9 * 30 / this.itemSize);
   }
 
-  public get tableHeight(): number {
+  public get tableHeightOld(): number {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
@@ -209,7 +209,16 @@ export class TableComponent implements OnInit, OnChanges {
     const visibleRows = Math.min(maxVisibleRows, actualRows);
     const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
     const height = headerHeight + visibleRows * rowHeight + placeHolderRows * 31;
-    return height + 18; // extra pixels takes care of the horiztonal scrollbar
+    return height + 18; // extra pixels take care of the horiztonal scrollbar
+  }
+
+  public get tableHeight(): number {
+    const headerHeight = this.HEADER_HEIGHT;
+    const rowHeight = this.itemSize;
+    const actualRows = this.dataSourceCopy.length;
+    const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
+    const height = headerHeight + actualRows * rowHeight + placeHolderRows * 31;
+    return height + 18; // extra pixels take care of the horiztonal scrollbar
   }
 
   public get tableMaxHeight(): number {
@@ -217,7 +226,7 @@ export class TableComponent implements OnInit, OnChanges {
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
     const height = headerHeight + maxVisibleRows * rowHeight;
-    return height + 1;
+    return height + 18;
   }
 
   public highlight(entity: EntityForSave): boolean {

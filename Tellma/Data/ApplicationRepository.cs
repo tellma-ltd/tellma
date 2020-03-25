@@ -3,7 +3,6 @@ using Tellma.Entities;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.Identity;
 using Tellma.Services.Sharding;
-using Tellma.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
@@ -32,6 +31,7 @@ namespace Tellma.Data
 
         private SqlConnection _conn;
         private UserInfo _userInfo;
+
         private TenantInfo _tenantInfo;
         private Transaction _transactionOverride;
 
@@ -169,6 +169,7 @@ namespace Tellma.Data
         public Query<User> Users => Query<User>();
         public Query<Agent> Agents => Query<Agent>();
         public Query<Currency> Currencies => Query<Currency>();
+        public Query<ExchangeRate> ExchangeRates => Query<ExchangeRate>();
 
         /// <summary>
         /// Creates and returns a new <see cref="Queries.Query{T}"/>
@@ -4637,6 +4638,41 @@ namespace Tellma.Data
             {
                 throw new ForeignKeyViolationException();
             }
+        }
+
+        public async Task<decimal?> ConvertToFunctional(DateTime date, string currencyId, decimal amount)
+        {
+            decimal? result = null;
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("@Date", date);
+                cmd.Parameters.Add("@CurrencyId", currencyId);
+                cmd.Parameters.Add("@Amount", amount);
+
+                // Output Parameter
+                SqlParameter resultParam = new SqlParameter("@Result", SqlDbType.Decimal)
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+
+                cmd.Parameters.Add(resultParam);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[wiz].[fn_{nameof(ConvertToFunctional)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+                var resultObject = cmd.Parameters["@Result"].Value;
+                if (resultObject != DBNull.Value)
+                {
+                    result = (decimal)resultObject;
+                }
+            }
+
+            return result;
         }
 
         #endregion

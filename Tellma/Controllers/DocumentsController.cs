@@ -457,14 +457,15 @@ namespace Tellma.Controllers
             docs.ForEach(doc =>
             {
                 // Document defaults
-                doc.MemoIsCommon ??= true; // TODO
-                doc.AgentIsCommon ??= docDef.AgentDefinitionId != null;
-                doc.InvestmentCenterIsCommon ??= docDef.InvestmentCenterVisibility != null;
-                doc.Time1IsCommon ??= docDef.Time1Visibility != null;
-                doc.Time2IsCommon ??= docDef.Time2Visibility != null;
-                doc.QuantityIsCommon ??= docDef.QuantityVisibility != null;
-                doc.UnitIsCommon ??= docDef.UnitVisibility != null;
-                doc.CurrencyIsCommon ??= docDef.CurrencyVisibility != null;
+                doc.MemoIsCommon ??= docDef.MemoVisibility != null;
+                doc.DebitAgentIsCommon ??= false; // docDef.DebitAgentDefinitionId != null;
+                doc.CreditAgentIsCommon ??= false; // docDef.CreditAgentDefinitionId != null;
+                doc.InvestmentCenterIsCommon ??= false; //docDef.InvestmentCenterVisibility != null;
+                doc.Time1IsCommon ??= false; //docDef.Time1Visibility != null;
+                doc.Time2IsCommon ??= false; //docDef.Time2Visibility != null;
+                doc.QuantityIsCommon ??= false; //docDef.QuantityVisibility != null;
+                doc.UnitIsCommon ??= false; //docDef.UnitVisibility != null;
+                doc.CurrencyIsCommon ??= false; //docDef.CurrencyVisibility != null;
 
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
@@ -484,7 +485,8 @@ namespace Tellma.Controllers
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
                 doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
-                doc.AgentId = doc.AgentIsCommon.Value ? doc.AgentId : null;
+                doc.DebitAgentId = doc.DebitAgentIsCommon.Value ? doc.DebitAgentId : null;
+                doc.CreditAgentId = doc.CreditAgentIsCommon.Value ? doc.CreditAgentId : null;
                 doc.InvestmentCenterId = doc.InvestmentCenterIsCommon.Value ? doc.InvestmentCenterId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
@@ -561,10 +563,10 @@ namespace Tellma.Controllers
                                 // Copy the common values
                                 switch (columnDef.ColumnName)
                                 {
-                                    case nameof(Entry.AgentId):
-                                        if (doc.AgentIsCommon.Value)
+                                    case nameof(Entry.AgentId): // TODO
+                                        if (doc.DebitAgentIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].AgentId = doc.AgentId;
+                                            line.Entries[columnDef.EntryIndex].AgentId = doc.DebitAgentId;
                                         }
 
                                         break;
@@ -658,6 +660,30 @@ namespace Tellma.Controllers
                         // Other logic
                     });
                 });
+
+                ////// handle subtle exchange rate rounding bugs
+                // (1) All non-manual entries have the same non-functional currency
+                // (2) Monetary Value of non-manual entries is balanced
+                // (3) Value of non-manual is not balanced
+                // => Take the difference and distribute it evenly on the entries
+                if (doc.Lines.Count > 0)
+                {
+                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != ManualLine).SelectMany(line => line.Entries);
+                    if (smartEntries.Any())
+                    {
+                        var currencyId = smartEntries.First().CurrencyId;
+                        if (currencyId != functionalId &&
+                            smartEntries.All(entry => entry.CurrencyId == currencyId) &&
+                            smartEntries.Sum(entry => entry.Direction.Value * (entry.MonetaryValue ?? 0)) == 0)
+                        {
+                            var valueDifference = smartEntries.Sum(entry => entry.Direction.Value * (entry.MonetaryValue ?? 0));
+                            if (valueDifference != 0)
+                            {
+                                // TODO: 
+                            }
+                        }
+                    }
+                }
             });
 
             return docs;
@@ -940,7 +966,6 @@ namespace Tellma.Controllers
             int tenantId = _tenantIdAccessor.GetTenantId();
             return $"{tenantId}/Attachments/{guid}";
         }
-
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

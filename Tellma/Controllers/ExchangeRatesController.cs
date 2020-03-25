@@ -38,6 +38,23 @@ namespace Tellma.Controllers
             _settingsCache = settingsCache;
         }
 
+        [HttpGet("convert-to-functional")]
+        public async Task<ActionResult<decimal>> ConvertToFunctional(DateTime date, string currencyId, decimal amount)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await _repo.ConvertToFunctional(date, currencyId, amount);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(result.Value);
+                }
+            }, _logger);
+        }
+
         protected override Query<ExchangeRate> GetAsQuery(List<ExchangeRateForSave> entities)
         {
             throw new System.NotImplementedException();

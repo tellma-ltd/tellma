@@ -14,6 +14,7 @@ export interface ExchangeRateForSave extends EntityWithKey {
 
 export interface ExchangeRate extends ExchangeRateForSave {
     Rate?: number;
+    ValidTill?: string;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
@@ -42,6 +43,7 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
                 CurrencyId: { control: 'text', label: () => `${trx.instant('ExchangeRate_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('ExchangeRate_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 ValidAsOf: { control: 'date', label: () => trx.instant('ExchangeRate_ValidAsOf') },
+                ValidTill: { control: 'date', label: () => trx.instant('ExchangeRate_ValidTill') },
                 AmountInCurrency: { control: 'number', label: () => trx.instant('ExchangeRate_AmountInCurrency'), minDecimalPlaces: 0, maxDecimalPlaces: 6, alignment: 'right' },
                 AmountInFunctional: {
                     control: 'number',

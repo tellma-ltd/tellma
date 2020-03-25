@@ -7,22 +7,20 @@ namespace Tellma.Entities
     {
         public short? Direction { get; set; }
 
-        public string AccountTypeParentCode { get; set; }
+        [AlwaysAccessible]
+        public int? AccountTypeParentId { get; set; }
 
         public string AgentDefinitionId { get; set; }
 
         public string NotedAgentDefinitionId { get; set; }
 
-        public string EntryTypeCode { get; set; }
+        public int? EntryTypeId { get; set; }
     }
 
     public class LineDefinitionEntry : LineDefinitionEntryForSave
     {
         [AlwaysAccessible]
         public int? Index { get; set; }
-
-        [AlwaysAccessible]
-        public int? AccountTypeParentId { get; set; }
 
         [AlwaysAccessible]
         public bool? AccountTypeParentIsResourceClassification { get; set; }

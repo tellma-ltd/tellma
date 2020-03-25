@@ -231,11 +231,44 @@
 
                         <!-- Form -->
                         <ng-container *ngIf="showAsForm(lineDefId, model)">
-                            <div class="row m-0 mt-2" [style.background-color]="formColor(lineDefId, model)">
+                            <div class="row m-0 pt-2 t-form" [style.background-color]="formColor(lineDefId, model)">
                                 <ng-container *ngIf="lines(lineDefId, model).length > 0; else noFormMessage">
                                     <div class="col-12 d-flex justify-content-end">
                                         <ng-container
                                             *ngTemplateOutlet="smartCommands;context: { item: lines(lineDefId, model)[0] }">
+                                        </ng-container>
+                                        <!-- <div ngbDropdown [placement]="commandsDropdownPlacement"
+                                            *ngIf="!lines(lineDefId, model)[0].PH">
+                                            <a href (click)="false"
+                                                class="px-2 t-no-arrow d-flex h-100 align-items-center"
+                                                ngbDropdownToggle><span class="small">
+                                                    <fa-icon icon="ellipsis-v"></fa-icon>
+                                                </span></a>
+                                            <div ngbDropdownMenu>
+                                                <button ngbDropdownItem class="t-transparent-background"
+                                                    (click)="toggleHighlight(lines(lineDefId, model)[0], model)">
+                                                    {{ (isHighlighted(lines(lineDefId, model)[0], model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
+                                                </button>
+                                            </div>
+                                        </div> -->
+
+                                        &nbsp;&nbsp;
+                                        <ng-container *ngIf="isEdit">
+                                            <div class="h-100 border-left">
+
+                                            </div>
+                                            &nbsp;
+                                            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1"
+                                                (click)="onDeleteForm(lineDefId, model)">
+                                                <fa-icon icon="trash" [title]="'Delete' | translate">
+                                                </fa-icon>
+                                            </button>
+                                            &nbsp;
+                                            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1"
+                                                (click)="onCreateForm(lineDefId, model)">
+                                                <fa-icon icon="plus" [title]="'AddAnotherSwitchToTable' | translate">
+                                                </fa-icon>
+                                            </button>
                                         </ng-container>
                                     </div>
                                     <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, true)">
@@ -262,7 +295,7 @@
                                     <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                                 </button>
                                 <!-- Actions dropdown -->
-                                <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
+                                <!-- <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
                                     [placement]="actionsDropdownPlacement">
                                     <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
                                         ngbDropdownToggle>
@@ -277,12 +310,8 @@
                                             (click)="onCreateForm(lineDefId, model)">
                                             {{ 'AddAnotherSwitchToTable' | translate }}
                                         </button>
-                                        <!-- <button ngbDropdownItem class="dropdown-item t-transparent-background"
-                                            (click)="toggleHighlight(lines(lineDefId, model)[0], model)">
-                                            {{ 'ToggleHighlight' | translate }}
-                                        </button> -->
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </ng-container>
                     </ng-container>
@@ -346,15 +375,15 @@
                             </t-view-link>
                             <span
                                 *ngSwitchCase="'DueDate'">{{ getFieldValue(lineDefId, columnIndex, line) | date:'yyyy-MM-dd'  }}</span>
-                            <div *ngSwitchCase="'MonetaryValue'" style="float:right">
+                            <div *ngSwitchCase="'MonetaryValue'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line))  }}</span>
                             </div>
-                            <div *ngSwitchCase="'Quantity'" style="float:right">
+                            <div *ngSwitchCase="'Quantity'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:'1.0-4'  }}</span>
                             </div>
                             <span
                                 *ngSwitchCase="'UnitId'">{{ ws.getMultilingualValue('Unit', getFieldValue(lineDefId, columnIndex, line), 'Name')  }}</span>
-                            <div *ngSwitchCase="'Value'" style="float:right">
+                            <div *ngSwitchCase="'Value'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:functional_format  }}</span>
                             </div>
                             <span
@@ -372,7 +401,7 @@
                             </t-view-link>
                             <span
                                 *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <div *ngSwitchCase="'NotedAmount'" style="float:right">
+                            <div *ngSwitchCase="'NotedAmount'" class="t-right-aligned">
                                 <span>{{ getFieldValue(lineDefId, columnIndex, line) | number:MonetaryValue_format(entry(lineDefId, columnIndex, line)) }}</span>
                             </div>
                             <span
@@ -525,20 +554,6 @@
                         </ng-container>
                     </ng-template>
                 </ng-template>
-                <ng-template #smartCommands let-line="item">
-                    <div ngbDropdown [placement]="commandsDropdownPlacement" tabindex="-1" *ngIf="!line.PH">
-                        <a href (click)="false" class="px-2 t-no-arrow" ngbDropdownToggle><span class="small"
-                                tabindex="-1">
-                                <fa-icon icon="ellipsis-v"></fa-icon>
-                            </span></a>
-                        <div ngbDropdownMenu>
-                            <button ngbDropdownItem class="t-transparent-background"
-                                (click)="toggleHighlight(line, model)">
-                                {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
-                            </button>
-                        </div>
-                    </div>
-                </ng-template>
 
                 <!----------- Signatures ------------>
                 <div class="row mx-0"
@@ -675,6 +690,21 @@
             </ng-template>
         </li>
 
+        <!-- The dropdown menu for smart lines -->
+        <ng-template #smartCommands let-line="item">
+            <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="!line.PH">
+                <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                    ngbDropdownToggle tabindex="-1"><span class="small">
+                        <fa-icon icon="ellipsis-v"></fa-icon>
+                    </span></button>
+                <div ngbDropdownMenu>
+                    <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
+                        {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
+                    </button>
+                </div>
+            </div>
+        </ng-template>
+
         <!-- Hidden Tabs Dropdown -->
         <li ngbDropdown *ngIf="isEdit && invisibleTabs(model).length > 0">
             <a href (click)="false" class="nav-link t-no-arrow" ngbDropdownToggle><span class="small t-slightly-bold">
@@ -701,7 +731,7 @@
                         <h5 class="small2 font-weight-bold2">
                             {{ ('SmartEntries' | translate) + ' (' + smartEntries(model).length + ')' }}</h5>
                     </div>
-                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="70" [visibleRows]="9"
+                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="70" [visibleRows]="7"
                         [highlightFunc]="highlightPairFactory(model)" [columnPaths]="manualColumnPaths(model, true)"
                         [columnTemplates]="{
                                 'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3, argument: true },
@@ -724,6 +754,28 @@
 
                         </ng-container>
                     </ng-container>
+
+                    <!-- Totals -->
+                    <div class="d-flex justify-content-end mt-3">
+                        <table>
+                            <tr class="border-top">
+                                <td style="width: 20px;"></td>
+                                <td class="small font-weight-bold pb-12 pt-2">
+                                    {{ ('TotalDebit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
+                                <td class="px-1 pt-2" style="text-align: right">
+                                    {{ total(model, 1) | number:functional_format }}
+                                </td>
+                            </tr>
+                            <tr class="border-bottom">
+                                <td></td>
+                                <td class="small font-weight-bold pt-12 pb-2">
+                                    {{ ('TotalCredit' | translate) + functionalPostfix }}&nbsp;&nbsp;&nbsp;</td>
+                                <td class="px-1 pb-2 align-right" style="text-align: right;">
+                                    {{ total(model, -1) | number:functional_format }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </t-restricted>
             </ng-template>
         </li>
@@ -842,7 +894,8 @@
                             'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
                             'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
                             'Center' : { headerTemplate : header_Center, rowTemplate : row_Center, weight : 1 },
-                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 }
+                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2 },
+                            'Commands' : { rowTemplate : row_ManualEntryCommands }
                         }" [onNewItem]="onNewManualEntry" (insert)="onInsertManualEntry($event, model)"
             (delete)="onDeleteManualEntry($event, model)">
         </t-table>
@@ -860,7 +913,8 @@
                 <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit || readonly">
                     <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">{{
                         ws.getMultilingualValue('Account', entry.AccountId, 'Name') }}</t-view-link>
-                    <span class="text-muted font-style-italic" *ngIf="readonly && !entry?.AccountId">???</span>
+                    <span class="text-muted font-italic"
+                        *ngIf="readonly && !entry?.AccountId">{{ 'Undefined' | translate }}</span>
                 </t-restricted>
                 <t-accounts-picker *ngIf="isEdit && !readonly" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
                     (ngModelChange)="update.call(null, pair);"
@@ -1191,6 +1245,9 @@
                 [ngModelOptions]="{ updateOn: 'blur' }">
             </t-decimal-editor>
         </t-form-group-dynamic>
+        <ng-container
+            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: 1, pair: pair, readonly: readonly }">
+        </ng-container>
     </ng-template>
 
     <!-- Credit -->
@@ -1210,6 +1267,22 @@
                 [ngModelOptions]="{ updateOn: 'blur' }">
             </t-decimal-editor>
         </t-form-group-dynamic>
+        <ng-container
+            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: -1, pair: pair, readonly: readonly }">
+        </ng-container>
+    </ng-template>
+
+    <!-- Fill from Exchange Rate button -->
+    <ng-template #autofillFromExchangeRate let-pair="pair" let-direction="direction" let-readonly="readonly">
+        <div class="d-flex justify-content-end pt-1"
+            *ngIf="!readonly && isEdit && !pair.PH && showMonetaryValue(pair.entry)">
+            <t-spinner *ngIf="!!pair.subscription && pair.direction === direction"></t-spinner>
+            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1"
+                (click)="onAutofillFromExchangeRate(pair, model, direction)" tabindex="-1">
+                <fa-icon icon="exchange-alt" [title]="'AutofillFromExchangeRate' | translate">
+                </fa-icon>
+            </button>
+        </div>
     </ng-template>
 
     <!-- Memo -->
@@ -1226,7 +1299,7 @@
         </t-form-group-dynamic>
     </ng-template>
 
-    <!-- Modified Warning -->
+    <!-- Warning of Modified Rows -->
     <ng-template #row_ModifiedWarning let-pair="item" let-line="item.line" let-index="index" let-update="update"
         let-readonly="argument">
         <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation" class="text-danger"
@@ -1234,15 +1307,34 @@
         </fa-icon>
     </ng-template>
 
-    <!-- Smart Commands for Smart entries -->
+    <!-- Commands for Smart entries -->
     <ng-template #row_SmartEntryCommands let-line="item.line">
         <div ngbDropdown [placement]="commandsDropdownPlacement">
-            <a href (click)="false" class="px-1 t-no-arrow" ngbDropdownToggle><span class="small">
+            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                ngbDropdownToggle><span class="small">
                     <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
-                </span></a>
+                </span></button>
             <div ngbDropdownMenu>
                 <button ngbDropdownItem class="t-transparent-background" (click)="toggleHighlight(line, model)">
                     {{ (isHighlighted(line, model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+
+    <!-- Commands for Manual entries -->
+    <ng-template #row_ManualEntryCommands let-pair="item" let-update="update">
+        <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
+            <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
+                ngbDropdownToggle><span class="small">
+                    <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                </span></button>
+            <div ngbDropdownMenu>
+                <!-- <button ngbDropdownItem class="t-transparent-background" (click)="onCloneManualLine(pair, model)">
+                    {{ 'Clone' | translate }}
+                </button> -->
+                <button ngbDropdownItem class="t-transparent-background" (click)="onAutoBalance(pair, model, update);">
+                    {{ 'AutoBalance' | translate }}
                 </button>
             </div>
         </div>

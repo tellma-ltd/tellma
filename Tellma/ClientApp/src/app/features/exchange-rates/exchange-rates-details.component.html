@@ -5,7 +5,7 @@
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-    {{ (model?.ValidAsOf | date:'yyyy-MM-dd') + '-' + model?.CurrencyId }}
+    <span>{{ (model?.ValidAsOf | date:'yyyy-MM-dd') + '-' + model?.CurrencyId }}</span>
 </ng-template>
 
 <!-- Edit/View Template -->

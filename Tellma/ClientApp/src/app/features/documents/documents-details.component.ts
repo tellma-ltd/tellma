@@ -12,10 +12,14 @@ import {
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
-import { addToWorkspace, getDataURL, downloadBlob, fileSizeDisplay, mergeEntitiesInWorkspace, toLocalDateISOString } from '~/app/data/util';
+import {
+  addToWorkspace, getDataURL, downloadBlob,
+  fileSizeDisplay, mergeEntitiesInWorkspace,
+  toLocalDateISOString, FriendlyError
+} from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError, Observable, Subscription } from 'rxjs';
+import { of, throwError, Observable, Subscription, Subject } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -30,9 +34,16 @@ import { ActionArguments } from '~/app/data/action-arguments';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
+import { formatDate } from '@angular/common';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
-interface LineEntryPair { entry: EntryForSave; line: LineForSave; }
+interface LineEntryPair {
+  entry: EntryForSave;
+  line: LineForSave;
+  subscription?: Subscription; // cancels API calls specific to this line
+  direction?: 1 | -1; // tracks whether the API call result will be debit or credit
+  PH?: boolean;
+}
 
 interface DocumentDetailsState {
   tab: string;
@@ -333,7 +344,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (result.MemoIsCommon) {
         result.Memo = this.initialText;
       }
-      result.AgentIsCommon = false;
+      result.DebitAgentIsCommon = false;
       result.InvestmentCenterIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
@@ -467,7 +478,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get functionalPostfix(): string {
-    return ' (' + this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName') + ')';
+    return ' (' + this.functionalName + ')';
   }
 
   public get flip() {
@@ -615,7 +626,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // AgentId
 
   public showDocumentAgent(_: DocumentForSave): boolean {
-    return !!this.definition.AgentDefinitionId;
+    return !!this.definition.DebitAgentDefinitionId;
   }
 
   public requireDocumentAgent(_: DocumentForSave): boolean {
@@ -625,7 +636,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public labelDocumentAgent(_: DocumentForSave): string {
     let label = this.ws.getMultilingualValueImmediate(this.definition, 'AgentLabel');
     if (!label) {
-      const agentDefId = this.definition.AgentDefinitionId;
+      const agentDefId = this.definition.DebitAgentDefinitionId;
       const agentDef = this.ws.definitions.Agents[agentDefId];
       if (!!agentDef) {
         label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
@@ -638,7 +649,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public documentAgentDefinitionIds(_: DocumentForSave): string[] {
-    return [this.definition.AgentDefinitionId];
+    return [this.definition.DebitAgentDefinitionId];
   }
 
   /////// Properties of the lines
@@ -1679,6 +1690,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public onDeleteManualEntry(pair: LineEntryPair, model: Document): void {
+
+    this.cancelAutofill(pair); // Good tidying up
+
     // Called when the user deletes an entry
     const index = model.Lines.indexOf(pair.line);
     if (index > -1) {
@@ -1769,8 +1783,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     if (smart) {
       paths.push('ModifiedWarning');
-      paths.push('Commands');
     }
+
+    paths.push('Commands');
 
     return paths;
   }
@@ -1935,7 +1950,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public isReadOnly(lineDefId: string, columnIndex: number, line: Line) {
     // return false;
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    return (line.State || 0) >= colDef.ReadOnlyState;
+    const state = line.State || 0;
+    return state < 0 || state >= colDef.ReadOnlyState;
   }
 
   public isRequired(lineDefId: string, columnIndex: number, line: Line) {
@@ -2351,9 +2367,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public smartTabColor(lineDefId: string, doc: DocumentForSave): string {
     return this.highlightSmartTab(lineDefId, doc) ? '#eeff44' : null;
   }
-  public highlightBookkeepingTab(doc: DocumentForSave): boolean {
+  public highlightBookkeepingTab(doc: Document): boolean {
     const isHighlightedLine = this.highlightLineFactory(doc);
-    return !!doc && !!doc.Lines && doc.Lines.some(isHighlightedLine);
+    return !!doc && !!doc.Lines && doc.Lines.some(e => (e.State || 0) >= 0 && isHighlightedLine(e));
   }
 
   public bookkeepingTabColor(doc: DocumentForSave): string {
@@ -2399,6 +2415,134 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     return this._documentStateResult;
+  }
+
+  public onAutofillFromExchangeRate(pair: LineEntryPair, doc: DocumentForSave, direction: 1 | -1) {
+
+    this.cancelAutofill(pair); // cancel any previous calls
+
+    const entry = pair.entry;
+    const amount = entry.MonetaryValue;
+    if (!amount) {
+      entry.Value = 0;
+      return;
+    } else {
+      const date = doc.PostingDate || toLocalDateISOString(new Date());
+      const currencyId = this.readonlyValueCurrencyId(pair.entry);
+      if (!!currencyId) {
+        pair.direction = direction;
+        pair.subscription = this.api.exchangeRatesApi(this.notifyDestruct$)
+          .convertToFunctional(date, currencyId, amount)
+          .pipe(
+            tap(result => {
+              this.cancelAutofill(pair); // remove the rotator
+
+              // Don't update the value if the arguments have changed during the call
+              const currentAmount = entry.MonetaryValue;
+              const currentCurrencyId = this.readonlyValueCurrencyId(pair.entry);
+              const currentDate = doc.PostingDate || date;
+
+              if (this.details.isEdit &&
+                currentAmount === amount &&
+                currentCurrencyId === currencyId &&
+                currentDate === date) {
+                // Set the values from the server
+                entry.Value = result;
+                entry.Direction = direction;
+              }
+            }),
+            catchError((error: FriendlyError) => {
+              this.cancelAutofill(pair); // remove the rotator
+
+              // Show a suitable error message
+              if (error.status === 404) {
+                const message = this.translate.instant('Error_NoExRateFoundForCurrency0Date1', {
+                  0: this.ws.getMultilingualValue('Currency', currencyId, 'Name'),
+                  1: formatDate(date, 'yyyy-MM-dd', 'en-GB')
+                });
+                this.details.displayModalError(message);
+              } else {
+                this.details.displayModalError(error.error);
+              }
+
+              return of(null);
+            }),
+            finalize(() => this.cancelAutofill(pair)) // removes the rotator
+          ).subscribe();
+      }
+    }
+  }
+
+  /**
+   * Cancels any pending server calls for auto-fill from exchange rate
+   */
+  public cancelAutofill(pair: LineEntryPair): void {
+    if (!!pair.subscription) {
+      pair.subscription.unsubscribe();
+      delete pair.subscription;
+      delete pair.direction;
+    }
+  }
+
+  public onCloneManualLine(pair: LineEntryPair, doc: Document) {
+    const clone = JSON.parse(JSON.stringify(pair.line)) as Line;
+    delete clone.Id;
+    delete clone.serverErrors;
+
+    // TODO
+  }
+
+  public onAutoBalance(pair: LineEntryPair, doc: Document, update: (pair: LineEntryPair) => void): void {
+    if (!doc || !doc.Lines) {
+      return;
+    }
+
+    const currentEntry = pair.entry;
+    const currentEntryValue = (currentEntry.Value || 0) * (currentEntry.Direction || 1);
+    const restOfTheDocumentDifference = doc.Lines
+      .filter(line => (line.State || 0) >= 0)
+      .map(line => {
+        return !!line.Entries ? line.Entries
+          .map(entry => (entry.Value || 0) * (entry.Direction || 1))
+          .reduce((total, v) => total + v, 0) : 0;
+      })
+      .reduce((total, v) => total + v, 0) - currentEntryValue;
+
+    if (restOfTheDocumentDifference > 0) {
+      currentEntry.Direction = -1;
+      currentEntry.Value = Math.abs(restOfTheDocumentDifference);
+      update(pair);
+    } else if (restOfTheDocumentDifference < 0) {
+      currentEntry.Direction = 1;
+      currentEntry.Value = Math.abs(restOfTheDocumentDifference);
+      update(pair);
+    } else if (!pair.PH) {
+      currentEntry.Direction = 1;
+      delete currentEntry.Value;
+      update(pair);
+    }
+  }
+
+  public total(doc: Document, direction: number) {
+    direction = direction as 1 | -1; // To avoid an Angular template binding bug
+
+    if (!doc || !doc.Lines) {
+      return null;
+    }
+
+    return direction * doc.Lines
+      .filter(line => (line.State || 0) >= 0)
+      .map(line => {
+        return !!line.Entries ? line.Entries
+          .filter(entry => entry.Direction === direction)
+          .map(entry => (entry.Value || 0) * (entry.Direction || 1))
+          .reduce((total, v) => total + v, 0) : 0;
+      })
+      .reduce((total, v) => total + v, 0);
+  }
+
+  public get functionalName() {
+    return this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName');
   }
 }
 

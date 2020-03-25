@@ -90,29 +90,30 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     IsOriginalDocument: boolean;
     Prefix: string;
     CodeWidth: number;
-    AgentDefinitionId: string;
-    AgentLabel: string;
-    AgentLabel2: string;
-    AgentLabel3: string;
+
+    MemoVisibility: Visibility;
+
+    DebitAgentDefinitionId: string;
+    DebitAgentLabel: string;
+    DebitAgentLabel2: string;
+    DebitAgentLabel3: string;
+    CreditAgentDefinitionId: string;
+    CreditAgentLabel: string;
+    CreditAgentLabel2: string;
+    CreditAgentLabel3: string;
     ClearanceVisibility: Visibility;
-    InvestmentCenterVisibility: Visibility;
-    Time1Visibility: Visibility;
     Time1Label: string;
     Time1Label2: string;
     Time1Label3: string;
-    Time2Visibility: Visibility;
     Time2Label: string;
     Time2Label2: string;
     Time2Label3: string;
-    QuantityVisibility: Visibility;
     QuantityLabel: string;
     QuantityLabel2: string;
     QuantityLabel3: string;
-    UnitVisibility: Visibility;
     UnitLabel: string;
     UnitLabel2: string;
     UnitLabel3: string;
-    CurrencyVisibility: Visibility;
     CanReachState1: boolean;
     CanReachState2: boolean;
     CanReachState3: boolean;
@@ -141,13 +142,12 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 
 export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
-    AccountTypeParentCode: string;
+    AccountTypeParentId?: number;
     AgentDefinitionId: string;
     NotedAgentDefinitionId: string;
-    EntryTypeCode: string;
+    EntryTypeId: number;
 
     // Computed
-    AccountTypeParentId?: number;
     AccountTypeParentIsResourceClassification: boolean;
     EntryTypeParentId?: number;
 }

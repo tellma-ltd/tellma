@@ -391,12 +391,6 @@
   <data name="Document" xml:space="preserve">
     <value>Document</value>
   </data>
-  <data name="Document_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="Document_AgentIsCommon" xml:space="preserve">
-    <value>Agent Is Common</value>
-  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>Assigned At</value>
   </data>
@@ -427,11 +421,23 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
+  <data name="Document_CreditAgent" xml:space="preserve">
+    <value>Credit Agent</value>
+  </data>
+  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
+    <value>Credit Agent Is Common</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>Currency Is Common</value>
+  </data>
+  <data name="Document_DebitAgent" xml:space="preserve">
+    <value>Credit Agent</value>
+  </data>
+  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
+    <value>Debit Agent Is Common</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -865,6 +871,9 @@
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>Valid As Of</value>
   </data>
+  <data name="ExchangeRate_ValidTill" xml:space="preserve">
+    <value>Valid Till</value>
+  </data>
   <data name="ExchangeRates" xml:space="preserve">
     <value>Exchange Rates</value>
   </data>
@@ -1016,7 +1025,7 @@
     <value>Requested</value>
   </data>
   <data name="Line_State_2" xml:space="preserve">
-    <value>Authorized</value>
+    <value>Approved</value>
   </data>
   <data name="Line_State_3" xml:space="preserve">
     <value>Completed</value>

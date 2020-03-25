@@ -1691,3 +1691,11 @@ $color-alert-danger: #721c24;
   color: $color-alert-danger;
   box-shadow: 0 5px 20px -12px black;
 }
+
+.t-table .t-right-aligned {
+  width: 100%;
+}
+
+.t-table .t-right-aligned span {
+  float: right;
+}

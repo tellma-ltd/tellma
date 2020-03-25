@@ -391,12 +391,6 @@
   <data name="Document" xml:space="preserve">
     <value>የሰነድ</value>
   </data>
-  <data name="Document_Agent" xml:space="preserve">
-    <value>ወኪል</value>
-  </data>
-  <data name="Document_AgentIsCommon" xml:space="preserve">
-    <value>ወኪል የሆነው የጋራ</value>
-  </data>
   <data name="Document_AssignedAt" xml:space="preserve">
     <value>በ የተመደበ</value>
   </data>
@@ -427,11 +421,23 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>አስተያየት</value>
   </data>
+  <data name="Document_CreditAgent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
+    <value>የብድር ወኪል የሆነው የጋራ</value>
+  </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>ምንዛሬ ነው ኮመን</value>
+  </data>
+  <data name="Document_DebitAgent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
+    <value>ዴቢት ወኪል የሆነው የጋራ</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>አይነታ 1</value>
@@ -864,6 +870,9 @@
   </data>
   <data name="ExchangeRate_ValidAsOf" xml:space="preserve">
     <value>ውስጥ የሚሰራ እንደ</value>
+  </data>
+  <data name="ExchangeRate_ValidTill" xml:space="preserve">
+    <value>ድረስ የሚሰራ</value>
   </data>
   <data name="ExchangeRates" xml:space="preserve">
     <value>ምንዛሬ ተመኖችን</value>
