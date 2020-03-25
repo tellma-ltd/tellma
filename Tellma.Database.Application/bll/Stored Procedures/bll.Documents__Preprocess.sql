@@ -234,8 +234,7 @@ END
 	UPDATE E
 	SET
 	--	E.[Direction] = LDE.[Direction], -- Handled in C#
-		E.[EntryTypeId] = COALESCE((SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = LDE.[EntryTypeCode]),
-									E.[EntryTypeId])
+		E.[EntryTypeId] = COALESCE(LDE.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
@@ -319,7 +318,7 @@ END
 			WHERE [Node].IsDescendantOf((
 				SELECT [Node]
 				FROM dbo.AccountTypes  
-				WHERE [Code] = LDE.AccountTypeParentCode
+				WHERE [Id] = LDE.[AccountTypeParentId]
 			)) = 1
 			)
 			AND (A.[CenterId] IS NULL				OR A.[CenterId] = E.[CenterId])

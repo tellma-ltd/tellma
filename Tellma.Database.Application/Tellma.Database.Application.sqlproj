@@ -545,7 +545,7 @@
     <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
     <Build Include="wiz\Stored Procedures\wiz.GainLossOnExchange__Prepare.sql" />
-    <Build Include="wiz\Functions\wiz.fn_MonetaryValue__Exchange.sql" />
+    <Build Include="wiz\Functions\wiz.fn_ConvertToFunctional.sql" />
     <Build Include="Security\wiz.sql" />
     <Build Include="Mapping\ExchangeRates.sql" />
     <Build Include="Mapping\LineDefinitions.sql" />

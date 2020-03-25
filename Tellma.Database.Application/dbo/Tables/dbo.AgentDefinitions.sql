@@ -20,7 +20,7 @@
 	[JobVisibility]						NVARCHAR (50), -- None, Visible, Required
 	[RatesVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([StartDateVisibility] IN (N'None', N'Optional', N'Required')),
 -- Filter on the resources allowed in table AgentRates
---	[AccountTypeParentCode]				NVARCHAR (255),
+--	[AccountTypeParentId]				INT,
 	[RatesLabel]						NVARCHAR (50),
 	[RatesLabel2]						NVARCHAR (50),
 	[RatesLabel3]						NVARCHAR (50),

@@ -84,10 +84,10 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-[Direction],[AccountTypeParentCode],	[AccountTagId]) VALUES
-(0,1,0,+1,	N'TradeAndOtherPayables',	N'VATX'),
-(1,1,1,+1,	N'Accruals',				N'SACR'),
-(2,1,2,-1,	N'TradeAndOtherPayables',	N'TPBL');
+[Direction],[AccountTypeParentId],	[AccountTagId]) VALUES
+(0,1,0,+1,	@TradeAndOtherPayables,	N'VATX'),
+(1,1,1,+1,	@Accruals,				N'SACR'),
+(2,1,2,-1,	@TradeAndOtherPayables,	N'TPBL');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 [SortKey],	[TableName],[ColumnName],[Index],	[Label],				[Label2],				[RequiredState],
 																									[ReadOnlyState]) VALUES
@@ -125,8 +125,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	WHERE [Index] = 2;
 
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-	[Direction],	[AccountTypeParentCode]) VALUES
-	(0,2,0,	-1,		N'CashAndCashEquivalents');
+	[Direction],	[AccountTypeParentId]) VALUES
+	(0,2,0,	-1,		@CashAndCashEquivalents);
 
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[TableName],[ColumnName],[Index],	[Label],					[Label2],				[RequiredState],
@@ -173,8 +173,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	--	SELECT * FROM @ProcessedWideLines;'
 	--WHERE [Index] = 3;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-	(0,3,0,-1,		N'CashAndCashEquivalents',	N'CASH');
+	[Direction],	[AccountTypeParentId],	[AccountTagId]) VALUES
+	(0,3,0,-1,		@CashAndCashEquivalents,	N'CASH');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[TableName],[ColumnName],[Index],	[Label],					[Label2],			[RequiredState],
 																										[ReadOnlyState]) VALUES
@@ -213,9 +213,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 4;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-	(0,4,0,+1,		N'TradeAndOtherPayables',	N'WHTX'),
-	(1,4,1,-1,		N'TradeAndOtherPayables',	N'TPBL');
+	[Direction],	[AccountTypeParentId],	[AccountTagId]) VALUES
+	(0,4,0,+1,		@TradeAndOtherPayables,	N'WHTX'),
+	(1,4,1,-1,		@TradeAndOtherPayables,	N'TPBL');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[ColumnName],						[Label],					[Label2],				[RequiredState],
 																										[ReadOnlyState]) VALUES
@@ -250,9 +250,9 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 5;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-	(0,5,0,+1,		N'TotalInventories',		N'STCK'),
-	(1,5,1,-1,		N'TradeAndOtherPayables',	N'SACR');
+	[Direction],	[AccountTypeParentId],	[AccountTagId]) VALUES
+	(0,5,0,+1,		@TotalInventories,		N'STCK'),
+	(1,5,1,-1,		@TradeAndOtherPayables,	N'SACR');
 	INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 	[SortKey],	[TableName],[ColumnName],[Index],	[Label],				[Label2],				[RequiredState],
 																										[ReadOnlyState]) VALUES
@@ -288,6 +288,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		SELECT * FROM @ProcessedWideLines;'
 	WHERE [Index] = 6;
 	INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Index],
-	[Direction],	[AccountTypeParentCode],	[AccountTagId]) VALUES
-	(0,6,0,-1,		N'TradeAndOtherPayables',	N'SACR'); -- we need functionality to fill one tab based on info in the other tab
+	[Direction],	[AccountTypeParentId],	[AccountTagId]) VALUES
+	(0,6,0,-1,		@TradeAndOtherPayables,	N'SACR'); -- we need functionality to fill one tab based on info in the other tab
 END

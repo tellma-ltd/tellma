@@ -19,7 +19,7 @@ AS
 		dbo.fn_Localize(AC.[Name], AC.Name2, AC.Name3) AS AccountType
 	FROM @Entities LD 
 	JOIN @LineDefinitionEntries LDE ON LD.[Index] = LDE.[HeaderIndex]
-	JOIN dbo.AccountTypes AC ON LDE.[AccountTypeParentCode] = AC.[Code]
+	JOIN dbo.AccountTypes AC ON LDE.[AccountTypeParentId] = AC.[Id]
 	WHERE AC.IsCurrent IS NOT NULL AND LDE.IsCurrent IS NOT NULL
 	AND AC.IsCurrent <> LDE.IsCurrent;
 

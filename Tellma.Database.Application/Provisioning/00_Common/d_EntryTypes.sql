@@ -209,8 +209,13 @@ UPDATE DB
 SET DB.[Node] = FE.[Node]
 FROM dbo.[EntryTypes] DB JOIN @ET FE ON DB.[Code] = FE.[Code]
 
+
+DECLARE @DepreciationPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DepreciationPropertyPlantAndEquipment' );
+
 DECLARE @PaymentsToSuppliersForGoodsAndServices INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToSuppliersForGoodsAndServices' );
 DECLARE @PaymentsToAndOnBehalfOfEmployees INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToAndOnBehalfOfEmployees' );
+DECLARE @InternalCashTransferExtension INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
+
 
 
 DECLARE @ReceiptsFromSalesOfGoodsAndRenderingOfServices	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ReceiptsFromSalesOfGoodsAndRenderingOfServices' );

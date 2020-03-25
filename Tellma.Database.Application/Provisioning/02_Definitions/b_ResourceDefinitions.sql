@@ -4,7 +4,7 @@ IF @DB = N'100'
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',@PropertyPlantAndEquipment),
 	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
 	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
 	(3,N'biological-assets',				N'Biological Assets',					N'Biological Asset',			dbo.fn_ATCode__Id(N'BiologicalAssets')),
@@ -71,7 +71,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitlePlural2],						[TitleSingular],					[TitleSingular2],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'ممتلكات ومنشآت ومعدات',		N'Property, Plant and Equipment',	N'ممتلكة -منشأة-معدة',	dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'ممتلكات ومنشآت ومعدات',		N'Property, Plant and Equipment',	N'ممتلكة -منشأة-معدة',				@PropertyPlantAndEquipment),
 	(4,N'paper-products',					N'Paper Products',						N'منتجات ورق',					N'Paper Product',					N'منتج ورق',					dbo.fn_ATCode__Id(N'Merchandise')),
 	(5,N'services-expenses',				N'Services',							N'خدمات',						N'Service',							N'خدمة',						dbo.fn_ATCode__Id(N'ServicesExpense'));
 

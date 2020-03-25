@@ -83,9 +83,9 @@ SET NOCOUNT ON;
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
-	JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
+	JOIN [dbo].[AccountTypes] AC ON LDE.[AccountTypeParentId] = AC.[Id] 
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
-	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
+	JOIN dbo.[EntryTypes] ETA ON AC.[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] <> N'ManualLine';
 	-- Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
@@ -103,7 +103,7 @@ SET NOCOUNT ON;
 	JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 	JOIN dbo.AccountTypes RC ON R.AccountTypeId = RC.[Id]
-	JOIN dbo.AccountTypes ATP ON LDE.AccountTypeParentCode = ATP.[Code]
+	JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeParentId] = ATP.[Id]
 	WHERE RC.[Node].IsDescendantOf(ATP.[Node]) = 0
 	AND ATP.[IsResourceClassification] = 1
 	AND L.[DefinitionId] <> N'ManualLine';

@@ -52,7 +52,7 @@ BEGIN
 		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
 		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Agent3Resource4',
 		L.[Index],
-		LDE.[AccountTypeParentCode],
+		(SELECT [Code] FROM dbo.AccountTypes WHERE [Id] = LDE.[AccountTypeParentId]) AS AccountTypeParentCode,
 		E.[CurrencyId],
 		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
@@ -108,7 +108,7 @@ IF @ToState > 0
 	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
-	--JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentCode] = [AT].[Code] 
+	--JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentId] = [AT].[Id]
 	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> N'ManualLine';
 
 	/*

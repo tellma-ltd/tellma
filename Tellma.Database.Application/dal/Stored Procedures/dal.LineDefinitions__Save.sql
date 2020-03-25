@@ -99,12 +99,12 @@ SET NOCOUNT ON;
 			LDE.[Id],
 			LD.[Id] AS [LineDefinitionId],
 			LDE.[Index],
-			LDE.[Direction]	,
-			LDE.[AccountTypeParentCode]	,
+			LDE.[Direction],
+			LDE.[AccountTypeParentId],
 			LDE.[IsCurrent],
 			LDE.[AgentDefinitionId],
 			LDE.[NotedAgentDefinitionId],
-			LDE.[EntryTypeCode]
+			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
 	) AS s
@@ -113,11 +113,11 @@ SET NOCOUNT ON;
 		UPDATE SET
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
-			t.[AccountTypeParentCode]	= s.[AccountTypeParentCode],
+			t.[AccountTypeParentId]		= s.[AccountTypeParentId],
 			t.[IsCurrent]				= s.[IsCurrent],
 			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
 			t.[NotedAgentDefinitionId]	= s.[NotedAgentDefinitionId],
-			t.[EntryTypeCode]			= s.[EntryTypeCode],
+			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
@@ -126,21 +126,21 @@ SET NOCOUNT ON;
 			[LineDefinitionId],
 			[Index],
 			[Direction],
-			[AccountTypeParentCode],
+			[AccountTypeParentId],
 			[IsCurrent],
 			[AgentDefinitionId],
 			[NotedAgentDefinitionId],
-			[EntryTypeCode]
+			[EntryTypeId]
 		)
 		VALUES (
 			s.[LineDefinitionId],
 			s.[Index],
 			s.[Direction],
-			s.[AccountTypeParentCode],
+			s.[AccountTypeParentId],
 			s.[IsCurrent],
 			s.[AgentDefinitionId],
 			s.[NotedAgentDefinitionId],
-			s.[EntryTypeCode]
+			s.[EntryTypeId]
 		);
 	MERGE [dbo].[LineDefinitionColumns] AS t
 	USING (

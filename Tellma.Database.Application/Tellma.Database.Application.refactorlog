@@ -619,4 +619,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DebitAgentIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1e0fef86-65a8-41b1-9e18-dab144078f0a" ChangeDateTime="03/25/2020 12:29:45">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeParentCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeParentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7254d0fb-c956-4b28-a783-05f6c2e3d3d1" ChangeDateTime="03/25/2020 12:30:55">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[EntryTypeCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fd74fe4a-7ff6-4517-bc72-2de21a84d2a1" ChangeDateTime="03/25/2020 13:43:14">
+    <Property Name="ElementName" Value="[dbo].[AccountsDisclosures].[EntryTypeCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountsDisclosures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1dfd0044-d05a-4812-a08e-23409ec920dc" ChangeDateTime="03/25/2020 13:43:37">
+    <Property Name="ElementName" Value="[dbo].[AccountsDisclosures].[AccountTypeCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountsDisclosures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
 </Operations>

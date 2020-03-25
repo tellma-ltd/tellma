@@ -5,8 +5,8 @@ INSERT @LineDefinitions([Index],
 [Id],			[TitleSingular], [TitlePlural], [TitleSingular2], [TitlePlural3]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments',N'تسوية',			N'تسويات');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode]) VALUES
-(0,0,+1,	N'StatementOfFinancialPositionAbstract');
+[Direction],[AccountTypeParentId]) VALUES
+(0,0,+1,	@StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 																[ReadOnlyState],
@@ -43,9 +43,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 1;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,1,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,					NULL),
-(1,1,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',			N'PaymentsToSuppliersForGoodsAndServices');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+(0,1,+1,	@ValueAddedTaxReceivables,	1,		NULL,				NULL,					NULL),
+(1,1,-1,	@CashAndCashEquivalents,	1,		N'cash-custodians',	N'suppliers',		@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -116,10 +116,10 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 2;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,2,+1,	N'Accruals',				1,		NULL,				NULL,			NULL),
-(1,2,+1,	N'ValueAddedTaxReceivables',1,		NULL,				NULL,			NULL),
-(2,2,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'suppliers',					N'PaymentsToSuppliersForGoodsAndServices');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+(0,2,+1,	@Accruals,					1,		NULL,				NULL,					NULL),
+(1,2,+1,	@ValueAddedTaxReceivables,	1,		NULL,				NULL,					NULL),
+(2,2,-1,	@CashAndCashEquivalents,	1,		N'cash-custodians',	N'suppliers',			@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -150,8 +150,8 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
 --3:GoodReceiptNote, (from Cash Purchase), (from Supplier on Account in SRV)
 --INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
---[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
---(0,3,+1,	N'InventoriesTotal',	1,			N'warehouses',		NULL,					N'InventoryPurchaseExtension'),--ET= purchasing
+--[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+--(0,3,+1,	@InventoriesTotal,	1,			N'warehouses',		NULL,					@InventoryPurchaseExtension),
 
 --4:GRIV Dr. (from Cash Purchase), (from Supplier on Account in GRIV)
 --5:Consumables&Services (from Cash Purchase), (from Supplier on Account in C&S RV)
@@ -163,8 +163,8 @@ INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES (
 9,1,N'PaymentToOther',	N'Other Payment',	N'دفعية أخرى',		N'Other Payments',	N'دفعيات أخرى');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,9,	-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,9,	-1,	@CashAndCashEquivalents,	1,		N'cash-custodians');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -216,9 +216,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 10;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId], [EntryTypeCode]) VALUES
-(0,10,+1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension'),
-(1,10,-1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',	N'InternalCashTransferExtension');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId], [EntryTypeId]) VALUES
+(0,10,+1,	@CashAndCashEquivalents,	1,		N'cash-custodians',	@InternalCashTransferExtension),
+(1,10,-1,	@CashAndCashEquivalents,	1,		N'cash-custodians',	@InternalCashTransferExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],			[Label2],			[RequiredState],
 																						[ReadOnlyState],
@@ -266,9 +266,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 11;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],	[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,11,+1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',		N'customers',			N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
-(1,11,-1,	N'ValueAddedTaxPayables',	1,		NULL,					NULL,					NULL);
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],	[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+(0,11,+1,	@CashAndCashEquivalents,	1,		N'cash-custodians',		N'customers',			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,11,-1,	@ValueAddedTaxPayables,		1,		NULL,					NULL,					NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
 																								[ReadOnlyState],
@@ -311,10 +311,10 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 12;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId],	[NotedAgentDefinitionId],[EntryTypeCode]) VALUES
-(0,12,+1,	N'CashAndCashEquivalents',	1,		N'cash-custodians',		N'customers',			N'ReceiptsFromSalesOfGoodsAndRenderingOfServices'),
-(1,12,-1,	N'ValueAddedTaxPayables',	1,		NULL,					NULL,					NULL),
-(2,12,-1,	N'AccruedIncome',			1,		N'customers',			NULL,					NULL);
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],	[NotedAgentDefinitionId],[EntryTypeId]) VALUES
+(0,12,+1,	@CashAndCashEquivalents,	1,		N'cash-custodians',	N'customers',		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,12,-1,	@ValueAddedTaxPayables,		1,		NULL,				NULL,				NULL),
+(2,12,-1,	@AccruedIncome,				1,		N'customers',		NULL,				NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],			[Label2],				[RequiredState],
 																							[ReadOnlyState],
@@ -344,8 +344,8 @@ INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],	[TitleSingular],	[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
 19,1,N'ReceiptFromOther',	N'Other Cash Receipt',	N'توريد آخر',	N'Other Cash Receipts',	N'توريدات أخرى');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,19,+1,	N'CashAndCashEquivalents',	1,		 N'cash-custodians');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,19,+1,	@CashAndCashEquivalents,	1,		 N'cash-custodians');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
 																						[ReadOnlyState],
@@ -385,9 +385,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 24;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,24,+1,	N'ServicesExpense',			1,		N'cost-objects'),
-(1,24,-1,	N'Accruals',				1,		N'suppliers');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,24,+1,	@ServicesExpense,		1,			N'cost-objects'),
+(1,24,-1,	@Accruals,				1,			N'suppliers');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState],
@@ -429,9 +429,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 34;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],[IsCurrent],[AgentDefinitionId]) VALUES
-(0,34,+1,	N'AccruedIncome',			1,		N'customers'),
-(1,34,-1,	N'Revenue',					1,		N'cost-objects');
+[Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId]) VALUES
+(0,34,+1,	@AccruedIncome,			1,		N'customers'),
+(1,34,-1,	@Revenue,				1,		N'cost-objects');
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState],
@@ -470,9 +470,9 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 8;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentCode],	[IsCurrent],[AgentDefinitionId],	[EntryTypeCode]) VALUES
-(0,8,+1,	N'DepreciationExpense',			1,		N'cost-objects',		NULL),
-(1,8,-1,	N'PropertyPlantAndEquipment',	0,		N'cost-objects',		N'DepreciationPropertyPlantAndEquipment');
+[Direction],[AccountTypeParentId],	[IsCurrent],[AgentDefinitionId],	[EntryTypeId]) VALUES
+(0,8,+1,	@DepreciationExpense,		1,		N'cost-objects',		NULL),
+(1,8,-1,	@PropertyPlantAndEquipment,	0,		N'cost-objects',		@DepreciationPropertyPlantAndEquipment);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
 																				[ReadOnlyState],

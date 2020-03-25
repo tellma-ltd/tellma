@@ -261,7 +261,7 @@ INSERT INTO @AT VALUES(185,0,1, 0,1,0,0,0,'/2/15/', NULL,N'IncomeTaxExpenseConti
 		GOTO Err_Label;
 	END;																					
 END
-
+DECLARE @StatementOfFinancialPositionAbstract INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'StatementOfFinancialPositionAbstract');
 DECLARE @PropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment');
 DECLARE @FixturesAndFittings INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'FixturesAndFittings');
 DECLARE @OfficeEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OfficeEquipment');
