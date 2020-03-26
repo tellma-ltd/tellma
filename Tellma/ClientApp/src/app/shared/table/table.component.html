@@ -1,5 +1,4 @@
-<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight"
-  [style.max-height.px]="tableMaxHeight">
+<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight">
   <table #t class="table table-sm text-nowrap t-table">
 
     <!-- Header -->
@@ -12,10 +11,10 @@
           </ng-container>
         </th>
         <th class="border-top-0" style="width:1px" *ngIf="isEdit">
-          <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
-            style="background:transparent;color:transparent;border-color: transparent;" disabled>
+          <!-- <button class="btn btn-light btn-sm p-0 pl-1 pr-1"
+            style="background:transparent;color:transparent;border-color: transparent;cursor:inherit" disabled>
             <fa-icon icon="trash"></fa-icon>
-          </button>
+          </button> -->
         </th>
       </tr>
     </thead>
