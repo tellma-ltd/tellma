@@ -1658,11 +1658,6 @@ select.t-input::-ms-expand {
   background-color: #e9ecef
 }
 
-.cdk-virtual-scroll-content-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
 // Error popovers
 $bg-alert-danger: #f8d7da;
 $color-alert-danger: #721c24;
@@ -1698,4 +1693,11 @@ $color-alert-danger: #721c24;
 
 .t-table .t-right-aligned span {
   float: right;
+}
+
+// Removes the reveal password eye in Edge
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear
+{
+    display: none;
 }

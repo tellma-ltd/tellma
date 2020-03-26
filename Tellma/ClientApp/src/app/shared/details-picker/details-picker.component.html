@@ -1,7 +1,7 @@
 <div ngbDropdown [placement]="placement" #dropdown="ngbDropdown">
 
   <!-- The Search Field -->
-  <div class="d-flex" [class.t-disabled-background]="isDisabled">
+  <div class="input-group" [class.t-disabled-background]="isDisabled">
     <input class="form-control t-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
     <button class="btn btn-light btn-sm text-primary t-white-button p-0 px-1"

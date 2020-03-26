@@ -198,35 +198,38 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   public get maxVisibleRows(): number {
-    return this.visibleRows || Math.ceil(9 * 30 / this.itemSize);
-  }
-
-  public get tableHeightOld(): number {
-    const headerHeight = this.HEADER_HEIGHT;
-    const rowHeight = this.itemSize;
-    const maxVisibleRows = this.maxVisibleRows;
-    const actualRows = this.dataSourceCopy.length;
-    const visibleRows = Math.min(maxVisibleRows, actualRows);
-    const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
-    const height = headerHeight + visibleRows * rowHeight + placeHolderRows * 31;
-    return height + 18; // extra pixels take care of the horiztonal scrollbar
+    return this.visibleRows || Math.ceil(8 * 30 / this.itemSize);
   }
 
   public get tableHeight(): number {
+    return Math.min(this.contentHeight, this.tableMaxHeight);
+  }
+
+  /**
+   * Determines the full height of the content if it were to be displayed in its entirety
+   */
+  private get contentHeight(): number {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const actualRows = this.dataSourceCopy.length;
     const placeHolderRows = actualRows < 3 ? 3 - actualRows : 0;
-    const height = headerHeight + actualRows * rowHeight + placeHolderRows * 31;
-    return height + 18; // extra pixels take care of the horiztonal scrollbar
+    const hScrollerHeight = 20;
+    const height = headerHeight + actualRows * rowHeight + placeHolderRows * 31 + hScrollerHeight;
+
+    return height;
   }
 
-  public get tableMaxHeight(): number {
+  /**
+   * Calculates the maximum height the whole table should take regardless of content
+   */
+  private get tableMaxHeight(): number {
     const headerHeight = this.HEADER_HEIGHT;
     const rowHeight = this.itemSize;
     const maxVisibleRows = this.maxVisibleRows;
-    const height = headerHeight + maxVisibleRows * rowHeight;
-    return height + 18;
+    const hScrollerHeight = 20;
+    const height = headerHeight + maxVisibleRows * rowHeight + hScrollerHeight;
+
+    return height;
   }
 
   public highlight(entity: EntityForSave): boolean {
