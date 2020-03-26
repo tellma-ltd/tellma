@@ -14,12 +14,13 @@ END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
-	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId],										[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment'),			N'building',		N'FixedAssets',		100),
-	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension'),		N'laptop',			N'FixedAssets',		200),
-	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill'),	N'cube',			N'FixedAssets',		300),
-	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'),						N'hand-holding-usd', N'Purchasing',		400),
-	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	dbo.fn_ATCode__Id(N'EmployeeBenefitsExpense'),				N'hand-holding-usd', N'HumanCapital',	500);
+	[Id],									[TitlePlural],							[TitleSingular],				[TitlePlural2],	[TitleSingular2],	[ParentAccountTypeId],					[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',NULL,NULL,							@PropertyPlantAndEquipment,				N'building',		N'FixedAssets',		100),
+	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			N'أجهزة كمبيوتر',N'جهاز كمبيوتر',	@ComputerEquipmentMemberExtension,		N'laptop',			N'FixedAssets',		200),
+	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			NULL,NULL,							@IntangibleAssetsOtherThanGoodwill,		N'cube',			N'FixedAssets',		300),
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				NULL,NULL,							@InventoriesTotal,						N'home',			N'Purchasing',		300),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				NULL,NULL,							@ServicesExpense,						N'hand-holding-usd', N'Purchasing',		400),
+	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	NULL,NULL,							@EmployeeBenefitsExpense,				N'hand-holding-usd', N'HumanCapital',	500);
 	
 	UPDATE @ResourceDefinitions
 	SET 

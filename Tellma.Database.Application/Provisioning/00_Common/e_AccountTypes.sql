@@ -265,8 +265,11 @@ DECLARE @StatementOfFinancialPositionAbstract INT = (SELECT [Id] FROM dbo.Accoun
 DECLARE @PropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'PropertyPlantAndEquipment');
 DECLARE @FixturesAndFittings INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'FixturesAndFittings');
 DECLARE @OfficeEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OfficeEquipment');
-DECLARE @ComputerEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ComputerEquipmentMemberExtension');
-DECLARE @ComputerAccessories INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ComputerAccessoriesExtension');
+DECLARE @ComputerEquipmentMemberExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ComputerEquipmentMemberExtension');
+DECLARE @ComputerAccessoriesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ComputerAccessoriesExtension');
+
+DECLARE @IntangibleAssetsOtherThanGoodwill INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IntangibleAssetsOtherThanGoodwill');
+
 
 DECLARE @TradeAndOtherReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherReceivables');
 DECLARE @ValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ValueAddedTaxReceivables'); 

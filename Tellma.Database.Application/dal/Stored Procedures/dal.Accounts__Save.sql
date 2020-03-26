@@ -66,7 +66,7 @@ SET NOCOUNT ON;
 				t.[HasNotedAgentId]			= s.[HasNotedAgentId],
 				t.[HasNotedAgentName]		= s.[HasNotedAgentName],
 				t.[HasNotedAmount]			= s.[HasNotedAmount],
-				t.[HasNotedDate]			= s.[HasNotedAmount],
+				t.[HasNotedDate]			= s.[HasNotedDate],
 				t.[AgentId]					= s.[AgentId],
 				t.[ResourceId]				= s.[ResourceId],
 				t.[CurrencyId]				= s.[CurrencyId],

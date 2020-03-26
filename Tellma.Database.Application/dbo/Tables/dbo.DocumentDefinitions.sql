@@ -19,11 +19,11 @@
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
 
 	[MemoVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MemoVisibility] IN (N'None', N'Optional', N'Required')),
-	[DebitAgentDefinitionId]	NVARCHAR (50),--	CONSTRAINT [FK_DocumentDefinitions__DebitAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
+	[DebitAgentDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__DebitAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[DebitAgentLabel]			NVARCHAR (50),
 	[DebitAgentLabel2]			NVARCHAR (50),
 	[DebitAgentLabel3]			NVARCHAR (50),
-	[CreditAgentDefinitionId]	NVARCHAR (50),--	CONSTRAINT [FK_DocumentDefinitions__CreditAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
+	[CreditAgentDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__CreditAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[CreditAgentLabel]			NVARCHAR (50),
 	[CreditAgentLabel2]			NVARCHAR (50),
 	[CreditAgentLabel3]			NVARCHAR (50),

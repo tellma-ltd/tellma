@@ -154,14 +154,14 @@ INSERT @LineDefinitions([Index],
 (3,0,N'GoodReceiptNote',N'Inventory Purchase',	N'شراء صنف',		N'Inventories Purchases',	N'مشتريات أصناف');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentId],[IsCurrent],[AgentDefinitionId],[NotedAgentDefinitionId],[EntryTypeId]) VALUES
-(0,3,+1,	@InventoriesTotal,		1,			N'warehouses',		NULL,					@InventoryPurchaseExtension);
+(0,3,+1,	@InventoriesTotal,		1,			N'inventory-custodians',NULL,				@InventoryPurchaseExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[TableName],[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
 																						[ReadOnlyState],
 																						[InheritsFromHeader]) VALUES
 (0,3,	N'Entries',	N'ResourceId',			0,	N'Item',			N'الصنف',			3,4,0),
 (1,3,	N'Entries',	N'Quantity',			0,	N'Quantity',		N'الكمية',			1,2,0),
-(2,3,	N'Entries',	N'UnitId',				0,	N'UnitId',			N'الوحدة',			1,2,0),
+(2,3,	N'Entries',	N'UnitId',				0,	N'Unit',			N'الوحدة',			1,2,0),
 (3,3,	N'Entries',	N'MonetaryValue',		0,	N'Price (b/f VAT)',	N'السعر (بلا ق.م.)',1,2,0),
 (4,3,	N'Entries',	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
 (5,3,	N'Entries',	N'AgentId',				0,	N'Warehouse',		N'المخزن',			3,3,1),
