@@ -9,6 +9,7 @@
 	[TitlePlural3]						NVARCHAR (255),
 
 	[TaxIdentificationNumberVisibility] NVARCHAR (50) NOT NULL DEFAULT N'None',
+	[ImageIdVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'Optional',
 	[StartDateVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None',
 	[StartDateLabel]					NVARCHAR (50),
 	[StartDateLabel2]					NVARCHAR (50),
@@ -24,6 +25,8 @@
 	[RatesLabel2]						NVARCHAR (50),
 	[RatesLabel3]						NVARCHAR (50),
 	[BankAccountNumberVisibility]		NVARCHAR (50) NOT NULL DEFAULT N'None',
+	[UserIdVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'Optional',
+	[AllowMultipleUsers]				BIT			  NOT NULL DEFAULT 0,
 
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- Required when the state is "Deployed"

@@ -128,7 +128,7 @@ Show the permissible Agent Definitions that are compatible with Account Type Ava
 
 Account Types should not be modified. However, they can be de-activated. Also, the user can specify which agent definitions
   are allowed with it.
-Inventories: Agent Definitions include: warehouses, transit-lines
+Inventories: Agent Definitions include: inventory-custodians, transit-lines
 CashAndCashEquivalent: AD include: cash-custodians, banks, money-transfer-agencies
 
 In cash purchase screen, the smart receipt part is inventory, ppe, biological assets, or consumables/services/expenses

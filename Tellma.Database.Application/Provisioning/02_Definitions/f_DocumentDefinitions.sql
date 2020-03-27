@@ -70,7 +70,8 @@ BEGIN
 	(1,1,	N'PaymentToSupplier',		1),
 	(2,1,	N'PaymentToOther',			1), -- for non-suppliers
 	(3,1,	N'CashTransferExchange',	1),
-	(4,1,	N'ManualLine',				1),
+	(4,1,	N'GoodReceiptNote',			1),
+	(5,1,	N'ManualLine',				1),
 	-- cash-receipt-vouchers
 	(0,2,	N'ReceiptFromCustomer',		1),  -- for tax visible customers
 	(1,2,	N'ReceiptFromOther',		1), -- for non-customers

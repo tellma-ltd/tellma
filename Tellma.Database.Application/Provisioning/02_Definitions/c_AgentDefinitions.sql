@@ -21,19 +21,22 @@ BEGIN
 	ELSE IF @DB = N'101' -- Banan SD, USD, en
 	BEGIN
 		INSERT INTO @AgentDefinitions([Index],
-		[Id],				[TitleSingular],[TitleSingular2],[TitlePlural],	[TitlePlural2],		[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
-		(0,N'cost-objects',	N'Cost Object',	N'موقع التكلفة',N'Cost Objects',N'مواقع التكلفة',	N'list',			N'Financials',		600),
-		(1,N'creditors',	N'Creditor',	N'الدائن',		N'Creditors',	N'الدائنون',		N'hands',			N'Cash',			100),
-		(2,N'customers',	N'Customer',	N'الزبون',		N'Customers',	N'الزبائن',			N'user-friends',	N'Sales',			500),
-		(4,N'debtors',		N'Debtor',		N'المدين',		N'Debtors',		N'المدينون',		N'hand-holding-usd',N'Cash',			200),
-		(5,N'partners',		N'Partner',		N'الشريك',		N'Partners',	N'الشركاء',			N'user-tie',		N'Financials',		300),
-		(6,N'suppliers',	N'Supplier',	N'المورد',		N'Suppliers',	N'الموردون',		N'truck',			N'Purchasing',		500),
-		(7,N'warehouses',	N'Warehouse',	N'المخزن',		N'Warehouse',	N'المخازن',			N'home',			N'Purchasing',		600),
-		(9,N'cash-custodians',N'Cash Custodian',N'الخزنة\البنك',N'Cash Custodians',N'الخزن\البنوك',N'lock',		N'Cash',			300);
+		[Id],					[TitleSingular],				[TitleSingular2],		[TitlePlural],		[TitlePlural2],			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
+		(0,N'cost-objects',		N'Cost Object',					N'موقع التكلفة',		N'Cost Objects',	N'مواقع التكلفة',		N'list',			N'Financials',		600),
+		(1,N'creditors',		N'Creditor',					N'الدائن',				N'Creditors',		N'الدائنون',			N'hands',			N'Cash',			100),
+		(2,N'customers',		N'Customer',					N'الزبون',				N'Customers',		N'الزبائن',				N'user-friends',	N'Sales',			500),
+		(4,N'debtors',			N'Debtor',						N'المدين',				N'Debtors',			N'المدينون',			N'hand-holding-usd',N'Cash',			200),
+		(5,N'partners',			N'Partner',						N'الشريك',				N'Partners',		N'الشركاء',				N'user-tie',		N'Financials',		300),
+		(6,N'suppliers',		N'Supplier',					N'المورد',				N'Suppliers',		N'الموردون',			N'truck',			N'Purchasing',		500),
+		(7,N'inventory-custodians',	N'Warehouse/Transit Line',	N'المخزن\الترانزيت',	N'Warehouses/Transit Lines',N'المخازن\الترانزيت',	N'home',	N'Purchasing',		600),
+		(9,N'cash-custodians',	N'Cash Custodian',				N'الخزنة\البنك',		N'Cash Custodians',N'الخزن\البنوك',		N'lock',			N'Cash',			300);
 
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],			[TitleSingular],[TitleSingular2],[TitlePlural],[TitlePlural2],	[JobVisibility], [RatesVisibility], [RatesLabel], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 		(10,N'employees',N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Optional',	N'Optional', N'Remuneration', 		N'user-friends', N'HumanCapital', 50);
+		
+		UPDATE @AgentDefinitions SET ImageIdVisibility = N'None', UserIdVisibility = N'None' WHERE [Id] IN (N'cost-objects');
+
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	BEGIN

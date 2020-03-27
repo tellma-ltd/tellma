@@ -15,6 +15,8 @@
 	[DebitAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[CreditAgentId]					INT,
 	[CreditAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[NotedAgentId]					INT,
+	[NotedAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),

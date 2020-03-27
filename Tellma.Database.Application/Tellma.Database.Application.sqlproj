@@ -550,6 +550,7 @@
     <Build Include="Mapping\ExchangeRates.sql" />
     <Build Include="Mapping\LineDefinitions.sql" />
     <Build Include="Mapping\DocumentStatesHistory.sql" />
+    <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
