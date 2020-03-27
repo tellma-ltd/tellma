@@ -1,4 +1,4 @@
-<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight">
+<cdk-virtual-scroll-viewport [itemSize]="itemSize" [style.height.px]="tableHeight" [minBufferPx]="itemSize * 5" [maxBufferPx]="itemSize * 7">
   <table #t class="table table-sm text-nowrap t-table">
 
     <!-- Header -->

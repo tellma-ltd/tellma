@@ -163,9 +163,13 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-        [Display(Name = "Document_Agent")]
+        [Display(Name = "Document_DebitAgent")]
         [ForeignKey(nameof(DebitAgentId))]
-        public Agent Agent { get; set; }
+        public Agent DebitAgent { get; set; }
+
+        [Display(Name = "Document_CreditAgent")]
+        [ForeignKey(nameof(CreditAgentId))]
+        public Agent CreditAgent { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]
         [ForeignKey(nameof(InvestmentCenterId))]

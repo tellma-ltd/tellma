@@ -91,29 +91,68 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     Prefix: string;
     CodeWidth: number;
 
+    // Memo
     MemoVisibility: Visibility;
 
+    // Debit Agent
+    DebitAgentVisibility: boolean;
+    DebitAgentRequiredState: LineState;
+    DebitAgentReadOnlyState: LineState;
     DebitAgentDefinitionId: string;
     DebitAgentLabel: string;
     DebitAgentLabel2: string;
     DebitAgentLabel3: string;
+
+    // Credit Agent
+    CreditAgentVisibility: boolean;
+    CreditAgentRequiredState: LineState;
+    CreditAgentReadOnlyState: LineState;
     CreditAgentDefinitionId: string;
     CreditAgentLabel: string;
     CreditAgentLabel2: string;
     CreditAgentLabel3: string;
+
+    // Clearance
     ClearanceVisibility: Visibility;
+
+    // Time1
+    Time1Visibility: boolean;
+    Time1RequiredState: LineState;
+    Time1ReadOnlyState: LineState;
     Time1Label: string;
     Time1Label2: string;
     Time1Label3: string;
+
+    // Time2
+    Time2Visibility: boolean;
+    Time2RequiredState: LineState;
+    Time2ReadOnlyState: LineState;
     Time2Label: string;
     Time2Label2: string;
     Time2Label3: string;
+
+    // Quantity
+    QuantityVisibility: boolean;
+    QuantityRequiredState: LineState;
+    QuantityReadOnlyState: LineState;
     QuantityLabel: string;
     QuantityLabel2: string;
     QuantityLabel3: string;
+
+    // Unit
+    UnitVisibility: boolean;
+    UnitRequiredState: LineState;
+    UnitReadOnlyState: LineState;
     UnitLabel: string;
     UnitLabel2: string;
     UnitLabel3: string;
+
+    // Currency
+    CurrencyVisibility: boolean;
+    CurrencyRequiredState: LineState;
+    CurrencyReadOnlyState: LineState;
+
+
     CanReachState1: boolean;
     CanReachState2: boolean;
     CanReachState3: boolean;

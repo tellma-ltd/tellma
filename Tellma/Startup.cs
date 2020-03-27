@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Diagnostics;
 
 namespace Tellma
 {
@@ -206,6 +207,23 @@ namespace Tellma
 
             try
             {
+                // Simple instrumentation, will be expanded later
+                app.Use(async (context, next) =>
+                {
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    context.Response.OnStarting(() =>
+                    {
+                        stopwatch.Stop();
+                        var milliseconds = stopwatch.ElapsedMilliseconds;
+                        context.Response.Headers.Add("x-milliseconds", milliseconds.ToString());
+
+                        return System.Threading.Tasks.Task.FromResult(0);
+                    });
+
+                    await next.Invoke();
+                });
+
 
                 // Regular Errors
                 if (_env.IsDevelopment())
@@ -269,7 +287,8 @@ namespace Tellma
                             "x-admin-settings-version",
                             "x-admin-permissions-version",
                             "x-admin-user-settings-version",
-                            "x-global-settings-version"
+                            "x-global-settings-version",
+                            "x-milliseconds"
                         );
                     });
                 }

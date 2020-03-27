@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Tellma.Controllers
 {
@@ -290,60 +291,6 @@ namespace Tellma.Controllers
             };
         }
 
-        private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def)
-        {
-            return new DocumentDefinitionForClient
-            {
-                IsOriginalDocument = def.IsOriginalDocument ?? false,
-                TitlePlural = def.TitlePlural,
-                TitlePlural2 = def.TitlePlural2,
-                TitlePlural3 = def.TitlePlural3,
-                TitleSingular = def.TitleSingular,
-                TitleSingular2 = def.TitleSingular2,
-                TitleSingular3 = def.TitleSingular3,
-                Prefix = def.Prefix,
-                CodeWidth = def.CodeWidth ?? 4,
-
-                MemoVisibility = def.MemoVisibility,
-                DebitAgentDefinitionId = def.DebitAgentDefinitionId,
-                DebitAgentLabel = def.DebitAgentLabel,
-                DebitAgentLabel2 = def.DebitAgentLabel2,
-                DebitAgentLabel3 = def.DebitAgentLabel3,
-                CreditAgentDefinitionId = def.CreditAgentDefinitionId,
-                CreditAgentLabel = def.CreditAgentLabel,
-                CreditAgentLabel2 = def.CreditAgentLabel2,
-                CreditAgentLabel3 = def.CreditAgentLabel3,
-                ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
-                Time1Label = def.Time1Label,
-                Time1Label2 = def.Time1Label2,
-                Time1Label3 = def.Time1Label3,
-                Time2Label = def.Time2Label,
-                Time2Label2 = def.Time2Label2,
-                Time2Label3 = def.Time2Label3,
-                QuantityLabel = def.QuantityLabel,
-                QuantityLabel2 = def.QuantityLabel2,
-                QuantityLabel3 = def.QuantityLabel3,
-                UnitLabel = def.UnitLabel,
-                UnitLabel2 = def.UnitLabel2,
-                UnitLabel3 = def.UnitLabel3,
-                
-                CanReachState1 = def.CanReachState1 ?? false,
-                CanReachState2 = def.CanReachState2 ?? false,
-                CanReachState3 = def.CanReachState3 ?? false,
-                HasWorkflow = def.HasWorkflow ?? false,
-
-                LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
-                {
-                    LineDefinitionId = d.LineDefinitionId,
-                    IsVisibleByDefault = d.IsVisibleByDefault ?? false
-                }).ToList(),
-
-                MainMenuIcon = def.MainMenuIcon,
-                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
-                MainMenuSection = def.MainMenuSection,
-            };
-        }
-
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def)
         {
             return new LineDefinitionForClient
@@ -393,25 +340,202 @@ namespace Tellma.Controllers
             };
         }
 
+        private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<string, LineDefinitionForClient> lineDefsDic)
+        {
+            var result = new DocumentDefinitionForClient
+            {
+                IsOriginalDocument = def.IsOriginalDocument ?? false,
+                TitlePlural = def.TitlePlural,
+                TitlePlural2 = def.TitlePlural2,
+                TitlePlural3 = def.TitlePlural3,
+                TitleSingular = def.TitleSingular,
+                TitleSingular2 = def.TitleSingular2,
+                TitleSingular3 = def.TitleSingular3,
+                Prefix = def.Prefix,
+                CodeWidth = def.CodeWidth ?? 4,
+
+                MemoVisibility = def.MemoVisibility,
+                DebitAgentDefinitionId = def.DebitAgentDefinitionId,
+                DebitAgentLabel = def.DebitAgentLabel,
+                DebitAgentLabel2 = def.DebitAgentLabel2,
+                DebitAgentLabel3 = def.DebitAgentLabel3,
+                CreditAgentDefinitionId = def.CreditAgentDefinitionId,
+                CreditAgentLabel = def.CreditAgentLabel,
+                CreditAgentLabel2 = def.CreditAgentLabel2,
+                CreditAgentLabel3 = def.CreditAgentLabel3,
+                ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
+                Time1Label = def.Time1Label,
+                Time1Label2 = def.Time1Label2,
+                Time1Label3 = def.Time1Label3,
+                Time2Label = def.Time2Label,
+                Time2Label2 = def.Time2Label2,
+                Time2Label3 = def.Time2Label3,
+                QuantityLabel = def.QuantityLabel,
+                QuantityLabel2 = def.QuantityLabel2,
+                QuantityLabel3 = def.QuantityLabel3,
+                UnitLabel = def.UnitLabel,
+                UnitLabel2 = def.UnitLabel2,
+                UnitLabel3 = def.UnitLabel3,
+
+                CanReachState1 = def.CanReachState1 ?? false,
+                CanReachState2 = def.CanReachState2 ?? false,
+                CanReachState3 = def.CanReachState3 ?? false,
+                HasWorkflow = def.HasWorkflow ?? false,
+
+                LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
+                {
+                    LineDefinitionId = d.LineDefinitionId,
+                    IsVisibleByDefault = d.IsVisibleByDefault ?? false
+                }).ToList(),
+
+                MainMenuIcon = def.MainMenuIcon,
+                MainMenuSortKey = def.MainMenuSortKey ?? 0m,
+                MainMenuSection = def.MainMenuSection,
+            };
+
+            // Here we compute some values based on the associated line definitions
+            var relevantLineDefs = result.LineDefinitions
+                .Select(e => lineDefsDic.GetValueOrDefault(e.LineDefinitionId))
+                .Where(e => e != null);
+
+            // AgentId
+            foreach (var lineDef in relevantLineDefs)
+            {
+                foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
+                {
+                    // Agents
+                    if (colDef.EntryIndex < lineDef.Entries.Count)
+                    {
+                        var entryDef = lineDef.Entries[colDef.EntryIndex];
+
+                        // DebitAgent
+                        if (colDef.ColumnName == nameof(Entry.AgentId) && entryDef.Direction == 1)
+                        {
+                            result.DebitAgentVisibility = true;
+                            if (colDef.RequiredState < (result.DebitAgentRequiredState ?? 5))
+                            {
+                                result.DebitAgentRequiredState = colDef.RequiredState;
+                            }
+
+                            if (colDef.ReadOnlyState < (result.DebitAgentReadOnlyState ?? 5))
+                            {
+                                result.DebitAgentReadOnlyState = colDef.ReadOnlyState;
+                            }
+                        }
+
+                        // CreditAgent
+                        if (colDef.ColumnName == nameof(Entry.AgentId) && entryDef.Direction == -1)
+                        {
+                            result.CreditAgentVisibility = true;
+                            if (colDef.RequiredState < (result.CreditAgentRequiredState ?? 5))
+                            {
+                                result.CreditAgentRequiredState = colDef.RequiredState;
+                            }
+
+                            if (colDef.ReadOnlyState < (result.CreditAgentReadOnlyState ?? 5))
+                            {
+                                result.CreditAgentReadOnlyState = colDef.ReadOnlyState;
+                            }
+                        }
+                    }
+
+                    // Time1
+                    if (colDef.ColumnName == nameof(Entry.Time1))
+                    {
+                        result.Time1Visibility = true;
+                        if (colDef.RequiredState < (result.Time1RequiredState ?? 5))
+                        {
+                            result.Time1RequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.Time1ReadOnlyState ?? 5))
+                        {
+                            result.Time1ReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Time2
+                    if (colDef.ColumnName == nameof(Entry.Time2))
+                    {
+                        result.Time2Visibility = true;
+                        if (colDef.RequiredState < (result.Time2RequiredState ?? 5))
+                        {
+                            result.Time2RequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.Time2ReadOnlyState ?? 5))
+                        {
+                            result.Time2ReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Quantity
+                    if (colDef.ColumnName == nameof(Entry.Quantity))
+                    {
+                        result.QuantityVisibility = true;
+                        if (colDef.RequiredState < (result.QuantityRequiredState ?? 5))
+                        {
+                            result.QuantityRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.QuantityReadOnlyState ?? 5))
+                        {
+                            result.QuantityReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Unit
+                    if (colDef.ColumnName == nameof(Entry.UnitId))
+                    {
+                        result.UnitVisibility = true;
+                        if (colDef.RequiredState < (result.UnitRequiredState ?? 5))
+                        {
+                            result.UnitRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.UnitReadOnlyState ?? 5))
+                        {
+                            result.UnitReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Currency
+                    if (colDef.ColumnName == nameof(Entry.CurrencyId))
+                    {
+                        result.CurrencyVisibility = true;
+                        if (colDef.RequiredState < (result.CurrencyRequiredState ?? 5))
+                        {
+                            result.CurrencyRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.CurrencyReadOnlyState ?? 5))
+                        {
+                            result.CurrencyReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public static async Task<DataWithVersion<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo)
         {
             var (version, lookupDefs, agentDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load();
 
+            var lineDefsDictionary = lineDefs.ToDictionary(e => e.Id, e => e);
+
             var result = new DefinitionsForClient
             {
                 Lookups = lookupDefs.ToDictionary(def => def.Id, def => MapLookupDefinition(def)),
-
                 Agents = agentDefs.ToDictionary(def => def.Id, def => MapAgentDefinition(def)),
-
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
-
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
-
-                Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def)),
-
                 Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def)),
             };
+            result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
+            // REturn result
             return new DataWithVersion<DefinitionsForClient>
             {
                 Data = result,

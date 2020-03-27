@@ -45,7 +45,7 @@ import {
   faShoppingCart,
   faProjectDiagram,
   faExclamation,
-  faHighlighter
+  faLockOpen
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -490,7 +490,7 @@ export class ApplicationModule {
     // Icons to be used in the web app
     library.addIcons(
       // Document icons
-      faThumbsUp, faThumbsDown, faPaperclip, faExclamation, faHighlighter,
+      faThumbsUp, faThumbsDown, faPaperclip, faExclamation, faLockOpen,
 
       // File icons
       faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt,

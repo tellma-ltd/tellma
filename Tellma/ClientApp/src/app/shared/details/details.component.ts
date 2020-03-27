@@ -145,6 +145,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as EntityForSave;
       delete clone.Id;
+      delete clone.EntityMetadata;
+      delete clone.serverErrors;
 
       if (clone['ImageId']) {
         delete clone['ImageId'];
@@ -170,7 +172,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   @HostListener('window:beforeunload', ['$event'])
-  doSomething($event: BeforeUnloadEvent) {
+  beforeUnload($event: BeforeUnloadEvent) {
+    // Prompts the user if they attempt to close the browser before saving changes
     if (environment.production && this.isDirty) {
       $event.returnValue = this.translate.instant('UnsavedChangesConfirmationMessage');
     }
@@ -512,29 +515,19 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   /**
-   * Handles server errors for save, if the error is 422 it distributes it
-   * on the entity that was saved and all its related weak entities, otherwise
-   * displays the error in a modal
+   * Handles 422 Unprocessible Entity errors from a save operation, it distributes the
+   * errors on the entity that was saved and all its related weak entities, by parsing
+   * the paths and adding the messages in the serverErrors dictionary of the target entity
    */
-  private handleSaveError = (friendlyError: any) => {
-    if (this.workspace.current.unauthorized) {
-      return;
-    }
-
-    // This handles 422 ModelState errors
-    if (friendlyError.status === 422) {
-      this._unboundServerErrors = [];
-      const serverErrors = applyServerErrors([this.activeModel], friendlyError.error);
-      const keys = Object.keys(serverErrors);
-      keys.forEach(key => {
-        serverErrors[key].forEach(error => {
-          this._unboundServerErrors.push(error);
-        });
+  private apply422ErrorsToModel(errors: { [path: string]: string[] }) {
+    this._unboundServerErrors = [];
+    const serverErrors = applyServerErrors([this.activeModel], errors);
+    const keys = Object.keys(serverErrors);
+    keys.forEach(key => {
+      serverErrors[key].forEach(error => {
+        this._unboundServerErrors.push(error);
       });
-
-    } else {
-      this.displayModalError(friendlyError.error);
-    }
+    });
   }
 
   ////// UI Bindings
@@ -809,7 +802,21 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
             }
           }
         },
-        (friendlyError) => this.handleSaveError(friendlyError)
+        (friendlyError) => {
+          if (this.workspace.current.unauthorized) {
+            // The user will be redirected away from the tenant anyways
+            // and the screen they're taken to will show an appropriate
+            // error message, so no need to show a modal here
+            return;
+          }
+
+          if (friendlyError.status === 422) {
+          // This handles 422 ModelState errors
+            this.apply422ErrorsToModel(friendlyError.error);
+          } else {
+            this.displayModalError(friendlyError.error);
+          }
+        }
       );
     }
   }

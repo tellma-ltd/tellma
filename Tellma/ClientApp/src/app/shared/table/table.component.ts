@@ -198,10 +198,12 @@ export class TableComponent implements OnInit, OnChanges {
   }
 
   public get maxVisibleRows(): number {
-    return this.visibleRows || Math.ceil(8 * 30 / this.itemSize);
+    return this.visibleRows || Math.ceil(9 * 30 / this.itemSize);
   }
 
   public get tableHeight(): number {
+    // const contentHeight = this.contentHeight;
+    // const tableMaxHeight = this.tableMaxHeight;
     return Math.min(this.contentHeight, this.tableMaxHeight);
   }
 

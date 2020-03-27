@@ -64,34 +64,6 @@
 <ng-template #documentHeader let-model="model" let-extras="extras" let-isEdit="isEdit">
     <div class="w-100 t-document-header d-flex justify-content-end">
 
-        <!-- Managerial/Accounting Toggle -->
-
-        <!-- <div class="btn-group btn-group-toggle">
-            <label class="btn btn-sm btn-light t-pointer d-flex align-items-center" [class.active]="isManagerial"
-                (click)="onManagerialView()">
-                <input type="radio" name="displayMode">
-                <fa-icon icon="user-tie"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Managerial' | translate }}</span>
-            </label>
-            <label class="btn btn-sm btn-light t-pointer d-flex align-items-center"
-                [class.active]="isAccounting" (click)="onAccountingView()">
-                <input type="radio" name="displayMode">
-                <fa-icon icon="coins"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Accounting' | translate }}</span>
-            </label>
-        </div> -->
-
-        <!-- <div class="btn-group btn-group-toggle small">
-            <div class="d-flex align-items-center px-2 t-pointer" (click)="onManagerialView()">
-                <fa-icon icon="user-tie"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Managerial' | translate }}</span>
-            </div>
-            <div class="d-flex align-items-center px-2 t-pointer" (click)="onAccountingView()">
-                <fa-icon icon="coins"></fa-icon>
-                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Accounting' | translate }}</span>
-            </div>
-        </div> -->
-
         <!-- +ve states on wide screen -->
         <ng-container *ngIf="isPositiveState(model); else negativeStates">
             <div class="t-flow-chart small d-none d-lg-block">
@@ -172,25 +144,43 @@
     </t-form-group>
 
     <!-- Agent -->
-    <!-- <t-form-group class="t-form-group" [label]="labelDocumentAgent(model)" [serverErrors]="model?.serverErrors?.AgentId"
-        *ngIf="showDocumentAgent(model)">
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitAgent(model)"
+        [serverErrors]="model?.serverErrors?.AgentId" *ngIf="showDocumentDebitAgent(model)">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AgentId">
             <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
                 [itemId]="model?.AgentId">
                 {{ ws.getMultilingualValue('Agent', model?.AgentId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [definitionIds]="documentAgentDefinitionIds(model)"
-            [required]="requireDocumentAgent(model)">
+        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId"
+            [definitionIds]="documentDebitAgentDefinitionIds(model)" [required]="requireDocumentDebitAgent(model)"
+            [disabled]="readonlyDocumentDebitAgent(model)">
         </t-agents-picker>
-    </t-form-group> -->
-
-    <!-- Memo -->
-    <t-form-group *ngIf="model?.MemoIsCommon && isJV" class="t-form-group" [label]="'Memo' | translate"
-        [serverErrors]="model?.serverErrors?.Memo">
-        <div *ngIf="!isEdit">{{ model?.Memo }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
     </t-form-group>
+
+    <!-- Document Memo -->
+    <t-form-group *ngIf="showDocumentMemo(model)" class="t-form-group" [label]="'Memo' | translate"
+        [serverErrors]="model.serverErrors?.Memo">
+        <ng-container *ngIf="model.MemoIsCommon; else perLine">
+            <div *ngIf="!isEdit">{{ model?.Memo }}</div>
+            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-text-editor>
+        </ng-container>
+        <!-- <span>&nbsp;&nbsp;</span> -->
+        <ng-container *ngTemplateOutlet="lock;context { prop: 'MemoIsCommon' }">
+        </ng-container>
+    </t-form-group>
+
+    <ng-template #perLine>
+        <span class="font-italic text-muted">(Per line)</span>
+    </ng-template>
+
+    <ng-template #lock let-prop="prop">
+        <button *ngIf="isEdit" class="btn btn-sm btn-light text-primary t-white-button py-0 px-1 align-baseline"
+            tabindex="-1" (click)="model[prop] = !model[prop]">
+            <fa-icon [icon]="model[prop] ? 'lock' : 'lock-open'"></fa-icon>
+        </button>
+    </ng-template>
 
     <!-- Memo Is Common -->
     <t-form-group *ngIf="isEdit && isJV" class="t-form-group" [label]="'Document_MemoIsCommon' | translate"
@@ -223,7 +213,7 @@
 
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
-                            [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, false)"
+                            [isEdit]="isEdit" [columnPaths]="smartColumnPaths(lineDefId, model, false)"
                             [columnTemplates]="columnTemplates(lineDefId, smartHeader, smartRow, smartCommands)"
                             [onNewItem]="onNewSmartLineFactory(lineDefId)" (insert)="onInsertSmartLine($event, model)"
                             (delete)="onDeleteSmartLine($event, model)" [highlightFunc]="highlightLineFactory(model)">
@@ -237,20 +227,6 @@
                                         <ng-container
                                             *ngTemplateOutlet="smartCommands;context: { item: lines(lineDefId, model)[0] }">
                                         </ng-container>
-                                        <!-- <div ngbDropdown [placement]="commandsDropdownPlacement"
-                                            *ngIf="!lines(lineDefId, model)[0].PH">
-                                            <a href (click)="false"
-                                                class="px-2 t-no-arrow d-flex h-100 align-items-center"
-                                                ngbDropdownToggle><span class="small">
-                                                    <fa-icon icon="ellipsis-v"></fa-icon>
-                                                </span></a>
-                                            <div ngbDropdownMenu>
-                                                <button ngbDropdownItem class="t-transparent-background"
-                                                    (click)="toggleHighlight(lines(lineDefId, model)[0], model)">
-                                                    {{ (isHighlighted(lines(lineDefId, model)[0], model) ? 'RemoveHighlight' : 'AddHighlight') | translate }}
-                                                </button>
-                                            </div>
-                                        </div> -->
 
                                         &nbsp;&nbsp;
                                         <ng-container *ngIf="isEdit">
@@ -271,7 +247,7 @@
                                             </button>
                                         </ng-container>
                                     </div>
-                                    <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, true)">
+                                    <ng-container *ngFor="let colPath of smartColumnPaths(lineDefId, model, true)">
                                         <ng-container *ngTemplateOutlet="smartRow; context: { 
                                                     item: lines(lineDefId, model)[0], 
                                                     argument: colPath, 
@@ -294,24 +270,6 @@
                                     (click)="onCreateForm(lineDefId, model)">
                                     <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'Add' | translate }}
                                 </button>
-                                <!-- Actions dropdown -->
-                                <!-- <div *ngIf="lines(lineDefId, model).length === 1" class="btn-group mt-3" ngbDropdown
-                                    [placement]="actionsDropdownPlacement">
-                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
-                                        ngbDropdownToggle>
-                                        {{ 'Actions' | translate }}
-                                    </button>
-                                    <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
-                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
-                                            (click)="onDeleteForm(lineDefId, model)">
-                                            {{ ('Delete' | translate) + ' ' + tabTitle(lineDefId, model) }}
-                                        </button>
-                                        <button ngbDropdownItem class="dropdown-item t-transparent-background"
-                                            (click)="onCreateForm(lineDefId, model)">
-                                            {{ 'AddAnotherSwitchToTable' | translate }}
-                                        </button>
-                                    </div>
-                                </div> -->
                             </div>
                         </ng-container>
                     </ng-container>

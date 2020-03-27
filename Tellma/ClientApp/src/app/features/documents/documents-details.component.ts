@@ -331,34 +331,38 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     };
 
     if (this.definitionId === 'manual-journal-vouchers') {
-      result.MemoIsCommon = true;
-      result.Memo = this.initialText;
-      result.PostingDate = toLocalDateISOString(new Date());
-    } else {
-      const def = this.definition;
-      if (!def.HasWorkflow) {
-        result.PostingDate = toLocalDateISOString(new Date());
-      }
 
-      result.MemoIsCommon = false; // TODO
-      if (result.MemoIsCommon) {
-        result.Memo = this.initialText;
-      }
+      // Posting Date
+      result.PostingDate = toLocalDateISOString(new Date());
+
+      // Is Common
+      result.MemoIsCommon = true;
       result.DebitAgentIsCommon = false;
+      result.CreditAgentIsCommon = false;
       result.InvestmentCenterIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
       result.QuantityIsCommon = false;
       result.UnitIsCommon = false;
       result.CurrencyIsCommon = false;
+    } else {
+      const def = this.definition;
 
-      // result.AgentIsCommon = !!def.AgentDefinitionId;
-      // result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility;
-      // result.Time1IsCommon = !!def.Time1Visibility;
-      // result.Time2IsCommon = !!def.Time2Visibility;
-      // result.QuantityIsCommon = !!def.QuantityVisibility;
-      // result.UnitIsCommon = !!def.UnitVisibility;
-      // result.CurrencyIsCommon = !!def.CurrencyVisibility;
+      // Posting Date
+      if (!def.HasWorkflow) {
+        result.PostingDate = toLocalDateISOString(new Date());
+      }
+
+      // Is Common
+      result.MemoIsCommon = !!def.MemoVisibility;
+      result.DebitAgentIsCommon = !!def.DebitAgentVisibility;
+      result.CreditAgentIsCommon = !!def.CreditAgentVisibility;
+      result.InvestmentCenterIsCommon = true;
+      result.Time1IsCommon = !!def.Time1Visibility;
+      result.Time2IsCommon = !!def.Time2Visibility;
+      result.QuantityIsCommon = !!def.QuantityVisibility;
+      result.UnitIsCommon = !!def.UnitVisibility;
+      result.CurrencyIsCommon = !!def.CurrencyVisibility;
     }
 
     return result;
@@ -367,28 +371,63 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   clone: (item: Document) => Document = (item: Document) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Document;
+
+      // Standard
       clone.Id = null;
+      delete clone.EntityMetadata;
+      delete clone.serverErrors;
+
+      // Non duplicable
+      delete clone.SerialNumber;
+      clone.Attachments = [];
+
+      // Non savable
+      delete clone.State;
+      delete clone.StateAt;
+      delete clone.Comment;
+      delete clone.AssigneeId;
+      delete clone.AssignedAt;
+      delete clone.AssignedById;
+      delete clone.OpenedAt;
+      delete clone.CreatedAt;
+      delete clone.CreatedById;
+      delete clone.ModifiedAt;
+      delete clone.ModifiedById;
+      clone.AssignmentsHistory = [];
+      clone.StatesHistory = [];
 
       if (!!clone.Lines) {
         clone.Lines.forEach(line => {
+          // Standard
           line.Id = null;
+          delete line.EntityMetadata;
+          delete line.serverErrors;
+
+          // Non savable
+          delete line.DocumentId;
+          delete line.State;
+          delete line.CreatedAt;
+          delete line.CreatedById;
+          delete line.ModifiedAt;
+          delete line.ModifiedById;
+
           if (!!line.Entries) {
             line.Entries.forEach(entry => {
+              // Standard
               entry.Id = null;
+              delete entry.EntityMetadata;
+              delete entry.serverErrors;
+
+              // Non savable
+              delete entry.LineId;
+              delete entry.CreatedAt;
+              delete entry.CreatedById;
+              delete entry.ModifiedAt;
+              delete entry.ModifiedById;
             });
           }
         });
       }
-
-      clone.Attachments = [];
-      clone.AssignmentsHistory = [];
-
-      delete clone.AssigneeId;
-      delete clone.CreatedById;
-      delete clone.ModifiedById;
-      delete clone.SerialNumber;
-      delete clone.State;
-      delete clone.StateAt;
 
       return clone;
     } else {
@@ -623,17 +662,44 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return getChoices(desc);
   }
 
-  // AgentId
-
-  public showDocumentAgent(_: DocumentForSave): boolean {
-    return !!this.definition.DebitAgentDefinitionId;
+  // Document Memo
+  public showDocumentMemo(_: DocumentForSave): boolean {
+    return this.isJV || !!this.definition.MemoVisibility;
   }
 
-  public requireDocumentAgent(_: DocumentForSave): boolean {
-    return true;
+  public requireDocumentMemo(doc: Document): boolean {
+    return false;
   }
 
-  public labelDocumentAgent(_: DocumentForSave): string {
+  public readonlyDocumentMemo(doc: Document): boolean {
+    return false;
+  }
+
+  public errorsDocumentMemo(doc: DocumentForSave): string[] {
+
+    if (!!doc && !!doc.Lines) {
+      const lineWithMemoErrors = doc.Lines.find(line => !!line.serverErrors && !!line.serverErrors.Memo);
+      return !!lineWithMemoErrors ? lineWithMemoErrors.serverErrors.Memo : null;
+    }
+
+    return null;
+  }
+
+  // Document AgentId
+
+  public showDocumentDebitAgent(_: DocumentForSave): boolean {
+    return this.definition.DebitAgentVisibility;
+  }
+
+  public requireDocumentDebitAgent(doc: Document): boolean {
+    return false; // this.getDocState(doc) >= (this.definition.DebitAgentRequiredState || 5);
+  }
+
+  public readonlyDocumentDebitAgent(doc: Document): boolean {
+    return false; // this.getDocState(doc) >= (this.definition.DebitAgentRequiredState || 5);
+  }
+
+  public labelDocumentDebitAgent(_: DocumentForSave): string {
     let label = this.ws.getMultilingualValueImmediate(this.definition, 'AgentLabel');
     if (!label) {
       const agentDefId = this.definition.DebitAgentDefinitionId;
@@ -648,7 +714,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return label;
   }
 
-  public documentAgentDefinitionIds(_: DocumentForSave): string[] {
+  public documentDebitAgentDefinitionIds(_: DocumentForSave): string[] {
     return [this.definition.DebitAgentDefinitionId];
   }
 
@@ -1777,7 +1843,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       paths.splice(1, 0, 'Center');
     }
 
-    if (!model.MemoIsCommon || this.definitionId !== 'manual-journal-vouchers') {
+    if (!model.MemoIsCommon || !this.isJV) {
       paths.push('Memo');
     }
 
@@ -1790,13 +1856,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return paths;
   }
 
-  public smartColumnPaths(lineDefId: string, isForm: boolean): string[] {
+  public smartColumnPaths(lineDefId: string, doc: Document, isForm: boolean): string[] {
     // All line definitions other than 'ManualLine'
     const lineDef = this.ws.definitions.Lines[lineDefId];
     const isMultiRS = this.ws.settings.IsMultiCenter;
     const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
       .map((column, index) => ({ column, index })) // Capture the index first thing
-      .filter(e => isMultiRS || e.column.ColumnName !== 'CenterId') // Hide Center columns when there is only one
+      .filter(e => {
+        const col = e.column;
+        // Hide Center columns when there is only one
+        return (isMultiRS || col.ColumnName !== 'CenterId') &&
+
+          // Hide memo if it's common, or it doesn't inherit from header
+          (!doc.MemoIsCommon || !col.InheritsFromHeader || col.ColumnName !== 'Memo');
+      })
       .map(e => e.index + '') : [];
 
     if (!isForm) {
@@ -2284,24 +2357,35 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _flagsModel: DocumentForSave;
   private _flags: { [id: number]: LineFlags } = {};
 
-  private flags(line: LineForSave, doc: DocumentForSave): LineFlags {
+  private flags(line: LineForSave, doc: DocumentForSave, setUndefined = false): LineFlags {
     if (this._flagsModel !== doc) {
       this._flagsModel = doc;
       this._flags = {};
     }
     if (!!line.Id) {
-      return this._flags[line.Id] || (this._flags[line.Id] = {});
+      let result = this._flags[line.Id];
+      if (setUndefined && !result) {
+        result = (this._flags[line.Id] = {});
+      }
+
+      return result;
     } else {
-      return line._flags || (line._flags = {});
+      let result = line._flags;
+      if (setUndefined && !result) {
+        result = (line._flags = {});
+      }
+
+      return result;
     }
   }
 
   public getIsModified(line: LineForSave, doc: DocumentForSave): boolean {
-    return this.flags(line, doc).isModified;
+    const flags = this.flags(line, doc);
+    return !!flags ? flags.isModified : false;
   }
 
   public setModified(line: LineForSave, doc: DocumentForSave) {
-    this.flags(line, doc).isModified = true;
+    this.flags(line, doc, true).isModified = true;
   }
 
   public get isJV(): boolean {
@@ -2323,7 +2407,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     if (!this._highlightPairFactoryResult) {
-      this._highlightPairFactoryResult = (pair: LineEntryPair) => this.flags(pair.line, doc).isHighlighted;
+      this._highlightPairFactoryResult = (pair: LineEntryPair) => {
+        const flags = this.flags(pair.line, doc);
+        return !!flags ? flags.isHighlighted : false;
+      };
     }
 
     return this._highlightPairFactoryResult;
@@ -2339,14 +2426,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     if (!this._highlightLineFactoryResult) {
-      this._highlightLineFactoryResult = (line: LineForSave) => this.flags(line, doc).isHighlighted;
+      this._highlightLineFactoryResult = (line: LineForSave) => {
+        const flags = this.flags(line, doc);
+        return !!flags ? flags.isHighlighted : false;
+      };
     }
 
     return this._highlightLineFactoryResult;
   }
 
   public toggleHighlight(line: LineForSave, doc: DocumentForSave) {
-    const flags = this.flags(line, doc);
+    const flags = this.flags(line, doc, true);
     flags.isHighlighted = !flags.isHighlighted;
 
     // To trigger OnPush change detection of t-table
