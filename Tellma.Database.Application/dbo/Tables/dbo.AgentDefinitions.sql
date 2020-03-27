@@ -28,6 +28,7 @@
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
 	[UserIdVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([UserIdVisibility] IN (N'None', N'Optional', N'Required')),
+	[AllowMultipleUsers]				BIT				NOT NULL DEFAULT 0,
 	
 	[State]								NVARCHAR (50)	DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),

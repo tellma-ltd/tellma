@@ -26,7 +26,8 @@ SET NOCOUNT ON;
 			[RatesLabel3],
 			[BankAccountNumberVisibility],
 			[UserIdVisibility],
-						
+			[AllowMultipleUsers],
+
 			[MainMenuIcon],
 			[MainMenuSection], [MainMenuSortKey]
 		FROM @Entities 
@@ -56,7 +57,8 @@ SET NOCOUNT ON;
 			t.[RatesLabel3]					= s.[RatesLabel3],
 			t.[BankAccountNumberVisibility]	= s.[BankAccountNumberVisibility],
 			t.[UserIdVisibility]			= s.[UserIdVisibility],
-			
+			t.[AllowMultipleUsers]			= s.[AllowMultipleUsers],
+
 			t.[MainMenuIcon]				= s.[MainMenuIcon],
 			t.[MainMenuSection]				= s.[MainMenuSection],
 			t.[MainMenuSortKey]				= s.[MainMenuSortKey],
@@ -80,6 +82,7 @@ SET NOCOUNT ON;
 			[RatesLabel3],
 			[BankAccountNumberVisibility],
 			[UserIdVisibility],
+			[AllowMultipleUsers],
 		
 			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
 		VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], 
@@ -100,5 +103,6 @@ SET NOCOUNT ON;
 			s.[RatesLabel3],
 			s.[BankAccountNumberVisibility],
 			s.[UserIdVisibility],
+			s.[AllowMultipleUsers],
 
 			s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey]);
