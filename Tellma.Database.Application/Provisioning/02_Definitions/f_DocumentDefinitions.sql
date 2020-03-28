@@ -11,22 +11,22 @@ DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinition
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',	N'ورقة قبض نقدي',		N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',				N'CRV'),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',		N'RRV');
+		[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',			N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
+	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'ورقة قبض نقدي',	N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',				N'CRV'),
+	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',		N'RRV');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
-	(0,0,	N'ManualLine',						1),
-	(0,1,	N'CashPayment',						1),
-	(1,1,	N'ManualLine',						1),
-	(2,1,	N'PurchaseInvoice',					0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',				1),
-	(0,3,	N'LeaseOut',						1),
-	(1,3,	N'ManualLine',						0);
+			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',				1),
+	(0,1,	N'CashPayment',				1),
+	(1,1,	N'ManualLine',				1),
+	(2,1,	N'PurchaseInvoice',			0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',		1),
+	(0,3,	N'LeaseOut',				1),
+	(1,3,	N'ManualLine',				0);
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
@@ -37,30 +37,6 @@ BEGIN
 	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'file-invoice-dollar',	N'Cash',			50),
 	(3,	N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
 	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
-	UPDATE @DocumentDefinitions
-	SET
-		[DebitAgentDefinitionId] = N'inventory-custodians',
-		[DebitAgentLabel] = N'To Warehouse/Transit Line', [DebitAgentLabel2] = N'إلى المخزن\خط الترانزيت',
-
-		[CreditAgentDefinitionId] = N'cash-custodians',
-		[CreditAgentLabel] = N'From Bank/Cashier', [CreditAgentLabel2] = N'من البنك\الخزنة'
-	WHERE [Id] = N'cash-payment-vouchers'		
-
-	UPDATE @DocumentDefinitions
-	SET
-		[DebitAgentDefinitionId] = N'cash-custodians',
-		[DebitAgentLabel] = N'To Bank/Cashier', [DebitAgentLabel2] = N'إلى البنك\الخزنة',
-
-		[CreditAgentDefinitionId] = N'inventory-custodians',
-		[CreditAgentLabel] = N'From Warehouse/Transit Line', [CreditAgentLabel2] = N'من المخزن\خط الترانزيت'
-	WHERE [Id] = N'cash-receipt-vouchers'
-
-	UPDATE @DocumentDefinitions
-	SET
-		Time1Label = N'Period Starts', Time1Label2 = N'ابتداء من',
-		QuantityLabel = N'Duration', QuantityLabel2 = N'لمدة',
-		UnitLabel = N'', UnitLabel2 = N''
-	WHERE [Id] IN (N'expense-recognition-vouchers', N'revenue-recognition-vouchers')
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
@@ -83,7 +59,6 @@ BEGIN
 	-- revenue-recognition-vouchers, for revenue recognition
 	(0,4,	N'LeaseOut',				1), -- for tax visible customers
 	(1,4,	N'ManualLine',				0);
-
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -128,30 +103,6 @@ BEGIN
 	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'file-invoice-dollar',	N'Cash',			50),
 	(3,	N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
 	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
-	UPDATE @DocumentDefinitions
-	SET
-		[DebitAgentDefinitionId] = N'inventory-custodians',
-		[DebitAgentLabel] = N'To Warehouse/Transit Line', [DebitAgentLabel2] = N'إلى المخزن\خط الترانزيت',
-
-		[CreditAgentDefinitionId] = N'cash-custodians',
-		[CreditAgentLabel] = N'From Bank/Cashier', [CreditAgentLabel2] = N'من البنك\الخزنة'
-	WHERE [Id] = N'cash-payment-vouchers'		
-
-	UPDATE @DocumentDefinitions
-	SET
-		[DebitAgentDefinitionId] = N'cash-custodians',
-		[DebitAgentLabel] = N'To Bank/Cashier', [DebitAgentLabel2] = N'إلى البنك\الخزنة',
-
-		[CreditAgentDefinitionId] = N'inventory-custodians',
-		[CreditAgentLabel] = N'From Warehouse/Transit Line', [CreditAgentLabel2] = N'من المخزن\خط الترانزيت'
-	WHERE [Id] = N'cash-receipt-vouchers'
-
-	UPDATE @DocumentDefinitions
-	SET
-		Time1Label = N'Period Starts', Time1Label2 = N'ابتداء من',
-		QuantityLabel = N'Duration', QuantityLabel2 = N'لمدة',
-		UnitLabel = N'', UnitLabel2 = N''
-	WHERE [Id] IN (N'expense-recognition-vouchers', N'revenue-recognition-vouchers');
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
