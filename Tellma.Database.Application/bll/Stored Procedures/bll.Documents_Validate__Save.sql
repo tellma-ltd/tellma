@@ -109,7 +109,7 @@ SET NOCOUNT ON;
 	AND L.[DefinitionId] <> N'ManualLine';
 
 	-- verify that all required fields are available
-	DECLARE @LineState SMALLINT, @L LineList, @E EntryList;
+	DECLARE @LineState SMALLINT, @D DocumentList, @L LineList, @E EntryList;
 		SELECT @LineState = MIN([State])
 		FROM dbo.Lines
 		WHERE [State] > 0
@@ -117,12 +117,13 @@ SET NOCOUNT ON;
 	
 	WHILE @LineState IS NOT NULL
 	BEGIN
-		DELETE FROM @L; DELETE FROM @E;
+		DELETE FROM @D; DELETE FROM @L; DELETE FROM @E;
 		INSERT INTO @L SELECT * FROM @Lines WHERE [Id] IN (SELECT [Id] FROM dbo.Lines WHERE [State] = @LineState);
+		INSERT INTO @D SELECT * FROM @Documents WHERE [Index] IN (SELECT DISTINCT [DocumentIndex] FROM @Lines);
 		INSERT INTO @E SELECT E.* FROM @Entries E JOIN @L L ON E.LineIndex = L.[Index] AND E.DocumentIndex = L.DocumentIndex
 		INSERT INTO @ValidationErrors
 		EXEC [bll].[Lines_Validate__State_Update]
-		@Lines = @L, @Entries = @E, @ToState = @LineState;
+		@Documents = @D, @Lines = @L, @Entries = @E, @ToState = @LineState;
 
 		SET @LineState = (
 			SELECT MIN([State])

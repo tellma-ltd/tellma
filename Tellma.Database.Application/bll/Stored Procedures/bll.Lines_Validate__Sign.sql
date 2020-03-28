@@ -147,7 +147,19 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
 
-	DECLARE @Lines LineList, @Entries EntryList;
+	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList;
+	INSERT INTO @Documents([Index],[Id],[SerialNumber],[PostingDate],[Clearance],[DocumentLookup1Id],
+		[DocumentLookup2Id],[DocumentLookup3Id],[DocumentText1],[DocumentText2],[Memo],[MemoIsCommon],
+		[DebitAgentId],[DebitAgentIsCommon],[CreditAgentId],[CreditAgentIsCommon],[NotedAgentId],[NotedAgentIsCommon],
+		[InvestmentCenterId],[InvestmentCenterIsCommon],[Time1],[Time1IsCommon],[Time2],[Time2IsCommon],
+		[Quantity],[QuantityIsCommon],[UnitId],[UnitIsCommon],[CurrencyId],[CurrencyIsCommon])
+	SELECT FE.[Index],D.[Id],D.[SerialNumber],D.[PostingDate],D.[Clearance],D.[DocumentLookup1Id],
+		D.[DocumentLookup2Id],D.[DocumentLookup3Id],D.[DocumentText1],D.[DocumentText2],D.[Memo],D.[MemoIsCommon],
+		D.[DebitAgentId],D.[DebitAgentIsCommon],D.[CreditAgentId],D.[CreditAgentIsCommon],D.[NotedAgentId],D.[NotedAgentIsCommon],
+		D.[InvestmentCenterId],D.[InvestmentCenterIsCommon],D.[Time1],D.[Time1IsCommon],D.[Time2],D.[Time2IsCommon],
+		D.[Quantity],D.[QuantityIsCommon],D.[UnitId],D.[UnitIsCommon],D.[CurrencyId],D.[CurrencyIsCommon]
+	FROM @Ids FE
+	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
 	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
 	FROM dbo.Lines L
@@ -166,5 +178,5 @@ SET NOCOUNT ON;
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Update]
-	@Lines = @Lines, @Entries = @Entries, @ToState = @ToState;
+	@Documents = @Documents, @Lines = @Lines, @Entries = @Entries, @ToState = @ToState;
 	SELECT TOP (@Top) * FROM @ValidationErrors;

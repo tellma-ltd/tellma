@@ -64,14 +64,14 @@ AS
 	AND	(
 
 		-- C# guarantees that a document cannot have BlaIsCommon = 1 when none of its line definitions has a Bla with InheritsFromHeader = 1
-		FL.Id = N'AgentId'				AND D.[DebitAgentId] IS NULL	AND D.[DebitAgentIsCommon] = 1 OR
-		FL.Id = N'AgentId'				AND D.[CreditAgentId] IS NULL	AND D.[CreditAgentIsCommon] = 1 OR
-		FL.Id = N'CenterId'				AND D.[CenterId] IS NULL		AND D.[InvestmentCenterIsCommon] = 1 OR
-		FL.Id = N'Time1'				AND D.[Time1] IS NULL			AND D.[Time1IsCommon] = 1 OR
-		FL.Id = N'Time2'				AND D.[Time2] IS NULL			AND D.[Time2IsCommon] = 1 OR
-		FL.Id = N'Quantity'				AND D.[Quantity] IS NULL		AND D.[QuantityIsCommon] = 1 OR
-		FL.Id = N'UnitId'				AND D.[UnitId] IS NULL			AND D.[UnitIsCommon] = 1 OR
-		FL.Id = N'CurrencyId'			AND D.[CurrencyId] IS NULL 		AND D.[CurrencyIsCommon] = 1
+		FL.Id = N'AgentId'				AND D.[DebitAgentId] IS NULL		AND D.[DebitAgentIsCommon] = 1 OR
+		FL.Id = N'AgentId'				AND D.[CreditAgentId] IS NULL		AND D.[CreditAgentIsCommon] = 1 OR
+		FL.Id = N'CenterId'				AND D.[InvestmentCenterId] IS NULL	AND D.[InvestmentCenterIsCommon] = 1 OR
+		FL.Id = N'Time1'				AND D.[Time1] IS NULL				AND D.[Time1IsCommon] = 1 OR
+		FL.Id = N'Time2'				AND D.[Time2] IS NULL				AND D.[Time2IsCommon] = 1 OR
+		FL.Id = N'Quantity'				AND D.[Quantity] IS NULL			AND D.[QuantityIsCommon] = 1 OR
+		FL.Id = N'UnitId'				AND D.[UnitId] IS NULL				AND D.[UnitIsCommon] = 1 OR
+		FL.Id = N'CurrencyId'			AND D.[CurrencyId] IS NULL 			AND D.[CurrencyIsCommon] = 1
 	);
 
 
