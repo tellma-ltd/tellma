@@ -735,6 +735,9 @@ namespace Tellma.Controllers
 
             // TODO: Add definition-specific validation here
 
+            // SQL may return keys representing line and entry properties that inherit from a common document property
+            // This dictionary maps the keys of the former properties to the keys of the later properties, and is used
+            // At the end to map the keys that return from SQL before serving them to the client
             var errorKeyMap = new Dictionary<string, string>();
 
             ///////// Document Validation
@@ -1069,7 +1072,7 @@ namespace Tellma.Controllers
             var key = $"[{docIndex}].{propName}";
             if (!ModelState.ContainsKey(key))
             {
-                var propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(Document), propName).DisplayName;
+                var propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(DocumentForSave), propName)?.DisplayName ?? _localizer["Document_NotedAgent"];
                 ModelState.AddModelError(key, _localizer["Error_TheField0IsReadOnly", propDisplayName]);
             }
         }

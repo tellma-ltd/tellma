@@ -962,7 +962,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentMemo = true;
               }
               if (!this._readonlyDocumentMemo &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentMemo = true;
               }
               break;
@@ -977,11 +977,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               }
 
               if (!this._readonlyDebitAgent && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDebitAgent = true;
               }
               if (!this._readonlyCreditAgent && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyCreditAgent = true;
               }
               break;
@@ -992,7 +992,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireNotedAgent = true;
               }
               if (!this._readonlyNotedAgent &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyNotedAgent = true;
               }
               break;
@@ -1003,7 +1003,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireInvestmentCenter = true;
               }
               if (!this._readonlyInvestmentCenter &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyInvestmentCenter = true;
               }
               break;
@@ -1014,7 +1014,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentTime1 = true;
               }
               if (!this._readonlyDocumentTime1 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentTime1 = true;
               }
               break;
@@ -1025,7 +1025,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentTime2 = true;
               }
               if (!this._readonlyDocumentTime2 &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentTime2 = true;
               }
               break;
@@ -1036,7 +1036,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentQuantity = true;
               }
               if (!this._readonlyDocumentQuantity &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentQuantity = true;
               }
               break;
@@ -1047,7 +1047,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentUnit = true;
               }
               if (!this._readonlyDocumentUnit &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentUnit = true;
               }
               break;
@@ -1058,7 +1058,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._requireDocumentCurrency = true;
               }
               if (!this._readonlyDocumentCurrency &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentCurrency = true;
               }
               break;

@@ -75,100 +75,33 @@ namespace Tellma.Controllers
                     var defaultName = propDetails.ModelAttributes.PropertyAttributes
                         .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
 
-                    DisplayMetadata displayMetadata;
-
-                    switch (propDetails.Key.Name)
+                    propDetails.DisplayMetadata = propDetails.Key.Name switch
                     {
-                        case nameof(Resource.Identifier):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.IdentifierVisibility, e => e.IdentifierLabel, e => e.IdentifierLabel2, e => e.IdentifierLabel3, defaultName);
-                            break;
-
+                        nameof(Resource.Identifier) => LocalizeResourceProperty(e => e.IdentifierVisibility, e => e.IdentifierLabel, e => e.IdentifierLabel2, e => e.IdentifierLabel3, defaultName),
                         // All dynamically labelled properties
-                        case nameof(Resource.Currency):
-                        case nameof(Resource.CurrencyId):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.CurrencyVisibility, e => e.CurrencyLabel, e => e.CurrencyLabel2, e => e.CurrencyLabel3, defaultName);
-                            break;
-
-                        case nameof(Resource.MonetaryValue):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.MonetaryValueVisibility, e => e.MonetaryValueLabel, e => e.MonetaryValueLabel2, e => e.MonetaryValueLabel3, defaultName);
-                            break; 
-
-                        case nameof(Resource.AvailableSince):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.AvailableSinceVisibility, e => e.AvailableSinceLabel, e => e.AvailableSinceLabel2, e => e.AvailableSinceLabel3, defaultName);
-                            break;
-
-                        case nameof(Resource.AvailableTill):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.AvailableTillVisibility, e => e.AvailableTillLabel, e => e.AvailableTillLabel2, e => e.AvailableTillLabel3, defaultName);
-                            break;
-
-                        case nameof(Resource.Decimal1):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Decimal1Visibility, e => e.Decimal1Label, e => e.Decimal1Label2, e => e.Decimal1Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Decimal2):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Decimal2Visibility, e => e.Decimal2Label, e => e.Decimal2Label2, e => e.Decimal2Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Int1):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Int1Visibility, e => e.Int1Label, e => e.Int1Label2, e => e.Int1Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Int2):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Int2Visibility, e => e.Int2Label, e => e.Int2Label2, e => e.Int2Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Lookup1):
-                        case nameof(Resource.Lookup1Id):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Lookup1Visibility, e => e.Lookup1Label, e => e.Lookup1Label2, e => e.Lookup1Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Lookup2):
-                        case nameof(Resource.Lookup2Id):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Lookup2Visibility, e => e.Lookup2Label, e => e.Lookup2Label2, e => e.Lookup2Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Lookup3):
-                        case nameof(Resource.Lookup3Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.Lookup3Visibility, e => e.Lookup3Label, e => e.Lookup3Label2, e => e.Lookup3Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Lookup4):
-                        case nameof(Resource.Lookup4Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.Lookup4Visibility, e => e.Lookup4Label, e => e.Lookup4Label2, e => e.Lookup4Label3, defaultName);
-                            break;
-
-                        //case nameof(Resource.Lookup5):
-                        //case nameof(Resource.Lookup5Id):
-                        //    displayMetadata = LocalizeResourceProperty(e => e.Lookup5Visibility, e => e.Lookup5Label, e => e.Lookup5Label2, e => e.Lookup5Label3, defaultName);
-                        //    break;
-
-                        case nameof(Resource.Text1):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Text1Visibility, e => e.Text1Label, e => e.Text1Label2, e => e.Text1Label3, defaultName);
-                            break;
-
-                        case nameof(Resource.Text2):
-                            displayMetadata = LocalizeResourceProperty(
-                                e => e.Text2Visibility, e => e.Text2Label, e => e.Text2Label2, e => e.Text2Label3, defaultName);
-                            break;
-
-                        default:
-                            displayMetadata = null;
-                            break;
-                    }
-
-                    propDetails.DisplayMetadata = displayMetadata;
+                        nameof(Resource.Currency) => LocalizeResourceProperty(e => e.CurrencyVisibility, e => e.CurrencyLabel, e => e.CurrencyLabel2, e => e.CurrencyLabel3, defaultName),
+                        nameof(Resource.CurrencyId) => LocalizeResourceProperty(e => e.CurrencyVisibility, e => e.CurrencyLabel, e => e.CurrencyLabel2, e => e.CurrencyLabel3, defaultName),
+                        nameof(Resource.MonetaryValue) => LocalizeResourceProperty(e => e.MonetaryValueVisibility, e => e.MonetaryValueLabel, e => e.MonetaryValueLabel2, e => e.MonetaryValueLabel3, defaultName),
+                        nameof(Resource.AvailableSince) => LocalizeResourceProperty(e => e.AvailableSinceVisibility, e => e.AvailableSinceLabel, e => e.AvailableSinceLabel2, e => e.AvailableSinceLabel3, defaultName),
+                        nameof(Resource.AvailableTill) => LocalizeResourceProperty(e => e.AvailableTillVisibility, e => e.AvailableTillLabel, e => e.AvailableTillLabel2, e => e.AvailableTillLabel3, defaultName),
+                        nameof(Resource.Decimal1) => LocalizeResourceProperty(e => e.Decimal1Visibility, e => e.Decimal1Label, e => e.Decimal1Label2, e => e.Decimal1Label3, defaultName),
+                        nameof(Resource.Decimal2) => LocalizeResourceProperty(e => e.Decimal2Visibility, e => e.Decimal2Label, e => e.Decimal2Label2, e => e.Decimal2Label3, defaultName),
+                        nameof(Resource.Int1) => LocalizeResourceProperty(e => e.Int1Visibility, e => e.Int1Label, e => e.Int1Label2, e => e.Int1Label3, defaultName),
+                        nameof(Resource.Int2) => LocalizeResourceProperty(e => e.Int2Visibility, e => e.Int2Label, e => e.Int2Label2, e => e.Int2Label3, defaultName),
+                        nameof(Resource.Lookup1) => LocalizeResourceProperty(e => e.Lookup1Visibility, e => e.Lookup1Label, e => e.Lookup1Label2, e => e.Lookup1Label3, defaultName),
+                        nameof(Resource.Lookup1Id) => LocalizeResourceProperty(e => e.Lookup1Visibility, e => e.Lookup1Label, e => e.Lookup1Label2, e => e.Lookup1Label3, defaultName),
+                        nameof(Resource.Lookup2) => LocalizeResourceProperty(e => e.Lookup2Visibility, e => e.Lookup2Label, e => e.Lookup2Label2, e => e.Lookup2Label3, defaultName),
+                        nameof(Resource.Lookup2Id) => LocalizeResourceProperty(e => e.Lookup2Visibility, e => e.Lookup2Label, e => e.Lookup2Label2, e => e.Lookup2Label3, defaultName),
+                        nameof(Resource.Lookup3) => LocalizeResourceProperty(e => e.Lookup3Visibility, e => e.Lookup3Label, e => e.Lookup3Label2, e => e.Lookup3Label3, defaultName),
+                        nameof(Resource.Lookup3Id) => LocalizeResourceProperty(e => e.Lookup3Visibility, e => e.Lookup3Label, e => e.Lookup3Label2, e => e.Lookup3Label3, defaultName),
+                        nameof(Resource.Lookup4) => LocalizeResourceProperty(e => e.Lookup4Visibility, e => e.Lookup4Label, e => e.Lookup4Label2, e => e.Lookup4Label3, defaultName),
+                        nameof(Resource.Lookup4Id) => LocalizeResourceProperty(e => e.Lookup4Visibility, e => e.Lookup4Label, e => e.Lookup4Label2, e => e.Lookup4Label3, defaultName),
+                        //nameof(Resource.Lookup5) => LocalizeResourceProperty(e => e.Lookup5Visibility, e => e.Lookup5Label, e => e.Lookup5Label2, e => e.Lookup5Label3, defaultName),
+                        //nameof(Resource.Lookup5Id) => LocalizeResourceProperty(e => e.Lookup5Visibility, e => e.Lookup5Label, e => e.Lookup5Label2, e => e.Lookup5Label3, defaultName),
+                        nameof(Resource.Text1) => LocalizeResourceProperty(e => e.Text1Visibility, e => e.Text1Label, e => e.Text1Label2, e => e.Text1Label3, defaultName),
+                        nameof(Resource.Text2) => LocalizeResourceProperty(e => e.Text2Visibility, e => e.Text2Label, e => e.Text2Label2, e => e.Text2Label3, defaultName),
+                        _ => null,
+                    };
                 }
             }
 
@@ -181,17 +114,49 @@ namespace Tellma.Controllers
                 {
                     var defaultName = propDetails.ModelAttributes.PropertyAttributes
                         .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
-                    var displayMetadata = propDetails.Key.Name switch
+                    propDetails.DisplayMetadata = propDetails.Key.Name switch
                     {
                         // All dynamically labelled properties
                         nameof(Agent.TaxIdentificationNumber) => LocalizeAgentSpecificProperty(e => e.TaxIdentificationNumberVisibility, defaultName),
                         nameof(Agent.StartDate) => LocalizeAgentProperty(e => e.StartDateVisibility, e => e.StartDateLabel, e => e.StartDateLabel2, e => e.StartDateLabel3, defaultName),
                         nameof(Agent.JobId) => LocalizeAgentSpecificProperty(e => e.JobVisibility, defaultName),//  case nameof(Agent.Job): TODO
-                        nameof(Agent.Rates) => LocalizeAgentSpecificProperty(e => e.RatesVisibility, defaultName),//  case nameof(Agent.Job): TODO
+                        nameof(Agent.Rates) => LocalizeAgentSpecificProperty(e => e.RatesVisibility, defaultName),
                         nameof(Agent.BankAccountNumber) => LocalizeAgentSpecificProperty(e => e.BankAccountNumberVisibility, defaultName),
                         _ => null,
                     };
-                    propDetails.DisplayMetadata = displayMetadata;
+                }
+            }
+
+            if (key.ModelType.IsSameOrSubClassOf<DocumentForSave>())
+            {
+                // Get the route data from http context
+                // Loop over the properties and special treatment to the dynamic ones
+                foreach (var propDetails in propsDetails)
+                {
+                    var defaultName = propDetails.ModelAttributes.PropertyAttributes
+                        .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
+
+                    propDetails.DisplayMetadata = propDetails.Key.Name switch
+                    {
+                        // All dynamically labelled properties
+                        nameof(Document.Memo) => LocalizeDocumentProperty(e => e.MemoVisibility, e => e.MemoLabel, e => e.MemoLabel2, e => e.MemoLabel3, defaultName),
+                        nameof(Document.DebitAgentId) => LocalizeDocumentSpecificProperty(e => e.DebitAgentVisibility, e => e.DebitAgentLabel, e => e.DebitAgentLabel2, e => e.DebitAgentLabel3, defaultName),
+                        nameof(Document.DebitAgent) => LocalizeDocumentSpecificProperty(e => e.DebitAgentVisibility, e => e.DebitAgentLabel, e => e.DebitAgentLabel2, e => e.DebitAgentLabel3, defaultName),
+                        nameof(Document.CreditAgentId) => LocalizeDocumentSpecificProperty(e => e.CreditAgentVisibility, e => e.CreditAgentLabel, e => e.CreditAgentLabel2, e => e.CreditAgentLabel3, defaultName),
+                        nameof(Document.CreditAgent) => LocalizeDocumentSpecificProperty(e => e.CreditAgentVisibility, e => e.CreditAgentLabel, e => e.CreditAgentLabel2, e => e.CreditAgentLabel3, defaultName),
+                        nameof(Document.NotedAgentId) => LocalizeDocumentSpecificProperty(e => e.NotedAgentVisibility, e => e.NotedAgentLabel, e => e.NotedAgentLabel2, e => e.NotedAgentLabel3, defaultName),
+                        nameof(Document.NotedAgent) => LocalizeDocumentSpecificProperty(e => e.NotedAgentVisibility, e => e.NotedAgentLabel, e => e.NotedAgentLabel2, e => e.NotedAgentLabel3, defaultName),
+                        nameof(Document.InvestmentCenter) => LocalizeDocumentSpecificProperty(e => e.InvestmentCenterVisibility, e => e.InvestmentCenterLabel, e => e.InvestmentCenterLabel2, e => e.InvestmentCenterLabel3, defaultName),
+                        nameof(Document.InvestmentCenterId) => LocalizeDocumentSpecificProperty(e => e.InvestmentCenterVisibility, e => e.InvestmentCenterLabel, e => e.InvestmentCenterLabel2, e => e.InvestmentCenterLabel3, defaultName),
+                        nameof(Document.Time1) => LocalizeDocumentSpecificProperty(e => e.Time1Visibility, e => e.Time1Label, e => e.Time1Label2, e => e.Time1Label3, defaultName),
+                        nameof(Document.Time2) => LocalizeDocumentSpecificProperty(e => e.Time2Visibility, e => e.Time2Label, e => e.Time2Label2, e => e.Time2Label3, defaultName),
+                        nameof(Document.Quantity) => LocalizeDocumentSpecificProperty(e => e.QuantityVisibility, e => e.QuantityLabel, e => e.QuantityLabel2, e => e.QuantityLabel3, defaultName),
+                        nameof(Document.UnitId) => LocalizeDocumentSpecificProperty(e => e.UnitVisibility, e => e.UnitLabel, e => e.UnitLabel2, e => e.UnitLabel3, defaultName),
+                        nameof(Document.Unit) => LocalizeDocumentSpecificProperty(e => e.UnitVisibility, e => e.UnitLabel, e => e.UnitLabel2, e => e.UnitLabel3, defaultName),
+                        nameof(Document.CurrencyId) => LocalizeDocumentSpecificProperty(e => e.CurrencyVisibility, e => e.CurrencyLabel, e => e.CurrencyLabel2, e => e.CurrencyLabel3, defaultName),
+                        nameof(Document.Currency) => LocalizeDocumentSpecificProperty(e => e.CurrencyVisibility, e => e.CurrencyLabel, e => e.CurrencyLabel2, e => e.CurrencyLabel3, defaultName),
+                        _ => null,
+                    };
                 }
             }
 
@@ -268,6 +233,33 @@ namespace Tellma.Controllers
                     visibilityFunc, e => null, e => null, e => null, defaultDisplayName);
         }
 
+        DisplayMetadata LocalizeDocumentProperty(
+            Func<DocumentDefinitionForClient, string> visibilityFunc,
+            Func<DocumentDefinitionForClient, string> s1Func,
+            Func<DocumentDefinitionForClient, string> s2Func,
+            Func<DocumentDefinitionForClient, string> s3Func,
+            string defaultDisplayName)
+        {
+            return LocalizeProperty(
+                (tenantId, definitionId) => _definitionsCache.GetDefinitionsIfCached(tenantId)?.Data?.Documents?.GetValueOrDefault(definitionId),
+                    visibilityFunc, s1Func, s2Func, s3Func, defaultDisplayName);
+        }
+
+        DisplayMetadata LocalizeDocumentSpecificProperty(
+            Func<DocumentDefinitionForClient, bool> isVisibleFunc,
+            Func<DocumentDefinitionForClient, string> s1Func,
+            Func<DocumentDefinitionForClient, string> s2Func,
+            Func<DocumentDefinitionForClient, string> s3Func,
+            string defaultDisplayName)
+        {
+            // Changes the boolean visibility to string visibility
+            string visibilityFunc(DocumentDefinitionForClient def) => isVisibleFunc(def) ? Visibility.Optional : null;
+
+            return LocalizeProperty(
+                (tenantId, definitionId) => _definitionsCache.GetDefinitionsIfCached(tenantId)?.Data?.Documents?.GetValueOrDefault(definitionId),
+                    visibilityFunc, s1Func, s2Func, s3Func, defaultDisplayName);
+        }
+
         DisplayMetadata LocalizeProperty<TDefinitionForClient>(
             Func<int, string, TDefinitionForClient> definitionFunc,
             Func<TDefinitionForClient, string> visibilityFunc,
@@ -282,7 +274,6 @@ namespace Tellma.Controllers
                 // the default if non are available. Be as forgiving as possible
                 DisplayName = () =>
                 {
-
                     string result = _localizer[defaultDisplayName];
                     var routeData = _httpContextAccessor.HttpContext.GetRouteData();
                     var definitionId = routeData.Values["definitionId"]?.ToString();

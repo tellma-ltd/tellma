@@ -47,7 +47,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'CurrencyId';
 	UPDATE E
 	SET E.AgentId = BE.AgentId
@@ -55,7 +55,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'AgentId';
 	UPDATE E
 	SET E.ResourceId = BE.ResourceId
@@ -63,7 +63,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'ResourceId';
 	UPDATE E
 	SET E.AgentId = BE.AgentId
@@ -71,7 +71,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'AgentId';
 	UPDATE E
 	SET E.CenterId = BE.CenterId
@@ -79,7 +79,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'CenterId';
 	UPDATE E
 	SET E.AgentId = BE.AgentId
@@ -87,7 +87,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'AgentId';
 	UPDATE E
 	SET E.DueDate = BE.DueDate
@@ -95,7 +95,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'DueDate';
 	UPDATE E
 	SET E.MonetaryValue = BE.MonetaryValue
@@ -103,7 +103,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'MonetaryValue';
 	UPDATE E
 	SET E.Quantity = BE.Quantity
@@ -111,7 +111,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'Quantity';
 	UPDATE E
 	SET E.UnitId = BE.UnitId
@@ -119,7 +119,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'UnitId';
 	UPDATE E
 	SET E.Time1 = BE.Time1
@@ -127,7 +127,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'Time1';
 	UPDATE E
 	SET E.Time2 = BE.Time2
@@ -135,7 +135,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'Time2';
 	UPDATE E
 	SET E.ExternalReference = BE.ExternalReference
@@ -143,7 +143,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'ExternalReference';
 	UPDATE E
 	SET E.AdditionalReference = BE.AdditionalReference
@@ -151,7 +151,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'AdditionalReference';
 	UPDATE E
 	SET E.NotedAgentId = BE.NotedAgentId
@@ -159,7 +159,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'NotedAgentId';
 	UPDATE E
 	SET E.NotedAgentName = BE.NotedAgentName
@@ -167,7 +167,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'NotedAgentName';
 	UPDATE E
 	SET E.NotedAmount = BE.NotedAmount
@@ -175,7 +175,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'NotedAmount';
 	UPDATE E
 	SET E.NotedDate = BE.NotedDate
@@ -183,7 +183,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State]
+	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
 	AND LDC.ColumnName = N'NotedDate';
 END
 	-- Get line definition which have script to run

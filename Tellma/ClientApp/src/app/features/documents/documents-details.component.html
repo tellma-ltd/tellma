@@ -316,7 +316,8 @@
     <t-form-group *ngIf="showDocumentMemo(model)" class="t-form-group" [label]="'Memo' | translate"
         [serverErrors]="model.serverErrors?.Memo">
         <div *ngIf="!isEdit">{{ model?.Memo }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }">
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="requireDocumentMemo(model)" [disabled]="readonlyDocumentMemo(model)">
         </t-text-editor>
         <ng-container *ngIf="showDocumentMemoIsCommon(model)">
             <ng-container *ngTemplateOutlet="lock; context:{ prop: 'MemoIsCommon' }"></ng-container>
@@ -1455,7 +1456,7 @@
                         {{ 'OwnsThisDocument' | translate }}
                     </div>
                 </div>
- 
+
                 <!-- Assign the document -->
                 <div class="px-2 pb-2 pt-0" [style.margin-left.px]="marginLeft" [style.margin-right.px]="marginRight"
                     *ngIf="showAssignDocument(model)">
