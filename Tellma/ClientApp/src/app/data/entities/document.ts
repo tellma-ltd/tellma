@@ -2,7 +2,7 @@
 // tslint:disable:max-line-length
 import { TenantWorkspace, WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor } from './base/metadata';
+import { EntityDescriptor, NavigationPropDescriptor, BooleanPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
@@ -24,6 +24,8 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     DebitAgentIsCommon?: boolean;
     CreditAgentId?: number;
     CreditAgentIsCommon?: boolean;
+    NotedAgentId?: number;
+    NotedAgentIsCommon?: boolean;
     InvestmentCenterId?: number;
     InvestmentCenterIsCommon?: boolean;
     Time1?: string;
@@ -116,13 +118,16 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
-                DebitAgentId:  { control: 'number', label: () => `${trx.instant('Document_DebitAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DebitAgentId: { control: 'number', label: () => `${trx.instant('Document_DebitAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DebitAgent: { control: 'navigation', label: () => trx.instant('Document_DebitAgent'), type: 'Agent', foreignKeyName: 'DebitAgentId' },
                 DebitAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_DebitAgentIsCommon') },
-                CreditAgentId:  { control: 'number', label: () => `${trx.instant('Document_CreditAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CreditAgentId: { control: 'number', label: () => `${trx.instant('Document_CreditAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CreditAgent: { control: 'navigation', label: () => trx.instant('Document_CreditAgent'), type: 'Agent', foreignKeyName: 'CreditAgentId' },
                 CreditAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_CreditAgentIsCommon') },
-                InvestmentCenterId:  { control: 'number', label: () => `${trx.instant('Document_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedAgentId: { control: 'number', label: () => `${trx.instant('Document_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedAgent: { control: 'navigation', label: () => trx.instant('Document_NotedAgent'), type: 'Agent', foreignKeyName: 'NotedAgentId' },
+                NotedAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_NotedAgentIsCommon') },
+                InvestmentCenterId: { control: 'number', label: () => `${trx.instant('Document_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 InvestmentCenter: { control: 'navigation', label: () => trx.instant('Document_InvestmentCenter'), type: 'Center', foreignKeyName: 'InvestmentCenterId' },
                 InvestmentCenterIsCommon: { control: 'boolean', label: () => trx.instant('Document_InvestmentCenterIsCommon') },
                 Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
@@ -131,10 +136,10 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 Time2IsCommon: { control: 'boolean', label: () => trx.instant('Document_Time2IsCommon') },
                 Quantity: { control: 'number', label: () => trx.instant('Document_Quantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 QuantityIsCommon: { control: 'boolean', label: () => trx.instant('Document_QuantityIsCommon') },
-                UnitId:  { control: 'number', label: () => `${trx.instant('Document_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                UnitId: { control: 'number', label: () => `${trx.instant('Document_Unit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Unit: { control: 'navigation', label: () => trx.instant('Document_Unit'), type: 'Unit', foreignKeyName: 'UnitId' },
                 UnitIsCommon: { control: 'boolean', label: () => trx.instant('Document_UnitIsCommon') },
-                CurrencyId:  { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
+                CurrencyId: { control: 'text', label: () => `${trx.instant('Document_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Document_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Document_CurrencyIsCommon') },
                 SerialNumber: {
@@ -185,10 +190,60 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 console.error(`defintionId '${definitionId}' doesn't exist`);
             }
         } else {
-            delete entityDesc.properties.DefinitionId;
-            delete entityDesc.properties.Definition;
+            const props = entityDesc.properties;
+            delete props.DefinitionId;
+            delete props.Definition;
 
-            // TODO: adjust properties as per definition
+            // Simple properties whose label and visibility are overriden by the definition
+            for (const propName of ['Time1', 'Time2', 'Quantity', 'Memo']) {
+                if (!definition[propName + 'Visibility']) {
+                    delete props[propName];
+                    delete props[propName + 'IsCommon'];
+                } else {
+
+                    // Nav property
+                    const propDesc = props[propName];
+                    const defaultLabel = propDesc.label;
+                    propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+
+                    // IsCommon property
+                    const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
+                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                }
+            }
+
+            if (!definition.MemoIsCommonVisibility) {
+                // Memo in particular can remain visible without MemoIsCommon
+                delete props.MemoIsCommon;
+            }
+
+            // Navigation properties whose label and visibility are overriden by the definition
+            for (const propName of ['DebitAgent', 'CreditAgent', 'NotedAgent', 'InvestmentCenter', 'Unit', 'Currency']) {
+                if (!definition[propName + 'Visibility']) {
+
+                    delete props[propName + 'Id'];
+                    delete props[propName];
+                    delete props[propName + 'IsCommon'];
+                } else {
+
+                    // Nav property
+                    const propDesc = props[propName] as NavigationPropDescriptor;
+                    const defaultLabel = propDesc.label;
+                    propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+
+                    if (definition[propName + 'DefinitionId']) {
+                        propDesc.definition = definition[propName + 'DefinitionId'];
+                    }
+
+                    // Foreign key property
+                    const idPropDesc = props[propName + 'Id'];
+                    idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+
+                    // IsCommon property
+                    const isCommonPropDesc = props[propName + 'IsCommon'] as BooleanPropDescriptor;
+                    isCommonPropDesc.label = () => trx.instant('XIsCommon', { 0: propDesc.label() });
+                }
+            }
         }
 
         _cache[key] = entityDesc;

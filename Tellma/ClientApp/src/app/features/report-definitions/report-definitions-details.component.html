@@ -84,7 +84,7 @@
                                 <!-- Expand button -->
                                 <button class="btn btn-sm m-0 py-0 px-2 border-0 text-white t-pointer t-transparent"
                                     [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
-                                    (click)="onExpand(node, i, model)">
+                                    [style.cursor]="!hasChildren(node) ? 'inherit' : null" (click)="onExpand(node, i, model)">
                                     <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)">
                                     </fa-icon>
                                 </button>
@@ -416,7 +416,8 @@
                     <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle" *ngIf="chartSectionErrors(model)">
                     </fa-icon>
                 </div>
-                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')" *ngIf="model.Type === 'Summary'">
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Chart')"
+                    *ngIf="model.Type === 'Summary'">
 
                     <!-- Chart -->
                     <div class="form-group" [class.is-invalid]="invalid(chart, model.serverErrors?.Chart)">

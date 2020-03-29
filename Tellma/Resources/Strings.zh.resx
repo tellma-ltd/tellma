@@ -463,6 +463,12 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>备注是常有的事</value>
   </data>
+  <data name="Document_NotedAgent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
+    <value>注意代理是很常见</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
   </data>
@@ -780,6 +786,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>与ID的实体“{0}”被指定多次。</value>
+  </data>
+  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
+    <value>{0}字段是只读的。</value>
   </data>
   <data name="Error_TheField0IsRequired" xml:space="preserve">
     <value>{0}字段是必需的。</value>

@@ -463,6 +463,12 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo Is Common</value>
   </data>
+  <data name="Document_NotedAgent" xml:space="preserve">
+    <value>Noted Agent</value>
+  </data>
+  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
+    <value>Noted Agent Is Common</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
   </data>
@@ -780,6 +786,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>The entity with Id '{0}' is specified more than once.</value>
+  </data>
+  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
+    <value>The {0} field is read-only.</value>
   </data>
   <data name="Error_TheField0IsRequired" xml:space="preserve">
     <value>The {0} field is required.</value>

@@ -21,8 +21,8 @@ BEGIN
 	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId NVARCHAR(50);
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
-	DECLARE @PreprocessedLines dbo.LineList, @PreprocessedEntries dbo.EntryList;
-	DECLARE @L [dbo].[LineList], @E [dbo].EntryList;
+	DECLARE @PreprocessedDocuments [dbo].[DocumentList], @PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
+	DECLARE @D [dbo].[DocumentList], @L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 	Declare @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -37,6 +37,7 @@ BEGIN
 	-----
 	SELECT * FROM @ProcessedWideLines;
 	';
+	INSERT INTO @D SELECT * FROM @Documents;
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 BEGIN --  Overwrite input with DB data that is read only
@@ -193,6 +194,8 @@ END
 		WHERE [Script] IS NOT NULL
 	);
 	-- Copy lines and entries with no script as they are
+	INSERT INTO @PreprocessedDocuments
+	SELECT * FROM @D
 	INSERT INTO @PreprocessedLines
 	SELECT * FROM @L WHERE DefinitionId NOT IN (SELECT [Id] FROM @ScriptLineDefinitions)
 	INSERT INTO @PreprocessedEntries
@@ -282,16 +285,25 @@ END
 	);
 
 	-- When there is only one center, use it everywhere
-	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE IsActive = 1 AND IsLeaf = 1) = 1
+	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1) = 1
+	BEGIN
+		UPDATE @PreprocessedDocuments
+		SET [InvestmentCenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 		UPDATE @PreprocessedEntries
-		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE IsActive = 1 AND IsLeaf = 1);
-	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND IsActive = 1 AND IsLeaf = 1) = 1
+		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
+	END
+	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
+	BEGIN
+		UPDATE @PreprocessedDocuments
+		SET [InvestmentCenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1)
+		WHERE InvestmentCenterIsCommon = 1;
 		UPDATE PE 
-		SET PE.CenterId = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND IsActive = 1 AND IsLeaf = 1)
+		SET PE.CenterId = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1)
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])
@@ -344,6 +356,10 @@ END
 		FROM @PreprocessedEntries
 		FOR JSON PATH
 	);	
+
+	-- We're still assuming that preprocess only modifies, it doesn't insert nor deletes
+	SELECT * FROM @PreprocessedDocuments;
+	SELECT * FROM @PreprocessedLines;
 	SELECT * FROM @PreprocessedEntries;
 END
 

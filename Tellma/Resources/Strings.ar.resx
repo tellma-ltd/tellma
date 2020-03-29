@@ -463,6 +463,12 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>الملاحظات مشتركة</value>
   </data>
+  <data name="Document_NotedAgent" xml:space="preserve">
+    <value>الذمة المعنية</value>
+  </data>
+  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
+    <value>الذمة المعنية مشتركة</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
   </data>
@@ -780,6 +786,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
+  </data>
+  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
+    <value>حقل {0} غير قابل للتعديل</value>
   </data>
   <data name="Error_TheField0IsRequired" xml:space="preserve">
     <value>حقل {0} مطلوب</value>

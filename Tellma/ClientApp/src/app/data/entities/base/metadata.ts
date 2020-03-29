@@ -266,11 +266,6 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     definition?: string;
 
     /**
-     * Determines the list of possible definition Ids
-     */
-    definitions?: string[];
-
-    /**
      * The name of the foreign key property
      */
     foreignKeyName: string;

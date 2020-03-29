@@ -166,6 +166,8 @@
   "Document_InvestmentCenter": "Investment Center",
   "Document_InvestmentCenterIsCommon": "Investment Center Is Common",
   "Document_MemoIsCommon": "Memo Is Common",
+  "Document_NotedAgent": "Noted Agent",
+  "Document_NotedAgentIsCommon": "Noted Agent Is Common",
   "Document_OpenedAt": "Opened At",
   "Document_PostingDate": "Date",
   "Document_Quantity": "Quantity",
@@ -598,7 +600,10 @@
   "Smart": "Smart",
   "SmartEntries": "Smart Entries",
   "SortKey": "Sort Key",
+  "SpecifiedPerLine": "Specified per line",
+  "SpecifyHere": "Specify Here",
   "SpecifyNumericMeasure": "Add at least one numeric measure",
+  "SpecifyPerLine": "Specify Per Line",
   "SqlDatabase_DatabaseName": "Database Name",
   "SqlDatabase_Server": "Server",
   "SqlServer_PasswordKey": "Password Key",
@@ -680,5 +685,6 @@
   "WeRecommendUpgradingToTheLatestBrowsers": "We recommend upgrading to the latest Chrome, Firefox or Edge",
   "WithoutPicture": "Without Picture",
   "WithPicture": "With Picture",
+  "XIsCommon": "{{0}} Is Common",
   "Yes": "Yes"
 }

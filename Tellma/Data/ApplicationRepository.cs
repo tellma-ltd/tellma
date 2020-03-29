@@ -664,8 +664,8 @@ namespace Tellma.Data
             return (version, permissions);
         }
 
-        public async Task<(Guid, IEnumerable<LookupDefinition>,  IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>,
-            IEnumerable<ReportDefinition>,  IEnumerable<DocumentDefinition>, IEnumerable<LineDefinition>)> Definitions__Load()
+        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>,
+            IEnumerable<ReportDefinition>, IEnumerable<DocumentDefinition>, IEnumerable<LineDefinition>)> Definitions__Load()
         {
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
@@ -3706,13 +3706,13 @@ namespace Tellma.Data
             return query.FromSql($"[map].[{nameof(Documents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
+        public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> docs)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+            var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(docs);
 
             var docsTvp = new SqlParameter("@Documents", docsTable)
             {
@@ -3743,16 +3743,57 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
-            var props = typeof(EntryForSave).GetMappedProperties();
+
+            // Documents
+            var docProps = typeof(DocumentForSave).GetMappedProperties();
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+
+                var doc = docs[index];
+
+                foreach (var prop in docProps)
+                {
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(doc, propValue);
+                }
+            }
+
+            // Lines
+            await reader.NextResultAsync();
+            var lineProps = typeof(LineForSave).GetMappedProperties();
+            while (await reader.ReadAsync())
+            {
+                var index = reader.GetInt32(0);
+                var docIndex = reader.GetInt32(1);
+
+                var line = docs[docIndex].Lines[index];
+
+                foreach (var prop in lineProps)
+                {
+                    // get property value
+                    var propValue = reader[prop.Name];
+                    propValue = propValue == DBNull.Value ? null : propValue;
+
+                    prop.SetValue(line, propValue);
+                }
+            }
+
+            // Entries         
+            await reader.NextResultAsync();
+            var entryProps = typeof(EntryForSave).GetMappedProperties();
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
                 var lineIndex = reader.GetInt32(1);
-                var documentIndex = reader.GetInt32(2);
+                var docIndex = reader.GetInt32(2);
 
-                var entry = documents[documentIndex].Lines[lineIndex].Entries[index];
+                var entry = docs[docIndex].Lines[lineIndex].Entries[index];
 
-                foreach (var prop in props)
+                foreach (var prop in entryProps)
                 {
                     // get property value
                     var propValue = reader[prop.Name];

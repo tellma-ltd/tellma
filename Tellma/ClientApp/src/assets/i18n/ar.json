@@ -166,6 +166,8 @@
   "Document_InvestmentCenter": "مركز الاستثمار",
   "Document_InvestmentCenterIsCommon": "مركز الاستثمار مشترك",
   "Document_MemoIsCommon": "الملاحظات مشتركة",
+  "Document_NotedAgent": "الذمة المعنية",
+  "Document_NotedAgentIsCommon": "الذمة المعنية مشتركة",
   "Document_OpenedAt": "زمن الاطلاع",
   "Document_PostingDate": "التاريخ",
   "Document_Quantity": "الكمية",
@@ -598,7 +600,10 @@
   "Smart": "ذكية",
   "SmartEntries": "القيود الآلية",
   "SortKey": "مفتاح الترتيب",
+  "SpecifiedPerLine": "كل سطر على حدة",
+  "SpecifyHere": "حدد هنا",
   "SpecifyNumericMeasure": "قم بتحديد قيمة واحدة على الأقل ذات طبيعة عددية",
+  "SpecifyPerLine": "حدد كل سطر على حدة",
   "SqlDatabase_DatabaseName": "اسم قاعدة البيانات",
   "SqlDatabase_Server": "المخدم",
   "SqlServer_PasswordKey": "مفتاح كلمة المرور",
@@ -680,5 +685,6 @@
   "WeRecommendUpgradingToTheLatestBrowsers": "ينصح باستخدام آخر الإصدارات من كروم أو فايرفوكس أو إيدج",
   "WithoutPicture": "بدون صورة",
   "WithPicture": "مع صورة",
+  "XIsCommon": "{{0}} صفة مشتركة",
   "Yes": "نعم"
 }

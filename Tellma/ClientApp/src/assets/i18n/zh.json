@@ -166,6 +166,8 @@
   "Document_InvestmentCenter": "投资中心",
   "Document_InvestmentCenterIsCommon": "投资中心是常有的事",
   "Document_MemoIsCommon": "备注是常有的事",
+  "Document_NotedAgent": "代理人",
+  "Document_NotedAgentIsCommon": "注意代理是很常见",
   "Document_OpenedAt": "开盘报",
   "Document_PostingDate": "日期",
   "Document_Quantity": "数量",
@@ -598,7 +600,10 @@
   "Smart": "聪明",
   "SmartEntries": "智能项",
   "SortKey": "排序关键字",
+  "SpecifiedPerLine": "每行指定",
+  "SpecifyHere": "在这里指定",
   "SpecifyNumericMeasure": "添加至少一个数字量度",
+  "SpecifyPerLine": "每行指定",
   "SqlDatabase_DatabaseName": "数据库名称",
   "SqlDatabase_Server": "服务器",
   "SqlServer_PasswordKey": "密码按键",
@@ -680,5 +685,6 @@
   "WeRecommendUpgradingToTheLatestBrowsers": "我们建议您升级到最新的Chrome，Firefox或边缘",
   "WithoutPicture": "没有图片",
   "WithPicture": "随着图片",
+  "XIsCommon": "{{0}}是常有的事",
   "Yes": "是"
 }

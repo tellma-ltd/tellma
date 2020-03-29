@@ -63,6 +63,12 @@ namespace Tellma.Entities
         [Display(Name = "Document_CreditAgentIsCommon")]
         public bool? CreditAgentIsCommon { get; set; }
 
+        [Display(Name = "Document_NotedAgent")]
+        public int? NotedAgentId { get; set; }
+
+        [Display(Name = "Document_NotedAgentIsCommon")]
+        public bool? NotedAgentIsCommon { get; set; }
+
         [Display(Name = "Document_InvestmentCenter")]
         public int? InvestmentCenterId { get; set; }
 
@@ -170,6 +176,10 @@ namespace Tellma.Entities
         [Display(Name = "Document_CreditAgent")]
         [ForeignKey(nameof(CreditAgentId))]
         public Agent CreditAgent { get; set; }
+
+        [Display(Name = "Document_NotedAgent")]
+        [ForeignKey(nameof(NotedAgentId))]
+        public Agent NotedAgent { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]
         [ForeignKey(nameof(InvestmentCenterId))]

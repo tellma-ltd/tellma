@@ -44,27 +44,7 @@ namespace Tellma.Entities
 
         // New Stuff
         public string MemoVisibility { get; set; }
-        public string DebitAgentDefinitionId { get; set; }
-        public string DebitAgentLabel { get; set; }
-        public string DebitAgentLabel2 { get; set; }
-        public string DebitAgentLabel3 { get; set; }
-        public string CreditAgentDefinitionId { get; set; }
-        public string CreditAgentLabel { get; set; }
-        public string CreditAgentLabel2 { get; set; }
-        public string CreditAgentLabel3 { get; set; }
         public string ClearanceVisibility { get; set; }
-        public string Time1Label { get; set; }
-        public string Time1Label2 { get; set; }
-        public string Time1Label3 { get; set; }
-        public string Time2Label { get; set; }
-        public string Time2Label2 { get; set; }
-        public string Time2Label3 { get; set; }
-        public string QuantityLabel { get; set; }
-        public string QuantityLabel2 { get; set; }
-        public string QuantityLabel3 { get; set; }
-        public string UnitLabel { get; set; }
-        public string UnitLabel2 { get; set; }
-        public string UnitLabel3 { get; set; }
 
         // End: New stuff
 

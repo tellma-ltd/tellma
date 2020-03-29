@@ -119,8 +119,10 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
       }
 
+      console.log(definitionId);
+
       // Simple properties whose visibility is overridden by the definition
-      const simpleVisibilityProps = ['TaxIdentificationNumber', 'StartDate', 'Job', 'BasicSalary', 'TransportationAllowance', 'OvertimeRate', 'BankAccountNumber'];
+      const simpleVisibilityProps = ['TaxIdentificationNumber', 'StartDate', 'BasicSalary', 'TransportationAllowance', 'OvertimeRate', 'BankAccountNumber'];
       for (const propName of simpleVisibilityProps) {
         if (!definition[propName + 'Visibility']) {
           delete entityDesc.properties[propName];
@@ -136,11 +138,10 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
 
         const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
         idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
-
       }
 
       // Navigation properties whose visibility is overriden by the definition
-      for (const propName of []) {
+      for (const propName of ['Job']) {
         if (!definition[propName + 'Visibility']) {
           delete entityDesc.properties[propName];
           delete entityDesc.properties[propName + 'Id'];

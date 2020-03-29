@@ -27,6 +27,6 @@
 	[QuantityIsCommon]				BIT				NOT NULL DEFAULT 0,
 	[UnitId]						INT,
 	[UnitIsCommon]					BIT				NOT NULL DEFAULT 0,
-	[CurrencyId]					INT, 
+	[CurrencyId]					NCHAR (3), 
 	[CurrencyIsCommon]				BIT				NOT NULL DEFAULT 0
 );

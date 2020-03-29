@@ -166,6 +166,8 @@
   "Document_InvestmentCenter": "የኢንቨስትመንት ማዕከል",
   "Document_InvestmentCenterIsCommon": "የኢንቨስትመንት ማዕከል ነው የጋራ",
   "Document_MemoIsCommon": "Memo የሆነው የጋራ",
+  "Document_NotedAgent": "ወኪል",
+  "Document_NotedAgentIsCommon": "እንደተጠቀሰው ወኪል የሆነው የጋራ",
   "Document_OpenedAt": "ላይ የተከፈተው",
   "Document_PostingDate": "ቀን",
   "Document_Quantity": "ብዛት",
@@ -598,7 +600,10 @@
   "Smart": "ብልህ",
   "SmartEntries": "ስማርት ግቤቶችን",
   "SortKey": "ደርድር ቁልፍ",
+  "SpecifiedPerLine": "መስመር አልተጠቀሰም",
+  "SpecifyHere": "እዚህ ላይ ይግለጹ",
   "SpecifyNumericMeasure": "ቢያንስ አንድ ቁጥራዊ መስፈሪያ ያክሉ",
+  "SpecifyPerLine": "በእያንዳንዱ መስመር ግለፅ",
   "SqlDatabase_DatabaseName": "የውሂብ ጎታ ስም",
   "SqlDatabase_Server": "አገልጋይ",
   "SqlServer_PasswordKey": "የይለፍ ቃል ቁልፍ",
@@ -680,5 +685,6 @@
   "WeRecommendUpgradingToTheLatestBrowsers": "እኛ የቅርብ ጊዜው Chrome, Firefox ወይም ጫፍ ወደ ማሻሻል ይመክራሉ",
   "WithoutPicture": "በገጽ ያለ",
   "WithPicture": "በገጽ ጋር",
+  "XIsCommon": "{{0}} የጋራ ነው",
   "Yes": "አዎ"
 }

@@ -456,11 +456,17 @@ namespace Tellma.Controllers
             // Set default values
             docs.ForEach(doc =>
             {
+                if (!settings.IsMultiCenter)
+                {
+                    doc.InvestmentCenterIsCommon = false;
+                }
+
                 // Document defaults
                 doc.MemoIsCommon ??= docDef.MemoVisibility != null ? doc.MemoIsCommon ?? false : false;
                 doc.DebitAgentIsCommon = docDef.DebitAgentVisibility ? doc.DebitAgentIsCommon ?? false : false;
                 doc.CreditAgentIsCommon = docDef.CreditAgentVisibility ? doc.CreditAgentIsCommon ?? false : false;
-                doc.InvestmentCenterIsCommon = false;
+                doc.NotedAgentIsCommon = docDef.NotedAgentVisibility ? doc.NotedAgentIsCommon ?? false : false;
+                doc.InvestmentCenterIsCommon = docDef.InvestmentCenterVisibility ? doc.InvestmentCenterIsCommon ?? false : false;
                 doc.Time1IsCommon = docDef.Time1Visibility ? doc.Time1IsCommon ?? false : false;
                 doc.Time2IsCommon = docDef.Time2Visibility ? doc.Time2IsCommon ?? false : false;
                 doc.QuantityIsCommon = docDef.QuantityVisibility ? doc.QuantityIsCommon ?? false : false;
@@ -487,6 +493,7 @@ namespace Tellma.Controllers
                 doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
                 doc.DebitAgentId = doc.DebitAgentIsCommon.Value ? doc.DebitAgentId : null;
                 doc.CreditAgentId = doc.CreditAgentIsCommon.Value ? doc.CreditAgentId : null;
+                doc.NotedAgentId = doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;
                 doc.InvestmentCenterId = doc.InvestmentCenterIsCommon.Value ? doc.InvestmentCenterId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
@@ -531,6 +538,7 @@ namespace Tellma.Controllers
                         }
 
                         // Copy common values from the header if they are marked inherits from header
+                        // IMPORTANT: Any changes to the switch statements must be mirrored in SaveValidateAsync
                         foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                         {
                             if (columnDef.TableName == Lines)
@@ -562,10 +570,10 @@ namespace Tellma.Controllers
                                 }
 
                                 // Copy the common values
+                                var entry = line.Entries[columnDef.EntryIndex];
                                 switch (columnDef.ColumnName)
                                 {
                                     case nameof(Entry.AgentId):
-                                        var entry = line.Entries[columnDef.EntryIndex];
                                         var entryDef = lineDef.Entries[columnDef.EntryIndex];
                                         if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
                                         {
@@ -578,10 +586,18 @@ namespace Tellma.Controllers
 
                                         break;
 
+                                    case nameof(Entry.NotedAgentId):
+                                        if (doc.NotedAgentIsCommon.Value)
+                                        {
+                                            entry.NotedAgentId = doc.NotedAgentId;
+                                        }
+
+                                        break;
+
                                     case nameof(Entry.CenterId):
                                         if (doc.InvestmentCenterIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].CenterId = doc.InvestmentCenterId;
+                                            entry.CenterId = doc.InvestmentCenterId;
                                         }
 
                                         break;
@@ -589,7 +605,7 @@ namespace Tellma.Controllers
                                     case nameof(Entry.Time1):
                                         if (doc.Time1IsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].Time1 = doc.Time1;
+                                            entry.Time1 = doc.Time1;
                                         }
 
                                         break;
@@ -597,7 +613,7 @@ namespace Tellma.Controllers
                                     case nameof(Entry.Time2):
                                         if (doc.Time2IsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].Time2 = doc.Time2;
+                                            entry.Time2 = doc.Time2;
                                         }
 
                                         break;
@@ -605,7 +621,7 @@ namespace Tellma.Controllers
                                     case nameof(Entry.Quantity):
                                         if (doc.QuantityIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].Quantity = doc.Quantity;
+                                            entry.Quantity = doc.Quantity;
                                         }
 
                                         break;
@@ -613,14 +629,14 @@ namespace Tellma.Controllers
                                     case nameof(Entry.UnitId):
                                         if (doc.UnitIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].UnitId = doc.UnitId;
+                                            entry.UnitId = doc.UnitId;
                                         }
                                         break;
 
                                     case nameof(Entry.CurrencyId):
                                         if (doc.CurrencyIsCommon.Value)
                                         {
-                                            line.Entries[columnDef.EntryIndex].CurrencyId = doc.CurrencyId;
+                                            entry.CurrencyId = doc.CurrencyId;
                                         }
 
                                         break;
@@ -717,114 +733,283 @@ namespace Tellma.Controllers
             var docDef = Definition();
             var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
-            // TODO: Add definition validation and defaults here
+            // TODO: Add definition-specific validation here
 
             ///////// Document Validation
+            for (int docIndex = 0; docIndex < docs.Count; docIndex++)
             {
-                int docIndex = 0;
-                foreach (var doc in docs)
+                var doc = docs[docIndex];
+
+                if (!docDef.IsOriginalDocument)
                 {
-                    if (!docDef.IsOriginalDocument)
+                    // If not an original document, the serial number is required
+                    if (doc.SerialNumber == null || doc.SerialNumber == 0)
                     {
-                        // If not an original document, the serial number is required
-                        if (doc.SerialNumber == null || doc.SerialNumber == 0)
-                        {
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                                _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Document_SerialNumber"]]);
-                        }
-                        else if (duplicateSerialNumbers.ContainsKey(doc))
-                        {
-                            var serial = duplicateSerialNumbers[doc];
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                                _localizer["Error_DuplicateSerial0", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
-                        }
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                            _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Document_SerialNumber"]]);
+                    }
+                    else if (duplicateSerialNumbers.ContainsKey(doc))
+                    {
+                        var serial = duplicateSerialNumbers[doc];
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
+                            _localizer["Error_DuplicateSerial0", FormatSerial(serial, docDef.Prefix, docDef.CodeWidth)]);
+                    }
+                }
+
+                // Date cannot be in the future
+                if (doc.PostingDate > DateTime.Today.AddDays(1))
+                {
+                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                        _localizer["Error_DateCannotBeInTheFuture"]);
+                }
+
+                // Date cannot be before archive date
+                if (doc.PostingDate <= settings.ArchiveDate)
+                {
+                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                        _localizer["Error_DateCannotBeBeforeArchiveDate0", settings.ArchiveDate.ToString("yyyy-MM-dd")]);
+                }
+
+                ///////// Line Validation
+                for (int lineIndex = 0; lineIndex < doc.Lines.Count; lineIndex++)
+                {
+                    var line = doc.Lines[lineIndex];
+
+                    var lineDef = lineDefs.GetValueOrDefault(line.DefinitionId);
+                    if (lineDef == null)
+                    {
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                            _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
                     }
 
-                    // Date cannot be in the future
-                    if (doc.PostingDate > DateTime.Today.AddDays(1))
+                    // Prevent duplicate line Ids
+                    if (duplicateLineIds.ContainsKey(line))
                     {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                            _localizer["Error_DateCannotBeInTheFuture"]);
+                        // This error indicates a bug
+                        var id = duplicateLineIds[line];
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                            _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
 
-                    // Date cannot be before archive date
-                    if (doc.PostingDate <= settings.ArchiveDate)
+                    ///////// Entry Validation
+                    for (int entryIndex = 0; entryIndex < line.Entries.Count; entryIndex++)
                     {
-                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                            _localizer["Error_DateCannotBeBeforeArchiveDate0", settings.ArchiveDate.ToString("yyyy-MM-dd")]);
-                    }
-
-                    ///////// Line Validation
-                    int lineIndex = 0;
-                    foreach (var line in doc.Lines)
-                    {
-                        var lineDef = lineDefs.GetValueOrDefault(line.DefinitionId);
-                        if (lineDef == null)
+                        var entry = line.Entries[entryIndex];
+                        // Prevent duplicate entry Ids
+                        if (duplicateEntryIds.ContainsKey(entry))
                         {
-                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
-                                _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
-                        }
-
-                        // Prevent duplicate line Ids
-                        if (duplicateLineIds.ContainsKey(line))
-                        {
-                            // This error indicates a bug
-                            var id = duplicateLineIds[line];
-                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                            var id = duplicateEntryIds[entry];
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
                                 _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                         }
 
-                        ///////// Entry Validation
-                        int entryIndex = 0;
-                        foreach (var entry in line.Entries)
+                        // If the currency is functional, value must equal monetary value
+                        if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
                         {
-                            // Prevent duplicate entry Ids
-                            if (duplicateEntryIds.ContainsKey(entry))
-                            {
-                                var id = duplicateEntryIds[entry];
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Id)),
-                                    _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
-                            }
+                            var currencyName = _tenantInfoAccessor.GetCurrentInfo()
+                                .Localize(settings.FunctionalCurrencyName,
+                                            settings.FunctionalCurrencyName2,
+                                            settings.FunctionalCurrencyName3);
 
-                            // If the currency is functional, value must equal monetary value
-                            if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
-                            {
-                                var currencyName = _tenantInfoAccessor.GetCurrentInfo()
-                                    .Localize(settings.FunctionalCurrencyName,
-                                                settings.FunctionalCurrencyName2,
-                                                settings.FunctionalCurrencyName3);
-
-                                // TODO: Use the proper field name from definition, instead of "Amount"
-                                ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
-                                    _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
-                            }
-
-                            entryIndex++;
+                            // TODO: Use the proper field name from definition, instead of "Amount"
+                            ModelState.AddModelError(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.MonetaryValue)),
+                                _localizer["TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2", entry.MonetaryValue ?? 0, entry.Value ?? 0, currencyName]);
                         }
 
-                        lineIndex++;
+                        if (ModelState.HasReachedMaxErrors)
+                        {
+                            break;
+                        }
                     }
 
-                    ///////// Attachment Validation
-                    int attIndex = 0;
-                    foreach (var att in doc.Attachments)
+                    // If a common header property is different than any of its constitutents, return readonly error
+                    // it means one of the constituents is readonly and has been changed by the preprocess SQL => return readonly error
+                    // IMPORTANT: Any changes to the switch statements must be mirrored in SavePreprocessAsync
+                    foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                     {
-                        if (att.Id != 0 && att.File != null)
+                        if (columnDef.TableName == Lines)
                         {
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
-                                _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
+                            switch (columnDef.ColumnName)
+                            {
+                                case nameof(Line.Memo):
+                                    {
+                                        if (doc.MemoIsCommon.Value)
+                                        {
+                                            if (doc.Memo != line.Memo)
+                                            {
+                                                AddReadOnlyError(docIndex, nameof(Document.Memo));
+                                            }
+                                        }
+
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        throw new Exception($"Unkown column name '{columnDef.ColumnName}' in table '{columnDef.TableName}'");
+                                    }
+                            }
+                        }
+                        else if (columnDef.TableName == Entries)
+                        {
+                            if (columnDef.EntryIndex >= line.Entries.Count ||
+                                columnDef.EntryIndex >= lineDef.Entries.Count)
+                            {
+                                // To avoid index out of bounds exception
+                                continue;
+                            }
+
+                            // Copy the common values
+                            var entry = line.Entries[columnDef.EntryIndex];
+                            switch (columnDef.ColumnName)
+                            {
+                                case nameof(Entry.AgentId):
+                                    var entryDef = lineDef.Entries[columnDef.EntryIndex];
+                                    if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
+                                    {
+                                        if (entry.AgentId != doc.DebitAgentId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.DebitAgentId));
+                                        }
+                                    }
+                                    else if (entryDef.Direction == -1 && doc.CreditAgentIsCommon.Value)
+                                    {
+                                        if (entry.AgentId != doc.CreditAgentId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.CreditAgentId));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.NotedAgentId):
+                                    if (doc.NotedAgentIsCommon.Value)
+                                    {
+                                        if (entry.NotedAgentId != doc.NotedAgentId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.NotedAgentId));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.CenterId):
+                                    if (doc.InvestmentCenterIsCommon.Value)
+                                    {
+                                        if(entry.CenterId != doc.InvestmentCenterId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.InvestmentCenterId));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.Time1):
+                                    if (doc.Time1IsCommon.Value)
+                                    {
+                                        if (entry.Time1 != doc.Time1)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.Time1));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.Time2):
+                                    if (doc.Time2IsCommon.Value)
+                                    {
+                                        if (entry.Time2 != doc.Time2)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.Time2));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.Quantity):
+                                    if (doc.QuantityIsCommon.Value)
+                                    {
+                                        if (entry.Quantity != doc.Quantity)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.Quantity));
+                                        }
+                                    }
+
+                                    break;
+
+                                case nameof(Entry.UnitId):
+                                    if (doc.UnitIsCommon.Value)
+                                    {
+                                        if (entry.UnitId != doc.UnitId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.UnitId));
+                                        }
+                                    }
+                                    break;
+
+                                case nameof(Entry.CurrencyId):
+                                    if (doc.CurrencyIsCommon.Value)
+                                    {
+                                        if (entry.CurrencyId != doc.CurrencyId)
+                                        {
+                                            AddReadOnlyError(docIndex, nameof(Document.CurrencyId));
+                                        }
+                                    }
+
+                                    break;
+
+                                default:
+                                    break; // This property doesn't exist on the document, just ignore it
+                            }
+                        }
+                        else
+                        {
+                            // Developer mistake
+                            throw new Exception($"Unrecognized table name '{columnDef.TableName}'");
                         }
 
-                        if (att.Id == 0 && att.File == null)
+                        if (ModelState.HasReachedMaxErrors)
                         {
-                            ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
-                                _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                            break;
                         }
-
-                        attIndex++;
                     }
 
-                    docIndex++;
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        break;
+                    }
+                }
+
+                if (ModelState.HasReachedMaxErrors)
+                {
+                    break;
+                }
+
+                ///////// Attachment Validation
+                for (var attIndex = 0; attIndex < doc.Attachments.Count; attIndex++)
+                {
+                    var att = doc.Attachments[attIndex];
+
+                    if (att.Id != 0 && att.File != null)
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            _localizer["Error_OnlyNewAttachmentsCanIncludeFileBytes"]);
+                    }
+
+                    if (att.Id == 0 && att.File == null)
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.Attachments)}[{attIndex}]",
+                            _localizer["Error_NewAttachmentsMustIncludeFileBytes"]);
+                    }
+
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        break;
+                    }
+                }
+
+                if (ModelState.HasReachedMaxErrors)
+                {
+                    break;
                 }
             }
 
@@ -840,323 +1025,21 @@ namespace Tellma.Controllers
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+        }
 
-            // Post-process errors to move common property errors to the header
-            //foreach (var lineDefId in docDef.LineDefinitions.Select(e => e.LineDefinitionId))
-            //{
-            //    var lineDef = lineDefs.GetValueOrDefault(lineDefId);
-            //    if (lineDef == null)
-            //    {
-            //        continue;
-            //    }
+        private void AddReadOnlyError(int docIndex, string propName)
+        {
+            if (ModelState.HasReachedMaxErrors)
+            {
+                return;
+            }
 
-            //    var inheritingColumns = lineDef.Columns.Where(c => c.InheritsFromHeader ?? false).ToList();
-
-            //    int docIndex = 0;
-            //    docs.ForEach(doc =>
-            //    {
-            //        var errorsMemo = new HashSet<string>();
-            //        var errorsDebitAgent = new HashSet<string>();
-            //        var errorsCreditAgent = new HashSet<string>();
-            //        var errorsInvestmentCenter = new HashSet<string>();
-            //        var errorsTime1 = new HashSet<string>();
-            //        var errorsTime2 = new HashSet<string>();
-            //        var errorsQuantity = new HashSet<string>();
-            //        var errorsUnit = new HashSet<string>();
-            //        var errorsCurrency = new HashSet<string>();
-
-            //        foreach (var columnDef in inheritingColumns)
-            //        {
-            //            int lineIndex = 0;
-            //            doc.Lines.ForEach(line =>
-            //            {
-            //                if (columnDef.TableName == Lines)
-            //                {
-            //                    switch (columnDef.ColumnName)
-            //                    {
-            //                        case nameof(Line.Memo):
-            //                            if (doc.MemoIsCommon.Value)
-            //                            {
-            //                                var path = LinePath(docIndex, lineIndex, nameof(Line.Memo));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var lineError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsMemo.Add(lineError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-            //                        default:
-            //                            throw new Exception($"Unkown column name '{columnDef.ColumnName}' in table '{columnDef.TableName}'");
-
-            //                    }
-            //                }
-            //                else if (columnDef.TableName == Entries)
-            //                {
-            //                    if (columnDef.EntryIndex >= line.Entries.Count ||
-            //                        columnDef.EntryIndex >= lineDef.Entries.Count)
-            //                    {
-            //                        // To avoid index out of bounds exception
-            //                        return;
-            //                    }
-
-            //                    // Copy the common values
-            //                    switch (columnDef.ColumnName)
-            //                    {
-            //                        case nameof(Entry.AgentId):
-            //                            var entry = line.Entries[columnDef.EntryIndex];
-            //                            var entryDef = lineDef.Entries[columnDef.EntryIndex];
-            //                            if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.AgentId));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsDebitAgent.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-            //                            else if (entryDef.Direction == -1 && doc.CreditAgentIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.AgentId));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsCreditAgent.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        case nameof(Entry.CenterId):
-            //                            if (doc.InvestmentCenterIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.CenterId));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsInvestmentCenter.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        case nameof(Entry.Time1):
-            //                            if (doc.Time1IsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.Time1));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsTime1.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        case nameof(Entry.Time2):
-            //                            if (doc.Time2IsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.Time2));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsTime2.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        case nameof(Entry.Quantity):
-            //                            if (doc.QuantityIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.Quantity));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsQuantity.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        case nameof(Entry.UnitId):
-            //                            if (doc.UnitIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.UnitId));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsUnit.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-            //                            break;
-
-            //                        case nameof(Entry.CurrencyId):
-            //                            if (doc.CurrencyIsCommon.Value)
-            //                            {
-            //                                var path = EntryPath(docIndex, lineIndex, columnDef.EntryIndex, nameof(Entry.CurrencyId));
-            //                                if (ModelState.ContainsKey(path))
-            //                                {
-            //                                    foreach (var entityError in ModelState[path].Errors)
-            //                                    {
-            //                                        errorsCurrency.Add(entityError.ErrorMessage);
-            //                                    }
-
-            //                                    ModelState[path].Errors.Clear();
-            //                                }
-            //                            }
-
-            //                            break;
-
-            //                        default:
-            //                            break; // This property doesn't exist on the document, just ignore it
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    // Developer mistake
-            //                    throw new Exception($"Unrecognized table name '{columnDef.TableName}'");
-            //                }
-
-            //                lineIndex++;
-            //            });
-            //        }
-
-            //        // Memo
-            //        if (doc.MemoIsCommon ?? false && errorsMemo.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.Memo)}";
-            //            if (ModelState.ContainsKey(docPath))
-            //            {
-            //                foreach (ModelError modelError in ModelState[docPath].Errors)
-            //                {
-            //                    errorsMemo.Add(modelError.ErrorMessage);
-            //                }
-
-            //                ModelState[docPath].Errors.Clear();
-            //            }
-
-            //            foreach (string error in errorsMemo)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // DebitAgent
-            //        if (doc.DebitAgentIsCommon ?? false && errorsDebitAgent.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.DebitAgentId)}";
-            //            foreach (string error in errorsDebitAgent)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // CreditAgent
-            //        if (doc.CreditAgentIsCommon ?? false && errorsCreditAgent.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.CreditAgentId)}";
-            //            foreach (string error in errorsCreditAgent)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // InvestmentCenter
-            //        if (doc.InvestmentCenterIsCommon ?? false && errorsInvestmentCenter.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.InvestmentCenterId)}";
-            //            foreach (string error in errorsInvestmentCenter)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // Time1
-            //        if (doc.Time1IsCommon ?? false && errorsTime1.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.Time1)}";
-            //            foreach (string error in errorsTime1)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // Time2
-            //        if (doc.Time2IsCommon ?? false && errorsTime2.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.Time2)}";
-            //            foreach (string error in errorsTime2)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // Quantity
-            //        if (doc.QuantityIsCommon ?? false && errorsQuantity.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.Quantity)}";
-            //            foreach (string error in errorsQuantity)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // Unit
-            //        if (doc.UnitIsCommon ?? false && errorsUnit.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.UnitId)}";
-            //            foreach (string error in errorsUnit)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        // Currency
-            //        if (doc.CurrencyIsCommon ?? false && errorsCurrency.Any())
-            //        {
-            //            var docPath = $"[{docIndex}].{nameof(Document.CurrencyId)}";
-            //            foreach (string error in errorsCurrency)
-            //            {
-            //                ModelState.AddModelError(docPath, error);
-            //            }
-            //        }
-
-            //        docIndex++;
-            //    });
-            //}
+            var key = $"[{docIndex}].{propName}";
+            if (!ModelState.ContainsKey(key))
+            {
+                var propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(Document), propName).DisplayName;
+                ModelState.AddModelError(key, _localizer["Error_TheField0IsReadOnly", propDisplayName]);
+            }
         }
 
         private string FormatSerial(int serial, string prefix, int codeWidth)

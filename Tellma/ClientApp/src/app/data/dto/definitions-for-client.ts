@@ -93,6 +93,12 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
 
     // Memo
     MemoVisibility: Visibility;
+    MemoIsCommonVisibility: boolean;
+    MemoLabel: string;
+    MemoLabel2: string;
+    MemoLabel3: string;
+    MemoRequiredState: LineState;
+    MemoReadOnlyState: LineState;
 
     // Debit Agent
     DebitAgentVisibility: boolean;
@@ -112,8 +118,25 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CreditAgentLabel2: string;
     CreditAgentLabel3: string;
 
+    // Noted Agent
+    NotedAgentVisibility: boolean;
+    NotedAgentRequiredState: LineState;
+    NotedAgentReadOnlyState: LineState;
+    NotedAgentDefinitionId: string;
+    NotedAgentLabel: string;
+    NotedAgentLabel2: string;
+    NotedAgentLabel3: string;
+
     // Clearance
     ClearanceVisibility: Visibility;
+
+    // Investment Center
+    InvestmentCenterVisibility: boolean;
+    InvestmentCenterRequiredState: LineState;
+    InvestmentCenterReadOnlyState: LineState;
+    InvestmentCenterLabel: string;
+    InvestmentCenterLabel2: string;
+    InvestmentCenterLabel3: string;
 
     // Time1
     Time1Visibility: boolean;
@@ -151,7 +174,9 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CurrencyVisibility: boolean;
     CurrencyRequiredState: LineState;
     CurrencyReadOnlyState: LineState;
-
+    CurrencyLabel: string;
+    CurrencyLabel2: string;
+    CurrencyLabel3: string;
 
     CanReachState1: boolean;
     CanReachState2: boolean;
@@ -193,7 +218,7 @@ export interface LineDefinitionEntryForClient {
 
 export interface LineDefinitionColumnForClient {
     TableName: 'Lines' | 'Entries';
-    ColumnName: string;
+    ColumnName: EntryColumnName;
     EntryIndex: number;
     Label: string;
     Label2: string;
@@ -211,6 +236,12 @@ export interface LineDefinitionStateReasonForClient {
     Name3: string;
     IsActive: boolean;
 }
+
+export type EntryColumnName = 'Memo' | 'AccountId' | 'CurrencyId' |
+    'AgentId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
+    'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
+    'ExternalReference' | 'AdditionalReference' | 'NotedAgentId' |
+    'NotedAgentName' | 'NotedAmount' | 'NotedDate';
 
 export type Visibility = 'None' | 'Optional' | 'Required';
 

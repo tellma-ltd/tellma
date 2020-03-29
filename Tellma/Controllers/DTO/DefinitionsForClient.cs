@@ -135,6 +135,12 @@ namespace Tellma.Controllers.Dto
 
         // Memo
         public string MemoVisibility { get; set; }
+        public bool MemoIsCommonVisibility { get; set; }
+        public string MemoLabel { get; set; }
+        public string MemoLabel2 { get; set; }
+        public string MemoLabel3 { get; set; }
+        public short? MemoRequiredState { get; set; }
+        public short? MemoReadOnlyState { get; set; }
 
         // Debit Agent
         public bool DebitAgentVisibility { get; set; }
@@ -154,8 +160,25 @@ namespace Tellma.Controllers.Dto
         public string CreditAgentLabel2 { get; set; }
         public string CreditAgentLabel3 { get; set; }
 
+        // Noted Agent
+        public bool NotedAgentVisibility { get; set; }
+        public short? NotedAgentRequiredState { get; set; }
+        public short? NotedAgentReadOnlyState { get; set; }
+        public string NotedAgentDefinitionId { get; set; }
+        public string NotedAgentLabel { get; set; }
+        public string NotedAgentLabel2 { get; set; }
+        public string NotedAgentLabel3 { get; set; }
+
         // Clearance
         public string ClearanceVisibility { get; set; }
+
+        // Investment Center
+        public bool InvestmentCenterVisibility { get; set; }
+        public short? InvestmentCenterRequiredState { get; set; }
+        public short? InvestmentCenterReadOnlyState { get; set; }
+        public string InvestmentCenterLabel { get; set; }
+        public string InvestmentCenterLabel2 { get; set; }
+        public string InvestmentCenterLabel3 { get; set; }
 
         // Time 1
         public bool Time1Visibility { get; set; }
@@ -193,6 +216,9 @@ namespace Tellma.Controllers.Dto
         public bool CurrencyVisibility { get; set; }
         public short? CurrencyRequiredState { get; set; }
         public short? CurrencyReadOnlyState { get; set; }
+        public string CurrencyLabel { get; set; }
+        public string CurrencyLabel2 { get; set; }
+        public string CurrencyLabel3 { get; set; }
 
 
         public bool CanReachState1 { get; set; }

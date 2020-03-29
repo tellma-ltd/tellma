@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/data/workspace.service';
@@ -19,7 +20,7 @@ import {
 } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError, Observable, Subscription, Subject } from 'rxjs';
+import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
@@ -102,38 +103,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
-  private _currentDoc: Document;
-  private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
   private _maxAttachmentSize = 20 * 1024 * 1024;
   private _pristineDocJson: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
-
-  // Caching for required signature functions
-  private _requiredSignaturesDetailed: RequiredSignature[];
-  private _requiredSignaturesLineIds: number[];
-  private _requiredSignaturesSummary: RequiredSignature[];
-  private _requiredSignaturesLineIdsHash: HashTable;
-  private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
-    'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
-    'ReasonId', 'ReasonDetails'];
-
-  private _requiredSignaturesForLineDefModel: Document;
-  private _requiredSignaturesForLineDefLineDefId: string;
-  private _requiredSignaturesForLineDefLineIds: number[];
-
-  // Caching for other functions
-
-  private _computeTabsLines: LineForSave[];
-  private _computeTabsDefinitions: DocumentDefinitionForClient;
-  private _visibleTabs: string[];
-  private _invisibleTabs: string[];
-
-  private _lines: { [key: string]: LineForSave[] };
-  private _linesModel: DocumentForSave;
-
-  private _onNewLineFactoryLineDefId: string;
-  private _onNewLineFactoryResult: (item: LineForSave) => LineForSave;
 
   // These are bound from UI
   public assigneeId: number;
@@ -213,16 +185,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           needsUrlStateChange = true;
         }
 
-        // const urlView = params.get('view') as DocumentDetailsView;
-        // if (urlView === 'Managerial' || urlView === 'Accounting') {
-        //   s.view = urlView;
-        // } else {
-        //   if (!s.view) {
-        //     s.view = 'Managerial'; // Default
-        //   }
-        //   needsUrlStateChange = true;
-        // }
-
         // The URL is out of step with the state => sync the two
         // This happens when we navigate to the screen again 2nd time
         if (needsUrlStateChange) {
@@ -246,10 +208,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         params.tab = s.tab;
       }
 
-      // if (!!s.view) {
-      //   params.view = s.view;
-      // }
-
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
     }
   }
@@ -260,16 +218,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public getActiveTab(model: Document): string {
-    // Special tabs, TODO: Remove
+    // Special tabs
     const s = this.state.detailsState as DocumentDetailsState;
     if (s.tab === '_Attachments' || (!this.isJV && s.tab === '_Entries')) {
       return s.tab;
     }
 
-    // if (this.isAccounting) {
-    //   // Accounting view only has 1 tab
-    //   return '_Entries';
-    // } else {
     // Managerial view can have multiple tabs, make sure the selected one is visible
     const visibleTabs = this.visibleTabs(model);
     if (visibleTabs.some(e => e === s.tab)) {
@@ -278,7 +232,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       // Get the first visible tab
       return visibleTabs[0];
     }
-    // }
   }
 
   public get state(): MasterDetailsStore {
@@ -339,6 +292,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.MemoIsCommon = true;
       result.DebitAgentIsCommon = false;
       result.CreditAgentIsCommon = false;
+      result.NotedAgentIsCommon = false;
       result.InvestmentCenterIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
@@ -354,10 +308,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       // Is Common
-      result.MemoIsCommon = !!def.MemoVisibility;
+      result.MemoIsCommon = !!def.MemoIsCommonVisibility;
       result.DebitAgentIsCommon = !!def.DebitAgentVisibility;
       result.CreditAgentIsCommon = !!def.CreditAgentVisibility;
-      result.InvestmentCenterIsCommon = true;
+      result.NotedAgentIsCommon = !!def.NotedAgentVisibility;
+      result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
       result.QuantityIsCommon = !!def.QuantityVisibility;
@@ -525,15 +480,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public sortChronologically(model: Document): { date: string, events: DocumentEvent[] }[] {
-    if (!model) {
+  private _sortChronologicallyDoc: Document;
+  private _sortChronologicallyResult: { date: string, events: DocumentEvent[] }[] = [];
+
+  public sortChronologically(doc: Document): { date: string, events: DocumentEvent[] }[] {
+    if (!doc) {
       return null;
     }
 
-    if (model !== this._currentDoc) {
-      this._currentDoc = model;
-      const assignmentsHistory: DocumentAssignment[] = model.AssignmentsHistory || [];
-      const statesHistory: DocumentStateChange[] = model.StatesHistory || [];
+    if (doc !== this._sortChronologicallyDoc) {
+      this._sortChronologicallyDoc = doc;
+      const assignmentsHistory: DocumentAssignment[] = doc.AssignmentsHistory || [];
+      const statesHistory: DocumentStateChange[] = doc.StatesHistory || [];
 
       const mappedAssignmentsHistory: DocumentEvent[] = assignmentsHistory
         .map(e =>
@@ -556,8 +514,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           }));
 
       const mappedHistory = mappedAssignmentsHistory.concat(mappedStatesHistory);
-      if (!!model.CreatedById) {
-        mappedHistory.push({ type: 'creation', userId: model.CreatedById, time: model.CreatedAt });
+      if (!!doc.CreatedById) {
+        mappedHistory.push({ type: 'creation', userId: doc.CreatedById, time: doc.CreatedAt });
       }
 
       const sortedHistory: DocumentEvent[] = mappedHistory.sort((a, b) => {
@@ -575,10 +533,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         result[date].push(entry);
       }
 
-      this._sortedHistory = Object.keys(result).map(date => ({ date, events: result[date] }));
+      this._sortChronologicallyResult = Object.keys(result).map(date => ({ date, events: result[date] }));
     }
 
-    return this._sortedHistory;
+    return this._sortChronologicallyResult;
   }
 
   public reassignment(event: DocumentEvent): DocumentReassignmentEvent {
@@ -663,44 +621,47 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // Document Memo
+
   public showDocumentMemo(_: DocumentForSave): boolean {
-    return this.isJV || !!this.definition.MemoVisibility;
+    return !!this.definition.MemoVisibility;
+  }
+
+  public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
+    return this.definition.MemoIsCommonVisibility;
   }
 
   public requireDocumentMemo(doc: Document): boolean {
-    return false;
+    this.computeDocumentSettings(doc);
+    return this.definition.MemoVisibility === 'Required' || this._requireDocumentMemo;
   }
 
   public readonlyDocumentMemo(doc: Document): boolean {
-    return false;
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentMemo;
   }
 
-  public errorsDocumentMemo(doc: DocumentForSave): string[] {
-
-    if (!!doc && !!doc.Lines) {
-      const lineWithMemoErrors = doc.Lines.find(line => !!line.serverErrors && !!line.serverErrors.Memo);
-      return !!lineWithMemoErrors ? lineWithMemoErrors.serverErrors.Memo : null;
-    }
-
-    return null;
+  public labelDocumentMemo(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
   }
 
-  // Document AgentId
+  // DebitAgent
 
   public showDocumentDebitAgent(_: DocumentForSave): boolean {
     return this.definition.DebitAgentVisibility;
   }
 
   public requireDocumentDebitAgent(doc: Document): boolean {
-    return false; // this.getDocState(doc) >= (this.definition.DebitAgentRequiredState || 5);
+    this.computeDocumentSettings(doc);
+    return this._requireDebitAgent;
   }
 
   public readonlyDocumentDebitAgent(doc: Document): boolean {
-    return false; // this.getDocState(doc) >= (this.definition.DebitAgentRequiredState || 5);
+    this.computeDocumentSettings(doc);
+    return this._readonlyDebitAgent;
   }
 
   public labelDocumentDebitAgent(_: DocumentForSave): string {
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'AgentLabel');
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitAgentLabel');
     if (!label) {
       const agentDefId = this.definition.DebitAgentDefinitionId;
       const agentDef = this.ws.definitions.Agents[agentDefId];
@@ -716,6 +677,395 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public documentDebitAgentDefinitionIds(_: DocumentForSave): string[] {
     return [this.definition.DebitAgentDefinitionId];
+  }
+
+  // CreditAgent
+
+  public showDocumentCreditAgent(_: DocumentForSave): boolean {
+    return this.definition.CreditAgentVisibility;
+  }
+
+  public requireDocumentCreditAgent(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireCreditAgent;
+  }
+
+  public readonlyDocumentCreditAgent(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyCreditAgent;
+  }
+
+  public labelDocumentCreditAgent(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditAgentLabel');
+    if (!label) {
+      const agentDefId = this.definition.CreditAgentDefinitionId;
+      const agentDef = this.ws.definitions.Agents[agentDefId];
+      if (!!agentDef) {
+        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      } else {
+        label = this.translate.instant('Agent');
+      }
+    }
+
+    return label;
+  }
+
+  public documentCreditAgentDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.CreditAgentDefinitionId];
+  }
+
+  // NotedAgent
+
+  public showDocumentNotedAgent(_: DocumentForSave): boolean {
+    return this.definition.NotedAgentVisibility;
+  }
+
+  public requireDocumentNotedAgent(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireNotedAgent;
+  }
+
+  public readonlyDocumentNotedAgent(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyNotedAgent;
+  }
+
+  public labelDocumentNotedAgent(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedAgentLabel');
+    if (!label) {
+      const agentDefId = this.definition.NotedAgentDefinitionId;
+      const agentDef = this.ws.definitions.Agents[agentDefId];
+      if (!!agentDef) {
+        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      } else {
+        label = this.translate.instant('Agent');
+      }
+    }
+
+    return label;
+  }
+
+  public documentNotedAgentDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.NotedAgentDefinitionId];
+  }
+
+  // Investment Center
+
+  public showDocumentInvestmentCenter(_: DocumentForSave) {
+    return this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
+  }
+
+  public requireDocumentInvestmentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireInvestmentCenter;
+  }
+
+  public readonlyDocumentInvestmentCenter(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyInvestmentCenter;
+  }
+
+  public labelDocumentInvestmentCenter(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'InvestmentCenterLabel') ||
+      this.translate.instant('Document_InvestmentCenter');
+  }
+
+  public showDocumentTime1(_: DocumentForSave) {
+    return this.definition.Time1Visibility;
+  }
+
+  public requireDocumentTime1(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentTime1;
+  }
+
+  public readonlyDocumentTime1(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentTime1;
+  }
+
+  public labelDocumentTime1(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'Time1Label') ||
+      this.translate.instant('Document_Time1');
+  }
+
+  // Time2
+
+  public showDocumentTime2(_: DocumentForSave) {
+    return this.definition.Time2Visibility;
+  }
+
+  public requireDocumentTime2(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentTime2;
+  }
+
+  public readonlyDocumentTime2(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentTime2;
+  }
+
+  public labelDocumentTime2(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'Time2Label') ||
+      this.translate.instant('Document_Time2');
+  }
+
+  // Quantity
+
+  public showDocumentQuantity(_: DocumentForSave) {
+    return this.definition.QuantityVisibility;
+  }
+
+  public requireDocumentQuantity(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentQuantity;
+  }
+
+  public readonlyDocumentQuantity(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentQuantity;
+  }
+
+  public labelDocumentQuantity(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'QuantityLabel') ||
+      this.translate.instant('Document_Quantity');
+  }
+
+  // Unit
+
+  public showDocumentUnit(_: DocumentForSave) {
+    return this.definition.UnitVisibility;
+  }
+
+  public requireDocumentUnit(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentUnit;
+  }
+
+  public readonlyDocumentUnit(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentUnit;
+  }
+
+  public labelDocumentUnit(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'UnitLabel') ||
+      this.translate.instant('Document_Unit');
+  }
+
+  // Currency
+
+  public showDocumentCurrency(_: DocumentForSave) {
+    return this.definition.CurrencyVisibility;
+  }
+
+  public requireDocumentCurrency(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentCurrency;
+  }
+
+  public readonlyDocumentCurrency(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentCurrency;
+  }
+
+  public labelDocumentCurrency(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') ||
+      this.translate.instant('Document_Currency');
+  }
+
+  // Time1
+  private _computeDocumentSettingsDoc: Document;
+  private _computeDocumentSettingsDef: DocumentDefinitionForClient;
+  private _requireDocumentMemo: boolean;
+  private _readonlyDocumentMemo: boolean;
+  private _requireDebitAgent: boolean;
+  private _readonlyDebitAgent: boolean;
+  private _requireCreditAgent: boolean;
+  private _readonlyCreditAgent: boolean;
+  private _requireNotedAgent: boolean;
+  private _readonlyNotedAgent: boolean;
+  private _requireInvestmentCenter: boolean;
+  private _readonlyInvestmentCenter: boolean;
+  private _requireDocumentTime1: boolean;
+  private _readonlyDocumentTime1: boolean;
+  private _requireDocumentTime2: boolean;
+  private _readonlyDocumentTime2: boolean;
+  private _requireDocumentQuantity: boolean;
+  private _readonlyDocumentQuantity: boolean;
+  private _requireDocumentUnit: boolean;
+  private _readonlyDocumentUnit: boolean;
+  private _requireDocumentCurrency: boolean;
+  private _readonlyDocumentCurrency: boolean;
+  private computeDocumentSettings(doc: Document): void {
+    if (!doc || !doc.Lines) {
+      this._requireDocumentMemo = false;
+      this._readonlyDocumentMemo = false;
+      this._requireDebitAgent = false;
+      this._readonlyDebitAgent = false;
+      this._requireCreditAgent = false;
+      this._readonlyCreditAgent = false;
+      this._requireNotedAgent = false;
+      this._readonlyNotedAgent = false;
+      this._requireInvestmentCenter = false;
+      this._readonlyInvestmentCenter = false;
+      this._requireDocumentTime1 = false;
+      this._readonlyDocumentTime1 = false;
+      this._requireDocumentTime2 = false;
+      this._readonlyDocumentTime2 = false;
+      this._requireDocumentQuantity = false;
+      this._readonlyDocumentQuantity = false;
+      this._requireDocumentUnit = false;
+      this._readonlyDocumentUnit = false;
+      this._requireDocumentCurrency = false;
+      this._readonlyDocumentCurrency = false;
+
+      return;
+    }
+
+    const def = this.definition;
+    if (this._computeDocumentSettingsDoc !== doc ||
+      this._computeDocumentSettingsDef !== def) {
+      this._computeDocumentSettingsDoc = doc;
+      this._computeDocumentSettingsDef = def;
+
+      this._requireDocumentMemo = def.MemoRequiredState === 0 || (def.MemoRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentMemo = def.MemoReadOnlyState === 0 || (def.MemoReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDebitAgent = def.DebitAgentRequiredState === 0 || (def.DebitAgentRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDebitAgent = def.DebitAgentReadOnlyState === 0 || (def.DebitAgentReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireCreditAgent = def.CreditAgentRequiredState === 0 || (def.CreditAgentRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyCreditAgent = def.CreditAgentReadOnlyState === 0 || (def.CreditAgentReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireNotedAgent = def.NotedAgentRequiredState === 0 || (def.NotedAgentRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyNotedAgent = def.NotedAgentReadOnlyState === 0 || (def.NotedAgentReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireInvestmentCenter = def.InvestmentCenterRequiredState === 0 ||
+        (def.InvestmentCenterRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyInvestmentCenter = def.InvestmentCenterReadOnlyState === 0 ||
+        (def.InvestmentCenterReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentTime1 = def.Time1RequiredState === 0 || (def.Time1RequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0 || (def.Time1ReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentTime2 = def.Time2RequiredState === 0 || (def.Time2RequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentTime2 = def.Time2ReadOnlyState === 0 || (def.Time2ReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentQuantity = def.QuantityRequiredState === 0 || (def.QuantityRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentQuantity = def.QuantityReadOnlyState === 0 || (def.QuantityReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentUnit = def.UnitRequiredState === 0 || (def.UnitRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentUnit = def.UnitReadOnlyState === 0 || (def.UnitReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentCurrency = def.CurrencyRequiredState === 0 || (def.CurrencyRequiredState <= 4 && !def.HasWorkflow);
+      this._readonlyDocumentCurrency = def.CurrencyReadOnlyState === 0 || (def.CurrencyReadOnlyState <= 4 && !def.HasWorkflow);
+
+      for (const lineDefId of def.LineDefinitions.map(e => e.LineDefinitionId)) {
+        const lineDef = this.lineDefinition(lineDefId);
+        for (const colDef of lineDef.Columns.filter(c => c.InheritsFromHeader)) {
+
+          switch (colDef.ColumnName) {
+            case 'Memo':
+              if (!this._requireDocumentMemo &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentMemo = true;
+              }
+              if (!this._readonlyDocumentMemo &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentMemo = true;
+              }
+              break;
+            case 'AgentId':
+              if (!this._requireDebitAgent && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDebitAgent = true;
+              }
+              if (!this._requireCreditAgent && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireCreditAgent = true;
+              }
+
+              if (!this._readonlyDebitAgent && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDebitAgent = true;
+              }
+              if (!this._readonlyCreditAgent && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyCreditAgent = true;
+              }
+              break;
+
+            case 'NotedAgentId':
+              if (!this._requireNotedAgent &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireNotedAgent = true;
+              }
+              if (!this._readonlyNotedAgent &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyNotedAgent = true;
+              }
+              break;
+
+            case 'CenterId':
+              if (!this._requireInvestmentCenter &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireInvestmentCenter = true;
+              }
+              if (!this._readonlyInvestmentCenter &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyInvestmentCenter = true;
+              }
+              break;
+
+            case 'Time1':
+              if (!this._requireDocumentTime1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentTime1 = true;
+              }
+              if (!this._readonlyDocumentTime1 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentTime1 = true;
+              }
+              break;
+
+            case 'Time2':
+              if (!this._requireDocumentTime2 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentTime2 = true;
+              }
+              if (!this._readonlyDocumentTime2 &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentTime2 = true;
+              }
+              break;
+
+            case 'Quantity':
+              if (!this._requireDocumentQuantity &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentQuantity = true;
+              }
+              if (!this._readonlyDocumentQuantity &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentQuantity = true;
+              }
+              break;
+
+            case 'UnitId':
+              if (!this._requireDocumentUnit &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentUnit = true;
+              }
+              if (!this._readonlyDocumentUnit &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentUnit = true;
+              }
+              break;
+
+            case 'CurrencyId':
+              if (!this._requireDocumentCurrency &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentCurrency = true;
+              }
+              if (!this._readonlyDocumentCurrency &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState)) {
+                this._readonlyDocumentCurrency = true;
+              }
+              break;
+          }
+        }
+      }
+    }
   }
 
   /////// Properties of the lines
@@ -1253,6 +1603,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
     }
   }
+
+  private _requiredSignaturesForLineDefModel: Document;
+  private _requiredSignaturesForLineDefLineDefId: string;
+  private _requiredSignaturesForLineDefLineIds: number[];
+
   public requiredSignaturesForLineDef(
     model: Document, lineDefId: string, extras: { [key: string]: any }): RequiredSignature[] {
     if (this._requiredSignaturesForLineDefModel !== model ||
@@ -1266,6 +1621,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     return this.requiredSignaturesSummaryInner(this._requiredSignaturesForLineDefLineIds, extras);
   }
+
+  private _requiredSignaturesDetailed: RequiredSignature[];
+  private _requiredSignaturesLineIds: number[];
+  private _requiredSignaturesSummary: RequiredSignature[];
+  private _requiredSignaturesLineIdsHash: HashTable;
+  private _requiredSignatureProps = [
+    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
+    'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
+    'ReasonId', 'ReasonDetails'];
 
   public requiredSignaturesSummaryInner(
     lineIds: number[],
@@ -1617,6 +1981,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._computeEntriesModel = null; // Force refresh the entries view
   }
 
+  private _computeTabsLines: LineForSave[];
+  private _computeTabsDefinitions: DocumentDefinitionForClient;
+  private _visibleTabs: string[];
+  private _invisibleTabs: string[];
+
   private computeTabs(model: Document): void {
     if (!model) {
       this._computeTabsLines = null;
@@ -1644,7 +2013,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const invisibleTabs: string[] = [];
       const invisibleTracker: { [key: string]: true } = {};
       const definitionTracker: { [key: string]: true } = {};
-      const lineDefinitions = this.ws.definitions.Documents[this.definitionId].LineDefinitions;
+      const lineDefinitions = this.definition.LineDefinitions;
 
       // Add the visible line def Ids from definitions to the def tracker
       const visibleLineDefIdsFromDefinitions = lineDefinitions
@@ -1720,7 +2089,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!def ? this.ws.getMultilingualValueImmediate(def, isForm ? 'TitleSingular' : 'TitlePlural') : lineDefId;
   }
 
-  public lines(lineDefId: string, model: Document): LineForSave[] {
+  private _lines: { [key: string]: LineForSave[] };
+  private _linesModel: DocumentForSave;
+
+  public lines(lineDefId: string, model: Document): Line[] {
     if (!model) {
       return [];
     }
@@ -1746,9 +2118,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     return this._lines[lineDefId];
   }
-
-  // WIP
-
 
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
     // Called when the user inserts a new entry
@@ -1784,7 +2153,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return pair;
   }
 
-  // tslint:disable:member-ordering
   private _smartEntries: LineEntryPair[];
   private _manualEntries: LineEntryPair[];
   private _computeEntriesModel: DocumentForSave;
@@ -1843,7 +2211,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       paths.splice(1, 0, 'Center');
     }
 
-    if (!model.MemoIsCommon || !this.isJV) {
+    if (!model.MemoIsCommon) {
       paths.push('Memo');
     }
 
@@ -1858,17 +2226,29 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public smartColumnPaths(lineDefId: string, doc: Document, isForm: boolean): string[] {
     // All line definitions other than 'ManualLine'
-    const lineDef = this.ws.definitions.Lines[lineDefId];
+    const lineDef = this.lineDefinition(lineDefId);
     const isMultiRS = this.ws.settings.IsMultiCenter;
     const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
       .map((column, index) => ({ column, index })) // Capture the index first thing
       .filter(e => {
         const col = e.column;
-        // Hide Center columns when there is only one
-        return (isMultiRS || col.ColumnName !== 'CenterId') &&
-
-          // Hide memo if it's common, or it doesn't inherit from header
-          (!doc.MemoIsCommon || !col.InheritsFromHeader || col.ColumnName !== 'Memo');
+        // Below are the conditions that make the column visible
+        return !(!isMultiRS && col.ColumnName === 'CenterId') // It's not a CenterId in a single center db
+          // AND it doesn't inherit from a document property marked IsCommon = true
+          && (!col.InheritsFromHeader ||
+            !(
+              (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+              (doc.DebitAgentIsCommon && col.ColumnName === 'AgentId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
+              (doc.CreditAgentIsCommon && col.ColumnName === 'AgentId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
+              (doc.NotedAgentIsCommon && col.ColumnName === 'NotedAgentId') ||
+              (doc.InvestmentCenterIsCommon && col.ColumnName === 'CenterId') ||
+              (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
+              (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
+              (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
+              (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
+              (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId')
+            )
+          );
       })
       .map(e => e.index + '') : [];
 
@@ -1880,6 +2260,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   private _columnTemplatesLineDefId: string;
+  private _columnTemplatesDef: DocumentDefinitionForClient;
   private _columnTemplatesResult: ColumnTemplates;
 
   public columnTemplates(
@@ -1888,8 +2269,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     row: TemplateRef<any>,
     commandsTemplate: TemplateRef<any>): ColumnTemplates {
 
-    if (this._columnTemplatesLineDefId !== lineDefId) {
+    const def = this.definition;
+    if (this._columnTemplatesLineDefId !== lineDefId ||
+      this._columnTemplatesDef !== def) {
       this._columnTemplatesLineDefId = lineDefId;
+      this._columnTemplatesDef = def;
       this._columnTemplatesResult = null;
     }
 
@@ -1897,7 +2281,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       const templates: ColumnTemplates = {};
 
       // Add as many templates as there are columns
-      const lineDef = this.ws.definitions.Lines[lineDefId];
+      const lineDef = this.lineDefinition(lineDefId);
       const columns = !!lineDef ? lineDef.Columns : [];
       const columnCount = columns.length;
       for (let colIndex = 0; colIndex < columnCount; colIndex++) {
@@ -1921,8 +2305,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   private lineDefinition(lineDefId: string) {
-    const lineDef = !!lineDefId ? this.ws.definitions.Lines[lineDefId] : null;
-    return lineDef;
+    return !!lineDefId ? this.ws.definitions.Lines[lineDefId] : null;
   }
 
   private columnDefinition(lineDefId: string, columnIndex: number): LineDefinitionColumnForClient {
@@ -2031,6 +2414,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const colDef = this.columnDefinition(lineDefId, columnIndex);
     return (line.State || 0) >= colDef.RequiredState;
   }
+
+  private _onNewLineFactoryLineDefId: string;
+  private _onNewLineFactoryResult: (item: LineForSave) => LineForSave;
 
   public onNewSmartLineFactory(lineDefId: string): (item: LineForSave) => LineForSave {
     if (this._onNewLineFactoryLineDefId !== lineDefId) {
@@ -2350,7 +2736,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get hasManualLines(): boolean {
-    return this.ws.definitions.Documents[this.definitionId].LineDefinitions
+    return this.definition.LineDefinitions
       .some(e => e.LineDefinitionId === 'ManualLine');
   }
 

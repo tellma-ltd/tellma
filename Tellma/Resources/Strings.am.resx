@@ -463,6 +463,12 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo የሆነው የጋራ</value>
   </data>
+  <data name="Document_NotedAgent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
+    <value>እንደተጠቀሰው ወኪል የሆነው የጋራ</value>
+  </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>ላይ የተከፈተው</value>
   </data>
@@ -780,6 +786,9 @@
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
     <value>መታወቂያ ጋር ያለው አካል «{0}» ከአንድ ጊዜ በላይ ተገልጿል.</value>
+  </data>
+  <data name="Error_TheField0IsReadOnly" xml:space="preserve">
+    <value>በ {0} መስክ ተነባቢ-ብቻ ነው.</value>
   </data>
   <data name="Error_TheField0IsRequired" xml:space="preserve">
     <value>በ {0} መስክ ያስፈልጋል.</value>

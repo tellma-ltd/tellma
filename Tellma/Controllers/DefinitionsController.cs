@@ -355,27 +355,7 @@ namespace Tellma.Controllers
                 CodeWidth = def.CodeWidth ?? 4,
 
                 MemoVisibility = def.MemoVisibility,
-                DebitAgentDefinitionId = def.DebitAgentDefinitionId,
-                DebitAgentLabel = def.DebitAgentLabel,
-                DebitAgentLabel2 = def.DebitAgentLabel2,
-                DebitAgentLabel3 = def.DebitAgentLabel3,
-                CreditAgentDefinitionId = def.CreditAgentDefinitionId,
-                CreditAgentLabel = def.CreditAgentLabel,
-                CreditAgentLabel2 = def.CreditAgentLabel2,
-                CreditAgentLabel3 = def.CreditAgentLabel3,
                 ClearanceVisibility = MapVisibility(def.ClearanceVisibility),
-                Time1Label = def.Time1Label,
-                Time1Label2 = def.Time1Label2,
-                Time1Label3 = def.Time1Label3,
-                Time2Label = def.Time2Label,
-                Time2Label2 = def.Time2Label2,
-                Time2Label3 = def.Time2Label3,
-                QuantityLabel = def.QuantityLabel,
-                QuantityLabel2 = def.QuantityLabel2,
-                QuantityLabel3 = def.QuantityLabel3,
-                UnitLabel = def.UnitLabel,
-                UnitLabel2 = def.UnitLabel2,
-                UnitLabel3 = def.UnitLabel3,
 
                 CanReachState1 = def.CanReachState1 ?? false,
                 CanReachState2 = def.CanReachState2 ?? false,
@@ -394,15 +374,35 @@ namespace Tellma.Controllers
             };
 
             // Here we compute some values based on the associated line definitions
-            var relevantLineDefs = result.LineDefinitions
+            var documentLineDefinitions = result.LineDefinitions
                 .Select(e => lineDefsDic.GetValueOrDefault(e.LineDefinitionId))
                 .Where(e => e != null);
 
             // AgentId
-            foreach (var lineDef in relevantLineDefs)
+            foreach (var lineDef in documentLineDefinitions)
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                 {
+                    if (colDef.TableName == "Lines" && colDef.ColumnName == nameof(Line.Memo))
+                    {
+                        result.MemoIsCommonVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.MemoLabel))
+                        {
+                            result.MemoLabel = colDef.Label;
+                            result.MemoLabel2 = colDef.Label2;
+                            result.MemoLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState < (result.MemoRequiredState ?? 5))
+                        {
+                            result.MemoRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.MemoReadOnlyState ?? 5))
+                        {
+                            result.MemoReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
                     // Agents
                     if (colDef.EntryIndex < lineDef.Entries.Count)
                     {
@@ -412,6 +412,18 @@ namespace Tellma.Controllers
                         if (colDef.ColumnName == nameof(Entry.AgentId) && entryDef.Direction == 1)
                         {
                             result.DebitAgentVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.DebitAgentLabel))
+                            {
+                                result.DebitAgentLabel ??= colDef.Label;
+                                result.DebitAgentLabel2 ??= colDef.Label2;
+                                result.DebitAgentLabel3 ??= colDef.Label3;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(result.DebitAgentDefinitionId))
+                            {
+                                result.DebitAgentDefinitionId = entryDef.AgentDefinitionId;
+                            }
+
                             if (colDef.RequiredState < (result.DebitAgentRequiredState ?? 5))
                             {
                                 result.DebitAgentRequiredState = colDef.RequiredState;
@@ -427,6 +439,18 @@ namespace Tellma.Controllers
                         if (colDef.ColumnName == nameof(Entry.AgentId) && entryDef.Direction == -1)
                         {
                             result.CreditAgentVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.CreditAgentLabel))
+                            {
+                                result.CreditAgentLabel = colDef.Label;
+                                result.CreditAgentLabel2 = colDef.Label2;
+                                result.CreditAgentLabel3 = colDef.Label3;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(result.CreditAgentDefinitionId))
+                            {
+                                result.CreditAgentDefinitionId = entryDef.AgentDefinitionId;
+                            }
+
                             if (colDef.RequiredState < (result.CreditAgentRequiredState ?? 5))
                             {
                                 result.CreditAgentRequiredState = colDef.RequiredState;
@@ -437,12 +461,66 @@ namespace Tellma.Controllers
                                 result.CreditAgentReadOnlyState = colDef.ReadOnlyState;
                             }
                         }
+
+                        // NotedAgent
+                        if (colDef.ColumnName == nameof(Entry.NotedAgentId))
+                        {
+                            result.NotedAgentVisibility = true;
+                            if (string.IsNullOrWhiteSpace(result.NotedAgentLabel))
+                            {
+                                result.NotedAgentLabel = colDef.Label;
+                                result.NotedAgentLabel2 = colDef.Label2;
+                                result.NotedAgentLabel3 = colDef.Label3;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(result.NotedAgentDefinitionId))
+                            {
+                                result.NotedAgentDefinitionId = entryDef.NotedAgentDefinitionId;
+                            }
+
+                            if (colDef.RequiredState < (result.NotedAgentRequiredState ?? 5))
+                            {
+                                result.NotedAgentRequiredState = colDef.RequiredState;
+                            }
+
+                            if (colDef.ReadOnlyState < (result.NotedAgentReadOnlyState ?? 5))
+                            {
+                                result.NotedAgentReadOnlyState = colDef.ReadOnlyState;
+                            }
+                        }
+                    }
+
+                    // InvestmentCenter
+                    if (colDef.ColumnName == nameof(Entry.CenterId))
+                    {
+                        result.InvestmentCenterVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.InvestmentCenterLabel))
+                        {
+                            result.InvestmentCenterLabel = colDef.Label;
+                            result.InvestmentCenterLabel2 = colDef.Label2;
+                            result.InvestmentCenterLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState < (result.InvestmentCenterRequiredState ?? 5))
+                        {
+                            result.InvestmentCenterRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.InvestmentCenterReadOnlyState ?? 5))
+                        {
+                            result.InvestmentCenterReadOnlyState = colDef.ReadOnlyState;
+                        }
                     }
 
                     // Time1
                     if (colDef.ColumnName == nameof(Entry.Time1))
                     {
                         result.Time1Visibility = true;
+                        if (string.IsNullOrWhiteSpace(result.Time1Label))
+                        {
+                            result.Time1Label = colDef.Label;
+                            result.Time1Label2 = colDef.Label2;
+                            result.Time1Label3 = colDef.Label3;
+                        }
                         if (colDef.RequiredState < (result.Time1RequiredState ?? 5))
                         {
                             result.Time1RequiredState = colDef.RequiredState;
@@ -458,6 +536,12 @@ namespace Tellma.Controllers
                     if (colDef.ColumnName == nameof(Entry.Time2))
                     {
                         result.Time2Visibility = true;
+                        if (string.IsNullOrWhiteSpace(result.Time2Label))
+                        {
+                            result.Time2Label = colDef.Label;
+                            result.Time2Label2 = colDef.Label2;
+                            result.Time2Label3 = colDef.Label3;
+                        }
                         if (colDef.RequiredState < (result.Time2RequiredState ?? 5))
                         {
                             result.Time2RequiredState = colDef.RequiredState;
@@ -473,6 +557,12 @@ namespace Tellma.Controllers
                     if (colDef.ColumnName == nameof(Entry.Quantity))
                     {
                         result.QuantityVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.QuantityLabel))
+                        {
+                            result.QuantityLabel = colDef.Label;
+                            result.QuantityLabel2 = colDef.Label2;
+                            result.QuantityLabel3 = colDef.Label3;
+                        }
                         if (colDef.RequiredState < (result.QuantityRequiredState ?? 5))
                         {
                             result.QuantityRequiredState = colDef.RequiredState;
@@ -488,6 +578,12 @@ namespace Tellma.Controllers
                     if (colDef.ColumnName == nameof(Entry.UnitId))
                     {
                         result.UnitVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.UnitLabel))
+                        {
+                            result.UnitLabel = colDef.Label;
+                            result.UnitLabel2 = colDef.Label2;
+                            result.UnitLabel3 = colDef.Label3;
+                        }
                         if (colDef.RequiredState < (result.UnitRequiredState ?? 5))
                         {
                             result.UnitRequiredState = colDef.RequiredState;
@@ -503,6 +599,12 @@ namespace Tellma.Controllers
                     if (colDef.ColumnName == nameof(Entry.CurrencyId))
                     {
                         result.CurrencyVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.CurrencyLabel))
+                        {
+                            result.CurrencyLabel = colDef.Label;
+                            result.CurrencyLabel2 = colDef.Label2;
+                            result.CurrencyLabel3 = colDef.Label3;
+                        }
                         if (colDef.RequiredState < (result.CurrencyRequiredState ?? 5))
                         {
                             result.CurrencyRequiredState = colDef.RequiredState;
