@@ -735,6 +735,8 @@ namespace Tellma.Controllers
 
             // TODO: Add definition-specific validation here
 
+            var errorKeyMap = new Dictionary<string, string>();
+
             ///////// Document Validation
             for (int docIndex = 0; docIndex < docs.Count; docIndex++)
             {
@@ -835,6 +837,7 @@ namespace Tellma.Controllers
                                     {
                                         if (doc.MemoIsCommon.Value)
                                         {
+                                            errorKeyMap.Add(LinePath(docIndex, lineIndex, nameof(Line.Memo)), $"[{docIndex}].{nameof(Document.Memo)}");
                                             if (doc.Memo != line.Memo)
                                             {
                                                 AddReadOnlyError(docIndex, nameof(Document.Memo));
@@ -851,21 +854,23 @@ namespace Tellma.Controllers
                         }
                         else if (columnDef.TableName == Entries)
                         {
-                            if (columnDef.EntryIndex >= line.Entries.Count ||
-                                columnDef.EntryIndex >= lineDef.Entries.Count)
+                            var entryIndex = columnDef.EntryIndex;
+                            if (entryIndex >= line.Entries.Count ||
+                                entryIndex >= lineDef.Entries.Count)
                             {
                                 // To avoid index out of bounds exception
                                 continue;
                             }
 
                             // Copy the common values
-                            var entry = line.Entries[columnDef.EntryIndex];
+                            var entry = line.Entries[entryIndex];
                             switch (columnDef.ColumnName)
                             {
                                 case nameof(Entry.AgentId):
-                                    var entryDef = lineDef.Entries[columnDef.EntryIndex];
+                                    var entryDef = lineDef.Entries[entryIndex];
                                     if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.AgentId)), $"[{docIndex}].{nameof(Document.DebitAgentId)}");
                                         if (entry.AgentId != doc.DebitAgentId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.DebitAgentId));
@@ -873,6 +878,7 @@ namespace Tellma.Controllers
                                     }
                                     else if (entryDef.Direction == -1 && doc.CreditAgentIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.AgentId)), $"[{docIndex}].{nameof(Document.CreditAgentId)}");
                                         if (entry.AgentId != doc.CreditAgentId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.CreditAgentId));
@@ -884,6 +890,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.NotedAgentId):
                                     if (doc.NotedAgentIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.NotedAgentId)), $"[{docIndex}].{nameof(Document.NotedAgentId)}");
                                         if (entry.NotedAgentId != doc.NotedAgentId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.NotedAgentId));
@@ -895,7 +902,8 @@ namespace Tellma.Controllers
                                 case nameof(Entry.CenterId):
                                     if (doc.InvestmentCenterIsCommon.Value)
                                     {
-                                        if(entry.CenterId != doc.InvestmentCenterId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)), $"[{docIndex}].{nameof(Document.InvestmentCenterId)}");
+                                        if (entry.CenterId != doc.InvestmentCenterId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.InvestmentCenterId));
                                         }
@@ -906,6 +914,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.Time1):
                                     if (doc.Time1IsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Time1)), $"[{docIndex}].{nameof(Document.Time1)}");
                                         if (entry.Time1 != doc.Time1)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.Time1));
@@ -917,6 +926,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.Time2):
                                     if (doc.Time2IsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Time2)), $"[{docIndex}].{nameof(Document.Time2)}");
                                         if (entry.Time2 != doc.Time2)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.Time2));
@@ -928,6 +938,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.Quantity):
                                     if (doc.QuantityIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.Quantity)), $"[{docIndex}].{nameof(Document.Quantity)}");
                                         if (entry.Quantity != doc.Quantity)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.Quantity));
@@ -939,6 +950,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.UnitId):
                                     if (doc.UnitIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.UnitId)), $"[{docIndex}].{nameof(Document.UnitId)}");
                                         if (entry.UnitId != doc.UnitId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.UnitId));
@@ -949,6 +961,7 @@ namespace Tellma.Controllers
                                 case nameof(Entry.CurrencyId):
                                     if (doc.CurrencyIsCommon.Value)
                                     {
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CurrencyId)), $"[{docIndex}].{nameof(Document.CurrencyId)}");
                                         if (entry.CurrencyId != doc.CurrencyId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.CurrencyId));
@@ -1022,6 +1035,25 @@ namespace Tellma.Controllers
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Documents_Validate__Save(DefinitionId, docs, top: remainingErrorCount);
+
+            // Update the key of mapped errors
+            foreach (var sqlError in sqlErrors)
+            {
+                sqlError.Key = errorKeyMap.GetValueOrDefault(sqlError.Key) ?? sqlError.Key;
+            }
+
+            // Make the key and error name unique again
+            sqlErrors = sqlErrors.GroupBy(e => new { e.Key, e.ErrorName })
+                .Select(g => new ValidationError
+                {
+                    Key = g.Key.Key,
+                    ErrorName = g.Key.ErrorName,
+                    Argument1 = g.First().Argument1,
+                    Argument2 = g.First().Argument2,
+                    Argument3 = g.First().Argument3,
+                    Argument4 = g.First().Argument4,
+                    Argument5 = g.First().Argument5,
+                });
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);

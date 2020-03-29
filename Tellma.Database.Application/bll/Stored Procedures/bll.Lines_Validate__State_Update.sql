@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Update]
 -- @Lines and @Entries are read from the database just before calling.
-	@Documents DocumentList READONLY,
+	-- @Documents DocumentList READONLY,
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@ToState SMALLINT,
@@ -21,58 +21,58 @@ AS
 		(N'NotedAgentId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+--	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
 	WHERE @ToState >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> N'ManualLine'
 	AND	(
-		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL		AND NOT(D.[CurrencyIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
-		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL			AND NOT(D.[DebitAgentIsCommon] = 1 AND E.[Direction] = 1 AND LDC.InheritsFromHeader = 1)  OR
-		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL			AND NOT(D.[CreditAgentIsCommon] = 1 AND E.[Direction] = -1 AND LDC.InheritsFromHeader = 1)  OR
+		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR --		AND NOT(D.[CurrencyIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
+		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL OR --			AND NOT(D.[DebitAgentIsCommon] = 1 AND E.[Direction] = 1 AND LDC.InheritsFromHeader = 1)  OR
+		FL.Id = N'AgentId'				AND E.[AgentId] IS NULL	OR --		AND NOT(D.[CreditAgentIsCommon] = 1 AND E.[Direction] = -1 AND LDC.InheritsFromHeader = 1)  OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
-		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL		AND NOT(D.[InvestmentCenterIsCommon] = 1 AND LDC.InheritsFromHeader = 0) OR
+		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR --		AND NOT(D.[InvestmentCenterIsCommon] = 1 AND LDC.InheritsFromHeader = 0) OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
 		FL.Id = N'DueDate'				AND E.[DueDate] IS NULL OR
 		FL.Id = N'MonetaryValue'		AND E.[MonetaryValue] IS NULL OR
-		FL.Id = N'Quantity'				AND E.[Quantity] IS NULL		AND NOT(D.[QuantityIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
-		FL.Id = N'UnitId'				AND E.[UnitId] IS NULL			AND NOT(D.[UnitIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
-		FL.Id = N'Time1'				AND E.[Time1] IS NULL			AND NOT(D.[Time1IsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
-		FL.Id = N'Time2'				AND E.[Time2] IS NULL			AND NOT(D.[Time2IsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
+		FL.Id = N'Quantity'				AND E.[Quantity] IS NULL OR --		AND NOT(D.[QuantityIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
+		FL.Id = N'UnitId'				AND E.[UnitId] IS NULL OR --			AND NOT(D.[UnitIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
+		FL.Id = N'Time1'				AND E.[Time1] IS NULL OR --			AND NOT(D.[Time1IsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
+		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR --			AND NOT(D.[Time2IsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
 		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
-		FL.Id = N'NotedAgentId'			AND E.[NotedAgentId] IS NULL OR
+		FL.Id = N'NotedAgentId'			AND E.[NotedAgentId] IS NULL OR --	AND NOT(D.[NotedAgentIsCommon] = 1 AND LDC.InheritsFromHeader = 1) OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
 	);
 
 	--=-=-=-=-=-=-=-=-=-=-=-=- Common Properties
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT DISTINCT TOP (@Top)
-		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id],
-		N'Error_TheField0IsRequired',
-		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
-	FROM @Entries E
-	CROSS JOIN (VALUES
-		(N'AgentId'),(N'CenterId'),(N'Time1'),(N'Time2'),(N'Quantity'),(N'UnitId'),(N'CurrencyId')
-	) FL([Id])
-	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
-	WHERE @ToState >= LDC.[RequiredState]
-	AND L.[DefinitionId] <> N'ManualLine'
-	AND	(
-
-		-- C# guarantees that a document cannot have BlaIsCommon = 1 when none of its line definitions has a Bla with InheritsFromHeader = 1
-		FL.Id = N'AgentId'				AND D.[DebitAgentId] IS NULL		AND D.[DebitAgentIsCommon] = 1 OR
-		FL.Id = N'AgentId'				AND D.[CreditAgentId] IS NULL		AND D.[CreditAgentIsCommon] = 1 OR
-		FL.Id = N'CenterId'				AND D.[InvestmentCenterId] IS NULL	AND D.[InvestmentCenterIsCommon] = 1 OR
-		FL.Id = N'Time1'				AND D.[Time1] IS NULL				AND D.[Time1IsCommon] = 1 OR
-		FL.Id = N'Time2'				AND D.[Time2] IS NULL				AND D.[Time2IsCommon] = 1 OR
-		FL.Id = N'Quantity'				AND D.[Quantity] IS NULL			AND D.[QuantityIsCommon] = 1 OR
-		FL.Id = N'UnitId'				AND D.[UnitId] IS NULL				AND D.[UnitIsCommon] = 1 OR
-		FL.Id = N'CurrencyId'			AND D.[CurrencyId] IS NULL 			AND D.[CurrencyIsCommon] = 1
-	);
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT DISTINCT TOP (@Top)
+	--	N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].' + FL.[Id],
+	--	N'Error_TheField0IsRequired',
+	--	dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
+	--FROM @Entries E
+	--CROSS JOIN (VALUES
+	--	(N'AgentId'),(N'CenterId'),(N'Time1'),(N'Time2'),(N'Quantity'),(N'UnitId'),(N'CurrencyId')
+	--) FL([Id])
+	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	--JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
+	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
+	--WHERE @ToState >= LDC.[RequiredState]
+	--AND L.[DefinitionId] <> N'ManualLine'
+	--AND	(
+	--	-- C# guarantees that a document cannot have BlaIsCommon = 1 when none of its line definitions has a Bla with InheritsFromHeader = 1
+	--	FL.Id = N'AgentId'				AND D.[DebitAgentId] IS NULL		AND D.[DebitAgentIsCommon] = 1 AND E.Direction = 1 OR
+	--	FL.Id = N'AgentId'				AND D.[CreditAgentId] IS NULL		AND D.[CreditAgentIsCommon] = 1 AND E.Direction = -1 OR
+	--	FL.Id = N'NotedAgentId'			AND D.[NotedAgentId] IS NULL		AND D.[NotedAgentIsCommon] = 1 OR
+	--	FL.Id = N'CenterId'				AND D.[InvestmentCenterId] IS NULL	AND D.[InvestmentCenterIsCommon] = 1 OR
+	--	FL.Id = N'Time1'				AND D.[Time1] IS NULL				AND D.[Time1IsCommon] = 1 OR
+	--	FL.Id = N'Time2'				AND D.[Time2] IS NULL				AND D.[Time2IsCommon] = 1 OR
+	--	FL.Id = N'Quantity'				AND D.[Quantity] IS NULL			AND D.[QuantityIsCommon] = 1 OR
+	--	FL.Id = N'UnitId'				AND D.[UnitId] IS NULL				AND D.[UnitIsCommon] = 1 OR
+	--	FL.Id = N'CurrencyId'			AND D.[CurrencyId] IS NULL 			AND D.[CurrencyIsCommon] = 1
+	--);
 
 
 	-- No Null account when moving to state 4

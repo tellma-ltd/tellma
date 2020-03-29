@@ -5,7 +5,7 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @WflessDocuments DocumentList, @WflessLines LineList, @WflessEntries EntryList, @ArchiveDate DATE;
+	DECLARE /* @WflessDocuments DocumentList, */ @WflessLines LineList, @WflessEntries EntryList, @ArchiveDate DATE;
 	
 	-- Posting Date not null
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -67,19 +67,19 @@ SET NOCOUNT ON;
 	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE L.[DocumentId] IN (SELECT [ID] FROM @Ids) 
 	AND LD.HasWorkflow = 0;
-	INSERT INTO @WflessDocuments([Index],[Id],[SerialNumber],[PostingDate],[Clearance],[DocumentLookup1Id],
-		[DocumentLookup2Id],[DocumentLookup3Id],[DocumentText1],[DocumentText2],[Memo],[MemoIsCommon],
-		[DebitAgentId],[DebitAgentIsCommon],[CreditAgentId],[CreditAgentIsCommon],[NotedAgentId],[NotedAgentIsCommon],
-		[InvestmentCenterId],[InvestmentCenterIsCommon],[Time1],[Time1IsCommon],[Time2],[Time2IsCommon],
-		[Quantity],[QuantityIsCommon],[UnitId],[UnitIsCommon],[CurrencyId],[CurrencyIsCommon])
-	SELECT FE.[Index],D.[Id],D.[SerialNumber],D.[PostingDate],D.[Clearance],D.[DocumentLookup1Id],
-		D.[DocumentLookup2Id],D.[DocumentLookup3Id],D.[DocumentText1],D.[DocumentText2],D.[Memo],D.[MemoIsCommon],
-		D.[DebitAgentId],D.[DebitAgentIsCommon],D.[CreditAgentId],D.[CreditAgentIsCommon],D.[NotedAgentId],D.[NotedAgentIsCommon],
-		D.[InvestmentCenterId],D.[InvestmentCenterIsCommon],D.[Time1],D.[Time1IsCommon],D.[Time2],D.[Time2IsCommon],
-		D.[Quantity],D.[QuantityIsCommon],D.[UnitId],D.[UnitIsCommon],D.[CurrencyId],D.[CurrencyIsCommon]
-	FROM @Ids FE
-	JOIN dbo.Documents D ON FE.[Id] = D.[Id]
-	WHERE FE.[Index] IN (SELECT DISTINCT [DocumentIndex] FROM @WflessLines);
+	--INSERT INTO @WflessDocuments([Index],[Id],[SerialNumber],[PostingDate],[Clearance],[DocumentLookup1Id],
+	--	[DocumentLookup2Id],[DocumentLookup3Id],[DocumentText1],[DocumentText2],[Memo],[MemoIsCommon],
+	--	[DebitAgentId],[DebitAgentIsCommon],[CreditAgentId],[CreditAgentIsCommon],[NotedAgentId],[NotedAgentIsCommon],
+	--	[InvestmentCenterId],[InvestmentCenterIsCommon],[Time1],[Time1IsCommon],[Time2],[Time2IsCommon],
+	--	[Quantity],[QuantityIsCommon],[UnitId],[UnitIsCommon],[CurrencyId],[CurrencyIsCommon])
+	--SELECT FE.[Index],D.[Id],D.[SerialNumber],D.[PostingDate],D.[Clearance],D.[DocumentLookup1Id],
+	--	D.[DocumentLookup2Id],D.[DocumentLookup3Id],D.[DocumentText1],D.[DocumentText2],D.[Memo],D.[MemoIsCommon],
+	--	D.[DebitAgentId],D.[DebitAgentIsCommon],D.[CreditAgentId],D.[CreditAgentIsCommon],D.[NotedAgentId],D.[NotedAgentIsCommon],
+	--	D.[InvestmentCenterId],D.[InvestmentCenterIsCommon],D.[Time1],D.[Time1IsCommon],D.[Time2],D.[Time2IsCommon],
+	--	D.[Quantity],D.[QuantityIsCommon],D.[UnitId],D.[UnitIsCommon],D.[CurrencyId],D.[CurrencyIsCommon]
+	--FROM @Ids FE
+	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
+	--WHERE FE.[Index] IN (SELECT DISTINCT [DocumentIndex] FROM @WflessLines);
 	INSERT INTO @WflessEntries ([Index],[LineIndex],[DocumentIndex],[Id],
 	[Direction],[AccountId],[CurrencyId],[AgentId],[ResourceId],[CenterId],
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
@@ -94,7 +94,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Update]
-	@Documents = @WflessDocuments, @Lines = @WflessLines, @Entries = @WflessEntries, @ToState = 4;
+	/* @Documents = @WflessDocuments, */ @Lines = @WflessLines, @Entries = @WflessEntries, @ToState = 4;
 	-- Cannot post a document with non-balanced lines (finalized or draft Wfless)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
