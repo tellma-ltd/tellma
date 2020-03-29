@@ -41,6 +41,7 @@ BEGIN
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
 BEGIN --  Overwrite input with DB data that is read only
+	-- TODO : Overwrite readonly Memo
 	UPDATE E
 	SET E.CurrencyId = BE.CurrencyId
 	FROM @E E
