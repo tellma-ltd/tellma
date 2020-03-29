@@ -490,7 +490,7 @@ namespace Tellma.Controllers
             {
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
-                doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
+                // doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
                 doc.DebitAgentId = doc.DebitAgentIsCommon.Value ? doc.DebitAgentId : null;
                 doc.CreditAgentId = doc.CreditAgentIsCommon.Value ? doc.CreditAgentId : null;
                 doc.NotedAgentId = doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;

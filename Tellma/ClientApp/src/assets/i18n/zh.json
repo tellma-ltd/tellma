@@ -601,7 +601,7 @@
   "SmartEntries": "智能项",
   "SortKey": "排序关键字",
   "SpecifiedPerLine": "每行指定",
-  "SpecifyHere": "在这里指定",
+  "SpecifyForAllLines": "在这里指定的所有行",
   "SpecifyNumericMeasure": "添加至少一个数字量度",
   "SpecifyPerLine": "每行指定",
   "SqlDatabase_DatabaseName": "数据库名称",

@@ -928,28 +928,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._computeDocumentSettingsDoc = doc;
       this._computeDocumentSettingsDef = def;
 
-      this._requireDocumentMemo = def.MemoRequiredState === 0 || (def.MemoRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentMemo = def.MemoReadOnlyState === 0 || (def.MemoReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDebitAgent = def.DebitAgentRequiredState === 0 || (def.DebitAgentRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDebitAgent = def.DebitAgentReadOnlyState === 0 || (def.DebitAgentReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireCreditAgent = def.CreditAgentRequiredState === 0 || (def.CreditAgentRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyCreditAgent = def.CreditAgentReadOnlyState === 0 || (def.CreditAgentReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireNotedAgent = def.NotedAgentRequiredState === 0 || (def.NotedAgentRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyNotedAgent = def.NotedAgentReadOnlyState === 0 || (def.NotedAgentReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireInvestmentCenter = def.InvestmentCenterRequiredState === 0 ||
-        (def.InvestmentCenterRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyInvestmentCenter = def.InvestmentCenterReadOnlyState === 0 ||
-        (def.InvestmentCenterReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDocumentTime1 = def.Time1RequiredState === 0 || (def.Time1RequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0 || (def.Time1ReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDocumentTime2 = def.Time2RequiredState === 0 || (def.Time2RequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentTime2 = def.Time2ReadOnlyState === 0 || (def.Time2ReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDocumentQuantity = def.QuantityRequiredState === 0 || (def.QuantityRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentQuantity = def.QuantityReadOnlyState === 0 || (def.QuantityReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDocumentUnit = def.UnitRequiredState === 0 || (def.UnitRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentUnit = def.UnitReadOnlyState === 0 || (def.UnitReadOnlyState <= 4 && !def.HasWorkflow);
-      this._requireDocumentCurrency = def.CurrencyRequiredState === 0 || (def.CurrencyRequiredState <= 4 && !def.HasWorkflow);
-      this._readonlyDocumentCurrency = def.CurrencyReadOnlyState === 0 || (def.CurrencyReadOnlyState <= 4 && !def.HasWorkflow);
+      this._requireDocumentMemo = def.MemoRequiredState === 0;
+      this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
+      this._requireDebitAgent = def.DebitAgentRequiredState === 0;
+      this._readonlyDebitAgent = def.DebitAgentReadOnlyState === 0;
+      this._requireCreditAgent = def.CreditAgentRequiredState === 0;
+      this._readonlyCreditAgent = def.CreditAgentReadOnlyState === 0;
+      this._requireNotedAgent = def.NotedAgentRequiredState === 0;
+      this._readonlyNotedAgent = def.NotedAgentReadOnlyState === 0;
+      this._requireInvestmentCenter = def.InvestmentCenterRequiredState === 0;
+      this._readonlyInvestmentCenter = def.InvestmentCenterReadOnlyState === 0;
+      this._requireDocumentTime1 = def.Time1RequiredState === 0;
+      this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
+      this._requireDocumentTime2 = def.Time2RequiredState === 0;
+      this._readonlyDocumentTime2 = def.Time2ReadOnlyState === 0;
+      this._requireDocumentQuantity = def.QuantityRequiredState === 0;
+      this._readonlyDocumentQuantity = def.QuantityReadOnlyState === 0;
+      this._requireDocumentUnit = def.UnitRequiredState === 0;
+      this._readonlyDocumentUnit = def.UnitReadOnlyState === 0;
+      this._requireDocumentCurrency = def.CurrencyRequiredState === 0;
+      this._readonlyDocumentCurrency = def.CurrencyReadOnlyState === 0;
 
       for (const lineDefId of def.LineDefinitions.map(e => e.LineDefinitionId)) {
         const lineDef = this.lineDefinition(lineDefId);

@@ -601,7 +601,7 @@
   "SmartEntries": "القيود الآلية",
   "SortKey": "مفتاح الترتيب",
   "SpecifiedPerLine": "كل سطر على حدة",
-  "SpecifyHere": "حدد هنا",
+  "SpecifyForAllLines": "حدد هنا لجميع الأسطر",
   "SpecifyNumericMeasure": "قم بتحديد قيمة واحدة على الأقل ذات طبيعة عددية",
   "SpecifyPerLine": "حدد كل سطر على حدة",
   "SqlDatabase_DatabaseName": "اسم قاعدة البيانات",
