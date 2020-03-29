@@ -21,7 +21,7 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex">
-    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
+    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2 && Image_isVisible">
       <div class="border t-dp-wrapper2">
         <t-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
           [size]="42" icon="camera"></t-image>

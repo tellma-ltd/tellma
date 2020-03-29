@@ -430,6 +430,7 @@ namespace Tellma.Controllers.Dto
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string TaxIdentificationNumberVisibility { get; set; }
+        public string ImageVisibility { get; set; }
         public string StartDateVisibility { get; set; }
         public string StartDateLabel { get; set; }
         public string StartDateLabel2 { get; set; }

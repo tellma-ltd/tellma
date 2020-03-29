@@ -35,7 +35,7 @@ BEGIN
 		[Id],			[TitleSingular],[TitleSingular2],[TitlePlural],[TitlePlural2],	[JobVisibility], [RatesVisibility], [RatesLabel], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 		(10,N'employees',N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Optional',	N'Optional', N'Remuneration', 		N'user-friends', N'HumanCapital', 50);
 		
-		UPDATE @AgentDefinitions SET ImageIdVisibility = N'None', UserIdVisibility = N'None' WHERE [Id] IN (N'cost-objects');
+		UPDATE @AgentDefinitions SET ImageVisibility = N'None', UserVisibility = N'None' WHERE [Id] IN (N'cost-objects');
 
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en

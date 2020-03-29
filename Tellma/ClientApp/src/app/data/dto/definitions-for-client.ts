@@ -274,10 +274,10 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     ResidualMonetaryValueVisibility: Visibility;
     ResidualValueVisibility: Visibility;
 
-    ReorderLevelVisibility: string;
+    ReorderLevelVisibility: Visibility;
     ReorderLevelDefaultValue: number;
 
-    EconomicOrderQuantityVisibility: string;
+    EconomicOrderQuantityVisibility: Visibility;
     EconomicOrderQuantityDefaultValue: number;
 
     AvailableSinceLabel: string;
@@ -387,15 +387,16 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
 
-    TaxIdentificationNumberVisibility?: string;
-    StartDateVisibility?: string;
+    TaxIdentificationNumberVisibility?: Visibility;
+    ImageVisibility: Visibility;
+    StartDateVisibility?: Visibility;
     StartDateLabel?: string;
     StartDateLabel2?: string;
     StartDateLabel3?: string;
-    JobVisibility?: string;
-    RatesVisibility?: string;
+    JobVisibility?: Visibility;
+    RatesVisibility?: Visibility;
     RatesLabel?: string;
     RatesLabel2?: string;
     RatesLabel3?: string;
-    BankAccountNumberVisibility?: string;
+    BankAccountNumberVisibility?: Visibility;
 }

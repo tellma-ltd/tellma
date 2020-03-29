@@ -163,9 +163,15 @@ namespace Tellma.Controllers
             return AgentControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
+        protected override Task<List<AgentForSave>> SavePreprocessAsync(List<AgentForSave> entities)
+        {
+            // TODO: Add definition defaults here
+            return base.SavePreprocessAsync(entities);
+        }
+
         protected override async Task SaveValidateAsync(List<AgentForSave> entities)
         {
-            // TODO: Add definition validation and defaults here
+            // TODO: Add definition validation here
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)

@@ -91,18 +91,19 @@ namespace Tellma.Controllers
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
 
-                BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
+                TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
+                ImageVisibility = MapVisibility(def.ImageVisibility),
+                StartDateVisibility = MapVisibility(def.StartDateVisibility),
                 StartDateLabel = def.StartDateLabel,
                 StartDateLabel2 = def.StartDateLabel2,
                 StartDateLabel3 = def.StartDateLabel3,
-                StartDateVisibility = MapVisibility(def.StartDateVisibility),
                 JobVisibility = MapVisibility(def.JobVisibility),
+                RatesVisibility = MapVisibility(def.RatesVisibility),
                 RatesLabel = def.RatesLabel,
                 RatesLabel2 = def.RatesLabel2,
                 RatesLabel3 = def.RatesLabel3,
-                RatesVisibility = MapVisibility(def.RatesVisibility),
+                BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
 
-                TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
             };
         }
 

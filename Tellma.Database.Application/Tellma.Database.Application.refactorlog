@@ -647,4 +647,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AccountTypeId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="40318fc0-1b57-4c3f-9e37-6402c8058252" ChangeDateTime="03/29/2020 11:41:38">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[ImageIdVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ImageVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="83c7bc7d-5a7e-4bba-b6a9-d9aa63e0840f" ChangeDateTime="03/29/2020 11:41:53">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[UserIdVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UserVisibility]" />
+  </Operation>
 </Operations>

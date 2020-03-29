@@ -107,4 +107,8 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
       this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
       this.translate.instant('Agent');
   }
+
+  public get Image_isVisible(): boolean {
+    return !!this.definition.ImageVisibility;
+  }
 }

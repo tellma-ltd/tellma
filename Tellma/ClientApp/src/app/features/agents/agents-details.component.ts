@@ -147,6 +147,10 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this.definition.TaxIdentificationNumberVisibility === 'Required';
   }
 
+  public get Image_isVisible(): boolean {
+    return !!this.definition.ImageVisibility;
+  }
+
   public get StartDate_isVisible(): boolean {
     return !!this.definition.StartDateVisibility;
   }
@@ -212,4 +216,5 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public Rate_format(line: AgentRateForSave): string {
     return `1.${this.Rate_minDecimalPlaces(line)}-${this.Rate_maxDecimalPlaces(line)}`;
   }
+
 }

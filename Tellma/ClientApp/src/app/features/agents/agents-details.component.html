@@ -40,7 +40,7 @@
   </t-form-group>
 
   <!-- Image -->
-  <div class="col-12 col-md-4 t-details-image-container">
+  <div class="col-12 col-md-4 t-details-image-container" *ngIf="Image_isVisible">
     <t-restricted [metadata]="model?.EntityMetadata?.ImageId">
       <div class="border">
         <t-image *ngIf="!!model" [src]="model.Id ? 'agents/' + definitionId + '/' + model.Id + '/image' : null"

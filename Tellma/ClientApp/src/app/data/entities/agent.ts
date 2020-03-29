@@ -119,8 +119,6 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
         propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
       }
 
-      console.log(definitionId);
-
       // Simple properties whose visibility is overridden by the definition
       const simpleVisibilityProps = ['TaxIdentificationNumber', 'StartDate', 'BasicSalary', 'TransportationAllowance', 'OvertimeRate', 'BankAccountNumber'];
       for (const propName of simpleVisibilityProps) {

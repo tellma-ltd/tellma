@@ -36,6 +36,23 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
 
+        // TODO: Add metadata
+
+        public string TaxIdentificationNumberVisibility { get; set; }
+        public string ImageVisibility { get; set; }
+        public string StartDateVisibility { get; set; }
+        public string StartDateLabel { get; set; }
+        public string StartDateLabel2 { get; set; }
+        public string StartDateLabel3 { get; set; }
+        public string JobVisibility { get; set; }
+        public string RatesVisibility { get; set; }
+        public string RatesLabel { get; set; }
+        public string RatesLabel2 { get; set; }
+        public string RatesLabel3 { get; set; }
+        public string BankAccountNumberVisibility { get; set; }
+
+        // ---------------
+
         [Display(Name = "MainMenuIcon")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
@@ -49,21 +66,6 @@ namespace Tellma.Entities
         [Display(Name = "MainMenuSortKey")]
         [AlwaysAccessible]
         public decimal? MainMenuSortKey { get; set; }
-
-
-        // TODO: Add metadata
-
-        public string TaxIdentificationNumberVisibility { get; set; }
-        public string StartDateVisibility { get; set; }
-        public string StartDateLabel { get; set; }
-        public string StartDateLabel2 { get; set; }
-        public string StartDateLabel3 { get; set; }
-        public string JobVisibility { get; set; }
-        public string RatesVisibility { get; set; }
-        public string RatesLabel { get; set; }
-        public string RatesLabel2 { get; set; }
-        public string RatesLabel3 { get; set; }
-        public string BankAccountNumberVisibility { get; set; }
     }
 
     public class AgentDefinition : AgentDefinitionForSave

@@ -10,7 +10,7 @@ SET NOCOUNT ON;
 		SELECT [Index], [Id], [TitleSingular], [TitleSingular2], [TitleSingular3],
 			[TitlePlural], [TitlePlural2], [TitlePlural3], 
 			[TaxIdentificationNumberVisibility],
-			[ImageIdVisibility],
+			[ImageVisibility],
 			[StartDateVisibility],
 			[StartDateLabel],
 			[StartDateLabel2],
@@ -25,7 +25,7 @@ SET NOCOUNT ON;
 			[RatesLabel2],
 			[RatesLabel3],
 			[BankAccountNumberVisibility],
-			[UserIdVisibility],
+			[UserVisibility],
 			[AllowMultipleUsers],
 
 			[MainMenuIcon],
@@ -44,7 +44,7 @@ SET NOCOUNT ON;
 
 			t.[TaxIdentificationNumberVisibility]
 											= s.[TaxIdentificationNumberVisibility],
-			t.[ImageIdVisibility]			= s.[ImageIdVisibility],
+			t.[ImageVisibility]				= s.[ImageVisibility],
 			t.[StartDateVisibility]			= s.[StartDateVisibility],
 			t.[StartDateLabel]				= s.[StartDateLabel],
 			t.[StartDateLabel2]				= s.[StartDateLabel2],
@@ -56,7 +56,7 @@ SET NOCOUNT ON;
 			t.[RatesLabel2]					= s.[RatesLabel2],
 			t.[RatesLabel3]					= s.[RatesLabel3],
 			t.[BankAccountNumberVisibility]	= s.[BankAccountNumberVisibility],
-			t.[UserIdVisibility]			= s.[UserIdVisibility],
+			t.[UserVisibility]				= s.[UserVisibility],
 			t.[AllowMultipleUsers]			= s.[AllowMultipleUsers],
 
 			t.[MainMenuIcon]				= s.[MainMenuIcon],
@@ -66,7 +66,7 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([Id],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], 
 			[TaxIdentificationNumberVisibility],
-			[ImageIdVisibility],
+			[ImageVisibility],
 			[StartDateVisibility],
 			[StartDateLabel],
 			[StartDateLabel2],
@@ -81,13 +81,13 @@ SET NOCOUNT ON;
 			[RatesLabel2],
 			[RatesLabel3],
 			[BankAccountNumberVisibility],
-			[UserIdVisibility],
+			[UserVisibility],
 			[AllowMultipleUsers],
 		
 			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
 		VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], 
 			s.[TaxIdentificationNumberVisibility],
-			s.[ImageIdVisibility],
+			s.[ImageVisibility],
 			s.[StartDateVisibility],
 			s.[StartDateLabel],
 			s.[StartDateLabel2],
@@ -102,7 +102,7 @@ SET NOCOUNT ON;
 			s.[RatesLabel2],
 			s.[RatesLabel3],
 			s.[BankAccountNumberVisibility],
-			s.[UserIdVisibility],
+			s.[UserVisibility],
 			s.[AllowMultipleUsers],
 
 			s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey]);

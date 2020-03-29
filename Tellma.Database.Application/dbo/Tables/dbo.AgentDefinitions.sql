@@ -8,7 +8,7 @@
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
-	[ImageIdVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([ImageIdVisibility] IN (N'None', N'Optional', N'Required')),
+	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[StartDateVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([StartDateVisibility] IN (N'None', N'Optional', N'Required')),
 	[StartDateLabel]					NVARCHAR (50),
 	[StartDateLabel2]					NVARCHAR (50),
@@ -27,7 +27,7 @@
 	[RatesLabel3]						NVARCHAR (50),
 	[BankAccountNumberVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([BankAccountNumberVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[UserIdVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([UserIdVisibility] IN (N'None', N'Optional', N'Required')),
+	[UserVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([UserVisibility] IN (N'None', N'Optional', N'Required')),
 	[AllowMultipleUsers]				BIT				NOT NULL DEFAULT 0,
 	
 	[State]								NVARCHAR (50)	DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
