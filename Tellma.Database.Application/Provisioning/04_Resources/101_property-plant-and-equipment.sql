@@ -3,7 +3,7 @@ BEGIN
 --	Defining computer equipment	   
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AccountTypeId],					[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
+		[AssetTypeId],						[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
 	(0,@ComputerEquipmentMemberExtension,	N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Microsoft'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
 	(1,@ComputerEquipmentMemberExtension,	N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
 	(2,@ComputerEquipmentMemberExtension,	N'Lenovo Ideapad S145',				N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
@@ -27,7 +27,7 @@ BEGIN
 -- Defining other fixed assets
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AccountTypeId],				[Name],						[Identifier]) VALUES
+		[AssetTypeId],					[Name],						[Identifier]) VALUES
 	(0, @OfficeEquipment,				N'Camera',					N'-'),
 	(1, @OfficeEquipment,				N'Generator',				N'-'),
 	(2, @OfficeEquipment,				N'Battery for Generator',	N'-'),

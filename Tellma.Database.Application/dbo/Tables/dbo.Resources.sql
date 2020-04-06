@@ -4,10 +4,11 @@
 CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of "real" Account Types.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_ResourceDefinitions] REFERENCES dbo.ResourceDefinitions([Id]),
+	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	-- TODO: to make sure we only use sensible account types, we add a field called
-	-- IsResourceClassification		BIT		DEFAULT 1, and add referential integrity.
-	[AccountTypeId]					INT					NOT NULL,
+	[AssetTypeId]					INT					CONSTRAINT [FK_Resources__AssetTypeId] REFERENCES dbo.AccountTypes([Id]),
+	[ExpenseTypeId]					INT					CONSTRAINT [FK_Resources__ExpenseTypeId] REFERENCES dbo.AccountTypes([Id]),
+	[RevenueTypeId]					INT					CONSTRAINT [FK_Resources__RevenueTypeId] REFERENCES dbo.AccountTypes([Id]),
 	--CONSTRAINT [CK_Resources__Id_AccountTypeId] UNIQUE ([Id], [AccountTypeId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
@@ -29,20 +30,17 @@ CREATE TABLE [dbo].[Resources] (
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
 	-- For PPE
-	[CostObjectId]					INT					CONSTRAINT [FK_Resources__CostObjectId] REFERENCES dbo.Agents([Id]),
-	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
-	[ExpenseCenterId]				INT					CONSTRAINT [FK_Resources__ExpenseCenterId] REFERENCES dbo.[Centers]([Id]),
-	[InvestmentCenterId]			INT					CONSTRAINT [FK_Resources__InvestmentCenterId] REFERENCES dbo.[Centers]([Id]),
+	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__ExpenseEntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	[CenterId]						INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
+
 	[ResidualMonetaryValue]			Decimal (19,4),
 	[ResidualValue]					Decimal (19,4),
-	-- For inventory
+	-- For inventory, we also need a CenterId of EntryTypeParentId OtherExpenseByFunction
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
-
 	--[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-
 	--[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
 	-- The following properties are user-defined, used for reporting
 	[AvailableSince]				DATE, -- such as first availability date. makes sense with non-null identifier

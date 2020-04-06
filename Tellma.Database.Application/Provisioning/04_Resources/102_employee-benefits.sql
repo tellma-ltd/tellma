@@ -2,7 +2,7 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-						[AccountTypeId],					[Name]) VALUES
+						[ExpenseTypeId],					[Name]) VALUES
 	(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
 	(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Transportation Allowance'),
 	(2, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Day Overtime'),

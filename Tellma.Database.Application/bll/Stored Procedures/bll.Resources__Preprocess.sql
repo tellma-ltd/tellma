@@ -21,21 +21,9 @@ IF (
 	WHERE [IsActive] = 1 AND [IsLeaf] = 1
 ) = 1
 UPDATE @PreprocessedResources
-SET [ExpenseCenterId] = (
+SET [CenterId] = (
 		SELECT [Id] FROM dbo.[Centers]
 		WHERE [IsActive] = 1 AND [IsLeaf] = 1
 	);
-	
-IF (
-	SELECT COUNT(*) FROM dbo.[Centers]
-	WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
-) = 1
-UPDATE @PreprocessedResources
-SET
-	[InvestmentCenterId] = (
-		SELECT [Id] FROM dbo.[Centers]
-		WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1
-	);
-
 
 SELECT * FROM @PreprocessedResources;

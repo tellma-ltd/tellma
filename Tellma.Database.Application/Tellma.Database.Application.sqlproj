@@ -370,7 +370,6 @@
     <Build Include="dal\Stored Procedures\dal.EntryTypes__DeleteWithDescendants.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryTypes_Validate__DeleteWithDescendants.sql" />
-    <Build Include="dbo\Tables\dbo.LegacyTypes.sql" />
     <Build Include="Mapping\Documents.sql" />
     <Build Include="Mapping\Lines.sql" />
     <Build Include="Mapping\Entries.sql" />
@@ -402,7 +401,6 @@
     <None Include="Provisioning\05_Agents\06_Suppliers.sql" />
     <None Include="Provisioning\05_Agents\03_Customers.sql" />
     <None Include="Provisioning\05_Agents\10_Employees.sql" />
-    <None Include="Provisioning\05_Agents\08_Banks.sql" />
     <None Include="Provisioning\05_Agents\09_Custodians.sql" />
     <None Include="Provisioning\05_Agents\05_Partners.sql" />
     <None Include="Provisioning\04_Resources\a1_PPE_motor-vehicles.sql" />
@@ -443,7 +441,6 @@
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceDefinitions__Save.sql" />
     <Build Include="dbo\Functions\dbo.fn_AGCode__Id.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LegacyTypeList.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Ifrs_810000.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Ifrs_210000.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Ifrs_220000.sql" />
@@ -461,7 +458,6 @@
     <Build Include="dal\Stored Procedures\dal.AccountTypes__Activate.sql" />
     <Build Include="Mapping\AccountTypes.sql" />
     <Build Include="Mapping\AccountTypes__AsQuery.sql" />
-    <None Include="Provisioning\06_Accounts\a_LegacyTypes.sql" />
     <None Include="Provisioning\00_Common\d_EntryTypes.sql" />
     <None Include="Provisioning\00_Common\e_AccountTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryList.sql" />
@@ -551,6 +547,11 @@
     <Build Include="Mapping\LineDefinitions.sql" />
     <Build Include="Mapping\DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.FinancialRatios.sql" />
+    <Build Include="dbo\Tables\dbo.ApportionmentRates.sql" />
+    <Build Include="dbo\Tables\dbo.AbsorptionRates.sql" />
+    <Build Include="dbo\Tables\dbo.BillOfMaterials.sql" />
+    <None Include="Provisioning\00_Common\e_AccountTypes_Liquidity.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -575,7 +576,6 @@
     <None Include="Provisioning\05_Agents\01_CostObjects.sql" />
     <None Include="Provisioning\05_Agents\02_Creditors.sql" />
     <None Include="Provisioning\05_Agents\04_Debtors.sql" />
-    <None Include="Provisioning\05_Agents\07_TaxAgencies.sql" />
     <None Include="105.Simpex.publish.xml" />
     <None Include="Provisioning\04_Resources\105_merchandise.sql" />
     <None Include="Provisioning\06_Accounts\105_Accounts.sql" />

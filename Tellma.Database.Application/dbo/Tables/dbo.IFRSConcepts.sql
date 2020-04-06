@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[IfrsConcepts] (
-	[Id]						NVARCHAR (255)	CONSTRAINT [PK_IfrsConcepts] PRIMARY KEY, -- Ifrs Concept
+	[Id]						INT PRIMARY KEY IDENTITY,
+	[Code]						NVARCHAR (255)	UNIQUE,
 /*
 	- Regulatory: Proposed by regulatory entity. We may have different flavors for different countries
 	- Amendment: Added for consistency, must be amended in the iXBRL tool. Mainly for members vs non members issue

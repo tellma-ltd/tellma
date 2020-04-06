@@ -12,7 +12,6 @@ BEGIN
 	DECLARE @IfrsDisclosureId NVARCHAR (255) = N'StatementOfFinancialPositionAbstract';
 	CREATE TABLE  #Mapping (
 		[AccountType]	NVARCHAR (255),
-		[IsCurrent]		BIT,
 		[Concept]		NVARCHAR (255)
 	);
 	-- The #Mapping table can be persisted and used to add the column IFRS210000_ConceptId to the fact table.
@@ -82,7 +81,6 @@ BEGIN
 	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN #Mapping M ON [AT].[Code] = M.[AccountType]
 	--ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
-	AND E.[IsCurrent] = M.[IsCurrent]
 	WHERE D.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	GROUP BY M.[Concept]
 	

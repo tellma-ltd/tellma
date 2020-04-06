@@ -8,15 +8,15 @@ AS
 RETURN (
 	SELECT 
 		[Index] AS [Id],
-		[LegacyClassificationId],
+		[CustomClassificationId],
 		[Name],
 		[Name2],
 		[Name3],
 		[Code],
 --		[PartyReference],
-		[AgentDefinitionId],
+--		[AgentDefinitionId], ERROR
 		[AccountTypeId],
-		[IsCurrent],
+--		[IsCurrent], ERROR
 		[AgentId],
 		[ResourceId],
 		[CenterId],

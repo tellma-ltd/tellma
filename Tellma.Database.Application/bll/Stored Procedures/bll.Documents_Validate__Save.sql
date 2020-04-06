@@ -88,6 +88,10 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] ETA ON AC.[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] <> N'ManualLine';
 	-- Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
+	-- TODO: rewrite it into 3 validations rules:
+	-- if debiting an asset account, make sure it is compatible with R.AssetTypeId
+	-- if debiting an expense account, make sure it is compatible with R.ExpenseTypeId
+	-- if crediting a revenue account, make sure it is compatible with R.RevenueTypeId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
@@ -102,7 +106,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'ResourceId'
 	JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
-	JOIN dbo.AccountTypes RC ON R.AccountTypeId = RC.[Id]
+	JOIN dbo.AccountTypes RC ON R.[AssetTypeId] = RC.[Id]
 	JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeParentId] = ATP.[Id]
 	WHERE RC.[Node].IsDescendantOf(ATP.[Node]) = 0
 	AND ATP.[IsResourceClassification] = 1

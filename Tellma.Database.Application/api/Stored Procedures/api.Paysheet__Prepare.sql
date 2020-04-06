@@ -43,7 +43,7 @@ BEGIN
 		PE.[CurrencyId] = AR.[CurrencyId],
 		PE.[AccountId] = (
 			SELECT [Id] FROM dbo.Accounts
-			WHERE AccountTypeId = R.AccountTypeId
+			WHERE AccountTypeId = R.[AssetTypeId]
 			AND ([CenterId] IS NULL OR [CenterId] = PE.CenterId)
 			AND ([AgentId] IS NULL OR [AgentId] = PE.[AgentId])
 			AND ([ResourceId] IS NULL OR [ResourceId] = PE.[ResourceId])

@@ -41,6 +41,14 @@ BEGIN
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',				1),
+	-- cash-purchase-vouchers:
+		-- cash purchase (authorize by GM, complete by cash custodian),
+		-- good receipt (complete by inventory custodian)
+		-- service receipt (Authorize By Center, complete by NotedAgent)
+		-- fixed asset receipt (Authorize by investment center, complete by  manual
+	-- cash-payment-voucher: payment to supplier, payment to other, manual
+	-- cash-salary-voucher: pay sheet, payroll, deductions,
+
 	-- cash-payment-vouchers
 	(0,1,	N'CashPurchase',			1), -- to recognize expenses, fill a separate GRN/GRIV
 	(1,1,	N'PaymentToSupplier',		1),

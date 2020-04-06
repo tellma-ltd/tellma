@@ -2,9 +2,9 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AccountTypeId],	[Name],					[Name2]) VALUES
-	(0,	@ServicesExpense,	N'Monthly Subscription',N'اشتراك شهري'),
-	(1, @ServicesExpense,	N'Yearly Support',		N'مساندة سنوية');
+		[ExpenseTypeId],	[RevenueTypeId],				[Name],						[Name2]) VALUES
+	(0,	@ServicesExpense,	@RevenueFromRenderingOfServices, N'Monthly Subscription',	N'اشتراك شهري'),
+	(1, @ServicesExpense,	@RevenueFromRenderingOfServices, N'Yearly Support',			N'مساندة سنوية');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],	[Multiplier]) VALUES

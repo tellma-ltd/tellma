@@ -167,19 +167,20 @@ INSERT INTO @ET VALUES(163, 0, 0, N'/8/8/', N'DecreaseThroughLossOfControlOfSubs
 INSERT INTO @ET VALUES(164, 0, 0, N'/8/9/', N'IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions', N'Increase (decrease) through transfers and other changes, other provisions')
 INSERT INTO @ET VALUES(165, 1, 1, N'/9/', N'ExpenseByFunctionExtension', N'Expense, by function')
 INSERT INTO @ET VALUES(166, 0, 1, N'/9/1/', N'CostOfSales', N'Cost of sales')
-INSERT INTO @ET VALUES(167, 0, 1, N'/9/2/', N'DistributionCosts', N'Distribution costs')
-INSERT INTO @ET VALUES(168, 0, 1, N'/9/3/', N'AdministrativeExpense', N'Administrative expenses')
-INSERT INTO @ET VALUES(169, 0, 1, N'/9/4/', N'OtherExpenseByFunction', N'Other expense, by function')
-INSERT INTO @ET VALUES(170, 1, 1, N'/10/', N'ChangesInInventories', N'Increase (decrease) in inventories')
-INSERT INTO @ET VALUES(171, 0, 1, N'/10/1/', N'InventoryPurchaseExtension', N'Inventory purchase')
-INSERT INTO @ET VALUES(172, 0, 1, N'/10/2/', N'InventoryProductionExtension', N'Inventory production')
-INSERT INTO @ET VALUES(173, 0, 1, N'/10/3/', N'InventorySalesExtension', N'Inventory sales')
-INSERT INTO @ET VALUES(174, 0, 1, N'/10/4/', N'InventoryConsumptionExtension', N'Inventory consumption')
-INSERT INTO @ET VALUES(175, 0, 1, N'/10/5/', N'InventoryGainLossExtension', N'Inventory Gain (loss)')
-INSERT INTO @ET VALUES(176, 0, 1, N'/10/6/', N'InventoryReclassifiedAsPropertyPlantAndEquipmentExtension', N'Inventory reclassified as property, plant and equipment')
-INSERT INTO @ET VALUES(177, 0, 1, N'/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventoryExtension', N'Fixed asset to inventory conversion')
-INSERT INTO @ET VALUES(178, 0, 1, N'/10/8/', N'InternalInventoryTransferExtension', N'Inventory transfer')
-
+INSERT INTO @ET VALUES(167, 0, 1, N'/9/2/', N'ProductionExtension', N'Production Centers Expenses')
+INSERT INTO @ET VALUES(168, 0, 1, N'/9/3/', N'ServiceExtension', N'Service Centers Expenses')
+INSERT INTO @ET VALUES(169, 0, 1, N'/9/4/', N'DistributionCosts', N'Distribution costs')
+INSERT INTO @ET VALUES(170, 0, 1, N'/9/5/', N'AdministrativeExpense', N'Administrative expenses')
+INSERT INTO @ET VALUES(171, 0, 1, N'/9/6/', N'OtherExpenseByFunction', N'Other expense, by function')
+INSERT INTO @ET VALUES(172, 1, 1, N'/10/', N'ChangesInInventories', N'Increase (decrease) in inventories')
+INSERT INTO @ET VALUES(173, 0, 1, N'/10/1/', N'InventoryPurchaseExtension', N'Inventory purchase')
+INSERT INTO @ET VALUES(174, 0, 1, N'/10/2/', N'InventoryProductionExtension', N'Inventory production')
+INSERT INTO @ET VALUES(175, 0, 1, N'/10/3/', N'InventorySalesExtension', N'Inventory sales')
+INSERT INTO @ET VALUES(176, 0, 1, N'/10/4/', N'InventoryConsumptionExtension', N'Inventory consumption')
+INSERT INTO @ET VALUES(177, 0, 1, N'/10/5/', N'InventoryGainLossExtension', N'Inventory Gain (loss)')
+INSERT INTO @ET VALUES(178, 0, 1, N'/10/6/', N'InventoryReclassifiedAsPropertyPlantAndEquipmentExtension', N'Inventory reclassified as property, plant and equipment')
+INSERT INTO @ET VALUES(179, 0, 1, N'/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventoryExtension', N'Fixed asset to inventory conversion')
+INSERT INTO @ET VALUES(180, 0, 1, N'/10/8/', N'InternalInventoryTransferExtension', N'Inventory transfer')
 
 -- TODO: we also need to add customer return and supplier return
 
@@ -216,22 +217,23 @@ DECLARE @PaymentsToSuppliersForGoodsAndServices INT = (SELECT [Id] FROM dbo.[Ent
 DECLARE @PaymentsToAndOnBehalfOfEmployees INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'PaymentsToAndOnBehalfOfEmployees' );
 DECLARE @InternalCashTransferExtension INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
 
-
-
 DECLARE @ReceiptsFromSalesOfGoodsAndRenderingOfServices	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ReceiptsFromSalesOfGoodsAndRenderingOfServices' );
 DECLARE @ProceedsFromIssuingShares	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromIssuingShares' );
 DECLARE @IssueOfEquity				INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'IssueOfEquity' );
 DECLARE @InternalCashTransfer	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InternalCashTransferExtension' );
 DECLARE @ProceedsFromBorrowingsClassifiedAsFinancingActivities	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProceedsFromBorrowingsClassifiedAsFinancingActivities' );
 
-
-
 DECLARE @InventoryPurchaseExtension	INT	 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryPurchaseExtension' );
 DECLARE @InternalInventoryTransferExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InternalInventoryTransferExtension');
 
 DECLARE @PPEAdditions			INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
+DECLARE @PPEDepreciations		INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DepreciationPropertyPlantAndEquipment' );
+
 DECLARE @InvReclassifiedAsPPE	INT		 = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
 DECLARE @CostOfSales INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'CostOfSales' );
 DECLARE @DistributionCosts	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'DistributionCosts' );
 DECLARE @AdministrativeExpense	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'AdministrativeExpense' );
-DECLARE @OEF	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'OtherExpenseByFunction' );
+DECLARE @OtherExpenseByFunction	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'OtherExpenseByFunction' );
+DECLARE @ServiceExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ServiceExtension' );
+DECLARE @ProductionExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ProductionExtension' );
+DECLARE @ExpenseByFunctionExtension	INT = (SELECT [Id] FROM dbo.[EntryTypes] WHERE [Code] = N'ExpenseByFunctionExtension' );

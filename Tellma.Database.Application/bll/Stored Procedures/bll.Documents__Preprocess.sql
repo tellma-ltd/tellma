@@ -340,7 +340,6 @@ END
 			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 			AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
 			--AND (A.[Identifier] IS NULL			OR A.[Identifier] = E.[AccountIdentifier])
-			AND (LDE.[IsCurrent] IS NULL			OR A.IsCurrent = LDE.IsCurrent)
 		WHERE L.DefinitionId <> N'ManualLine'
 		AND A.IsDeprecated = 0
 		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]

@@ -108,13 +108,14 @@ BEGIN
 		(N'AccountId'),(N'CurrencyId'),(N'AgentId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue')
 	) FL([Id])
 	LEFT JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	LEFT JOIN dbo.AccountTypes AC ON AC.Id = A.AccountTypeId
 	WHERE L.DefinitionId = N'ManualLine' 
 	AND	(
 		FL.Id = N'AccountId'		AND E.[AccountId] IS NULL OR
 		FL.Id = N'CurrencyId'		AND E.[CurrencyId] IS NULL OR
 		FL.Id = N'CenterId'			AND E.[CenterId] IS NULL OR
-		FL.Id = N'AgentId'			AND A.AgentDefinitionId IS NOT NULL AND E.[AgentId] IS NULL OR
-		FL.Id = N'ResourceId'		AND A.[HasResource] = 1 AND E.[ResourceId] IS NULL 
+		FL.Id = N'AgentId'			AND AC.AgentDefinitionId IS NOT NULL AND E.[AgentId] IS NULL OR
+		FL.Id = N'ResourceId'		AND AC.[ResourceAssignment] <> N'N' AND E.[ResourceId] IS NULL 
 	)
 END
 	-- No deprecated account, for any positive state
