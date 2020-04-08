@@ -13,7 +13,7 @@ namespace Tellma.Controllers
     [Route("api/permissions")]
     [ApiController]
     [AuthorizeAccess]
-    [ApplicationApi]
+    [ApplicationController(allowUnobtrusive: true)]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase
     {

@@ -96,6 +96,9 @@ namespace Tellma.Controllers
         /// </summary>
         protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args, Query<TEntity> queryOverride = null)
         {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse(args.OrderBy);
@@ -163,7 +166,8 @@ namespace Tellma.Controllers
                 Result = result,
                 RelatedEntities = relatedEntities,
                 CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras
+                Extras = extras,
+                ServerTime = serverTime
             };
         }
 
@@ -172,6 +176,8 @@ namespace Tellma.Controllers
         /// </summary>
         protected virtual async Task<GetAggregateResponse> GetAggregateImplAsync(GetAggregateArguments args)
         {
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
             var select = AggregateSelectExpression.Parse(args.Select);
@@ -221,7 +227,8 @@ namespace Tellma.Controllers
             {
                 Top = args.Top,
                 IsPartial = isPartial,
-
+                ServerTime = serverTime,
+                
                 Result = result,
                 RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
             };

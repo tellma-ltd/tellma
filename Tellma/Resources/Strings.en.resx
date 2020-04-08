@@ -211,6 +211,9 @@
   <data name="AppName" xml:space="preserve">
     <value>Tellma</value>
   </data>
+  <data name="Assignment_Document" xml:space="preserve">
+    <value>Document</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>File Extension</value>
   </data>
@@ -952,6 +955,12 @@
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
   </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="InboxRecord" xml:space="preserve">
+    <value>Inbox Record</value>
+  </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>Invalid authenticator code.</value>
   </data>
@@ -1191,6 +1200,12 @@
   </data>
   <data name="Or" xml:space="preserve">
     <value>Or</value>
+  </data>
+  <data name="Outbox" xml:space="preserve">
+    <value>Outbox</value>
+  </data>
+  <data name="OutboxRecord" xml:space="preserve">
+    <value>Outbox Record</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>

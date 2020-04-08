@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class LegacyClassificationsController : CrudTreeControllerBase<LegacyClassificationForSave, LegacyClassification, int>
     {
         public const string BASE_ADDRESS = "legacy-classifications";
@@ -60,7 +60,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate(List<int> ids, bool returnEntities, string expand, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);

@@ -41,17 +41,10 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
   }
 
   ngOnInit() {
-
     this.route.paramMap.subscribe((params: ParamMap) => {
       // This triggers changes on the screen
-
       if (this.isScreenMode) {
-
-        const definitionId = params.get('definitionId');
-
-        if (this.definitionId !== definitionId) {
-          this.definitionId = definitionId;
-        }
+        this.definitionId = params.get('definitionId');
       }
     });
   }

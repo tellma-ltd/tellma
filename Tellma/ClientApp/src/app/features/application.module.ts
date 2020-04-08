@@ -45,7 +45,10 @@ import {
   faShoppingCart,
   faProjectDiagram,
   faExclamation,
-  faLockOpen
+  faLockOpen,
+  faInbox,
+  faShareSquare,
+  faShare
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -89,6 +92,8 @@ import { DocumentsDetailsComponent } from './documents/documents-details.compone
 import { DetailsEntriesComponent } from './details-entries/details-entries.component';
 import { ExchangeRatesMasterComponent } from './exchange-rates/exchange-rates-master.component';
 import { ExchangeRatesDetailsComponent } from './exchange-rates/exchange-rates-details.component';
+import { InboxComponent } from './inbox/inbox.component';
+import { OutboxComponent } from './outbox/outbox.component';
 
 const routes: Routes = [
   {
@@ -327,7 +332,16 @@ const routes: Routes = [
         component: DocumentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
-
+      {
+        path: 'inbox',
+        component: InboxComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'outbox',
+        component: OutboxComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
 
       // Report Definitions
       {
@@ -479,6 +493,8 @@ const routes: Routes = [
     DetailsEntriesComponent,
     ExchangeRatesMasterComponent,
     ExchangeRatesDetailsComponent,
+    InboxComponent,
+    OutboxComponent,
   ],
   imports: [
     SharedModule,
@@ -501,7 +517,7 @@ export class ApplicationModule {
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
       faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale, faBook, faChartBar, faChartArea,
-      faShoppingCart, faProjectDiagram
+      faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare
     );
   }
 }

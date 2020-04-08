@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Agent" [definitionId]="definitionId" [createFunc]="create"
   [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString"
   [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -114,7 +114,7 @@
   <t-form-group class="t-form-group" [label]="'Agent_User' | translate" [serverErrors]="model?.serverErrors?.UserId">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.User">
       <t-view-link *ngIf="!isEdit" link="../../../users" [itemId]="model?.UserId">
-        <t-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="User">
+        <t-auto-cell collection="Agent" [definitionId]="definitionId" [entity]="model" path="User">
         </t-auto-cell>
       </t-view-link>
     </t-restricted>

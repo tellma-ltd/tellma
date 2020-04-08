@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class AccountsController : CrudControllerBase<AccountForSave, Account, int>
     {
         public const string BASE_ADDRESS = "accounts";
@@ -63,7 +63,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Account>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<Account>>> Activate(List<int> ids, bool returnEntities, string expand, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);

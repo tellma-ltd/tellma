@@ -20,7 +20,7 @@ namespace Tellma.Controllers
     }
 
     [Route("api/voucher-booklets")]
-    [ApplicationApi]
+    [ApplicationController]
     public class VoucherBookletsController : FactGetByIdControllerBase<VoucherBooklet, int>
     {
         private readonly ApplicationRepository _repo;

@@ -2,12 +2,12 @@
 import { Location } from '@angular/common';
 import {
   Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef,
-  ViewChild, Output, SimpleChanges, OnChanges, HostListener
+  ViewChild, Output, SimpleChanges, OnChanges, HostListener, ChangeDetectorRef, DoCheck
 } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, switchMap, tap } from 'rxjs/operators';
+import { catchError, switchMap, tap, skip } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -33,7 +33,7 @@ export type DocumentLayout = 'document' | 'full-screen';
   selector: 't-details',
   templateUrl: './details.component.html'
 })
-export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeactivate {
+export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactivate {
 
   @Input()
   expand: string;
@@ -88,7 +88,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   collection: string;
 
   @Input()
-  definition: string;
+  definitionId: string;
+
+  @Input()
+  stateKey: string;
 
   @Input()
   idString: string;
@@ -104,6 +107,12 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   @Input()
   theme: 'light' | 'dark' = 'light';
+
+  /**
+   * Encodes any custom screen state in the url params
+   */
+  @Input()
+  encodeCustomStateFunc: (params: Params) => void;
 
   @Output()
   saved = new EventEmitter<number | string>();
@@ -131,6 +140,13 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   private _unboundServerErrors: string[]; // in the modal
   private _pristineModelJson: string;
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+
+  // For ngDoCheck
+  private _firstTime = true;
+  private _collectionOld: string;
+  private _definitionIdOld: string;
+  private _stateKeyOld: string;
+  private _idStringOld: string;
 
   // Moved below the fields to keep tslint happy
   @Input()
@@ -196,37 +212,83 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   ngOnInit() {
 
-    // as if the screen is opened a new
+    // Rest all fields to their defaults
     this.localState = new MasterDetailsStore();
     this._errorMessage = null;
     this._modalErrorMessage = null;
     this._modalSuccessMessage = null;
     this._unboundServerErrors = [];
-    this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this.registerPristineFunc(null);
 
-    this._subscriptions = new Subscription();
-    this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
+    const handleFreshStateFromUrl = (params: ParamMap, firstTime = false) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
-      if (this.isScreenMode && params.has('id')) {
-        // even though this might get set in a popup because the parent has an id param,
-        // it gets wiped out afterwards when angular initializes the input properties
-        const newId = params.get('id');
-        if (this.idString !== newId) {
-          const notFirstTime = !!this.idString;
-          this.idString = newId;
+      if (this.isScreenMode) {
 
-          // Call this manually since Angular won't call ngOnChanges automatically
-          if (notFirstTime) {
-            this.newScreen();
+        // When set to true, it means a parameter that defines a screen has changed
+        let screenDefChange = false;
+
+        // When set to true, it means the url is out of step with the state
+        let triggerUrlStateChange = false;
+
+        // Id
+        if (params.has('id')) {
+          const newId = params.get('id');
+          if (this.idString !== newId) {
+            this.idString = newId;
+            screenDefChange = true;
           }
         }
-      }
-    }));
 
-    // Fetch the data of the screen based on apiEndpoint and idString
-    this.fetch();
+        // definition Id
+        const defIdParamName = 'definitionId';
+        if (params.has(defIdParamName)) {
+          const newDefId = params.get(defIdParamName);
+          if (this.definitionId !== newDefId) {
+            this.definitionId = newDefId;
+            screenDefChange = true;
+          }
+        }
+
+        // state key
+        const stateKeyParamName = 'state_key';
+        if (params.has(stateKeyParamName)) {
+          const stateKey = params.get(stateKeyParamName);
+          if (this.stateKey !== stateKey) {
+            this.stateKey = stateKey;
+            screenDefChange = true;
+          }
+        } else if (!!this.stateKey) { // Prevents infinite loop
+          triggerUrlStateChange = true;
+        }
+
+        if (screenDefChange && !firstTime) {
+          return false; // Don't bother with the rest of ngOnInit
+        }
+
+        if (triggerUrlStateChange || firstTime) {
+          // The URL is out of step with the state => sync the two
+          // This happens when we navigate to the screen again 2nd time
+          // We must be careful here to avoid an infinite loop
+          this.urlStateChange();
+        }
+      }
+
+      return true; // The rest of ngOnInit can be executed
+    };
+
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl)); // future changes
+    const carryOn = handleFreshStateFromUrl(this.route.snapshot.paramMap, true); // right now
+
+    if (carryOn) {
+
+      // Now that we have the definitionId
+      this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
+
+      // Fetch the data of the screen based on apiEndpoint and idString
+      this.fetch();
+    }
   }
 
   ngOnDestroy() {
@@ -238,30 +300,65 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngDoCheck() {
+    // When navigating to another screen, Angular may reuse the same t-details component
+    // without calling the onInit and onDestory lifecycle hooks, causing cross contamination
+    // of state, here we call the lifecycle hooks manually if any of these properties changes
+    // Note: we don't use ngOnChanges because that one is only called when the input changes
+    // via binding, but sometimes the input is changed internally e.g. in response to a URL change
 
-    // the combination of these properties defines a whole new screen from the POV of the user
-    // when either of these properties change it is equivalent to a screen closing and
-    // and another screen opening even though Angular may reuse the same
-    // component and never call ngOnDestroy and ngOnInit. So we call them
-    // manually here if this is not the first time these properties are set
-    // to simulate a screen closing and opening again
-    const screenDefProperties = [changes.collection, changes.apiEndpoint, changes.idString];
-    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    let screenDefChanges = false;
+    if (this._collectionOld !== this.collection) {
+      this._collectionOld = this.collection;
+      screenDefChanges = true;
+    }
+    if (this._definitionIdOld !== this.definitionId) {
+      this._definitionIdOld = this.definitionId;
+      screenDefChanges = true;
+    }
+    if (this._stateKeyOld !== this.stateKey) {
+      this._stateKeyOld = this.stateKey;
+      screenDefChanges = true;
+    }
+    if (this._idStringOld !== this.idString) {
+      this._idStringOld = this.idString;
+      screenDefChanges = true;
+    }
+
     if (screenDefChanges) {
-      this.newScreen();
+      if (this._firstTime) {
+        this._firstTime = false;
+      } else {
+        this.ngOnDestroy();
+        this.ngOnInit();
+      }
     }
   }
 
-  private newScreen(): void {
-    // This method simulates navigating away from the screen and then navigating back
-    this.ngOnDestroy();
-    this.ngOnInit();
+  /**
+   * This is invoked whenever a change occurs in the screen state that must be encoded in the URL
+   */
+  public urlStateChange(): void {
+    if (this.isScreenMode) {
+      const params: Params = {
+      };
+
+      if (!!this.encodeCustomStateFunc) {
+        this.encodeCustomStateFunc(params);
+      }
+
+      // TODO: Add the built in stuff to params
+      if (!!this.stateKey) {
+        params.state_key = this.stateKey;
+      }
+
+      this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    }
   }
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, this.definitionId) : null;
   }
 
   get apiEndpoint(): string {
@@ -415,11 +512,13 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   private get globalState(): MasterDetailsStore {
-    if (!this.workspace.current.mdState[this.apiEndpoint]) {
-      this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
+    const mdState = this.workspace.current.mdState;
+    const key = this.stateKey || this.apiEndpoint;
+    if (!mdState[key]) {
+      mdState[key] = new MasterDetailsStore();
     }
 
-    return this.workspace.current.mdState[this.apiEndpoint];
+    return mdState[key];
   }
 
   public canDeactivate(currentUrl?: string, nextUrl?: string): boolean | Observable<boolean> {
@@ -811,7 +910,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
           }
 
           if (friendlyError.status === 422) {
-          // This handles 422 ModelState errors
+            // This handles 422 ModelState errors
             this.apply422ErrorsToModel(friendlyError.error);
           } else {
             this.displayModalError(friendlyError.error);
@@ -888,17 +987,34 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return this.canDeletePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
+  private navigateTo(id: string | number) {
+    if (!!id) {
+      const entity = this.workspace.current[this.collection][id];
+      const nextDefId = entity['DefinitionId'];
+
+      // Navigate intelligently depending on whether the next entity has a definition Id
+      // This allows navigating through a generic collection of entities of different definition Ids
+      const navExtras: NavigationExtras = { relativeTo: this.route };
+      if (!!nextDefId) {
+        this.router.navigate(['../..', nextDefId, id], navExtras);
+      } else {
+        this.router.navigate(['..', id], navExtras);
+      }
+    }
+  }
+
   onNext(): void {
-    this.router.navigate(['..', this.getNextId()], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    const nextId = this.getNextId();
+    this.navigateTo(nextId);
   }
 
   get canNext(): boolean {
-
     return !!this.getNextId();
   }
 
   onPrevious(): void {
-    this.router.navigate(['..', this.getPreviousId()], { relativeTo: this.route });
+    const prevId = this.getPreviousId();
+    this.navigateTo(prevId);
   }
 
   get canPrevious(): boolean {
@@ -911,7 +1027,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
     if (!!id) {
       const index = s.masterIds.findIndex(e => e.toString() === id);
-      if (index !== -1 && index !== s.masterIds.length - 1) {
+      if (index >= 0 && index < s.masterIds.length - 1) {
         const nextIndex = index + 1;
         const nextId = s.masterIds[nextIndex];
         return nextId;

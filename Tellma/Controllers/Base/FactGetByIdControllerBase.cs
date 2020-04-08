@@ -45,6 +45,9 @@ namespace Tellma.Controllers
         /// </summary>
         protected virtual async Task<GetByIdResponse<TEntity>> GetByIdImplAsync(TKey id, [FromQuery] GetByIdArguments args)
         {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Parse the parameters
             var expand = ExpandExpression.Parse(args?.Expand);
             var select = SelectExpression.Parse(args?.Select);
@@ -100,6 +103,7 @@ namespace Tellma.Controllers
                 CollectionName = GetCollectionName(typeof(TEntity)),
                 RelatedEntities = relatedEntities,
                 Extras = extras,
+                ServerTime = serverTime,
             };
         }
 
@@ -137,6 +141,9 @@ namespace Tellma.Controllers
         /// <param name="select">Optional select argument</param>
         protected async Task<EntitiesResponse<TEntity>> GetByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby = null)
         {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Prepare a query of the result, and clone it
             var repo = GetRepository();
             var query = repo.Query<TEntity>();
@@ -168,6 +175,7 @@ namespace Tellma.Controllers
                 RelatedEntities = relatedEntities,
                 CollectionName = GetCollectionName(typeof(TEntity)),
                 Extras = extras,
+                ServerTime = serverTime,
             };
         }
     }

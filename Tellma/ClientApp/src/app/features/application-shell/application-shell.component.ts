@@ -1,10 +1,14 @@
 import { Component, OnInit, OnDestroy, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService, TenantWorkspace, DetailsStatus } from '~/app/data/workspace.service';
+import {
+  WorkspaceService, TenantWorkspace, DetailsStatus,
+  MasterDetailsStore, EntityWorkspace, MasterStatus
+} from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { AuthService } from '~/app/data/auth.service';
 import { appsettings } from '~/app/data/global-resolver.guard';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
+import { ServerNotificationsService } from '~/app/data/server-notifications.service';
 import { NavigationService } from '~/app/data/navigation.service';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { StorageService } from '~/app/data/storage.service';
@@ -13,10 +17,13 @@ import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { MyUserForSave } from '~/app/data/dto/my-user';
 import { User } from '~/app/data/entities/user';
 import { ApiService } from '~/app/data/api.service';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, tap, catchError, filter } from 'rxjs/operators';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { addSingleToWorkspace } from '~/app/data/util';
+import { addSingleToWorkspace, addToWorkspace, toLocalDateISOString, isSpecified } from '~/app/data/util';
 import { clearServerErrors, applyServerErrors } from '~/app/shared/details/details.component';
+import { Document as TellmaDocument } from '~/app/data/entities/document';
+import { InboxRecord } from '~/app/data/entities/inbox-record';
+import { GetResponse } from '~/app/data/dto/get-response';
 
 @Component({
   selector: 't-application-shell',
@@ -28,38 +35,49 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   public isCollapsed = true;
 
   // My User stuff
-  private _subscription: Subscription;
+  private _subscriptions = new Subscription();
   private notifyDestruct$ = new Subject<void>();
   private notifyFetch$: Subject<void>;
-  private usersApi = this.apiService.usersApi(this.notifyDestruct$); // for intellisense
+  private usersApi = this.api.usersApi(this.notifyDestruct$);
   public myUser: MyUserForSave;
   public myUserStatus: DetailsStatus;
   private _errorMessage: string;
   private _saveErrorMessage: string;
+  private inboxCrud = this.api.crudFactory('inbox', this.notifyDestruct$);
+  private inboxApi = this.api.inboxApi(this.notifyDestruct$);
+  private inboxStateKey = 'navinbox';
 
   @ViewChild('myAccountModal', { static: true })
   myAccountModal: TemplateRef<any>;
 
+  @ViewChild('inboxModal', { static: true})
+  inboxModal: TemplateRef<any>;
+
   constructor(
     public workspace: WorkspaceService, public nav: NavigationService,
     private translate: TranslateService, private progress: ProgressOverlayService,
-    private auth: AuthService, private storage: StorageService, private apiService: ApiService,
-    @Inject(DOCUMENT) private document: Document, private modalService: NgbModal) {
-
-    this.notifyFetch$ = new Subject<any>();
-    this.notifyFetch$.pipe(
-      switchMap(() => this.doFetch())
-    ).subscribe();
+    private auth: AuthService, private storage: StorageService, private api: ApiService,
+    @Inject(DOCUMENT) private document: Document, private modalService: NgbModal,
+    private notificationsService: ServerNotificationsService) {
   }
 
   ngOnInit() {
-    this.usersApi = this.apiService.usersApi(this.notifyDestruct$);
+    this.notifyFetch$ = new Subject<any>();
+    this._subscriptions.add(this.notifyFetch$.pipe(
+      switchMap(() => this.doFetch())
+    ).subscribe());
+
+    // Refresh the inbox whenever the server signals a change
+    this._subscriptions.add(this.notificationsService.inboxChanged$.pipe(
+      filter(e => e.UpdateInboxList),
+      switchMap((n) => this.doFetchInbox(n.Count))
+    ).subscribe());
 
     ////// These ensures that once in a company, the language is
     ////// restricted to one of the company's languages
     this.restrictToCompanyLanguages();
-    this._subscription = this.workspace.stateChanged$
-      .subscribe(() => this.restrictToCompanyLanguages()); // In case settings changed
+    this._subscriptions.add(this.workspace.stateChanged$
+      .subscribe(() => this.restrictToCompanyLanguages())); // In case settings changed
   }
 
   ngOnDestroy() {
@@ -67,8 +85,8 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
     // cancel any backend operations
     this.notifyDestruct$.next();
 
-    if (!!this._subscription) {
-      this._subscription.unsubscribe();
+    if (!!this._subscriptions) {
+      this._subscriptions.unsubscribe();
     }
 
     ////// when we exit a company, reset the language how it was
@@ -130,6 +148,10 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   get ws(): TenantWorkspace {
     return this.workspace.currentTenant;
+  }
+
+  get tenantId(): number {
+    return this.workspace.ws.tenantId;
   }
 
   get userName(): string {
@@ -276,5 +298,158 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
 
   public get canSave(): boolean {
     return this.isMyUserLoaded;
+  }
+
+  // Notifications
+
+  public get inboxCountDisplay(): string {
+    const count = this.inboxCount;
+    return !isSpecified(count) ? '...' : count > 99 ? '99+' : count.toString();
+  }
+
+  public get unknownInboxCountDisplay(): string {
+    const count = this.unknownInboxCount;
+    return !count ? '' : count > 99 ? '99+' : count.toString();
+  }
+
+  //////// Inbox dropdown
+
+  private doFetchInbox(count: number): Observable<void> {
+    let s = this.inboxState;
+    s.masterStatus = MasterStatus.loading;
+    // s.detailsId = null; // clear the cached details item
+
+    const unobtrusive = true;
+    const top = 25; // Only get the top 25 items
+    const skip = 0;
+    const select = `Comment,CreatedAt,CreatedBy/Name,CreatedBy/Name2,CreatedBy/Name3,
+      CreatedBy/ImageId,OpenedAt,Document/DefinitionId,Document/SerialNumber,Document/Memo`;
+
+    if (!count) {
+      s.total = count;
+      s.masterStatus = MasterStatus.loaded;
+      s.flatIds = [];
+      return of();
+    } else {
+      // Capture the tenant Id before the async call
+      const tenantId = this.workspace.ws.tenantId;
+
+      // Retrieve the inbox items
+      return this.inboxCrud.get({
+        unobtrusive,
+        top,
+        skip,
+        select,
+      }).pipe(
+        tap((response: GetResponse) => {
+          s = this.inboxState; // get the source
+          s.top = response.Top;
+          s.skip = response.Skip;
+          s.total = response.TotalCount;
+          s.masterStatus = MasterStatus.loaded;
+          s.extras = response.Extras;
+          s.collectionName = response.CollectionName;
+          s.flatIds = addToWorkspace(response, this.workspace);
+
+          // Update the state to minimize the chance of discrepancy
+          // between number of items and displayed count
+          const serverTime = response.ServerTime;
+          const newCount = response.TotalCount;
+          const newUnknownCount = Math.min(response.Extras.UnknownCount, response.TotalCount); // Just in case
+          this.notificationsService.handleFreshInboxCounts(tenantId, serverTime, newCount, newUnknownCount);
+        }),
+        catchError((friendlyError) => {
+          s = this.inboxState; // get the source
+          s.masterStatus = MasterStatus.error;
+          s.errorMessage = friendlyError.error;
+          return of(null);
+        })
+      );
+    }
+  }
+
+  private get inboxCount(): number {
+    const tenantState = this.notificationsService.tenantState;
+    return !!tenantState ? tenantState.inbox.count : null;
+  }
+
+  private get unknownInboxCount(): number {
+    const tenantState = this.notificationsService.tenantState;
+    return !!tenantState ? tenantState.inbox.unknownCount : null;
+  }
+
+  public get showInboxSpinner(): boolean {
+    return this.inboxState.masterStatus === MasterStatus.loading;
+  }
+
+  public get showEmptyInboxMessage(): boolean {
+    const s = this.inboxState;
+    return s.masterStatus === MasterStatus.loaded && s.flatIds.length === 0;
+  }
+
+  public get showSeeAll(): boolean {
+    const s = this.inboxState;
+    return s.flatIds.length < s.total;
+  }
+
+  private get inboxState(): MasterDetailsStore {
+    const key = this.inboxStateKey;
+    const mdStateDic = this.workspace.current.mdState;
+    if (!mdStateDic[key]) {
+      mdStateDic[key] = new MasterDetailsStore();
+    }
+
+    return mdStateDic[key];
+  }
+
+  public get ids(): (string | number)[] {
+    return this.inboxState.flatIds;
+  }
+
+  public get c(): EntityWorkspace<InboxRecord> {
+    return this.workspace.currentTenant.InboxRecord;
+  }
+
+  public get docs(): EntityWorkspace<TellmaDocument> { // To avoid errors with the built in Document type
+    return this.workspace.currentTenant.Document;
+  }
+
+  public isToday(date: string) {
+    return date.startsWith(toLocalDateISOString(new Date()));
+  }
+
+  private checkInbox() {
+    if (this.unknownInboxCount > 0) {
+      this.notificationsService.tenantState.inbox.unknownCount = 0;
+      const lastInboxRecordId = this.ids[0];
+      if (!!lastInboxRecordId) {
+        const lastInboxRecord = this.c[lastInboxRecordId] as InboxRecord;
+        const lastInboxRecordTime = lastInboxRecord.CreatedAt;
+
+        this.inboxApi.check(lastInboxRecordTime).subscribe();
+      }
+    }
+  }
+
+  public onDropdownInbox(isOpen: boolean) {
+    this.workspace.ignoreKeyDownEvents = isOpen;
+    if (isOpen) {
+      this.checkInbox();
+    }
+  }
+
+  public onModalInbox() {
+    this.workspace.ignoreKeyDownEvents = true;
+    this.checkInbox();
+
+    this.modalService.open(this.inboxModal, { windowClass: 't-inbox-modal' })
+      .result.then(
+        () => this.workspace.ignoreKeyDownEvents = false,
+        () => this.workspace.ignoreKeyDownEvents = false,
+      );
+  }
+
+  get isMdScreen(): boolean {
+    return window.matchMedia(`(min-width: 768px)`).matches;
   }
 }

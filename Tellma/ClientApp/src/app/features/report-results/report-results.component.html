@@ -9,7 +9,7 @@
                         <th style="width:10px"></th>
                         <th *ngFor="let col of select">
                             <t-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
-                                [definition]="definitionId" [useAlignment]="true">
+                                [definitionId]="definitionId" [useAlignment]="true">
                             </t-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
                         </th>
                     </tr>
@@ -19,7 +19,7 @@
                     <tr class="t-pointer" *cdkVirtualFor="let entity of entities" [class.t-highlight]="false">
                         <td>&zwnj;</td>
                         <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
-                            <t-auto-cell [collection]="collection" [path]="col.Path" [definition]="definitionId"
+                            <t-auto-cell [collection]="collection" [path]="col.Path" [definitionId]="definitionId"
                                 [entity]="entity">
                             </t-auto-cell>
                         </td>

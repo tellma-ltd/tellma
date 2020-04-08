@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Resource" [definitionId]="definitionId" [createFunc]="create"
     [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
     [actions]="[

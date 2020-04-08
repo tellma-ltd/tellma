@@ -13,7 +13,7 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
-
+	
 	INSERT INTO @DocumentsIndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -296,10 +296,11 @@ BEGIN
 	SELECT Id FROM @DocumentsIndexedIds
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
 
+	-- This automatically returns the new notification counts
 	EXEC [dal].[Documents__Assign]
 		@Ids = @NewDocumentsIds,
-		@AssigneeId = @UserId,
-		@Comment = N'FYC'
+		@AssigneeId = @UserId --,
+		-- @Comment = N'FYC' -- Not necessary, also doesn't work in other languages
 
 	-- Return deleted File IDs, so C# can delete them from Blob Storage
 	SELECT [Id] FROM @DeletedFileIds;

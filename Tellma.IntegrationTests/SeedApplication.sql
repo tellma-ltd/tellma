@@ -37,6 +37,10 @@ DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[Centers];
 DELETE FROM [dbo].[AccountTypes];
 DELETE FROM [dbo].[EntryTypes];
+	
+DELETE FROM [dbo].[DocumentDefinitionLineDefinitions];
+DELETE FROM [dbo].[DocumentDefinitions];
+DELETE FROM [dbo].[LineDefinitions];
 
 -- Populate
 
@@ -101,3 +105,56 @@ INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [E]) VALUES
 
 EXEC dal.Currencies__Save
 	@Entities = @Currencies;
+
+-- Line Definitions
+DECLARE @AccountsPayable INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'AccountsPayable');
+DECLARE @LineDefinitions dbo.LineDefinitionList;
+DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
+DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
+DECLARE @LineDefinitionStateReasons dbo.LineDefinitionStateReasonList;
+DECLARE @Workflows dbo.WorkflowList;
+DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
+
+INSERT @LineDefinitions([Index],
+[Id],			[TitleSingular], [TitlePlural], [TitleSingular2], [TitlePlural3]) VALUES
+(0,N'ManualLine', N'Adjustment', N'Adjustments',N'تسوية',			N'تسويات');
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeParentId]) VALUES
+(0,0,+1,	@AccountsPayable);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[TableName],[ColumnName],[EntryIndex],	[Label],		[RequiredState],
+																[ReadOnlyState],
+																[InheritsFromHeader]) VALUES
+(0,0,	N'Entries',	N'Account',		0,			N'Account',		4,4,0), -- together with properties
+(1,0,	N'Entries',	N'Value',		0,			N'Debit',		4,4,0), -- see special case
+(2,0,	N'Entries',	N'Value',		0,			N'Credit',		4,4,0),
+(3,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears,
+INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
+[State],	[Name],					[Name2]) VALUES
+(0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
+(1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
+(2,0,-4,	N'Other reasons',		N'أسباب أخرى');
+
+EXEC [api].[LineDefinitions__Save]
+	@Entities = @LineDefinitions,
+	@LineDefinitionColumns = @LineDefinitionColumns,
+	@LineDefinitionEntries = @LineDefinitionEntries,
+	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
+	@Workflows = @Workflows,
+	@WorkflowSignatures = @WorkflowSignatures,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+-- Document Definitions
+DECLARE @DocumentDefinitions dbo.DocumentDefinitionList;
+DECLARE @DocumentDefinitionLineDefinitions dbo.DocumentDefinitionLineDefinitionList;
+INSERT @DocumentDefinitions([Index],	
+	[Id],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0);
+
+INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',				1);
+
+EXEC dal.DocumentDefinitions__Save
+	@Entities = @DocumentDefinitions,
+	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;

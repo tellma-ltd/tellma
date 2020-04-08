@@ -12,6 +12,7 @@ import { CanActivate } from '@angular/router';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { ProgressOverlayService } from './progress-overlay.service';
 import { DefinitionsForClient } from './dto/definitions-for-client';
+import { ServerNotificationsService } from './server-notifications.service';
 
 export const SETTINGS_PREFIX = 'settings';
 export const DEFINITIONS_PREFIX = 'definitions';
@@ -113,7 +114,8 @@ export class TenantResolverGuard implements CanActivate {
 
   constructor(
     private workspace: WorkspaceService, private storage: StorageService,
-    private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
+    private router: Router, private api: ApiService, private progress: ProgressOverlayService,
+    private notificationsService: ServerNotificationsService) {
 
     this.cancellationToken$ = new Subject<void>();
     const settingsApi = this.api.settingsApi(this.cancellationToken$);
@@ -131,6 +133,9 @@ export class TenantResolverGuard implements CanActivate {
       if (!!tenantId) {
         // set the Tenant ID
         this.workspace.setTenantId(tenantId);
+
+        // connect to this tenant Id
+        this.notificationsService.connect(tenantId);
 
         // take a concrete reference just in case it changes
         const current = this.workspace.currentTenant;

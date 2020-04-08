@@ -211,6 +211,9 @@
   <data name="AppName" xml:space="preserve">
     <value>تلما</value>
   </data>
+  <data name="Assignment_Document" xml:space="preserve">
+    <value>المستند</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>امتداد الملف</value>
   </data>
@@ -952,6 +955,12 @@
   <data name="Inactive" xml:space="preserve">
     <value>غير منشط</value>
   </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>صندوق الوارد</value>
+  </data>
+  <data name="InboxRecord" xml:space="preserve">
+    <value>بيان من صندوق الوارد</value>
+  </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>الكود غير سليم.</value>
   </data>
@@ -1191,6 +1200,12 @@
   </data>
   <data name="Or" xml:space="preserve">
     <value>أو</value>
+  </data>
+  <data name="Outbox" xml:space="preserve">
+    <value>صندوق الصادر</value>
+  </data>
+  <data name="OutboxRecord" xml:space="preserve">
+    <value>بيان من صندوق الصادر</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>

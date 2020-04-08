@@ -582,7 +582,7 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            string orderbySql = ""; // Default order by
+            string orderbySql = "";
             if (orderbys.Count > 0)
             {
                 orderbySql = "ORDER BY " + string.Join(", ", orderbys);

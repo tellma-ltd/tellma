@@ -24,6 +24,8 @@ import { metadata_Line } from '../line';
 import { metadata_AdminUser } from '../admin-user';
 import { metadata_IdentityServerUser } from '../identity-server-user';
 import { metadata_ExchangeRate } from '../exchange-rate';
+import { metadata_InboxRecord } from '../inbox-record';
+import { metadata_OutboxRecord } from '../outbox-record';
 
 export const metadata: {
     [collection: string]: (
@@ -51,6 +53,8 @@ export const metadata: {
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
     SummaryEntry: metadata_SummaryEntry,
+    InboxRecord: metadata_InboxRecord,
+    OutboxRecord: metadata_OutboxRecord,
 
     // Admin
     AdminUser: metadata_AdminUser,

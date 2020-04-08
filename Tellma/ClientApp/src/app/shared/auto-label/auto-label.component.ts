@@ -17,7 +17,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
   collection: string;
 
   @Input()
-  definition: string;
+  definitionId: string;
 
   @Input()
   path: string;
@@ -80,9 +80,9 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
         const labelArray = [];
 
-        let currentEntityDesc = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definition);
+        let currentEntityDesc = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definitionId);
         let currentCollection = this.collection;
-        let currentDefinition = this.definition;
+        let currentDefinition = this.definitionId;
         let currentPropDesc: PropDescriptor;
 
         for (let i = 0; i < pathArray.length; i++) {

@@ -13,7 +13,7 @@ namespace Tellma.Controllers
 {
     [Route("api/definitions")]
     [AuthorizeAccess]
-    [ApplicationApi]
+    [ApplicationController(allowUnobtrusive: true)]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class DefinitionsController : ControllerBase
@@ -224,7 +224,7 @@ namespace Tellma.Controllers
                     AutoExpand = r.AutoExpand ?? false,
                     Modifier = r.Modifier,
                     OrderDirection = r.OrderDirection,
-                }).ToList(),
+                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
                 ShowRowsTotal = def.ShowRowsTotal ?? false,
 
                 Columns = def.Columns?.Select(c => new ReportDimensionDefinitionForClient
@@ -236,7 +236,7 @@ namespace Tellma.Controllers
                     AutoExpand = c.AutoExpand ?? false,
                     Modifier = c.Modifier,
                     OrderDirection = c.OrderDirection,
-                }).ToList(),
+                })?.ToList() ?? new List<ReportDimensionDefinitionForClient>(),
                 ShowColumnsTotal = def.ShowColumnsTotal ?? false,
 
                 Measures = def.Measures?.Select(m => new ReportMeasureDefinitionForClient
@@ -247,7 +247,7 @@ namespace Tellma.Controllers
                     Label3 = m.Label3,
                     OrderDirection = m.OrderDirection,
                     Aggregation = m.Aggregation,
-                }).ToList(),
+                })?.ToList() ?? new List<ReportMeasureDefinitionForClient>(),
 
                 Select = def.Select?.Select(s => new ReportSelectDefinitionForClient
                 {
@@ -255,7 +255,7 @@ namespace Tellma.Controllers
                     Label = s.Label,
                     Label2 = s.Label2,
                     Label3 = s.Label3,
-                }).ToList(),
+                })?.ToList() ?? new List<ReportSelectDefinitionForClient>(),
 
                 OrderBy = def.OrderBy,
                 Top = def.Top ?? 0,
@@ -270,7 +270,7 @@ namespace Tellma.Controllers
                     Label3 = p.Label3,
                     Visibility = p.Visibility,
                     Value = p.Value,
-                }).ToList(),
+                })?.ToList() ?? new List<ReportParameterDefinitionForClient>(),
 
                 // Chart
                 Chart = def.Chart,
@@ -314,7 +314,7 @@ namespace Tellma.Controllers
                     EntryTypeId = e.EntryTypeId,
                     AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false,
                     EntryTypeParentId = e.EntryTypeParentId
-                })?.ToList(),
+                })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
                 {
@@ -327,7 +327,7 @@ namespace Tellma.Controllers
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
                     InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader
-                })?.ToList(),
+                })?.ToList() ?? new List<LineDefinitionColumnForClient>(),
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient
                 {
@@ -337,7 +337,7 @@ namespace Tellma.Controllers
                     Name2 = r.Name2,
                     Name3 = r.Name3,
                     IsActive = r.IsActive ?? false,
-                })?.ToList(),
+                })?.ToList() ?? new List<LineDefinitionStateReasonForClient>(),
             };
         }
 
@@ -367,7 +367,7 @@ namespace Tellma.Controllers
                 {
                     LineDefinitionId = d.LineDefinitionId,
                     IsVisibleByDefault = d.IsVisibleByDefault ?? false
-                }).ToList(),
+                })?.ToList() ?? new List<DocumentDefinitionLineDefinitionForClient>(),
 
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
@@ -377,7 +377,7 @@ namespace Tellma.Controllers
             // Here we compute some values based on the associated line definitions
             var documentLineDefinitions = result.LineDefinitions
                 .Select(e => lineDefsDic.GetValueOrDefault(e.LineDefinitionId))
-                .Where(e => e != null);
+                .Where(e => e != null && e.Columns != null);
 
             // AgentId
             foreach (var lineDef in documentLineDefinitions)

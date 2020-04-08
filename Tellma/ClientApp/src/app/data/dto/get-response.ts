@@ -7,6 +7,7 @@ export class EntitiesResponse<TEntity extends Entity = EntityWithKey> {
   Result: TEntity[];
   CollectionName: string;
   RelatedEntities: { [key: string]: EntityWithKey[]; };
+  ServerTime: string;
 }
 
 export class GetResponse<TEntity extends Entity = EntityWithKey> extends EntitiesResponse<TEntity> {

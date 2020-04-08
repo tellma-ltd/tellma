@@ -1,5 +1,6 @@
 ﻿using Tellma.Entities;
 using System.Collections.Generic;
+using System;
 
 namespace Tellma.Controllers.Dto
 {
@@ -12,5 +13,7 @@ namespace Tellma.Controllers.Dto
         public string CollectionName { get; set; }
         
         public Dictionary<string, IEnumerable<Entity>> RelatedEntities { get; set; }
+
+        public DateTimeOffset ServerTime { get; internal set; }
     }
 }

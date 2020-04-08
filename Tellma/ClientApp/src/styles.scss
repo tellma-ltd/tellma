@@ -7,7 +7,7 @@ $gray-500: #adb5bd;
 $gray-600: #6c757d;
 $gray-650: #5a636a;
 $gray-700: #495057;
-$gray-750: #3E454B;
+$gray-750: #3e454b;
 $gray-800: #343a40;
 $gray-900: #212529;
 
@@ -81,7 +81,16 @@ a {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-.table-hover tbody tr:hover {
+.t-inbox-item {
+  background-color: white;
+}
+
+.t-inbox-item.t-unread {
+  background-color: #edf2fa;
+}
+
+.table-hover tbody tr:hover,
+.t-inbox-item:hover {
   background-color: rgba(0, 0, 0, 0.075);
 }
 
@@ -642,8 +651,7 @@ $slightly-less-white: rgba(255, 255, 255, 0.9);
   color: $whitish !important;
 }
 
-button.t-text-whitish:hover,
-li.t-text-whitish:hover {
+button.t-text-whitish:hover {
   color: $white !important;
 }
 
@@ -678,7 +686,7 @@ table tr .t-form-group {
 
 .is-invalid .t-input {
   border-color: $danger;
-  border-bottom-width: 1px;  
+  border-bottom-width: 1px;
 }
 
 .is-invalid.t-input::placeholder,
@@ -1199,7 +1207,19 @@ tr.t-highlight {
     padding-bottom: 0;
   }
 }
-.t-master-modal {
+
+.t-inbox-modal {
+  .modal-body {
+    background-color: $light;
+  }
+  .modal-body,
+  .model-footer {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.t-master-modal, .t-inbox-modal {
   .modal-content {
     height: 100%;
   }
@@ -1216,7 +1236,7 @@ tr.t-highlight {
 }
 
 @media (min-width: 576px) {
-  .t-master-modal {
+  .t-master-modal, .t-inbox-modal {
     .modal-content {
       height: 100%;
     }
@@ -1312,8 +1332,14 @@ tr.t-highlight {
 }
 
 .t-brand-link {
-  padding: 0.5rem 0.625rem;
+  padding: 0.5rem;
   text-decoration: none !important;
+}
+
+@media (min-width: 576px) {
+  .t-brand-link {
+    padding: 0.5rem 0.625rem;
+  }
 }
 
 .t-details-image-container {
@@ -1376,7 +1402,8 @@ tr.t-highlight {
   }
 }
 
-.t-quickaccess, .t-teal1 {
+.t-quickaccess,
+.t-teal1 {
   @include background-color($primary); // Teal
 }
 
@@ -1627,7 +1654,7 @@ h1.t-report-measure:hover {
     min-width: 125px;
     max-width: 200px;
   }
-  
+
   .t-labeled-form-group-content {
     flex-grow: 1;
   }
@@ -1635,27 +1662,28 @@ h1.t-report-measure:hover {
 
 // Wrap around on smaller screens
 @media (max-width: 991px) {
-  .t-form-group-label, .t-labeled-form-group-content {
-    width: 100%;    
+  .t-form-group-label,
+  .t-labeled-form-group-content {
+    width: 100%;
   }
 }
 
 // // Style the select properly
 select.t-input {
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	appearance: none;
-	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-	background-repeat: no-repeat, repeat;
-	background-position: right .3em top 50%, 0 0;
-	background-size: .4em auto, 100%;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat, repeat;
+  background-position: right 0.3em top 50%, 0 0;
+  background-size: 0.4em auto, 100%;
 }
 select.t-input::-ms-expand {
-	display: none;
+  display: none;
 }
 
 .t-disabled-background {
-  background-color: #e9ecef
+  background-color: #e9ecef;
 }
 
 // Error popovers
@@ -1682,7 +1710,7 @@ $color-alert-danger: #721c24;
   border-left-color: $bg-alert-danger;
 }
 
-.t-error-popover .popover-body { 
+.t-error-popover .popover-body {
   color: $color-alert-danger;
   box-shadow: 0 5px 20px -12px black;
 }
@@ -1696,8 +1724,18 @@ $color-alert-danger: #721c24;
 }
 
 // Removes the reveal password eye in Edge
-input[type=password]::-ms-reveal,
-input[type=password]::-ms-clear
-{
-    display: none;
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+.t-notification-badge {
+  position: absolute;
+  right: -6px;
+  top: -5px;
+  border: solid 2px $gray-800;
+}
+
+button:focus {
+  outline: 1px auto $primary;
 }

@@ -285,7 +285,7 @@
             <div class="t-tile-container p-0 p-sm-1" [class.t-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
               <div class="p-2 t-tile" [class.bg-white]="isLight" [class.t-less-dark]="isDark"
-                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+                [class.t-dark-border]="isDark" [class.t-highlight]="isRecentlyViewed(id)" (click)="onChoose(id)">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
                 </ng-container>
               </div>
@@ -304,7 +304,7 @@
                   </button>
                 </div>
                 &nbsp;
-                <div class="p-2 t-pointer flex-grow-1" (click)="onSelect(node.id)"
+                <div class="p-2 t-pointer flex-grow-1" (click)="onChoose(node.id)"
                   [class.font-weight-bold]="node.highlight">
                   <ng-container *ngTemplateOutlet="tileTemplate;context: { id : node.id }">
                   </ng-container>
@@ -343,8 +343,8 @@
 
               <!-- Descrpition  -->
               <th class="t-pointer" [style.width]="colWidth('(Description)')"
-                [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
-                <ng-content *ngTemplateOutlet="tableSummaryHeaderTemplateDefault">
+                [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)', $event)">
+                <ng-content *ngTemplateOutlet="tableSummaryHeaderTemplate || tableSummaryHeaderTemplateDefault">
                 </ng-content>
 
                 <ng-template #tableSummaryHeaderTemplateDefault let-modal>
@@ -355,8 +355,8 @@
               <!-- Custom feature columns -->
               <th class="t-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
                 [style.width]="colWidth(colPath)" [class.dropdown-toggle]="isOrderedBy(colPath)"
-                (click)="onOrderBy(colPath)" cdkDrag>
-                <t-auto-label [collection]="collection" [path]="colPath" [definition]="definition"
+                (click)="onOrderBy(colPath, $event)" cdkDrag>
+                <t-auto-label [collection]="collection" [path]="colPath" [definitionId]="definitionId"
                   [useAlignment]="true">
                 </t-auto-label>
               </th>
@@ -387,7 +387,7 @@
                 </ng-content>
 
                 <!-- Description -->
-                <td class="t-pointer" (click)="onSelect(id)">
+                <td class="t-pointer" (click)="onChoose(id)">
                   <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: id }">
                   </ng-content>
                 </td>
@@ -425,7 +425,7 @@
                     </button>
                     <!-- The node button -->
                     <div class="t-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
-                      (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
+                      (click)="onChoose(node.id)" [class.font-weight-bold]="node.highlight">
                       <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: node.id }">
                       </ng-content>
                       <t-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></t-spinner>
@@ -461,7 +461,7 @@
           </td>
 
           <!-- In popup mode, this column is merely a clickable margin -->
-          <td class="t-pointer" (click)="onSelect(id)" *ngIf="!showCheckboxes">
+          <td class="t-pointer" (click)="onChoose(id)" *ngIf="!showCheckboxes">
 
           </td>
         </ng-template>
@@ -500,8 +500,8 @@
 
         <!-- Template reused in both tree and flat tables -->
         <ng-template #selectColumns let-id="id">
-          <td class="t-pointer text-truncate" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-            <t-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
+          <td class="t-pointer text-truncate" *ngFor="let colPath of tableColumnPaths" (click)="onChoose(id)">
+            <t-auto-cell [collection]="collection" [path]="colPath" [definitionId]="definitionId" [entity]="entity(id)">
             </t-auto-cell>
           </td>
         </ng-template>

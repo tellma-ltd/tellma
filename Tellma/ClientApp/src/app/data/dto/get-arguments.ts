@@ -7,5 +7,5 @@ export class GetArguments {
   filter?: string;
   expand?: string;
   select?: string;
-  inactive?: boolean;
+  unobtrusive?: boolean;
 }

@@ -1,11 +1,11 @@
 // tslint:disable:member-ordering
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { WorkspaceService, TenantWorkspace, MasterDetailsStore } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { DocumentForSave, Document, serialNumber, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
+import { ActivatedRoute, ParamMap, Params } from '@angular/router';
+import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient, ResourceDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
@@ -161,7 +161,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute, private modalService: NgbModal) {
+    private route: ActivatedRoute, private modalService: NgbModal) {
     super();
   }
 
@@ -170,51 +170,47 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const handleFreshStateFromUrl = (params: ParamMap) => {
 
       if (this.isScreenMode) {
-        // Definitoin Id, must set before retrieving the state
+        // Definitoin Id, must be set before retrieving the state
         this.definitionId = params.get('definitionId') || '';
+        const s = this.state.detailsState as DocumentDetailsState;
 
         // When set to true, it means the url is out of step with the state
-        let needsUrlStateChange = false;
-        const s = this.state.detailsState as DocumentDetailsState;
+        let triggerUrlStateChange = false;
 
         // Active tab
         const urlTab = params.get('tab');
         if (!!urlTab) {
           s.tab = urlTab;
         } else if (!!s.tab) { // Prevents infinite loop
-          needsUrlStateChange = true;
+          triggerUrlStateChange = true;
         }
 
         // The URL is out of step with the state => sync the two
         // This happens when we navigate to the screen again 2nd time
-        if (needsUrlStateChange) {
-          this.urlStateChange();
+        if (triggerUrlStateChange && !!this.details) {
+          // We must be careful here to avoid an infinite loop
+          this.details.urlStateChange();
         }
       }
     };
 
-    this._subscriptions = new Subscription();
     this._subscriptions.add(this.route.paramMap.pipe(skip(1)).subscribe(handleFreshStateFromUrl)); // future changes
     handleFreshStateFromUrl(this.route.snapshot.paramMap); // right now
   }
 
-  private urlStateChange(): void {
-    if (this.isScreenMode) {
-      const params: Params = {
-      };
-
-      const s = this.state.detailsState as DocumentDetailsState;
-      if (!!s.tab) {
-        params.tab = s.tab;
-      }
-
-      this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+  /**
+   * Encodes any custom screen state in the url params
+   */
+  public encodeCustomStateFunc: (params: Params) => void = (params: Params) => {
+    const s = this.state.detailsState as DocumentDetailsState;
+    if (!!s.tab) {
+      params.tab = s.tab;
     }
   }
 
   public setActiveTab(newTab: string) {
     (this.state.detailsState as DocumentDetailsState).tab = newTab;
-    this.urlStateChange();
+    this.details.urlStateChange();
   }
 
   public getActiveTab(model: Document): string {
@@ -224,7 +220,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return s.tab;
     }
 
-    // Managerial view can have multiple tabs, make sure the selected one is visible
+    // Make sure the selected tab is a visible one
     const visibleTabs = this.visibleTabs(model);
     if (visibleTabs.some(e => e === s.tab)) {
       return s.tab;
@@ -405,7 +401,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return `(${this.translate.instant('New')})`;
     }
     const def = this.definition;
-    return serialNumber(serial, def.Prefix, def.CodeWidth || 4);
+    return formatSerial(serial, def.Prefix, def.CodeWidth || 4);
   }
 
   public get serialPrefix(): string {
@@ -1589,9 +1585,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return copy;
   }
 
-  public get extraParams(): { [key: string]: any } {
-    return { includeRequiredSignatures: true };
-  }
+  public extraParams = { includeRequiredSignatures: true };
 
   public handleFreshExtras(extras: { [key: string]: any }) {
     if (!!extras) {
@@ -2704,30 +2698,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public updateStateTooltip(doc: Document): string {
     return this.hasPermissionToUpdateState(doc) ? null : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
-
-  ////////////// Accounting vs. Managerial
-
-  // public get isManagerial(): boolean {
-  //   return (this.state.detailsState as DocumentDetailsState).view === 'Managerial';
-  // }
-
-  // public get isAccounting(): boolean {
-  //   return (this.state.detailsState as DocumentDetailsState).view === 'Accounting';
-  // }
-
-  // public onManagerialView() {
-  //   const s = this.state.detailsState as DocumentDetailsState;
-  //   s.view = 'Managerial';
-  //   this.urlStateChange();
-  // }
-
-  // public onAccountingView() {
-  //   const s = this.state.detailsState as DocumentDetailsState;
-  //   s.view = 'Accounting';
-  //   this.urlStateChange();
-  // }
-
-  // Accounting View
 
   public entriesCount(doc: DocumentForSave) {
     return this.smartEntries(doc).length + this.manualEntries(doc).length;

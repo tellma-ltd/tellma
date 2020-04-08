@@ -1,21 +1,21 @@
-import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output, OnInit } from '@angular/core';
 import { DetailsComponent } from '~/app/shared/details/details.component';
 import { Observable, Subscription, Subject } from 'rxjs';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { TenantWorkspace } from '~/app/data/workspace.service';
 
+/**
+ * a convenience class that canonical details components can inherit from
+ * it provides all common functionality of the TypeScript part of the component
+ * and complements a t-details in the root of its HTML template
+ */
 @Component({
   template: ''
 })
-export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
+export class DetailsBaseComponent implements ICanDeactivate, OnInit, OnDestroy {
 
-  // a convenience class that canonical details components can inherit from
-  // it provides all common functionality of the TypeScript part of the component
-  // and complements a t-details in the root of its HTML template
   @Input()
   public mode: 'screen' | 'popup' = 'screen';
-
-  // public mode: 'screen' | 'popup' = 'screen';
 
   @Input()
   public idString: string | number;
@@ -36,7 +36,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
-  public _subscriptions: Subscription;
+  public _subscriptions = new Subscription();
 
   @ViewChild(DetailsComponent, { static: false })
   set details(v: DetailsComponent) {
@@ -72,6 +72,9 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
 
   get isPopupMode(): boolean {
     return this.mode === 'popup';
+  }
+
+  ngOnInit(): void {
   }
 
   ngOnDestroy(): void {

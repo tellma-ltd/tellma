@@ -7,7 +7,6 @@ import { StorageService } from './storage.service';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
 
-
 // a set of events that various services in the application are interested in knowing about
 export enum AuthEvent {
 
@@ -51,10 +50,6 @@ export class AuthService {
 
       // url of the Identity Provider
       issuer: appsettings.identityAddress,
-
-      // when identity server is hosted in the same domain, we refere to it as "/" and this library complains about lack of https
-      // requireHttps: false,
-      // strictDiscoveryDocumentValidation: false,
 
       // url of the SPA to redirect the user to after login
       redirectUri: window.location.origin + '/sign-in-callback',
@@ -266,6 +261,9 @@ export class AuthService {
     const idToken = this.storage.getItem('id_token');
     this.cleaner.cleanLocalStorage(true); // preserve user independent stuff
     this.storage.setItem('id_token', idToken);
+
+    // Close down SignalR connection with the server
+    this.cleaner.cleanServerNotifications();
 
     // go to identity server and sign out from there
     this.oauth.logOut();

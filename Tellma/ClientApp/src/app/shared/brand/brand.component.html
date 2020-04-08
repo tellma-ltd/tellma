@@ -1,3 +1,6 @@
-<div class="d-flex flex-column align-items-center justify-content-center px-1" style="height: 34px;"> 
+<div class="d-flex d-sm-none flex-column align-items-center justify-content-center" style="height: 34px;width: 34px;"> 
+    <img [src]="theme === 'light' ? '/assets/tellma-light-sm.png' : '/assets/tellma-sm.png'" [width]="24 * scale" alt="Application logo" />
+</div>
+<div class="d-none d-sm-flex flex-column align-items-center justify-content-center px-1" style="height: 34px;"> 
     <img [src]="theme === 'light' ? '/assets/tellma-light.png' : '/assets/tellma.png'" [width]="64 * scale" alt="Application logo" />
 </div>

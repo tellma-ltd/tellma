@@ -13,7 +13,7 @@ using Tellma.Entities;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class DetailsEntriesController : FactWithIdControllerBase<DetailsEntry, int>
     {
         public const string BASE_ADDRESS = "details-entries";

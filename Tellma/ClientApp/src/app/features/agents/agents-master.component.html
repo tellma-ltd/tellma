@@ -1,4 +1,4 @@
-<t-master *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [mode]="mode"
+<t-master *ngIf="found;else pageNotFound" collection="Agent" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated" selectForTiles="Code,ImageId"
@@ -47,7 +47,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <t-auto-cell collection="Agent" [definition]="definitionId" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Agent" [definitionId]="definitionId" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

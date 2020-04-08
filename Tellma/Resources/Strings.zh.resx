@@ -211,6 +211,9 @@
   <data name="AppName" xml:space="preserve">
     <value>敏锐</value>
   </data>
+  <data name="Assignment_Document" xml:space="preserve">
+    <value>文献</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>文件扩展名</value>
   </data>
@@ -952,6 +955,12 @@
   <data name="Inactive" xml:space="preserve">
     <value>待用</value>
   </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>收件箱</value>
+  </data>
+  <data name="InboxRecord" xml:space="preserve">
+    <value>收件箱记录</value>
+  </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>无效的认证码。</value>
   </data>
@@ -1191,6 +1200,12 @@
   </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>
+  </data>
+  <data name="Outbox" xml:space="preserve">
+    <value>发件箱</value>
+  </data>
+  <data name="OutboxRecord" xml:space="preserve">
+    <value>发件箱记录</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>双因素认证（2FA）</value>
