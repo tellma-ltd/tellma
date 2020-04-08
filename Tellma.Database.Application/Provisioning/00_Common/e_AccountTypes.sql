@@ -106,6 +106,8 @@ UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', 
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'suppliers' WHERE [Code] = N'AccrualsClassifiedAsCurrent';
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'employees' WHERE [Code] = N'CurrentPayablesToEmployeesExtension';
 UPDATE @AccountTypes	SET [AgentAssignment] = N'E', [AgentDefinitionId] = N'inventory-custodians' WHERE [Code] = N'Inventories';
+UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'suppliers' WHERE [Code] = N'CurrentValueAddedTaxReceivables';
+--UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'suppliers' WHERE [Code] = N'CurrentValueAddedTaxReceivables';
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
@@ -133,7 +135,6 @@ DECLARE @ComputerEquipmentMemberExtension INT = (SELECT [Id] FROM dbo.AccountTyp
 DECLARE @ComputerAccessoriesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ComputerAccessoriesExtension');
 
 DECLARE @IntangibleAssetsOtherThanGoodwill INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IntangibleAssetsOtherThanGoodwill');
-
 
 DECLARE @TradeAndOtherNonCurrentReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherNonCurrentReceivables');
 DECLARE @NoncurrentCarLoansReceivablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'NoncurrentCarLoansReceivablesExtension');
