@@ -3,9 +3,7 @@
 	[ParentIndex]		INT,
 	[Id]				INT					NOT NULL DEFAULT 0,
 	[ParentId]			INT,  
-	[CenterType]		NVARCHAR (50)		NOT NULL CHECK ([CenterType] IN (
-													N'Investment', N'Profit', N'Revenue', N'Cost')
-												),
+	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (N'Investment', N'Profit', N'Revenue', N'Cost')),
 	[Name]				NVARCHAR (255)		NOT NULL,
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),

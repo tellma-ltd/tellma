@@ -135,4 +135,9 @@ SET NOCOUNT ON;
 	-- TODO: if units have standard conversion rates, reject any attempt to change them
 	-- TODO: Add bll.Resources__Preprocess, to update the units with 
 
+	-- TODO: make sure AssetTypeId is descendants of AssetsAbstract
+	-- TODO: make sure ExpenseTypeId is descendants of ExpenseByNatureAbstract
+	-- TODO: make sure RevenueTypeId is descendants of Revenue
+
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -45,9 +45,9 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',
 		N'Error_TheAccountClassification0IsNotLeaf',
-		FE.[LegacyClassificationId]
+		FE.[CustomClassificationId]
 	FROM @Entities FE 
-	JOIN [dbo].[LegacyClassifications] BE ON FE.[LegacyClassificationId] = BE.Id
+	JOIN [dbo].[LegacyClassifications] BE ON FE.[CustomClassificationId] = BE.Id
 	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[LegacyClassifications]);
 
 	-- bll.Preprocess copies the AgentDefinition from Agent
@@ -77,9 +77,8 @@ SET NOCOUNT ON;
 	FROM @Entities A 
 	JOIN [dbo].[Resources] R ON R.[Id] = A.ResourceId
 	JOIN dbo.[AccountTypes] [AAT] ON [AAT].[Id]= A.[AccountTypeId]
-	JOIN dbo.[AccountTypes] [RAT] ON [RAT].[Id]= R.[AccountTypeId]
-	WHERE (A.[HasResource] = 1)
-	AND ([AAT].[IsResourceClassification] = 1)
+	JOIN dbo.[AccountTypes] [RAT] ON [RAT].[Id]= R.[AssetTypeId]
+	WHERE ([AAT].[IsResourceClassification] = 1)
 	AND ([RAT].[Node].IsDescendantOf([AAT].[Node]) = 0)
 
 	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
@@ -91,13 +90,11 @@ SET NOCOUNT ON;
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource],
 		dbo.fn_Localize(RC.[Name], RC.[Name2], RC.[Name3]) AS [ResourceCurrency],
 		dbo.fn_Localize(C.[Name], C.[Name2], C.[Name3]) AS [AccountCurrency]
-	FROM @Entities FE 
+	FROM @Entities FE
 	JOIN [dbo].[Resources] R ON R.[Id] = FE.ResourceId
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
 	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
-	WHERE (FE.[HasResource] = 1)
-	--AND (FE.ResourceId IS NOT NULL AND FE.CurrencyId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Resources
-	AND (FE.[CurrencyId] <> R.[CurrencyId])
+	WHERE (FE.[CurrencyId] <> R.[CurrencyId])
 
 	-- Cannot change properties of the account is used in a line, unless the line is draft, or negative.
 	-- TODO: The code below is too conservative. We may relax it as follows:
@@ -118,15 +115,10 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Ready To Post')
 	WHERE L.[State] > 0
 	AND (
-		FE.HasResource						<> A.[HasResource]						OR
 		--FE.[CenterId]						<> A.[CenterId]			OR
-		ISNULL(FE.[LegacyTypeId], N'')		<> ISNULL(A.[LegacyTypeId], N'')		OR
-		ISNULL(FE.[AgentDefinitionId],N'')	<> ISNULL(A.[AgentDefinitionId], N'')	OR
-		FE.[AccountTypeId]					<> A.[AccountTypeId]					OR
-		FE.[IsCurrent]						<> A.[IsCurrent]				--		OR
+		FE.[AccountTypeId]					<> A.[AccountTypeId]
 		--FE.[AgentId]						<> A.[AgentId]							OR
 		--FE.[ResourceId]					<> A.[ResourceId]						OR
 		--FE.[Identifier]					<> A.[Identifier]						OR
@@ -240,7 +232,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
-	JOIN dbo.[AccountTypes] ERC ON ERC.[Id] = R.[AccountTypeId]
+	JOIN dbo.[AccountTypes] ERC ON ERC.[Id] = R.[AssetTypeId]
 	WHERE L.[State] >= 0
 	AND ERC.[Node].IsDescendantOf(ARC.[Node]) = 0;
 

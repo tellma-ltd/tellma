@@ -8,28 +8,13 @@
 	[Code]							NVARCHAR (50),
 	--[PartyReference]				NVARCHAR (50), -- how it is referred to by the other party
 	[AccountTypeId]					INT				NOT NULL,
-	[IsCurrent]						BIT,
---
-	[LegacyClassificationId]		INT,
-	[LegacyTypeId]					NVARCHAR (50),
+	[CustomClassificationId]		INT,
 -- Major properties: NULL means it is not defined.
-	[AgentDefinitionId]				NVARCHAR (50),
-	[HasResource]					BIT				NOT NULL DEFAULT 0,
-	--[HasAgent]						BIT				NOT NULL DEFAULT 0,
-	[HasIdentifier]					BIT				NOT NULL DEFAULT 0,
+	[IsSmart]						BIT				NOT NULL DEFAULT 0,
 	[IsRelated]						BIT				NOT NULL DEFAULT 0,
-
-	[HasExternalReference]			BIT				NOT NULL DEFAULT 0,	
-	[HasAdditionalReference]		BIT				NOT NULL DEFAULT 0,	
-	[HasNotedAgentId]				BIT				NOT NULL DEFAULT 0,	
-	[HasNotedAgentName]				BIT				NOT NULL DEFAULT 0,	
-	[HasNotedAmount]				BIT				NOT NULL DEFAULT 0,	
-	[HasNotedDate]					BIT				NOT NULL DEFAULT 0,	
-
 	[AgentId]						INT,
 	[ResourceId]					INT,
 	[CurrencyId]					NCHAR (3),
 	[Identifier]					NVARCHAR (10),
--- Entry Property
 	[EntryTypeId]					INT
 );

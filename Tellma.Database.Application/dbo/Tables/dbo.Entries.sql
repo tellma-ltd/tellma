@@ -27,7 +27,7 @@
 
 	[Time1]						DATETIME2 (2),	-- from time
 	[Time2]						DATETIME2 (2),	-- to time
-
+	-- Decimal1, Decimal2, Decimal3: VAT percent, WIP percent completion: DM, DL, O/H
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
 	[NotedAgentId]				INT,

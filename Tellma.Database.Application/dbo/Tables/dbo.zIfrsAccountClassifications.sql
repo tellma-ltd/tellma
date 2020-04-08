@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[IfrsAccountClassifications] ( -- managed by Tellma
-	[Id]						NVARCHAR (255)			CONSTRAINT [PK_IfrsAccountClassifications] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsAccountClassifications__Id] REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
+	[Id]						INT						PRIMARY KEY IDENTITY,
+	[Code]						NVARCHAR (255)			CONSTRAINT [PK_IfrsAccountClassifications] UNIQUE NONCLUSTERED CONSTRAINT [FK_IfrsAccountClassifications__Code] REFERENCES [dbo].[IfrsConcepts] ([Code]) ON DELETE CASCADE,
 	[Node]						HIERARCHYID				NOT NULL CONSTRAINT [UX_IfrsClassifications__Node] UNIQUE CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
 	[IsLeaf]					BIT						NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors

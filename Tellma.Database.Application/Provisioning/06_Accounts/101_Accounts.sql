@@ -1,144 +1,189 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	INSERT INTO @Accounts([Index],[IsCurrent],[HasResource],--[Code],
-					[AccountTypeId],			[Name],						[CurrencyId],[CenterId], [EntryTypeId], [AgentDefinitionId],	[AgentId]) VALUES
+/*
+Entry Type - Account Type - Center - Currency - Agent Definition - Agent
+	*/
+		
+	INSERT INTO @Accounts([Index],[IsSmart],[Code],
+					[AccountTypeId],			[Name],									[CurrencyId],	[CenterId],		[EntryTypeId],		[AgentId]) VALUES
 	-- Assets Accounts
-	(0,1,0,		@PropertyPlantAndEquipment,	N'Property, plant and equipment',@USD,		@RC_Inv,	NULL,			N'cost-objects',	NULL),
+	(10,1,N'1000',	@PropertyPlantAndEquipment,	N'Equipment - Unallocated',				@USD,			@C101_UNALLOC,	@PPEAdditions,			NULL),
+	(11,1,N'1010',	@PropertyPlantAndEquipment,	N'Equipment - Exec Office',				@USD,			@C101_EXEC,		@PPEAdditions,			NULL),
+	(12,1,N'1020',	@PropertyPlantAndEquipment,	N'Equipment - Sales',					@USD,			@C101_Sales,	@PPEAdditions,			NULL),
+	(13,1,N'1030',	@PropertyPlantAndEquipment,	N'Equipment - Sys Admin',				@USD,			@C101_Sys,		@PPEAdditions,			NULL),
+	(14,1,N'1040',	@PropertyPlantAndEquipment,	N'Equipment - B10/HCM',					@USD,			@C101_B10,		@PPEAdditions,			NULL),
+	(15,1,N'1050',	@PropertyPlantAndEquipment,	N'Equipment - BSmart',					@USD,			@C101_BSmart,	@PPEAdditions,			NULL),
+	(16,1,N'1060',	@PropertyPlantAndEquipment,	N'Equipment - Campus',					@USD,			@C101_Campus,	@PPEAdditions,			NULL),
+	(17,1,N'1070',	@PropertyPlantAndEquipment,	N'Equipment - Tellma',					@USD,			@C101_Tellma,	@PPEAdditions,			NULL),
+	(18,1,N'1080',	@PropertyPlantAndEquipment,	N'Equipment - Floor Rental',			@USD,			@C101_FFLR,		@PPEAdditions,			NULL),
 
-	(1,1,0,		@CashOnHand,				N'GM Fund',					NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@GMSafe),
-	(2,1,0,		@CashOnHand,				N'Admin Fund',				NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@AdminSafe),
-	(3,1,0,		@CashOnHand,				N'KSA Fund',				NULL,			@RC_Inv,	NULL,			N'cash-custodians',	@KSASafe),
-	(4,1,0,		@BalancesWithBanks,			N'Bank Of Khartoum',		@SDG,			@RC_Inv,	NULL,			N'cash-custodians',	@KRTBank),
+	(310,1,N'1100',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Unallocated',	@USD,			@C101_UNALLOC,	@PPEDepreciations,		NULL),
+	(311,1,N'1110',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Exec Office',	@USD,			@C101_EXEC,		@PPEDepreciations,		NULL),
+	(312,1,N'1120',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Sales',		@USD,			@C101_Sales,	@PPEDepreciations,		NULL),
+	(313,1,N'1130',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Sys Admin',	@USD,			@C101_Sys,		@PPEDepreciations,		NULL),
+	(314,1,N'1140',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - B10/HCM',		@USD,			@C101_B10,		@PPEDepreciations,		NULL),
+	(315,1,N'1150',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - BSmart',		@USD,			@C101_BSmart,	@PPEDepreciations,		NULL),
+	(316,1,N'1160',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Campus',		@USD,			@C101_Campus,	@PPEDepreciations,		NULL),
+	(317,1,N'1170',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Tellma',		@USD,			@C101_Tellma,	@PPEDepreciations,		NULL),
+	(318,1,N'1180',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Floor Rental',	@USD,			@C101_FFLR,		@PPEDepreciations,		NULL),
 
-	(5,1,0,		@TradeReceivables,			N'Trade Receivables',		NULL,			@RC_Inv,					NULL,			N'customers',	NULL),
-	(8,1,0,		@TradeAndOtherReceivables,	N'Banan ET',				@USD,			@RC_Inv,					NULL,			NULL,				NULL),
-	(9,1,0,		@TradeAndOtherReceivables,	N'PrimeLedgers A/R',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
-	(10,1,0,	@TradeAndOtherReceivables,	N'Partners Withdrawals',	@USD,			@RC_Inv,					NULL,			N'partners',		NULL),
-	(11,1,0,	@TradeAndOtherReceivables,	N'Abu Ammar Car Loan',		@USD,			@RC_Inv,					NULL,			N'employees',		@Abu_Ammar),
-	(12,1,0,	@TradeAndOtherReceivables,	N'M. Ali Car Loan',			@USD,			@RC_Inv,					NULL,			N'employees',		@M_Ali),
-	(13,1,0,	@TradeAndOtherReceivables,	N'El-Amin Car Loan',		@USD,			@RC_Inv,					NULL,			N'employees',		@el_Amin),
-	(14,1,0,	@ValueAddedTaxReceivables,	N'VAT Input',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(15,1,0,	@TradeAndOtherReceivables,	N'Commissions',				@USD,			@RC_Inv,					NULL,			NULL,				NULL),
-	(16,1,0,	@TradeAndOtherReceivables,	N'Office Rent',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(17,1,0,	@TradeAndOtherReceivables,	N'Internet Expense',		@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(18,1,0,	@TradeAndOtherReceivables,	N'Car Rent Prepayment',		@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(19,1,0,	@TradeAndOtherReceivables,	N'House Rent Prepayment',	@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(20,1,0,	@TradeAndOtherReceivables,	N'Maintenance Prepayment',	@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
+	(20,1,N'1201',	@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,					NULL),
+	(21,0,N'1202',	@TradeAndOtherCurrentReceivables,	N'Banan ET',					@USD,			@C101_INV,		NULL,					NULL),
+	(22,0,N'1203',	@TradeAndOtherCurrentReceivables,	N'PrimeLedgers A/R',			@USD,			@C101_INV,		NULL,					NULL),
+	(23,1,N'1204',	@TradeAndOtherCurrentReceivables,	N'Partners Withdrawals',		@USD,			@C101_INV,		NULL,					NULL),
+	--(24,1,N'1205',	@CurrentCarLoanReceivablesExtension,N'Abu Ammar Car Loan',			@USD,			@C101_INV,		NULL,					@Abu_Ammar),
+	--(25,1,N'1206',	@CurrentCarLoanReceivablesExtension,N'M. Ali Car Loan',				@USD,			@C101_INV,		NULL,					@M_Ali),
+	--(26,1,N'1207',	@CurrentCarLoanReceivablesExtension,N'El-Amin Car Loan',			@USD,			@C101_INV,		NULL,					@el_Amin),
+	(27,0,N'1208',	@CurrentValueAddedTaxReceivables,	N'VAT Input',					@SDG,			@C101_INV,		NULL,					NULL),
+	(28,0,N'1209',	@TradeAndOtherCurrentReceivables,	N'Commissions',					@USD,			@C101_INV,		NULL,					NULL),
+	(29,0,N'1210',	@TradeAndOtherCurrentReceivables,	N'Office Rent',					@SDG,			@C101_INV,		NULL,					NULL),
+	(30,0,N'1211',	@TradeAndOtherCurrentReceivables,	N'Internet Expense',			@SDG,			@C101_INV,		NULL,					NULL),
+	(31,0,N'1212',	@TradeAndOtherCurrentReceivables,	N'Car Rent Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
+	(32,0,N'1213',	@TradeAndOtherCurrentReceivables,	N'House Rent Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
+	(33,0,N'1214',	@TradeAndOtherCurrentReceivables,	N'Maintenance Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
+	-- Non Current
+--	(34,1,N'1215',	@NoncurrentCarLoansReceivablesExtension,N'Abu Ammar Car Loan - NC',	@USD,			@C101_INV,		NULL,					@Abu_Ammar),
+--	(35,1,N'1216',	@NoncurrentCarLoansReceivablesExtension,N'M. Ali Car Loan - NC',	@USD,			@C101_INV,		NULL,					@M_Ali),
+--	(36,1,N'1217',	@NoncurrentCarLoansReceivablesExtension,N'El-Amin Car Loan - NC',	@USD,			@C101_INV,		NULL,					@el_Amin),
+	
+	(38,0,N'1310',	@CurrentAccruedIncome,				N'Accrued Income',				NULL,			@C101_INV,		NULL,					NULL),
 
-	(21,0,0,	@TradeAndOtherReceivables,	N'Abu Ammar Car Loan - NC',	@USD,			@RC_Inv,					NULL,			N'employees',		@Abu_Ammar),
-	(22,0,0,	@TradeAndOtherReceivables,	N'M. Ali Car Loan - NC',	@USD,			@RC_Inv,					NULL,			N'employees',		@M_Ali),
-	(23,0,0,	@TradeAndOtherReceivables,	N'El-Amin Car Loan - NC',	@USD,			@RC_Inv,					NULL,			N'employees',		@el_Amin),
---	(24,0,0,	@TradeAndOtherReceivables,	N'Abdurrahman Loan',		@USD,			@RC_Inv,					NULL,			N'employees',		@el_Amin),
-	(25,1,0,	@AccruedIncome,				N'Accrued Income',			NULL,			@RC_Inv,					NULL,			N'customers',		NULL),
+	(41,1,N'1810',	@CashAndCashEquivalents,			N'GM Fund - SDG',				@SDG,			@C101_INV,		NULL,					@GMSafe),
+	(42,1,N'1811',	@CashAndCashEquivalents,			N'GM Fund - USD',				@USD,			@C101_INV,		NULL,					@GMSafe),
+	(43,1,N'1820',	@CashAndCashEquivalents,			N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,					@AdminSafe),
+	(44,1,N'1830',	@CashAndCashEquivalents,			N'KSA Fund',					@SAR,			@C101_INV,		NULL,					@KSASafe),
+	(45,1,N'1910',	@CashAndCashEquivalents,			N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,					@KRTBank),
 
 	-- Equity and Liabilities accounts
-	(30,0,0,	@IssuedCapital,				N'Issued Capital',			@USD,			@RC_Inv,					NULL,			NULL,				NULL),
-	(31,0,0,	@RetainedEarnings,			N'Retained Earnings',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
+	(50,1,N'2010',	@IssuedCapital,						N'Issued Capital',				@USD,			@C101_INV,		@IssueOfEquity,			NULL),
+	(51,1,N'2020',	@RetainedEarnings,					N'Retained Earnings',			@USD,			@C101_INV,		NULL,					NULL),
 
-	(32,1,0,	@PayablesToEmployeesExtension,N'Employees Payables',	@USD,			@RC_Inv,					NULL,			N'employees',		NULL),
-	(33,1,0,	@TradeAndOtherPayables,		N'10% Retained Salaries',	@USD,			@RC_Inv,					NULL,			N'employees',		NULL),
-	(34,1,0,	@TradeAndOtherPayables,		N'PrimeLedgers A/P',		@USD,			@RC_Inv,					NULL,			NULL,				NULL),
-	(35,1,0,	@TradeAndOtherPayablesToTradeSuppliers,N'Trade Payables',NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
-	(36,1,0,	@Accruals,					N'Accrued Expenses',		NULL,			@RC_Inv,					NULL,			N'suppliers',		NULL),
-	(37,1,0,	@TradeAndOtherPayables,		N'Dividends Payables',		@USD,			@RC_Inv,					NULL,			N'partners',		NULL),
-	(38,1,0,	@TradeAndOtherPayables,		N'Borrowings from M/A',		@USD,			@RC_Inv,					NULL,			N'partners',		@PartnerMA),
+	(62,0,N'3010',	@CurrentPayablesToEmployeesExtension,N'Employees Payables',			NULL,			@C101_INV,		NULL,					NULL),
+	(63,0,N'3015',	@TradeAndOtherCurrentPayables,		N'10% Retained Salaries',		@USD,			@C101_INV,		NULL,					NULL),
+	(64,0,N'3020',	@TradeAndOtherCurrentPayables,		N'PrimeLedgers A/P',			@USD,			@C101_INV,		NULL,					NULL),
+	/*
+	(65,0,N'3030',	@TradeAndOtherCurrentPayablesToTradeSuppliers,N'Trade Payables',	NULL,			@C101_INV,		NULL,				N'suppliers',		NULL),
+	(66,0,N'3035',	@AccrualsClassifiedAsCurrent,		N'Accrued Expenses',			NULL,			@C101_INV,		NULL,				N'suppliers',		NULL),
+	(67,0,N'3040',	@TradeAndOtherCurrentPayables,		N'Dividends Payables',			@USD,			@C101_INV,		NULL,				N'partners',		NULL),
+	(68,0,N'3045',	@TradeAndOtherCurrentPayables,		N'Borrowings from M/A',			@USD,			@C101_INV,		NULL,				N'partners',		@PartnerMA),
 
-	(39,1,0,	@DeferredIncome,			N'Unearned Revenues',		NULL,			@RC_Inv,					NULL,			N'customers',		NULL),
-	--(39,1,0,	@DeferredIncome,			N'Unearned Revenues - T3',	NULL,			@RC_Inv,					NULL,			N't3-customers',	NULL),
-	--(40,1,0,	@DeferredIncome,			N'Unearned Revenues - T2',	NULL,			@RC_Inv,					NULL,			N't2-customers',	NULL),
-	(41,1,0,	@SocialSecurityPayables,	N'Employee Pensions',		NULL,			@RC_Inv,					NULL,			NULL,				NULL),
-	(42,1,0,	@ZakatPayables,				N'Zakat',					@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(43,1,0,	@ValueAddedTaxPayables,		N'VAT Output',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
---	(44,1,0,	@TradeAndOtherPayables,		N'Income Tax',				@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(45,1,0,	@EmployeeIncomeTaxPayables,	N'Employees Income Tax',	@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
-	(46,1,0,	@EmployeeStampTaxPayables,	N'Employees Stamp Tax',		@SDG,			@RC_Inv,					NULL,			NULL,				NULL),
+	(69,0,N'3050',	@DeferredIncomeClassifiedAsCurrent,	N'Unearned Revenues',			NULL,			@C101_INV,		NULL,				N'customers',		NULL),
+	*/
+	(71,0,N'3110',	@CurrentSocialSecurityPayablesExtension,N'Employee Pensions',		@SDG,			@C101_INV,		NULL,				NULL),
+	(72,0,N'3120',	@CurrentZakatPayablesExtension,		N'Zakat',						@SDG,			@C101_INV,		NULL,				NULL),
+	(73,0,N'3130',	@CurrentValueAddedTaxPayables,		N'VAT Output',					@SDG,			@C101_INV,		NULL,				NULL),
+--	(74,0,N'3140',	@CurrentTradeAndOtherPayables,		N'Income Tax',					@SDG,			@C101_INV,		NULL,				NULL),
+	(75,0,N'3150',	@CurrentEmployeeIncomeTaxPayablesExtension,	N'Employees Income Tax',@SDG,			@C101_INV,		NULL,				NULL),
+	(76,0,N'3160',	@CurrentEmployeeStampTaxPayablesExtension,	N'Employees Stamp Tax',	@SDG,			@C101_INV,		NULL,				NULL),
+		-- Profit/Loss Accounts
+	(91,0,N'4110',	@RevenueFromRenderingOfServices,	N'Revenues - B10',				NULL,			@C101_B10,		NULL,				NULL),
+	(92,0,N'4120',	@RevenueFromRenderingOfServices,	N'Revenues - BSmart',			NULL,			@C101_BSmart,	NULL,				NULL),
+	(93,0,N'4130',	@RevenueFromRenderingOfServices,	N'Revenues - Campus',			NULL,			@C101_Campus,	NULL,				NULL),
+	(94,0,N'4140',	@RevenueFromRenderingOfServices,	N'Revenues - Tellma',			NULL,			@C101_Tellma,	NULL,				NULL),
+/*	-- Add Account Type: Commissions
+	(95,0,N'4210',	@Revenue,							N'Commission - B10',			NULL,			@C101_B10,		NULL,				NULL),
+	(96,0,N'4220',	@Revenue,							N'Commission - BSmart',			NULL,			@C101_BSmart,	NULL,				NULL),
+	(97,0,N'4230',	@Revenue,							N'Commission - Campus',			NULL,			@C101_Campus,	NULL,				NULL),
+	(98,0,N'4240',	@Revenue,							N'Commission - Tellma',			NULL,			@C101_Tellma,	NULL,				NULL),
+*/
+	(99,0,N'4910',	@OtherRevenue,						N'Rental Income',				@SAR,			@C101_FFLR,		NULL,				NULL),
+-- 5: Direct, Cost of sales
+-- 6: Indirect, Production, 7:service
+-- 8:Distribution
+-- 9:Admin. Nature: 2 digits, Center: 2 digits, Varieties: 1
+	(101,0,N'90510',	@ProfessionalFeesExpense,		N'Acc. & Legal Services',	NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
 
-	-- Profit/Loss Accounts
-	(50,1,0,	@Revenue,					N'Revenues',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(51,1,0,	@Revenue,					N'Commission',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(52,1,0,	@OtherIncome,				N'Rental Income',			@SAR,			@RC_Inv,					NULL,			NULL,				NULL),
+	(110,0,N'X0611',	@TransportationExpense,			N'Transportation',			NULL,			NULL,			NULL,					NULL),
+	(115,0,N'90710',	@BankAndSimilarCharges,			N'Banking Services',		NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+	(120,0,N'X0811',	@TravelExpense,					N'Visa & Travel',			NULL,			NULL,			NULL,					NULL),
+	(130,0,N'A0900',	@CommunicationExpense,			N'Internet & Tel',			NULL,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
+	(135,0,N'50511',	@ServicesExpense,				N'Cloud Hosting',			@USD,			NULL,			@CostOfSales,			NULL),
+	(140,0,N'A1000',	@UtilitiesExpense,				N'Utilities',				@SDG,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
+	(145,0,N'A9900',	@ServicesExpense,				N'Office Rental',			@SDG,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
 
-	(69,1,0,	@ServicesExpense,			N'Accounting Services',		@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(83,1,0,	@ServicesExpense,			N'Legal Services',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(150,0,N'81120',	@AdvertisingExpense,			N'Marketing Service',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
+	(155,0,N'X05111',	@ServicesExpense,				N'Domain Registration',		@USD,			NULL,			NULL,					NULL),
+	(160,0,N'X05112',	@ServicesExpense,				N'Maintenance',				NULL,			NULL,			NULL,					NULL),
+	(165,0,N'X05113',	@ServicesExpense,				N'Medical',					NULL,			NULL,			NULL,					NULL),
 
-	(62,1,0,	@ServicesExpense,			N'Transportation',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(82,1,0,	@ServicesExpense,			N'Banking Services',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(80,1,0,	@ServicesExpense,			N'Travel',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(81,1,0,	@ServicesExpense,			N'Visa',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(67,1,0,	@ServicesExpense,			N'Internet & Tel',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(60,1,0,	@ServicesExpense,			N'Cloud Hosting',			@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(75,1,0,	@ServicesExpense,			N'Utilities',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(72,1,0,	@ServicesExpense,			N'Office Rental',			@SDG,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(170,0,N'51400',	@WagesAndSalaries,				N'Salaries - Direct',		NULL,			NULL,			@CostOfSales,			NULL),
+	(172,0,N'71400',	@WagesAndSalaries,				N'Salaries - Service',		NULL,			NULL,			@ServiceExtension,		NULL),
+	(173,0,N'81400',	@WagesAndSalaries,				N'Salaries - Distribution',	NULL,			NULL,			@DistributionCosts,		NULL),
+	(174,0,N'91400',	@WagesAndSalaries,				N'Salaries - Admin',		NULL,			NULL,			@AdministrativeExpense,	NULL),
+	(175,0,N'X1201',	@EmployeeBenefitsExpense,		N'Zakat & Eid',				NULL,			NULL,			NULL,					NULL),
+	(180,0,N'50550',	@ProfessionalFeesExpense,		N'Salaries - B10 Contractors',NULL,			@C101_B10,		@CostOfSales,			NULL),
+	(185,0,N'X1500',	@SocialSecurityContributions,	N'Employee Pension Contribution',NULL,		NULL,			NULL,					NULL),
+	(190,0,N'X1202',	@EmployeeBenefitsExpense,		N'Allowances & Bonuses',	NULL,			NULL,			NULL,					NULL),
+	(195,0,N'X99001',	@OtherExpenseByNature,			N'Employee Meals',			NULL,			NULL,			NULL,					NULL),
 
-	(64,1,0,	@ServicesExpense,			N'Marketing Service',		NULL,			@RC_Inv,					@DistributionCosts,N'cost-objects',	NULL),
-	(63,1,0,	@ServicesExpense,			N'Domain Registration',		@USD,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(77,1,0,	@ServicesExpense,			N'Maintenance',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(78,1,0,	@ServicesExpense,			N'Medical',					NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(200,0,N'X99002',	@OtherExpenseByNature,			N'Stationery & Grocery',	NULL,			NULL,			NULL,					NULL),
+	(205,0,N'99910',	@OtherExpenseByNature,			N'Gov fees',				NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
 
-	(65,1,0,	@WagesAndSalaries,			N'Salaries',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(79,1,0,	@EmployeeBenefitsExpense,	N'Zakat & Eid',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(66,1,0,	@EmployeeBenefitsExpense,	N'Contractors Salaries',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(70,1,0,	@SocialSecurityContributions,N'Employee Pension Contribution',NULL,		@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(88,1,0,	@EmployeeBenefitsExpense,	N'Allowances & Bonuses',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(76,1,0,	@EmployeeBenefitsExpense,	N'Employee Meals',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(210,0,N'89920',	@OtherExpenseByNature,			N'Presentation tools',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
+	(215,0,N'X99003',	@OtherExpenseByNature,			N'Education & Certifications',NULL,			NULL,			NULL,					NULL),
+	(220,0,N'X99004',	@OtherExpenseByNature,			N'Consumables',				NULL,			NULL,			NULL,					NULL),
+	(225,0,N'X99005',	@OtherExpenseByNature,			N'Tender Fees',				NULL,			NULL,			NULL,					NULL),
+	(230,0,N'X99006',	@OtherExpenseByNature,			N'Office Furniture',		NULL,			NULL,			NULL,					NULL),
+	(235,0,N'X99007',	@OtherExpenseByNature,			N'Other Expenses',			NULL,			NULL,			NULL,					NULL),
 
-	(71,1,0,	@OtherExpenseByNature,		N'Stationery & Grocery',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(74,1,0,	@OtherExpenseByNature,		N'Gov fees',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(241,0,N'92310',	@DepreciationExpense,	N'Dep. Exp. - Exec Office Equip.',	@USD,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+	(242,0,N'82320',	@DepreciationExpense,	N'Dep. Exp. - Sales Equip.',		@USD,			@C101_Sales,	@DistributionCosts,		NULL),
+	(243,0,N'72330',	@DepreciationExpense,	N'Dep. Exp. - Sys Admin Equip.',	@USD,			@C101_Sys,		@ServiceExtension,		NULL),
+	(244,0,N'52340',	@DepreciationExpense,	N'Dep. Exp. - B10/HCM Equip.',		@USD,			@C101_B10,		@CostOfSales,			NULL),
+	(245,0,N'52350',	@DepreciationExpense,	N'Dep. Exp. - BSmart Equip.',		@USD,			@C101_BSmart,	@CostOfSales,			NULL),
+	(246,0,N'52360',	@DepreciationExpense,	N'Dep. Exp. - Campus Equip.',		@USD,			@C101_Campus,	@CostOfSales,			NULL),
+	(247,0,N'52370',	@DepreciationExpense,	N'Dep. Exp. - Tellma Equip.',		@USD,			@C101_Tellma,	@CostOfSales,			NULL),
+	(248,0,N'52380',	@DepreciationExpense,	N'Dep. Exp. - Floor Rental Equip.',	@USD,			@C101_FFLR,		@CostOfSales,			NULL),
 
-	(84,1,0,	@OtherExpenseByNature,		N'Presentation tools',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(85,1,0,	@OtherExpenseByNature,		N'Education & Certifications',NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(86,1,0,	@OtherExpenseByNature,		N'Consumables',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(87,1,0,	@OtherExpenseByNature,		N'Tender Fees',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(89,1,0,	@OtherExpenseByNature,		N'Office Furniture',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(90,1,0,	@OtherExpenseByNature,		N'Other Expenses',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(250,0,N'B01',	@GainLossOnDisposalOfPropertyPlantAndEquipment,
+														N'Gain (loss) on disposal',	NULL,			NULL,			NULL,					NULL);
 
-	(98,1,0,	@DepreciationExpense,		N'Depreciation',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(99,1,0,	@GainLossOnDisposalOfPropertyPlantAndEquipment,
-											N'Gain (loss) on disposal',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL);
+-- 5: Direct, Cost of sales
+-- 6: Indirect, Production, 7:service
+-- 8:Distribution
+-- 9:Admin. Nature: 2 digits, Center: 2 digits, Varieties: 1
 
 	-- Expenses
 	/*
-	(69,1,0,	@ProfessionalFeesExpense,	N'Accounting Services',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(83,1,0,	@ProfessionalFeesExpense,	N'Legal Services',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(69,1,0,	@ProfessionalFeesExpense,	N'Accounting Services',	NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(83,1,0,	@ProfessionalFeesExpense,	N'Legal Services',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
 
-	(62,1,0,	@TransportationExpense,		N'Transportation',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(82,1,0,	@BankAndSimilarCharges,		N'Banking Services',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(80,1,0,	@TravelExpense,				N'Travel',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(81,1,0,	@TravelExpense,				N'Visa',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(67,1,0,	@CommunicationExpense,		N'Internet & Tel',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(60,1,0,	@UtilitiesExpense,			N'Cloud Hosting',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(75,1,0,	@UtilitiesExpense,			N'Utilities',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(72,1,0,	@UtilitiesExpense,			N'Office Rental',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(62,1,0,	@TransportationExpense,		N'Transportation',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(82,1,0,	@BankAndSimilarCharges,		N'Banking Services',	NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(80,1,0,	@TravelExpense,				N'Travel',				NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(81,1,0,	@TravelExpense,				N'Visa',				NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(67,1,0,	@CommunicationExpense,		N'Internet & Tel',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(60,1,0,	@UtilitiesExpense,			N'Cloud Hosting',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(75,1,0,	@UtilitiesExpense,			N'Utilities',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(72,1,0,	@UtilitiesExpense,			N'Office Rental',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
 
-	(64,1,0,	@AdvertisingExpense,		N'Marketing Service',	NULL,			@RC_Inv,					@DistributionCosts,N'cost-objects',	NULL),
+	(64,1,0,	@AdvertisingExpense,		N'Marketing Service',	NULL,			@C101_INV,					@DistributionCosts,NULL,	NULL),
 
-	(65,1,0,1,@WagesAndSalaries,		N'Salaries',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(79,1,0,@WagesAndSalaries,		N'Zakat & Eid',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(66,1,0,@WagesAndSalaries,		N'Contractors Salaries',			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(70,1,0,1,@SocialSecurityContributions,N'Employee Pension Contribution',@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(88,1,0,@EmployeeBenefitsExpense,	N'Allowances & Bonuses',			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(76,1,0,@OtherShorttermEmployeeBenefits,N'Employee Meals',			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(65,1,0,1,@WagesAndSalaries,		N'Salaries',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(79,1,0,@WagesAndSalaries,		N'Zakat & Eid',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(66,1,0,@WagesAndSalaries,		N'Contractors Salaries',			@C101_INV,					NULL,			NULL,	NULL),
+	(70,1,0,1,@SocialSecurityContributions,N'Employee Pension Contribution',@C101_INV,					NULL,			NULL,	NULL),
+	(88,1,0,@EmployeeBenefitsExpense,	N'Allowances & Bonuses',			@C101_INV,					NULL,			NULL,	NULL),
+	(76,1,0,@OtherShorttermEmployeeBenefits,N'Employee Meals',			@C101_INV,					NULL,			NULL,	NULL),
 
-	(63,1,0,@OtherExpenseByNature,	N'Domain Registration',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(63,1,0,@OtherExpenseByNature,	N'Domain Registration',	NULL,			@C101_INV,					NULL,			NULL,	NULL),
 		
-	(71,1,0,@OtherExpenseByNature,	N'Stationery & Grocery',			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(71,1,0,@OtherExpenseByNature,	N'Stationery & Grocery',			@C101_INV,					NULL,			NULL,	NULL),
 
-	(74,1,0,@OtherExpenseByNature,	N'Gov fees',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(74,1,0,@OtherExpenseByNature,	N'Gov fees',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
 
-	(77,1,0,@OtherExpenseByNature,	N'Maintenance',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(78,1,0,@OtherExpenseByNature,	N'Medical',				NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(84,1,0,@OtherExpenseByNature,	N'Presentation tools',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(85,1,0,@OtherExpenseByNature,	N'Education & Certifications',		@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(86,1,0,@OtherExpenseByNature,	N'Consumables',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(87,1,0,@OtherExpenseByNature,	N'Tender Fees',			NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(89,1,0,@OtherExpenseByNature,	N'Office Furniture',	NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(90,1,0,@OtherExpenseByNature,	N'Other Expenses',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
+	(77,1,0,@OtherExpenseByNature,	N'Maintenance',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(78,1,0,@OtherExpenseByNature,	N'Medical',				NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(84,1,0,@OtherExpenseByNature,	N'Presentation tools',	NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(85,1,0,@OtherExpenseByNature,	N'Education & Certifications',		@C101_INV,					NULL,			NULL,	NULL),
+	(86,1,0,@OtherExpenseByNature,	N'Consumables',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(87,1,0,@OtherExpenseByNature,	N'Tender Fees',			NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(89,1,0,@OtherExpenseByNature,	N'Office Furniture',	NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(90,1,0,@OtherExpenseByNature,	N'Other Expenses',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
 
-	(98,1,0,1,@OtherExpenseByNature,	N'Depreciation',		NULL,			@RC_Inv,					NULL,			N'cost-objects',	NULL),
-	(99,1,0,1,@OtherExpenseByNature,	N'Gain (loss) on disposal',	NULL,		@RC_Inv,					NULL,			N'cost-objects',	NULL);
+	(98,1,0,1,@OtherExpenseByNature,	N'Depreciation',		NULL,			@C101_INV,					NULL,			NULL,	NULL),
+	(99,1,0,1,@OtherExpenseByNature,	N'Gain (loss) on disposal',	NULL,		@C101_INV,					NULL,			NULL,	NULL);
 */
-
-	UPDATE @Accounts SET HasResource = 1 WHERE [Index] IN (0);
 
 	EXEC [api].[Accounts__Save]
 		@Entities = @Accounts,

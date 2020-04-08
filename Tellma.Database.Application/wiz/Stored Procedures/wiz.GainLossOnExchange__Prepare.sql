@@ -35,12 +35,11 @@ BEGIN
 		JOIN [dbo].[AccountTypes] T2
 		ON T2.[Node].IsDescendantOf(T1.[Node]) = 1
 		WHERE T1.[Code] IN (
-			N'TradeAndOtherReceivables',
+			N'TradeAndOtherCurrentReceivables',
 			N'CashAndCashEquivalents',
-			N'TradeAndOtherPayables',
-			N'OtherFinancialAssets',
-			N'OtherFinancialLiabilities')
-		AND (T2.IsCurrent = 1 OR T2.IsCurrent IS NULL)
+			N'TradeAndOtherCurrentPayables',
+			N'OtherCurrentFinancialAssets',
+			N'OtherCurrentFinancialLiabilities')
 	),
 	CashAndCashEquivalentsAccounts AS
 	(
@@ -53,8 +52,7 @@ BEGIN
 	ExchangeVarianceAccounts AS 
 	(
 		SELECT [Id] FROM dbo.[Accounts]
-		WHERE [IsCurrent] = 1
-		AND [AccountTypeId] IN (SELECT [Id] FROM ExchangeVarianceAccountTypes)
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM ExchangeVarianceAccountTypes)
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY E.[AccountId]) AS [Index],

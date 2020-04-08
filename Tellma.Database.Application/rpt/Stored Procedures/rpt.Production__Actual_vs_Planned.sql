@@ -17,10 +17,10 @@ BEGIN
 			SUM(J.[AlgebraicCount]) AS [Count]
 		FROM [map].[DetailsEntries]() J --(@FromDate, @ToDate) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
-		LEFT JOIN dbo.[AccountTypes] RC ON R.[AccountTypeId] = RC.Id
+		LEFT JOIN dbo.[AccountTypes] RC ON R.[AssetTypeId] = RC.Id
 		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND R.[AccountTypeId] IN (SELECT [Id] FROM FinishedGoodsAccountTypes)
+		AND R.[AssetTypeId] IN (SELECT [Id] FROM FinishedGoodsAccountTypes)
 		GROUP BY J.[AgentId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (

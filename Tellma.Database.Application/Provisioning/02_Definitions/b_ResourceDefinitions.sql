@@ -6,10 +6,10 @@ BEGIN
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',@PropertyPlantAndEquipment),
 	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
-	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			dbo.fn_ATCode__Id(N'IntangibleAssetsOtherThanGoodwill')),
+	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			@IntangibleAssetsOtherThanGoodwill),
 	(3,N'biological-assets',				N'Biological Assets',					N'Biological Asset',			dbo.fn_ATCode__Id(N'BiologicalAssets')),
-	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				@Inventories),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				@ServicesExpense);
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
@@ -18,7 +18,7 @@ BEGIN
 	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',NULL,NULL,							@PropertyPlantAndEquipment,				N'building',		N'FixedAssets',		100),
 	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			N'أجهزة كمبيوتر',N'جهاز كمبيوتر',	@ComputerEquipmentMemberExtension,		N'laptop',			N'FixedAssets',		200),
 	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			NULL,NULL,							@IntangibleAssetsOtherThanGoodwill,		N'cube',			N'FixedAssets',		300),
-	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				NULL,NULL,							@InventoriesTotal,						N'home',			N'Purchasing',		300),
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				NULL,NULL,							@Inventories,						N'home',			N'Purchasing',		300),
 	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				NULL,NULL,							@ServicesExpense,						N'hand-holding-usd', N'Purchasing',		400),
 	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	NULL,NULL,							@EmployeeBenefitsExpense,				N'hand-holding-usd', N'HumanCapital',	500);
 	
@@ -49,15 +49,15 @@ BEGIN
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
 	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			dbo.fn_ATCode__Id(N'ComputerEquipmentMemberExtension')),
-	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				@ServicesExpense);
 END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
-	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				@Inventories),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				@ServicesExpense);
 END
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
@@ -65,18 +65,17 @@ BEGIN
 	[Id],									[TitlePlural],							[TitleSingular],				[ParentAccountTypeId]) VALUES
 	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
 	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property',			dbo.fn_ATCode__Id(N'InvestmentProperty')),
-	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				dbo.fn_ATCode__Id(N'InventoriesTotal')),
-	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				dbo.fn_ATCode__Id(N'ServicesExpense'));
+	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				@Inventories),
+	(5,N'services-expenses',				N'Services Expenses',					N'Service Expense',				@ServicesExpense);
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
-	[Id],									[TitlePlural],							[TitlePlural2],						[TitleSingular],					[TitleSingular2],				[ParentAccountTypeId]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'ممتلكات ومنشآت ومعدات',		N'Property, Plant and Equipment',	N'ممتلكة -منشأة-معدة',				@PropertyPlantAndEquipment),
-	(4,N'paper-products',					N'Paper Products',						N'منتجات ورق',					N'Paper Product',					N'منتج ورق',					dbo.fn_ATCode__Id(N'Merchandise')),
-	(5,N'services-expenses',				N'Services',							N'خدمات',						N'Service',							N'خدمة',						dbo.fn_ATCode__Id(N'ServicesExpense'));
-
-	UPDATE @ResourceDefinitions
+	[Id],									[TitlePlural],							[TitlePlural2],						[TitleSingular],					[TitleSingular2],		[ParentAccountTypeId]) VALUES
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'ممتلكات ومنشآت ومعدات',		N'Property, Plant and Equipment',	N'ممتلكة -منشأة-معدة',		@PropertyPlantAndEquipment),
+	(4,N'paper-products',					N'Paper Products',						N'منتجات ورق',					N'Paper Product',					N'منتج ورق',				dbo.fn_ATCode__Id(N'Merchandise')),
+	(5,N'services-expenses',				N'Services',							N'خدمات',						N'Service',							N'خدمة',							@ServicesExpense);
+		UPDATE @ResourceDefinitions
 	SET
 		[DescriptionVisibility] = N'Optional',
 		[ReorderLevelVisibility] = N'Optional',

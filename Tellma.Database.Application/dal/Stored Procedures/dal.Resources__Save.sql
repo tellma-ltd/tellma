@@ -17,9 +17,10 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 	
 				[Index], [Id],
-				--[OperatingSegmentId],
 				@DefinitionId AS [DefinitionId],
-				[AccountTypeId], 
+				[AssetTypeId],
+				[ExpenseTypeId],
+				[RevenueTypeId],
 				[Name], 
 				[Name2], 
 				[Name3],
@@ -30,10 +31,8 @@ SET NOCOUNT ON;
 				[Description],
 				[Description2],
 				[Description3],
-				[CostObjectId],
 				[ExpenseEntryTypeId],
-				[ExpenseCenterId],
-				[InvestmentCenterId],
+				[CenterId],
 				[ResidualMonetaryValue],
 				[ResidualValue],
 				[ReorderLevel],
@@ -73,9 +72,10 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[DefinitionId]			= s.[DefinitionId],
-				t.[AccountTypeId]			= s.[AccountTypeId], 
+				t.[AssetTypeId]				= s.[AssetTypeId],
+				t.[ExpenseTypeId]			= s.[ExpenseTypeId],
+				t.[RevenueTypeId]			= s.[RevenueTypeId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -86,10 +86,8 @@ SET NOCOUNT ON;
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
-				t.[CostObjectId]			= s.[CostObjectId],
 				t.[ExpenseEntryTypeId]		= s.[ExpenseEntryTypeId],
-				t.[ExpenseCenterId]			= s.[ExpenseCenterId],
-				t.[InvestmentCenterId]		= s.[InvestmentCenterId],
+				t.[CenterId]				= s.[CenterId],
 				t.[ResidualMonetaryValue]	= s.[ResidualMonetaryValue],
 				t.[ResidualValue]			= s.[ResidualValue],
 				t.[ReorderLevel]			= s.[ReorderLevel],
@@ -125,16 +123,18 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT (--[OperatingSegmentId], 
-				[DefinitionId], [AccountTypeId], [Name], [Name2], [Name3], [Identifier], [Code], [CurrencyId],
+			INSERT (
+				[DefinitionId],
+				[AssetTypeId], 
+				[ExpenseTypeId],
+				[RevenueTypeId],
+				[Name], [Name2], [Name3], [Identifier], [Code], [CurrencyId],
 				[MonetaryValue],
 				[Description],
 				[Description2],
 				[Description3],
-				[CostObjectId],
 				[ExpenseEntryTypeId],
-				[ExpenseCenterId],
-				[InvestmentCenterId],
+				[CenterId],
 				[ResidualMonetaryValue],
 				[ResidualValue],
 				[ReorderLevel],
@@ -142,7 +142,6 @@ SET NOCOUNT ON;
 				--[AttachmentsFolderURL],		
 				--[CustomsReference], -- how it is referred to by Customs
 				--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
-
 				[AvailableSince],			
 				[AvailableTill],			
 				--[UniqueReference1],			
@@ -169,16 +168,18 @@ SET NOCOUNT ON;
 				[Text1],					
 				[Text2]			
 				)
-			VALUES (--s.[OperatingSegmentId], 
-				s.[DefinitionId], s.[AccountTypeId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
+			VALUES (
+				s.[DefinitionId],
+				s.[AssetTypeId],
+				s.[ExpenseTypeId],
+				s.[RevenueTypeId],				
+				s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
 				s.[MonetaryValue],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
-				s.[CostObjectId],
 				s.[ExpenseEntryTypeId],
-				s.[ExpenseCenterId],
-				s.[InvestmentCenterId],
+				s.[CenterId],
 				s.[ResidualMonetaryValue],
 				s.[ResidualValue],
 				s.[ReorderLevel],

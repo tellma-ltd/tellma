@@ -2,7 +2,9 @@
 	[Index]							INT					PRIMARY KEY,
 	[Id]							INT					NOT NULL DEFAULT 0,
 	--[OperatingSegmentId]			INT,
-	[AccountTypeId]					INT,
+	[AssetTypeId]					INT,
+	[ExpenseTypeId]					INT,
+	[RevenueTypeId]					INT,
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -17,10 +19,8 @@
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
 	-- For PPE
-	[CostObjectId]					INT,
 	[ExpenseEntryTypeId]			INT,
-	[ExpenseCenterId]				INT,
-	[InvestmentCenterId]			INT,
+	[CenterId]						INT,
 	[ResidualMonetaryValue]			Decimal (19,4),
 	[ResidualValue]					Decimal (19,4),
 	-- For inventory

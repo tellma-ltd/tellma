@@ -17,12 +17,11 @@ WSI
 */
 -- some operations are used in the line corresponding to production event
 	[Id]					INT					CONSTRAINT [PK_Centers] PRIMARY KEY IDENTITY,
-	[CenterType]	NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
+-- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
+	[CenterType]			NVARCHAR (50)		CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
 													N'Investment', N'Profit', N'Revenue', N'Cost')
 												),
-	[IsLeaf]				BIT					NOT NULL DEFAULT 1,
--- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
-	--[IsOperatingSegment]	BIT					NOT NULL DEFAULT 0, -- on each path from root to leaf, at most one O/S
+	[IsLeaf]				BIT					NOT NULL,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
