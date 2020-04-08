@@ -5,6 +5,5 @@
 	[Id]						INT		DEFAULT 0,
 	[Direction]					SMALLINT,
 	[AccountTypeParentId]		INT		NOT NULL,
-	[NotedAgentDefinitionId]	NVARCHAR (50),
 	[EntryTypeId]				INT
 );

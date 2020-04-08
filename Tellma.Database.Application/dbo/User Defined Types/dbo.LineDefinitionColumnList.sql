@@ -4,7 +4,6 @@
 	[HeaderIndex]			INT				DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]					INT				DEFAULT 0,
-	[TableName]				NVARCHAR (10)	NOT NULL,
 	[ColumnName]			NVARCHAR (50),
 	[EntryIndex]			INT,
 	[Label]					NVARCHAR (50),

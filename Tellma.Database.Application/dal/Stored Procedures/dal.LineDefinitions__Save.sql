@@ -101,7 +101,6 @@ SET NOCOUNT ON;
 			LDE.[Index],
 			LDE.[Direction],
 			LDE.[AccountTypeParentId],
-			LDE.[NotedAgentDefinitionId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -112,7 +111,6 @@ SET NOCOUNT ON;
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
 			t.[AccountTypeParentId]		= s.[AccountTypeParentId],
-			t.[NotedAgentDefinitionId]	= s.[NotedAgentDefinitionId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -123,7 +121,6 @@ SET NOCOUNT ON;
 			[Index],
 			[Direction],
 			[AccountTypeParentId],
-			[NotedAgentDefinitionId],
 			[EntryTypeId]
 		)
 		VALUES (
@@ -140,7 +137,6 @@ SET NOCOUNT ON;
 			LDC.[Id],
 			LD.[Id] AS [LineDefinitionId],
 			LDC.[Index],
-			LDC.[TableName],
 			LDC.[ColumnName],
 			LDC.[EntryIndex],
 			LDC.[Label],
@@ -156,7 +152,6 @@ SET NOCOUNT ON;
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Index]			= s.[Index],
-			t.[TableName]		= s.[TableName],
 			t.[ColumnName]		= s.[ColumnName],
 			t.[EntryIndex]		= s.[EntryIndex],
 			t.[Label]			= s.[Label],
@@ -169,8 +164,8 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[TableName], [ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[TableName], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
+		INSERT ([LineDefinitionId],		[Index],[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
 		SELECT

@@ -107,7 +107,7 @@ UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', 
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'employees' WHERE [Code] = N'CurrentPayablesToEmployeesExtension';
 UPDATE @AccountTypes	SET [AgentAssignment] = N'E', [AgentDefinitionId] = N'inventory-custodians' WHERE [Code] = N'Inventories';
 UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'suppliers' WHERE [Code] = N'CurrentValueAddedTaxReceivables';
---UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'suppliers' WHERE [Code] = N'CurrentValueAddedTaxReceivables';
+UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'customers' WHERE [Code] IN (N'RevenueFromRenderingOfServices', N'OtherRevenue', N'CurrentValueAddedTaxPayables');
 
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,

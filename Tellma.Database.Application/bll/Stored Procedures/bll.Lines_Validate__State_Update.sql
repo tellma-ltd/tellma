@@ -22,7 +22,7 @@ AS
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 --	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
-	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[TableName] = N'Entries' AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
+	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
 	WHERE @ToState >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> N'ManualLine'
 	AND	(

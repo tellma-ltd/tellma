@@ -4,7 +4,6 @@
 	[LineDefinitionId]		NVARCHAR (50)	NOT NULL,
 	[Index]					INT				NOT NULL,
 	CONSTRAINT [IX_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
-	[TableName]				NVARCHAR (10)	NOT NULL CHECK([TableName] IN (N'Lines', N'Entries')),
 	[ColumnName]			NVARCHAR (50)	NOT NULL,
 	[EntryIndex]			INT				NOT NULL DEFAULT 0,
 	CONSTRAINT [FK_LineDefinitionColumns__LineDefinitionId_EntryIndex] FOREIGN KEY ([LineDefinitionId], [EntryIndex]) REFERENCES dbo.LineDefinitionEntries([LineDefinitionId], [Index]),

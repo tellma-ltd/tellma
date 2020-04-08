@@ -97,6 +97,7 @@
     <Folder Include="wiz" />
     <Folder Include="wiz\Functions" />
     <Folder Include="wiz\Stored Procedures" />
+    <Folder Include="Mapping\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
