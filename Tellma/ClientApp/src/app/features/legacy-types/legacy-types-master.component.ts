@@ -8,8 +8,6 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 })
 export class LegacyTypesMasterComponent extends MasterBaseComponent {
 
-  public expand = '';
-
   constructor(private workspace: WorkspaceService) {
     super();
   }

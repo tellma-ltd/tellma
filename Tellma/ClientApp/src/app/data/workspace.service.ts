@@ -35,6 +35,8 @@ import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { AdminUserSettingsForClient } from './dto/admin-user-settings-for-client';
 import { AdminUser } from './entities/admin-user';
 import { IdentityServerUser } from './entities/identity-server-user';
+import { InboxRecord } from './entities/inbox-record';
+import { OutboxRecord } from './entities/outbox-record';
 
 enum WhichWorkspace {
   /**
@@ -251,6 +253,13 @@ export class AdminWorkspace extends SpecificWorkspace {
    */
   mdState: { [key: string]: MasterDetailsStore };
 
+  /**
+   * Master screens use this to remember the last opened master screen,
+   * if it's not the same as the current screen, the current screen may
+   * wish to refresh
+   */
+  mdLastKey: string;
+
   AdminUser: EntityWorkspace<AdminUser>;
   IdentityServerUser: EntityWorkspace<IdentityServerUser>;
 
@@ -313,6 +322,13 @@ export class TenantWorkspace extends SpecificWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   /**
+   * Master screens use this to remember the last opened master screen,
+   * if it's not the same as the current screen, the current screen may
+   * wish to refresh
+   */
+  mdLastKey: string;
+
+  /**
    * Keeps the state of every report widget
    */
   reportState: { [key: string]: ReportStore };
@@ -335,6 +351,8 @@ export class TenantWorkspace extends SpecificWorkspace {
   Line: EntityWorkspace<Line>;
   ExchangeRate: EntityWorkspace<ExchangeRate>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
+  InboxRecord: EntityWorkspace<InboxRecord>;
+  OutboxRecord: EntityWorkspace<OutboxRecord>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -364,6 +382,8 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Line = {};
     this.ExchangeRate = {};
     this.DetailsEntry = {};
+    this.InboxRecord = {};
+    this.OutboxRecord = {};
 
     this.notifyStateChanged();
   }

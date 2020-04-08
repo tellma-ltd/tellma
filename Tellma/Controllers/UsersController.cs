@@ -27,7 +27,7 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [AuthorizeAccess]
-    [ApplicationApi]
+    [ApplicationController(allowUnobtrusive: true)]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
         public const string BASE_ADDRESS = "users";
@@ -339,7 +339,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);

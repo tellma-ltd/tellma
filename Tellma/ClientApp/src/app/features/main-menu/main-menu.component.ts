@@ -41,10 +41,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
-    { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 10 },
-    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 30 },
-    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 40 },
-    { label: 'Units', icon: 'ruler', link: '../units', view: 'units', sortKey: 50 },
+    { label: 'Inbox', icon: 'inbox', link: '../inbox', sortKey: 10 },
+    { label: 'Outbox', icon: 'share', link: '../outbox', sortKey: 20 },
+    { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 30 },
+    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
+    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
     { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
   ];
 
@@ -364,10 +365,14 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // tiles with the arrow keys, ala metro style
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.workspace.ignoreKeyDownEvents) {
+      return;
+    }
+
     let key: string = event.key;
 
     // Focus on the search field as soon as the user starts typing letters or numbers
-    if (!this.searchInputIsFocused && !!key && key.trim().length === 1 && !this.workspace.ignoreKeyDownEvents) {
+    if (!this.searchInputIsFocused && !!key && key.trim().length === 1) {
       this.currentXMemory = -1;
       this.searchInput.nativeElement.value = '';
       this.searchInput.nativeElement.focus();

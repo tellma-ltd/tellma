@@ -1,0 +1,51 @@
+<t-master collection="InboxRecord" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'Inbox' | translate" [showImportButton]="false"
+    [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+    [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Document/Memo,CreatedAt,CreatedBy,Comment,OpenedAt"
+    selectForTiles="Comment,CreatedAt,CreatedBy/Name,CreatedBy/Name2,CreatedBy/Name3,CreatedBy/ImageId,OpenedAt,Document/DefinitionId,Document/SerialNumber,Document/Memo"
+    inactiveFilter="" [multiselectActions]="[]" [customChoiceHandler]="customChoiceHandler" [filterDefinition]="{
+        'OpenedAt' : [
+          { template: notopened, expression: 'OpenedAt eq null'},
+          { template: opened, expression: 'OpenedAt ne null'}
+        ]
+      }">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex">
+        <div class="border">
+            <t-image [src]="'users/' + c[id].CreatedById + '/image'"
+                [imageId]="ws.get('User', c[id].CreatedById)?.ImageId" [size]="42"></t-image>
+        </div>
+        &nbsp;&nbsp;&nbsp;
+        <div class="flex-grow-1" style="min-width: 0;">
+            <div class="d-flex justify-content-between">
+                <div class="text-truncate t-slightly-bold">
+                    {{ ws.getMultilingualValue('User', c[id].CreatedById, 'Name') }}
+                </div>
+                <div class="text-truncate text-muted">
+                    {{ c[id].CreatedAt | date:'yyyy-MM-dd HH:mm' }}
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-1 small text-truncate">
+                <div class="text-truncate text-muted" style="min-width: 0;">
+                    <span>{{ formatSerial(id) }}</span><span *ngIf="ws.get('Document', id)?.Memo">{{ ' - ' + ws.get('Document', id)?.Memo }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Document' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">{{ formatSerial(id) }}</span>
+</ng-template>
+
+<ng-template #notopened> {{ 'NotOpened' | translate }} </ng-template>
+<ng-template #opened> {{ 'Opened' | translate }} </ng-template>

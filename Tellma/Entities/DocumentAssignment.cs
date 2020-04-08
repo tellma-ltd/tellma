@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tellma.Entities
 {
@@ -13,7 +10,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Document_Assignee")]
         public int? AssigneeId { get; set; }
-        
+
         [Display(Name = "Document_Comment")]
         public string Comment { get; set; }
 

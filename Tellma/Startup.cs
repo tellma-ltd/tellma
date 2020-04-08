@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Primitives;
+using IdentityModel;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Tellma
 {
@@ -169,6 +172,9 @@ namespace Tellma
                     // This is a required configuration since ASP.NET Core 2.1
                     opt.HttpsPort = 443;
                 });
+
+                // Adds and configures SignalR
+                services.AddSignalRImplementation(_env);
             }
             catch (Exception ex)
             {
@@ -269,7 +275,7 @@ namespace Tellma
                     string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
                     if (string.IsNullOrWhiteSpace(webClientUri))
                     {
-                        throw new Exception($"The configuration value {nameof(GlobalOptions.ClientApplications)}::{nameof(WebClientOptions.WebClientUri)} is required when {nameof(GlobalOptions.EmbeddedClientApplicationEnabled)} is not set to true");
+                        throw new Exception($"The configuration value {nameof(GlobalOptions.ClientApplications)}:{nameof(WebClientOptions.WebClientUri)} is required when {nameof(GlobalOptions.EmbeddedClientApplicationEnabled)} is not set to true");
                     }
 
                     // If a web client is listed in the configurations, add it to CORS
@@ -278,6 +284,7 @@ namespace Tellma
                         builder.WithOrigins(webClientUri)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
+                        .AllowCredentials()
                         .WithExposedHeaders(
                             "x-image-id",
                             "x-settings-version",
@@ -292,6 +299,9 @@ namespace Tellma
                         );
                     });
                 }
+
+                // Moves the access token from the query string to the Authorization header, for SignalR
+                app.UseQueryStringToken();
 
                 // IdentityServer
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
@@ -309,6 +319,8 @@ namespace Tellma
                 // Routing
                 app.UseEndpoints(endpoints =>
                 {
+                    endpoints.MapHub<ServerNotificationsHub>("api/hubs/notifications");
+
                     // For the API
                     endpoints.MapControllerRoute(
                         name: "default",

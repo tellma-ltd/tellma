@@ -21,7 +21,7 @@ namespace Tellma.Controllers
 {
     [Route("api/admin-settings")]
     [AuthorizeAccess]
-    [AdminApi]
+    [AdminController]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminSettingsController : ControllerBase

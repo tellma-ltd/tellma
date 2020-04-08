@@ -1,10 +1,10 @@
-<t-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Document" [definitionId]="definitionId" [createFunc]="create"
     [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
     [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
-    [toolbarTemplate]="toolbar">
+    [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc">
 
 </t-details>
 
@@ -314,7 +314,7 @@
 
     <!-- Document Memo -->
     <t-form-group *ngIf="showDocumentMemo(model)" class="t-form-group" [label]="'Memo' | translate"
-        [serverErrors]="model.serverErrors?.Memo">
+        [serverErrors]="model?.serverErrors?.Memo">
         <div *ngIf="!isEdit">{{ model?.Memo }}</div>
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="requireDocumentMemo(model)" [disabled]="readonlyDocumentMemo(model)">
@@ -335,7 +335,7 @@
                     </fa-icon>&nbsp;
                 </span>
                 <span
-                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lineDefId === 'ManualLine' ? manualEntries(model).length : lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model?.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lineDefId === 'ManualLine' ? manualEntries(model).length : lines(lineDefId, model).length | number) + ')' : '') }}</span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
@@ -809,10 +809,10 @@
 
         <!-- Bookkeeping Tab -->
         <li class="{{ attachmentsClass }}" [ngbNavItem]="'_Entries'" *ngIf="!isJV">
-            <a ngbNavLink [title]="'Bookkeeping' | translate" [style.background-color]="bookkeepingTabColor(model)">
+            <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate" [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
                     <fa-icon icon="book"></fa-icon>
-                    <span>&nbsp;&nbsp;{{ (!model.Id || model?.EntityMetadata?.Lines === 2 ? '(' + (entriesCount(model) | number) + ')' : '')}}</span>
+                    <span>&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Lines === 2 ? '(' + (entriesCount(model) | number) + ')' : '')}}</span>
                 </span>
             </a>
             <ng-template ngbNavContent>
@@ -873,14 +873,14 @@
 
         <!-- Attachments -->
         <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="'_Attachments'">
-            <a ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
+            <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
                         <fa-icon icon="exclamation-triangle">
                         </fa-icon>&nbsp;
                     </span>
                     <span>
                         <fa-icon icon="paperclip"></fa-icon>
-                        <span>&nbsp;&nbsp;{{ (!model.Id || model?.EntityMetadata?.Attachments === 2 ? '(' + (model?.Attachments?.length | number) + ')' : '')}}</span>
+                        <span>&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Attachments === 2 ? '(' + (model?.Attachments?.length | number) + ')' : '')}}</span>
                     </span>
                 </span>
             </a>
@@ -1439,14 +1439,12 @@
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">
-    <div class="d-flex justify-content-center p-2">
+    <div class="d-flex justify-content-center px-0 px-sm-2">
         <div class="w-100 t-paper-width">
-            <!-- <div class="py-3 px-3 d-flex justify-content-center small font-weight-bold" *ngIf="!!model.AssigneeId">
-                {{ 'Document_AssignmentsHistory' | translate }}
-            </div> -->
+            <!-- <div class="px-3 py-3 small font-weight-bold" *ngIf="!!model.AssigneeId">{{ 'Workflow' | translate }}</div> -->
 
             <!-- Currently with -->
-            <div class="t-biege border-bottom border-top2 py-2 px-3" *ngIf="!!model.AssigneeId">
+            <div class="bg-light border-bottom py-2 px-3" *ngIf="!!model.AssigneeId">
                 <div class="d-flex">
                     <t-image [src]="'users/' + model.AssigneeId + '/image'"
                         [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="picSize" shape="circle"></t-image>
@@ -1485,7 +1483,7 @@
 
                 <!-- Day's history -->
                 <ng-container *ngFor="let event of dayEvents.events; let i = index;">
-                    <div class="t-biege border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
+                    <div class="bg-light border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
                         [ngSwitch]="event.type">
 
                         <!-- State Update -->

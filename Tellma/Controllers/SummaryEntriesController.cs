@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class SummaryEntriesController : FactControllerBase<SummaryEntry>
     {
         public const string BASE_ADDRESS = "summary-entries";

@@ -17,7 +17,7 @@ using Tellma.Services.EmbeddedIdentityServer;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [AdminApi]
+    [AdminController]
     public class IdentityServerUsersController : FactGetByIdControllerBase<IdentityServerUser, string>
     {
         public const string BASE_ADDRESS = "identity-server-users";

@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, Input, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { serialNumber } from '~/app/data/entities/document';
+import { formatSerial } from '~/app/data/entities/document';
 
 @Component({
   selector: 't-serial-editor',
@@ -56,7 +56,7 @@ export class SerialEditorComponent implements ControlValueAccessor, OnChanges {
   ///////////////// UI Binding
 
   public get zeros(): string {
-    return serialNumber(0, '', this.codeWidth);
+    return formatSerial(0, '', this.codeWidth);
   }
 
   private format(value: number | string): string {
@@ -66,7 +66,7 @@ export class SerialEditorComponent implements ControlValueAccessor, OnChanges {
     }
 
     const serial = +value.toString();
-    return serialNumber(serial, '', this.codeWidth);
+    return formatSerial(serial, '', this.codeWidth);
   }
 
   private parse(value: string): number {

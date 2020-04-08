@@ -18,7 +18,7 @@ namespace Tellma.Controllers
 {
     // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
-    [ApplicationApi]
+    [ApplicationController]
     public class ResourcesController : CrudControllerBase<ResourceForSave, Resource, int>
     {
         public const string BASE_ADDRESS = "resources/";
@@ -80,7 +80,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -319,7 +319,7 @@ namespace Tellma.Controllers
     // Generic API, allows reading all resources
 
     [Route("api/" + ResourcesController.BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
     {
         private readonly ApplicationRepository _repo;

@@ -16,11 +16,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
-    [ApplicationApi]
+    [ApplicationController]
     public class DocumentsController : CrudControllerBase<DocumentForSave, Document, int>
     {
         public const string BASE_ADDRESS = "documents/";
@@ -40,6 +41,9 @@ namespace Tellma.Controllers
         private readonly IClientInfoAccessor _clientInfo;
         private readonly IModelMetadataProvider _modelMetadataProvider;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
+        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+
+        private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
 
         private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
             throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
@@ -51,7 +55,8 @@ namespace Tellma.Controllers
         public DocumentsController(ILogger<DocumentsController> logger, IStringLocalizer<Strings> localizer,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor) : base(logger, localizer)
+            IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor,
+            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
@@ -63,6 +68,7 @@ namespace Tellma.Controllers
             _clientInfo = clientInfo;
             _modelMetadataProvider = modelMetadataProvider;
             _tenantInfoAccessor = tenantInfoAccessor;
+            _hubContext = hubContext;
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
@@ -148,8 +154,12 @@ namespace Tellma.Controllers
                 }
 
                 // Actual Assignment
-                await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
+                var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
 
+                // Notify relevant parties
+                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+                // Return result
                 if (returnEntities)
                 {
                     var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
@@ -331,24 +341,16 @@ namespace Tellma.Controllers
                     throw new UnprocessableEntityException(ModelState);
                 }
 
-                // Update state
-                switch (transition)
+                var notificationInfos = transition switch
                 {
-                    case nameof(Post):
-                        await _repo.Documents__Post(ids);
-                        break;
-                    case nameof(Unpost):
-                        await _repo.Documents__Unpost(ids);
-                        break;
-                    case nameof(Cancel):
-                        await _repo.Documents__Cancel(ids);
-                        break;
-                    case nameof(Uncancel):
-                        await _repo.Documents__Uncancel(ids);
-                        break;
-                    default:
-                        throw new BadRequestException($"Unknown transition {transition}");
-                }
+                    nameof(Post) => await _repo.Documents__Post(ids),
+                    nameof(Unpost) => await _repo.Documents__Unpost(ids),
+                    nameof(Cancel) => await _repo.Documents__Cancel(ids),
+                    nameof(Uncancel) => await _repo.Documents__Uncancel(ids),
+                    _ => throw new BadRequestException($"Unknown transition {transition}"),
+                };
+
+                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
                 if (returnEntities)
                 {
@@ -366,15 +368,46 @@ namespace Tellma.Controllers
             , _logger);
         }
 
+        protected override async Task<GetByIdResponse<Document>> GetByIdImplAsync(int id, [FromQuery] GetByIdArguments args)
+        {
+            var response = await base.GetByIdImplAsync(id, args);
+            var entity = response.Result;
+            if (entity.OpenedAt == null)
+            {
+                var userInfo = await _repo.GetUserInfoAsync();
+                var userId = userInfo.UserId.Value;
+
+                if (entity.AssigneeId == userId)
+                {
+                    // Mark the entity's OpenedAt both in the DB and in the returned entity
+                    var assignedAt = entity.AssignedAt.Value;
+                    var openedAt = DateTimeOffset.Now;
+                    var infos = await _repo.Documents__Open(entity.Id, assignedAt, openedAt);
+                    entity.OpenedAt = openedAt;
+
+                    // Notify the user
+                    var tenantId = _tenantIdAccessor.GetTenantId();
+                    await _hubContext.NotifyInboxAsync(tenantId, infos);
+                }
+            }
+
+            return response;
+        }
+
         protected override IRepository GetRepository()
         {
             string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} '{DefinitionId}'";
             return new FilteredRepository<Document>(_repo, filter);
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _repo.UserPermissions(action, View);
+            var permissions = (await _repo.UserPermissions(action, View)).ToList();
+
+            // Add a special permission that lets you see the documents that were assigned to you
+            permissions.AddRange(DocumentControllerUtil.HardCodedPermissions());
+
+            return permissions;
         }
 
         protected override Query<Document> GetAsQuery(List<DocumentForSave> entities)
@@ -475,6 +508,7 @@ namespace Tellma.Controllers
 
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
+                doc.Attachments ??= new List<AttachmentForSave>();
 
                 doc.Lines.ForEach(line =>
                 {
@@ -1143,11 +1177,14 @@ namespace Tellma.Controllers
             }
 
             // Save the documents
-            var (ids, fileIdsToDelete) = await _repo.Documents__SaveAndRefresh(
+            var (notificationInfos, fileIdsToDelete, ids) = await _repo.Documents__SaveAndRefresh(
                 DefinitionId,
                 documents: entities,
                 attachments: attachments,
                 returnIds: returnIds);
+
+            // Notify affected users
+            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
             // Delete the file Ids retrieved earlier if any
             if (fileIdsToDelete.Any())
@@ -1180,7 +1217,9 @@ namespace Tellma.Controllers
         {
             try
             {
-                var fileIdsToDelete = await _repo.Documents__Delete(ids);
+                var (notificationInfos, fileIdsToDelete) = await _repo.Documents__Delete(ids);
+
+                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
                 // Delete the file Ids retrieved earlier if any
                 if (fileIdsToDelete.Any())
@@ -1207,13 +1246,12 @@ namespace Tellma.Controllers
 
         private string BlobName(string guid)
         {
-            int tenantId = _tenantIdAccessor.GetTenantId();
-            return $"{tenantId}/Attachments/{guid}";
+            return $"{TenantId}/Attachments/{guid}";
         }
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class DocumentsGenericController : FactWithIdControllerBase<Document, int>
     {
         private readonly ApplicationRepository _repo;
@@ -1238,7 +1276,7 @@ namespace Tellma.Controllers
         {
             // Get all permissions pertaining to documents
             string prefix = DocumentsController.BASE_ADDRESS;
-            var permissions = await _repo.GenericUserPermissions(action, prefix);
+            var permissions = (await _repo.GenericUserPermissions(action, prefix)).ToList();
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
@@ -1255,6 +1293,9 @@ namespace Tellma.Controllers
                     permission.Criteria = definitionPredicate;
                 }
             }
+
+            // Add a special permission that lets you see the documents that were assigned to you
+            permissions.AddRange(DocumentControllerUtil.HardCodedPermissions());
 
             // Return the massaged permissions
             return permissions;
@@ -1282,7 +1323,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, string DefinitionId)> prefixMap)
+        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, string DefinitionId)> prefixMap)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -1336,6 +1377,22 @@ namespace Tellma.Controllers
             }
 
             return query;
+        }
+
+        internal static IEnumerable<AbstractPermission> HardCodedPermissions()
+        {
+            // If someone assigns the document to you, you can read it
+            // and forward it to someone else, until it either gets modified
+            // or forwarded again (the second condition so that you can 
+            // refresh the document immediately after forwarding)
+            //yield return new AbstractPermission
+            //{
+            //    View = "documents", // Not important
+            //    Action = "Read",
+            //    Criteria = "AssigneeId eq me OR (AssignedById eq me AND ModifiedAt lt AssignedAt)"
+            //};
+
+            return new List<AbstractPermission>();
         }
     }
 }

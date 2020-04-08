@@ -330,6 +330,25 @@ export class ApiService {
     };
   }
 
+  public inboxApi(cancellationToken$: Observable<void>) {
+    return {
+      check: (now: string) => {
+        const url = appsettings.apiAddress + `api/inbox/check`;
+        const obs$ = this.http.put(url, JSON.stringify(now), {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      }
+    };
+  }
+
   public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
       assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
@@ -497,7 +516,7 @@ export class ApiService {
       activate: this.activateFactory<User>('users', cancellationToken$),
       deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/users/client`;
+        const url = appsettings.apiAddress + `api/users/client?unobtrusive=true`;
         const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -653,7 +672,7 @@ export class ApiService {
       },
 
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/settings/client`;
+        const url = appsettings.apiAddress + `api/settings/client?unobtrusive=true`;
         const obs$ = this.http.get<DataWithVersion<SettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -707,7 +726,7 @@ export class ApiService {
   public permissionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/permissions/client`;
+        const url = appsettings.apiAddress + `api/permissions/client?unobtrusive=true`;
         const obs$ = this.http.get<DataWithVersion<PermissionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -724,7 +743,7 @@ export class ApiService {
   public definitionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appsettings.apiAddress + `api/definitions/client`;
+        const url = appsettings.apiAddress + `api/definitions/client?unobtrusive=true`;
         const obs$ = this.http.get<DataWithVersion<DefinitionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
@@ -1153,10 +1172,6 @@ export class ApiService {
       paramsArray.push(`desc=${!!args.desc}`);
     }
 
-    if (!!args.inactive) {
-      paramsArray.push(`inactive=${args.inactive}`);
-    }
-
     if (!!args.filter) {
       paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
     }
@@ -1167,6 +1182,10 @@ export class ApiService {
 
     if (!!args.select) {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+    }
+
+    if (!!args.unobtrusive) {
+      paramsArray.push(`unobtrusive=${args.unobtrusive}`);
     }
 
     return paramsArray;

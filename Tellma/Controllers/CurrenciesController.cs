@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class CurrenciesController : CrudControllerBase<CurrencyForSave, Currency, string>
     {
         public const string BASE_ADDRESS = "currencies";

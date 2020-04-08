@@ -312,5 +312,23 @@ namespace Tellma.Data
 
             return result;
         }
+
+        public static async Task<List<InboxNotificationInfo>> LoadAssignmentNotificationInfos(SqlDataReader reader, List<InboxNotificationInfo> result = null)
+        {
+            result ??= new List<InboxNotificationInfo>();
+
+            while (await reader.ReadAsync())
+            {
+                int i = 0;
+                result.Add(new InboxNotificationInfo
+                {
+                    ExternalId = reader.GetString(i++),
+                    Count = reader.GetInt32(i++),
+                    UnknownCount = reader.GetInt32(i++)
+                });
+            }
+
+            return result;
+        }
     }
 }

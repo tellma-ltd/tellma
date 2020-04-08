@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Tellma.Services.Sharding;
 
 namespace Tellma.Controllers
 {
@@ -23,34 +24,39 @@ namespace Tellma.Controllers
     /// 7. If the version headers are provided, it also checks their freshness and adds appropriate response headers
     /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
     /// </summary>
-    public class ApplicationApiAttribute : TypeFilterAttribute
+    public class ApplicationControllerAttribute : TypeFilterAttribute
     {
-        public ApplicationApiAttribute() : base(typeof(ApplicationApiFilter)) { }
+        public ApplicationControllerAttribute(bool allowUnobtrusive = false) : 
+            base(allowUnobtrusive ? typeof(UnobtrusiveApplicationApiFilter) : typeof(ObtrusiveApplicationApiFilter)) { }
 
         /// <summary>
         /// An implementation of the method described here https://bit.ly/2MKwY7A
         /// </summary>
-        private class ApplicationApiFilter : IAsyncResourceFilter
+        private abstract class ApplicationApiFilter : IAsyncResourceFilter
         {
             private readonly ApplicationRepository _appRepo;
             private readonly ITenantIdAccessor _tenantIdAccessor;
+            private readonly IShardResolver _shardResolver;
             private readonly ITenantInfoAccessor _tenantInfoAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
             private readonly IDefinitionsCache _definitionsCache;
             private readonly ISettingsCache _settingsCache;
 
-            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
+            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
                 IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
+                _shardResolver = shardResolver;
                 _tenantInfoAccessor = tenantInfoAccessor;
                 _externalUserAccessor = externalUserAccessor;
                 _serviceProvider = serviceProvider;
                 _definitionsCache = definitionsCache;
                 _settingsCache = settingsCache;
             }
+
+            protected abstract bool AllowUnobtrusive { get; }
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
@@ -66,6 +72,13 @@ namespace Tellma.Controllers
                     context.Result = new BadRequestObjectResult(ex.Message);
                     return;
                 }
+
+                // Init the database connection...
+                // The client sometimes makes ambient API calls, not in response to user interaction
+                // Such calls should not update LastAccess of that user, in this case the client 
+                var connString = _shardResolver.GetConnectionString(tenantId);
+                bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
+                await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive);
 
                 // (2) Make sure the user is a member of this tenant
                 UserInfo userInfo = await _appRepo.GetUserInfoAsync();
@@ -193,5 +206,33 @@ namespace Tellma.Controllers
                 await next();
             }
         }
+
+        #region Implementations
+
+        /// <summary>
+        /// An implementation of <see cref="ApplicationApiFilter"/> that allows the client to bypass setting LastAccess of the user
+        /// </summary>
+        private class UnobtrusiveApplicationApiFilter : ApplicationApiFilter
+        {
+            public UnobtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache) : base(tenantIdAccessor, shardResolver, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache)
+            {
+            }
+
+            protected override bool AllowUnobtrusive => true;
+        }
+
+        /// <summary>
+        /// An implementation of <see cref="ApplicationApiFilter"/> that forces the setting of LastAccess of the user
+        /// </summary>
+        private class ObtrusiveApplicationApiFilter : ApplicationApiFilter
+        {
+            public ObtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache) : base(tenantIdAccessor, shardResolver, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache)
+            {
+            }
+
+            protected override bool AllowUnobtrusive => false;
+        }
+
+        #endregion
     };
 }

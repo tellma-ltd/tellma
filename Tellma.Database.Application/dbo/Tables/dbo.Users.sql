@@ -10,13 +10,13 @@
 	[LastAccess]			DATETIMEOFFSET(7),
 	[PermissionsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
 	[UserSettingsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT NEWID(),
+	
+	[LastInboxCheck]		DATETIMEOFFSET(7)	NULL,
+	[LastNotificationsCheck] DATETIMEOFFSET(7)	NULL,
 
-	-- Delete
-	-- End Delete
 
 	[SortKey]				DECIMAL (9,4),
 
-	-- ??
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__CreatedById] REFERENCES [dbo].[Users] ([Id]),

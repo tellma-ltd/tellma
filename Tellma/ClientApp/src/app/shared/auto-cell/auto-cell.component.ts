@@ -19,7 +19,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   collection: string;
 
   @Input()
-  definition: string;
+  definitionId: string;
 
   @Input()
   path: string;
@@ -103,7 +103,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
-        this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definition);
+        this._entityDescriptor = this.metadataFactory(this.collection)(this.workspace, this.translate, this.definitionId);
 
         if (pathArray.length === 0) {
           this._propDescriptor = null;
@@ -112,7 +112,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
         } else {
           let currentCollection = this.collection;
-          let currentDefinition = this.definition;
+          let currentDefinition = this.definitionId;
 
           for (let i = 0; i < pathArray.length; i++) {
             const step = pathArray[i];

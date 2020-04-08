@@ -9,8 +9,8 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'ExternalId' : [
-              { template: new, expression: 'ExternalId eq null'},
-              { template: confirmed, expression: 'ExternalId ne null'}
+              { template: invited, expression: 'ExternalId eq null'},
+              { template: member, expression: 'ExternalId ne null'}
             ],
             'ImageId' : [
               { template: withPicture, expression: 'ImageId ne null'},
@@ -24,12 +24,12 @@
 <ng-template #tile let-id="id">
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
-      <div class="border t-dp-wrapper2">
+      <div class="border">
         <t-image [src]="'users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></t-image>
       </div>
       &nbsp;&nbsp;&nbsp;
     </ng-container>
-    <div class="flex-grow-1 d-inline-block t-mw-0">
+    <div class="flex-grow-1">
       <div class="d-flex justify-content-between">
         <t-auto-cell collection="User" path="" [entity]="c[id]"></t-auto-cell>
       </div>
@@ -59,8 +59,8 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #new> {{ 'User_Invited' | translate }} </ng-template>
-<ng-template #confirmed> {{ 'User_Member' | translate }} </ng-template>
+<ng-template #invited> {{ 'User_Invited' | translate }} </ng-template>
+<ng-template #member> {{ 'User_Member' | translate }} </ng-template>
 
 <ng-template #withPicture> {{ 'WithPicture' | translate }} </ng-template>
 <ng-template #withoutPicture> {{ 'WithoutPicture' | translate }} </ng-template>

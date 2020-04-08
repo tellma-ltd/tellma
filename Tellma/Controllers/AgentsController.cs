@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
-    [ApplicationApi]
+    [ApplicationController]
     public class AgentsController : CrudControllerBase<AgentForSave, Agent, int>
     {
         public const string BASE_ADDRESS = "agents/";
@@ -109,7 +109,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Agent>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -256,7 +256,7 @@ namespace Tellma.Controllers
     }
 
     [Route("api/" + AgentsController.BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class AgentsGenericController : FactWithIdControllerBase<Agent, int>
     {
         private readonly ApplicationRepository _repo;

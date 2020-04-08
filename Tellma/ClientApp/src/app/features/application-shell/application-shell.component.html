@@ -1,11 +1,13 @@
 <div class="d-flex flex-column h-100">
   <!-- <t-warning-message>The license has expired. The system will become read-only in <b>22 days.</b></t-warning-message> -->
   <!-- <t-error-message>The system is readonly, please renew your license</t-error-message> -->
-  <nav class="navbar navbar-dark t-dark navbar-expand-lg p-0 align-items-lg-stretch"
+  <nav class="navbar navbar-dark t-dark navbar-expand-md p-0 align-items-md-stretch"
     [style.background-color]="settings?.BrandColor">
+    <!-- System Icon -->
     <a class="t-brand-link t-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
       <t-brand [scale]="1.0"></t-brand>
     </a>
+    <!-- Forward and Backward Navigation -->
     <div class="mx-2 d-flex">
       <button class="t-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
         *ngIf="nav.showBack">
@@ -17,30 +19,33 @@
         <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
       </button>
     </div>
+    <!-- Inbox Button (on mobile) -->
+    <div class="nav navbar-nav" *ngIf="!isMdScreen">
+      <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" (click)="onModalInbox()">
+        <ng-container *ngTemplateOutlet="inboxButtonContent">
+        </ng-container>
+      </button>
+    </div>
+    <!-- Hamburger Button -->
     <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Collapsible Navbar -->
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
+      <ol class="nav navbar-nav px-4 px-md-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
         <!-- <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
-            (click)="onCollapse()">
-            {{ 'Home' | translate }}
-          </a>
-        </li> -->
-        <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" [routerLink]="['./documents', { 'orderby': 'AssignedAt desc' }]"
-            (click)="onCollapse()">
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            [routerLink]="['./documents', { 'orderby': 'AssignedAt desc' }]" (click)="onCollapse()">
             {{ 'Documents' | translate }}
           </a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
             (click)="onCollapse()">
             {{ 'Users' | translate }}
           </a>
         </li>
-
         <li class="nav-item">
           <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
             (click)="onCollapse()">
@@ -48,8 +53,8 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./units" (click)="onCollapse()">
+          <a class="t-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./units"
+            (click)="onCollapse()">
             {{ 'Units' | translate }}
           </a>
         </li>
@@ -67,7 +72,48 @@
         </li>
       </ol>
 
-      <ol class="nav navbar-nav p-0">
+      <ol class="nav navbar-nav">
+        <!-- Inbox Button (Desktop) -->
+        <li class="nav-item" ngbDropdown #inboxDrop="ngbDropdown" container="" (openChange)="onDropdownInbox($event)"
+          *ngIf="isMdScreen">
+          <!-- Inbox button -->
+          <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow small align-items-center" ngbDropdownToggle>
+            <ng-container *ngTemplateOutlet="inboxButtonContent">
+            </ng-container>
+          </button>
+          <!-- Inbox Dropdown -->
+          <div class="dropdown-menu shadow m-0 p-0" [class.dropdown-menu-right]="!isRtl"
+            style="width: 27rem; max-height: 30rem; overflow-y: auto;" ngbDropdownMenu>
+
+            <!-- Inbox header -->
+            <div class="px-2 py-1 border-bottom d-flex justify-content-between t-slightly-bold">
+              <!-- Title and Spinner -->
+              <div>{{ 'Inbox' | translate }}&nbsp;<t-spinner [scale]="1" *ngIf="showInboxSpinner"></t-spinner>
+              </div>
+              <!-- Link to Inbox -->
+              <a [routerLink]="'/app/' + tenantId + '/inbox'" (click)="inboxDrop.close()">{{ 'SeeAll' | translate }}</a>
+            </div>
+
+            <!-- Empty inbox message -->
+            <ng-container *ngTemplateOutlet="emptyInboxMessage">
+            </ng-container>
+
+            <!-- The inbox items -->
+            <button class="p-2 border-bottom t-inbox-item" [class.bg-light]="c[id].OpenedAt"
+              [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id, { state_key: 'navinbox' }]"
+              *ngFor="let id of ids" ngbDropdownItem (click)="inboxDrop.close()">
+              <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
+            </button>
+
+            <!-- If there are more than 25 inbox items -->
+            <div class="t-slightly-bold p-1 text-center" *ngIf="showSeeAll">
+              <ng-container *ngTemplateOutlet="seeAllLink; context:{ closable: inboxDrop }">
+              </ng-container>
+            </div>
+          </div>
+        </li>
+
+        <!-- The user dropdown -->
         <li class="nav-item" ngbDropdown container="">
           <button class="h-100 w-100 d-flex t-navbar-button t-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
@@ -86,16 +132,20 @@
           <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
             [class.dropdown-menu-right]="!isRtl">
 
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/companies"
+              (click)="onCollapse()">
               {{ 'ChangeCompany' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem routerLink="/root/welcome"
+              (click)="onCollapse()">
               {{ 'WelcomePage' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMySystemAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+              (click)="onMySystemAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
             </button>
-            <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onMyCompanyAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" ngbDropdownItem
+              (click)="onMyCompanyAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: companyName } }}
             </button>
             <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onSignOut();onCollapse()">
@@ -109,11 +159,13 @@
                 {{ settings?.PrimaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" ngbDropdownItem (click)="onSecondary();onCollapse()">
+                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId" ngbDropdownItem
+                (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" ngbDropdownItem (click)="onTernary();onCollapse()">
+                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" ngbDropdownItem
+                (click)="onTernary();onCollapse()">
                 {{ settings?.TernaryLanguageName }}
               </button>
             </ng-container>
@@ -122,10 +174,95 @@
       </ol>
     </div>
   </nav>
+
   <main class="t-rest-of-screen container-fluid">
     <router-outlet></router-outlet>
   </main>
 </div>
+
+<ng-template #inboxButtonContent>
+  <div style="position: relative;">
+    <fa-icon icon="inbox" style="font-size: 1.1rem;"></fa-icon>
+    <div class="badge badge-danger t-notification-badge" [style.border-color]="settings?.BrandColor"
+      *ngIf="unknownInboxCountDisplay"> {{ unknownInboxCountDisplay }} </div>
+  </div>
+  <div>&nbsp;&nbsp;{{ inboxCountDisplay }}</div>
+</ng-template>
+
+<ng-template #inboxEntryContent let-id="id">
+  <div class="d-flex">
+    <!-- Sender image -->
+    <t-image [src]="'users/' + c[id].CreatedById + '/image'" [imageId]="ws.get('User', c[id].CreatedById)?.ImageId"
+      shape="circle" [size]="32"></t-image>
+
+    <!-- Small margin -->
+    <div class="px-1"></div>
+
+    <!-- Right of the image -->
+    <div class="flex-grow-1" style="min-width: 0;">
+      <!-- Top row -->
+      <div class="d-flex justify-content-between">
+        <div class="text-truncate font-weight-bold">
+          {{ ws.getMultilingualValue('User', c[id].CreatedById, 'Name') }}
+        </div>
+        <div class="text-muted">
+          {{ c[id].CreatedAt | date:(isToday(c[id].CreatedAt) ? 'HH:mm' : 'yyyy-MM-dd HH:mm') }}
+        </div>
+      </div>
+      <!-- Optional middle row -->
+      <div class="text-truncate text-muted">
+        <t-auto-cell collection="Document" [definitionId]="docs[id].DefinitionId" [entity]="docs[id]">
+        </t-auto-cell>
+        <span *ngIf="docs[id].Memo">{{ ' - ' + docs[id].Memo }}</span>
+      </div>
+      <!-- Bottom row -->
+      <div class="text-wrap" *ngIf="c[id].Comment">{{ '"' + c[id].Comment + '"' }}</div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #emptyInboxMessage>
+  <div class="p-2 m-2 alert-success text-center" *ngIf="showEmptyInboxMessage">
+    <fa-icon icon="check"></fa-icon>&nbsp;&nbsp;&nbsp;{{ 'EmptyInboxMessage' | translate }}
+  </div>
+</ng-template>
+
+<ng-template #seeAllLink let-closable="closable">
+  <a [routerLink]="'/app/' + tenantId + '/inbox'" (click)="closable.close()">{{ 'SeeAll' | translate }}</a>
+</ng-template>
+
+<!-- Inbox on mobile -->
+<ng-template #inboxModal let-modal>
+  <!-- Inbox header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ ('Inbox' | translate) + ' (' + inboxCountDisplay + ')' }}&nbsp;<t-spinner [scale]="1"
+        *ngIf="showInboxSpinner"></t-spinner>
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- Inbox header -->
+  <div class="modal-body p-0 bg-white t-rest-of-screen">
+    <!-- Empty inbox message -->
+    <ng-container *ngTemplateOutlet="emptyInboxMessage">
+    </ng-container>
+
+    <!-- The inbox items -->
+    <button class="p-2 border-bottom t-inbox-item" [class.bg-light]="c[id].OpenedAt"
+      [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id, { state_key: 'navinbox' }]"
+      *ngFor="let id of ids" ngbDropdownItem (click)="modal.close()">
+      <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
+    </button>
+
+    <!-- If there are more than 25 inbox items -->
+    <div class="t-slightly-bold p-2 text-center" *ngIf="showSeeAll">
+      <ng-container *ngTemplateOutlet="seeAllLink; context:{ closable: modal }">
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
 
 <!-- My Account Modal -->
 <ng-template #myAccountModal let-modal>

@@ -47,6 +47,42 @@ namespace Tellma.Data.Queries
                 throw new ArgumentNullException(nameof(atom));
             }
 
+            ///////////// Adds missing spaces around the comparison signs, "Name='Ahmad'" => "Name = 'Ahmad'"
+            var singleQuotationIndex = atom.IndexOf('\'');
+            if (singleQuotationIndex < 0)
+            {
+                singleQuotationIndex = atom.Length;
+            }
+
+            // A sign is a string of special chars
+            var specialChars = new char[] { '!', '=', '<', '>' };
+            var specialCharIndices = specialChars.Select(c => atom.IndexOf(c)).Where(i => i > 0 && i < singleQuotationIndex);
+            if (specialCharIndices.Any())
+            {
+                // Get the index of the first special char
+                int signStartIndex = specialCharIndices.Min(); // First occurrence
+
+                // Calculate how long is the sign = string of special chars
+                int signLength = 1;
+                while (signStartIndex + signLength < atom.Length && specialChars.Contains(atom[signStartIndex + signLength]))
+                {
+                    signLength++;
+                }
+
+                // Insert space after the sign if missing
+                if (signStartIndex + signLength < atom.Length && atom[signStartIndex + signLength] != ' ')
+                {
+                    atom = atom.Insert(signStartIndex + signLength, " ");
+                }
+
+                // Insert space before the sign if missing
+                if (atom[signStartIndex - 1] != ' ')
+                {
+                    atom = atom.Insert(signStartIndex, " ");
+                }
+            }
+
+            ///////////// Perform the parsing
             var pieces = atom.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (pieces.Length < 3)
             {

@@ -56,7 +56,7 @@ namespace Tellma.Controllers
             }
         }
 
-        [AdminApi]
+        [AdminController]
         [HttpPost]
         public Task<ActionResult<SaveGlobalSettingsResponse>> Save([FromBody] GlobalSettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {

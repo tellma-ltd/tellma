@@ -178,8 +178,8 @@ namespace Tellma.IntegrationTests.Scenario_01
 
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Null(entry.EntryTypeId);
-                                Assert.Null(entry.ResourceId);
+                                //Assert.Null(entry.EntryTypeId);
+                                Assert.Equal(entryForSave.ResourceId, entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
                             }
@@ -195,8 +195,8 @@ namespace Tellma.IntegrationTests.Scenario_01
 
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Null(entry.EntryTypeId);
-                                Assert.Null(entry.ResourceId);
+                                //Assert.Null(entry.EntryTypeId);
+                                Assert.Equal(entryForSave.ResourceId, entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
                             }

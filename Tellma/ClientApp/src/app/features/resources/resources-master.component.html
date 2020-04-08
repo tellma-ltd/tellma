@@ -1,4 +1,4 @@
-<t-master *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [mode]="mode"
+<t-master *ngIf="found;else pageNotFound" collection="Resource" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3"
@@ -21,10 +21,10 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <t-auto-cell collection="Resource" [definition]="definitionId" path="" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Resource" [definitionId]="definitionId" path="" [entity]="c[id]"></t-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <t-auto-cell collection="Resource" [definition]="definitionId" path="Code" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Resource" [definitionId]="definitionId" path="Code" [entity]="c[id]"></t-auto-cell>
   </div>
 </ng-template>
 
@@ -36,7 +36,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <t-auto-cell collection="Resource" [definition]="definitionId" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Resource" [definitionId]="definitionId" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

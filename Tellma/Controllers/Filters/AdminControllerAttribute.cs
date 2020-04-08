@@ -18,9 +18,9 @@ namespace Tellma.Controllers
     /// 4. If version headers are provided, it also checks their freshness and adds appropriate response headers
     /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
     /// </summary>
-    public class AdminApiAttribute : TypeFilterAttribute
+    public class AdminControllerAttribute : TypeFilterAttribute
     {
-        public AdminApiAttribute() : base(typeof(AdminApiFilter)) { }
+        public AdminControllerAttribute() : base(typeof(AdminApiFilter)) { }
 
         /// <summary>
         /// An implementation of the method described here https://bit.ly/2MKwY7A

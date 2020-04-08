@@ -66,16 +66,6 @@ let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
 let _definitionIds: string[];
 
-function getPrefix(ws: TenantWorkspace, definitionId: string) {
-    const def = ws.definitions.Documents[definitionId];
-    return !!def ? def.Prefix : '';
-}
-
-function getCodeWidth(ws: TenantWorkspace, definitionId: string) {
-    const def = ws.definitions.Documents[definitionId];
-    return !!def ? def.CodeWidth : 4;
-}
-
 export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
@@ -104,7 +94,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             apiEndpoint: !!definitionId ? `documents/${definitionId}` : 'documents',
             screenUrl: !!definitionId ? `documents/${definitionId}` : 'documents',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
+            format: (doc: Document) => !!doc.SerialNumber ? formatSerial(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
@@ -144,7 +134,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 CurrencyIsCommon: { control: 'boolean', label: () => trx.instant('Document_CurrencyIsCommon') },
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
-                    format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
+                    format: (serial: number) => formatSerial(serial, getPrefix(ws, definitionId), getCodeWidth(ws, definitionId))
                 },
                 State: {
                     control: 'state',
@@ -252,7 +242,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
     return _cache[key];
 }
 
-export function serialNumber(serial: number, prefix: string, codeWidth: number) {
+export function formatSerial(serial: number, prefix: string, codeWidth: number) {
 
     // Handle null and 0
     if (serial === null || serial === undefined) {
@@ -273,4 +263,14 @@ export function serialNumber(serial: number, prefix: string, codeWidth: number) 
 
     // Return the result
     return result;
+}
+
+function getPrefix(ws: TenantWorkspace, definitionId: string) {
+    const def = ws.definitions.Documents[definitionId];
+    return !!def ? def.Prefix : '';
+}
+
+function getCodeWidth(ws: TenantWorkspace, definitionId: string) {
+    const def = ws.definitions.Documents[definitionId];
+    return !!def ? def.CodeWidth : 4;
 }

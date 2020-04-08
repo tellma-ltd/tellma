@@ -14,7 +14,7 @@ using System;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class ExchangeRatesController : CrudControllerBase<ExchangeRateForSave, ExchangeRate, int>
     {
         public const string BASE_ADDRESS = "exchange-rates";

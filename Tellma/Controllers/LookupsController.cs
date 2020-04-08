@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
-    [ApplicationApi]
+    [ApplicationController]
     public class LookupsController : CrudControllerBase<LookupForSave, Lookup, int>
     {
         public const string BASE_ADDRESS = "lookups/";
@@ -73,7 +73,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Lookup>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Lookup>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);

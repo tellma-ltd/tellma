@@ -3,16 +3,19 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService, AuthEvent } from './auth.service';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, finalize } from 'rxjs/operators';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
+import { ServerNotificationsService } from './server-notifications.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
-  constructor(private auth: AuthService, private cleaner: CleanerService,
-              private router: Router, private progress: ProgressOverlayService) {
+  constructor(
+    private auth: AuthService, private cleaner: CleanerService,
+    private router: Router, private progress: ProgressOverlayService,
+    private serverNotifications: ServerNotificationsService) {
     this.auth.setupAutomaticSilentRefresh();
     this.handleAuthEvents();
   }
@@ -34,7 +37,10 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         if (!isSignedIn) {
           this.cleaner.cleanState();
           this.progress.startAsyncOperation('sign_in', 'RedirectingToSignIn');
+          this.serverNotifications.signout();
           this.auth.initImplicitFlow(returnUrl);
+        } else {
+          this.serverNotifications.signin();
         }
       }), catchError(err => {
         console.error(err);
@@ -69,6 +75,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         case AuthEvent.StorageIsCleared:
           this.goToLandingPage().then(_ => {
             this.cleaner.cleanWorkspace();
+            this.cleaner.cleanServerNotifications();
           });
           break;
       }

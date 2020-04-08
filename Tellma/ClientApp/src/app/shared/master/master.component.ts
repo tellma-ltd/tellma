@@ -54,7 +54,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   collection: string; // This is one of two properties that define the screen
 
   @Input()
-  definition: string; // This is one of two properties that define the screen
+  definitionId: string; // This is one of two properties that define the screen
 
   @Input()
   tileTemplate: TemplateRef<any>;
@@ -129,6 +129,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   exportFileName: string;
+
+  /**
+   * Some screens handle clicking on a master row (choosing) in a customized way,
+   * when this input is set to a function, this function becomes the handler
+   */
+  @Input()
+  public customChoiceHandler: (id: number | string, router: Router, route: ActivatedRoute, stateKey: string) => void;
 
   @Output()
   choose = new EventEmitter<number | string>(); // Fired in popup mode to indicate choosing an item
@@ -312,8 +319,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
 
       // (hasChanged === true) means we navigated to this screen with different url params than last time
-      // (masterStatus !== loaded) means we navigated to this master screen for the first time or after another screen
-      if (hasChanged || s.masterStatus !== MasterStatus.loaded) {
+      // (masterStatus !== loaded) means we navigated to this master screen for the first time
+      // (masterStatus !== loadeding) means the url state has NOT changed from within the screen
+      // (s.lastMasterEndpoint != this.endpoint) means another master screen was opened before coming here
+      // In either of the above cases, we need to refresh
+      if (hasChanged || (s.masterStatus !== MasterStatus.loaded && s.masterStatus !== MasterStatus.loading) ||
+        this.workspace.current.mdLastKey !== this.apiEndpoint) {
+        this.workspace.current.mdLastKey = this.apiEndpoint;
         this.fetch();
       }
     };
@@ -337,7 +349,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // component and never call ngOnDestroy and ngOnInit. So we call them
     // manually here if this is not the first time these properties are set
     // to simulate a screen closing and opening again
-    const screenDefProperties = [changes.collection, changes.definition];
+    const screenDefProperties = [changes.collection, changes.definitionId];
     const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
     if (screenDefChanges) {
 
@@ -404,6 +416,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         roots: true
       }).pipe(
         tap((response: GetResponse) => {
+          s = this.state; // get the source
           s.top = response.Result.length;
           s.skip = 0;
           s.total = s.top;
@@ -436,6 +449,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         filter,
       }).pipe(
         tap((response: GetResponse) => {
+          s = this.state; // get the source
           s.top = response.Top;
           s.skip = response.Skip;
           s.total = response.TotalCount;
@@ -536,13 +550,17 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     } else { // this.mode === 'screen'
 
       // screens on the other hand use a global store
-      if (!this.workspace.current.mdState[this.apiEndpoint]) {
-        this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
-        this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
+      const key = this.mdStateKey;
+      if (!this.workspace.current.mdState[key]) {
+        this.workspace.current.mdState[key] = new MasterDetailsStore();
       }
 
-      return this.workspace.current.mdState[this.apiEndpoint];
+      return this.workspace.current.mdState[key];
     }
+  }
+
+  private get mdStateKey(): string {
+    return this.apiEndpoint;
   }
 
   private get view(): string {
@@ -595,7 +613,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace, this.translate, this.definitionId) : null;
   }
 
   get apiEndpoint(): string {
@@ -639,7 +657,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.definition, this.workspace, this.translate);
+          this.definitionId, this.workspace, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
       } catch {
@@ -665,7 +683,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get selectKey(): string {
-    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/select`;
+    return `${this.collection + (!!this.definitionId ? '/' + this.definitionId : '')}/select`;
   }
 
   private get selectFromUserSettings(): string {
@@ -677,7 +695,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get parentIdsKey(): string {
-    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/parent_ids`;
+    return `${this.collection + (!!this.definitionId ? '/' + this.definitionId : '')}/parent_ids`;
   }
 
   private get parentIdsFromUserSettings(): (string | number)[] {
@@ -717,7 +735,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.state.orderby;
   }
 
-  onOrderBy(path: string) {
+  onOrderBy(path: string, event: MouseEvent) {
+    event.stopPropagation();
     path = this.computeOrderBy(path);
     if (!!path) {
       const s = this.state;
@@ -767,7 +786,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         try {
           const entityDesc = entityDescriptorImpl(result.split('/'),
-            this.collection, this.definition, this.workspace, this.translate);
+            this.collection, this.definitionId, this.workspace, this.translate);
 
           if (!!entityDesc) {
             result = entityDesc.orderby().map(e => `${result}/${e}`).join(',');
@@ -978,92 +997,103 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // this.router.navigate(['.', 'import'], { relativeTo: this.route });
   }
 
+  /**
+   * Returns true when the screen is a generic master screen of otherwise definitioned entities
+   * e.g. screen Resources or Agents showing entities of various DefinitionId
+   */
   private get missingDefinitionId(): boolean {
-    return !!this.entityDescriptor.definitionIds && !this.definition;
+    return !!this.entityDescriptor.definitionIds && !this.definitionId;
   }
 
-  onSelect(id: number | string) {
+  public onChoose(id: number | string) {
     if (this.isPopupMode) {
       this.choose.emit(id);
     } else {
-      if (this.missingDefinitionId) {
+      if (!!this.customChoiceHandler) {
+        // If a custom choice handler is provided use that
+        this.customChoiceHandler(id, this.router, this.route, this.mdStateKey);
+      } else if (this.missingDefinitionId) {
+        // If this screen is a generic master screen of definitioned entities do two things:
+        // (1) Make sure the definition Id is in the target route
+        // (2) Add state_key param to let the details screen use the same state object
         const definitionId = this.workspace.current[this.collection][id].DefinitionId;
-        this.router.navigate(['.', definitionId, id], { relativeTo: this.route });
+        const extras = { state_key: this.mdStateKey };
+        this.router.navigate(['.', definitionId, id, extras], { relativeTo: this.route });
       } else {
         this.router.navigate(['.', id], { relativeTo: this.route });
       }
     }
   }
 
-  get showCreate() {
+  public get showCreate() {
     return this.showCreateButton && (this.isPopupMode || !this.missingDefinitionId);
   }
 
-  get canCreatePermissions(): boolean {
+  public get canCreatePermissions(): boolean {
     return this.workspace.current.canCreate(this.view);
   }
 
-  get canCreate(): boolean {
+  public get canCreate(): boolean {
     return this.canCreatePermissions;
   }
 
-  get createTooltip(): string {
+  public get createTooltip(): string {
     return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  get canImportPermissions(): boolean {
+  public get canImportPermissions(): boolean {
     return this.workspace.current.canCreate(this.view);
   }
 
-  get canImport(): boolean {
+  public get canImport(): boolean {
     return this.canImportPermissions;
   }
 
-  get importTooltip(): string {
+  public get importTooltip(): string {
     return this.canImportPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  get canExportPermissions(): boolean {
+  public get canExportPermissions(): boolean {
     return this.workspace.current.canRead(this.view);
   }
 
-  get canExport(): boolean {
+  public get canExport(): boolean {
     return this.canExportPermissions;
   }
 
-  get exportTooltip(): string {
+  public get exportTooltip(): string {
     return this.canExportPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  get showDelete() {
+  public get showDelete() {
     return this.showDeleteButton;
   }
 
-  get showDeleteWithDescendants() {
+  public get showDeleteWithDescendants() {
     return this.showDelete && this.isTreeMode;
   }
 
-  get canDeletePermissions(): boolean {
+  public get canDeletePermissions(): boolean {
     return this.workspace.current.canDo(this.view, 'Delete', null);
   }
 
-  get canDelete(): boolean {
+  public get canDelete(): boolean {
     return this.canDeletePermissions;
   }
 
-  get deleteTooltip(): string {
+  public get deleteTooltip(): string {
     return this.canDeletePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  trackById(_: any, id: number | string) {
+  public trackById(_: any, id: number | string) {
     return id;
   }
 
-  trackByNodeId(_: any, node: NodeInfo) {
+  public trackByNodeId(_: any, node: NodeInfo) {
     return node.id;
   }
 
-  colWidth(colPath: string) {
+  public colWidth(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
     // Get the weight of this column
@@ -1076,7 +1106,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  get formatChoices(): SelectorChoice[] {
+  public get formatChoices(): SelectorChoice[] {
 
     if (!this._formatChoices) {
       this._formatChoices = Object.keys(TemplateArguments_format)
@@ -1086,11 +1116,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this._formatChoices;
   }
 
-  get search(): string {
+  public get search(): string {
     return this.state.search;
   }
 
-  set search(val: string) {
+  public set search(val: string) {
     if (!val) {
       val = null;
     }
@@ -1129,27 +1159,27 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   // Export-related stuff
-  get showExportPaging(): boolean {
+  public get showExportPaging(): boolean {
     return this.maxTotalExport < this.total;
   }
 
-  get fromExport(): number {
+  public get fromExport(): number {
     return Math.min(this.exportSkip + 1, this.totalExport);
   }
 
-  get toExport(): number {
+  public get toExport(): number {
     return Math.min(this.exportSkip + this.maxTotalExport, this.totalExport);
   }
 
-  get totalExport(): number {
+  public get totalExport(): number {
     return this.total;
   }
 
-  get canPreviousPageExport() {
+  public get canPreviousPageExport() {
     return this.exportSkip > 0;
   }
 
-  get canNextPageExport() {
+  public get canNextPageExport() {
     return this.toExport < this.totalExport;
   }
 
@@ -1165,11 +1195,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.exportPageSize;
   }
 
-  onExport(): void {
+  public onExport(): void {
     alert('To be implemented');
   }
 
-  onExport2(): void {
+  public onExport2(): void {
     if (!this.canExport) {
       return;
     }
@@ -1189,7 +1219,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       search: s.search,
       filter: this.filter(),
       expand: null,
-      inactive: s.inactive,
       format
     }).pipe(tap(
       (blob: Blob) => {
@@ -1241,7 +1270,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.displayedIds.filter(id => !!this.checked[id]);
   }
 
-  onCheckAll() {
+  public onCheckAll() {
     if (this.areAllChecked) {
       // Uncheck all
       this.checked = {};
@@ -1252,7 +1281,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get displayedIds(): (string | number)[] {
+  public get displayedIds(): (string | number)[] {
     if (this.isTreeMode) {
       return this.treeNodes.filter(node => this.showTreeNode(node)).map(node => node.id);
     } else {
@@ -1260,12 +1289,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  onCancelMultiselect() {
+  public onCancelMultiselect() {
     this.checked = {};
     this.actionValidationErrors = {};
   }
 
-  canAction(action: MultiselectAction) {
+  public canAction(action: MultiselectAction) {
     if (!!action.canAction) {
       return action.canAction(this.checkedIds);
     } else {
@@ -1284,7 +1313,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  actionTooltip(action: MultiselectAction) {
+  public actionTooltip(action: MultiselectAction) {
     if (!!action.actionTooltip) {
       return action.actionTooltip(this.checkedIds);
     } else {
@@ -1293,7 +1322,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  onAction(action: MultiselectAction) {
+  public onAction(action: MultiselectAction) {
     // clear any previous errors
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
@@ -1309,7 +1338,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     ).subscribe();
   }
 
-  onDelete() {
+  public onDelete() {
     // clear any previous errors
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
@@ -1333,7 +1362,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     ).subscribe();
   }
 
-  onDeleteWithDescendants() {
+  public onDeleteWithDescendants() {
     // clear any previous errors
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
@@ -1455,22 +1484,22 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       !!custom ? custom : !!builtin ? builtin : null;
   }
 
-  get showIncludeInactive(): boolean {
+  public get showIncludeInactive(): boolean {
     return !!this.includeInactiveLabel; // If the label is not specified then hide the option
   }
 
-  onIncludeInactive(): void {
+  public onIncludeInactive(): void {
     const s = this.state;
     s.inactive = !s.inactive;
     this.fetch();
     this.urlStateChange();
   }
 
-  get isIncludeInactive(): boolean {
+  public get isIncludeInactive(): boolean {
     return this.state.inactive;
   }
 
-  onFilterCheck(groupName: string, expression: string) {
+  public onFilterCheck(groupName: string, expression: string) {
     const filterGroups = this.state.builtInFilterSelections;
     if (!filterGroups[groupName]) {
       filterGroups[groupName] = {};
@@ -1485,18 +1514,18 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.urlStateChange();
   }
 
-  isFilterChecked(groupName: string, expression: string): boolean {
+  public isFilterChecked(groupName: string, expression: string): boolean {
     const s = this.state.builtInFilterSelections;
     return !!s[groupName] && !!s[groupName][expression];
   }
 
-  get isAnyFilterChecked(): boolean {
+  public get isAnyFilterChecked(): boolean {
     // when this is true the UI shows the red circle
     // This code checks whether any expression in any group is checked, also if include inactive is checked
     return this.state.inactive || this.isAnyFilterCheckedOtherThanInactive;
   }
 
-  get isAnyFilterCheckedOtherThanInactive(): boolean {
+  public get isAnyFilterCheckedOtherThanInactive(): boolean {
     // when this is true, the way data is queried in tree view changes from paged to not paged
     return Object.keys(this.filterDefinition).some(groupName => {
       const group = this.filterDefinition[groupName];
@@ -1504,7 +1533,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }) || !!this.state.customFilter;
   }
 
-  onClearFilter() {
+  public onClearFilter() {
     if (this.isAnyFilterChecked) {
       const s = this.state;
       s.inactive = false;
@@ -1517,11 +1546,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get groupNames(): string[] {
+  public get groupNames(): string[] {
     return Object.keys(this.filterDefinition);
   }
 
-  filterTemplates(groupName: string): {
+  public filterTemplates(groupName: string): {
     template: TemplateRef<any>,
     expression: string
   }[] {
@@ -1530,19 +1559,19 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   // END filter related stuff
 
-  isRecentlyViewed(id: number | string) {
+  public isRecentlyViewed(id: number | string) {
     return this.state.detailsId === id;
   }
 
-  onCancel() {
+  public onCancel() {
     this.cancel.emit();
   }
 
-  get customFilter(): string {
+  public get customFilter(): string {
     return this.state.customFilter;
   }
 
-  set customFilter(v: string) {
+  public set customFilter(v: string) {
     v = v || null;
     if (this.state.customFilter !== v) {
       this.state.customFilter = v;
@@ -1553,11 +1582,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get stateSelect(): string {
+  public get stateSelect(): string {
     return this.state.select;
   }
 
-  set stateSelect(v: string) {
+  public set stateSelect(v: string) {
     v = v || null;
     if (this.state.select !== v) {
       this.state.select = v;
@@ -1581,11 +1610,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  get editingColumns(): boolean {
+  public get editingColumns(): boolean {
     return this._editingColumns;
   }
 
-  set editingColumns(v: boolean) {
+  public set editingColumns(v: boolean) {
     this._editingColumns = v;
   }
 
@@ -1653,20 +1682,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return node.hasChildren;
   }
 
-  // public get canExpandNextLevel(): boolean {
-  //   return true; // TODO
-  // }
-
-  // public get showExpandNextLevel(): boolean {
-  //   return this.isTreeMode && !this.searchOrFilter;
-  // }
-
-  // public onExpandNextLevel(): void {
-  //   this.state.level++;
-  //   this.fetch();
-  //   this.saveLevel(this.state.level);
-  // }
-
   public get canCollapseAll(): boolean {
     return true;
   }
@@ -1682,14 +1697,5 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.saveParentIdsToUserSettings([]);
-
-    // if (this.state.level !== 1) {
-    //   this.state.level = 1;
-    //   this.saveLevel(null);
-    // }
   }
-
-  // public get level(): number {
-  //   return this.state.level;
-  // }
 }

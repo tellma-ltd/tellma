@@ -1,27 +1,22 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Data;
-using Tellma.Data.Queries;
-using Tellma.Entities;
-using Tellma.Services.ApiAuthentication;
-using Tellma.Services.ImportExport;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
+using Tellma.Data;
+using Tellma.Entities;
+using Tellma.Services.ApiAuthentication;
+using Tellma.Services.MultiTenancy;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
     [Route("api/settings")]
     [AuthorizeAccess]
-    [ApplicationApi]
+    [ApplicationController(allowUnobtrusive: true)]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class SettingsController : ControllerBase
@@ -312,6 +307,5 @@ namespace Tellma.Controllers
 
             return System.Globalization.CultureInfo.GetCultureInfo(cultureName)?.NativeName;
         }
-
     }
 }

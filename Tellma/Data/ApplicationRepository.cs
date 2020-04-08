@@ -211,124 +211,50 @@ namespace Tellma.Data
         /// </summary>
         private static string Sources(Type t)
         {
-            switch (t.Name)
+            var result = t.Name switch
             {
-                case nameof(Entities.Settings):
-                    return "[dbo].[Settings]";
-
-                case nameof(User):
-                    return "[map].[Users]()";
-
-                case nameof(Agent):
-                    return "[map].[Agents]()";
-
-                case nameof(AgentRate):
-                    return "[map].[AgentRates]()";
-
-                case nameof(Unit):
-                    return "[map].[Units]()";
-
-                case nameof(Permission):
-                    return "[dbo].[Permissions]";
-
-                case nameof(RoleMembership):
-                    return "[dbo].[RoleMemberships]";
-
-                case nameof(Role):
-                    return "[dbo].[Roles]";
-
-                case nameof(LegacyType):
-                    return "[dbo].[LegacyTypes]";
-
-                case nameof(Lookup):
-                    return "[map].[Lookups]()";
-
-                case nameof(Currency):
-                    return "[map].[Currencies]()";
-
-                case nameof(Resource):
-                    return "[map].[Resources]()";
-
-                case nameof(ResourceUnit):
-                    return "[map].[ResourceUnits]()";
-
-                case nameof(LegacyClassification):
-                    return "[map].[LegacyClassifications]()";
-
-                case nameof(AccountType):
-                    return "[map].[AccountTypes]()";
-
-                case nameof(Account):
-                    return "[map].[Accounts]()";
-
-                case nameof(LookupDefinition):
-                    return "[map].[LookupDefinitions]()";
-
-                case nameof(Center):
-                    return "[map].[Centers]()";
-
-                case nameof(EntryType):
-                    return "[map].[EntryTypes]()";
-
-                case nameof(Document):
-                    return "[map].[Documents]()";
-
-                case nameof(Line):
-                    return "[map].[Lines]()";
-
-                case nameof(Entry):
-                    return "[map].[Entries]()";
-
-                case nameof(Attachment):
-                    return "[map].[Attachments]()";
-
-                case nameof(DocumentAssignment):
-                    return "[map].[DocumentAssignmentsHistory]()";
-
-                case nameof(DocumentStateChange):
-                    return "[map].[DocumentStatesHistory]()";
-
-                case nameof(ReportDefinition):
-                    return "[map].[ReportDefinitions]()";
-
-                case nameof(ReportParameterDefinition):
-                    return "[map].[ReportParameterDefinitions]()";
-
-                case nameof(ReportSelectDefinition):
-                    return "[map].[ReportSelectDefinitions]()";
-
-                case nameof(ReportRowDefinition):
-                    return "[map].[ReportRowDefinitions]()";
-
-                case nameof(ReportColumnDefinition):
-                    return "[map].[ReportColumnDefinitions]()";
-
-                case nameof(ReportMeasureDefinition):
-                    return "[map].[ReportMeasureDefinitions]()";
-
-                case nameof(ExchangeRate):
-                    return "[map].[ExchangeRates]()";
-
+                nameof(Entities.Settings) => "[dbo].[Settings]",
+                nameof(User) => "[map].[Users]()",
+                nameof(Agent) => "[map].[Agents]()",
+                nameof(AgentRate) => "[map].[AgentRates]()",
+                nameof(Unit) => "[map].[Units]()",
+                nameof(Permission) => "[dbo].[Permissions]",
+                nameof(RoleMembership) => "[dbo].[RoleMemberships]",
+                nameof(Role) => "[dbo].[Roles]",
+                nameof(LegacyType) => "[dbo].[LegacyTypes]",
+                nameof(Lookup) => "[map].[Lookups]()",
+                nameof(Currency) => "[map].[Currencies]()",
+                nameof(Resource) => "[map].[Resources]()",
+                nameof(ResourceUnit) => "[map].[ResourceUnits]()",
+                nameof(LegacyClassification) => "[map].[LegacyClassifications]()",
+                nameof(AccountType) => "[map].[AccountTypes]()",
+                nameof(Account) => "[map].[Accounts]()",
+                nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
+                nameof(Center) => "[map].[Centers]()",
+                nameof(EntryType) => "[map].[EntryTypes]()",
+                nameof(Document) => "[map].[Documents]()",
+                nameof(Line) => "[map].[Lines]()",
+                nameof(Entry) => "[map].[Entries]()",
+                nameof(Attachment) => "[map].[Attachments]()",
+                nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",
+                nameof(InboxRecord) => "[map].[Inbox]()",
+                nameof(OutboxRecord) => "[map].[Outbox]()",
+                nameof(DocumentStateChange) => "[map].[DocumentStatesHistory]()",
+                nameof(ReportDefinition) => "[map].[ReportDefinitions]()",
+                nameof(ReportParameterDefinition) => "[map].[ReportParameterDefinitions]()",
+                nameof(ReportSelectDefinition) => "[map].[ReportSelectDefinitions]()",
+                nameof(ReportRowDefinition) => "[map].[ReportRowDefinitions]()",
+                nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
+                nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
+                nameof(ExchangeRate) => "[map].[ExchangeRates]()",
                 // Fact tables
-
-                case nameof(RequiredSignature):
-                    return "[map].[DocumentsRequiredSignatures](@DocumentIds)";
-
-                case nameof(DetailsEntry):
-                    return "[map].[DetailsEntries]()";
-
-                case nameof(SummaryEntry):
-                    return "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)";
-
-                #region _Temp
-
-                case nameof(VoucherBooklet):
-                    return "[dbo].[VoucherBooklets]";
-
-                    #endregion
-            }
-
-            throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries");
+                nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
+                nameof(DetailsEntry) => "[map].[DetailsEntries]()",
+                nameof(SummaryEntry) => "[map].[SummaryEntries](@FromDate, @ToDate, NULL, NULL, NULL, NULL, NULL, NULL)",
+                nameof(VoucherBooklet) => "[dbo].[VoucherBooklets]",
+                _ => throw new InvalidOperationException($"The requested type '{t.Name}' is not supported in {nameof(ApplicationRepository)} queries"),
+            };
+            return result;
         }
 
         #endregion
@@ -489,6 +415,49 @@ namespace Tellma.Data
                         Action = reader.GetString(i++),
                         Criteria = reader.String(i++),
                         Mask = reader.String(i++)
+                    });
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<List<InboxNotificationInfo>> InboxCounts__Load(IEnumerable<int> userIds)
+        {
+            var result = new List<InboxNotificationInfo>(userIds.Count());
+            if (userIds == null || !userIds.Any())
+            {
+                return result;
+            }
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable idsTable = RepositoryUtilities.DataTable(userIds.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@UserIds", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(InboxCounts__Load)}]";
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    string externalId = reader.GetString(i++);
+                    int count = reader.GetInt32(i++);
+                    int unknownCount = reader.GetInt32(i++);
+
+                    result.Add(new InboxNotificationInfo
+                    {
+                        ExternalId = externalId,
+                        Count = count,
+                        UnknownCount = unknownCount
                     });
                 }
             }
@@ -1597,7 +1566,6 @@ namespace Tellma.Data
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
-
 
         #endregion
 
@@ -3844,9 +3812,10 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<int> Ids, List<string> DeletedFileIds)> Documents__SaveAndRefresh(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
+        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
             var deletedFileIds = new List<string>();
+            var notificationInfos = new List<InboxNotificationInfo>();
             var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
@@ -3894,7 +3863,11 @@ namespace Tellma.Data
                 // Execute
                 using var reader = await cmd.ExecuteReaderAsync();
 
+                // Get the assignments notifications infos
+                await RepositoryUtilities.LoadAssignmentNotificationInfos(reader, notificationInfos);
+
                 // Get the deleted file IDs
+                await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {
                     deletedFileIds.Add(reader.GetString(0));
@@ -3923,7 +3896,7 @@ namespace Tellma.Data
                 sortedResult[e.Index] = e.Id;
             });
 
-            return (sortedResult.ToList(), deletedFileIds);
+            return (notificationInfos, deletedFileIds, sortedResult.ToList());
         }
 
         public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? onBehalfOfUserId, string ruleType, int? roleId, short toState, int top)
@@ -4084,8 +4057,10 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool recordInHistory)
+        public async Task<List<InboxNotificationInfo>> Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment, bool recordInHistory)
         {
+            var result = new List<InboxNotificationInfo>();
+
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
 
@@ -4107,13 +4082,15 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(Documents__Assign)}]";
 
             // Execute                    
-            await cmd.ExecuteNonQueryAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<List<string>> Documents__Delete(IEnumerable<int> ids)
+        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds)> Documents__Delete(IEnumerable<int> ids)
         {
-            // Returns the list of File Ids to be deleted
-            var result = new List<string>();
+            // Returns the new notifification counts of affected users, and the list of File Ids to be deleted
+            var notificationInfos = new List<InboxNotificationInfo>();
+            var deletedFileIds = new List<string>();
 
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4137,9 +4114,14 @@ namespace Tellma.Data
             {
                 using var reader = await cmd.ExecuteReaderAsync();
 
+                // Load notification infos
+                await RepositoryUtilities.LoadAssignmentNotificationInfos(reader, notificationInfos);
+
+                // Load deleted file Ids
+                await reader.NextResultAsync();
                 while (await reader.ReadAsync())
                 {
-                    result.Add(reader.String(0));
+                    deletedFileIds.Add(reader.String(0));
                 }
             }
             catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
@@ -4147,7 +4129,7 @@ namespace Tellma.Data
                 throw new ForeignKeyViolationException();
             }
 
-            return result;
+            return (notificationInfos, deletedFileIds);
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
@@ -4201,7 +4183,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Post(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Post(List<int> ids)
         {
             var result = new List<int>();
 
@@ -4223,7 +4205,8 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(Documents__Post)}]";
 
             // Execute
-            await cmd.ExecuteNonQueryAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(string definitionId, List<int> ids, int top)
@@ -4250,7 +4233,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Unpost(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Unpost(List<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4270,7 +4253,8 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(Documents__Unpost)}]";
 
             // Execute
-            await cmd.ExecuteNonQueryAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(string definitionId, List<int> ids, int top)
@@ -4297,7 +4281,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Cancel(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Cancel(List<int> ids)
         {
             var result = new List<int>();
 
@@ -4319,7 +4303,8 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(Documents__Cancel)}]";
 
             // Execute
-            await cmd.ExecuteNonQueryAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(string definitionId, List<int> ids, int top)
@@ -4346,7 +4331,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task Documents__Uncancel(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Uncancel(List<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4366,7 +4351,27 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(Documents__Uncancel)}]";
 
             // Execute
-            await cmd.ExecuteNonQueryAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+        }
+
+        public async Task<List<InboxNotificationInfo>> Documents__Open(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@DocumentId", documentId);
+            cmd.Parameters.Add("@CreatedAt", createdAt);
+            cmd.Parameters.Add("@OpenedAt", openedAt);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
         #endregion
@@ -4714,6 +4719,27 @@ namespace Tellma.Data
             }
 
             return result;
+        }
+
+        #endregion
+
+        #region Inbox
+
+        public async Task<List<InboxNotificationInfo>> Inbox__Check(DateTimeOffset now)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("@Now", now);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Inbox__Check)}]";
+
+            // Execute
+            using var reader = await cmd.ExecuteReaderAsync();
+            return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
         #endregion

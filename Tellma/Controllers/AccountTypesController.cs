@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
-    [ApplicationApi]
+    [ApplicationController]
     public class AccountTypesController : CrudTreeControllerBase<AccountTypeForSave, AccountType, int>
     {
         public const string BASE_ADDRESS = "account-types";
@@ -61,7 +61,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<AccountType>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<AccountType>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);

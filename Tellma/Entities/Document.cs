@@ -17,7 +17,6 @@ namespace Tellma.Entities
         public DateTime? PostingDate { get; set; }
 
         [Display(Name = "Document_Clearance")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
         public byte? Clearance { get; set; }

@@ -551,6 +551,11 @@
     <Build Include="Mapping\LineDefinitions.sql" />
     <Build Include="Mapping\DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
+    <Build Include="dal\Stored Procedures\dal.InboxCounts__Load.sql" />
+    <Build Include="Mapping\Inbox.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Open.sql" />
+    <Build Include="dal\Stored Procedures\dal.Inbox__Check.sql" />
+    <Build Include="Mapping\Outbox.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
