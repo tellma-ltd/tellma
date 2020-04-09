@@ -128,7 +128,6 @@ SET NOCOUNT ON;
 			s.[Index],
 			s.[Direction],
 			s.[AccountTypeParentId],
-			s.[NotedAgentDefinitionId],
 			s.[EntryTypeId]
 		);
 	MERGE [dbo].[LineDefinitionColumns] AS t

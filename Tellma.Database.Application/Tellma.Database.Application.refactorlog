@@ -745,4 +745,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[InboxCounts__Load]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="843998e1-18b1-4de2-b28e-52d0220cdb61" ChangeDateTime="04/08/2020 15:40:31">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[NotedAgentDefinition]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b424f460-1c81-4225-8292-978fa9764969" ChangeDateTime="04/08/2020 15:41:35">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[ResourceDefinition]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cd946310-832f-4be2-bd9f-289e09c6dbeb" ChangeDateTime="04/09/2020 08:34:56">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ExpenseCenterVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CenterVisibility]" />
+  </Operation>
 </Operations>

@@ -7,12 +7,9 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[ParentAccountTypeId]				INT,
-	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
-	--[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
-	--[NameRegEx]							NVARCHAR (255), -- Null means manually defined
-	-- Resource properties
-	-- [AccountTypeVisibility]	NVARCHAR (50) DEFAULT N'None' CHECK ([AccountTypeVisibility] IN (N'None', N'Optional', N'Required')),
+	[AssetTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([AssetTypeVisibility] IN (N'None', N'Optional', N'Required')),
+	[RevenueTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([RevenueTypeVisibility] IN (N'None', N'Optional', N'Required')),
+	[ExpenseTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([ExpenseTypeVisibility] IN (N'None', N'Optional', N'Required')),
 	[IdentifierLabel]					NVARCHAR (50),
 	[IdentifierLabel2]					NVARCHAR (50),
 	[IdentifierLabel3]					NVARCHAR (50),		
@@ -22,10 +19,8 @@
 	-- [PreferredSupplierVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([PreferredSupplierVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
 	
-	[CostObjectVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([CostObjectVisibility] IN (N'None', N'Optional', N'Required')),
 	[ExpenseEntryTypeVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([ExpenseEntryTypeVisibility] IN (N'None', N'Optional', N'Required')),
-	[ExpenseCenterVisibility]			NVARCHAR (50) DEFAULT N'None' CHECK ([ExpenseCenterVisibility] IN (N'None', N'Optional', N'Required')),
-	[InvestmentCenterVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([InvestmentCenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[CenterVisibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ResidualMonetaryValueVisibility]	NVARCHAR (50) DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
 	[ResidualValueVisibility]			NVARCHAR (50) DEFAULT N'None' CHECK ([ResidualValueVisibility] IN (N'None', N'Optional', N'Required')),
 

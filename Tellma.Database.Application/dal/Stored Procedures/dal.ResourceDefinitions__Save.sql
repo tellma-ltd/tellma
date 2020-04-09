@@ -16,12 +16,13 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--[CodeRegEx], -- Null means manually defined
 			--[NameRegEx], -- Null means manually defined
 			-- Resource properties
-			-- [ResourceClassificationVisibility],
+			[AssetTypeVisibility],
+			[RevenueTypeVisibility],	
+			[ExpenseTypeVisibility],
 			[IdentifierLabel],
 			[IdentifierLabel2],
 			[IdentifierLabel3],		
@@ -32,10 +33,8 @@ SET NOCOUNT ON;
 			-- [PreferredSupplierVisibility],
 			[DescriptionVisibility],
 
-			[CostObjectVisibility],
 			[ExpenseEntryTypeVisibility],
-			[ExpenseCenterVisibility],
-			[InvestmentCenterVisibility],
+			[CenterVisibility],
 			[ResidualMonetaryValueVisibility],
 			[ResidualValueVisibility],
 
@@ -123,12 +122,14 @@ SET NOCOUNT ON;
 			t.[TitleSingular3] = s.[TitleSingular3],
 			t.[TitlePlural] = s.[TitlePlural],
 			t.[TitlePlural2] = s.[TitlePlural2],
-			t.[TitlePlural3] = s.[TitlePlural3],
-			t.[ParentAccountTypeId] = s.[ParentAccountTypeId],
+			t.[TitlePlural3]			= s.[TitlePlural3],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--t.[CodeRegEx] = s.[CodeRegEx], -- Null means manually defined
 			--t.[NameRegEx] = s.[NameRegEx], -- Null means manually defined
 			-- Resource properties
+			t.[AssetTypeVisibility]		= s.[AssetTypeVisibility],
+			t.[RevenueTypeVisibility]	=s.[RevenueTypeVisibility],	
+			t.[ExpenseTypeVisibility]	=s.[ExpenseTypeVisibility],
 			t.[IdentifierLabel] = s.[IdentifierLabel],
 			t.[IdentifierLabel2] = s.[IdentifierLabel2],
 			t.[IdentifierLabel3] = s.[IdentifierLabel3],		
@@ -137,10 +138,8 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility] = s.[CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility] = s.[PreferredSupplierVisibility],
 			t.[DescriptionVisibility] = s.[DescriptionVisibility],
-			t.[CostObjectVisibility] = s.[CostObjectVisibility],
 			t.[ExpenseEntryTypeVisibility] = s.[ExpenseEntryTypeVisibility],
-			t.[ExpenseCenterVisibility] = s.[ExpenseCenterVisibility],
-			t.[InvestmentCenterVisibility] = s.[InvestmentCenterVisibility],
+			t.[CenterVisibility] = s.[CenterVisibility],
 			t.[ResidualMonetaryValueVisibility] = s.[ResidualMonetaryValueVisibility],
 			t.[ResidualValueVisibility] = s.[ResidualValueVisibility],
 			t.[ReorderLevelVisibility]=s.[ReorderLevelVisibility],
@@ -225,11 +224,13 @@ SET NOCOUNT ON;
 			[TitlePlural],
 			[TitlePlural2],
 			[TitlePlural3],
-			[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--[CodeRegEx], -- Null means manually defined
 			--[NameRegEx], -- Null means manually defined
 			-- Resource properties
+			[AssetTypeVisibility],
+			[RevenueTypeVisibility],	
+			[ExpenseTypeVisibility],
 			[IdentifierLabel],
 			[IdentifierLabel2],
 			[IdentifierLabel3],		
@@ -238,10 +239,8 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility],
 			[DescriptionVisibility],
-			[CostObjectVisibility],
 			[ExpenseEntryTypeVisibility],
-			[ExpenseCenterVisibility],
-			[InvestmentCenterVisibility],
+			[CenterVisibility],
 			[ResidualMonetaryValueVisibility],
 			[ResidualValueVisibility],
 			[ReorderLevelVisibility],
@@ -326,11 +325,13 @@ SET NOCOUNT ON;
 			s.[TitlePlural],
 			s.[TitlePlural2],
 			s.[TitlePlural3],
-			s.[ParentAccountTypeId],
 			-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 			--s.[CodeRegEx], -- Null means manually defined
 			--s.[NameRegEx], -- Null means manually defined
 			-- Resource properties
+			s.[AssetTypeVisibility],
+			s.[RevenueTypeVisibility],	
+			s.[ExpenseTypeVisibility],
 			s.[IdentifierLabel],
 			s.[IdentifierLabel2],
 			s.[IdentifierLabel3],		
@@ -339,10 +340,8 @@ SET NOCOUNT ON;
 			-- [CustomsReferenceVisibility],
 			-- [PreferredSupplierVisibility],
 			s.[DescriptionVisibility],
-			s.[CostObjectVisibility],
 			s.[ExpenseEntryTypeVisibility],
-			s.[ExpenseCenterVisibility],
-			s.[InvestmentCenterVisibility],
+			s.[CenterVisibility],
 			s.[ResidualMonetaryValueVisibility],
 			s.[ResidualValueVisibility],
 			s.[ReorderLevelVisibility],

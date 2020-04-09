@@ -22,7 +22,6 @@ BEGIN
 	BEGIN
 		INSERT INTO @AgentDefinitions([Index],
 		[Id],					[TitleSingular],				[TitleSingular2],		[TitlePlural],		[TitlePlural2],			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
---		(0,N'cost-objects',		N'Cost Object',					N'موقع التكلفة',		N'Cost Objects',	N'مواقع التكلفة',		N'list',			N'Financials',		600),
 		(1,N'creditors',		N'Creditor',					N'الدائن',				N'Creditors',		N'الدائنون',			N'hands',			N'Cash',			100),
 		(2,N'customers',		N'Customer',					N'الزبون',				N'Customers',		N'الزبائن',				N'user-friends',	N'Sales',			500),
 		(4,N'debtors',			N'Debtor',						N'المدين',				N'Debtors',			N'المدينون',			N'hand-holding-usd',N'Cash',			200),

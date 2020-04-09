@@ -3,8 +3,9 @@
 	[Id]							INT					NOT NULL DEFAULT 0,
 	--[OperatingSegmentId]			INT,
 	[AssetTypeId]					INT,
-	[ExpenseTypeId]					INT,
 	[RevenueTypeId]					INT,
+	[ExpenseTypeId]					INT,
+
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
