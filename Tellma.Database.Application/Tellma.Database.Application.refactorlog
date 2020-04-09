@@ -745,6 +745,13 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[InboxCounts__Load]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ece5c4e1-a558-428a-bdd1-1008152e6973" ChangeDateTime="04/08/2020 15:35:21">
+    <Property Name="ElementName" Value="[dbo].[LegacyClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications]" />
+  </Operation>
   <Operation Name="Rename Refactor" Key="843998e1-18b1-4de2-b28e-52d0220cdb61" ChangeDateTime="04/08/2020 15:40:31">
     <Property Name="ElementName" Value="[dbo].[AccountTypes].[NotedAgentDefinition]" />
     <Property Name="ElementType" Value="SqlSimpleColumn" />

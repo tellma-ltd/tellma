@@ -1,0 +1,60 @@
+<t-details collection="IfrsConcept" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
+    [showCreateButton]="false" [showEditButton]="false" [showDeleteButton]="false"
+    [masterCrumb]="'IfrsConcepts' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" [actions]="[]">
+
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ getMultilingualValue(model, 'Label', ws) }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+    <!-- Header Label -->
+    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2">
+        <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Label', ws) }}</h2>
+    </t-form-group>
+
+    <!-- Label -->
+    <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage"
+        [label]="('Label' | translate) + ws.primaryPostfix">
+        <div>{{ model?.Label }}</div>
+    </t-form-group>
+
+    <!-- Label2 -->
+    <t-form-group class="t-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+        [label]="('Label' | translate) + ws.secondaryPostfix">
+        <div>{{ model?.Label2 }}</div>
+    </t-form-group>
+
+    <!-- Label3 -->
+    <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+        [label]="('Label' | translate) + ws.ternaryPostfix">
+        <div>{{ model?.Label3 }}</div>
+    </t-form-group>
+
+    <!-- Code -->
+    <t-form-group class="t-form-group" [label]="'Code' | translate">
+        <div>{{model?.Code}}</div>
+    </t-form-group>
+
+    <!-- Documentation -->
+    <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix">
+        <div>{{ model?.Documentation }}</div>
+    </t-form-group>
+
+    <!-- Documentation2 -->
+    <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+        [label]="('Description' | translate) + ws.secondaryPostfix">
+        <div>{{ model?.Documentation2 }}</div>
+    </t-form-group>
+
+    <!-- Documentation3 -->
+    <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
+        [label]="('Description' | translate) + ws.ternaryPostfix">
+        <div>{{ model?.Documentation3 }}</div>
+    </t-form-group>
+</ng-template>

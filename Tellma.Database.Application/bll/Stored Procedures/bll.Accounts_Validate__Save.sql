@@ -47,8 +47,8 @@ SET NOCOUNT ON;
 		N'Error_TheAccountClassification0IsNotLeaf',
 		FE.[CustomClassificationId]
 	FROM @Entities FE 
-	JOIN [dbo].[LegacyClassifications] BE ON FE.[CustomClassificationId] = BE.Id
-	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[LegacyClassifications]);
+	JOIN [dbo].[CustomClassifications] BE ON FE.[CustomClassificationId] = BE.Id
+	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[CustomClassifications]);
 
 	-- bll.Preprocess copies the AgentDefinition from Agent
 	---- If Agent Id is not null, then account and agent must have same agent definition

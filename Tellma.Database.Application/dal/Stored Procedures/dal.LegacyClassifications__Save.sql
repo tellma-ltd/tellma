@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[LegacyClassifications] AS t
+		MERGE INTO [dbo].[CustomClassifications] AS t
 		USING (
 			SELECT
 				[Index], [Id], [ParentId], [Name], [Name2], [Name3], [Code],
@@ -35,7 +35,7 @@ SET NOCOUNT ON;
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
-	MERGE [dbo].[LegacyClassifications] As t
+	MERGE [dbo].[CustomClassifications] As t
 	USING (
 		SELECT II.[Id], IIParent.[Id] As ParentId
 		FROM @Entities O
@@ -75,8 +75,8 @@ SET NOCOUNT ON;
 */
 	WITH Children ([Id], [ParentId], [Num]) AS (
 		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
-		FROM [dbo].[LegacyClassifications] E
-		LEFT JOIN [dbo].[LegacyClassifications] E2 ON E.[ParentId] = E2.[Id]
+		FROM [dbo].[CustomClassifications] E
+		LEFT JOIN [dbo].[CustomClassifications] E2 ON E.[ParentId] = E2.[Id]
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  
@@ -89,7 +89,7 @@ SET NOCOUNT ON;
 		FROM Children C
 		JOIN Paths P ON C.[ParentId] = P.[Id]
 	)
-	MERGE INTO [dbo].[LegacyClassifications] As t
+	MERGE INTO [dbo].[CustomClassifications] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 

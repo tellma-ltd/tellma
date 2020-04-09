@@ -162,7 +162,7 @@
     <Build Include="dbo\Tables\dbo.Entries.sql" />
     <Build Include="dbo\User Defined Types\dbo.EntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
-    <Build Include="dbo\Tables\dbo.LegacyClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.CustomClassifications.sql" />
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
     <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
@@ -544,6 +544,7 @@
     <Build Include="dal\Stored Procedures\dal.Inbox__Check.sql" />
     <Build Include="map\map.Inbox.sql" />
     <Build Include="map\map.Outbox.sql" />
+    <Build Include="map\IfrsConcepts.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

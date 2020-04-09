@@ -13,9 +13,9 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_05_Units : Scenario_01
+    public class Tests_06_Units : Scenario_01
     {
-        public Tests_05_Units(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_06_Units(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 

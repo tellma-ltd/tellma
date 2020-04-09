@@ -575,26 +575,15 @@ namespace Tellma.Controllers
                         // IMPORTANT: Any changes to the switch statements must be mirrored in SaveValidateAsync
                         foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                         {
-                            if (columnDef.TableName == Lines)
+                            if (columnDef.ColumnName == nameof(Line.Memo))
                             {
-                                switch (columnDef.ColumnName)
-                                {
-                                    case nameof(Line.Memo):
-                                        {
-                                            if (doc.MemoIsCommon.Value)
-                                            {
-                                                line.Memo = doc.Memo;
-                                            }
 
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            throw new Exception($"Unkown column name '{columnDef.ColumnName}' in table '{columnDef.TableName}'");
-                                        }
+                                if (doc.MemoIsCommon.Value)
+                                {
+                                    line.Memo = doc.Memo;
                                 }
                             }
-                            else if (columnDef.TableName == Entries)
+                            else
                             {
                                 if (columnDef.EntryIndex >= line.Entries.Count ||
                                     columnDef.EntryIndex >= lineDef.Entries.Count)
@@ -678,11 +667,6 @@ namespace Tellma.Controllers
                                     default:
                                         break; // This property doesn't exist on the document, just ignore it
                                 }
-                            }
-                            else
-                            {
-                                // Developer mistake
-                                throw new Exception($"Unrecognized table name '{columnDef.TableName}'");
                             }
                         }
                     }
@@ -866,30 +850,18 @@ namespace Tellma.Controllers
                     // IMPORTANT: Any changes to the switch statements must be mirrored in SavePreprocessAsync
                     foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                     {
-                        if (columnDef.TableName == Lines)
+                        if (columnDef.ColumnName == nameof(Line.Memo))
                         {
-                            switch (columnDef.ColumnName)
+                            if (doc.MemoIsCommon.Value)
                             {
-                                case nameof(Line.Memo):
-                                    {
-                                        if (doc.MemoIsCommon.Value)
-                                        {
-                                            errorKeyMap.Add(LinePath(docIndex, lineIndex, nameof(Line.Memo)), $"[{docIndex}].{nameof(Document.Memo)}");
-                                            if (doc.Memo != line.Memo)
-                                            {
-                                                AddReadOnlyError(docIndex, nameof(Document.Memo));
-                                            }
-                                        }
-
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        throw new Exception($"Unkown column name '{columnDef.ColumnName}' in table '{columnDef.TableName}'");
-                                    }
+                                errorKeyMap.Add(LinePath(docIndex, lineIndex, nameof(Line.Memo)), $"[{docIndex}].{nameof(Document.Memo)}");
+                                if (doc.Memo != line.Memo)
+                                {
+                                    AddReadOnlyError(docIndex, nameof(Document.Memo));
+                                }
                             }
                         }
-                        else if (columnDef.TableName == Entries)
+                        else
                         {
                             var entryIndex = columnDef.EntryIndex;
                             if (entryIndex >= line.Entries.Count ||
@@ -1010,11 +982,6 @@ namespace Tellma.Controllers
                                 default:
                                     break; // This property doesn't exist on the document, just ignore it
                             }
-                        }
-                        else
-                        {
-                            // Developer mistake
-                            throw new Exception($"Unrecognized table name '{columnDef.TableName}'");
                         }
 
                         if (ModelState.HasReachedMaxErrors)

@@ -1,8 +1,8 @@
 ﻿-- This table can be used to migrate the roots and intermediate nodes of the legacy chart of accounts
 -- Alternatively, it can be used to mimic the ERCA tree for easier reporting
-CREATE TABLE [dbo].[LegacyClassifications] (
+CREATE TABLE [dbo].[CustomClassifications] (
 	[Id]								INT					CONSTRAINT [PK_LegacyClassifications] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[ParentId]							INT					CONSTRAINT [FK_LegacyClassifications__ParentId] REFERENCES [dbo].[LegacyClassifications] ([Id]),
+	[ParentId]							INT					CONSTRAINT [FK_LegacyClassifications__ParentId] REFERENCES [dbo].[CustomClassifications] ([Id]),
 	-- This one is not needed, and must be replaces with AccountDefinition
 	[Name]								NVARCHAR (255),
 	[Name2]								NVARCHAR (255),

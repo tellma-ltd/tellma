@@ -252,9 +252,9 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public int? AccountTypeParentId { get; set; }
         public string AgentDefinitionId { get; set; }
         public string NotedAgentDefinitionId { get; set; }
+        public int? AccountTypeParentId { get; set; }
         public int? EntryTypeId { get; set; }
 
 
@@ -265,7 +265,6 @@ namespace Tellma.Controllers.Dto
 
     public class LineDefinitionColumnForClient
     {
-        public string TableName { get; set; }
         public string ColumnName { get; set; }
         public int EntryIndex { get; set; }
         public string Label { get; set; }

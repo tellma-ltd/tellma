@@ -37,6 +37,7 @@ import { AdminUser } from './entities/admin-user';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
+import { IfrsConcept } from './entities/ifrs-concept';
 
 enum WhichWorkspace {
   /**
@@ -342,6 +343,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
   LegacyClassification: EntityWorkspace<LegacyClassification>;
+  IfrsConcept: EntityWorkspace<IfrsConcept>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
@@ -373,6 +375,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Currency = {};
     this.Resource = {};
     this.LegacyClassification = {};
+    this.IfrsConcept = {};
     this.AccountType = {};
     this.Account = {};
     this.ReportDefinition = {};

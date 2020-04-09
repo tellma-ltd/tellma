@@ -5,7 +5,6 @@ namespace Tellma.Entities
 {
     public class LineDefinitionColumnForSave : EntityWithKey<int>
     {
-        public string TableName { get; set; }
         public string ColumnName { get; set; }
         public int? EntryIndex { get; set; }
 

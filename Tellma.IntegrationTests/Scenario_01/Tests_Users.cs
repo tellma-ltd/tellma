@@ -12,13 +12,13 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_11_Users : Scenario_01
+    public class Tests_16_Users : Scenario_01
     {
         public readonly string _baseAddress = "users";
 
         public string Url => $"/api/{_baseAddress}";
 
-        public Tests_11_Users(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_16_Users(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 

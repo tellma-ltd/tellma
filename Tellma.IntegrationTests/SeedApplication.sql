@@ -6,7 +6,9 @@ SELECT @RoleId = [Id] FROM [dbo].[Roles] WHERE [Name] = 'Administrator';
 
 EXEC sp_set_session_context 'UserId', @UserId;
 
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 -- Cleanup, Central records before lookup records
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 DELETE FROM [dbo].[ExchangeRates];
 DELETE FROM [dbo].[ReportDefinitions];
@@ -25,24 +27,30 @@ DELETE FROM [dbo].[LineDefinitionStateReasons];
 
 DELETE FROM [dbo].[Roles] WHERE [Id] <> @RoleId;
 DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
+DELETE FROM [dbo].[Centers];
 DELETE FROM [dbo].[Agents];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM [dbo].[Settings]);
 
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[Units];
-DELETE FROM [dbo].[LegacyClassifications];
+DELETE FROM [dbo].[CustomClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
-DELETE FROM [dbo].[Centers];
 DELETE FROM [dbo].[AccountTypes];
 DELETE FROM [dbo].[EntryTypes];
 	
 DELETE FROM [dbo].[DocumentDefinitionLineDefinitions];
 DELETE FROM [dbo].[DocumentDefinitions];
 DELETE FROM [dbo].[LineDefinitions];
+DELETE FROM [dbo].[IfrsConcepts];
 
--- Populate
+
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+-- Populate lookup records before central records
+--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+INSERT INTO IfrsConcepts([Code], [Label], [Documentation]) VALUES (N'Inventories' ,N'Current inventories', N'The amount of current inventories. [Refer: Inventories]');
 
 
 DECLARE @PTAccountTypes dbo.[AccountTypeList];
@@ -122,13 +130,13 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentId]) VALUES
 (0,0,+1,	@AccountsPayable);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[TableName],[ColumnName],[EntryIndex],	[Label],		[RequiredState],
+		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 																[ReadOnlyState],
 																[InheritsFromHeader]) VALUES
-(0,0,	N'Entries',	N'Account',		0,			N'Account',		4,4,0), -- together with properties
-(1,0,	N'Entries',	N'Value',		0,			N'Debit',		4,4,0), -- see special case
-(2,0,	N'Entries',	N'Value',		0,			N'Credit',		4,4,0),
-(3,0,	N'Lines',	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears,
+(0,0,	N'Account',		0,			N'Account',		4,4,0), -- together with properties
+(1,0,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
+(2,0,	N'Value',		0,			N'Credit',		4,4,0),
+(3,0,	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears,
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),

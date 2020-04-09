@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_10_Roles : Scenario_01
+    public class Tests_15_Roles : Scenario_01
     {
-        public Tests_10_Roles(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_15_Roles(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
