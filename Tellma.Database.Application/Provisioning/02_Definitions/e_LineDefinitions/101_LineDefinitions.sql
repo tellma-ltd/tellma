@@ -182,8 +182,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,9,	-1,	@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
-																								[ReadOnlyState],
-																								[InheritsFromHeader]) VALUES
+																					[ReadOnlyState],
+																					[InheritsFromHeader]) VALUES
 (0,9,	N'Memo',				0,	N'Memo',				N'البيان',				1,2,1),
 (1,9,	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
 (2,9,	N'MonetaryValue',		0,	N'Pay Amount',			N'المبلغ',				1,2,0),
@@ -223,8 +223,8 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[NotedAgentId0]	= [AgentId1],
-		[NotedAgentId1]	= [AgentId0],
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [AgentId1]),
+		[NotedAgentName1] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [AgentId0]),
 		[CenterId1] = [CenterId0],
 		[MonetaryValue0] = IIF([CurrencyId0]=[CurrencyId1],[MonetaryValue1],[MonetaryValue0])
 	-----
@@ -236,8 +236,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,10,-1,	@CashAndCashEquivalents, @InternalCashTransferExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[Label2],			[RequiredState],
-																						[ReadOnlyState],
-																						[InheritsFromHeader]) VALUES
+																			[ReadOnlyState],
+																			[InheritsFromHeader]) VALUES
 (0,10,	N'AgentId',				1,	N'From Account',	N'من حساب',			1,2,0),
 (1,10,	N'AgentId',				0,	N'To Account',		N'إلى حساب',		1,2,0),
 (2,10,	N'CurrencyId',			1,	N'From Currency',	N'من عملة',			1,2,0),
@@ -274,23 +274,23 @@ SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1] = [CurrencyId0],
-		[NotedAgentId1] = [NotedAgentId0],
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [NotedAgentId1]),
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
 		[CenterId1] = [CenterId0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 11;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],		[NotedAgentDefinitionId],[EntryTypeId]) VALUES
-(0,11,+1,	@CashAndCashEquivalents,	N'customers',			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,11,-1,	@CurrentValueAddedTaxPayables,NULL,					NULL);
+[Direction],[AccountTypeParentId],		[EntryTypeId]) VALUES
+(0,11,+1,	@CashAndCashEquivalents,	@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,11,-1,	@CurrentValueAddedTaxPayables,NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[Label2],				[RequiredState],
-																								[ReadOnlyState],
-																								[InheritsFromHeader]) VALUES
+																					[ReadOnlyState],
+																					[InheritsFromHeader]) VALUES
 (0,11,	N'NotedDate',			1,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
 (1,11,	N'ExternalReference',	1,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
-(2,11,	N'NotedAgentId',		0,	N'Customer',			N'الزبون',				1,4,1),
+(2,11,	N'NotedAgentId',		1,	N'Customer',			N'الزبون',				1,4,1),
 (3,11,	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
 (4,11,	N'NotedAmount',			1,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
 (5,11,	N'MonetaryValue',		1,	N'VAT',					N'ق.م.',				3,4,0),
@@ -316,8 +316,8 @@ SET [Script] = N'
 	SET
 		[CurrencyId1] = [CurrencyId0],
 		[CurrencyId2] = [CurrencyId0],
-		[NotedAgentId1] = [NotedAgentId0],
-		[AgentId2]		= [NotedAgentId0],
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [NotedAgentId1]),
+		[AgentId2]		= [NotedAgentId1],
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
 		[MonetaryValue2] = ISNULL([NotedAmount1],0),
 		[CenterId1] = [CenterId0],
@@ -326,18 +326,18 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 12;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],			[NotedAgentDefinitionId],[EntryTypeId]) VALUES
-(0,12,+1,	@CashAndCashEquivalents,		N'customers',		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,12,-1,	@CurrentValueAddedTaxPayables,	NULL,				NULL),
-(2,12,-1,	@CurrentAccruedIncome,			NULL,				NULL);
+[Direction],[AccountTypeParentId],			[EntryTypeId]) VALUES
+(0,12,+1,	@CashAndCashEquivalents,		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,12,-1,	@CurrentValueAddedTaxPayables,	NULL),
+(2,12,-1,	@CurrentAccruedIncome,			NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[Label2],				[RequiredState],
-																							[ReadOnlyState],
-																							[InheritsFromHeader]) VALUES
+																				[ReadOnlyState],
+																				[InheritsFromHeader]) VALUES
 
 (0,12,	N'NotedDate',			1,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
 (1,12,	N'ExternalReference',	1,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
-(2,12,	N'NotedAgentId',		0,	N'Customer',			N'الزبون',				1,4,1),
+(2,12,	N'NotedAgentId',		1,	N'Customer',			N'الزبون',				1,4,1),
 (3,12,	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
 (4,12,	N'NotedAmount',			1,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
 (5,12,	N'MonetaryValue',		1,	N'VAT',					N'ق.م.',				3,4,0),
@@ -363,8 +363,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,19,+1,	@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[Label2],		[RequiredState],
-																						[ReadOnlyState],
-																						[InheritsFromHeader]) VALUES
+																			[ReadOnlyState],
+																			[InheritsFromHeader]) VALUES
 (0,19,	N'CurrencyId',			0,	N'Currency',		N'العملة',			1,2,1),
 (1,19,	N'MonetaryValue',		0,	N'Amount',			N'المبلغ',			1,2,0),
 (2,19,	N'NotedAgentName',		0,	N'Received from',	N'مستلم من',		3,4,0),
@@ -449,8 +449,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,34,-1,	@Revenue);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
-																				[ReadOnlyState],
-																				[InheritsFromHeader]) VALUES
+																	[ReadOnlyState],
+																	[InheritsFromHeader]) VALUES
 (0,34,	N'AgentId',				0,	N'Customer',	N'الزبون',		1,4,0),
 (1,34,	N'CenterId',			1,	N'Cost Center',	N'مركز التكلفة',1,4,0),
 (2,34,	N'ResourceId',			0,	N'Service',		N'الخدمة',		1,4,0),
@@ -489,8 +489,8 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (1,8,-1,	@PropertyPlantAndEquipment,	@DepreciationPropertyPlantAndEquipment);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[Label2],		[RequiredState],
-																				[ReadOnlyState],
-																				[InheritsFromHeader]) VALUES
+																	[ReadOnlyState],
+																	[InheritsFromHeader]) VALUES
 (0,8,	N'ResourceId',			1,	N'Asset',		N'الأصل',		1,4,0),
 (1,8,	N'Quantity',			1,	N'Usage',		N'الاستخدام',	1,4,1),
 (2,8,	N'UnitId',				1,	N'',			N'',			1,4,1),
