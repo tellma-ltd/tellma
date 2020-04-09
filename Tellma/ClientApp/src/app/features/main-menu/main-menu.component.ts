@@ -66,12 +66,16 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'account-types', sortKey: 300
         },
         {
+          label: 'IfrsConcepts', icon: 'list', link: '../ifrs-concepts',
+          view: 'ifrs-concepts', sortKey: 400
+        },
+        {
           label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
-          view: 'legacy-classifications', sortKey: 400
+          view: 'legacy-classifications', sortKey: 500
         },
         {
           label: 'LegacyTypes', icon: 'list', link: '../legacy-types',
-          view: 'legacy-types', sortKey: 500
+          view: 'legacy-types', sortKey: 600
         },
       ]
     },

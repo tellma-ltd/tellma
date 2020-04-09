@@ -39,7 +39,7 @@ export class OutboxComponent extends MasterBaseComponent {
     const outboxRecord = this.c[id];
     const docId = outboxRecord.DocumentId;
     const definitionId = this.workspace.currentTenant.Document[docId].DefinitionId;
-    const extras = { state_key: 'from_outbox' };
+    const extras = { state_key: 'from_outbox' }; // fake state key to hide forward and backward navigation in details screen
     router.navigate(['../documents', definitionId, docId, extras], { relativeTo: route });
   }
 }

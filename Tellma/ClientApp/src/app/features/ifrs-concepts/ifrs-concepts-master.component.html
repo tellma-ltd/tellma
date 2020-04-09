@@ -1,0 +1,26 @@
+<t-master collection="IfrsConcept" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'IfrsConcepts' | translate" [showImportButton]="false"
+  [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code"
+  selectForTiles="Label,Label2,Label3" inactiveFilter="" [multiselectActions]="[]">
+</t-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('IfrsConcept', id, 'Label') }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span class="d-block text-truncate">{{ id }}</span>
+  </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+  {{ 'IfrsConcept' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+  <span class="text-truncate">{{ ws.getMultilingualValue('IfrsConcept', id, 'Label') }}</span>
+</ng-template>

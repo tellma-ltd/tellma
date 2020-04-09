@@ -11,7 +11,7 @@ AS
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
 	FROM @Entities FE 
-	JOIN [dbo].[LegacyClassifications] BE ON FE.Code = BE.Code
+	JOIN [dbo].[CustomClassifications] BE ON FE.Code = BE.Code
 	WHERE FE.Id <> BE.Id;
 
 	-- Code must not be duplicated in the uploaded list

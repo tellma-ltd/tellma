@@ -952,6 +952,15 @@
   <data name="IdentityServerUsers" xml:space="preserve">
     <value>身份服务器的用户</value>
   </data>
+  <data name="IfrsConcept" xml:space="preserve">
+    <value>IFRS概念</value>
+  </data>
+  <data name="IfrsConcept_Documentation" xml:space="preserve">
+    <value>文档</value>
+  </data>
+  <data name="IfrsConcepts" xml:space="preserve">
+    <value>IFRS概念</value>
+  </data>
   <data name="Inactive" xml:space="preserve">
     <value>待用</value>
   </data>

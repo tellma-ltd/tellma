@@ -121,6 +121,12 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsDeprecated')
         ]
     },
+    'ifrs-concepts': {
+        name: 'IfrsConcepts',
+        actions: [
+            li('Read', false)
+        ]
+    },
     'account-types': {
         name: 'AccountTypes',
         actions: [

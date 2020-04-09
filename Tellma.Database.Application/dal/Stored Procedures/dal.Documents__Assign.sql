@@ -41,8 +41,8 @@ BEGIN
 			VALUES (s.[Id], @AssigneeId, @Comment, IIF(@AssigneeId = @UserId, @Now, NULL));
 
 		IF (@RecordInHistory = 1)
-			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])
-			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById]
+			INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt])
+			SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById], [OpenedAt]
 			FROM dbo.DocumentAssignments
 			WHERE DocumentId IN (SELECT [Id] FROM @Ids)
 	END

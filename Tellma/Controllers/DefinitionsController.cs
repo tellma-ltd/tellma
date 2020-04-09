@@ -309,8 +309,6 @@ namespace Tellma.Controllers
                 {
                     Direction = e.Direction.Value,
                     AccountTypeParentId = e.AccountTypeParentId,
-                    AgentDefinitionId = e.AgentDefinitionId,
-                    NotedAgentDefinitionId = e.NotedAgentDefinitionId,
                     EntryTypeId = e.EntryTypeId,
                     AccountTypeParentIsResourceClassification = e.AccountTypeParentIsResourceClassification ?? false,
                     EntryTypeParentId = e.EntryTypeParentId
@@ -318,7 +316,6 @@ namespace Tellma.Controllers
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
                 {
-                    TableName = c.TableName,
                     ColumnName = c.ColumnName,
                     EntryIndex = c.EntryIndex.Value,
                     Label = c.Label,
@@ -384,7 +381,7 @@ namespace Tellma.Controllers
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                 {
-                    if (colDef.TableName == "Lines" && colDef.ColumnName == nameof(Line.Memo))
+                    if (colDef.ColumnName == nameof(Line.Memo))
                     {
                         result.MemoIsCommonVisibility = true;
                         if (string.IsNullOrWhiteSpace(result.MemoLabel))
@@ -405,7 +402,7 @@ namespace Tellma.Controllers
                     }
 
                     // Agents
-                    if (colDef.EntryIndex < lineDef.Entries.Count)
+                    else if (colDef.EntryIndex < lineDef.Entries.Count)
                     {
                         var entryDef = lineDef.Entries[colDef.EntryIndex];
 

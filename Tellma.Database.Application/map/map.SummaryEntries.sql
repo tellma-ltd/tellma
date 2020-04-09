@@ -1,4 +1,4 @@
-﻿	CREATE FUNCTION [map].[SummaryEntries] (
+﻿CREATE FUNCTION [map].[SummaryEntries] (
 	@fromDate Date = '01.01.2018',
 	@toDate Date = '01.01.2019',
 	@CenterId INT = NULL,

@@ -177,7 +177,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
       }
 
       // True if this is an API request to refresh the
-      const isVersionRefreshRequest = req.url.endsWith('/client') || req.url.indexOf('/client/') !== -1;
+      const isVersionRefreshRequest = req.url.endsWith('/client') ||
+        req.url.indexOf('/client?') !== -1 || req.url.indexOf('/client/') !== -1;
 
       // Workspace specific headers
       if (this.workspace.isApp) {

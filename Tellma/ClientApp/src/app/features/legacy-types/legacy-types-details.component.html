@@ -30,13 +30,12 @@
 
   <!-- Name3 -->
   <t-form-group class="t-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
-    [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+    [label]="('Name' | translate) + ws.ternaryPostfix">
     <div>{{ model?.Name3 }}</div>
   </t-form-group>
 
   <!-- Description -->
-  <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
-    [serverErrors]="model?.serverErrors?.Description">
+  <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix">
     <div>{{ model?.Description }}</div>
   </t-form-group>
 

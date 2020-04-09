@@ -26,6 +26,7 @@ import { metadata_IdentityServerUser } from '../identity-server-user';
 import { metadata_ExchangeRate } from '../exchange-rate';
 import { metadata_InboxRecord } from '../inbox-record';
 import { metadata_OutboxRecord } from '../outbox-record';
+import { metadata_IfrsConcept } from '../ifrs-concept';
 
 export const metadata: {
     [collection: string]: (
@@ -43,6 +44,7 @@ export const metadata: {
     Currency: metadata_Currency,
     Resource: metadata_Resource,
     LegacyClassification: metadata_LegacyClassification,
+    IfrsConcept: metadata_IfrsConcept,
     AccountType: metadata_AccountType,
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,

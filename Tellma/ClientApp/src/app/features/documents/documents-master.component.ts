@@ -75,12 +75,6 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
       this.translate.instant('Documents');
   }
 
-  public get summary(): string {
-    return !!this.definition ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
-      this.translate.instant('Document');
-  }
-
   // State
 
   public onPost = (ids: (number | string)[]): Observable<any> => {

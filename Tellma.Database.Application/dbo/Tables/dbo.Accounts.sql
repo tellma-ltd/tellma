@@ -8,7 +8,7 @@
 	[Code]							NVARCHAR (50), -- used for import.
 	--[PartyReference]				NVARCHAR (50), -- how it is referred to by the other party
 	[AccountTypeId]					INT					NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[CustomClassificationId]		INT					CONSTRAINT [FK_Accounts__CustomClassificationId] REFERENCES [dbo].[LegacyClassifications] ([Id]),
+	[CustomClassificationId]		INT					CONSTRAINT [FK_Accounts__CustomClassificationId] REFERENCES [dbo].[CustomClassifications] ([Id]),
 	[IsSmart]						BIT				NOT NULL DEFAULT 0,
 	[IsRelated]						BIT				NOT NULL DEFAULT 0,
 	[AgentId]						INT				CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Resources] ([Id]),

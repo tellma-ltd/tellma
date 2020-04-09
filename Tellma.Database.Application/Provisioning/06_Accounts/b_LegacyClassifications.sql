@@ -34,16 +34,16 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT @Assets_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'1';
-SELECT @CurrentAssets_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'11';
-SELECT @BankAndCash_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'111';
-SELECT @Debtors_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'112';
-SELECT @Inventories_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'113';
-SELECT @NonCurrentAssets_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'12';
-SELECT @Liabilities_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'2';
-SELECT @Equity_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'3';
-SELECT @Revenue_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'4';
-SELECT @Expenses_AC = [Id] FROM dbo.[LegacyClassifications] WHERE Code = N'5';
+SELECT @Assets_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'1';
+SELECT @CurrentAssets_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'11';
+SELECT @BankAndCash_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'111';
+SELECT @Debtors_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'112';
+SELECT @Inventories_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'113';
+SELECT @NonCurrentAssets_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'12';
+SELECT @Liabilities_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'2';
+SELECT @Equity_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'3';
+SELECT @Revenue_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'4';
+SELECT @Expenses_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'5';
 
 IF @DebugLegacyClassifications = 1
 	SELECT
@@ -51,5 +51,5 @@ IF @DebugLegacyClassifications = 1
 		SPACE(5 * (AC.[Node].GetLevel() - 1)) +  AC.[Name] As [Name],
 		[Code],
 		AC.[Node].ToString() As [Node],
-		(SELECT COUNT(*) FROM [LegacyClassifications] WHERE [ParentNode] = AC.[Node]) AS [ChildCount]
-	FROM dbo.[LegacyClassifications] AC
+		(SELECT COUNT(*) FROM [CustomClassifications] WHERE [ParentNode] = AC.[Node]) AS [ChildCount]
+	FROM dbo.[CustomClassifications] AC

@@ -100,6 +100,14 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "ifrs-concepts",
+                        Name = "IfrsConcepts",
+                        Actions = new ActionInfo[]
+                        {
+                            Li("Read", false)
+                        }
+                    },
+                    new ViewInfo {
                         Id = "lookup-definitions",
                         Name = "LookupDefinitions",
                         Read = true,

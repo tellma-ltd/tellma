@@ -7,12 +7,12 @@ AS
 	WITH EntitiesWithDescendants
 	AS (
 		SELECT T2.[Id]
-		FROM [dbo].[LegacyClassifications] T1
-		JOIN [dbo].[LegacyClassifications] T2
+		FROM [dbo].[CustomClassifications] T1
+		JOIN [dbo].[CustomClassifications] T2
 		ON T2.[Node].IsDescendantOf(T1.[Node]) = 1
 		WHERE T1.[Id] IN (SELECT [Id] FROM @Ids)
 	)
-	DELETE FROM [dbo].[LegacyClassifications]
+	DELETE FROM [dbo].[CustomClassifications]
 	WHERE [Id] IN (SELECT [Id] FROM EntitiesWithDescendants);
 
 	-- TODO: reorganize the nodes

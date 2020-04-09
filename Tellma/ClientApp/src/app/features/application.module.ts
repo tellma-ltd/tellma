@@ -94,6 +94,8 @@ import { ExchangeRatesMasterComponent } from './exchange-rates/exchange-rates-ma
 import { ExchangeRatesDetailsComponent } from './exchange-rates/exchange-rates-details.component';
 import { InboxComponent } from './inbox/inbox.component';
 import { OutboxComponent } from './outbox/outbox.component';
+import { IfrsConceptsMasterComponent } from './ifrs-concepts/ifrs-concepts-master.component';
+import { IfrsConceptsDetailsComponent } from './ifrs-concepts/ifrs-concepts-details.component';
 
 const routes: Routes = [
   {
@@ -267,6 +269,18 @@ const routes: Routes = [
       {
         path: 'legacy-classifications/:id',
         component: LegacyClassificationsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // IFRS Concepts
+      {
+        path: 'ifrs-concepts',
+        component: IfrsConceptsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'ifrs-concepts/:id',
+        component: IfrsConceptsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -495,6 +509,8 @@ const routes: Routes = [
     ExchangeRatesDetailsComponent,
     InboxComponent,
     OutboxComponent,
+    IfrsConceptsMasterComponent,
+    IfrsConceptsDetailsComponent,
   ],
   imports: [
     SharedModule,

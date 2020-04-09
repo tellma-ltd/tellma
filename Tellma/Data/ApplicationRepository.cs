@@ -227,6 +227,7 @@ namespace Tellma.Data
                 nameof(Resource) => "[map].[Resources]()",
                 nameof(ResourceUnit) => "[map].[ResourceUnits]()",
                 nameof(LegacyClassification) => "[map].[LegacyClassifications]()",
+                nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
                 nameof(Account) => "[map].[Accounts]()",
                 nameof(LookupDefinition) => "[map].[LookupDefinitions]()",
