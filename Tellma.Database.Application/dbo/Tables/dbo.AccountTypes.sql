@@ -16,7 +16,7 @@
 	[AgentDefinitionId]			NVARCHAR (50),
 
 	[ResourceAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__ResourceAssignment] CHECK([ResourceAssignment] IN (N'N',N'A',N'E')),
-	[ResourceDefinition]		NVARCHAR (50),
+	[ResourceDefinitionId]		NVARCHAR (50),
 
 	[IsResourceClassification]	AS CAST(
 										IIF([ResourceAssignment] IN (N'A',N'E')
@@ -31,7 +31,7 @@
 		),
 	[IdentifierAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__IdentifierAssignment] CHECK([IdentifierAssignment] IN (N'N',N'A',N'E')),
 	[NotedAgentAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__NotedAgentAssignment] CHECK([NotedAgentAssignment] IN (N'N',N'A',N'E')),
-	[NotedAgentDefinition]		NVARCHAR (50),
+	[NotedAgentDefinitionId]		NVARCHAR (50),
 
 	[DueDateLabel]				NVARCHAR (50),
 	[DueDateLabel2]				NVARCHAR (50),

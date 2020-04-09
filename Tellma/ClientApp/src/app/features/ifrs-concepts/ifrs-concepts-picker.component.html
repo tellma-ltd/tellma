@@ -1,0 +1,12 @@
+<t-details-picker [filter]="filter" collection="IfrsConcept" [masterTemplate]="master"
+    [additionalSelect]="additionalSelect">
+</t-details-picker>
+
+<!-- The Master Modal -->
+<ng-template #master let-modal="modal" let-update="update" let-filter="filter">
+    <div class="modal-body">
+        <t-ifrs-concepts-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
+            (choose)="modal.close(true); update.call(null, $event); " [additionalSelect]="additionalSelect">
+        </t-ifrs-concepts-master>
+    </div>
+</ng-template>

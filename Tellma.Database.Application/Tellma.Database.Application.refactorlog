@@ -752,4 +752,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[CustomClassifications]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ee2d5709-37c7-4fd6-ad1e-2923a76d899c" ChangeDateTime="04/09/2020 13:12:25">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[ResourceDefinition]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3360e695-e76b-4e70-805b-8ba505d3a236" ChangeDateTime="04/09/2020 13:14:15">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes].[NotedAgentDefinition]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedAgentDefinitionId]" />
+  </Operation>
 </Operations>

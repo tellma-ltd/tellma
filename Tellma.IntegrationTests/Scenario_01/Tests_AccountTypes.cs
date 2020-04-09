@@ -83,10 +83,6 @@ namespace Tellma.IntegrationTests.Scenario_01
                 IsAssignable = true,
                 Description = "Sheet Metals",
                 Description2 = "صفائح المعدن",
-                IsCurrent = true,
-                IsReal = true,
-                IsPersonal = false,
-                IsResourceClassification = true
             };
 
             // Save it
@@ -115,11 +111,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.ParentId, responseDto.ParentId);
             Assert.Equal(dtoForSave.IsAssignable, responseDto.IsAssignable);
-            Assert.Equal(dtoForSave.IsCurrent, responseDto.IsCurrent);
-            Assert.Equal(dtoForSave.IsReal, responseDto.IsReal);
-            Assert.Equal(dtoForSave.IsPersonal, responseDto.IsPersonal);
-            Assert.Equal(dtoForSave.IsResourceClassification, responseDto.IsResourceClassification);
-
+            Assert.Equal('N', responseDto.AgentAssignment);
+            Assert.Equal('N', responseDto.CenterAssignment);
+            Assert.Equal('N', responseDto.CurrencyAssignment);
+            Assert.Equal('N', responseDto.EntryTypeAssignment);
+            Assert.Equal('N', responseDto.IdentifierAssignment);
+            Assert.Equal('N', responseDto.NotedAgentAssignment);
+            Assert.Equal('N', responseDto.ResourceAssignment);
 
             Shared.Set("AccountType_SM", responseDto);
         }

@@ -96,6 +96,7 @@ import { InboxComponent } from './inbox/inbox.component';
 import { OutboxComponent } from './outbox/outbox.component';
 import { IfrsConceptsMasterComponent } from './ifrs-concepts/ifrs-concepts-master.component';
 import { IfrsConceptsDetailsComponent } from './ifrs-concepts/ifrs-concepts-details.component';
+import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picker.component';
 
 const routes: Routes = [
   {
@@ -511,6 +512,7 @@ const routes: Routes = [
     OutboxComponent,
     IfrsConceptsMasterComponent,
     IfrsConceptsDetailsComponent,
+    IfrsConceptsPickerComponent,
   ],
   imports: [
     SharedModule,
