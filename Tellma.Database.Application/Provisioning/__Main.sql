@@ -22,15 +22,17 @@ END
 
 :r .\00_Common\d_EntryTypes.sql
 
+:r .\02_Definitions\a_LookupDefinitions.sql
+:r .\02_Definitions\b_ResourceDefinitions.sql
+:r .\02_Definitions\c_AgentDefinitions.sql
+
 :r .\00_Common\e_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
 
 :r .\01_Security\a_Users.sql
 :r .\01_Security\b_RolesMemberships.sql
 
-:r .\02_Definitions\a_LookupDefinitions.sql
-:r .\02_Definitions\b_ResourceDefinitions.sql
-:r .\02_Definitions\c_AgentDefinitions.sql
+
 
 
 --:r .\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql

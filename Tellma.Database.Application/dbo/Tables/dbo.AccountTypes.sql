@@ -13,10 +13,10 @@
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
 	[CurrencyAssignment]		NCHAR (1)			NOT NULL DEFAULT N'A' CONSTRAINT [CK_AccountTypes__CurrencyAssignment] CHECK([CurrencyAssignment] IN (N'A',N'E')),
 	[AgentAssignment]			NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__AgentAssignment] CHECK([AgentAssignment] IN (N'N',N'A',N'E')),
-	[AgentDefinitionId]			NVARCHAR (50),
+	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 
 	[ResourceAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__ResourceAssignment] CHECK([ResourceAssignment] IN (N'N',N'A',N'E')),
-	[ResourceDefinitionId]		NVARCHAR (50),
+	[ResourceDefinitionId]		NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__ResourceDefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 
 	[IsResourceClassification]	AS CAST(
 										IIF([ResourceAssignment] IN (N'A',N'E')
@@ -31,7 +31,7 @@
 		),
 	[IdentifierAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__IdentifierAssignment] CHECK([IdentifierAssignment] IN (N'N',N'A',N'E')),
 	[NotedAgentAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__NotedAgentAssignment] CHECK([NotedAgentAssignment] IN (N'N',N'A',N'E')),
-	[NotedAgentDefinitionId]		NVARCHAR (50),
+	[NotedAgentDefinitionId]	NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__NotedAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 
 	[DueDateLabel]				NVARCHAR (50),
 	[DueDateLabel2]				NVARCHAR (50),

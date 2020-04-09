@@ -7,8 +7,8 @@ CREATE TABLE [dbo].[Resources] (
 	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	-- TODO: to make sure we only use sensible account types, we add a field called
 	[AssetTypeId]					INT					CONSTRAINT [FK_Resources__AssetTypeId] REFERENCES dbo.AccountTypes([Id]),
-	[ExpenseTypeId]					INT					CONSTRAINT [FK_Resources__ExpenseTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[RevenueTypeId]					INT					CONSTRAINT [FK_Resources__RevenueTypeId] REFERENCES dbo.AccountTypes([Id]),
+	[ExpenseTypeId]					INT					CONSTRAINT [FK_Resources__ExpenseTypeId] REFERENCES dbo.AccountTypes([Id]),
 	--CONSTRAINT [CK_Resources__Id_AccountTypeId] UNIQUE ([Id], [AccountTypeId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
