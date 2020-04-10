@@ -73,10 +73,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
           view: 'legacy-classifications', sortKey: 500
         },
-        {
-          label: 'LegacyTypes', icon: 'list', link: '../legacy-types',
-          view: 'legacy-types', sortKey: 600
-        },
       ]
     },
     Cash: {

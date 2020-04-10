@@ -150,11 +150,6 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
-    'legacy-types': {
-        name: 'LegacyTypes',
-        read: true,
-        actions: []
-    },
     'entry-types': {
         name: 'EntryTypes',
         read: true,

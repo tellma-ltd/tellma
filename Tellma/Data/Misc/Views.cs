@@ -141,14 +141,6 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "legacy-types",
-                        Name = "LegacyTypes",
-                        Read = true,
-                        Actions = new ActionInfo[]
-                        {
-                        }
-                    },
-                    new ViewInfo {
                         Id = "entry-types",
                         Name = "EntryTypes",
                         Read = true,

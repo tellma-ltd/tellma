@@ -107,12 +107,7 @@
                                 [definitionIds]="!!p.desc['definition'] ? [p.desc['definition']] : []"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-resources-picker>
-
-                            <t-legacy-types-picker *ngSwitchCase="'LegacyType'"
-                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
-                                (ngModelChange)="onArgumentChange()">
-                            </t-legacy-types-picker>
-
+                            
                             <t-centers-picker *ngSwitchCase="'Center'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">

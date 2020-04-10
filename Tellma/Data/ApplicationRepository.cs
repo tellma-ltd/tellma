@@ -221,7 +221,6 @@ namespace Tellma.Data
                 nameof(Permission) => "[dbo].[Permissions]",
                 nameof(RoleMembership) => "[dbo].[RoleMemberships]",
                 nameof(Role) => "[dbo].[Roles]",
-                nameof(LegacyType) => "[dbo].[LegacyTypes]",
                 nameof(Lookup) => "[map].[Lookups]()",
                 nameof(Currency) => "[map].[Currencies]()",
                 nameof(Resource) => "[map].[Resources]()",

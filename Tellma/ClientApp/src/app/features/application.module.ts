@@ -21,9 +21,6 @@ import { UsersImportComponent } from './users/users-import.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
-import { LegacyTypesMasterComponent } from './legacy-types/legacy-types-master.component';
-import { LegacyTypesImportComponent } from './legacy-types/legacy-types-import.component';
-import { LegacyTypesDetailsComponent } from './legacy-types/legacy-types-details.component';
 import { LookupsMasterComponent } from './lookups/lookups-master.component';
 import { LookupsDetailsComponent } from './lookups/lookups-details.component';
 import { LookupsImportComponent } from './lookups/lookups-import.component';
@@ -79,7 +76,6 @@ import { ReportDefinitionsImportComponent } from './report-definitions/report-de
 import { CentersMasterComponent } from './centers/centers-master.component';
 import { CentersDetailsComponent } from './centers/centers-details.component';
 import { CentersPickerComponent } from './centers/centers-picker.component';
-import { LegacyTypesPickerComponent } from './legacy-types/legacy-types-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
 import { CurrenciesPickerComponent } from './currencies/currencies-picker.component';
@@ -175,23 +171,6 @@ const routes: Routes = [
       {
         path: 'agents/:definitionId/:id',
         component: AgentsDetailsComponent,
-        canDeactivate: [UnsavedChangesGuard]
-      },
-
-      // Legacy Types
-      {
-        path: 'legacy-types',
-        component: LegacyTypesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'legacy-types/import',
-        component: LegacyTypesImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'legacy-types/:id',
-        component: LegacyTypesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -460,10 +439,6 @@ const routes: Routes = [
     UsersMasterComponent,
     UsersImportComponent,
     SettingsComponent,
-    LegacyTypesMasterComponent,
-    LegacyTypesImportComponent,
-    LegacyTypesDetailsComponent,
-    LegacyTypesPickerComponent,
     LookupsMasterComponent,
     LookupsDetailsComponent,
     LookupsImportComponent,
