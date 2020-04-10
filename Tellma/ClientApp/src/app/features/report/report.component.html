@@ -67,10 +67,15 @@
                         <!-- Navigation -->
                         <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
 
-                            <t-legacy-classifications-picker *ngSwitchCase="'LegacyClassification'"
+                            <t-custom-classifications-picker *ngSwitchCase="'CustomClassification'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-legacy-classifications-picker>
+                            </t-custom-classifications-picker>
+
+                            <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'"
+                                [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                                (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-ifrs-concepts-picker>
 
                             <t-account-types-picker *ngSwitchCase="'AccountType'" [(ngModel)]="arguments[p.key]"
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">

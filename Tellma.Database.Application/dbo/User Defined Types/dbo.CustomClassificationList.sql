@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[LegacyClassificationList] AS TABLE (
+﻿CREATE TYPE [dbo].[CustomClassificationList] AS TABLE (
 	[Index]				INT				PRIMARY KEY ,
 	[ParentIndex]		INT,
 	[Id]				INT				NOT NULL DEFAULT 0,

@@ -1,23 +1,23 @@
-<t-details-picker collection="LegacyClassification" [masterTemplate]="master" [filter]="filter"
+<t-details-picker collection="CustomClassification" [masterTemplate]="master" [filter]="filter"
     [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
-        <t-legacy-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
+        <t-custom-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);"
             [additionalSelect]="additionalSelect">
-        </t-legacy-classifications-details>
+        </t-custom-classifications-details>
     </div>
 </ng-template>
 
 <!-- The Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
-        <t-legacy-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
+        <t-custom-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
             [showCreate]="showCreate" (choose)="modal.close(true); update.call(null, $event);"
             (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
-        </t-legacy-classifications-master>
+        </t-custom-classifications-master>
     </div>
 </ng-template>

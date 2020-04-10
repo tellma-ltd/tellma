@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [api].[LegacyClassifications__Save]
-	@Entities [LegacyClassificationList] READONLY,
+﻿CREATE PROCEDURE [api].[CustomClassifications__Save]
+	@Entities [CustomClassificationList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[LegacyClassifications_Validate__Save]
+	EXEC [bll].[CustomClassifications_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[LegacyClassifications__Save]
+	EXEC [dal].[CustomClassifications__Save]
 		@Entities = @Entities;
 END

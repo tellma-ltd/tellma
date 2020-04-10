@@ -15,7 +15,7 @@ import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitio
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
-import { LegacyClassification } from './entities/legacy-classification';
+import { CustomClassification } from './entities/custom-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
@@ -340,7 +340,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
-  LegacyClassification: EntityWorkspace<LegacyClassification>;
+  CustomClassification: EntityWorkspace<CustomClassification>;
   IfrsConcept: EntityWorkspace<IfrsConcept>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
@@ -371,7 +371,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Lookup = {};
     this.Currency = {};
     this.Resource = {};
-    this.LegacyClassification = {};
+    this.CustomClassification = {};
     this.IfrsConcept = {};
     this.AccountType = {};
     this.Account = {};

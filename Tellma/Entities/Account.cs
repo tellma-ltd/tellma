@@ -36,15 +36,11 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? AccountTypeId { get; set; }
 
-        [Display(Name = "Account_LegacyClassification")]
-        public int? LegacyClassificationId { get; set; }
+        [Display(Name = "Account_CustomClassification")]
+        public int? CustomClassificationId { get; set; }
 
-        [Display(Name = "Account_AgentDefinition")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string AgentDefinitionId { get; set; }
 
-        [Display(Name = "Account_HasResource")]
-        public bool? HasResource { get; set; }
+
 
         // HIDDEN
 
@@ -118,9 +114,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AccountTypeId))]
         public AccountType AccountType { get; set; }
 
-        [Display(Name = "Account_LegacyClassification")]
-        [ForeignKey(nameof(LegacyClassificationId))]
-        public LegacyClassification LegacyClassification { get; set; }
+        [Display(Name = "Account_CustomClassification")]
+        [ForeignKey(nameof(CustomClassificationId))]
+        public CustomClassification CustomClassification { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]
@@ -129,10 +125,6 @@ namespace Tellma.Entities
         [Display(Name = "Account_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
-
-        [Display(Name = "Account_AgentDefinition")]
-        [ForeignKey(nameof(AgentDefinitionId))]
-        public AgentDefinition AgentDefinition { get; set; }
 
         [Display(Name = "Account_Agent")]
         [ForeignKey(nameof(AgentId))]

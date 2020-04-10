@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[LegacyClassifications__Deprecate]
+﻿CREATE PROCEDURE [api].[CustomClassifications__Deprecate]
 	@IndexedIds [dbo].[IndexedIdList] READONLY,
 	@IsDeprecated BIT,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 	
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[LegacyClassifications_Validate__Deprecate]
+	EXEC [bll].[CustomClassifications_Validate__Deprecate]
 		@Ids = @IndexedIds;
 	
 	SELECT @ValidationErrorsJson = 
@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[LegacyClassifications__Deprecate]
+	EXEC [dal].[CustomClassifications__Deprecate]
 		@Ids = @Ids,
 		@IsDeprecated = @IsDeprecated;
 END;

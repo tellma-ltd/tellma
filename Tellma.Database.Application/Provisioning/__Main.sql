@@ -73,7 +73,7 @@ END
 :r .\05_Agents\10_Employees.sql
 :r .\05_Agents\00_Centers.sql
 
-:r .\06_Accounts\b_LegacyClassifications.sql
+:r .\06_Accounts\b_CustomClassifications.sql
 :r .\06_Accounts\101_Accounts.sql
 
 --:r .\06_Accounts\105_Accounts.sql

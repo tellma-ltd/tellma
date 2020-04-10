@@ -225,7 +225,7 @@ namespace Tellma.Data
                 nameof(Currency) => "[map].[Currencies]()",
                 nameof(Resource) => "[map].[Resources]()",
                 nameof(ResourceUnit) => "[map].[ResourceUnits]()",
-                nameof(LegacyClassification) => "[map].[LegacyClassifications]()",
+                nameof(CustomClassification) => "[map].[CustomClassifications]()",
                 nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
                 nameof(Account) => "[map].[Accounts]()",
@@ -2440,9 +2440,9 @@ namespace Tellma.Data
 
         #endregion
 
-        #region LegacyClassifications
+        #region CustomClassifications
 
-        public Query<LegacyClassification> LegacyClassifications__AsQuery(List<LegacyClassificationForSave> entities)
+        public Query<CustomClassification> CustomClassifications__AsQuery(List<CustomClassificationForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
@@ -2451,16 +2451,16 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",
+                TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             // Query
-            var query = Query<LegacyClassification>();
-            return query.FromSql($"[map].[{nameof(LegacyClassifications__AsQuery)}] (@Entities)", null, entitiesTvp);
+            var query = Query<CustomClassification>();
+            return query.FromSql($"[map].[{nameof(CustomClassifications__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> LegacyClassifications_Validate__Save(List<LegacyClassificationForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__Save(List<CustomClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2468,7 +2468,7 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",
+                TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -2477,13 +2477,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(LegacyClassifications_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> LegacyClassifications__Save(List<LegacyClassificationForSave> entities, bool returnIds)
+        public async Task<List<int>> CustomClassifications__Save(List<CustomClassificationForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2493,7 +2493,7 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(LegacyClassification)}List]",
+                    TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -2501,7 +2501,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(LegacyClassifications__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Save)}]";
 
                 if (returnIds)
                 {
@@ -2532,7 +2532,7 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task LegacyClassifications__Deprecate(List<int> ids, bool isDeprecated)
+        public async Task CustomClassifications__Deprecate(List<int> ids, bool isDeprecated)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2549,13 +2549,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LegacyClassifications__Deprecate)}]";
+            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Deprecate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> LegacyClassifications_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2572,13 +2572,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(LegacyClassifications_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task LegacyClassifications__Delete(IEnumerable<int> ids)
+        public async Task CustomClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2594,7 +2594,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LegacyClassifications__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Delete)}]";
 
             // Execute
             try
@@ -2607,7 +2607,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> LegacyClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2624,13 +2624,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(LegacyClassifications_Validate__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__DeleteWithDescendants)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task LegacyClassifications__DeleteWithDescendants(IEnumerable<int> ids)
+        public async Task CustomClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2646,7 +2646,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LegacyClassifications__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__DeleteWithDescendants)}]";
 
             // Execute
             try

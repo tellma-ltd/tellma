@@ -70,8 +70,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'ifrs-concepts', sortKey: 400
         },
         {
-          label: 'LegacyClassifications', icon: 'sitemap', link: '../legacy-classifications',
-          view: 'legacy-classifications', sortKey: 500
+          label: 'CustomClassifications', icon: 'sitemap', link: '../custom-classifications',
+          view: 'custom-classifications', sortKey: 500
         },
       ]
     },

@@ -15,8 +15,7 @@ export interface AccountForSave extends EntityWithKey {
     Code?: string;
     AccountTypeId?: string;
     IsCurrent?: boolean;
-    LegacyClassificationId?: number;
-    LegacyTypeId?: string;
+    CustomClassificationId?: number;
     AgentDefinitionId?: string;
     HasResource?: boolean;
     IsRelated?: boolean;
@@ -73,10 +72,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _
                 AccountTypeId: { control: 'number', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0  },
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 IsCurrent: { control: 'boolean', label: () => trx.instant('Account_IsCurrent') },
-                LegacyClassificationId: { control: 'number', label: () => `${trx.instant('Account_LegacyClassification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                LegacyClassification: { control: 'navigation', label: () => trx.instant('Account_LegacyClassification'), type: 'LegacyClassification', foreignKeyName: 'LegacyClassificationId' },
-                LegacyTypeId: { control: 'text', label: () => `${trx.instant('Account_LegacyType')} (${trx.instant('Id')})` },
-                LegacyType: { control: 'navigation', label: () => trx.instant('Account_LegacyType'), type: 'LegacyType', foreignKeyName: 'LegacyTypeId' },
+                CustomClassificationId: { control: 'number', label: () => `${trx.instant('Account_CustomClassification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CustomClassification: { control: 'navigation', label: () => trx.instant('Account_CustomClassification'), type: 'CustomClassification', foreignKeyName: 'CustomClassificationId' },
 
                 // AgentDefinitionId: { control: 'text', label: () => `${trx.instant('Account_AgentDefinition')} (${trx.instant('Id')})` },
                 // AgentDefinition: { control: 'navigation', label: () => trx.instant('Account_AgentDefinition'), type: 'AgentDefinition', foreignKeyName: 'AgentDefinitionId' },

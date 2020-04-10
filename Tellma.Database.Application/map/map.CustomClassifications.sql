@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [map].[LegacyClassifications] ()
+﻿CREATE FUNCTION [map].[CustomClassifications] ()
 RETURNS TABLE AS 
 RETURN (
 	SELECT

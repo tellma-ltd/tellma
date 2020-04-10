@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [dal].[LegacyClassifications__Save]
-	@Entities [LegacyClassificationList] READONLY,
+﻿CREATE PROCEDURE [dal].[CustomClassifications__Save]
+	@Entities [CustomClassificationList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -47,15 +47,15 @@ SET NOCOUNT ON;
 	
 /*	WITH DirectParents AS (
 		SELECT EC.[Code] AS ChildCode, MAX(EP.Code) AS ParentCode
-		FROM dbo.[LegacyClassifications] EC
-		LEFT JOIN dbo.[LegacyClassifications] EP ON EC.[Code] LIKE EP.[Code] +'%' AND EC.[Code] <> EP.[Code]
+		FROM dbo.[CustomClassifications] EC
+		LEFT JOIN dbo.[CustomClassifications] EP ON EC.[Code] LIKE EP.[Code] +'%' AND EC.[Code] <> EP.[Code]
 		GROUP BY EC.[Code]
 	),
 	Children ([Id], [ParentId], [Num]) AS (
 		SELECT EC.[Id], EP.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY EP.[Id] ORDER BY EP.[Id], EC.[Code])   
-		FROM dbo.[LegacyClassifications] EC
+		FROM dbo.[CustomClassifications] EC
 		JOIN DirectParents DP ON EC.Code = DP.ChildCode
-		LEFT JOIN dbo.[LegacyClassifications] EP ON EP.Code = DP.ParentCode
+		LEFT JOIN dbo.[CustomClassifications] EP ON EP.Code = DP.ParentCode
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  
@@ -68,7 +68,7 @@ SET NOCOUNT ON;
 		FROM Children C
 		JOIN Paths P ON C.[ParentId] = P.[Id]
 	)
-	MERGE INTO dbo.[LegacyClassifications] As t
+	MERGE INTO dbo.[CustomClassifications] As t
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 	----SELECT  *, [Node].ToString() As [Path] FROM @Entities;-- ORDER BY [Node].GetLevel(), [Node];

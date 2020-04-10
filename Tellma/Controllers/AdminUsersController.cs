@@ -1,17 +1,5 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
-using Tellma.Data;
-using Tellma.Data.Queries;
-using Tellma.Entities;
-using Tellma.Services.ApiAuthentication;
-using Tellma.Services.BlobStorage;
-using Tellma.Services.Email;
-using Tellma.Services.EmbeddedIdentityServer;
-using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,6 +10,16 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.Utilities;
+using Tellma.Data;
+using Tellma.Data.Queries;
+using Tellma.Entities;
+using Tellma.Services.ApiAuthentication;
+using Tellma.Services.BlobStorage;
+using Tellma.Services.Email;
+using Tellma.Services.EmbeddedIdentityServer;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[LegacyClassifications__Deprecate]
+﻿CREATE PROCEDURE [dal].[CustomClassifications__Deprecate]
 	@Ids [dbo].[IdList] READONLY,
 	@IsDeprecated BIT
 AS

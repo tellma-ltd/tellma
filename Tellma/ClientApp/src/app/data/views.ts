@@ -103,8 +103,8 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive')
         ]
     },
-    'legacy-classifications': {
-        name: 'LegacyClassifications',
+    'custom-classifications': {
+        name: 'CustomClassifications',
         read: true,
         update: true,
         delete: true,

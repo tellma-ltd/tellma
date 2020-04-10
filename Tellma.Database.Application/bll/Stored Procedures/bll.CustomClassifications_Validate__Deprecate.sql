@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[LegacyClassifications_Validate__Deprecate]
+﻿CREATE PROCEDURE [bll].[CustomClassifications_Validate__Deprecate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsDeprecated BIT,
 	@Top INT = 10

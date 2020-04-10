@@ -787,4 +787,81 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CenterVisibility]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6fc1bc45-6efc-4495-a45c-9bb071f9e3f2" ChangeDateTime="04/10/2020 14:50:55">
+    <Property Name="ElementName" Value="[dbo].[LegacyClassificationList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassificationList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b79e9931-f4b4-4a67-a0ab-b0af07791d69" ChangeDateTime="04/10/2020 14:52:40">
+    <Property Name="ElementName" Value="[dal].[LegacyClassifications__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f7573572-e107-4ecc-a28e-36cc99fc67bd" ChangeDateTime="04/10/2020 14:53:10">
+    <Property Name="ElementName" Value="[dal].[LegacyClassifications__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="78445cb5-a841-4e6a-a428-d5977e91a202" ChangeDateTime="04/10/2020 14:53:33">
+    <Property Name="ElementName" Value="[dal].[LegacyClassifications__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1965f56-db29-4b53-b0e6-5bab5fabc3c6" ChangeDateTime="04/10/2020 14:53:47">
+    <Property Name="ElementName" Value="[dal].[LegacyClassifications__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eec6085f-fd1a-455d-a396-a93082a19294" ChangeDateTime="04/10/2020 14:54:10">
+    <Property Name="ElementName" Value="[bll].[LegacyClassifications_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8be56b65-9a69-4024-acc9-c7f02d44fcea" ChangeDateTime="04/10/2020 14:54:37">
+    <Property Name="ElementName" Value="[bll].[LegacyClassifications_Validate__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications_Validate__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3dd89334-17a2-415c-b4c6-7e81f2a3e359" ChangeDateTime="04/10/2020 14:54:48">
+    <Property Name="ElementName" Value="[bll].[LegacyClassifications_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c7ca7876-08d2-4545-9110-c4fcacf7dc4b" ChangeDateTime="04/10/2020 14:55:03">
+    <Property Name="ElementName" Value="[bll].[LegacyClassifications_Validate__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications_Validate__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f68906c-1be4-4413-b8d6-5834f2947f3f" ChangeDateTime="04/10/2020 14:55:30">
+    <Property Name="ElementName" Value="[api].[LegacyClassifications__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c2f2318e-fa16-412a-8270-31b4a8885a4d" ChangeDateTime="04/10/2020 14:55:56">
+    <Property Name="ElementName" Value="[api].[LegacyClassifications__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CustomClassifications__Deprecate]" />
+  </Operation>
 </Operations>

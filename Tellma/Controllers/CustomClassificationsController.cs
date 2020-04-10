@@ -14,9 +14,9 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationController]
-    public class LegacyClassificationsController : CrudTreeControllerBase<LegacyClassificationForSave, LegacyClassification, int>
+    public class CustomClassificationsController : CrudTreeControllerBase<CustomClassificationForSave, CustomClassification, int>
     {
-        public const string BASE_ADDRESS = "legacy-classifications";
+        public const string BASE_ADDRESS = "custom-classifications";
 
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
@@ -24,8 +24,8 @@ namespace Tellma.Controllers
 
         private string View => BASE_ADDRESS;
 
-        public LegacyClassificationsController(
-            ILogger<LegacyClassificationsController> logger,
+        public CustomClassificationsController(
+            ILogger<CustomClassificationsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -35,7 +35,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<CustomClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -48,7 +48,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<CustomClassification>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -60,7 +60,7 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<LegacyClassification>>> Activate(List<int> ids, bool returnEntities, string expand, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<CustomClassification>>> Activate(List<int> ids, bool returnEntities, string expand, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -71,7 +71,7 @@ namespace Tellma.Controllers
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.LegacyClassifications__Deprecate(ids, isDeprecated);
+            await _repo.CustomClassifications__Deprecate(ids, isDeprecated);
 
             if (returnEntities)
             {
@@ -97,17 +97,17 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<LegacyClassification> Search(Query<LegacyClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<CustomClassification> Search(Query<CustomClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(LegacyClassification.Name);
-                var name2 = nameof(LegacyClassification.Name2);
-                var name3 = nameof(LegacyClassification.Name3);
-                var code = nameof(LegacyClassification.Code);
+                var name = nameof(CustomClassification.Name);
+                var name2 = nameof(CustomClassification.Name2);
+                var name3 = nameof(CustomClassification.Name3);
+                var code = nameof(CustomClassification.Code);
 
                 var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
@@ -116,26 +116,26 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<LegacyClassificationForSave> entities)
+        protected override async Task SaveValidateAsync(List<CustomClassificationForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.LegacyClassifications_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.CustomClassifications_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<LegacyClassificationForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<CustomClassificationForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.LegacyClassifications__Save(entities, returnIds);
+            return await _repo.CustomClassifications__Save(entities, returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.LegacyClassifications_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.CustomClassifications_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -145,11 +145,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.LegacyClassifications__Delete(ids);
+                await _repo.CustomClassifications__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["LegacyClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["CustomClassification"]]);
             }
         }
 
@@ -157,7 +157,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.LegacyClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.CustomClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -167,17 +167,17 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.LegacyClassifications__DeleteWithDescendants(ids);
+                await _repo.CustomClassifications__DeleteWithDescendants(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["LegacyClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["CustomClassification"]]);
             }
         }
 
-        protected override Query<LegacyClassification> GetAsQuery(List<LegacyClassificationForSave> entities)
+        protected override Query<CustomClassification> GetAsQuery(List<CustomClassificationForSave> entities)
         {
-            return _repo.LegacyClassifications__AsQuery(entities);
+            return _repo.CustomClassifications__AsQuery(entities);
         }
     }
 }

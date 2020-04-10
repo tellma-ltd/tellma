@@ -21,8 +21,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType,LegacyClassification,Currency,Center,
-  LegacyType,Agent,Resource/Currency,EntryType`;
+  public expand = `AccountType,CustomClassification,Currency,Center,Agent,Resource/Currency,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -112,9 +111,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
     return false; // !!model.AccountTypeId && (accountType.IsCurrent === true || accountType.IsCurrent === false);
   }
-
-  // LegacyClassificationId
-  // LegacyTypeId
 
   // AgentDefinitionId
   public showAgentDefinitionId(model: AccountForSave): boolean {

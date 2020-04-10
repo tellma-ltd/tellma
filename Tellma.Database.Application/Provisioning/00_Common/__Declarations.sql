@@ -6,7 +6,7 @@
 	DECLARE @DebugCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0,
 			@DebugBanks bit = 0, @DebugCustodies bit = 0, @DebugTaxAgencies bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugLegacyClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugCustomClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
 	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
 	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;

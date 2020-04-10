@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class LegacyClassificationForSave : EntityWithKey<int>
+    public class CustomClassificationForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -37,7 +37,7 @@ namespace Tellma.Entities
         public string Code { get; set; } // The basis of the tree structure
     }
 
-    public class LegacyClassification : LegacyClassificationForSave
+    public class CustomClassification : CustomClassificationForSave
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
@@ -48,7 +48,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ChildCount { get; set; }
 
-        [Display(Name = "LegacyClassification_IsDeprecated")]
+        [Display(Name = "CustomClassification_IsDeprecated")]
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }
 
@@ -74,7 +74,7 @@ namespace Tellma.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public LegacyClassification Parent { get; set; }
+        public CustomClassification Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

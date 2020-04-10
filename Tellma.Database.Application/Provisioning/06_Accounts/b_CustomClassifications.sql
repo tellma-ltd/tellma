@@ -7,11 +7,11 @@ Missing
 	- Deactivating
 */
 
-DECLARE @LegacyClassifications dbo.LegacyClassificationList;
+DECLARE @CustomClassifications dbo.CustomClassificationList;
 Declare @Assets_AC INT, @CurrentAssets_AC INT, @BankAndCash_AC INT, @Debtors_AC INT, @Inventories_AC INT, @NonCurrentAssets_AC INT,
 	@Liabilities_AC INT, @Equity_AC INT, @Revenue_AC INT, @Expenses_AC INT;
 	   
-INSERT INTO @LegacyClassifications([Index],
+INSERT INTO @CustomClassifications([Index],
 [Name],						[Code], [ParentIndex]) VALUES
 (0,	N'Assets',				N'1',	NULL),
 (1, N'Current Assets',		N'11',	0),
@@ -24,13 +24,13 @@ INSERT INTO @LegacyClassifications([Index],
 (8, N'Revenue',				N'4',	NULL),
 (9, N'Expenses',			N'5',	NULL);
 ;
-EXEC [api].[LegacyClassifications__Save] --  N'cash-and-cash-equivalents',
-	@Entities = @LegacyClassifications,
+EXEC [api].[CustomClassifications__Save] --  N'cash-and-cash-equivalents',
+	@Entities = @CustomClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Inserting LegacyClassifications: ' + @ValidationErrorsJson
+	Print 'Inserting CustomClassifications: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 
@@ -45,7 +45,7 @@ SELECT @Equity_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'3';
 SELECT @Revenue_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'4';
 SELECT @Expenses_AC = [Id] FROM dbo.[CustomClassifications] WHERE Code = N'5';
 
-IF @DebugLegacyClassifications = 1
+IF @DebugCustomClassifications = 1
 	SELECT
 		AC.Id,
 		SPACE(5 * (AC.[Node].GetLevel() - 1)) +  AC.[Name] As [Name],

@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [bll].[LegacyClassifications_Validate__Save]
-	@Entities [LegacyClassificationList] READONLY,
+﻿CREATE PROCEDURE [bll].[CustomClassifications_Validate__Save]
+	@Entities [CustomClassificationList] READONLY,
 	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

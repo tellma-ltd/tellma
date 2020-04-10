@@ -6,7 +6,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export interface LegacyClassificationForSave extends EntityForSave {
+export interface CustomClassificationForSave extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -14,7 +14,7 @@ export interface LegacyClassificationForSave extends EntityForSave {
   Code?: string;
 }
 
-export interface LegacyClassification extends LegacyClassificationForSave {
+export interface CustomClassification extends CustomClassificationForSave {
   Level?: number;
   ChildCount?: number;
   ActiveChildCount?: number;
@@ -30,7 +30,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor = null;
 
-export function metadata_LegacyClassification(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_CustomClassification(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
@@ -43,12 +43,12 @@ export function metadata_LegacyClassification(wss: WorkspaceService, trx: Transl
   if (!_cache) {
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
-      collection: 'LegacyClassification',
-      titleSingular: () => trx.instant('LegacyClassification'),
-      titlePlural: () => trx.instant('LegacyClassifications'),
+      collection: 'CustomClassification',
+      titleSingular: () => trx.instant('CustomClassification'),
+      titlePlural: () => trx.instant('CustomClassifications'),
       select: _select,
-      apiEndpoint: 'legacy-classifications',
-      screenUrl: 'legacy-classifications',
+      apiEndpoint: 'custom-classifications',
+      screenUrl: 'custom-classifications',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -60,7 +60,7 @@ export function metadata_LegacyClassification(wss: WorkspaceService, trx: Transl
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'LegacyClassification',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'CustomClassification',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
@@ -76,7 +76,7 @@ export function metadata_LegacyClassification(wss: WorkspaceService, trx: Transl
           alignment: 'right'
         },
 
-        IsDeprecated: { control: 'boolean', label: () => trx.instant('LegacyClassification_IsDeprecated') },
+        IsDeprecated: { control: 'boolean', label: () => trx.instant('CustomClassification_IsDeprecated') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
         ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },

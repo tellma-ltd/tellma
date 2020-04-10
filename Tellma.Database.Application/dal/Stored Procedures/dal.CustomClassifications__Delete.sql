@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[LegacyClassifications__Delete]
+﻿CREATE PROCEDURE [dal].[CustomClassifications__Delete]
 	@Ids [dbo].[IdList] READONLY
 AS
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;

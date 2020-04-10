@@ -73,14 +73,14 @@
   <data name="Account_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
-  <data name="Account_AgentDefinition" xml:space="preserve">
-    <value>Agent Definition</value>
-  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>Center</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
+  </data>
+  <data name="Account_CustomClassification" xml:space="preserve">
+    <value>Custom Classification</value>
   </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
@@ -103,26 +103,14 @@
   <data name="Account_HasNotedDate" xml:space="preserve">
     <value>Has Noted Date</value>
   </data>
-  <data name="Account_HasResource" xml:space="preserve">
-    <value>Has Resource</value>
-  </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>Identifier</value>
-  </data>
-  <data name="Account_IsCurrent" xml:space="preserve">
-    <value>Is Current</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>Is Deprecated</value>
   </data>
   <data name="Account_IsRelated" xml:space="preserve">
     <value>Is Related</value>
-  </data>
-  <data name="Account_LegacyClassification" xml:space="preserve">
-    <value>Legacy Classification</value>
-  </data>
-  <data name="Account_LegacyType" xml:space="preserve">
-    <value>Legacy Type</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
@@ -378,6 +366,15 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current Password</value>
+  </data>
+  <data name="CustomClassification" xml:space="preserve">
+    <value>Custom Classification</value>
+  </data>
+  <data name="CustomClassification_IsDeprecated" xml:space="preserve">
+    <value>Is Deprecated</value>
+  </data>
+  <data name="CustomClassifications" xml:space="preserve">
+    <value>Custom Classifications</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
@@ -1080,21 +1077,6 @@
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
-  </data>
-  <data name="LegacyClassification" xml:space="preserve">
-    <value>Legacy Classification</value>
-  </data>
-  <data name="LegacyClassification_IsDeprecated" xml:space="preserve">
-    <value>Is Deprecated</value>
-  </data>
-  <data name="LegacyClassifications" xml:space="preserve">
-    <value>Legacy Classifications</value>
-  </data>
-  <data name="LegacyType" xml:space="preserve">
-    <value>Legacy Type</value>
-  </data>
-  <data name="LegacyTypes" xml:space="preserve">
-    <value>Legacy Types</value>
   </data>
   <data name="Line" xml:space="preserve">
     <value>Line</value>

@@ -248,27 +248,17 @@
             <ng-template ngbNavContent>
                 <div class="row m-0 pt-2 pt-sm-3">
 
-                    <!-- Legacy Classification -->
-                    <t-form-group class="t-form-group" [label]="'Account_LegacyClassification' | translate"
-                        [serverErrors]="model?.serverErrors?.LegacyClassificationId">
-                        <t-view-link *ngIf="!isEdit" link="../../legacy-classifications"
-                            [itemId]="model?.LegacyClassificationId">
-                            <t-auto-cell collection="Account" path="LegacyClassification" [entity]="model">
+                    <!-- Custom Classification -->
+                    <t-form-group class="t-form-group" [label]="'Account_CustomClassification' | translate"
+                        [serverErrors]="model?.serverErrors?.CustomClassificationId">
+                        <t-view-link *ngIf="!isEdit" link="../../custom-classifications"
+                            [itemId]="model?.CustomClassificationId">
+                            <t-auto-cell collection="Account" path="CustomClassification" [entity]="model">
                             </t-auto-cell>
                         </t-view-link>
-                        <t-legacy-classifications-picker *ngIf="isEdit" [(ngModel)]="model.LegacyClassificationId">
-                        </t-legacy-classifications-picker>
+                        <t-custom-classifications-picker *ngIf="isEdit" [(ngModel)]="model.CustomClassificationId">
+                        </t-custom-classifications-picker>
                     </t-form-group>
-
-                    <!-- Legacy Type -->
-                    <!-- <t-form-group class="t-form-group" [label]="'Account_LegacyType' | translate"
-                        [serverErrors]="model?.serverErrors?.LegacyTypeId">
-                        <t-view-link *ngIf="!isEdit" link="../../legacy-types" [itemId]="model.LegacyTypeId">
-                            {{ ws.getMultilingualValue('LegacyType', model.LegacyTypeId, 'Name') }}
-                        </t-view-link>
-                        <t-legacy-types-picker *ngIf="isEdit" [(ngModel)]="model.LegacyTypeId">
-                        </t-legacy-types-picker>
-                    </t-form-group> -->
 
                     <!-- Has ExternalReference -->
                     <t-form-group class="t-form-group" [label]="'Account_HasExternalReference' | translate"
