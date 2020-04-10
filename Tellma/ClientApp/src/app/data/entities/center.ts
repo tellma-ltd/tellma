@@ -64,7 +64,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService, _:
                     control: 'choice',
                     label: () => trx.instant('Center_CenterType'),
                     choices: ['Investment', 'Profit', 'Revenue', 'Cost'],
-                    format: (c: string) => trx.instant(`Center_CenterType_${c}`)
+                    format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },

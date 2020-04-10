@@ -70,8 +70,7 @@
                 {{ centerTypeLookup(model?.CenterType) | translate }}
             </t-restricted>
         </div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices"
-            required></t-selector>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices"></t-selector>
     </t-form-group>
 
     <!-- Manager -->

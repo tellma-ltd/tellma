@@ -15,7 +15,6 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
             new string[] {
