@@ -60,6 +60,12 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+
+        public int? AssetTypeId { get; set; }
+        public int? RevenueTypeId { get; set; }
+        public int? ExpenseTypeId { get; set; }
+
+
         [Display(Name = "Resource_CostObject")]
         public int? CostObjectId { get; set; }
 

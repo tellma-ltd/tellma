@@ -73,7 +73,7 @@ namespace Tellma.Controllers
                     // Init the database connection...
                     // The client sometimes makes ambient API calls, not in response to user interaction
                     // Such calls should not update LastAccess of that user, in this case the client 
-                    var connString = _shardResolver.GetConnectionString(tenantId);
+                    var connString = await _shardResolver.GetConnectionString(tenantId);
                     bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
                     await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive);
 

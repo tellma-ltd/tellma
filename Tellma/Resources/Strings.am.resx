@@ -136,20 +136,68 @@
   <data name="AccountType" xml:space="preserve">
     <value>የመለያ አይነት</value>
   </data>
+  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
+    <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
+  </data>
+  <data name="AccountType_AgentAssignment" xml:space="preserve">
+    <value>ወኪል ምደባ</value>
+  </data>
+  <data name="AccountType_AgentDefinition" xml:space="preserve">
+    <value>ወኪል ፍቺ</value>
+  </data>
+  <data name="AccountType_CenterAssignment" xml:space="preserve">
+    <value>ማዕከል ምደባ</value>
+  </data>
+  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
+    <value>የምንዛሬ ምደባ</value>
+  </data>
+  <data name="AccountType_DueDateLabel" xml:space="preserve">
+    <value>መጠናቀቅ ያለበት ቀን መሰየሚያ</value>
+  </data>
+  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
+    <value>ዓላማ ምደባ</value>
+  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ምዝግብ አይነት ወላጅ</value>
   </data>
-  <data name="AccountType_IsCurrent" xml:space="preserve">
-    <value>የሆነው የአሁኑ</value>
+  <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
+    <value>የውጭ ማጣቀሻ መሰየሚያ</value>
   </data>
-  <data name="AccountType_IsPersonal" xml:space="preserve">
-    <value>የሆነው የግል</value>
+  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
+    <value>መለያ ምደባ</value>
   </data>
-  <data name="AccountType_IsReal" xml:space="preserve">
-    <value>እውነተኛ</value>
+  <data name="AccountType_IfrsConcept" xml:space="preserve">
+    <value>IFRS ጽንሰ</value>
   </data>
   <data name="AccountType_IsResourceClassification" xml:space="preserve">
     <value>ሪሶርስ ምደባ ነው</value>
+  </data>
+  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
+    <value>እንደተጠቀሰው ወኪል ምደባ</value>
+  </data>
+  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው ወኪል ፍቺ</value>
+  </data>
+  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+    <value>እንደተጠቀሰው ወኪል ስም መሰየሚያ</value>
+  </data>
+  <data name="AccountType_NotedAmountLabel" xml:space="preserve">
+    <value>እንደተጠቀሰው መጠን መለያ ስም</value>
+  </data>
+  <data name="AccountType_NotedDateLabel" xml:space="preserve">
+    <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
+  </data>
+  <data name="AccountType_ResourceAssignment" xml:space="preserve">
+    <value>የመገልገያ ምደባ</value>
+  </data>
+  <data name="AccountType_ResourceDefinition" xml:space="preserve">
+    <value>የመገልገያ ፍቺ</value>
+  </data>
+  <data name="AccountType_Time1Label" xml:space="preserve">
+    <value>ጊዜ 1 መሰየሚያ</value>
+  </data>
+  <data name="AccountType_Time2Label" xml:space="preserve">
+    <value>ሰዓት 2 መሰየሚያ</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>የመለያ አይነቶች</value>
@@ -211,8 +259,17 @@
   <data name="AppName" xml:space="preserve">
     <value>ተልማ</value>
   </data>
+  <data name="Assignment_A" xml:space="preserve">
+    <value>መለያ</value>
+  </data>
   <data name="Assignment_Document" xml:space="preserve">
     <value>የሰነድ</value>
+  </data>
+  <data name="Assignment_E" xml:space="preserve">
+    <value>Entry ከ</value>
+  </data>
+  <data name="Assignment_N" xml:space="preserve">
+    <value>አልተመደበም</value>
   </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>የፋይል ቅጥያ</value>
@@ -660,6 +717,9 @@
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>አንድ ያልተንቀሳቀሰ ንጥል ማስተካከል አይቻልም.</value>
+  </data>
+  <data name="Error_CannotModifySystemItem" xml:space="preserve">
+    <value>የስርዓት መዝገብ አርትዕ ሊደረግ አይችልም</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>ኮድ የዝማኔ ማስመጣት ሁነታ ያስፈልጋል.</value>

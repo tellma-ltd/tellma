@@ -83,6 +83,13 @@ namespace Tellma.IntegrationTests.Scenario_01
                 IsAssignable = true,
                 Description = "Sheet Metals",
                 Description2 = "صفائح المعدن",
+                AgentAssignment = 'N',
+                CenterAssignment = 'A',
+                CurrencyAssignment = 'A',
+                EntryTypeAssignment = 'N',
+                IdentifierAssignment = 'N',
+                NotedAgentAssignment = 'N',
+                ResourceAssignment = 'N',
             };
 
             // Save it
@@ -112,8 +119,8 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.ParentId, responseDto.ParentId);
             Assert.Equal(dtoForSave.IsAssignable, responseDto.IsAssignable);
             Assert.Equal('N', responseDto.AgentAssignment);
-            Assert.Equal('N', responseDto.CenterAssignment);
-            Assert.Equal('N', responseDto.CurrencyAssignment);
+            Assert.Equal('A', responseDto.CenterAssignment);
+            Assert.Equal('A', responseDto.CurrencyAssignment);
             Assert.Equal('N', responseDto.EntryTypeAssignment);
             Assert.Equal('N', responseDto.IdentifierAssignment);
             Assert.Equal('N', responseDto.NotedAgentAssignment);
@@ -155,7 +162,14 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "SM",
-                    IsAssignable = true
+                    IsAssignable = true,
+                    AgentAssignment = 'N',
+                    CenterAssignment = 'A',
+                    CurrencyAssignment = 'A',
+                    EntryTypeAssignment = 'N',
+                    IdentifierAssignment = 'N',
+                    NotedAgentAssignment = 'N',
+                    ResourceAssignment = 'N',
                 }
             };
 
@@ -189,7 +203,14 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name2 = "مقطع أجوف",
                 Code = "HS  ", // Trailing space
                 ParentId = null,
-                IsAssignable = false
+                IsAssignable = false,
+                AgentAssignment = 'N',
+                CenterAssignment = 'A',
+                CurrencyAssignment = 'A',
+                EntryTypeAssignment = 'N',
+                IdentifierAssignment = 'N',
+                NotedAgentAssignment = 'N',
+                ResourceAssignment = 'N',
             };
 
             // Call the API

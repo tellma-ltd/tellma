@@ -1,7 +1,9 @@
-﻿namespace Tellma.Services.Sharding
+﻿using System.Threading.Tasks;
+
+namespace Tellma.Services.Sharding
 {
     public interface IShardResolver
     {
-        string GetConnectionString(int? tenantId = null);
+        Task<string> GetConnectionString(int? tenantId = null);
     }
 }

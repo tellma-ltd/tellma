@@ -70,7 +70,7 @@
               [serverErrors]="validationErrors.ShortCompanyName">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
               <t-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName"
-                [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
+                [ngModelOptions]="{ updateOn: 'blur' }" required></t-text-editor>
             </t-form-group-settings>
 
             <!-- Short Company Name 2 -->

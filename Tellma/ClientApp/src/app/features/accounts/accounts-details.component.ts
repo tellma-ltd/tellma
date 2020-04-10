@@ -110,7 +110,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
     // returns true if the field is meant to stay readonly in edit mode
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return !!model.AccountTypeId && (accountType.IsCurrent === true || accountType.IsCurrent === false);
+    return false; // !!model.AccountTypeId && (accountType.IsCurrent === true || accountType.IsCurrent === false);
   }
 
   // LegacyClassificationId
@@ -123,7 +123,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal;
+    return false; // accountType.IsPersonal;
   }
 
   public readonlyAgentDefinitionId(model: AccountForSave): boolean {
@@ -167,7 +167,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return !!model.AccountTypeId && accountType.IsReal;
+    return false; // !!model.AccountTypeId && accountType.IsReal;
   }
 
   // IsRelated
@@ -177,7 +177,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal;
+    return false; // accountType.IsPersonal;
   }
 
   // Agent
@@ -187,7 +187,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsPersonal;
+    return false; // accountType.IsPersonal;
   }
 
   // Resource
@@ -197,7 +197,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return accountType.IsReal && model.HasResource;
+    return false; // accountType.IsReal && model.HasResource;
   }
 
   public filterResource(model: AccountForSave) {

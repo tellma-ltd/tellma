@@ -126,7 +126,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                   const metadataFn = metadata[collection];
                   if (!metadataFn) {
                     // developer mistake
-                    console.error(`Collection @${navPropDesc.collection} was not found`);
+                    console.error(`Collection @${collection} was not found`);
                   }
                   const entityDesc = metadataFn(this.workspace, this.translate, navPropDesc.definition);
                   urlValue = entityDesc.properties.Id.control === 'number' ? +urlStringValue : urlStringValue;

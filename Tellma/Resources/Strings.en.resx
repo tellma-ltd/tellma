@@ -136,20 +136,68 @@
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
+  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
+    <value>Additional Reference Label</value>
+  </data>
+  <data name="AccountType_AgentAssignment" xml:space="preserve">
+    <value>Agent Assignment</value>
+  </data>
+  <data name="AccountType_AgentDefinition" xml:space="preserve">
+    <value>Agent Definition</value>
+  </data>
+  <data name="AccountType_CenterAssignment" xml:space="preserve">
+    <value>Center Assignment</value>
+  </data>
+  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
+    <value>Currency Assignment</value>
+  </data>
+  <data name="AccountType_DueDateLabel" xml:space="preserve">
+    <value>Due Date Label</value>
+  </data>
+  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
+    <value>Purpose Assignment</value>
+  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Entry Type Parent</value>
   </data>
-  <data name="AccountType_IsCurrent" xml:space="preserve">
-    <value>Is Current</value>
+  <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
+    <value>External Reference Label</value>
   </data>
-  <data name="AccountType_IsPersonal" xml:space="preserve">
-    <value>Is Personal</value>
+  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
+    <value>Identifier Assignment</value>
   </data>
-  <data name="AccountType_IsReal" xml:space="preserve">
-    <value>Is Real</value>
+  <data name="AccountType_IfrsConcept" xml:space="preserve">
+    <value>IFRS Concept</value>
   </data>
   <data name="AccountType_IsResourceClassification" xml:space="preserve">
     <value>Is Resource Classification</value>
+  </data>
+  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
+    <value>Noted Agent Assignment</value>
+  </data>
+  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
+    <value>Noted Agent Definition</value>
+  </data>
+  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+    <value>Noted Agent Name Label</value>
+  </data>
+  <data name="AccountType_NotedAmountLabel" xml:space="preserve">
+    <value>Noted Amount Label</value>
+  </data>
+  <data name="AccountType_NotedDateLabel" xml:space="preserve">
+    <value>Noted Date Label</value>
+  </data>
+  <data name="AccountType_ResourceAssignment" xml:space="preserve">
+    <value>Resource Assignment</value>
+  </data>
+  <data name="AccountType_ResourceDefinition" xml:space="preserve">
+    <value>Resource Definition</value>
+  </data>
+  <data name="AccountType_Time1Label" xml:space="preserve">
+    <value>Time 1 Label</value>
+  </data>
+  <data name="AccountType_Time2Label" xml:space="preserve">
+    <value>Time 2 Label</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>Account Types</value>
@@ -211,8 +259,17 @@
   <data name="AppName" xml:space="preserve">
     <value>Tellma</value>
   </data>
+  <data name="Assignment_A" xml:space="preserve">
+    <value>From Account</value>
+  </data>
   <data name="Assignment_Document" xml:space="preserve">
     <value>Document</value>
+  </data>
+  <data name="Assignment_E" xml:space="preserve">
+    <value>From Entry</value>
+  </data>
+  <data name="Assignment_N" xml:space="preserve">
+    <value>Not Assigned</value>
   </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>File Extension</value>
@@ -660,6 +717,9 @@
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
+  </data>
+  <data name="Error_CannotModifySystemItem" xml:space="preserve">
+    <value>A system record cannot be edited</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>The code is required for the update import mode.</value>

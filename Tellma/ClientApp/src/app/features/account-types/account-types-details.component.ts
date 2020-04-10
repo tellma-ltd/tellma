@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { ChoicePropDescriptor, getChoices, metadata } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 't-account-types-details',
@@ -17,17 +18,18 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent,EntryTypeParent';
-  public isCurrentChoices: SelectorChoice[] = [
-    { value: 'Yes', name: () => this.translate.instant('Yes') },
-    { value: 'No', name: () => this.translate.instant('No') },
-  ];
+  private _choicesRequiredAssignment: SelectorChoice[];
+  private _choicesOptionalAssignment: SelectorChoice[];
+
+  public expand = 'Parent,IfrsConcept,EntryTypeParent';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$);
+    this._choicesRequiredAssignment = ['A', 'E'].map(e => ({ value: e, name: () => translate.instant('Assignment_' + e) }));
+    this._choicesOptionalAssignment = ['N', 'A', 'E'].map(e => ({ value: e, name: () => translate.instant('Assignment_' + e) }));
   }
 
   get view(): string {
@@ -45,9 +47,14 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     }
 
     result.IsAssignable = true;
-    result.IsReal = false;
-    result.IsResourceClassification = true;
-    result.IsPersonal = true;
+    result.AgentAssignment = 'N';
+    result.CenterAssignment = 'A';
+    result.CurrencyAssignment = 'A';
+    result.EntryTypeAssignment = 'N';
+    result.IdentifierAssignment = 'N';
+    result.NotedAgentAssignment = 'N';
+    result.ResourceAssignment = 'N';
+
     return result;
   }
 
@@ -84,17 +91,81 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 
-  getIsCurrent(model: AccountTypeForSave) {
-    return model.IsCurrent === true ? 'Yes' : model.IsCurrent === false ? 'No' : '';
+  // Assignment
+
+  public get choicesRequiredAssignment(): SelectorChoice[] {
+    return this._choicesRequiredAssignment;
+  }
+  public get choicesOptionalAssignment(): SelectorChoice[] {
+    return this._choicesOptionalAssignment;
   }
 
-  setIsCurrent(model: AccountTypeForSave, v: string) {
-    if (v === 'Yes') {
-      model.IsCurrent = true;
-    } else if (v === 'No') {
-      model.IsCurrent = false;
-    } else {
-      delete model.IsCurrent;
-    }
+  public formatAssignment(assignment: string): string {
+    return this.translate.instant('Assignment_' + assignment);
   }
+
+  // Agent Definition
+
+  public get choicesAgentDefinitionId(): SelectorChoice[] {
+    const entityDesc = metadata.AccountType(this.workspace, this.translate, null);
+    return getChoices(entityDesc.properties.AgentDefinitionId as ChoicePropDescriptor);
+  }
+
+  public showAgentDefinitionId(model: AccountType): boolean {
+    return !!model && !!model.AgentAssignment && model.AgentAssignment !== 'N';
+  }
+
+  public formatAgentDefinitionId(defId: string): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Agents[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
+  // Noted Agent Definition
+
+  public get choicesNotedAgentDefinitionId(): SelectorChoice[] {
+    const entityDesc = metadata.AccountType(this.workspace, this.translate, null);
+    return getChoices(entityDesc.properties.NotedAgentDefinitionId as ChoicePropDescriptor);
+  }
+
+  public showNotedAgentDefinitionId(model: AccountType): boolean {
+    return !!model && !!model.NotedAgentAssignment && model.NotedAgentAssignment !== 'N';
+  }
+
+  public formatNotedAgentDefinitionId(defId: string): string {
+    return this.formatAgentDefinitionId(defId);
+  }
+
+  // Resource Definition
+
+  public get choicesResourceDefinitionId(): SelectorChoice[] {
+    const entityDesc = metadata.AccountType(this.workspace, this.translate, null);
+    return getChoices(entityDesc.properties.ResourceDefinitionId as ChoicePropDescriptor);
+  }
+
+  public showResourceDefinitionId(model: AccountType): boolean {
+    return !!model && !!model.ResourceAssignment && model.ResourceAssignment !== 'N';
+  }
+
+  public formatResourceDefinitionId(defId: string): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Resources[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
+  // Entry Type Parent
+  public showEntryTypeParent(model: AccountType): boolean {
+    return !!model && !!model.EntryTypeAssignment && model.EntryTypeAssignment !== 'N';
+  }
+
+  // Is Inactive
+  isInactive: (model: AccountType) => string = (at: AccountType) =>
+    !!at && at.IsSystem ? 'Error_CannotModifySystemItem' :
+    !!at && !at.IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 }

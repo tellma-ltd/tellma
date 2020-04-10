@@ -10,8 +10,8 @@ namespace Tellma.Entities
     [AttributeUsage(validOn: AttributeTargets.Property)]
     public class AssignmentAttribute : ChoiceListAttribute
     {
-        public AssignmentAttribute() : base(new object[] { 'N', 'A', 'E' },
-            new string[] { "Assignment_N", "Assignment_A", "Assignment_E" })
+        public AssignmentAttribute(bool required = false) : base(required ? new object[] { 'A', 'E' } : new object[] { 'N', 'A', 'E' },
+            required ? new string[] { "Assignment_A", "Assignment_E" } : new string[] { "Assignment_N", "Assignment_A", "Assignment_E" })
         {
         }
     }

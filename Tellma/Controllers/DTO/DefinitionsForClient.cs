@@ -307,13 +307,11 @@ namespace Tellma.Controllers.Dto
         public string MonetaryValueVisibility { get; set; }
         public int? MonetaryValueDefaultValue { get; set; }
 
+        public string AssetTypeVisibility { get; set; }
+        public string RevenueTypeVisibility { get; set; }
+        public string ExpenseTypeVisibility { get; set; }
         public string DescriptionVisibility { get; set; } // Yes
-
-
-        public string CostObjectVisibility { get; set; } // Yes
         public string ExpenseEntryTypeVisibility { get; set; } // Yes
-        public string ExpenseCenterVisibility { get; set; } // Yes
-        public string InvestmentCenterVisibility { get; set; } // Yes
         public string ResidualMonetaryValueVisibility { get; set; } // Yes
         public string ResidualValueVisibility { get; set; } // Yes
 

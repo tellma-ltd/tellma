@@ -38,7 +38,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException("TenantId is required");
             }
 
-            string connString = _shardResolver.GetConnectionString(tenantId);
+            string connString = await _shardResolver.GetConnectionString(tenantId);
             await _repo.InitConnectionAsync(connString, setLastActive: false);
 
             var userInfo = await _repo.GetUserInfoAsync();

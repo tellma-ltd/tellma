@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tellma.Services.Sharding
 {
@@ -17,8 +18,8 @@ namespace Tellma.Services.Sharding
     {
         public const string ADMIN_SERVER_PLACEHOLDER = "<AdminServer>";
 
-        // This efficient lock prevents concurrency issues when updating the cache
-        private static ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        // This efficient semaphore prevents concurrency issues when updating the cache
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private readonly ITenantIdAccessor _tenantIdProvider;
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +27,7 @@ namespace Tellma.Services.Sharding
         private readonly ShardResolverOptions _options;
         private readonly AdminRepositoryOptions _adminOptions;
 
-        public ShardResolver(ITenantIdAccessor tenantIdAccessor, IServiceProvider serviceProvider,
+        public ShardResolver(ITenantIdAccessor tenantIdAccessor, IServiceProvider serviceProvider, 
             IMemoryCache cache, IOptions<ShardResolverOptions> options, IOptions<AdminRepositoryOptions> adminOptions)
         {
             _tenantIdProvider = tenantIdAccessor;
@@ -36,31 +37,31 @@ namespace Tellma.Services.Sharding
             _options = options.Value;
         }
 
-        public string GetConnectionString(int? tenantId = null)
+        public async Task<string> GetConnectionString(int? tenantId = null)
         {
-            string shardConnString = null;
             int databaseId = tenantId ?? _tenantIdProvider.GetTenantId();
 
-            // Step (1) retrieve the conn string from the cache inside a READ lock
-            _lock.EnterReadLock();
-            try
+            // Step (1) Try retrieving the connection string from the cache
+            if (_cache.TryGetValue(CacheKey(databaseId), out string shardConnString))
             {
-                _cache.TryGetValue(CacheKey(databaseId), out shardConnString);
-            }
-            finally
-            {
-                _lock.ExitReadLock();
+                return shardConnString;
             }
 
-            // Step (2) if step (1) was a miss, enter inside a WRITE lock, retrieve the conn string from the source and update the cache
-            if (shardConnString == null)
+            // Step (2) if step 1 was a miss, request the semaphore to guarantee only one thread can
+            // access the try-block, in there retrieve the conn string from the DB and update the cache
+            else
             {
-                _lock.EnterWriteLock();
+                // Only one thread at a time can access the next section
+                await _semaphore.WaitAsync();
                 try
                 {
                     // To avoid a race-condition causing multiple threads to populate the cache in parallel immediately after they all 
-                    // have a cache miss inside the previous READ lock, here we check the cache again inside the WRITE lock
-                    _cache.TryGetValue(CacheKey(databaseId), out shardConnString);
+                    // have a cache miss, here we check the cache again inside the single-threaded block
+                    if(_cache.TryGetValue(CacheKey(databaseId), out shardConnString))
+                    {
+                        return shardConnString;
+                    }
+
                     if (shardConnString == null)
                     {
                         DatabaseConnectionInfo connectionInfo;
@@ -75,7 +76,7 @@ namespace Tellma.Services.Sharding
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                            connectionInfo = repo.GetDatabaseConnectionInfo(databaseId: databaseId).GetAwaiter().GetResult();
+                            connectionInfo = await repo.GetDatabaseConnectionInfo(databaseId: databaseId);
 
                             dbName = connectionInfo?.DatabaseName;
                         }
@@ -90,15 +91,15 @@ namespace Tellma.Services.Sharding
                         else if (connectionInfo.ServerName == ADMIN_SERVER_PLACEHOLDER)
                         {
                             // Get the connection string of the manager
-                            var shardManagerConnection = _adminOptions.ConnectionString;
-                            var shardManagerConnBuilder = new SqlConnectionStringBuilder(shardManagerConnection);
+                            var adminConnection = _adminOptions.ConnectionString;
+                            var adminConnBuilder = new SqlConnectionStringBuilder(adminConnection);
 
                             // Everything comes from the Admin connection string except the database name
-                            serverName = shardManagerConnBuilder.DataSource;
-                            userName = shardManagerConnBuilder.UserID;
-                            password = shardManagerConnBuilder.Password;
+                            serverName = adminConnBuilder.DataSource;
+                            userName = adminConnBuilder.UserID;
+                            password = adminConnBuilder.Password;
 
-                            isWindowsAuth = shardManagerConnBuilder.IntegratedSecurity;
+                            isWindowsAuth = adminConnBuilder.IntegratedSecurity;
                         }
 
                         // ELSE: this is a different SQL Server use the information in ConnectionInfo
@@ -109,13 +110,11 @@ namespace Tellma.Services.Sharding
 
                             // For better security, there are 2 modes of storing shard passwords:
                             // - Mode 1: in a "Sharding:Passwords" section in a secure configuration provider, and then they are referenced in the DB by their names
-                            // - Mode 2: as being the same password as the shard manager's connection string, which is also stored safely in a configuration provider
+                            // - Mode 2: as being the same password as the admin db's connection string, which is also stored safely in a configuration provider
 
                             if (!string.IsNullOrWhiteSpace(connectionInfo.PasswordKey))
                             {
                                 // If the shard password is specified, and it matches a valid key in the "Passwords" configuration section, use that configuration value instead
-                                // string configPassword = _config[$"{PASSWORDS_CONFIG_SECTION}:{shardConnBuilder.Password}"];
-
                                 if (_options?.Passwords != null && _options.Passwords.ContainsKey(connectionInfo.PasswordKey))
                                 {
                                     password = _options.Passwords[connectionInfo.PasswordKey];
@@ -127,18 +126,18 @@ namespace Tellma.Services.Sharding
                             }
                             else
                             {
-                                // If the password of the shard is not set but the password of the shard manager is, use the shard manager's
-                                string shardManagerConnection = _adminOptions.ConnectionString;
-                                var shardManagerConnBuilder = new SqlConnectionStringBuilder(shardManagerConnection);
+                                // If the password of the shard is not set but the password of the admin db is, use the admin db's
+                                string adminConnection = _adminOptions.ConnectionString;
+                                var adminConnBuilder = new SqlConnectionStringBuilder(adminConnection);
 
-                                if (!string.IsNullOrWhiteSpace(shardManagerConnBuilder.Password))
+                                if (!string.IsNullOrWhiteSpace(adminConnBuilder.Password))
                                 {
-                                    password = shardManagerConnBuilder.Password;
+                                    password = adminConnBuilder.Password;
                                 }
                                 else
                                 {
                                     // ELSE we hope that this is windows authentication on a development machine, or else the connection to the shard will sadly fail.
-                                    isWindowsAuth = shardManagerConnBuilder.IntegratedSecurity;
+                                    isWindowsAuth = adminConnBuilder.IntegratedSecurity;
                                 }
                             }
                         }
@@ -168,14 +167,14 @@ namespace Tellma.Services.Sharding
                 }
                 finally
                 {
-                    _lock.ExitWriteLock();
+                    _semaphore.Release();
                 }
             }
 
             return shardConnString;
         }
 
-        private double GetCacheExpirationInMinutes() => _options?.ShardResolverCacheExpirationMinutes ?? 120d;
+        private double GetCacheExpirationInMinutes() => _options?.ShardResolverCacheExpirationMinutes ?? 120d; // Default = 2 hours
 
         private string CacheKey(int tenantId) => $"Sharding:{tenantId}";
     }

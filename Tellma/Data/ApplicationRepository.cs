@@ -92,7 +92,7 @@ namespace Tellma.Data
         {
             if (_conn == null)
             {
-                string connString = _shardResolver.GetConnectionString();
+                string connString = await _shardResolver.GetConnectionString();
                 await InitConnectionAsync(connString, setLastActive: true);
             }
 

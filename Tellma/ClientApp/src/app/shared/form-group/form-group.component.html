@@ -14,7 +14,7 @@
   <!-- Content -->
   <div class="d-flex form-group-container" style="overflow-wrap: anywhere;" [class.w-100]="!showLabel"
     [class.t-labeled-form-group-content]="showLabel" [class.is-invalid]="invalid">
-    <!-- <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="areServerErrors"></fa-icon> -->
+    <fa-icon class="text-danger mx-1" icon="exclamation-triangle" *ngIf="areServerErrors"></fa-icon>
     <ng-content></ng-content>
   </div>
 </div>

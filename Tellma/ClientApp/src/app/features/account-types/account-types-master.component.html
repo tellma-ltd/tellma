@@ -1,7 +1,7 @@
 <t-master collection="AccountType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'AccountTypes' | translate"
   [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="IsAssignable,IsCurrent,IsReal,IsActive" selectForTiles="Name,Name2,Name3" [multiselectActions]="[
+  selectDefault="IfrsConcept,IsAssignable,IsActive" selectForTiles="Name,Name2,Name3" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
   ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
@@ -17,7 +17,7 @@
     <span class="d-block text-truncate">{{ ws.getMultilingualValue('AccountType', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <t-auto-cell collection="AccountType" [entity]="c[id]" path="Id"></t-auto-cell>
+    <t-auto-cell collection="AccountType" [entity]="c[id]" path="Code"></t-auto-cell>
   </div>
 </ng-template>
 

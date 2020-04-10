@@ -88,8 +88,7 @@ IF NOT EXISTS(SELECT * FROM [dbo].[AgentDefinitions] WHERE [Id] = N'customers')
 	VALUES(N'customers');
 
 IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'currencies')
-	INSERT INTO [dbo].[ResourceDefinitions]([Id], [ParentAccountTypeId])
-	SELECT TOP 1 N'currencies', [Id] FROM [dbo].[AccountTypes];
+	INSERT INTO [dbo].[ResourceDefinitions]([Id]) VALUES (N'currencies')
 
 UPDATE Settings SET DefinitionsVersion = NEWID(), SettingsVersion = NEWID();
 

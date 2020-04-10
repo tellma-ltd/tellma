@@ -72,7 +72,7 @@ namespace Tellma.Controllers
             {
                 try
                 {
-                    var connString = _shardResolver.GetConnectionString(databaseId);
+                    var connString = await _shardResolver.GetConnectionString(databaseId);
                     using var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null);
 
                     await appRepo.InitConnectionAsync(connString, setLastActive: false);

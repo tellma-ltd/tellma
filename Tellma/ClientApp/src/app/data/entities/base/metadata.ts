@@ -285,7 +285,6 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
      * Determines the name of the collection holding the entities represented by this property
      */
     collection?: string; // e.g. Custody
-
 }
 
 export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor

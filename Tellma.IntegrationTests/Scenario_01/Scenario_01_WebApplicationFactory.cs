@@ -83,7 +83,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 }
             }
 
-            var appConnString = shardResolver.GetConnectionString(databaseId);
+            var appConnString = shardResolver.GetConnectionString(databaseId).GetAwaiter().GetResult();
             var seedAppPath = Path.Combine(projectDir, "SeedApplication.sql");
             var seedAppSql = File.ReadAllText(seedAppPath);
 

@@ -136,20 +136,68 @@
   <data name="AccountType" xml:space="preserve">
     <value>帐户类型</value>
   </data>
+  <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
+    <value>其他参考标签</value>
+  </data>
+  <data name="AccountType_AgentAssignment" xml:space="preserve">
+    <value>代理分配</value>
+  </data>
+  <data name="AccountType_AgentDefinition" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
+  <data name="AccountType_CenterAssignment" xml:space="preserve">
+    <value>中心分配</value>
+  </data>
+  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
+    <value>货币分配</value>
+  </data>
+  <data name="AccountType_DueDateLabel" xml:space="preserve">
+    <value>截止日期标签</value>
+  </data>
+  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
+    <value>目的分配</value>
+  </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>输入型亲</value>
   </data>
-  <data name="AccountType_IsCurrent" xml:space="preserve">
-    <value>是当前</value>
+  <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
+    <value>外部参考标签</value>
   </data>
-  <data name="AccountType_IsPersonal" xml:space="preserve">
-    <value>是个人</value>
+  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
+    <value>标识符指定</value>
   </data>
-  <data name="AccountType_IsReal" xml:space="preserve">
-    <value>是真实的</value>
+  <data name="AccountType_IfrsConcept" xml:space="preserve">
+    <value>IFRS概念</value>
   </data>
   <data name="AccountType_IsResourceClassification" xml:space="preserve">
     <value>是资源分类</value>
+  </data>
+  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
+    <value>注意代理分配</value>
+  </data>
+  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
+    <value>注意代理定义</value>
+  </data>
+  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+    <value>注意代理名称标签</value>
+  </data>
+  <data name="AccountType_NotedAmountLabel" xml:space="preserve">
+    <value>注意金额标签</value>
+  </data>
+  <data name="AccountType_NotedDateLabel" xml:space="preserve">
+    <value>注意日期标签</value>
+  </data>
+  <data name="AccountType_ResourceAssignment" xml:space="preserve">
+    <value>资源分配</value>
+  </data>
+  <data name="AccountType_ResourceDefinition" xml:space="preserve">
+    <value>资源定义</value>
+  </data>
+  <data name="AccountType_Time1Label" xml:space="preserve">
+    <value>时间1个标签</value>
+  </data>
+  <data name="AccountType_Time2Label" xml:space="preserve">
+    <value>时间2标签</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>账户类型</value>
@@ -211,8 +259,17 @@
   <data name="AppName" xml:space="preserve">
     <value>敏锐</value>
   </data>
+  <data name="Assignment_A" xml:space="preserve">
+    <value>从账户</value>
+  </data>
   <data name="Assignment_Document" xml:space="preserve">
     <value>文献</value>
+  </data>
+  <data name="Assignment_E" xml:space="preserve">
+    <value>从入门</value>
+  </data>
+  <data name="Assignment_N" xml:space="preserve">
+    <value>未分配</value>
   </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>文件扩展名</value>
@@ -660,6 +717,9 @@
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>无法修改非活动项目。</value>
+  </data>
+  <data name="Error_CannotModifySystemItem" xml:space="preserve">
+    <value>系统记录不能被编辑</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>该代码需要更新导入模式。</value>
