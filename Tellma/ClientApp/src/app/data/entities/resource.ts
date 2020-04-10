@@ -9,7 +9,9 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityWithKey {
-    AccountTypeId?: number;
+    AssetTypeId?: number;
+    RevenueTypeId?: number;
+    ExpenseTypeId?: number;
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -20,10 +22,8 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Description?: string;
     Description2?: string;
     Description3?: string;
-    CostObjectId?: number;
     ExpenseEntryTypeId?: number;
-    ExpenseCenterId?: number;
-    InvestmentCenterId?: number;
+    CenterId?: number;
     ResidualMonetaryValue?: number;
     ResidualValue?: number;
     ReorderLevel?: number;
@@ -95,8 +95,12 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ResourceDefinition', foreignKeyName: 'DefinitionId' },
-                AccountTypeId: { control: 'number', label: () => `${trx.instant('Resource_AccountType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AccountType: { control: 'navigation', label: () => trx.instant('Resource_AccountType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'AccountTypeId' },
+                AssetTypeId: { control: 'number', label: () => `${trx.instant('Resource_AssetType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AssetType: { control: 'navigation', label: () => trx.instant('Resource_AssetType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'AssetTypeId' },
+                RevenueTypeId: { control: 'number', label: () => `${trx.instant('Resource_RevenueType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                RevenueType: { control: 'navigation', label: () => trx.instant('Resource_RevenueType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'RevenueTypeId' },
+                ExpenseTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ExpenseType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'ExpenseTypeId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -108,14 +112,10 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
-                CostObjectId: { control: 'number', label: () => `${trx.instant('Resource_CostObject')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CostObject: { control: 'navigation', label: () => trx.instant('Resource_CostObject'), type: 'Agent', foreignKeyName: 'CostObjectId' },
                 ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
-                ExpenseCenterId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ExpenseCenter: { control: 'navigation', label: () => trx.instant('Resource_ExpenseCenter'), type: 'Center', foreignKeyName: 'ExpenseCenterId' },
-                InvestmentCenterId: { control: 'number', label: () => `${trx.instant('Resource_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                InvestmentCenter: { control: 'navigation', label: () => trx.instant('Resource_InvestmentCenter'), type: 'Center', foreignKeyName: 'InvestmentCenterId' },
+                CenterId: { control: 'number', label: () => `${trx.instant('Resource_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { control: 'navigation', label: () => trx.instant('Resource_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 ResidualMonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 ResidualValue: { control: 'number', label: () => `${trx.instant('Resource_ResidualValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})` , minDecimalPlaces: functionalE, maxDecimalPlaces: functionalE, alignment: 'right' },
                 ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
@@ -194,7 +194,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'CostObject', 'ExpenseEntryType', 'ExpenseCenter', 'InvestmentCenter']) {
+            for (const propName of ['Currency', 'ExpenseEntryType', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

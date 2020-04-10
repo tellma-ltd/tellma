@@ -158,7 +158,7 @@
     <value>تعريف الغرض</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
-    <value>تصنيف الغرض</value>
+    <value>جذر الغرض</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
@@ -1615,8 +1615,8 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
-  <data name="Resource_AccountType" xml:space="preserve">
-    <value>نوع الحسابات</value>
+  <data name="Resource_AssetType" xml:space="preserve">
+    <value>نوع الأصل</value>
   </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>متاح من</value>
@@ -1624,8 +1624,8 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>متاح إلى</value>
   </data>
-  <data name="Resource_CostObject" xml:space="preserve">
-    <value>مركز التكلفة</value>
+  <data name="Resource_Center" xml:space="preserve">
+    <value>المركز</value>
   </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>العملة</value>
@@ -1639,11 +1639,11 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
   </data>
-  <data name="Resource_ExpenseCenter" xml:space="preserve">
-    <value>مركز المصروف</value>
-  </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>الغرض</value>
+  </data>
+  <data name="Resource_ExpenseType" xml:space="preserve">
+    <value>نوع المصروف</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>رقم التعريف</value>
@@ -1653,9 +1653,6 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>الصفة العددية 2</value>
-  </data>
-  <data name="Resource_InvestmentCenter" xml:space="preserve">
-    <value>مركز الاستثمار</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -1683,6 +1680,9 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>قيمة الخردة</value>
+  </data>
+  <data name="Resource_RevenueType" xml:space="preserve">
+    <value>نوع الإيراد</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>

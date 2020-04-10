@@ -195,15 +195,14 @@ namespace Tellma.Controllers
             ValidateIfRequired(entities, e => e.Description, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description2, definition.DescriptionVisibility);
             ValidateIfRequired(entities, e => e.Description3, definition.DescriptionVisibility);
-
             ValidateIfRequired(entities, e => e.AssetTypeId, definition.AssetTypeVisibility);
             ValidateIfRequired(entities, e => e.RevenueTypeId, definition.RevenueTypeVisibility);
             ValidateIfRequired(entities, e => e.ExpenseTypeId, definition.ExpenseTypeVisibility);
-
             ValidateIfRequired(entities, e => e.ExpenseEntryTypeId, definition.ExpenseEntryTypeVisibility);
+            ValidateIfRequired(entities, e => e.CenterId, definition.CenterVisibility);
+
             ValidateIfRequired(entities, e => e.ResidualMonetaryValue, definition.ResidualMonetaryValueVisibility);
             ValidateIfRequired(entities, e => e.ResidualValue, definition.ResidualValueVisibility);
-
             ValidateIfRequired(entities, e => e.ReorderLevel, definition.ReorderLevelVisibility);
             ValidateIfRequired(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityVisibility);
             ValidateIfRequired(entities, e => e.AvailableSince, definition.AvailableSinceVisibility);

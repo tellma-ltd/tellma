@@ -1,7 +1,7 @@
 <t-master collection="AccountType" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
   [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'AccountTypes' | translate"
   [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="IfrsConcept,IsAssignable,IsActive" selectForTiles="Name,Name2,Name3" [multiselectActions]="[
+  selectDefault="IfrsConcept,IsAssignable,IsActive" selectForTiles="Name,Name2,Name3,Code" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
   ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{

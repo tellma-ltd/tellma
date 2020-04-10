@@ -81,16 +81,42 @@
         </t-text-editor>
     </t-form-group>
 
-    <!-- Account Type -->
-    <t-form-group class="t-form-group" [label]="'Resource_AccountType' | translate"
-        [serverErrors]="model?.serverErrors?.AccountTypeId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AccountType">
-            <t-view-link link="../../../account-types" [itemId]="model?.AccountTypeId">
-                {{ ws.getMultilingualValue('AccountType', model.AccountTypeId, 'Name') }}
+    <!-- Asset Type -->
+    <t-form-group class="t-form-group" *ngIf="AssetType_isVisible" [label]="'Resource_AssetType' | translate"
+        [serverErrors]="model?.serverErrors?.AssetTypeId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AssetType">
+            <t-view-link link="../../../account-types" [itemId]="model?.AssetTypeId">
+                {{ ws.getMultilingualValue('AccountType', model.AssetTypeId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="true"
-            filter="IsResourceClassification eq true">
+        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AssetTypeId"
+            filter="IsResourceClassification eq true" [required]="AssetType_isRequired">
+        </t-account-types-picker>
+    </t-form-group>
+    
+    <!-- Revenue Type -->
+    <t-form-group class="t-form-group" *ngIf="RevenueType_isVisible" [label]="'Resource_RevenueType' | translate"
+        [serverErrors]="model?.serverErrors?.RevenueTypeId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.RevenueType">
+            <t-view-link link="../../../account-types" [itemId]="model?.RevenueTypeId">
+                {{ ws.getMultilingualValue('AccountType', model.RevenueTypeId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.RevenueTypeId"
+            filter="IsResourceClassification eq true" [required]="RevenueType_isRequired">
+        </t-account-types-picker>
+    </t-form-group>
+    
+    <!-- Expense Type -->
+    <t-form-group class="t-form-group" *ngIf="ExpenseType_isVisible" [label]="'Resource_ExpenseType' | translate"
+        [serverErrors]="model?.serverErrors?.ExpenseTypeId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseType">
+            <t-view-link link="../../../account-types" [itemId]="model?.ExpenseTypeId">
+                {{ ws.getMultilingualValue('AccountType', model.ExpenseTypeId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseTypeId"
+            filter="IsResourceClassification eq true" [required]="ExpenseType_isRequired">
         </t-account-types-picker>
     </t-form-group>
 
@@ -120,22 +146,6 @@
         </t-decimal-editor>
     </t-form-group>
 
-    <!-- Cost Object -->
-    <t-form-group *ngIf="CostObject_isVisible" class="t-form-group" [label]="'Resource_CostObject' | translate"
-        [serverErrors]="model?.serverErrors?.CostObjectId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CostObject">
-            <t-view-link [link]="'../../../agents/' + ws.get('Agent', model.CostObjectId)?.DefinitionId"
-                [itemId]="model?.CostObjectId">
-                {{ ws.getMultilingualValue('Agent', model.CostObjectId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <!-- <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.CostObjectId" [required]="CostObject_isRequired">
-        </t-agents-picker> -->
-        <div class="text-danger t-slightly-bold" *ngIf="isEdit">
-            TODO
-        </div>
-    </t-form-group>
-
     <!-- Expense Entry Type -->
     <t-form-group *ngIf="ExpenseEntryType_isVisible" class="t-form-group"
         [label]="'Resource_ExpenseEntryType' | translate" [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
@@ -149,29 +159,16 @@
         </t-entry-types-picker>
     </t-form-group>
 
-    <!-- Expense Center -->
-    <t-form-group *ngIf="ExpenseCenter_isVisible" class="t-form-group" [label]="'Resource_ExpenseCenter' | translate"
-        [serverErrors]="model?.serverErrors?.ExpenseCenterId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseCenter">
-            <t-view-link link="../../../centers" [itemId]="model?.ExpenseCenterId">
-                {{ ws.getMultilingualValue('Center', model.ExpenseCenterId, 'Name') }}
+    <!-- Center -->
+    <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="'Resource_Center' | translate"
+        [serverErrors]="model?.serverErrors?.CenterId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Center">
+            <t-view-link link="../../../centers" [itemId]="model?.CenterId">
+                {{ ws.getMultilingualValue('Center', model.CenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseCenterId" filter="IsLeaf eq true"
-            [required]="ExpenseCenter_isRequired">
-        </t-centers-picker>
-    </t-form-group>
-
-    <!-- Investment Center -->
-    <t-form-group *ngIf="InvestmentCenter_isVisible" class="t-form-group"
-        [label]="'Resource_InvestmentCenter' | translate" [serverErrors]="model?.serverErrors?.InvestmentCenterId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InvestmentCenter">
-            <t-view-link link="../../../centers" [itemId]="model?.InvestmentCenterId">
-                {{ ws.getMultilingualValue('Center', model.InvestmentCenterId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId" [required]="InvestmentCenter_isRequired"
-            filter="CenterType eq 'Investment' and IsLeaf eq true">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true"
+            [required]="Center_isRequired">
         </t-centers-picker>
     </t-form-group>
 

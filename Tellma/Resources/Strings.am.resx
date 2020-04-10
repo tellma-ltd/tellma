@@ -1615,7 +1615,7 @@
   <data name="Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
-  <data name="Resource_AccountType" xml:space="preserve">
+  <data name="Resource_AssetType" xml:space="preserve">
     <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
@@ -1624,8 +1624,8 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>ድረስ ይገኛል</value>
   </data>
-  <data name="Resource_CostObject" xml:space="preserve">
-    <value>የወጭ የነገር</value>
+  <data name="Resource_Center" xml:space="preserve">
+    <value>ማዕከል የወጪ</value>
   </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
@@ -1639,11 +1639,11 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
   </data>
-  <data name="Resource_ExpenseCenter" xml:space="preserve">
-    <value>ማዕከል የወጪ</value>
-  </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>ዓላማ</value>
+  </data>
+  <data name="Resource_ExpenseType" xml:space="preserve">
+    <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>መለያ</value>
@@ -1653,9 +1653,6 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
-  </data>
-  <data name="Resource_InvestmentCenter" xml:space="preserve">
-    <value>የኢንቨስትመንት ማዕከል</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>አይነታ 1</value>
@@ -1683,6 +1680,9 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>ትራፊ እሴት</value>
+  </data>
+  <data name="Resource_RevenueType" xml:space="preserve">
+    <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>

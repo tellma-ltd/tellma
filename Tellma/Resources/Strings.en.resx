@@ -158,7 +158,7 @@
     <value>Purpose Assignment</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
-    <value>Entry Type Parent</value>
+    <value>Purpose Parent</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
@@ -1615,8 +1615,8 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
-  <data name="Resource_AccountType" xml:space="preserve">
-    <value>Account Type</value>
+  <data name="Resource_AssetType" xml:space="preserve">
+    <value>Asset Type</value>
   </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>Available Since</value>
@@ -1624,8 +1624,8 @@
   <data name="Resource_AvailableTill" xml:space="preserve">
     <value>Available Till</value>
   </data>
-  <data name="Resource_CostObject" xml:space="preserve">
-    <value>Cost Object</value>
+  <data name="Resource_Center" xml:space="preserve">
+    <value>Center</value>
   </data>
   <data name="Resource_Currency" xml:space="preserve">
     <value>Currency</value>
@@ -1639,11 +1639,11 @@
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
   </data>
-  <data name="Resource_ExpenseCenter" xml:space="preserve">
-    <value>Expense Center</value>
-  </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>Purpose</value>
+  </data>
+  <data name="Resource_ExpenseType" xml:space="preserve">
+    <value>Expense Type</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>
@@ -1653,9 +1653,6 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>Integer Attribute 2</value>
-  </data>
-  <data name="Resource_InvestmentCenter" xml:space="preserve">
-    <value>Investment Center</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -1683,6 +1680,9 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>Residual Value</value>
+  </data>
+  <data name="Resource_RevenueType" xml:space="preserve">
+    <value>Revenue Type</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>Text Attribute 1</value>

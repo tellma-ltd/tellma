@@ -32,12 +32,12 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `AccountType,Currency,CostObject,ExpenseEntryType,
-ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
+  public expand = `AssetType,RevenueType,ExpenseType,Currency,ExpenseEntryType,
+Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute) {
+    private workspace: WorkspaceService, private api: ApiService,
+    private translate: TranslateService, private route: ActivatedRoute) {
     super();
   }
 
@@ -213,12 +213,28 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
     return this.definition.DescriptionVisibility === 'Required';
   }
 
-  public get CostObject_isVisible(): boolean {
-    return !!this.definition.CostObjectVisibility;
+  public get AssetType_isVisible(): boolean {
+    return !!this.definition.AssetTypeVisibility;
   }
 
-  public get CostObject_isRequired(): boolean {
-    return this.definition.CostObjectVisibility === 'Required';
+  public get AssetType_isRequired(): boolean {
+    return this.definition.AssetTypeVisibility === 'Required';
+  }
+
+  public get RevenueType_isVisible(): boolean {
+    return !!this.definition.RevenueTypeVisibility;
+  }
+
+  public get RevenueType_isRequired(): boolean {
+    return this.definition.RevenueTypeVisibility === 'Required';
+  }
+
+  public get ExpenseType_isVisible(): boolean {
+    return !!this.definition.ExpenseTypeVisibility;
+  }
+
+  public get ExpenseType_isRequired(): boolean {
+    return this.definition.ExpenseTypeVisibility === 'Required';
   }
 
   public get ExpenseEntryType_isVisible(): boolean {
@@ -229,23 +245,15 @@ ExpenseCenter,InvestmentCenter,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
     return this.definition.ExpenseEntryTypeVisibility === 'Required';
   }
 
-  public get ExpenseCenter_isVisible(): boolean {
-    return !!this.definition.ExpenseCenterVisibility && this.ws.settings.IsMultiCenter;
+  public get Center_isVisible(): boolean {
+    return !!this.definition.CenterVisibility && this.ws.settings.IsMultiCenter;
   }
 
-  public get ExpenseCenter_isRequired(): boolean {
-    return this.definition.ExpenseCenterVisibility === 'Required';
+  public get Center_isRequired(): boolean {
+    return this.definition.CenterVisibility === 'Required';
   }
 
-  public get InvestmentCenter_isVisible(): boolean {
-    return !!this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
-  }
-
-  public get InvestmentCenter_isRequired(): boolean {
-    return this.definition.InvestmentCenterVisibility === 'Required';
-  }
-
-  public ResidualMonetaryValue_isVisible(model: ResourceForSave): boolean {
+  public ResidualMonetaryValue_isVisible(_: ResourceForSave): boolean {
     return !!this.definition.ResidualMonetaryValueVisibility;
   }
 

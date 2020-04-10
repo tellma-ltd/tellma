@@ -8,10 +8,14 @@ namespace Tellma.Entities
     [StrongEntity]
     public class ResourceForSave<TResourceUnit> : EntityWithKey<int>
     {
-        [Display(Name = "Resource_AccountType")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [AlwaysAccessible]
-        public int? AccountTypeId { get; set; }
+        [Display(Name = "Resource_AssetType")]
+        public int? AssetTypeId { get; set; }
+
+        [Display(Name = "Resource_RevenueType")]
+        public int? RevenueTypeId { get; set; }
+
+        [Display(Name = "Resource_ExpenseType")]
+        public int? ExpenseTypeId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
@@ -60,23 +64,11 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
-
-        public int? AssetTypeId { get; set; }
-        public int? RevenueTypeId { get; set; }
-        public int? ExpenseTypeId { get; set; }
-
-
-        [Display(Name = "Resource_CostObject")]
-        public int? CostObjectId { get; set; }
-
         [Display(Name = "Resource_ExpenseEntryType")]
         public int? ExpenseEntryTypeId { get; set; }
 
-        [Display(Name = "Resource_ExpenseCenter")]
-        public int? ExpenseCenterId { get; set; }
-
-        [Display(Name = "Resource_InvestmentCenter")]
-        public int? InvestmentCenterId { get; set; }
+        [Display(Name = "Resource_Center")]
+        public int? CenterId { get; set; }
 
         [Display(Name = "Resource_ResidualMonetaryValue")]
         public decimal? ResidualMonetaryValue { get; set; }
@@ -164,21 +156,13 @@ namespace Tellma.Entities
 
         // For Query
 
-        [Display(Name = "Resource_CostObject")]
-        [ForeignKey(nameof(CostObjectId))]
-        public Agent CostObject { get; set; }
-
         [Display(Name = "Resource_ExpenseEntryType")]
         [ForeignKey(nameof(ExpenseEntryTypeId))]
         public EntryType ExpenseEntryType { get; set; }
 
-        [Display(Name = "Resource_ExpenseCenter")]
-        [ForeignKey(nameof(ExpenseCenterId))]
-        public Center ExpenseCenter { get; set; }
-
-        [Display(Name = "Resource_InvestmentCenter")]
-        [ForeignKey(nameof(InvestmentCenterId))]
-        public Center InvestmentCenter { get; set; }
+        [Display(Name = "Resource_Center")]
+        [ForeignKey(nameof(CenterId))]
+        public Center Center { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
@@ -188,9 +172,17 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        [Display(Name = "Resource_AccountType")]
-        [ForeignKey(nameof(AccountTypeId))]
-        public AccountType AccountType { get; set; }
+        [Display(Name = "Resource_AssetType")]
+        [ForeignKey(nameof(AssetTypeId))]
+        public AccountType AssetType { get; set; }
+
+        [Display(Name = "Resource_ExpenseType")]
+        [ForeignKey(nameof(ExpenseTypeId))]
+        public AccountType ExpenseType { get; set; }
+
+        [Display(Name = "Resource_RevenueType")]
+        [ForeignKey(nameof(RevenueTypeId))]
+        public AccountType RevenueType { get; set; }
 
         [Display(Name = "Resource_Currency")]
         [ForeignKey(nameof(CurrencyId))]
