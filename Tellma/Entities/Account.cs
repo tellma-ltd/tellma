@@ -36,15 +36,8 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? AccountTypeId { get; set; }
 
-        [Display(Name = "Account_IsCurrent")]
-        public bool? IsCurrent { get; set; }
-
         [Display(Name = "Account_LegacyClassification")]
         public int? LegacyClassificationId { get; set; }
-
-        [Display(Name = "Account_LegacyType")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string LegacyTypeId { get; set; }
 
         [Display(Name = "Account_AgentDefinition")]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
@@ -140,10 +133,6 @@ namespace Tellma.Entities
         [Display(Name = "Account_AgentDefinition")]
         [ForeignKey(nameof(AgentDefinitionId))]
         public AgentDefinition AgentDefinition { get; set; }
-
-        [Display(Name = "Account_LegacyType")]
-        [ForeignKey(nameof(LegacyTypeId))]
-        public LegacyType LegacyType { get; set; }
 
         [Display(Name = "Account_Agent")]
         [ForeignKey(nameof(AgentId))]

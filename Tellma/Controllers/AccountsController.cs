@@ -124,7 +124,6 @@ namespace Tellma.Controllers
             //var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             entities.ForEach(result =>
             {
-                result.IsCurrent ??= false;
                 result.HasResource ??= false;
                 result.IsRelated ??= false;
                 result.HasExternalReference ??= false;
