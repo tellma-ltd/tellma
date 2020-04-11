@@ -21,10 +21,10 @@ BEGIN
 	(1,N'Banan - Unallocated',	N'شركة بنان - غ مخصص',	N'10',	NULL,			0),
 	(2,N'Executive Office',		N'المكتب التنفيذي',	N'11',	NULL,			0),
 	(3,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	NULL,			0), -- 	DistributionAndAdministrativeExpense
-	(4,N'System Admin',			N'إدارة النظم',			N'13',	NULL,			0),
+	(4,N'System Admin',			N'إدارة النظم',		N'13',	NULL,			0),
 	(5,N'Products',				N'المنتجات',			N'2',	N'Revenue',		0),
 	(6,N'B10/HCM',				N'بابل',				N'21',	NULL,			5), -- should we say: ExpenseByFunctionExtension
-	(7,N'BSmart',				N'بيسمارت',				N'22',	NULL,			5),
+	(7,N'BSmart',				N'بيسمارت',			N'22',	NULL,			5),
 	(8,N'Campus',				N'كامبوس',				N'23',	NULL,			5),
 	(9,N'Tellma',				N'تلما',				N'24',	NULL,			5),
 	(10,N'1st Floor',			N'ط - 1',				N'30',	NULL,			0);
@@ -229,7 +229,7 @@ DECLARE @C101_B10 INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'21');
 DECLARE @C101_BSmart INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'22');
 DECLARE @C101_Campus INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'23');
 DECLARE @C101_Tellma INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'24');
-DECLARE @C101_FFLR INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'3');
+DECLARE @C101_FFLR INT = (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'30');
 
 SELECT @RC_ExecutiveOffice = [Id] FROM dbo.[Centers] WHERE [Name] Like N'%Exec%';
 SELECT @RC_SalesAG =  [Id] FROM dbo.[Centers] WHERE Code = N'141';
