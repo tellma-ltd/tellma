@@ -18,8 +18,8 @@ END
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
 :r .\00_Common\b_FunctionalCurrency.sql
+:r .\00_Common\w_IfrsConcepts.sql
 :r .\00_Common\c_Settings.sql
-
 :r .\00_Common\d_EntryTypes.sql
 
 :r .\02_Definitions\a_LookupDefinitions.sql

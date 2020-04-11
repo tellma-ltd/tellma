@@ -22,8 +22,8 @@
 	-- For PPE
 	[ExpenseEntryTypeId]			INT,
 	[CenterId]						INT,
-	[ResidualMonetaryValue]			Decimal (19,4),
-	[ResidualValue]					Decimal (19,4),
+	[ResidualMonetaryValue]			Decimal (19,4) DEFAULT 0,
+	[ResidualValue]					Decimal (19,4) DEFAULT 0,
 	-- For inventory
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),

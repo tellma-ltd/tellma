@@ -14,7 +14,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (0,0,	N'Account',		0,			N'Account',		4,4,0), -- together with properties
 (1,0,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,0,	N'Value',		0,			N'Credit',		4,4,0),
-(3,0,	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears,
+(3,0,	N'Memo',		0,			N'Memo',		5,4,1); -- only if it appears
 INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
@@ -74,10 +74,10 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,1,N'ByAgent',	NULL,				1,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL);
---2:PaymentToSupplier (against invoice)
+--2:PaymentToLessor (against invoice)
 INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],		[TitlePlural2]) VALUES
-(2,1,N'PaymentToSupplier',N'Rental Payment',	N'دفع إيجار',		N'Rental Payments',	N'دفعيات إيجارات');
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],				[TitlePlural2]) VALUES
+(2,1,N'PaymentToLessor',N'Rent/Subscription',	N'إيجار\اشتراك',	N'Rents/Subscriptions',	N'إيجارات\اشتراكات');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -300,10 +300,10 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,11,	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			3,4,0),
 (10,11,	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
 (11,11,	N'Memo',				1,	N'Memo',				N'البيان',				1,5,1);
---12:ReceiptFromCustomer (against an invoice), No workflow
+--12:ReceiptFromLessee (against an invoice), No workflow
 INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Id],[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2]) VALUES (
-12,1,N'ReceiptFromCustomer',N'Receipt from Customer',N'دفعية من زبون',	N'Receipts from Customers',N'دفعيات من زبائن');
+[ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
+12,1,N'ReceiptFromLessee',N'Rent/Subscription',	N'إيجار\اشتراك',	N'Rents/Subscriptions',	N'إيجارات\اشتراكات');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON

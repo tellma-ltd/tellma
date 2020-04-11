@@ -33,10 +33,13 @@ BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPV',		N'money-check-alt',		N'Cash',			20),
-	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'file-invoice-dollar',	N'Cash',			50),
-	(3,	N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
+	(1,	N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'قيد شراء نقدي',		N'Cash Purchase Vouchers',		N'قيود مشتريات نقدية',	N'CPRV',	N'money-check-alt',		N'Cash',			20),
+--	(2,	N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'قيد مرتب نقدي',		N'Cash Payroll Vouchers',		N'قيود مرتبات نقدية',	N'PRLV',	N'money-check-alt',		N'Cash',			20),
+	(3,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
+	(11,N'cash-sale-vouchers',			N'Cash Sale Voucher',			N'قيد بيع نقدي',		N'Cash Sale Vouchers',			N'قيود مبيعات نقدية',	N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
+	(13,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
+	(21,N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
+	(31,N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
@@ -47,26 +50,38 @@ BEGIN
 		-- service receipt (Authorize By Center, complete by NotedAgent)
 		-- fixed asset receipt (Authorize by investment center, complete by  manual
 	-- cash-payment-voucher: payment to supplier, payment to other, manual
-	-- cash-salary-voucher: pay sheet, payroll, deductions,
+	-- cash-payroll-voucher: pay sheet, payroll, deductions,
+
+	-- cash-purchase-vouchers
+	(0,1,	N'CashPurchase',			1), -- includes invoice
+	--(1,1,	N'ConsumableServiceReceiptNote',1),
+	(2,1,	N'GoodReceiptNote',			0),
+	--(3,1,	N'FixedAssetReceiptNote',	0),
+	(5,1,	N'ManualLine',				0), -- might be able to remove it, if we handle all cases
 
 	-- cash-payment-vouchers
-	(0,1,	N'CashPurchase',			1), -- to recognize expenses, fill a separate GRN/GRIV
-	(1,1,	N'PaymentToSupplier',		1),
-	(2,1,	N'PaymentToOther',			1), -- for non-suppliers
-	(3,1,	N'CashTransferExchange',	1),
-	(4,1,	N'GoodReceiptNote',			1),
-	(5,1,	N'ManualLine',				1),
+	--(0,3,	N'PaymentToSupplier',		0), -- on credit for goods and services
+	(1,3,	N'PaymentToLessor',			1), -- for rentals and subscriptions
+	--(2,3,	N'RefundToCustomer',		1),
+	(3,3,	N'PaymentToOther',			1), -- including partner, creditor
+	(4,3,	N'CashTransferExchange',	1),
+	(5,3,	N'ManualLine',				1),
+	-- cash-sale-vouchers
+	(0,11,	N'CashSale',				1),  -- includes invoice
+	--(1,11,	N'GoodDeliveryNote',		1),
+	(2,11,	N'ManualLine',				1),
 	-- cash-receipt-vouchers
-	(0,2,	N'ReceiptFromCustomer',		1),  -- for tax visible customers
-	(1,2,	N'ReceiptFromOther',		1), -- for non-customers
-	(2,2,	N'ManualLine',				1),
+	--(0,12,	N'ReceiptFromCustomer',		1),  -- on credit, of goods and services
+	(1,13,	N'ReceiptFromLessee',		1),  -- for period
+	(2,13,	N'ReceiptFromOther',		1),	 -- including partner, creditor
+	(3,13,	N'ManualLine',				1),
 	-- 	expense-recognition-vouchers, for depreciation expenses and rental recognition
-	(0,3,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
-	(1,3,	N'LeaseIn',					1),-- software subscription, domain registration, office rental...
-	(9,3,	N'ManualLine',				0),
-	-- revenue-recognition-vouchers, for revenue recognition
-	(0,4,	N'LeaseOut',				1), -- for tax visible customers
-	(1,4,	N'ManualLine',				0);
+	(0,21,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
+	(1,21,	N'LeaseIn',					1),-- software subscription, domain registration, office rental...
+	(9,21,	N'ManualLine',				0),
+	-- revenue-reognition-vouchers, for revenue recognition
+	(0,31,	N'LeaseOut',				1), -- for tax visible customers
+	(1,31,	N'ManualLine',				0);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -211,7 +226,3 @@ EXEC dal.DocumentDefinitions__Save
 	--(N'purchasing-international', NULL, NULL, N'PI'), -- 
 	
 	--(N'production-events', NULL, NULL, N'PRD');
-
-
-IF @DebugDocumentDefinitions = 1
-	SELECT * FROM dbo.DocumentDefinitions;

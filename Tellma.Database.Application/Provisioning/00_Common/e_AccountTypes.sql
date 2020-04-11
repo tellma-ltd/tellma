@@ -95,7 +95,10 @@ UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 
 DECLARE @CurrentCarLoanReceivablesExtension INT, @PartnersWithdrawalExtension INT ;
-UPDATE @AccountTypes	SET [EntryTypeAssignment] = N'A'  WHERE [Index] = 3 OR [ParentIndex] = 3;-- PropertyPlantAndEquipment
+UPDATE @AccountTypes	SET [EntryTypeAssignment] = N'A'  WHERE [ParentIndex] = 3;-- PropertyPlantAndEquipment
+UPDATE @AccountTypes	SET [ResourceAssignment] = N'E', [ResourceDefinitionId] = N'properties-plants-and-equipment' WHERE [ParentIndex] = 3;-- PropertyPlantAndEquipment
+UPDATE @AccountTypes	SET [ResourceAssignment] = N'E', [ResourceDefinitionId] = N'computer-equipment' WHERE [Code] = N'ComputerEquipmentExtension';-- PropertyPlantAndEquipment
+
 UPDATE @AccountTypes	SET [EntryTypeAssignment] = N'E'  WHERE [EntryTypeParentId] IS NOT NULL AND [EntryTypeAssignment] <> N'A';
 
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'A', [AgentDefinitionId] = N'customers' WHERE [Code] = N'CurrentTradeReceivables';

@@ -7,6 +7,7 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	INSERT INTO @Accounts([Index],[IsSmart],[Code],
 					[AccountTypeId],			[Name],									[CurrencyId],	[CenterId],		[EntryTypeId],		[AgentId]) VALUES
 	-- Assets Accounts
+	/*
 	(10,1,N'1000',	@PropertyPlantAndEquipment,	N'Equipment - Unallocated',				@USD,			@C101_UNALLOC,	@PPEAdditions,			NULL),
 	(11,1,N'1010',	@PropertyPlantAndEquipment,	N'Equipment - Exec Office',				@USD,			@C101_EXEC,		@PPEAdditions,			NULL),
 	(12,1,N'1020',	@PropertyPlantAndEquipment,	N'Equipment - Sales',					@USD,			@C101_Sales,	@PPEAdditions,			NULL),
@@ -26,6 +27,16 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	(316,1,N'1160',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Campus',		@USD,			@C101_Campus,	@PPEDepreciations,		NULL),
 	(317,1,N'1170',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Tellma',		@USD,			@C101_Tellma,	@PPEDepreciations,		NULL),
 	(318,1,N'1180',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Floor Rental',	@USD,			@C101_FFLR,		@PPEDepreciations,		NULL),
+*/
+	(10,1,N'1000',	@PropertyPlantAndEquipment,	N'Fixtures and fittings',				@USD,			NULL,			@PPEAdditions,			NULL),
+	(11,1,N'1010',	@PropertyPlantAndEquipment,	N'Office equipment',					@USD,			NULL,			@PPEAdditions,			NULL),
+	(12,1,N'1020',	@PropertyPlantAndEquipment,	N'Computer equipment',					@USD,			NULL,			@PPEAdditions,			NULL),
+	(13,1,N'1030',	@PropertyPlantAndEquipment,	N'Computer accessories',				@USD,			NULL,			@PPEAdditions,			NULL),
+
+	(310,1,N'1100',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Fixtures and fittings',	@USD,			NULL,			@PPEDepreciations,		NULL),
+	(311,1,N'1110',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Office equipment',			@USD,			NULL,			@PPEDepreciations,		NULL),
+	(312,1,N'1120',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Computer equipment',		@USD,			NULL,			@PPEDepreciations,		NULL),
+	(313,1,N'1130',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Computer accessories',		@USD,			NULL,			@PPEDepreciations,		NULL),
 
 	(20,1,N'1201',	@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,					NULL),
 	(21,0,N'1202',	@TradeAndOtherCurrentReceivables,	N'Banan ET',					@USD,			@C101_INV,		NULL,					NULL),
@@ -37,7 +48,7 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	(27,0,N'1208',	@CurrentValueAddedTaxReceivables,	N'VAT Input',					@SDG,			@C101_INV,		NULL,					NULL),
 	(28,0,N'1209',	@TradeAndOtherCurrentReceivables,	N'Commissions',					@USD,			@C101_INV,		NULL,					NULL),
 	(29,0,N'1210',	@TradeAndOtherCurrentReceivables,	N'Office Rent',					@SDG,			@C101_INV,		NULL,					NULL),
-	(30,0,N'1211',	@TradeAndOtherCurrentReceivables,	N'Internet Expense',			@SDG,			@C101_INV,		NULL,					NULL),
+	(30,0,N'1211',	@TradeAndOtherCurrentReceivables,	N'Internet Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
 	(31,0,N'1212',	@TradeAndOtherCurrentReceivables,	N'Car Rent Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
 	(32,0,N'1213',	@TradeAndOtherCurrentReceivables,	N'House Rent Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
 	(33,0,N'1214',	@TradeAndOtherCurrentReceivables,	N'Maintenance Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
@@ -86,7 +97,7 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	(97,0,N'4230',	@Revenue,							N'Commission - Campus',			NULL,			@C101_Campus,	NULL,				NULL),
 	(98,0,N'4240',	@Revenue,							N'Commission - Tellma',			NULL,			@C101_Tellma,	NULL,				NULL),
 */
-	(99,0,N'4910',	@OtherRevenue,						N'Rental Income',				@SAR,			@C101_FFLR,		NULL,				NULL),
+	(99,0,N'4910',	@OtherRevenue,						N'Rental Income - SAR',			@SAR,			@C101_FFLR,		NULL,				NULL),
 -- 5: Direct, Cost of sales
 -- 6: Indirect, Production, 7:service
 -- 8:Distribution

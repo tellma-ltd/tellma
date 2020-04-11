@@ -30,7 +30,7 @@
 		[EntryTypeAssignment] <> N'N' AND [EntryTypeParentId] IS NOT NULL
 		),
 	[IdentifierAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__IdentifierAssignment] CHECK([IdentifierAssignment] IN (N'N',N'A',N'E')),
-	[NotedAgentAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__NotedAgentAssignment] CHECK([NotedAgentAssignment] IN (N'N',N'A',N'E')),
+	[NotedAgentAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__NotedAgentAssignment] CHECK([NotedAgentAssignment] IN (N'N',N'E')),
 	[NotedAgentDefinitionId]	NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__NotedAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 
 	[DueDateLabel]				NVARCHAR (50),
