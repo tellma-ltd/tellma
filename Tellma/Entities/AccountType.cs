@@ -61,7 +61,7 @@ namespace Tellma.Entities
 
         [Display(Name = "AccountType_CurrencyAssignment")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [Assignment(true)]
+        [Assignment(AssignmentType.Required)]
         public char? CurrencyAssignment { get; set; }
 
         [Display(Name = "AccountType_AgentAssignment")]
@@ -84,7 +84,7 @@ namespace Tellma.Entities
 
         [Display(Name = "AccountType_CenterAssignment")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [Assignment(true)]
+        [Assignment(AssignmentType.Required)]
         public char? CenterAssignment { get; set; }
 
         [Display(Name = "AccountType_EntryTypeAssignment")]
@@ -103,7 +103,7 @@ namespace Tellma.Entities
 
         [Display(Name = "AccountType_NotedAgentAssignment")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [Assignment]
+        [Assignment(AssignmentType.EntryOnly)]
         public char? NotedAgentAssignment { get; set; }
 
         [Display(Name = "AccountType_NotedAgentDefinition")]

@@ -20,6 +20,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   private _choicesRequiredAssignment: SelectorChoice[];
   private _choicesOptionalAssignment: SelectorChoice[];
+  private _choicesEntryAssignment: SelectorChoice[];
 
   public expand = 'Parent,IfrsConcept,EntryTypeParent';
 
@@ -30,6 +31,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     this.accountTypesApi = this.api.accountTypesApi(this.notifyDestruct$);
     this._choicesRequiredAssignment = ['A', 'E'].map(e => ({ value: e, name: () => translate.instant('Assignment_' + e) }));
     this._choicesOptionalAssignment = ['N', 'A', 'E'].map(e => ({ value: e, name: () => translate.instant('Assignment_' + e) }));
+    this._choicesEntryAssignment = ['N', 'E'].map(e => ({ value: e, name: () => translate.instant('Assignment_' + e) }));
   }
 
   get view(): string {
@@ -96,8 +98,13 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
   public get choicesRequiredAssignment(): SelectorChoice[] {
     return this._choicesRequiredAssignment;
   }
+
   public get choicesOptionalAssignment(): SelectorChoice[] {
     return this._choicesOptionalAssignment;
+  }
+
+  public get choicesEntryAssignment(): SelectorChoice[] {
+    return this._choicesEntryAssignment;
   }
 
   public formatAssignment(assignment: string): string {
@@ -166,6 +173,6 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
 
   // Is Inactive
   isInactive: (model: AccountType) => string = (at: AccountType) =>
-    !!at && at.IsSystem ? 'Error_CannotModifySystemItem' :
+    // !!at && at.IsSystem ? 'Error_CannotModifySystemItem' :
     !!at && !at.IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 }

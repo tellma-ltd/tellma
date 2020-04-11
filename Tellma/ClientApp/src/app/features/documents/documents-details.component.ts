@@ -1086,7 +1086,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showAgent(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.AgentDefinitionId;
+    return false; // TODO: !!account && !!account.AgentDefinitionId;
   }
 
   public readonlyAgent(entry: Entry): boolean {
@@ -1101,16 +1101,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public labelAgent(entry: Entry): string {
     const account = this.account(entry);
-    const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
+   // const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, agentDefinitionId).titleSingular();
+    return ''; // TODO: metadata_Agent(this.workspace, this.translate, agentDefinitionId).titleSingular();
   }
 
   // ResourceId
 
   public showResource(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && account.HasResource;
+    return false; // TODO: !!account && account.HasResource;
   }
 
   public readonlyResource(entry: Entry): boolean {
@@ -1282,40 +1282,40 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showExternalReference(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasExternalReference : false;
+    return false; // TODO: !!account ? account.HasExternalReference : false;
   }
 
   // Additional Reference
 
   public showAdditionalReference(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasAdditionalReference : false;
+    return false; // TODO: !!account ? account.HasAdditionalReference : false;
   }
 
   // Noted Agent Id
 
   public showNotedAgent(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasNotedAgentId : false;
+    return false; // TODO: !!account ? account.HasNotedAgentId : false;
   }
 
   // Noted Agent Name
 
   public showNotedAgentName(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasNotedAgentName : false;
+    return false; // TODO: !!account ? account.HasNotedAgentName : false;
   }
 
   // Noted Amount
   public showNotedAmount(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasNotedAmount : false;
+    return false; // TODO: !!account ? account.HasNotedAmount : false;
   }
 
   // Noted Date
   public showNotedDate(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account ? account.HasNotedDate : false;
+    return false; // TODO: !!account ? account.HasNotedDate : false;
   }
 
   public onFileSelected(input: any, model: DocumentForSave) {

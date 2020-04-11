@@ -317,7 +317,6 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
   private doFetchInbox(count: number): Observable<void> {
     let s = this.inboxState;
     s.masterStatus = MasterStatus.loading;
-    // s.detailsId = null; // clear the cached details item
 
     const unobtrusive = true;
     const top = 25; // Only get the top 25 items
@@ -335,12 +334,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
       const tenantId = this.workspace.ws.tenantId;
 
       // Retrieve the inbox items
-      return this.inboxCrud.get({
-        unobtrusive,
-        top,
-        skip,
-        select,
-      }).pipe(
+      return this.inboxCrud.get({ unobtrusive, top, skip, select }).pipe(
         tap((response: GetResponse) => {
           s = this.inboxState; // get the source
           s.top = response.Top;

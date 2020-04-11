@@ -6,10 +6,8 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountForSave, Account, metadata_Account } from '~/app/data/entities/account';
-import { PropDescriptor, getChoices, ChoicePropDescriptor, metadata } from '~/app/data/entities/base/metadata';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Resource } from '~/app/data/entities/resource';
-import { Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 
 @Component({
@@ -46,15 +44,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       result.Name3 = this.initialText;
     }
 
-    result.IsCurrent = false;
-    result.HasResource = false;
     result.IsRelated = false;
-    result.HasExternalReference = false;
-    result.HasAdditionalReference = false;
-    result.HasNotedAgentId = false;
-    result.HasNotedAgentName = false;
-    result.HasNotedAmount = false;
-    result.HasNotedDate = false;
+    result.IsSmart = false;
 
     return result;
   }
@@ -92,124 +83,36 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
 
+  private accountType(model: AccountForSave): AccountType {
+    if (!model) {
+      return null;
+    }
+
+    return this.ws.get('AccountType', model.AccountTypeId) as AccountType;
+  }
+
   /////////////// New stuff
 
   // CenterId
 
-  public showCenter(_: AccountForSave): boolean {
-    return this.ws.settings.IsMultiCenter;
-  }
+  public showCenter(model: AccountForSave): boolean {
+    const accountType = this.accountType(model);
+    const isAccountAssignment = !!accountType && accountType.CenterAssignment === 'A';
+    const isSmart = !!model && model.IsSmart;
 
-  // IsCurrent
-
-  public readonlyIsCurrent(model: AccountForSave): boolean {
-    if (!model) {
-      return true;
-    }
-
-    // returns true if the field is meant to stay readonly in edit mode
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // !!model.AccountTypeId && (accountType.IsCurrent === true || accountType.IsCurrent === false);
-  }
-
-  // AgentDefinitionId
-  public showAgentDefinitionId(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // accountType.IsPersonal;
-  }
-
-  public readonlyAgentDefinitionId(model: AccountForSave): boolean {
-    if (!model) {
-      return true;
-    }
-
-    return !!model.AgentId;
-  }
-
-  public readonlyValueAgentDefinitionId(model: Account): string {
-    if (!model) {
-      return null;
-    }
-
-    if (!!model.AgentId) {
-      return (this.ws.get('Agent', model.AgentId) as Agent).DefinitionId;
-    } else {
-      return null;
-    }
-  }
-
-  public get choicesAgentDefinitionId(): SelectorChoice[] {
-    const entityDesc = metadata.Account(this.workspace, this.translate, null);
-    return getChoices(entityDesc.properties.AgentDefinitionId as ChoicePropDescriptor);
-  }
-
-  public formatAgentDefinitionId(defId: string): string {
-    if (!defId) {
-      return null;
-    }
-
-    const def = this.ws.definitions.Agents[defId];
-    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
-  }
-
-  // HasResource
-  public showHasResource(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // !!model.AccountTypeId && accountType.IsReal;
-  }
-
-  // IsRelated
-  public showIsRelated(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // accountType.IsPersonal;
-  }
-
-  // Agent
-  public showAgent(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // accountType.IsPersonal;
-  }
-
-  // Resource
-  public showResource(model: AccountForSave): boolean {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return false; // accountType.IsReal && model.HasResource;
-  }
-
-  public filterResource(model: AccountForSave) {
-    if (!model || !model.AccountTypeId) {
-      return null;
-    }
-
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    if (!!accountType.IsResourceClassification) {
-      return `AccountType/Node descof ${model.AccountTypeId}`;
-    } else {
-      return null;
-    }
+    return this.ws.settings.IsMultiCenter && (!isSmart || isAccountAssignment);
   }
 
   // CurrencyId
+  public showCurrency(model: AccountForSave): boolean {
+    const accountType = this.accountType(model);
+    const isAccountAssignment = !!accountType && accountType.CurrencyAssignment === 'A';
+    const isSmart = !!model && model.IsSmart;
+
+    // Currency is required in dumb accounts,
+    return !isSmart || isAccountAssignment;
+  }
+
   public readonlyCurrencyId(model: AccountForSave): boolean {
     if (!model) {
       return true;
@@ -228,22 +131,115 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return !!model.ResourceId ? resource.CurrencyId : null;
   }
 
-  // EntryTypeId
-  public showEntryType(model: AccountForSave) {
-    if (!model || !model.AccountTypeId) {
-      return false;
-    }
+  // IsRelated
+  public showIsRelated(_: AccountForSave): boolean {
+    // if (!model || !model.AccountTypeId) {
+    //   return false;
+    // }
 
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return !!accountType.EntryTypeParentId;
+    // const accountType = this.accountType(model);
+    return false; // accountType.IsPersonal;
   }
 
-  public filterEntryType(model: AccountForSave) {
+  // Agent
+  public showAgent(model: AccountForSave): boolean {
+    const accountType = this.accountType(model);
+    const isSmart = !!model && model.IsSmart;
+    const isAccountAssignment = !!accountType && accountType.AgentAssignment === 'A';
+
+    return isSmart && isAccountAssignment;
+  }
+
+  public labelAgent(model: AccountForSave): string {
+    let postfix = '';
+    const accountType = this.accountType(model);
+    if (!!accountType && !!accountType.AgentDefinitionId) {
+      const agentDef = this.ws.definitions.Agents[accountType.AgentDefinitionId];
+      if (!!agentDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_Agent') + postfix;
+  }
+
+  public definitionIdsAgent(model: AccountForSave): string[] {
+    const accountType = this.accountType(model);
+    if (!!accountType && !!accountType.AgentDefinitionId) {
+      return [accountType.AgentDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
+  // Resource
+  public labelResource(model: AccountForSave): string {
+    let postfix = '';
+    const accountType = this.accountType(model);
+    if (!!accountType && !!accountType.ResourceDefinitionId) {
+      const resourceDef = this.ws.definitions.Resources[accountType.ResourceDefinitionId];
+      if (!!resourceDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular')})`;
+      }
+    }
+    return this.translate.instant('Account_Resource') + postfix;
+  }
+
+  public showResource(model: AccountForSave): boolean {
+    const accountType = this.accountType(model);
+    const isAccountAssignment = !!accountType && accountType.ResourceAssignment === 'A';
+    const isSmart = !!model && model.IsSmart;
+
+    return isSmart && isAccountAssignment;
+  }
+
+  public filterResource(model: AccountForSave) {
     if (!model || !model.AccountTypeId) {
       return null;
     }
 
-    const accountType = this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
+    const accountType = this.accountType(model);
+    if (!!accountType.IsResourceClassification) {
+      return `AssetType/Node descof ${model.AccountTypeId}`;
+    } else {
+      return null;
+    }
+  }
+
+  public definitionIdsResource(model: AccountForSave): string[] {
+    const accountType = this.accountType(model);
+    if (!!accountType && !!accountType.ResourceDefinitionId) {
+      return [accountType.ResourceDefinitionId];
+    } else {
+      return [];
+    }
+  }
+
+  // Identifier
+
+  public showIdentifier(model: AccountForSave): boolean {
+    const accountType = this.accountType(model);
+    const isAccountAssignment = !!accountType && accountType.IdentifierAssignment === 'A';
+    const isSmart = !!model && model.IsSmart;
+
+    return isSmart && isAccountAssignment;
+  }
+
+  // EntryTypeId
+  public showEntryType(model: AccountForSave) {
+    const accountType = this.accountType(model);
+    const isSmart = !!model && model.IsSmart;
+    const isAccountAssignment = !!accountType && accountType.EntryTypeAssignment === 'A';
+
+    return isSmart && isAccountAssignment;
+  }
+
+  public filterEntryType(model: AccountForSave) {
+    let result = 'IsAssignable eq true and IsActive eq true';
+    const accountType = this.accountType(model);
+    if (!!accountType && !!accountType.EntryTypeParentId) {
+      result += ` and Node descof ${accountType.EntryTypeParentId}`;
+    }
+
+    return result;
   }
 }

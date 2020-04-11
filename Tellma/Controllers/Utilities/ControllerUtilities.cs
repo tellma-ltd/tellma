@@ -154,30 +154,33 @@ namespace Tellma.Controllers.Utilities
         /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
         /// will be parsed to datetime object suitable for formatting in C# into the error message
         /// </summary>
-        public static object[] ToFormatArguments(this ValidationError @this)
+        public static object[] ToFormatArguments(this ValidationError @this, IStringLocalizer localizer)
         {
-            static object Parse(string str)
+            static object Parse(string str, IStringLocalizer localizer)
             {
-                // TODO Implement properly
+                // Null returns null
                 if (string.IsNullOrWhiteSpace(str))
                 {
                     return str;
                 }
 
-                //if (DateTime.TryParse(str, out DateTime dResult))
-                //{
-                //    return dResult;
-                //}
+                // Anything with this prefix is translated
+                var translateKey = "localize:";
+                if (str.StartsWith(translateKey))
+                {
+                    str = str.Remove(0, translateKey.Length);
+                    return localizer[str];
+                }
 
                 return str;
             }
 
             object[] formatArguments = {
-                    Parse(@this.Argument1),
-                    Parse(@this.Argument2),
-                    Parse(@this.Argument3),
-                    Parse(@this.Argument4),
-                    Parse(@this.Argument5)
+                    Parse(@this.Argument1, localizer),
+                    Parse(@this.Argument2, localizer),
+                    Parse(@this.Argument3, localizer),
+                    Parse(@this.Argument4, localizer),
+                    Parse(@this.Argument5, localizer)
                 };
 
             return formatArguments;
@@ -190,7 +193,7 @@ namespace Tellma.Controllers.Utilities
         {
             foreach (var error in errors)
             {
-                var formatArguments = error.ToFormatArguments();
+                var formatArguments = error.ToFormatArguments(localizer);
 
                 string key = error.Key;
                 string errorMessage = localizer[error.ErrorName, formatArguments];

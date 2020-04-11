@@ -91,6 +91,9 @@
   <data name="Account_HasExternalReference" xml:space="preserve">
     <value>مرتبط بمرجع خارجي</value>
   </data>
+  <data name="Account_HasIdentifier" xml:space="preserve">
+    <value>مرتبط برقم تعريف</value>
+  </data>
   <data name="Account_HasNotedAgentId" xml:space="preserve">
     <value>مرتبط بذمة معنية</value>
   </data>
@@ -111,6 +114,9 @@
   </data>
   <data name="Account_IsRelated" xml:space="preserve">
     <value>ذمة ذات علاقة</value>
+  </data>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>حساب ذكي</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>

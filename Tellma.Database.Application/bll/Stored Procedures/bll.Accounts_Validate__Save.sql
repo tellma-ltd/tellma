@@ -2,6 +2,14 @@
 	@Entities [dbo].[AccountList] READONLY,
 	@Top INT = 10
 AS
+
+	--=-=-=-=-=-=- [C# Validation]
+	/* 
+	
+	 [✓] That Codes are unique within the arriving list
+
+	*/
+
 -- TODO: Add tests for every violation
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -24,23 +32,69 @@ SET NOCOUNT ON;
 	FROM @Entities FE 
 	JOIN [dbo].[Accounts] BE ON FE.Code = BE.Code
 	WHERE (FE.Id <> BE.Id);
-
-	-- Code must not be duplicated in the uploaded list
+	
+	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	-- Below we require fields where Assignment = N'A'
+	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
-		N'Error_TheCode0IsDuplicated',
-		[Code]
-	FROM @Entities
-	WHERE [Code] IN (
-		SELECT [Code]
-		FROM @Entities
-		WHERE [Code] IS NOT NULL
-		GROUP BY [Code]
-		HAVING COUNT(*) > 1
-	);
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_Center'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[CenterId] IS NULL AND (FE.[IsSmart] = 0 OR T.[CenterAssignment] = N'A');
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_Currency'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[CurrencyId] IS NULL AND (FE.[IsSmart] = 0 OR T.[CurrencyAssignment] = N'A');
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_Resource'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[ResourceId] IS NULL AND T.[ResourceAssignment] = N'A';
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_Agent'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[AgentId] IS NULL AND T.[AgentAssignment] = N'A';
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Identifier',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_Identifier'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[Identifier] IS NULL AND T.[IdentifierAssignment] = N'A';
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
+		N'Error_TheField0IsRequired',
+		N'localize:Account_EntryType'
+	FROM @Entities FE
+	JOIN dbo.[AccountTypes] T ON FE.[AccountTypeId] = T.[Id]
+	WHERE FE.[EntryTypeId] IS NULL AND T.[EntryTypeAssignment] = N'A';
 
--- Account classification must be a leaf
+	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	-- Other Validation
+	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	-- Custom Classification must be a leaf
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',

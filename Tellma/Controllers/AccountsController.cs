@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -122,18 +123,20 @@ namespace Tellma.Controllers
         {
             // Defaults
             //var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
-            entities.ForEach(result =>
+            entities.ForEach(entity =>
             {
-                result.IsRelated ??= false;
-                result.IsSmart ??= false;
+                // Set defaults
+                entity.IsRelated ??= false;
+                entity.IsSmart ??= false;
 
-                //result.HasExternalReference ??= false;
-                //result.HasAdditionalReference ??= false;
-                //result.HasNotedAgentId ??= false;
-                //result.HasNotedAgentName ??= false;
-                //result.HasNotedAmount ??= false;
-                //result.HasNotedDate ??= false;
-                //result.HasIdentifier ??= false;
+                // Set invisible fields to NULL when IsSmart = false
+                if (!entity.IsSmart.Value)
+                {
+                    entity.ResourceId = null;
+                    entity.AgentId = null;
+                    entity.Identifier = null;
+                    entity.EntryTypeId = null;
+                }
             });
 
             // SQL Preprocessing
@@ -143,18 +146,28 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<AccountForSave> entities)
         {
+            // Find duplicate codes within the saved list
+            var duplicateCodes = entities
+                .Where(e => e.Code != null)
+                .GroupBy(e => e.Code)
+                .Where(g => g.Count() > 1)
+                .SelectMany(g => g)
+                .ToHashSet();
+
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
+                // Check that the code is unique within the saved list
+                if (duplicateCodes.Contains(entity))
+                {
+                    ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
+                }
+
                 if (entity.IsSmart.Value)
                 {
-                    // Can we add any validation here ?
+                    // Can we add any validation here?
                 } 
                 else
                 {
-                    entity.ResourceId = null;
-                    entity.AgentId = null;
-                    entity.EntryTypeId = null;
-
                     // These are required for smart accounts
                     if (entity.CurrencyId == null)
                     {
@@ -165,15 +178,15 @@ namespace Tellma.Controllers
                         ModelState.AddModelError(path, errorMsg);
                     }
 
-                    // These are required for smart accounts
-                    if (entity.CenterId == null)
-                    {
-                        string path = $"[{index}].{nameof(AccountForSave.CenterId)}";
-                        string propDisplayName = _localizer["Account_Center"];
-                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
+                    //// These are required for smart accounts
+                    //if (entity.CenterId == null)
+                    //{
+                    //    string path = $"[{index}].{nameof(AccountForSave.CenterId)}";
+                    //    string propDisplayName = _localizer["Account_Center"];
+                    //    string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
 
-                        ModelState.AddModelError(path, errorMsg);
-                    }
+                    //    ModelState.AddModelError(path, errorMsg);
+                    //}
                 }
 
                 if (ModelState.HasReachedMaxErrors)
