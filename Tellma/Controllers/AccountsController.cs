@@ -125,15 +125,15 @@ namespace Tellma.Controllers
             entities.ForEach(result =>
             {
                 result.IsRelated ??= false;
-                result.HasExternalReference ??= false;
-                result.HasAdditionalReference ??= false;
-                result.HasNotedAgentId ??= false;
-                result.HasNotedAgentName ??= false;
-                result.HasNotedAmount ??= false;
-                result.HasNotedDate ??= false;
+                result.IsSmart ??= false;
 
-                // TODO: Remove
-                result.HasIdentifier ??= false;
+                //result.HasExternalReference ??= false;
+                //result.HasAdditionalReference ??= false;
+                //result.HasNotedAgentId ??= false;
+                //result.HasNotedAgentName ??= false;
+                //result.HasNotedAmount ??= false;
+                //result.HasNotedDate ??= false;
+                //result.HasIdentifier ??= false;
             });
 
             // SQL Preprocessing
@@ -145,18 +145,36 @@ namespace Tellma.Controllers
         {
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                //if (entity.IsSmart ?? false)
-                //{
-                //    // These are required for smart accounts
-                //    if(entity.ContractType == null)
-                //    {
-                //        string path = $"[{index}].{nameof(entity.ContractType)}";
-                //        string propDisplayName = _localizer["Account_ContractType"];
-                //        string errorMsg = _localizer[Services.Utilities.Constants.Error_RequiredField0, propDisplayName];
+                if (entity.IsSmart.Value)
+                {
+                    // Can we add any validation here ?
+                } 
+                else
+                {
+                    entity.ResourceId = null;
+                    entity.AgentId = null;
+                    entity.EntryTypeId = null;
 
-                //        ModelState.AddModelError(path, errorMsg);
-                //    }
-                //}
+                    // These are required for smart accounts
+                    if (entity.CurrencyId == null)
+                    {
+                        string path = $"[{index}].{nameof(AccountForSave.CurrencyId)}";
+                        string propDisplayName = _localizer["Account_Currency"];
+                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
+
+                        ModelState.AddModelError(path, errorMsg);
+                    }
+
+                    // These are required for smart accounts
+                    if (entity.CenterId == null)
+                    {
+                        string path = $"[{index}].{nameof(AccountForSave.CenterId)}";
+                        string propDisplayName = _localizer["Account_Center"];
+                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
+
+                        ModelState.AddModelError(path, errorMsg);
+                    }
+                }
 
                 if (ModelState.HasReachedMaxErrors)
                 {

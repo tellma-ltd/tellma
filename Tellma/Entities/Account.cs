@@ -39,35 +39,11 @@ namespace Tellma.Entities
         [Display(Name = "Account_CustomClassification")]
         public int? CustomClassificationId { get; set; }
 
-
-
-
-        // HIDDEN
-
-        public bool? HasIdentifier { get; set; }
-
-        // END HIDDEN
+        [Display(Name = "Account_IsSmart")]
+        public bool? IsSmart { get; set; }
 
         [Display(Name = "Account_IsRelated")]
         public bool? IsRelated { get; set; }
-
-        [Display(Name = "Account_HasExternalReference")]
-        public bool? HasExternalReference { get; set; }
-
-        [Display(Name = "Account_HasAdditionalReference")]
-        public bool? HasAdditionalReference { get; set; }
-
-        [Display(Name = "Account_HasNotedAgentId")]
-        public bool? HasNotedAgentId { get; set; }
-
-        [Display(Name = "Account_HasNotedAgentName")]
-        public bool? HasNotedAgentName { get; set; }
-
-        [Display(Name = "Account_HasNotedAmount")]
-        public bool? HasNotedAmount { get; set; }
-
-        [Display(Name = "Account_HasNotedDate")]
-        public bool? HasNotedDate { get; set; }
 
         [Display(Name = "Account_Agent")]
         public int? AgentId { get; set; }
@@ -89,6 +65,28 @@ namespace Tellma.Entities
 
     public class Account : AccountForSave
     {
+        // TODO: Remove?
+        //[Display(Name = "Account_HasIdentifier")]
+        //public bool? HasIdentifier { get; set; }
+
+        //[Display(Name = "Account_HasExternalReference")]
+        //public bool? HasExternalReference { get; set; }
+
+        //[Display(Name = "Account_HasAdditionalReference")]
+        //public bool? HasAdditionalReference { get; set; }
+
+        //[Display(Name = "Account_HasNotedAgentId")]
+        //public bool? HasNotedAgentId { get; set; }
+
+        //[Display(Name = "Account_HasNotedAgentName")]
+        //public bool? HasNotedAgentName { get; set; }
+
+        //[Display(Name = "Account_HasNotedAmount")]
+        //public bool? HasNotedAmount { get; set; }
+
+        //[Display(Name = "Account_HasNotedDate")]
+        //public bool? HasNotedDate { get; set; }
+
         [Display(Name = "Account_IsDeprecated")]
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }

@@ -80,7 +80,9 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name2 = "مستحقات",
                 Code = "Payables",
                 AccountTypeId = accountTypeId,
-                CustomClassificationId = null
+                CustomClassificationId = null,
+                CurrencyId = "ETB",
+                CenterId = Shared.Get<Center>("Center_Child").Id,
             };
 
             // Save it
@@ -186,6 +188,8 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Code = "Receivables  ", // Trailing space
                 CustomClassificationId = null,
                 AccountTypeId = accountTypeId,
+                CurrencyId = "ETB",
+                CenterId = Shared.Get<Center>("Center_Child").Id,
             };
 
             // Call the API

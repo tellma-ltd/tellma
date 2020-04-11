@@ -27,9 +27,9 @@ DELETE FROM [dbo].[LineDefinitionStateReasons];
 
 DELETE FROM [dbo].[Roles] WHERE [Id] <> @RoleId;
 DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
+DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Centers];
 DELETE FROM [dbo].[Agents];
-DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM [dbo].[Settings]);
 
 DELETE FROM [dbo].[Lookups];
