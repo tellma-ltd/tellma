@@ -1406,8 +1406,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public labelAccountIdentifier_Manual(entry: Entry): string {
     const at = this.accountType(entry);
     return !!at.ExternalReferenceLabel ?
-      this.ws.getMultilingualValueImmediate(at, 'ExternalReferenceLabel') :
-      this.translate.instant('Entry_ExternalReference');
+      this.ws.getMultilingualValueImmediate(at, 'IdentifierLabel') :
+      this.translate.instant('Entry_AccountIdentifier');
   }
 
   // External Reference
@@ -1435,7 +1435,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const at = this.accountType(entry);
     return !!at.AdditionalReferenceLabel ?
       this.ws.getMultilingualValueImmediate(at, 'AdditionalReferenceLabel') :
-      this.translate.instant('Entry_ExternalReference');
+      this.translate.instant('Entry_AdditionalReference');
   }
 
   // Noted Agent Name
@@ -1449,7 +1449,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const at = this.accountType(entry);
     return !!at.NotedAgentNameLabel ?
       this.ws.getMultilingualValueImmediate(at, 'NotedAgentNameLabel') :
-      this.translate.instant('Entry_ExternalReference');
+      this.translate.instant('Entry_NotedAgentName');
   }
 
   // Noted Amount
@@ -1463,7 +1463,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const at = this.accountType(entry);
     return !!at.NotedAmountLabel ?
       this.ws.getMultilingualValueImmediate(at, 'NotedAmountLabel') :
-      this.translate.instant('Entry_ExternalReference');
+      this.translate.instant('Entry_NotedAmount');
   }
 
   // Noted Date
@@ -1477,7 +1477,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const at = this.accountType(entry);
     return !!at.NotedDateLabel ?
       this.ws.getMultilingualValueImmediate(at, 'NotedDateLabel') :
-      this.translate.instant('Entry_ExternalReference');
+      this.translate.instant('Entry_NotedDate');
   }
 
   public onFileSelected(input: any, model: DocumentForSave) {

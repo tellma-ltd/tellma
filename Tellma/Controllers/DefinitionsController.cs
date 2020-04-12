@@ -385,7 +385,7 @@ namespace Tellma.Controllers
 
             foreach (var col in result.Columns)
             {
-                if (col.Label == null && col.EntryIndex < result.Entries.Count)
+                if (col.EntryIndex < result.Entries.Count)
                 {
                     var entry = result.Entries[col.EntryIndex];
                     var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeParentId.Value);
@@ -394,69 +394,69 @@ namespace Tellma.Controllers
                         case nameof(Entry.AgentId):
                             if (accountType.AgentDefinitionId != null && agentDefs.TryGetValue(accountType.AgentDefinitionId, out var agentDef))
                             {
-                                col.Label = agentDef.TitleSingular;
-                                col.Label2 = agentDef.TitleSingular2;
-                                col.Label3 = agentDef.TitleSingular3;
+                                col.Label ??= agentDef.TitleSingular;
+                                col.Label2 ??= agentDef.TitleSingular2;
+                                col.Label3 ??= agentDef.TitleSingular3;
                             }
                             break;
                         case nameof(Entry.NotedAgentId):
                             if (accountType.NotedAgentDefinitionId != null && agentDefs.TryGetValue(accountType.NotedAgentDefinitionId, out var notedAgentDef))
                             {
-                                col.Label = notedAgentDef.TitleSingular;
-                                col.Label2 = notedAgentDef.TitleSingular2;
-                                col.Label3 = notedAgentDef.TitleSingular3;
+                                col.Label ??= notedAgentDef.TitleSingular;
+                                col.Label2 ??= notedAgentDef.TitleSingular2;
+                                col.Label3 ??= notedAgentDef.TitleSingular3;
                             }
                             break;
                         case nameof(Entry.ResourceId):
                             if (accountType.ResourceDefinitionId != null && resourceDefs.TryGetValue(accountType.ResourceDefinitionId, out var resourceDef))
                             {
-                                col.Label = resourceDef.TitleSingular;
-                                col.Label2 = resourceDef.TitleSingular2;
-                                col.Label3 = resourceDef.TitleSingular3;
+                                col.Label ??= resourceDef.TitleSingular;
+                                col.Label2 ??= resourceDef.TitleSingular2;
+                                col.Label3 ??= resourceDef.TitleSingular3;
                             }
                             break;
                         case nameof(Entry.AccountIdentifier):
-                            col.Label = accountType?.IdentifierLabel;
+                            col.Label ??= accountType?.IdentifierLabel;
                             col.Label2 ??= accountType?.IdentifierLabel2;
                             col.Label3 ??= accountType?.IdentifierLabel3;
                             break;
                         case nameof(Entry.DueDate):
-                            col.Label = accountType?.DueDateLabel;
+                            col.Label ??= accountType?.DueDateLabel;
                             col.Label2 ??= accountType?.DueDateLabel2;
                             col.Label3 ??= accountType?.DueDateLabel3;
                             break;
                         case nameof(Entry.Time1):
-                            col.Label = accountType?.Time1Label;
+                            col.Label ??= accountType?.Time1Label;
                             col.Label2 ??= accountType?.Time1Label2;
                             col.Label3 ??= accountType?.Time1Label3;
                             break;
                         case nameof(Entry.Time2):
-                            col.Label = accountType?.Time2Label;
+                            col.Label ??= accountType?.Time2Label;
                             col.Label2 ??= accountType?.Time2Label2;
                             col.Label3 ??= accountType?.Time2Label3;
                             break;
                         case nameof(Entry.ExternalReference):
-                            col.Label = accountType?.ExternalReferenceLabel;
+                            col.Label ??= accountType?.ExternalReferenceLabel;
                             col.Label2 ??= accountType?.ExternalReferenceLabel2;
                             col.Label3 ??= accountType?.ExternalReferenceLabel3;
                             break;
                         case nameof(Entry.AdditionalReference):
-                            col.Label = accountType?.AdditionalReferenceLabel;
+                            col.Label ??= accountType?.AdditionalReferenceLabel;
                             col.Label2 ??= accountType?.AdditionalReferenceLabel2;
                             col.Label3 ??= accountType?.AdditionalReferenceLabel3;
                             break;
                         case nameof(Entry.NotedAgentName):
-                            col.Label = accountType?.NotedAgentNameLabel;
+                            col.Label ??= accountType?.NotedAgentNameLabel;
                             col.Label2 ??= accountType?.NotedAgentNameLabel2;
                             col.Label3 ??= accountType?.NotedAgentNameLabel3;
                             break;
                         case nameof(Entry.NotedAmount):
-                            col.Label = accountType?.NotedAmountLabel;
+                            col.Label ??= accountType?.NotedAmountLabel;
                             col.Label2 ??= accountType?.NotedAmountLabel2;
                             col.Label3 ??= accountType?.NotedAmountLabel3;
                             break;
                         case nameof(Entry.NotedDate):
-                            col.Label = accountType?.NotedDateLabel;
+                            col.Label ??= accountType?.NotedDateLabel;
                             col.Label2 ??= accountType?.NotedDateLabel2;
                             col.Label3 ??= accountType?.NotedDateLabel3;
                             break;
