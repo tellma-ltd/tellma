@@ -524,7 +524,6 @@ namespace Tellma.Controllers
             {
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
-                // doc.Memo = doc.MemoIsCommon.Value ? doc.Memo : null;
                 doc.DebitAgentId = doc.DebitAgentIsCommon.Value ? doc.DebitAgentId : null;
                 doc.CreditAgentId = doc.CreditAgentIsCommon.Value ? doc.CreditAgentId : null;
                 doc.NotedAgentId = doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;
@@ -577,7 +576,6 @@ namespace Tellma.Controllers
                         {
                             if (columnDef.ColumnName == nameof(Line.Memo))
                             {
-
                                 if (doc.MemoIsCommon.Value)
                                 {
                                     line.Memo = doc.Memo;
@@ -702,7 +700,7 @@ namespace Tellma.Controllers
                     });
                 });
 
-                ////// handle subtle exchange rate rounding bugs
+                ////// handle subtle exchange rate rounding bugs. IF...
                 // (1) All non-manual entries have the same non-functional currency
                 // (2) Monetary Value of non-manual entries is balanced
                 // (3) Value of non-manual is not balanced
@@ -720,7 +718,16 @@ namespace Tellma.Controllers
                             var valueDifference = smartEntries.Sum(entry => entry.Direction.Value * (entry.MonetaryValue ?? 0));
                             if (valueDifference != 0)
                             {
-                                // TODO: 
+                                //// This variable will equal the smallest amount that can be represented
+                                //// in the functional currency. E.g. for USD it's 0.01
+                                //decimal adjustment = 1.0m;
+                                //for (byte i = 0; i < settings.FunctionalCurrencyDecimals; i++)
+                                //{
+                                //    adjustment *= 0.1m;
+                                //}
+
+                                //// TODO: 
+                                //smartEntries.First().Value += adjustment;
                             }
                         }
                     }

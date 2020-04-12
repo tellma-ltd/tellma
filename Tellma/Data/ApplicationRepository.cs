@@ -633,8 +633,15 @@ namespace Tellma.Data
             return (version, permissions);
         }
 
-        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>,
-            IEnumerable<ReportDefinition>, IEnumerable<DocumentDefinition>, IEnumerable<LineDefinition>)> Definitions__Load()
+        public async Task<(Guid, 
+            IEnumerable<LookupDefinition>,
+            IEnumerable<AgentDefinition>,
+            IEnumerable<ResourceDefinition>,
+            IEnumerable<ReportDefinition>,
+            IEnumerable<DocumentDefinition>,
+            IEnumerable<LineDefinition>,
+            IEnumerable<AccountType>)> 
+            Definitions__Load()
         {
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
@@ -643,6 +650,7 @@ namespace Tellma.Data
             var reportDefinitions = new List<ReportDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
+            var accountTypes = new List<AccountType>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -965,9 +973,54 @@ namespace Tellma.Data
                 }
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
+
+                // Next load account types
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    var entity = new AccountType
+                    {
+                        Id = reader.GetInt32(i++),
+                        IsResourceClassification = reader.GetBoolean(i++),
+                        EntryTypeParentId = reader.Int32(i++),
+                        ResourceDefinitionId = reader.String(i++),
+                        AgentDefinitionId = reader.String(i++),
+                        NotedAgentDefinitionId = reader.String(i++),
+                        IdentifierLabel = reader.String(i++),
+                        IdentifierLabel2 = reader.String(i++),
+                        IdentifierLabel3 = reader.String(i++),
+                        DueDateLabel = reader.String(i++),
+                        DueDateLabel2 = reader.String(i++),
+                        DueDateLabel3 = reader.String(i++),
+                        Time1Label = reader.String(i++),
+                        Time1Label2 = reader.String(i++),
+                        Time1Label3 = reader.String(i++),
+                        Time2Label = reader.String(i++),
+                        Time2Label2 = reader.String(i++),
+                        Time2Label3 = reader.String(i++),
+                        ExternalReferenceLabel = reader.String(i++),
+                        ExternalReferenceLabel2 = reader.String(i++),
+                        ExternalReferenceLabel3 = reader.String(i++),
+                        AdditionalReferenceLabel = reader.String(i++),
+                        AdditionalReferenceLabel2 = reader.String(i++),
+                        AdditionalReferenceLabel3 = reader.String(i++),
+                        NotedAgentNameLabel = reader.String(i++),
+                        NotedAgentNameLabel2 = reader.String(i++),
+                        NotedAgentNameLabel3 = reader.String(i++),
+                        NotedAmountLabel = reader.String(i++),
+                        NotedAmountLabel2 = reader.String(i++),
+                        NotedAmountLabel3 = reader.String(i++),
+                        NotedDateLabel = reader.String(i++),
+                        NotedDateLabel2 = reader.String(i++),
+                        NotedDateLabel3 = reader.String(i++)
+                    };
+
+                    accountTypes.Add(entity);
+                }
             }
 
-            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
+            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, accountTypes);
         }
 
         #endregion

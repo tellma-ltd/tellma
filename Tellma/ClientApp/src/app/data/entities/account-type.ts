@@ -32,6 +32,9 @@ export interface AccountTypeForSave extends EntityForSave {
   EntryTypeAssignment?: OptionalAssignment;
   EntryTypeParentId?: number;
   IdentifierAssignment?: OptionalAssignment;
+  IdentifierLabel?: string;
+  IdentifierLabel2?: string;
+  IdentifierLabel3?: string;
   NotedAgentAssignment?: EntryAssignment;
   NotedAgentDefinitionId?: string;
   DueDateLabel?: string;
@@ -147,6 +150,9 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
           format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
         },
 
+        IdentifierLabel: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.primaryPostfix },
+        IdentifierLabel2: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.secondaryPostfix },
+        IdentifierLabel3: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.ternaryPostfix },
         DueDateLabel: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.primaryPostfix },
         DueDateLabel2: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.secondaryPostfix },
         DueDateLabel3: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.ternaryPostfix },
@@ -193,6 +199,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.SecondaryLanguageId) {
       delete entityDesc.properties.Name2;
       delete entityDesc.properties.Description2;
+      delete entityDesc.properties.IdentifierLabel2;
       delete entityDesc.properties.DueDateLabel2;
       delete entityDesc.properties.Time1Label2;
       delete entityDesc.properties.Time2Label2;
@@ -206,6 +213,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.TernaryLanguageId) {
       delete entityDesc.properties.Name3;
       delete entityDesc.properties.Description3;
+      delete entityDesc.properties.IdentifierLabel3;
       delete entityDesc.properties.DueDateLabel3;
       delete entityDesc.properties.Time1Label3;
       delete entityDesc.properties.Time2Label3;

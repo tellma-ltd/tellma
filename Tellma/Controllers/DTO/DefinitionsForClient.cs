@@ -252,15 +252,39 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public string AgentDefinitionId { get; set; }
-        public string NotedAgentDefinitionId { get; set; }
         public int? AccountTypeParentId { get; set; }
         public int? EntryTypeId { get; set; }
 
-
-        // Computed
-        public bool AccountTypeParentIsResourceClassification { get; set; }
+        // Computed from AccountTypeParent
+        public bool IsResourceClassification { get; set; }
         public int? EntryTypeParentId { get; set; }
+        public string ResourceDefinitionId { get; set; }
+        public string AgentDefinitionId { get; set; }
+        public string NotedAgentDefinitionId { get; set; }
+        //public string DueDateLabel { get; set; }
+        //public string DueDateLabel2 { get; set; }
+        //public string DueDateLabel3 { get; set; }
+        //public string Time1Label { get; set; }
+        //public string Time1Label2 { get; set; }
+        //public string Time1Label3 { get; set; }
+        //public string Time2Label { get; set; }
+        //public string Time2Label2 { get; set; }
+        //public string Time2Label3 { get; set; }
+        //public string ExternalReferenceLabel { get; set; }
+        //public string ExternalReferenceLabel2 { get; set; }
+        //public string ExternalReferenceLabel3 { get; set; }
+        //public string AdditionalReferenceLabel { get; set; }
+        //public string AdditionalReferenceLabel2 { get; set; }
+        //public string AdditionalReferenceLabel3 { get; set; }
+        //public string NotedAgentNameLabel { get; set; }
+        //public string NotedAgentNameLabel2 { get; set; }
+        //public string NotedAgentNameLabel3 { get; set; }
+        //public string NotedAmountLabel { get; set; }
+        //public string NotedAmountLabel2 { get; set; }
+        //public string NotedAmountLabel3 { get; set; }
+        //public string NotedDateLabel { get; set; }
+        //public string NotedDateLabel2 { get; set; }
+        //public string NotedDateLabel3 { get; set; }
     }
 
     public class LineDefinitionColumnForClient
