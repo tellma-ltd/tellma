@@ -111,13 +111,10 @@ namespace Tellma.Controllers
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
-                TEntity entity = null;
-                if (resultDic.ContainsKey(id))
+                if (resultDic.TryGetValue(id, out TEntity entity))
                 {
-                    entity = resultDic[id];
+                    sortedResult[i] = entity;
                 }
-
-                sortedResult[i] = entity;
             }
 
             result.Result = sortedResult;

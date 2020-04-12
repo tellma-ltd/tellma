@@ -2489,9 +2489,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private entity(def: LineDefinitionColumnForClient, line: LineForSave): LineForSave | EntryForSave {
     let entity: LineForSave | EntryForSave;
     if (!!def) {
-      if (def.TableName === 'Lines') {
+      if (def.ColumnName === 'Memo') {
         entity = line;
-      } else if (def.TableName === 'Entries') {
+      } else {
         entity = !!line.Entries ? line.Entries[def.EntryIndex] : null;
       }
     }
@@ -2501,7 +2501,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public entry(lineDefId: string, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    if (!!colDef && colDef.TableName === 'Entries') {
+    if (!!colDef && colDef.ColumnName !== 'Memo') {
       return !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 

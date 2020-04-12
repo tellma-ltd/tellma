@@ -242,7 +242,6 @@ export interface LineDefinitionEntryForClient {
 }
 
 export interface LineDefinitionColumnForClient {
-    TableName: 'Lines' | 'Entries';
     ColumnName: EntryColumnName;
     EntryIndex: number;
     Label: string;
