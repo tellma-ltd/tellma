@@ -7,27 +7,6 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	INSERT INTO @Accounts([Index],[IsSmart],[Code],
 					[AccountTypeId],			[Name],									[CurrencyId],	[CenterId],		[EntryTypeId],		[AgentId]) VALUES
 	-- Assets Accounts
-	/*
-	(10,1,N'1000',	@PropertyPlantAndEquipment,	N'Equipment - Unallocated',				@USD,			@C101_UNALLOC,	@PPEAdditions,			NULL),
-	(11,1,N'1010',	@PropertyPlantAndEquipment,	N'Equipment - Exec Office',				@USD,			@C101_EXEC,		@PPEAdditions,			NULL),
-	(12,1,N'1020',	@PropertyPlantAndEquipment,	N'Equipment - Sales',					@USD,			@C101_Sales,	@PPEAdditions,			NULL),
-	(13,1,N'1030',	@PropertyPlantAndEquipment,	N'Equipment - Sys Admin',				@USD,			@C101_Sys,		@PPEAdditions,			NULL),
-	(14,1,N'1040',	@PropertyPlantAndEquipment,	N'Equipment - B10/HCM',					@USD,			@C101_B10,		@PPEAdditions,			NULL),
-	(15,1,N'1050',	@PropertyPlantAndEquipment,	N'Equipment - BSmart',					@USD,			@C101_BSmart,	@PPEAdditions,			NULL),
-	(16,1,N'1060',	@PropertyPlantAndEquipment,	N'Equipment - Campus',					@USD,			@C101_Campus,	@PPEAdditions,			NULL),
-	(17,1,N'1070',	@PropertyPlantAndEquipment,	N'Equipment - Tellma',					@USD,			@C101_Tellma,	@PPEAdditions,			NULL),
-	(18,1,N'1080',	@PropertyPlantAndEquipment,	N'Equipment - Floor Rental',			@USD,			@C101_FFLR,		@PPEAdditions,			NULL),
-
-	(310,1,N'1100',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Unallocated',	@USD,			@C101_UNALLOC,	@PPEDepreciations,		NULL),
-	(311,1,N'1110',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Exec Office',	@USD,			@C101_EXEC,		@PPEDepreciations,		NULL),
-	(312,1,N'1120',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Sales',		@USD,			@C101_Sales,	@PPEDepreciations,		NULL),
-	(313,1,N'1130',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Sys Admin',	@USD,			@C101_Sys,		@PPEDepreciations,		NULL),
-	(314,1,N'1140',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - B10/HCM',		@USD,			@C101_B10,		@PPEDepreciations,		NULL),
-	(315,1,N'1150',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - BSmart',		@USD,			@C101_BSmart,	@PPEDepreciations,		NULL),
-	(316,1,N'1160',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Campus',		@USD,			@C101_Campus,	@PPEDepreciations,		NULL),
-	(317,1,N'1170',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Tellma',		@USD,			@C101_Tellma,	@PPEDepreciations,		NULL),
-	(318,1,N'1180',	@PropertyPlantAndEquipment,	N'Acc. Dep.- Equipment - Floor Rental',	@USD,			@C101_FFLR,		@PPEDepreciations,		NULL),
-*/
 	(10,1,N'1000',	@FixturesAndFittings,		N'Fixtures and fittings',				@USD,			NULL,			@PPEAdditions,			NULL),
 	(11,1,N'1010',	@OfficeEquipment,			N'Office equipment',					@USD,			NULL,			@PPEAdditions,			NULL),
 	(12,1,N'1020',	@ComputerEquipmentMemberExtension,N'Computer equipment',			@USD,			NULL,			@PPEAdditions,			NULL),
@@ -103,50 +82,60 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 -- 6: Indirect, Production, 7:service
 -- 8:Distribution
 -- 9:Admin. Nature: 2 digits, Center: 2 digits, Varieties: 1
-/*
-	(101,0,N'90510',	@ProfessionalFeesExpense,		N'Acc. & Legal Services',	NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
 
+	(101,0,N'90510',	@ProfessionalFeesExpense,		N'Acc. & Legal Services - USD',	@USD,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+	(102,0,N'90511',	@ProfessionalFeesExpense,		N'Acc. & Legal Services - SDG',	@SDG,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+/*
 	(110,0,N'X0611',	@TransportationExpense,			N'Transportation',			NULL,			NULL,			NULL,					NULL),
 	(115,0,N'90710',	@BankAndSimilarCharges,			N'Banking Services',		NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
 	(120,0,N'X0811',	@TravelExpense,					N'Visa & Travel',			NULL,			NULL,			NULL,					NULL),
 	(130,0,N'A0900',	@CommunicationExpense,			N'Internet & Tel',			NULL,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
 	(135,0,N'50511',	@ServicesExpense,				N'Cloud Hosting',			@USD,			NULL,			@CostOfSales,			NULL),
+*/	
 	(140,0,N'A1000',	@UtilitiesExpense,				N'Utilities',				@SDG,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
 	(145,0,N'A9900',	@ServicesExpense,				N'Office Rental',			@SDG,			@C101_UNALLOC,	@OtherExpenseByFunction,NULL),
-
-	(150,0,N'81120',	@AdvertisingExpense,			N'Marketing Service',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
+/*
+	(150,0,N'81120',	@AdvertisingExpense,			N'Marketing Service - SDG',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
+	(151,0,N'81120',	@AdvertisingExpense,			N'Marketing Service - SDG',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
 	(155,0,N'X05111',	@ServicesExpense,				N'Domain Registration',		@USD,			NULL,			NULL,					NULL),
 	(160,0,N'X05112',	@ServicesExpense,				N'Maintenance',				NULL,			NULL,			NULL,					NULL),
 	(165,0,N'X05113',	@ServicesExpense,				N'Medical',					NULL,			NULL,			NULL,					NULL),
+*/
+	(170,1,N'92310',	@WagesAndSalaries,		N'Salaries - Exec Office Equip.',	@USD,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+	(171,1,N'82320',	@WagesAndSalaries,		N'Salaries - Sales Equip.',			@USD,			@C101_Sales,	@DistributionCosts,		NULL),
+	(172,1,N'72330',	@WagesAndSalaries,		N'Salaries - Sys Admin Equip.',		@USD,			@C101_Sys,		@ServiceExtension,		NULL),
+	(173,1,N'52340',	@WagesAndSalaries,		N'Salaries - B10/HCM Equip.',		@USD,			@C101_B10,		@CostOfSales,			NULL),
+	(174,1,N'52350',	@WagesAndSalaries,		N'Salaries - BSmart Equip.',		@USD,			@C101_BSmart,	@CostOfSales,			NULL),
+	(175,1,N'52360',	@WagesAndSalaries,		N'Salaries - Campus Equip.',		@USD,			@C101_Campus,	@CostOfSales,			NULL),
+	(176,1,N'52370',	@WagesAndSalaries,		N'Salaries - Tellma Equip.',		@USD,			@C101_Tellma,	@CostOfSales,			NULL),
+	(177,1,N'52380',	@WagesAndSalaries,		N'Salaries - Floor Rental Equip.',	@USD,			@C101_FFLR,		@CostOfSales,			NULL),
+/*
+	(178,0,N'X1201',	@EmployeeBenefitsExpense,		N'Zakat & Eid',				@USD,			NULL,			NULL,					NULL),
 
-	(170,0,N'51400',	@WagesAndSalaries,				N'Salaries - Direct',		NULL,			NULL,			@CostOfSales,			NULL),
-	(172,0,N'71400',	@WagesAndSalaries,				N'Salaries - Service',		NULL,			NULL,			@ServiceExtension,		NULL),
-	(173,0,N'81400',	@WagesAndSalaries,				N'Salaries - Distribution',	NULL,			NULL,			@DistributionCosts,		NULL),
-	(174,0,N'91400',	@WagesAndSalaries,				N'Salaries - Admin',		NULL,			NULL,			@AdministrativeExpense,	NULL),
-	(175,0,N'X1201',	@EmployeeBenefitsExpense,		N'Zakat & Eid',				NULL,			NULL,			NULL,					NULL),
-	(180,0,N'50550',	@ProfessionalFeesExpense,		N'Salaries - B10 Contractors',NULL,			@C101_B10,		@CostOfSales,			NULL),
-	(185,0,N'X1500',	@SocialSecurityContributions,	N'Employee Pension Contribution',NULL,		NULL,			NULL,					NULL),
+	(180,0,N'50550',	@ProfessionalFeesExpense,		N'Salaries - B10 Contractors',@USD,			@C101_B10,		@CostOfSales,			NULL),
+	(185,0,N'X1500',	@SocialSecurityContributions,	N'Employee Pension Contribution',@SDG,		NULL,			NULL,					NULL),
 	(190,0,N'X1202',	@EmployeeBenefitsExpense,		N'Allowances & Bonuses',	NULL,			NULL,			NULL,					NULL),
 	(195,0,N'X99001',	@OtherExpenseByNature,			N'Employee Meals',			NULL,			NULL,			NULL,					NULL),
 
 	(200,0,N'X99002',	@OtherExpenseByNature,			N'Stationery & Grocery',	NULL,			NULL,			NULL,					NULL),
-	(205,0,N'99910',	@OtherExpenseByNature,			N'Gov fees',				NULL,			@C101_EXEC,		@AdministrativeExpense,	NULL),
-
+	*/
+	(205,0,N'99910',	@OtherExpenseByNature,			N'Gov fees',				@SDG,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+/*
 	(210,0,N'89920',	@OtherExpenseByNature,			N'Presentation tools',		NULL,			@C101_Sales,	@DistributionCosts,		NULL),
 	(215,0,N'X99003',	@OtherExpenseByNature,			N'Education & Certifications',NULL,			NULL,			NULL,					NULL),
 	(220,0,N'X99004',	@OtherExpenseByNature,			N'Consumables',				NULL,			NULL,			NULL,					NULL),
 	(225,0,N'X99005',	@OtherExpenseByNature,			N'Tender Fees',				NULL,			NULL,			NULL,					NULL),
 	(230,0,N'X99006',	@OtherExpenseByNature,			N'Office Furniture',		NULL,			NULL,			NULL,					NULL),
 	(235,0,N'X99007',	@OtherExpenseByNature,			N'Other Expenses',			NULL,			NULL,			NULL,					NULL),
-
-	(241,0,N'92310',	@DepreciationExpense,	N'Dep. Exp. - Exec Office Equip.',	@USD,			@C101_EXEC,		@AdministrativeExpense,	NULL),
-	(242,0,N'82320',	@DepreciationExpense,	N'Dep. Exp. - Sales Equip.',		@USD,			@C101_Sales,	@DistributionCosts,		NULL),
-	(243,0,N'72330',	@DepreciationExpense,	N'Dep. Exp. - Sys Admin Equip.',	@USD,			@C101_Sys,		@ServiceExtension,		NULL),
-	(244,0,N'52340',	@DepreciationExpense,	N'Dep. Exp. - B10/HCM Equip.',		@USD,			@C101_B10,		@CostOfSales,			NULL),
-	(245,0,N'52350',	@DepreciationExpense,	N'Dep. Exp. - BSmart Equip.',		@USD,			@C101_BSmart,	@CostOfSales,			NULL),
-	(246,0,N'52360',	@DepreciationExpense,	N'Dep. Exp. - Campus Equip.',		@USD,			@C101_Campus,	@CostOfSales,			NULL),
-	(247,0,N'52370',	@DepreciationExpense,	N'Dep. Exp. - Tellma Equip.',		@USD,			@C101_Tellma,	@CostOfSales,			NULL),
-	(248,0,N'52380',	@DepreciationExpense,	N'Dep. Exp. - Floor Rental Equip.',	@USD,			@C101_FFLR,		@CostOfSales,			NULL),*/
+*/
+	(241,1,N'92311',	@DepreciationExpense,	N'Dep. Exp. - Exec Office Equip.',	@USD,			@C101_EXEC,		@AdministrativeExpense,	NULL),
+	(242,1,N'82321',	@DepreciationExpense,	N'Dep. Exp. - Sales Equip.',		@USD,			@C101_Sales,	@DistributionCosts,		NULL),
+	(243,1,N'72331',	@DepreciationExpense,	N'Dep. Exp. - Sys Admin Equip.',	@USD,			@C101_Sys,		@ServiceExtension,		NULL),
+	(244,1,N'52341',	@DepreciationExpense,	N'Dep. Exp. - B10/HCM Equip.',		@USD,			@C101_B10,		@CostOfSales,			NULL),
+	(245,1,N'52351',	@DepreciationExpense,	N'Dep. Exp. - BSmart Equip.',		@USD,			@C101_BSmart,	@CostOfSales,			NULL),
+	(246,1,N'52361',	@DepreciationExpense,	N'Dep. Exp. - Campus Equip.',		@USD,			@C101_Campus,	@CostOfSales,			NULL),
+	(247,1,N'52371',	@DepreciationExpense,	N'Dep. Exp. - Tellma Equip.',		@USD,			@C101_Tellma,	@CostOfSales,			NULL),
+	(248,1,N'52381',	@DepreciationExpense,	N'Dep. Exp. - Floor Rental Equip.',	@USD,			@C101_FFLR,		@CostOfSales,			NULL),
 
 	(250,1,N'B01',	@GainLossOnDisposalOfPropertyPlantAndEquipment,
 														N'Gain (loss) on disposal',	@USD,			@C101_INV,			NULL,					NULL);

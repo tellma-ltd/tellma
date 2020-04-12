@@ -113,6 +113,11 @@ UPDATE @AccountTypes	SET [AgentAssignment] = N'E', [AgentDefinitionId] = N'inven
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [CenterAssignment] = N'A' WHERE [ParentIndex] = 55;
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [CenterAssignment] = N'A' WHERE  [Code] = N'RevenueFromRenderingOfServices';
 
+UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [EntryTypeAssignment] = N'A', [CenterAssignment] = N'A'
+WHERE [Code] = N'WagesAndSalaries';
+
+UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [EntryTypeAssignment] = N'A', [CenterAssignment] = N'A'
+WHERE [Code] = N'DepreciationExpense';
 
 
 -- UPDATE @AccountTypes	SET [NotedAgentDefinitionId] = N'suppliers' WHERE [Code] = N'CurrentValueAddedTaxReceivables';
