@@ -12,7 +12,7 @@
 	[ResourceId]				INT				NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
 	-- required when the resource classification is anything but Cash
 	[CenterId]					INT				NULL REFERENCES dbo.[Centers]([Id]),
-	--[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entries__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
+	[AccountIdentifier]			NVARCHAR (10),
 	--[ResourceIdentifier]		NVARCHAR (10),
 	[EntryTypeId]				INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	-- Due Date is required only for certain resources, 

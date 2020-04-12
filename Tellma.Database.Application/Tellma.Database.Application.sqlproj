@@ -385,7 +385,6 @@
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
     <None Include="Provisioning\03_Basic\b_Units.sql" />
     <None Include="Provisioning\03_Basic\c_Lookups.sql" />
-    <None Include="Provisioning\05_Agents\00_Centers.sql" />
     <None Include="Provisioning\05_Agents\06_Suppliers.sql" />
     <None Include="Provisioning\05_Agents\03_Customers.sql" />
     <None Include="Provisioning\05_Agents\10_Employees.sql" />
@@ -545,6 +544,7 @@
     <Build Include="map\map.Inbox.sql" />
     <Build Include="map\map.Outbox.sql" />
     <Build Include="map\IfrsConcepts.sql" />
+    <None Include="Provisioning\03_Basic\d_Centers.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -566,7 +566,6 @@
     <None Include="Provisioning\01_Security\a_Users.sql" />
     <None Include="Provisioning\02_Definitions\b_ResourceDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\c_AgentDefinitions.sql" />
-    <None Include="Provisioning\05_Agents\01_CostObjects.sql" />
     <None Include="Provisioning\05_Agents\02_Creditors.sql" />
     <None Include="Provisioning\05_Agents\04_Debtors.sql" />
     <None Include="105.Simpex.publish.xml" />

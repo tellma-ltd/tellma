@@ -1,13 +1,13 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
---	Defining computer equipment	   
+--	Defining computer equipment	 @CostOfSales @DistributionCosts @AdministrativeExpense @ProductionExtension @ServiceExtension @OtherExpenseByFunction
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AssetTypeId],						[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
-	(0,@ComputerEquipmentMemberExtension,	N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Microsoft'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(1,@ComputerEquipmentMemberExtension,	N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(2,@ComputerEquipmentMemberExtension,	N'Lenovo Ideapad S145',				N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(3,@ComputerEquipmentMemberExtension,	N'Abdulrahman Used Laptop',			N'100022312',	NULL,														dbo.fn_Lookup(N'operating-systems', N'Windows 10'));
+		[AssetTypeId],				[CurrencyId],	[ExpenseTypeId],		[ExpenseEntryTypeId],	[CenterId],	[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
+	(0,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC,	N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Microsoft'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
+	(1,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Sales,N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
+	(2,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Campus,N'Lenovo Ideapad S145',			N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
+	(3,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@ProductionExtension,	@C101_B10,	N'Abdulrahman Used Laptop',			N'100022312',	NULL,														dbo.fn_Lookup(N'operating-systems', N'Windows 10'));
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],					[Multiplier]) VALUES
 	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
@@ -27,21 +27,21 @@ BEGIN
 -- Defining other fixed assets
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AssetTypeId],					[Name],						[Identifier]) VALUES
-	(0, @OfficeEquipment,				N'Camera',					N'-'),
-	(1, @OfficeEquipment,				N'Generator',				N'-'),
-	(2, @OfficeEquipment,				N'Battery for Generator',	N'-'),
-	(3, @ComputerAccessoriesExtension,	N'Mouse (65.49 GBP)',		N'-'),
-	(4, @ComputerAccessoriesExtension,	N'Laptop Case (17.99 GBP)',	N'-'),
-	(5, @ComputerAccessoriesExtension,	N'Dock (140.80 GBP)',		N'-'),
-	(6, @OfficeEquipment,				N'FingerPrint System',		N'-'),
-	(7, @ComputerAccessoriesExtension,	N'SSD for PC',				N'1'),
-	(8, @ComputerAccessoriesExtension,	N'SSD for PC',				N'2'),
-	(9, @ComputerAccessoriesExtension,	N'SSD 240 GB',				N'-'),
-	(10, @OfficeEquipment,				N'Meeting Luxurious Table',	N'-'),
-	(11, @OfficeEquipment,				N'Generator Auto Switch',	N'-'),
-	(12, @ComputerAccessoriesExtension,	N'Hikvision 240GB SSD Disk',N'-'),
-	(14, @OfficeEquipment,				N'Huawei Prime 7 Golden',	N'-');
+		[AssetTypeId],					[Name],				[Identifier],[CurrencyId],[ExpenseTypeId],	[ExpenseEntryTypeId],	[CenterId]) VALUES
+	(0, @OfficeEquipment,				N'Camera',					N'-', @USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Sales),
+	(1, @OfficeEquipment,				N'Generator',				N'-', @USD,	@DepreciationExpense,	@ServiceExtension,		@C101_PWG),
+	(2, @OfficeEquipment,				N'Battery for Generator',	N'-', @USD,	@DepreciationExpense,	@ServiceExtension,		@C101_PWG),
+	(3, @ComputerAccessoriesExtension,	N'Mouse (65.49 GBP)',		N'-', @USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC),
+	(4, @ComputerAccessoriesExtension,	N'Laptop Case (17.99 GBP)',	N'-', @USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC),
+	(5, @ComputerAccessoriesExtension,	N'Dock (140.80 GBP)',		N'-', @USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC),
+	(6, @OfficeEquipment,				N'FingerPrint System',		N'-', @USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC),
+	(7, @ComputerAccessoriesExtension,	N'SSD for PC',				N'1', @USD, @DepreciationExpense,	@ProductionExtension,	@C101_B10),
+	(8, @ComputerAccessoriesExtension,	N'SSD for PC',				N'2', @USD, @DepreciationExpense,	@ProductionExtension,	@C101_Campus),
+	(9, @ComputerAccessoriesExtension,	N'SSD 240 GB',				N'-', @USD, @DepreciationExpense,	@ServiceExtension,		@C101_Sys),
+	(10, @OfficeEquipment,				N'Meeting Luxurious Table',	N'-', @USD, @DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC),
+	(11, @OfficeEquipment,				N'Generator Auto Switch',	N'-', @USD, @DepreciationExpense,	@ServiceExtension,		@C101_PWG),
+	(12, @ComputerAccessoriesExtension,	N'Hikvision 240GB SSD Disk',N'-', @USD, @DepreciationExpense,	@ProductionExtension,	@C101_B10),
+	(13, @OfficeEquipment,				N'Huawei Prime 7 Golden',	N'-', @USD, @DepreciationExpense,	@DistributionCosts,		@C101_Sales);
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 	[UnitId],					[Multiplier]) VALUES
 	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
@@ -57,8 +57,7 @@ BEGIN
 	(0, 10, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 11, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 12, dbo.fn_UnitName__Id(N'yr'),	1),
-	(0, 13, dbo.fn_UnitName__Id(N'yr'),	1),
-	(0, 14, dbo.fn_UnitName__Id(N'yr'),	1);
+	(0, 13, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'properties-plants-and-equipment',
 		@Entities = @Resources,

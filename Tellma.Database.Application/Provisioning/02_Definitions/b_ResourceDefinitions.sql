@@ -29,17 +29,22 @@ BEGIN
 		[IdentifierLabel2]					= N'رقم التعريف',
 		[CurrencyVisibility]				= N'Required',
 		[DescriptionVisibility]				= N'Optional',
-		[Lookup1Visibility]					= N'Optional',
-		[Lookup1Label]						= N'Manufacturer',
-		[Lookup1DefinitionId]				= N'it-equipment-manufacturers',
-		[Lookup2Visibility]					= N'Optional',
-		[Lookup2Label]						= N'Operating System',
-		[Lookup2DefinitionId]				= N'operating-systems',
+		[AssetTypeVisibility]				= N'Required',
+		[ExpenseTypeVisibility]				= N'Required',
 		[ExpenseEntryTypeVisibility]		= N'Required',
 		[CenterVisibility]					= N'Required',
 		[ResidualMonetaryValueVisibility]	= N'Required',
 		[ResidualValueVisibility]			= N'Required'
 	WHERE [Id] IN (N'computer-equipment', N'properties-plants-and-equipment');
+	UPDATE @ResourceDefinitions
+	SET 
+		[Lookup1Visibility]					= N'Optional',
+		[Lookup1Label]						= N'Manufacturer',
+		[Lookup1DefinitionId]				= N'it-equipment-manufacturers',
+		[Lookup2Visibility]					= N'Optional',
+		[Lookup2Label]						= N'Operating System',
+		[Lookup2DefinitionId]				= N'operating-systems'
+	WHERE [Id] = N'computer-equipment';
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN

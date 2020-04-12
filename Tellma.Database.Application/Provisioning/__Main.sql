@@ -47,6 +47,7 @@ END
 :r .\03_Basic\a_Currencies.sql
 :r .\03_Basic\b_Units.sql
 :r .\03_Basic\c_Lookups.sql
+:r .\03_Basic\d_Centers.sql
 
 :r .\04_Resources\101_property-plant-and-equipment.sql
 :r .\04_Resources\101_employee-benefits.sql
@@ -71,7 +72,7 @@ END
 :r .\05_Agents\09_Custodians.sql
 :r .\05_Agents\09a_Warehouses.sql
 :r .\05_Agents\10_Employees.sql
-:r .\05_Agents\00_Centers.sql
+
 
 :r .\06_Accounts\b_CustomClassifications.sql
 :r .\06_Accounts\101_Accounts.sql

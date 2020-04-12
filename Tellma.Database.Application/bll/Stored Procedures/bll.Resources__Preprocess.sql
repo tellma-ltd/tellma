@@ -12,7 +12,7 @@ SELECT * FROM @Entities;
 --UPDATE @PreprocessedResources
 --SET
 --	[ResidualValue] = [ResidualMonetaryValue]
---WHERE [CurrencyId]  = dbo.fn_FunctionalCurrencyId();
+--	WHERE [CurrencyId]  = dbo.fn_FunctionalCurrencyId();
 
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

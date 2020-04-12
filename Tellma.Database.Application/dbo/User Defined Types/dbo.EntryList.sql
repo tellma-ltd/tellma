@@ -10,7 +10,7 @@
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[CenterId]					INT,
-	--[AccountIdentifier]			NVARCHAR (10),
+	[AccountIdentifier]			NVARCHAR (10),
 	--[ResourceIdentifier]		NVARCHAR (10),
 	[EntryTypeId]				INT,
 	--[BatchCode]					NVARCHAR (50),

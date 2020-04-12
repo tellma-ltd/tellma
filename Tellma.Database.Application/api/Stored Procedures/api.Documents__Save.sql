@@ -32,7 +32,7 @@ BEGIN
 	[AgentId]					INT '$.AgentId',
 	[ResourceId]				INT '$.ResourceId',
 	[CenterId]					INT '$.CenterId',
-	--[AccountIdentifier]		NVARCHAR (10) '$.AccountIdentifier',
+	[AccountIdentifier]		NVARCHAR (10) '$.AccountIdentifier',
 	--[ResourceIdentifier]		NVARCHAR (10) '$.ResourceIdentifier',
 	[EntryTypeId]				INT '$.EntryTypeId',
 	--[BatchCode]					NVARCHAR (50) '$.BatchCode',
