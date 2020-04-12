@@ -95,10 +95,10 @@ SET NOCOUNT ON;
 			[Lookup4Label2],
 			[Lookup4Label3],
 
-			[DueDateLabel],
-			[DueDateLabel2],
-			[DueDateLabel3],
-			[DueDateVisibility],
+			--[DueDateLabel],
+			--[DueDateLabel2],
+			--[DueDateLabel3],
+			--[DueDateVisibility],
 			-- more properties from Resource Instances to come..
 			[Text1Label],				
 			[Text1Label2],
@@ -196,10 +196,10 @@ SET NOCOUNT ON;
 			t.[Lookup4Label2] = s.[Lookup4Label2],
 			t.[Lookup4Label3] = s.[Lookup4Label3],
 
-			t.[DueDateLabel] = s.[DueDateLabel],
-			t.[DueDateLabel2] = s.[DueDateLabel2],
-			t.[DueDateLabel3] = s.[DueDateLabel3],
-			t.[DueDateVisibility] = s.[DueDateVisibility],
+			--t.[DueDateLabel] = s.[DueDateLabel],
+			--t.[DueDateLabel2] = s.[DueDateLabel2],
+			--t.[DueDateLabel3] = s.[DueDateLabel3],
+			--t.[DueDateVisibility] = s.[DueDateVisibility],
 			-- more properties from Resource Instances to come..
 			t.[Text1Label] = s.[Text1Label],						
 			t.[Text1Label2] = s.[Text1Label2],
@@ -297,10 +297,10 @@ SET NOCOUNT ON;
 			[Lookup4Label2],
 			[Lookup4Label3],
 
-			[DueDateLabel],
-			[DueDateLabel2],
-			[DueDateLabel3],
-			[DueDateVisibility],
+			--[DueDateLabel],
+			--[DueDateLabel2],
+			--[DueDateLabel3],
+			--[DueDateVisibility],
 			-- more properties from Resource Instances to come..
 			[Text1Label],				
 			[Text1Label2],
@@ -399,10 +399,10 @@ SET NOCOUNT ON;
 			s.[Lookup4Label2],
 			s.[Lookup4Label3],
 
-			s.[DueDateLabel],
-			s.[DueDateLabel2],
-			s.[DueDateLabel3],
-			s.[DueDateVisibility],
+			--s.[DueDateLabel],
+			--s.[DueDateLabel2],
+			--s.[DueDateLabel3],
+			--s.[DueDateVisibility],
 			-- more properties from Resource Instances to come..
 			s.[Text1Label],				
 			s.[Text1Label2],
