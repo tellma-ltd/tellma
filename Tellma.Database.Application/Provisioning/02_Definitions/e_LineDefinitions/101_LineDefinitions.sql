@@ -300,10 +300,58 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,11,	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			3,4,0),
 (10,11,	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
 (11,11,	N'Memo',				1,	N'Memo',				N'البيان',				1,5,1);
---12:ReceiptFromLessee (against an invoice), No workflow
+--12:AdvancedReceiptFromLessee (against an invoice), No workflow
+INSERT @LineDefinitions([Index],
+[ViewDefaultsToForm],[Id],			[TitleSingular],	[TitleSingular2],		[TitlePlural],		[TitlePlural2]) VALUES (
+12,1,N'AdvancedReceiptFromLessee',N'Adv. Rent/Sub.',	N'إيجار\اشتراك مقدم',	N'Adv. Rents/Subs',	N'إيجارات\اشتراكات مقدمة');
+UPDATE @LineDefinitions
+SET [Script] = N'
+	--SET NOCOUNT ON
+	--DECLARE @ProcessedWideLines WideLineList;
+
+	--INSERT INTO @ProcessedWideLines
+	--SELECT * FROM @WideLines;
+	-----
+	UPDATE @ProcessedWideLines
+	SET
+		[CurrencyId1] = [CurrencyId0],
+		[CurrencyId2] = [CurrencyId0],
+		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [AgentId2]),
+		[NotedAgentId1] = [AgentId2],
+		[NotedAmount1] = ISNULL([MonetaryValue2],0),
+		[CenterId1] = [CenterId0],
+		[CenterId2] = [CenterId0]
+	-----
+	--SELECT * FROM @ProcessedWideLines;'
+WHERE [Index] = 12;
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+(0,12,+1,	@CashAndCashEquivalents,			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,12,-1,	@CurrentValueAddedTaxPayables,		NULL),
+(2,12,-1,	@DeferredIncomeClassifiedAsCurrent,	NULL);
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+		[ColumnName],[EntryIndex],	[Label],			[Label2],				[RequiredState],
+																				[ReadOnlyState],
+																				[InheritsFromHeader]) VALUES
+(0,12,	N'Memo',				1,	N'Memo',			N'البيان',				1,5,1),
+(1,12,	N'NotedDate',			1,	N'Invoice Date',	N'تاريخ الفاتورة',		3,5,0), 
+(2,12,	N'ExternalReference',	1,	N'Invoice #',		N'رقم الفاتورة',		3,5,0), 
+(3,12,	N'AgentId',				2,	N'Customer',		N'الزبون',				1,4,1),
+(4,12,	N'CurrencyId',			0,	N'Invoice Currency',N'عملة الفاتورة',		1,2,1),
+(5,12,	N'MonetaryValue',		1,	N'Price Excl. VAT',	N'المبلغ بدون ق.م.',	1,2,0),
+(6,12,	N'MonetaryValue',		1,	N'VAT',				N'ق.م.',				3,4,0),
+(7,12,	N'CurrencyId',			0,	N'Rcvd. Currency',	N'عملة الاستلام',		3,0,0),
+(8,12,	N'MonetaryValue',		0,	N'Rcvd. Amount',	N'الإجمالي المستلم',	3,0,0),
+
+(9,12,	N'AgentId',				0,	N'Bank/Cashier',	N'البنك\الخزنة',		3,4,1),
+(10,12,	N'ExternalReference',	0,	N'Check #',			N'رقم الشيك ',			5,4,0),
+(11,12,	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,4,0),
+(12,12,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1);
+
+--13:DeferredReceiptFromLessee (against an invoice), No workflow
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Id],[TitleSingular],		[TitleSingular2],	[TitlePlural],			[TitlePlural2]) VALUES (
-12,1,N'ReceiptFromLessee',N'Rent/Subscription',	N'إيجار\اشتراك',	N'Rents/Subscriptions',	N'إيجارات\اشتراكات');
+13,1,N'DeferredReceiptFromLessee',N'Def. Rent/Sub.',	N'إيجار\اشتراك مؤخر',	N'Def. Rents/Subs',	N'إيجارات\اشتراكات مؤهرة');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -324,31 +372,31 @@ SET [Script] = N'
 		[CenterId2] = [CenterId0]
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
-WHERE [Index] = 12;
+WHERE [Index] = 13;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[AccountTypeParentId],			[EntryTypeId]) VALUES
-(0,12,+1,	@CashAndCashEquivalents,		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
-(1,12,-1,	@CurrentValueAddedTaxPayables,	NULL),
-(2,12,-1,	@CurrentAccruedIncome,			NULL);
+(0,13,+1,	@CashAndCashEquivalents,		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
+(1,13,-1,	@CurrentValueAddedTaxPayables,	NULL),
+(2,13,-1,	@CurrentAccruedIncome,			NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[Label2],				[RequiredState],
 																				[ReadOnlyState],
 																				[InheritsFromHeader]) VALUES
 
-(0,12,	N'NotedDate',			1,	N'Invoice Date',		N'تاريخ الفاتورة',		3,5,0), 
-(1,12,	N'ExternalReference',	1,	N'Invoice #',			N'رقم الفاتورة',		3,5,0), 
-(2,12,	N'NotedAgentId',		1,	N'Customer',			N'الزبون',				1,4,1),
-(3,12,	N'CurrencyId',			0,	N'Currency',			N'العملة',				1,2,1),
-(4,12,	N'NotedAmount',			1,	N'Price Excl. VAT',		N'المبلغ بدون ق.م.',	1,2,0),
-(5,12,	N'MonetaryValue',		1,	N'VAT',					N'ق.م.',				3,4,0),
-(6,12,	N'MonetaryValue',		0,	N'Total',				N'الإجمالي',				3,0,0),
-(7,12,	N'AgentId',				0,	N'Bank/Cashier',		N'البنك\الخزنة',		3,4,1),
-(8,12,	N'ExternalReference',	0,	N'Check #',				N'رقم الشيك ',			5,4,0),
-(9,12,	N'NotedDate',			0,	N'Check Date',			N'تاريخ الشيك',			5,4,0),
-(10,12,	N'CenterId',			0,	N'Inv. Ctr',			N'مركز الاستثمار',		4,4,1),
-(11,12,	N'Memo',				1,	N'Memo',				N'البيان',				1,5,1);
---13:GoodDeliveryNote
---14:ServiceDeliveryNote (from Cash Sale). For sale to customer on account in SDN)
+(0,13,	N'NotedDate',			1,	N'Invoice Date',	N'تاريخ الفاتورة',		3,5,0), 
+(1,13,	N'ExternalReference',	1,	N'Invoice #',		N'رقم الفاتورة',		3,5,0), 
+(2,13,	N'NotedAgentId',		1,	N'Customer',		N'الزبون',				1,4,1),
+(3,13,	N'CurrencyId',			0,	N'Currency',		N'العملة',				1,2,1),
+(4,13,	N'NotedAmount',			1,	N'Price Excl. VAT',	N'المبلغ بدون ق.م.',	1,2,0),
+(5,13,	N'MonetaryValue',		1,	N'VAT',				N'ق.م.',				3,4,0),
+(6,13,	N'MonetaryValue',		0,	N'Total',			N'الإجمالي',			3,0,0),
+(7,13,	N'AgentId',				0,	N'Bank/Cashier',	N'البنك\الخزنة',		3,4,1),
+(8,13,	N'ExternalReference',	0,	N'Check #',			N'رقم الشيك ',			5,4,0),
+(9,13,	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,4,0),
+(10,13,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1),
+(11,13,	N'Memo',				1,	N'Memo',			N'البيان',				1,5,1);
+--14:GoodDeliveryNote
+--15:ServiceDeliveryNote (from Cash Sale). For sale to customer on account in SDN)
 
 --17:ReceiptFromPartner
 --18:RefundFromSupplier.

@@ -72,9 +72,10 @@ BEGIN
 	(2,11,	N'ManualLine',				1),
 	-- cash-receipt-vouchers
 	--(0,12,	N'ReceiptFromCustomer',		1),  -- on credit, of goods and services
-	(1,13,	N'ReceiptFromLessee',		1),  -- for period
-	(2,13,	N'ReceiptFromOther',		1),	 -- including partner, creditor
-	(3,13,	N'ManualLine',				1),
+	(1,13,	N'AdvancedReceiptFromLessee',1),  -- for period
+	(2,13,	N'DeferredReceiptFromLessee',1),  -- for period
+	(3,13,	N'ReceiptFromOther',		1),	 -- including partner, creditor
+	(4,13,	N'ManualLine',				1),
 	-- 	expense-recognition-vouchers, for depreciation expenses and rental recognition
 	(0,21,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
 	(1,21,	N'LeaseIn',					1),-- software subscription, domain registration, office rental...

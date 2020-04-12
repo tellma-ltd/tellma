@@ -57,9 +57,9 @@ Entry Type - Account Type - Center - Currency - Agent Definition - Agent
 	(66,0,N'3035',	@AccrualsClassifiedAsCurrent,		N'Accrued Expenses',			NULL,			@C101_INV,		NULL,				N'suppliers',		NULL),
 	(67,0,N'3040',	@TradeAndOtherCurrentPayables,		N'Dividends Payables',			@USD,			@C101_INV,		NULL,				N'partners',		NULL),
 	(68,0,N'3045',	@TradeAndOtherCurrentPayables,		N'Borrowings from M/A',			@USD,			@C101_INV,		NULL,				N'partners',		@PartnerMA),
-
-	(69,0,N'3050',	@DeferredIncomeClassifiedAsCurrent,	N'Unearned Revenues',			NULL,			@C101_INV,		NULL,				N'customers',		NULL),
 	*/
+	(69,0,N'3049',	@DeferredIncomeClassifiedAsCurrent,	N'Deferred Income - USD',		@USD,			@C101_INV,		NULL,				NULL),
+	(70,0,N'3050',	@DeferredIncomeClassifiedAsCurrent,	N'Deferred Income - SDG',		@SDG,			@C101_INV,		NULL,				NULL),
 	(71,0,N'3110',	@CurrentSocialSecurityPayablesExtension,N'Employee Pensions',		@SDG,			@C101_INV,		NULL,				NULL),
 	(72,0,N'3120',	@CurrentZakatPayablesExtension,		N'Zakat',						@SDG,			@C101_INV,		NULL,				NULL),
 	(73,0,N'3130',	@CurrentValueAddedTaxPayables,		N'VAT Output',					@SDG,			@C101_INV,		NULL,				NULL),
