@@ -22,7 +22,7 @@ import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
-import { Resource } from '~/app/data/entities/resource';
+import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
@@ -1068,6 +1068,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.get('Account', entry.AccountId) as AccountForSave;
   }
 
+  public accountType(entry: Entry): AccountType {
+    const account = this.account(entry);
+    if (!!account && account.AccountTypeId) {
+      return this.ws.get('AccountType', account.AccountTypeId) as AccountType;
+    }
+
+    return null;
+  }
+
   public resource(entry: Entry): Resource {
     const account = this.account(entry);
     const accountResourceId = !!account ? account.ResourceId : null;
@@ -1082,61 +1091,159 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return resourceDefinition;
   }
 
-  // AgentId
+  // Center
 
-  public showAgent(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account && !!account.AgentDefinitionId;
+  public readonlyCenter_Manual(entry: Entry): boolean {
+    const at = this.account(entry);
+    return !!at && !!at.CenterId; // It's either A or E
   }
 
-  public readonlyAgent(entry: Entry): boolean {
+  public readonlyValueCenterId_Manual(entry: Entry): number {
+    // When CenterAssignment === A, then account.CenterId is required
+    const account = this.account(entry);
+    return !!account ? account.CenterId : null;
+  }
+
+  // Account
+
+  public additionalSelectAccount =
+    // AccountType
+    [
+      // Misc
+      'EntryTypeParentId', 'IsResourceClassification',
+
+      // Definitions
+      'AgentDefinitionId', 'NotedAgentDefinitionId', 'ResourceDefinitionId',
+
+      // Assignments
+      'CurrencyAssignment', 'AgentAssignment', 'ResourceAssignment',
+      'CenterAssignment', 'EntryTypeAssignment', 'IdentifierAssignment',
+      'NotedAgentAssignment',
+
+      // Labels
+      'DueDateLabel', 'DueDateLabel2', 'DueDateLabel3',
+      'Time1Label', 'Time1Label2', 'Time1Label3',
+      'Time2Label', 'Time2Label2', 'Time2Label3',
+      'ExternalReferenceLabel', 'ExternalReferenceLabel2', 'ExternalReferenceLabel3',
+      'AdditionalReferenceLabel', 'AdditionalReferenceLabel2', 'AdditionalReferenceLabel3',
+      'NotedAgentNameLabel', 'NotedAgentNameLabel2', 'NotedAgentNameLabel3',
+      'NotedAmountLabel', 'NotedAmountLabel2', 'NotedAmountLabel3',
+      'NotedDateLabel', 'NotedDateLabel2', 'NotedDateLabel3'
+    ].map(prop => `AccountType/${prop}`).join(',') + ',' +
+
+    // Center
+    ['Name', 'Name2', 'Name3']
+      .map(prop => `Center/${prop}`).join(',') + ',' +
+
+    // EntryType
+    ['Name', 'Name2', 'Name3']
+      .map(prop => `EntryType/${prop}`).join(',') + ',' +
+
+    // Currency
+    ['Name', 'Name2', 'Name3', 'E']
+      .map(prop => `Currency/${prop}`).join(',') + ',' +
+
+    // Agent
+    ['Name', 'Name2', 'Name3', 'DefinitionId']
+      .map(prop => `Agent/${prop}`).join(',') + ',' +
+
+    // Resource
+    ['Name', 'Name2', 'Name3', 'DefinitionId']
+      .map(prop => `Resource/${prop}`).join(',') + ',' +
+
+    // Resource/Units
+    ['Unit/Name', 'Unit/Name2', 'Unit/Name3', 'Multiplier']
+      .map(prop => `Resource/Units/${prop}`).join(',');
+
+  // AgentId
+
+  public showAgent_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && at.AgentAssignment !== 'N';
+  }
+
+  public readonlyAgent_Manual(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account && !!account.AgentId;
   }
 
-  public readonlyValueAgentId(entry: Entry): number {
+  public readonlyValueAgentId_Manual(entry: Entry): number {
     const account = this.account(entry);
     return !!account ? account.AgentId : null;
   }
 
-  public labelAgent(entry: Entry): string {
-    const account = this.account(entry);
-   // const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
+  public labelAgent_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    const defId = !!at ? at.AgentDefinitionId : null;
 
-    return ''; // TODO: metadata_Agent(this.workspace, this.translate, agentDefinitionId).titleSingular();
+    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdAgent_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return at.AgentDefinitionId;
+  }
+
+  // Noted Agent Id
+
+  public showNotedAgent_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && at.NotedAgentAssignment !== 'N';
+  }
+
+  public labelNotedAgent_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    const defId = !!at ? at.NotedAgentDefinitionId : null;
+
+    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdNotedAgent_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return at.NotedAgentDefinitionId;
   }
 
   // ResourceId
 
-  public showResource(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account && account.HasResource;
+  public additionalSelectResource = `Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier`;
+
+  public showResource_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && at.ResourceAssignment !== 'N';
   }
 
-  public readonlyResource(entry: Entry): boolean {
+  public readonlyResource_Manual(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account && !!account.ResourceId;
   }
 
-  public readonlyValueResourceId(entry: Entry): number {
+  public readonlyValueResourceId_Manual(entry: Entry): number {
     const account = this.account(entry);
     return !!account ? account.ResourceId : null;
   }
 
-  public filterResource(entry: Entry): string {
+  public filterResource_Manual(entry: Entry): string {
     // For manual JV
     const account = this.account(entry);
-    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
+    const accountType = this.accountType(entry);
 
     if (!!accountType.IsResourceClassification) {
-      return `AccountType/Node descof ${account.AccountTypeId}`;
+      return `AssetType/Node descof ${account.AccountTypeId}`;
     } else {
       return null;
     }
   }
 
-  public labelResource(_: Entry): string {
-    return this.translate.instant('Resource');
+  public labelResource_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    const defId = !!at ? at.ResourceDefinitionId : null;
+
+    return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
+  }
+
+  public definitionIdResource_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return at.ResourceDefinitionId;
   }
 
   // Quantity + Unit
@@ -1166,29 +1273,56 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  private unit(entry: Entry): Unit {
-    const unitId = this.readonlyUnit(entry) ? this.readonlyValueUnitId(entry) : entry.UnitId;
-    return this.ws.get('Unit', unitId) as Unit;
-  }
-
   // DueDate
 
-  public showDueDate(entry: Entry): boolean {
-    const resourceDefinition = this.resourceDefinition(entry);
-    return !!resourceDefinition && !!resourceDefinition.DueDateVisibility;
+  public showDueDate_Manual(entry: Entry): boolean {
+    // const resourceDefinition = this.resourceDefinition(entry);
+    // return !!resourceDefinition && !!resourceDefinition.DueDateVisibility;
+    const at = this.accountType(entry);
+    return !!at && !!at.DueDateLabel;
   }
 
-  public requireDueDate(entry: Entry): boolean {
-    const resourceDefinition = this.resourceDefinition(entry);
-    return !!resourceDefinition && resourceDefinition.DueDateVisibility === 'Required';
+  public labelDueDate_Manual(entry: Entry): string {
+    // const rd = this.resourceDefinition(entry);
+    // const at = this.accountType(entry);
+    // return !!rd.DueDateLabel ? this.ws.getMultilingualValueImmediate(rd, 'DueDateLabel') :
+    //   !!at.DueDateLabel ? this.ws.getMultilingualValueImmediate(at, 'DueDateLabel') :
+    //     this.translate.instant('Entry_DueDate');
+
+    const at = this.accountType(entry);
+    return this.ws.getMultilingualValueImmediate(at, 'DueDateLabel');
   }
 
-  public labelDueDate(entry: Entry): string {
-    const resourceDefinition = this.resourceDefinition(entry);
-    return this.ws.getMultilingualValueImmediate(resourceDefinition, 'DueDateLabel');
+  // Time1
+
+  public showTime1_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && !!at.Time1Label;
+  }
+
+  public labelTime1_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return this.ws.getMultilingualValueImmediate(at, 'Time1Label');
+  }
+
+  // Time2
+
+  public showTime2_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at && !!at.Time2Label;
+  }
+
+  public labelTime2_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return this.ws.getMultilingualValueImmediate(at, 'Time2Label');
   }
 
   // Currency
+
+  public showCurrency(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && !this.getAccountResourceCurrencyId(entry);
+  }
 
   private getAccountResourceCurrencyId(entry: Entry): string {
     // returns the currency Id (if any) that will eventually be copied to the Entry in the bll
@@ -1203,11 +1337,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
 
     return accountCurrencyId || resourceCurrencyId;
-  }
-
-  public showCurrency(entry: Entry): boolean {
-    const account = this.account(entry);
-    return !!account && !this.getAccountResourceCurrencyId(entry);
   }
 
   public readonlyValueCurrencyId(entry: Entry): string {
@@ -1245,77 +1374,110 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return `1.${decimals}-${decimals}`;
   }
 
-  // Entry Classification
+  // Entry Type
 
-  public showEntryType(entry: Entry): boolean {
-    const account = this.account(entry);
-    if (!account || !account.AccountTypeId) {
-      return false;
-    }
-
+  public showEntryType_Manual(entry: Entry): boolean {
     // Show entry type when the account's type has an entry type parent Id
-    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
-    return !!accountType.EntryTypeParentId;
+    const at = this.accountType(entry);
+    return !!at && at.EntryTypeAssignment !== 'N';
   }
 
-  public readonlyEntryType(entry: Entry): boolean {
+  public readonlyEntryType_Manual(entry: Entry): boolean {
     const account = this.account(entry);
     return !!account && !!account.EntryTypeId;
   }
 
-  public readonlyValueEntryTypeId(entry: Entry): number {
+  public readonlyValueEntryTypeId_Manual(entry: Entry): number {
     const account = this.account(entry);
     return !!account ? account.EntryTypeId : null;
   }
 
-  public filterEntryType(entry: Entry): string {
-    const account = this.account(entry);
-    if (!account || !account.AccountTypeId) {
-      return null;
-    }
-
-    const accountType = this.ws.get('AccountType', account.AccountTypeId) as AccountType;
+  public filterEntryType_Manual(entry: Entry): string {
+    const accountType = this.accountType(entry);
     return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
+  }
+
+  // Account Identifier
+  public showAccountIdentifier_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at ? !!at.IdentifierLabel : false;
+  }
+
+  public labelAccountIdentifier_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.ExternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'IdentifierLabel') :
+      this.translate.instant('Entry_AccountIdentifier');
   }
 
   // External Reference
 
-  public showExternalReference(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasExternalReference : false;
+  public showExternalReference_Manual(entry: Entry): boolean {
+    const at = this.accountType(entry);
+    return !!at ? !!at.ExternalReferenceLabel : false;
+  }
+
+  public labelExternalReference_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.ExternalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'ExternalReferenceLabel') :
+      this.translate.instant('Entry_ExternalReference');
   }
 
   // Additional Reference
 
-  public showAdditionalReference(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasAdditionalReference : false;
+  public showAdditionalReference_Manual(entry: Entry): boolean {
+    const account = this.accountType(entry);
+    return !!account ? !!account.AdditionalReferenceLabel : false;
   }
 
-  // Noted Agent Id
-
-  public showNotedAgent(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasNotedAgentId : false;
+  public labelAdditionalReference_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.AdditionalReferenceLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'AdditionalReferenceLabel') :
+      this.translate.instant('Entry_AdditionalReference');
   }
 
   // Noted Agent Name
 
-  public showNotedAgentName(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasNotedAgentName : false;
+  public showNotedAgentName_Manual(entry: Entry): boolean {
+    const account = this.accountType(entry);
+    return !!account ? !!account.NotedAgentNameLabel : false;
+  }
+
+  public labelNotedAgentName_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.NotedAgentNameLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'NotedAgentNameLabel') :
+      this.translate.instant('Entry_NotedAgentName');
   }
 
   // Noted Amount
-  public showNotedAmount(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasNotedAmount : false;
+
+  public showNotedAmount_Manual(entry: Entry): boolean {
+    const account = this.accountType(entry);
+    return !!account ? !!account.NotedAmountLabel : false;
+  }
+
+  public labelNotedAmount_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.NotedAmountLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'NotedAmountLabel') :
+      this.translate.instant('Entry_NotedAmount');
   }
 
   // Noted Date
-  public showNotedDate(entry: Entry): boolean {
-    const account = this.account(entry);
-    return false; // TODO: !!account ? account.HasNotedDate : false;
+
+  public showNotedDate_Manual(entry: Entry): boolean {
+    const account = this.accountType(entry);
+    return !!account ? !!account.NotedDateLabel : false;
+  }
+
+  public labelNotedDate_Manual(entry: Entry): string {
+    const at = this.accountType(entry);
+    return !!at.NotedDateLabel ?
+      this.ws.getMultilingualValueImmediate(at, 'NotedDateLabel') :
+      this.translate.instant('Entry_NotedDate');
   }
 
   public onFileSelected(input: any, model: DocumentForSave) {
@@ -2346,21 +2508,26 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public agentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
+  public definitionIdAgent_Smart(lineDefId: string, columnIndex: number): string {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.AgentDefinitionId ? [entryDef.AgentDefinitionId] : [];
+    return !!entryDef && !!entryDef.AgentDefinitionId ? entryDef.AgentDefinitionId : null;
   }
 
-  public notedAgentDefinitionIds(lineDefId: string, columnIndex: number): string[] {
+  public definitionIdNotedAgent_Smart(lineDefId: string, columnIndex: number): string {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.NotedAgentDefinitionId ? [entryDef.NotedAgentDefinitionId] : [];
+    return !!entryDef && !!entryDef.NotedAgentDefinitionId ? entryDef.NotedAgentDefinitionId : null;
   }
 
-  public resourcesFilter(lineDefId: string, columnIndex: number): string {
+  public definitionIdResource_Smart(lineDefId: string, columnIndex: number): string {
+    const entryDef = this.entryDefinition(lineDefId, columnIndex);
+    return !!entryDef && !!entryDef.ResourceDefinitionId ? entryDef.ResourceDefinitionId : null;
+  }
+
+  public filterResource_Smart(lineDefId: string, columnIndex: number): string {
     // Filter for smart line
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.AccountTypeParentIsResourceClassification &&
-      !!entryDef.AccountTypeParentId ? `AccountType/Node descof ${entryDef.AccountTypeParentId}` : null;
+    return !!entryDef && !!entryDef.IsResourceClassification &&
+      !!entryDef.AccountTypeParentId ? `AssetType/Node descof ${entryDef.AccountTypeParentId}` : null;
   }
 
   public entryTypeFilter(lineDefId: string, columnIndex: number): string {

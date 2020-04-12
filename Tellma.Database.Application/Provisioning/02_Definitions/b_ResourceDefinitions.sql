@@ -15,7 +15,7 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @ResourceDefinitions([Index],
 	[Id],									[TitlePlural],							[TitleSingular],				[TitlePlural2],	[TitleSingular2],	[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
-	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment',NULL,NULL,							N'building',		N'FixedAssets',		100),--@PropertyPlantAndEquipment
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant or Equipment',NULL,NULL,							N'building',		N'FixedAssets',		100),--@PropertyPlantAndEquipment
 	(1,N'computer-equipment',				N'Computer Equipment',					N'Computer Equipment',			N'أجهزة كمبيوتر',N'جهاز كمبيوتر',	N'laptop',			N'FixedAssets',		200),--@ComputerEquipmentMemberExtension
 	(2,N'intangible-assets',				N'Intangible Assets',					N'Intangible Asset',			NULL,NULL,							N'cube',			N'FixedAssets',		300),--@IntangibleAssetsOtherThanGoodwill
 	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				NULL,NULL,							N'home',			N'Purchasing',		300),--@Inventories

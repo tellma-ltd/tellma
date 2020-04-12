@@ -27,6 +27,10 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Center")]
         public int? CenterId { get; set; }
 
+        [Display(Name = "Entry_AccountIdentifier")]
+        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
+        public string AccountIdentifier { get; set; }
+
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; } // EntryTypeId
 

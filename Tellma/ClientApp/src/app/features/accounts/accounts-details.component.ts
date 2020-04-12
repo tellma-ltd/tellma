@@ -224,6 +224,16 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return isSmart && isAccountAssignment;
   }
 
+  public labelIdentifier(model: AccountForSave): string {
+    let postfix = '';
+    const accountType = this.accountType(model);
+    if (!!accountType.IdentifierLabel) {
+      postfix = ` (${this.ws.getMultilingualValueImmediate(accountType, 'IdentifierLabel')})`;
+    }
+
+    return this.translate.instant('Account_Identifier') + postfix;
+  }
+
   // EntryTypeId
   public showEntryType(model: AccountForSave) {
     const accountType = this.accountType(model);

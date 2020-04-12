@@ -17,13 +17,6 @@ namespace Tellma.Entities
     {
         [AlwaysAccessible]
         public int? Index { get; set; }
-
-        [AlwaysAccessible]
-        public bool? AccountTypeParentIsResourceClassification { get; set; }
-
-        [AlwaysAccessible]
-        public int? EntryTypeParentId { get; set; }
-
         public string LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]

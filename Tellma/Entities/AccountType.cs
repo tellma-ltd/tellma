@@ -101,6 +101,18 @@ namespace Tellma.Entities
         [Assignment]
         public char? IdentifierAssignment { get; set; }
 
+        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Primary)]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string IdentifierLabel { get; set; }
+
+        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Secondary)]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string IdentifierLabel2 { get; set; }
+
+        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Ternary)]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        public string IdentifierLabel3 { get; set; }
+
         [Display(Name = "AccountType_NotedAgentAssignment")]
         [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         [Assignment(AssignmentType.EntryOnly)]

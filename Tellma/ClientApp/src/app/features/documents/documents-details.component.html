@@ -516,14 +516,15 @@
                             <t-agents-picker *ngSwitchCase="'AgentId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="agentDefinitionIds(lineDefId, columnIndex)"
+                                [definitionIds]="[definitionIdAgent_Smart(lineDefId, columnIndex)]"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-agents-picker>
                             <t-resources-picker *ngSwitchCase="'ResourceId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [filter]="resourcesFilter(lineDefId, columnIndex)"
+                                [definitionIds]="[definitionIdResource_Smart(lineDefId, columnIndex)]"
+                                [filter]="filterResource_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-resources-picker>
@@ -608,7 +609,7 @@
                             <t-agents-picker *ngSwitchCase="'NotedAgentId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="notedAgentDefinitionIds(lineDefId, columnIndex)"
+                                [definitionIds]="[definitionIdNotedAgent_Smart(lineDefId, columnIndex)]"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-agents-picker>
@@ -809,7 +810,8 @@
 
         <!-- Bookkeeping Tab -->
         <li class="{{ attachmentsClass }}" [ngbNavItem]="'_Entries'" *ngIf="!isJV">
-            <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate" [style.background-color]="bookkeepingTabColor(model)">
+            <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate"
+                [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
                     <fa-icon icon="book"></fa-icon>
                     <span>&nbsp;&nbsp;{{ (!model?.Id || model?.EntityMetadata?.Lines === 2 ? '(' + (entriesCount(model) | number) + ')' : '')}}</span>
@@ -995,21 +997,21 @@
     <!-- Account + Dynamic Properties -->
     <ng-template #header_Account>{{ 'Entry_Account' | translate }}</ng-template>
     <ng-template #row_Account let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
-        let-readonly="argument">
+        let-bookkeeping="argument">
 
         <!-- Account -->
         <div>
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
                 <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
-                <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit || readonly">
+                <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit || bookkeeping">
                     <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">{{
                         ws.getMultilingualValue('Account', entry.AccountId, 'Name') }}</t-view-link>
                     <span class="text-muted font-italic"
-                        *ngIf="readonly && !entry?.AccountId">{{ 'Undefined' | translate }}</span>
+                        *ngIf="bookkeeping && !entry?.AccountId">{{ 'Undefined' | translate }}</span>
                 </t-restricted>
-                <t-accounts-picker *ngIf="isEdit && !readonly" style="min-width: 150px;" [(ngModel)]="entry.AccountId"
-                    (ngModelChange)="update.call(null, pair);"
-                    additionalSelect="HasExternalReference,HasAdditionalReference,HasNotedAgentId,HasNotedAgentName,Center/Name,Center/Name2,Center/Name3,HasNotedAmount,HasNotedDate,HasResource,AccountType/EntryTypeParentId,AccountType/IsResourceClassification,EntryType/Name,EntryType/Name2,EntryType/Name3,AgentDefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Agent/Name,Agent/Name2,Agent/Name3,Agent/DefinitionId,Resource/Name,Resource/Name2,Resource/Name3,Resource/DefinitionId,Resource/Units/Unit/Name,Resource/Units/Unit/Name2,Resource/Units/Unit/Name3,Resource/Units/Multiplier">
+                <t-accounts-picker *ngIf="isEdit && !bookkeeping" style="min-width: 150px;"
+                    [(ngModel)]="entry.AccountId" (ngModelChange)="update.call(null, pair);"
+                    [additionalSelect]="additionalSelectAccount">
                 </t-accounts-picker>
             </t-form-group-dynamic>
         </div>
@@ -1021,13 +1023,13 @@
                 <t-form-group-dynamic [label]="'Entry_Currency' | translate"
                     [serverErrors]="entry.serverErrors?.CurrencyId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.CurrencyId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CurrencyId">
                         <t-view-link link="../../../currencies" [itemId]="entry.CurrencyId">
                             {{ ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-currencies-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.CurrencyId"
+                    <t-currencies-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.CurrencyId"
                         (ngModelChange)="update.call(null, pair);" required>
                     </t-currencies-picker>
                     &nbsp;&nbsp;
@@ -1039,13 +1041,13 @@
                 <t-form-group-dynamic [label]="'Entry_MonetaryValue' | translate"
                     [serverErrors]="entry.serverErrors?.MonetaryValue">
                     <!-- View -->
-                    <ng-container *ngIf="!isEdit || readonly">
+                    <ng-container *ngIf="!isEdit || bookkeeping">
                         <t-restricted [metadata]="entry.EntityMetadata?.MonetaryValue">
                             {{ entry.MonetaryValue | number:MonetaryValue_format(entry) }}
                         </t-restricted>
                     </ng-container>
                     <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !readonly">
+                    <ng-container *ngIf="isEdit && !bookkeeping">
                         <t-decimal-editor [(ngModel)]="entry.MonetaryValue"
                             [maxDecimalPlaces]="MonetaryValue_decimals(entry)"
                             [minDecimalPlaces]="MonetaryValue_decimals(entry)"
@@ -1066,23 +1068,23 @@
             </ng-container>
 
             <!-- Agent -->
-            <ng-container *ngIf="showAgent(entry)">
-                <t-form-group-dynamic [label]="labelAgent(entry)" [serverErrors]="entry.serverErrors?.AgentId">
+            <ng-container *ngIf="showAgent_Manual(entry)">
+                <t-form-group-dynamic [label]="labelAgent_Manual(entry)" [serverErrors]="entry.serverErrors?.AgentId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.AgentId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AgentId">
                         <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
                             [itemId]="entry.AgentId">
                             {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !readonly">
-                        <t-agents-picker *ngIf="!readonlyAgent(entry)" [(ngModel)]="entry.AgentId"
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-agents-picker *ngIf="!readonlyAgent_Manual(entry)" [(ngModel)]="entry.AgentId"
                             (ngModelChange)="update.call(null, pair);"
-                            [definitionIds]="[account(entry)?.AgentDefinitionId]" required>
+                            [definitionIds]="[definitionIdAgent_Manual(entry)]" required>
                         </t-agents-picker>
-                        <t-restricted *ngIf="readonlyAgent(entry)" [metadata]="entry.EntityMetadata?.AgentId">
-                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId(entry), 'Name') }}
+                        <t-restricted *ngIf="readonlyAgent_Manual(entry)" [metadata]="entry.EntityMetadata?.AgentId">
+                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
@@ -1090,24 +1092,26 @@
             </ng-container>
 
             <!-- Resource -->
-            <ng-container *ngIf="showResource(entry)">
-                <t-form-group-dynamic [label]="labelResource(entry)" [serverErrors]="entry.serverErrors?.ResourceId">
+            <ng-container *ngIf="showResource_Manual(entry)">
+                <t-form-group-dynamic [label]="labelResource_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.ResourceId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.ResourceId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ResourceId">
                         <t-view-link [link]="'../../../resources/' + ws.get('Resource', entry.ResourceId)?.DefinitionId"
                             [itemId]="entry.ResourceId">
                             {{ ws.getMultilingualValue('Resource', entry.ResourceId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !readonly">
-                        <t-resources-picker *ngIf="!readonlyResource(entry)" [(ngModel)]="entry.ResourceId"
-                            (ngModelChange)="update.call(null, pair);"
-                            additionalSelect="Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier"
-                            [filter]="filterResource(entry)" required>
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-resources-picker *ngIf="!readonlyResource_Manual(entry)" [(ngModel)]="entry.ResourceId"
+                            (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectResource"
+                            [definitionIds]="[definitionIdResource_Manual(entry)]"
+                            [filter]="filterResource_Manual(entry)" required>
                         </t-resources-picker>
-                        <t-restricted *ngIf="readonlyResource(entry)" [metadata]="entry.EntityMetadata?.ResourceId">
-                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId(entry), 'Name') }}
+                        <t-restricted *ngIf="readonlyResource_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.ResourceId">
+                            {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
@@ -1118,22 +1122,22 @@
             <ng-container *ngIf="showQuantityAndUnit(entry)">
                 <t-form-group-dynamic [label]="'Entry_Quantity' | translate"
                     [serverErrors]="entry.serverErrors?.Quantity">
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Quantity">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Quantity">
                         <span>{{ entry.Quantity | number:'1.0-4'}}</span>
                     </t-restricted>
-                    <t-decimal-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.Quantity" [maxDecimalPlaces]="4"
+                    <t-decimal-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Quantity" [maxDecimalPlaces]="4"
                         [minDecimalPlaces]="0" (ngModelChange)="update.call(null, pair);"
                         [ngModelOptions]="{ updateOn: 'blur' }" required>
                     </t-decimal-editor>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
                 <t-form-group-dynamic [label]="'Entry_Unit' | translate" [serverErrors]="entry.serverErrors?.UnitId">
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.UnitId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.UnitId">
                         <!-- <t-view-link link="../../../units" [itemId]="entry.UnitId"> -->
                         {{ ws.getMultilingualValue('Unit', entry.UnitId, 'Name') }}
                         <!-- </t-view-link> -->
                     </t-restricted>
-                    <ng-container *ngIf="isEdit && !readonly">
+                    <ng-container *ngIf="isEdit && !bookkeeping">
                         <t-restricted *ngIf="readonlyUnit(entry)" [metadata]="entry.EntityMetadata?.UnitId">
                             {{ ws.getMultilingualValue('Unit', readonlyValueUnitId(entry), 'Name') }}
                         </t-restricted>
@@ -1146,25 +1150,50 @@
             </ng-container>
 
             <!-- DueDate -->
-            <ng-container *ngIf="showDueDate(entry)">
-                <t-form-group-dynamic [label]="labelDueDate(entry)" [serverErrors]="entry.serverErrors?.DueDate">
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.DueDate">
+            <ng-container *ngIf="showDueDate_Manual(entry)">
+                <t-form-group-dynamic [label]="labelDueDate_Manual(entry)" [serverErrors]="entry.serverErrors?.DueDate">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.DueDate">
                         {{ entry.DueDate | date:'yyyy-MM-dd'}}
                     </t-restricted>
-                    <t-date-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.DueDate"
-                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }"
-                        [required]="requireDueDate(entry)">
+                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.DueDate"
+                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
+                    </t-date-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Time1 -->
+            <ng-container *ngIf="showTime1_Manual(entry)">
+                <t-form-group-dynamic [label]="labelTime1_Manual(entry)" [serverErrors]="entry.serverErrors?.Time1">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time1">
+                        {{ entry.Time1 | date:'yyyy-MM-dd'}}
+                    </t-restricted>
+                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time1"
+                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
+                    </t-date-picker>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
+            <!-- Time2 -->
+            <ng-container *ngIf="showTime2_Manual(entry)">
+                <t-form-group-dynamic [label]="labelTime2_Manual(entry)" [serverErrors]="entry.serverErrors?.Time2">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Time2">
+                        {{ entry.Time2 | date:'yyyy-MM-dd'}}
+                    </t-restricted>
+                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.Time2"
+                        (ngModelChange)="update.call(null, pair);" [ngModelOptions]="{ updateOn: 'blur' }">
                     </t-date-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
 
             <!-- Entry Type -->
-            <ng-container *ngIf="showEntryType(entry)">
+            <ng-container *ngIf="showEntryType_Manual(entry)">
                 <t-form-group-dynamic [label]="'Entry_EntryType' | translate"
                     [serverErrors]="entry.serverErrors?.EntryTypeId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.EntryTypeId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.EntryTypeId">
                         <t-view-link link="../../../entry-types" [itemId]="entry.EntryTypeId">
                             <div class="text-truncate">
                                 {{ ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name') }}
@@ -1172,13 +1201,15 @@
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <ng-container *ngIf="isEdit && !readonly">
-                        <t-entry-types-picker *ngIf="!readonlyEntryType(entry)" [(ngModel)]="entry.EntryTypeId"
-                            (ngModelChange)="update.call(null, pair);" [filter]="filterEntryType(entry)" required>
+                    <ng-container *ngIf="isEdit && !bookkeeping">
+                        <t-entry-types-picker *ngIf="!readonlyEntryType_Manual(entry)" [(ngModel)]="entry.EntryTypeId"
+                            (ngModelChange)="update.call(null, pair);" [filter]="filterEntryType_Manual(entry)"
+                            required>
                         </t-entry-types-picker>
-                        <t-restricted *ngIf="readonlyEntryType(entry)" [metadata]="entry.EntityMetadata?.EntryTypeId">
+                        <t-restricted *ngIf="readonlyEntryType_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.EntryTypeId">
                             <div class="text-truncate">
-                                {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId(entry), 'Name') }}
+                                {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId_Manual(entry), 'Name') }}
                             </div>
                         </t-restricted>
                     </ng-container>
@@ -1186,18 +1217,36 @@
                 </t-form-group-dynamic>
             </ng-container>
 
+            <!-- AccountIdentifier -->
+            <ng-container *ngIf="showAccountIdentifier_Manual(entry)">
+                <t-form-group-dynamic [label]="labelAccountIdentifier_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.AccountIdentifier">
+                    <!-- View -->
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AccountIdentifier">
+                        <div class="text-truncate">
+                            {{ entry.AccountIdentifier }}
+                        </div>
+                    </t-restricted>
+                    <!-- Edit -->
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AccountIdentifier"
+                        (ngModelChange)="update.call(null, pair);" required>
+                    </t-text-editor>
+                    &nbsp;&nbsp;
+                </t-form-group-dynamic>
+            </ng-container>
+
             <!-- External Reference -->
-            <ng-container *ngIf="showExternalReference(entry)">
-                <t-form-group-dynamic [label]="'Entry_ExternalReference' | translate"
+            <ng-container *ngIf="showExternalReference_Manual(entry)">
+                <t-form-group-dynamic [label]="labelExternalReference_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.ExternalReference">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.ExternalReference">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ExternalReference">
                         <div class="text-truncate">
                             {{ entry.ExternalReference }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.ExternalReference"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.ExternalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;
@@ -1205,17 +1254,17 @@
             </ng-container>
 
             <!-- Additional Reference -->
-            <ng-container *ngIf="showAdditionalReference(entry)">
-                <t-form-group-dynamic [label]="'Entry_AdditionalReference' | translate"
+            <ng-container *ngIf="showAdditionalReference_Manual(entry)">
+                <t-form-group-dynamic [label]="labelAdditionalReference_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.AdditionalReference">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.AdditionalReference">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AdditionalReference">
                         <div class="text-truncate">
                             {{ entry.AdditionalReference }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.AdditionalReference"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AdditionalReference"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;
@@ -1223,36 +1272,37 @@
             </ng-container>
 
             <!-- Noted Agent -->
-            <ng-container *ngIf="showNotedAgent(entry)">
-                <t-form-group-dynamic [label]="'Entry_NotedAgent' | translate"
+            <ng-container *ngIf="showNotedAgent_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedAgent_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.NotedAgent">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAgentId">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAgentId">
                         <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
                             [itemId]="entry.NotedAgentId">
                             {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-agents-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedAgentId"
-                        (ngModelChange)="update.call(null, pair);">
+                    <t-agents-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedAgentId"
+                        (ngModelChange)="update.call(null, pair);"
+                        [definitionIds]="[definitionIdNotedAgent_Manual(entry)]">
                     </t-agents-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>
 
             <!-- Noted Agent Name -->
-            <ng-container *ngIf="showNotedAgentName(entry)">
-                <t-form-group-dynamic [label]="'Entry_NotedAgentName' | translate"
+            <ng-container *ngIf="showNotedAgentName_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedAgentName_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.NotedAgentName">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAgentName">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAgentName">
                         <div class="text-truncate">
                             {{ entry.NotedAgentName }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedAgentName"
+                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedAgentName"
                         (ngModelChange)="update.call(null, pair);">
                     </t-text-editor>
                     &nbsp;&nbsp;
@@ -1260,17 +1310,17 @@
             </ng-container>
 
             <!-- Noted Amount -->
-            <ng-container *ngIf="showNotedAmount(entry)">
-                <t-form-group-dynamic [label]="'Entry_NotedAmount' | translate"
+            <ng-container *ngIf="showNotedAmount_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedAmount_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.NotedAmount">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedAmount">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAmount">
                         <div class="text-truncate">
                             {{ entry.NotedAmount | number:MonetaryValue_format(entry) }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-decimal-editor *ngIf="isEdit && !readonly" [minDecimalPlaces]="MonetaryValue_decimals(entry)"
+                    <t-decimal-editor *ngIf="isEdit && !bookkeeping" [minDecimalPlaces]="MonetaryValue_decimals(entry)"
                         [maxDecimalPlaces]="MonetaryValue_decimals(entry)" [(ngModel)]="entry.NotedAmount"
                         (ngModelChange)="update.call(null, pair);">
                     </t-decimal-editor>
@@ -1279,17 +1329,17 @@
             </ng-container>
 
             <!-- Noted Date -->
-            <ng-container *ngIf="showNotedDate(entry)">
-                <t-form-group-dynamic [label]="'Entry_NotedDate' | translate"
+            <ng-container *ngIf="showNotedDate_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedDate_Manual(entry)"
                     [serverErrors]="entry.serverErrors?.NotedDate">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.NotedDate">
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedDate">
                         <div class="text-truncate">
                             {{ entry.NotedDate | date:'yyyy-MM-dd' }}
                         </div>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-date-picker *ngIf="isEdit && !readonly" [(ngModel)]="entry.NotedDate"
+                    <t-date-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedDate"
                         (ngModelChange)="update.call(null, pair);">
                     </t-date-picker>
                     &nbsp;&nbsp;
@@ -1301,19 +1351,19 @@
     <!-- Center -->
     <ng-template #header_Center>{{ 'Entry_Center' | translate }}</ng-template>
     <ng-template #row_Center let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
-        let-readonly="argument">
-        <t-restricted *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.CenterId">
+        let-bookkeeping="argument">
+        <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.CenterId">
             <t-view-link link="../../../centers" [itemId]="entry.CenterId">
                 {{ ws.getMultilingualValue('Center', entry.CenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <ng-container *ngIf="isEdit && !readonly">
+        <ng-container *ngIf="isEdit && !bookkeeping">
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
-                <t-centers-picker *ngIf="!account(entry)?.CenterId" [(ngModel)]="entry.CenterId"
-                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true and IsActive eq true">
+                <t-centers-picker *ngIf="!readonlyCenter_Manual(entry)" [(ngModel)]="entry.CenterId"
+                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true and IsActive eq true" required>
                 </t-centers-picker>
-                <t-restricted *ngIf="!!account(entry)?.CenterId" [metadata]="entry.EntityMetadata?.CenterId">
-                    {{ ws.getMultilingualValue('Center', account(entry)?.CenterId, 'Name') }}
+                <t-restricted *ngIf="readonlyCenter_Manual(entry)" [metadata]="entry.EntityMetadata?.CenterId">
+                    {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual(entry), 'Name') }}
                 </t-restricted>
             </t-form-group-dynamic>
         </ng-container>
@@ -1324,11 +1374,11 @@
         <div style="float: right">{{ ('Debit' | translate) + functionalPostfix }}</div>
     </ng-template>
     <ng-template #row_Debit let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
-        let-readonly="argument">
-        <t-restricted class="h-100" *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Value">
+        let-bookkeeping="argument">
+        <t-restricted class="h-100" *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Value">
             <div style="float: right">{{ getDebit(entry) | number:functional_format }}</div>
         </t-restricted>
-        <t-form-group-dynamic *ngIf="isEdit && !readonly" class="t-form-group"
+        <t-form-group-dynamic *ngIf="isEdit && !bookkeeping" class="t-form-group"
             [serverErrors]="entry.serverErrors?.Value">
             <t-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="functional_decimals"
                 [minDecimalPlaces]="functional_decimals" textAlignment="right"
@@ -1337,7 +1387,7 @@
             </t-decimal-editor>
         </t-form-group-dynamic>
         <ng-container
-            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: 1, pair: pair, readonly: readonly }">
+            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: 1, pair: pair, bookkeeping: bookkeeping }">
         </ng-container>
     </ng-template>
 
@@ -1346,11 +1396,11 @@
         <div style="float: right">{{ ('Credit' | translate) + functionalPostfix }}</div>
     </ng-template>
     <ng-template #row_Credit let-pair="item" let-entry="item.entry" let-index="index" let-update="update"
-        let-readonly="argument">
-        <t-restricted class="h-100" *ngIf="!isEdit || readonly" [metadata]="entry.EntityMetadata?.Value">
+        let-bookkeeping="argument">
+        <t-restricted class="h-100" *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.Value">
             <div style="float: right">{{ getCredit(entry) | number:functional_format }}</div>
         </t-restricted>
-        <t-form-group-dynamic *ngIf="isEdit && !readonly" class="t-form-group"
+        <t-form-group-dynamic *ngIf="isEdit && !bookkeeping" class="t-form-group"
             [serverErrors]="entry.serverErrors?.Value">
             <t-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="functional_decimals"
                 [minDecimalPlaces]="functional_decimals" textAlignment="right"
@@ -1359,14 +1409,14 @@
             </t-decimal-editor>
         </t-form-group-dynamic>
         <ng-container
-            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: -1, pair: pair, readonly: readonly }">
+            *ngTemplateOutlet="autofillFromExchangeRate; context: { direction: -1, pair: pair, bookkeeping: bookkeeping }">
         </ng-container>
     </ng-template>
 
     <!-- Fill from Exchange Rate button -->
-    <ng-template #autofillFromExchangeRate let-pair="pair" let-direction="direction" let-readonly="readonly">
+    <ng-template #autofillFromExchangeRate let-pair="pair" let-direction="direction" let-bookkeeping="bookkeeping">
         <div class="d-flex justify-content-end pt-1"
-            *ngIf="!readonly && isEdit && !pair.PH && showMonetaryValue(pair.entry)">
+            *ngIf="!bookkeeping && isEdit && !pair.PH && showMonetaryValue(pair.entry)">
             <t-spinner *ngIf="!!pair.subscription && pair.direction === direction"></t-spinner>
             <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1"
                 (click)="onAutofillFromExchangeRate(pair, model, direction)" tabindex="-1">
@@ -1379,20 +1429,20 @@
     <!-- Memo -->
     <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
     <ng-template #row_Memo let-pair="item" let-line="item.line" let-index="index" let-update="update"
-        let-readonly="argument">
+        let-bookkeeping="argument">
         <t-form-group-dynamic class="t-form-group" [serverErrors]="line.serverErrors?.Memo">
-            <div *ngIf="!isEdit || readonly">
+            <div *ngIf="!isEdit || bookkeeping">
                 <t-restricted [metadata]="line.EntityMetadata?.Memo">{{ line.Memo }}</t-restricted>
             </div>
-            <t-text-editor *ngIf="isEdit && !readonly" [(ngModel)]="line.Memo" (ngModelChange)="update.call(null, pair)"
-                [ngModelOptions]="{ updateOn: 'blur' }">
+            <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="line.Memo"
+                (ngModelChange)="update.call(null, pair)" [ngModelOptions]="{ updateOn: 'blur' }">
             </t-text-editor>
         </t-form-group-dynamic>
     </ng-template>
 
     <!-- Warning of Modified Rows -->
     <ng-template #row_ModifiedWarning let-pair="item" let-line="item.line" let-index="index" let-update="update"
-        let-readonly="argument">
+        let-bookkeeping="argument">
         <fa-icon *ngIf="getIsModified(line, model)" icon="exclamation" class="text-danger"
             [placement]="modifiedTooltipPlacement" [ngbTooltip]="'ModifiedLineWarning' | translate" container="body">
         </fa-icon>
@@ -1417,8 +1467,8 @@
     <ng-template #row_ManualEntryCommands let-pair="item" let-update="update">
         <div ngbDropdown [placement]="commandsDropdownPlacement" *ngIf="isEdit">
             <button class="btn btn-light text-primary t-white-button btn-sm py-0 px-1 t-no-arrow align-baseline"
-                ngbDropdownToggle><span class="small">
-                    <fa-icon icon="ellipsis-v" tabindex="-1"></fa-icon>
+                ngbDropdownToggle tabindex="-1"><span class="small">
+                    <fa-icon icon="ellipsis-v"></fa-icon>
                 </span></button>
             <div ngbDropdownMenu>
                 <!-- <button ngbDropdownItem class="t-transparent-background" (click)="onCloneManualLine(pair, model)">
@@ -1434,7 +1484,7 @@
     <!-- Manual Commands -->
     <ng-template #header_ManualCommands></ng-template>
     <ng-template #row_ManualCommands let-pair="item" let-line="item.line" let-index="index" let-update="update"
-        let-readonly="argument">
+        let-bookkeeping="argument">
     </ng-template>
 </ng-template>
 

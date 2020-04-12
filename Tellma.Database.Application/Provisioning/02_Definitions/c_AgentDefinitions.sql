@@ -27,7 +27,7 @@ BEGIN
 		(4,N'debtors',			N'Debtor',						N'المدين',				N'Debtors',			N'المدينون',			N'hand-holding-usd',N'Cash',			200),
 		(5,N'partners',			N'Partner',						N'الشريك',				N'Partners',		N'الشركاء',				N'user-tie',		N'Financials',		300),
 		(6,N'suppliers',		N'Supplier',					N'المورد',				N'Suppliers',		N'الموردون',			N'truck',			N'Purchasing',		500),
-		(7,N'inventory-custodians',	N'Warehouse, Transit Line',	N'المخزن، الترانزيت',	N'Warehouses, Transit Lines',N'المخازن، الترانزيت',N'home',	N'Purchasing',		600),
+		(7,N'inventory-custodians',	N'Warehouse or Transit Line',	N'المخزن أو الترانزيت',	N'Warehouses and Transit Lines',N'المخازن والترانزيت',N'home',	N'Purchasing',		600),
 		(9,N'cash-custodians',	N'Cash Custodian',				N'الخزنة، البنك',		N'Cash Custodians',N'الخزن، البنوك',		N'lock',			N'Cash',			300);
 
 		INSERT INTO @AgentDefinitions([Index],
