@@ -386,12 +386,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     // Lookup5DefaultValue: number;
     // Lookup5DefinitionId: string;
 
-    DueDateLabel: string;
-    DueDateLabel2: string;
-    DueDateLabel3: string;
-    DueDateVisibility: Visibility;
-    DueDateDefaultValue: string;
-
     // Text 1
     Text1Label: string;
     Text1Label2: string;

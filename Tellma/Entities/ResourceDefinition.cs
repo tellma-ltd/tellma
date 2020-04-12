@@ -113,10 +113,6 @@ namespace Tellma.Entities
         public string Lookup4Label3 { get; set; }
         public string Lookup4Visibility { get; set; }
         public string Lookup4DefinitionId { get; set; }
-        public string DueDateLabel { get; set; }
-        public string DueDateLabel2 { get; set; }
-        public string DueDateLabel3 { get; set; }
-        public string DueDateVisibility { get; set; }
         public string Text1Label { get; set; }
         public string Text1Label2 { get; set; }
         public string Text1Label3 { get; set; }

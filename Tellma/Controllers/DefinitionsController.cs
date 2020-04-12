@@ -190,11 +190,6 @@ namespace Tellma.Controllers
                 Lookup4Visibility = MapVisibility(def.Lookup4Visibility),
                 Lookup4DefinitionId = def.Lookup4DefinitionId,
 
-                DueDateLabel = def.DueDateLabel,
-                DueDateLabel2 = def.DueDateLabel2,
-                DueDateLabel3 = def.DueDateLabel3,
-                DueDateVisibility = MapVisibility(def.DueDateVisibility),
-
                 Text1Label = def.Text1Label,
                 Text1Label2 = def.Text1Label2,
                 Text1Label3 = def.Text1Label3,

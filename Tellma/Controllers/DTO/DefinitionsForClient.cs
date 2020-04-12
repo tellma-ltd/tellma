@@ -427,13 +427,7 @@ namespace Tellma.Controllers.Dto
         //public string Lookup5Visibility { get; set; }
         //public int? Lookup5DefaultValue { get; set; }
         //public string Lookup5DefinitionId { get; set; }
-
-        public string DueDateLabel { get; set; } // Yes
-        public string DueDateLabel2 { get; set; } // Yes
-        public string DueDateLabel3 { get; set; } // Yes
-        public string DueDateVisibility { get; set; } // Yes
-        public DateTime? DueDateDefaultValue { get; set; }
-
+        
         // Text 1
         public string Text1Label { get; set; } // Yes
         public string Text1Label2 { get; set; } // Yes

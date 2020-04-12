@@ -59,13 +59,6 @@ namespace Tellma.Controllers
             // Add the filter by Id
             query = query.FilterByIds(id);
 
-            // Check that the entity exists
-            int count = await query.CountAsync();
-            if (count == 0)
-            {
-                throw new NotFoundException<TKey>(id);
-            }
-
             // Apply read permissions
             var permissions = await UserPermissions(Constants.Read);
             var permissionsFilter = GetReadPermissionsCriteria(permissions);
@@ -81,9 +74,10 @@ namespace Tellma.Controllers
             var result = await expandedQuery.FirstOrDefaultAsync();
             if (result == null)
             {
-                // We already checked for not found earlier,
-                // This can only mean lack of permissions
-                throw new ForbiddenException();
+                // Complete lack of permissions was already handled in GetReadPermissionsCriteria
+                // IF the permissions are RLS, the user shouldn't be able to tell the difference
+                // between a record that doesn't exist and one that they don't have access to
+                throw new NotFoundException<TKey>(id);
             }
             
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
