@@ -107,10 +107,14 @@ UPDATE @AccountTypes	SET [AgentAssignment] = N'A', [AgentDefinitionId] = N'emplo
 UPDATE @AccountTypes	SET [AgentAssignment] = N'E', [AgentDefinitionId] = N'partners' WHERE [Code] = N'PartnersWithdrawalExtension';
 UPDATE @AccountTypes	SET [AgentAssignment] = N'A', [AgentDefinitionId] = N'cash-custodians' WHERE [Code] = N'CashAndCashEquivalents';
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'customers' WHERE [Code] = N'CurrentAccruedIncome';
+
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'suppliers' WHERE [Code] = N'AccrualsClassifiedAsCurrent';
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [AgentAssignment] = N'E', [AgentDefinitionId] = N'employees' WHERE [Code] = N'CurrentPayablesToEmployeesExtension';
 UPDATE @AccountTypes	SET [AgentAssignment] = N'E', [AgentDefinitionId] = N'inventory-custodians' WHERE [Code] = N'Inventories';
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [CenterAssignment] = N'A' WHERE [ParentIndex] = 55; -- 
+
+UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [CenterAssignment] = N'A', [NotedAgentDefinitionId] = N'customers',[NotedAgentAssignment] = N'E' WHERE [Code] = N'CurrentValueAddedTaxPayables';
+
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'E', [CenterAssignment] = N'A', [AgentDefinitionId] = N'customers',[AgentAssignment] = N'E' WHERE [Code] = N'DeferredIncomeClassifiedAsCurrent';
 
 UPDATE @AccountTypes	SET [CurrencyAssignment] = N'A', [CenterAssignment] = N'A' WHERE  [Code] = N'RevenueFromRenderingOfServices';

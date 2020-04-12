@@ -296,10 +296,19 @@ END
 	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
 	BEGIN
 		UPDATE @PreprocessedDocuments
-		SET [InvestmentCenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1)
+		SET [InvestmentCenterId] = (
+			SELECT [Id]	FROM dbo.[Centers]
+			WHERE [CenterType] = N'Investment'
+			AND [IsActive] = 1 AND [IsLeaf] = 1
+		)
 		WHERE InvestmentCenterIsCommon = 1;
+
 		UPDATE PE 
-		SET PE.CenterId = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1)
+		SET PE.CenterId = (
+			SELECT [Id] FROM dbo.[Centers]
+			WHERE [CenterType] = N'Investment'
+			AND [IsActive] = 1 AND [IsLeaf] = 1
+		)
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
@@ -342,6 +351,7 @@ END
 			--AND (A.[Identifier] IS NULL			OR A.[Identifier] = E.[AccountIdentifier])
 		WHERE L.DefinitionId <> N'ManualLine'
 		AND A.IsDeprecated = 0
+		AND A.IsSmart = 1
 		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]
 	)
 	UPDATE E

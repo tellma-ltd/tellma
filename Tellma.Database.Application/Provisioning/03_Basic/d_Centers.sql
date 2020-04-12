@@ -10,7 +10,7 @@ ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @Centers([Index],
 				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	N'Investment',		NULL
+	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	NULL,			NULL
 	FROM dbo.Settings
 	-- expenses, and fixed assets can be assigned to all leaves
 	-- revenues can be assigned to Profit leaves only
@@ -18,17 +18,17 @@ BEGIN
 
 	INSERT INTO @Centers([Index],							-- ResponsibilityType	CenterClassification
 		[Name],					[Name2],				[Code],[CenterType],	[ParentIndex]) VALUES
-	(1,N'Banan - Unallocated',	N'شركة بنان - غ مخصص',	N'10',	NULL,			0),
-	(2,N'Executive Office',		N'المكتب التنفيذي',	N'11',	NULL,			0),
-	(3,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	NULL,			0), -- 	DistributionAndAdministrativeExpense
-	(4,N'System Admin',			N'إدارة النظم',			N'13',	NULL,			0),
-	(5,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	NULL,			0),
+	(1,N'Banan - Unallocated',	N'شركة بنان - غ مخصص',	N'10',	N'Investment',	0),
+	(2,N'Executive Office',		N'المكتب التنفيذي',	N'11',	N'Cost',		0),
+	(3,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		0), -- 	DistributionAndAdministrativeExpense
+	(4,N'System Admin',			N'إدارة النظم',			N'13',	N'Cost',		0),
+	(5,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		0),
 	(6,N'Products',				N'المنتجات',			N'2',	N'Revenue',		0),
-	(7,N'B10/HCM',				N'بابل',				N'21',	NULL,			5), -- should we say: ExpenseByFunctionExtension
-	(8,N'BSmart',				N'بيسمارت',				N'22',	NULL,			5),
-	(9,N'Campus',				N'كامبوس',				N'23',	NULL,			5),
-	(10,N'Tellma',				N'تلما',				N'24',	NULL,			5),
-	(11,N'1st Floor',			N'ط - 1',				N'30',	NULL,			0);
+	(7,N'B10/HCM',				N'بابل',				N'21',	N'Profit',		5), -- should we say: ExpenseByFunctionExtension
+	(8,N'BSmart',				N'بيسمارت',				N'22',	N'Profit',		5),
+	(9,N'Campus',				N'كامبوس',				N'23',	N'Profit',		5),
+	(10,N'Tellma',				N'تلما',				N'24',	N'Profit',		5),
+	(11,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		0);
 
 	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'2');
 --	Dr. Tellma: WIP Acct, Resource:Job XYZ, Qty:1 [Open a new job]

@@ -314,13 +314,10 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId1] = [CurrencyId0],
-		[CurrencyId2] = [CurrencyId0],
+		[CurrencyId1] = N''SDG'',
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [AgentId2]),
 		[NotedAgentId1] = [AgentId2],
-		[NotedAmount1] = ISNULL([MonetaryValue2],0),
-		[CenterId1] = [CenterId0],
-		[CenterId2] = [CenterId0]
+		[NotedAmount1] = ISNULL([MonetaryValue2],0)
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 12;
@@ -337,16 +334,14 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,12,	N'NotedDate',			1,	N'Invoice Date',	N'تاريخ الفاتورة',		3,5,0), 
 (2,12,	N'ExternalReference',	1,	N'Invoice #',		N'رقم الفاتورة',		3,5,0), 
 (3,12,	N'AgentId',				2,	N'Customer',		N'الزبون',				1,4,1),
-(4,12,	N'CurrencyId',			0,	N'Invoice Currency',N'عملة الفاتورة',		1,2,1),
-(5,12,	N'MonetaryValue',		1,	N'Price Excl. VAT',	N'المبلغ بدون ق.م.',	1,2,0),
-(6,12,	N'MonetaryValue',		1,	N'VAT',				N'ق.م.',				3,4,0),
-(7,12,	N'CurrencyId',			0,	N'Rcvd. Currency',	N'عملة الاستلام',		3,0,0),
-(8,12,	N'MonetaryValue',		0,	N'Rcvd. Amount',	N'الإجمالي المستلم',	3,0,0),
+(4,12,	N'CurrencyId',			2,	N'Contract Currency',N'عملة العقد',		1,2,1),
+(5,12,	N'MonetaryValue',		1,	N'Due Excl. VAT',	N'المطالبة بدون ق.م.',	1,2,0),
+(6,12,	N'MonetaryValue',		1,	N'VAT - SDG',		N'ق.م. - جنيه',			3,4,0),
+(7,12,	N'CurrencyId',			0,	N'Rcvd. Currency',	N'عملة الاستلام',			3,4,0),
+(8,12,	N'MonetaryValue',		0,	N'Rcvd. Amount',	N'الإجمالي المستلم',	3,4,0),
 
 (9,12,	N'AgentId',				0,	N'Bank/Cashier',	N'البنك\الخزنة',		3,4,1),
-(10,12,	N'ExternalReference',	0,	N'Check #',			N'رقم الشيك ',			5,4,0),
-(11,12,	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,4,0),
-(12,12,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1);
+(10,12,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1);
 
 --13:DeferredReceiptFromLessee (against an invoice), No workflow
 INSERT @LineDefinitions([Index],
@@ -362,14 +357,10 @@ SET [Script] = N'
 	-----
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId1] = [CurrencyId0],
-		[CurrencyId2] = [CurrencyId0],
 		[NotedAgentName0] = (SELECT [Name] FROM dbo.Agents WHERE [Id] = [NotedAgentId1]),
-		[AgentId2]		= [NotedAgentId1],
+		[NotedAgentId1]	 = [AgentId2],
 		[MonetaryValue0] = ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
-		[MonetaryValue2] = ISNULL([NotedAmount1],0),
-		[CenterId1] = [CenterId0],
-		[CenterId2] = [CenterId0]
+		[MonetaryValue2] = ISNULL([NotedAmount1],0)
 	-----
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 13;
@@ -383,18 +374,18 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 																				[ReadOnlyState],
 																				[InheritsFromHeader]) VALUES
 
-(0,13,	N'NotedDate',			1,	N'Invoice Date',	N'تاريخ الفاتورة',		3,5,0), 
-(1,13,	N'ExternalReference',	1,	N'Invoice #',		N'رقم الفاتورة',		3,5,0), 
-(2,13,	N'NotedAgentId',		1,	N'Customer',		N'الزبون',				1,4,1),
-(3,13,	N'CurrencyId',			0,	N'Currency',		N'العملة',				1,2,1),
-(4,13,	N'NotedAmount',			1,	N'Price Excl. VAT',	N'المبلغ بدون ق.م.',	1,2,0),
-(5,13,	N'MonetaryValue',		1,	N'VAT',				N'ق.م.',				3,4,0),
-(6,13,	N'MonetaryValue',		0,	N'Total',			N'الإجمالي',			3,0,0),
-(7,13,	N'AgentId',				0,	N'Bank/Cashier',	N'البنك\الخزنة',		3,4,1),
-(8,13,	N'ExternalReference',	0,	N'Check #',			N'رقم الشيك ',			5,4,0),
-(9,13,	N'NotedDate',			0,	N'Check Date',		N'تاريخ الشيك',		5,4,0),
-(10,13,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1),
-(11,13,	N'Memo',				1,	N'Memo',			N'البيان',				1,5,1);
+(0,13,	N'Memo',				1,	N'Memo',			N'البيان',				1,5,1),
+(1,13,	N'NotedDate',			1,	N'Invoice Date',	N'تاريخ الفاتورة',		3,5,0), 
+(2,13,	N'ExternalReference',	1,	N'Invoice #',		N'رقم الفاتورة',		3,5,0), 
+(3,13,	N'AgentId',				2,	N'Customer',		N'الزبون',				1,4,1),
+(4,13,	N'CurrencyId',			2,	N'Contract Currency',N'عملة العقد',			1,2,1),
+(5,13,	N'MonetaryValue',		1,	N'Due Excl. VAT',	N'المطالبة بدون ق.م.',	1,2,0),
+(6,13,	N'MonetaryValue',		1,	N'VAT - SDG',		N'ق.م. - جنيه',			3,4,0),
+(7,13,	N'CurrencyId',			0,	N'Rcvd. Currency',	N'عملة الاستلام',			3,4,0),
+(8,13,	N'MonetaryValue',		0,	N'Rcvd. Amount',	N'الإجمالي المستلم',	3,4,0),
+
+(9,13,	N'AgentId',				0,	N'Bank/Cashier',	N'البنك\الخزنة',		3,4,1),
+(10,13,	N'CenterId',			0,	N'Inv. Ctr',		N'مركز الاستثمار',		4,4,1);
 --14:GoodDeliveryNote
 --15:ServiceDeliveryNote (from Cash Sale). For sale to customer on account in SDN)
 
