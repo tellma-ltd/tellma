@@ -1,5 +1,5 @@
 // tslint:disable:no-string-literal
-import { Location } from '@angular/common';
+import { Location, formatNumber } from '@angular/common';
 import {
   Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef,
   ViewChild, Output, SimpleChanges, OnChanges, HostListener, ChangeDetectorRef, DoCheck
@@ -13,7 +13,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker, FriendlyError } from '~/app/data/util';
-import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
+import { DetailsStatus, MasterDetailsStore, WorkspaceService, MAXIMUM_COUNT } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
 import { EntityDescriptor, metadata } from '~/app/data/entities/base/metadata';
@@ -37,6 +37,9 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
   @Input()
   expand: string;
+
+  @Input()
+  select: string;
 
   @Input()
   masterCrumb: string;
@@ -449,7 +452,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
         const id = isCloning ? cloneId : this.idString;
 
         // server call
-        return this.crud.getById(id, { expand: this.expand }, this.extraParams).pipe(
+        return this.crud.getById(id, { expand: this.expand, select: this.select }, this.extraParams).pipe(
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
@@ -857,7 +860,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       }
 
       // prepare the save observable
-      const select = this.isPopupMode ? computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect) : null;
+      const select = this.isPopupMode ? computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect) : this.select;
       this.crud.save([this._editModel], { select, expand: this.expand, returnEntities: true }, this.extraParams).subscribe(
         (response: EntitiesResponse) => {
 
@@ -1055,6 +1058,15 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
   get total(): number {
     return this.state.total;
+  }
+
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return total.toString();
+    }
   }
 
   get order(): number {

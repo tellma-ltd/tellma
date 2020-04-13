@@ -5,7 +5,7 @@
     /// </summary>
     public class GetArguments
     {
-        private const int DEFAULT_PAGE_SIZE = 50;
+        private const int DEFAULT_PAGE_SIZE = 25;
 
         /// <summary>
         /// Specifies the number of items the server should return
@@ -41,9 +41,17 @@
 
         /// <summary>
         /// Equivalent to linq's "Select", determines which properties of the principal entities
-        /// or of the included related entities to return the result. If left empty then all
-        /// properties of the principalentity and included entities are returned
+        /// or of the expanded related entities to return in the result. If left empty then all
+        /// properties of the principal entity and expanded entities are returned
         /// </summary>
         public string Select { get; set; }
+
+        /// <summary>
+        /// When set to true, instructs the server to include the <see cref="GetResponse{TEntity}.TotalCount"/> of the query
+        /// (without the constraint of <see cref="Top"/> and <see cref="Skip"/>), the server
+        /// counts results up to a certain maximum limit <see cref="FactControllerBase{TEntity}.MAXIMUM_COUNT"/>, or returns <see cref="int.MaxValue"/>
+        /// if that limit is exceeded
+        /// </summary>
+        public bool CountEntities { get; set; }
     }
 }

@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -183,9 +184,9 @@ namespace Tellma.Controllers
                 }
                 else
                 {
-                    // GetByIdImplAsync() enforces read permissions
-                    var userResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) });
-                    imageId = userResponse.Result.ImageId;
+                    // This enforces read permissions
+                    var user = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) });
+                    imageId = user.ImageId;
                 }
 
                 // Get the blob name
@@ -236,7 +237,7 @@ namespace Tellma.Controllers
             var me = await _appRepo.Users.FilterByIds(meId).FirstOrDefaultAsync();
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var relatedEntities = FlattenAndTrim(new List<User> { me }, null);
+            var relatedEntities = FlattenAndTrim(new List<User> { me });
 
             // Return
             return new GetByIdResponse<User>
@@ -375,7 +376,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
 
                 trx.Complete();
                 return Ok(response);

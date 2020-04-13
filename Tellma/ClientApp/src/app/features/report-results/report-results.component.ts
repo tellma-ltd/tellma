@@ -284,7 +284,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         skip,
         orderby,
         select,
-        filter
+        filter,
+        countEntities: true
       }, extras).pipe(
         tap((response: GetResponse) => {
           s = this.state;

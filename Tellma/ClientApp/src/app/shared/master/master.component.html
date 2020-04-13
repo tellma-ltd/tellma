@@ -175,7 +175,7 @@
           <div class="d-inline small mx-2">
             <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
             </span>
-            <span class="t-vertical-align-middle"> / {{ total | number }}</span>
+            <span class="t-vertical-align-middle"> / {{ totalDisplay }}</span>
           </div>
           <button class="btn btn-sm t-toolbar-button"
             [ngClass]="{ 'btn-light': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }"

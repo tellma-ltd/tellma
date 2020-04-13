@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Data.Queries
 {
@@ -262,7 +263,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>
         /// </summary>
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(int maximum = 0)
         {
             var args = await _factory();
             var conn = args.Connection;
@@ -315,6 +316,15 @@ namespace Tellma.Data.Queries
 
             // Load the statement
             var sql = flatQuery.PrepareStatement(sources, ps, userId, userToday).Sql;
+
+            // Add the maximum
+            if (maximum > 0)
+            {
+                // Replace "SELECT" with "SELECT TOP maximum"
+                sql = sql.Remove(0, "SELECT".Length);
+                sql = $"SELECT TOP {maximum}" + sql;
+            }
+
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -356,7 +366,7 @@ namespace Tellma.Data.Queries
                 // Otherwise we might get an error
                 cmd.Parameters.Clear();
 
-                // This block is never entered, but we put anyways for robustness
+                // This block is never entered, but we put it anyways for robustness
                 if (ownsConnection)
                 {
                     conn.Close();

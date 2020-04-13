@@ -78,13 +78,13 @@ namespace Tellma.Controllers
             {
                 // GetByIdImplAsync() enforces read permissions
                 string attachments = nameof(Document.Attachments);
-                var response = await GetByIdImplAsync(docId, new GetByIdArguments
+                var doc = await GetByIdLoadData(docId, new GetByIdArguments
                 {
                     Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
                 });
 
                 // Get the blob name
-                var attachment = response.Result.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+                var attachment = doc.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
                 if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
                 {
                     // Get the bytes
@@ -162,7 +162,7 @@ namespace Tellma.Controllers
                 // Return result
                 if (returnEntities)
                 {
-                    var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                     trx.Complete();
                     return Ok(response);
@@ -223,7 +223,7 @@ namespace Tellma.Controllers
 
                 if (returnIds)
                 {
-                    var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(documentIds.ToArray(), expandExp, selectExp);
 
                     trx.Complete();
                     return Ok(response);
@@ -267,7 +267,7 @@ namespace Tellma.Controllers
                 var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnIds);
                 if (returnIds)
                 {
-                    var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(documentIds.ToArray(), expandExp, selectExp);
 
                     trx.Complete();
                     return Ok(response);
@@ -354,7 +354,7 @@ namespace Tellma.Controllers
 
                 if (returnEntities)
                 {
-                    var response = await GetByIdListAsync(ids.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(ids.ToArray(), expandExp, selectExp);
 
                     trx.Complete();
                     return Ok(response);
@@ -368,9 +368,9 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        protected override async Task<GetByIdResponse<Document>> GetByIdImplAsync(int id, [FromQuery] GetByIdArguments args)
+        protected override async Task<GetByIdResponse<Document>> GetByIdImpl(int id, [FromQuery] GetByIdArguments args)
         {
-            var response = await base.GetByIdImplAsync(id, args);
+            var response = await base.GetByIdImpl(id, args);
             var entity = response.Result;
             if (entity.OpenedAt == null)
             {
@@ -465,7 +465,7 @@ namespace Tellma.Controllers
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync();
-                var relatedEntities = FlattenAndTrim(requiredSignatures, null);
+                var relatedEntities = FlattenAndTrim(requiredSignatures);
                 requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
 
                 return new Dictionary<string, object>

@@ -1184,6 +1184,10 @@ export class ApiService {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
     }
 
+    if (!!args.countEntities) {
+      paramsArray.push(`countEntities=true`);
+    }
+
     if (!!args.unobtrusive) {
       paramsArray.push(`unobtrusive=${args.unobtrusive}`);
     }

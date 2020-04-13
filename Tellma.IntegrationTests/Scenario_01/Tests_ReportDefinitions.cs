@@ -54,7 +54,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("ReportDefinition", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
+            Assert.Null(responseData.TotalCount);
         }
 
         [Fact(DisplayName = "03 Getting a non-existent report definition id returns a 404 Not Found")]

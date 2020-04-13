@@ -62,9 +62,9 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // GetByIdImplAsync() enforces read permissions
-                var response = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(Agent.ImageId) });
-                string imageId = response.Result.ImageId;
+                // This enforces read permissions
+                var agent = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Agent.ImageId) });
+                string imageId = agent.ImageId;
 
                 // Get the blob name
                 if (imageId != null)
@@ -124,7 +124,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
 
                 trx.Complete();
                 return Ok(response);

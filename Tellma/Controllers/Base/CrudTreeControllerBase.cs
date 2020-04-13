@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -35,7 +36,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetChildrenOfAsync(args);
+                var result = await GetChildrenOf_Impl(args);
                 return Ok(result);
             }, _logger);
         }
@@ -43,8 +44,11 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a single entity as per the ID and specifications in the get request
         /// </summary>
-        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args)
+        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOf_Impl(GetChildrenArguments<TKey> args)
         {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
             var select = SelectExpression.Parse(args.Select);
@@ -52,7 +56,12 @@ namespace Tellma.Controllers
             var orderby = OrderByExpression.Parse("Node");
             var ids = args.I ?? new List<TKey>();
 
-            return await GetByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby);
+            // Load the data
+            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby);
+            var extras = await GetExtras(data);
+
+            // Transform and Return
+            return TransformToEntitiesResponse(data, extras, serverTime);
         }
 
         [HttpDelete("with-descendants")]
@@ -62,7 +71,7 @@ namespace Tellma.Controllers
             // ids to be passed in the query string before the url size limit
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await DeleteWithDescendantsImplAsync(i);
+                await DeleteWithDescendants_Impl(i);
                 return Ok();
             }, _logger);
         }
@@ -70,7 +79,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Deletes the current node and all the nodes descending from it
         /// </summary>
-        protected virtual async Task DeleteWithDescendantsImplAsync(List<TKey> ids)
+        protected virtual async Task DeleteWithDescendants_Impl(List<TKey> ids)
         {
             if (ids == null || !ids.Any())
             {

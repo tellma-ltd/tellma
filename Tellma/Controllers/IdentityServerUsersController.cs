@@ -84,7 +84,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException(errorMessage);
                 }
 
-                var response = await GetByIdListAsync(ids);
+                var response = await LoadDataByIdsAndTransform(ids);
                 return Ok(response);
             }
             , _logger);

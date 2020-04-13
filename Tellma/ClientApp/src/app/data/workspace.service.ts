@@ -687,6 +687,7 @@ export class ReportStore {
 }
 
 export const DEFAULT_PAGE_SIZE = 25;
+export const MAXIMUM_COUNT = 10000; // IMPORTANT: Keep in sync with server side
 
 export class MasterDetailsStore {
 

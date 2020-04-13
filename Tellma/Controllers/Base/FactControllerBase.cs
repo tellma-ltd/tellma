@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -33,7 +34,7 @@ namespace Tellma.Controllers
         private readonly IStringLocalizer _localizer;
 
         /// <summary>
-        /// The default maximum page size returned by the <see cref="Get(GetArguments)"/>,
+        /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
         /// it can be overridden by overriding <see cref="MaximumPageSize()"/>
         /// </summary>
         private static int DEFAULT_MAX_PAGE_SIZE => 10000;
@@ -44,6 +45,8 @@ namespace Tellma.Controllers
         /// </summary>
         private static int MAXIMUM_AGGREGATE_RESULT_SIZE => 65536;
 
+        private static int MAXIMUM_COUNT => 10000; // IMPORTANT: Keep in sync with client side
+
         // Constructor
         public FactControllerBase(ILogger logger, IStringLocalizer localizer)
         {
@@ -53,16 +56,11 @@ namespace Tellma.Controllers
 
         // HTTP Methods
         [HttpGet]
-        public virtual async Task<ActionResult<GetResponse<TEntity>>> Get([FromQuery] GetArguments args)
-        {
-            return await GetInnerAsync(args);
-        }
-
-        protected virtual async Task<ActionResult<GetResponse<TEntity>>> GetInnerAsync(GetArguments args, Query<TEntity> queryOverride = null)
+        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetImplAsync(args, queryOverride);
+                var result = await GetFactImpl(args);
                 return Ok(result);
             }, _logger);
         }
@@ -72,7 +70,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetAggregateImplAsync(args);
+                var result = await GetAggregateImpl(args);
                 return Ok(result);
             }, _logger);
         }
@@ -83,22 +81,55 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Get abstract grid
-                var response = await GetImplAsync(args);
+                var response = await GetFactImpl(args);
                 var abstractFile = EntitiesToAbstractGrid(response, args);
                 return AbstractGridToFileResult(abstractFile, args.Format);
             }, _logger);
         }
 
-        // Endpoint implementations
+        /////////////////////////////
+        // Endpoint Implementations
+        /////////////////////////////
 
         /// <summary>
-        /// Returns the entities as per the specifications in the get request
+        /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
         /// </summary>
-        protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args, Query<TEntity> queryOverride = null)
+        protected virtual async Task<GetResponse<TEntity>> GetFactImpl(GetArguments args)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
+            // Retrieves the raw data from the database, unflattend, untrimmed 
+            var (data, isPartial, totalCount) = await GetFactLoadData(args);
+
+            // Get any controller-specific extras
+            var extras = await GetExtras(data);
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(data);
+
+            // Prepare the result in a response object
+            return new GetResponse<TEntity>
+            {
+                Skip = args.Skip,
+                Top = data.Count,
+                OrderBy = args.OrderBy,
+                TotalCount = totalCount,
+                IsPartial = isPartial,
+                Result = data,
+                RelatedEntities = relatedEntities,
+                CollectionName = GetCollectionName(typeof(TEntity)),
+                Extras = extras,
+                ServerTime = serverTime
+            };
+        }
+
+        /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>,
+        /// and also the total count if required
+        /// </summary>
+        protected virtual async Task<(List<TEntity> Data, bool IsPartial, int? Count)> GetFactLoadData(GetArguments args)
+        {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse(args.OrderBy);
@@ -106,14 +137,17 @@ namespace Tellma.Controllers
             var select = SelectExpression.Parse(args.Select);
 
             // Prepare the query
-            var query = queryOverride ?? GetRepository().Query<TEntity>();
+            var query = GetRepository().Query<TEntity>();
 
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read);
 
             // Filter out permissions with masks that would be violated by the filter or order by arguments
             var defaultMask = GetDefaultMask() ?? new MaskTree();
+            var permissionsCount = permissions.Count();
             permissions = FilterViolatedPermissionsForFlatQuery(permissions, defaultMask, filter, orderby);
+            var filteredPermissionsCount = permissions.Count();
+            bool isPartial = permissionsCount != filteredPermissionsCount;
 
             // Apply read permissions
             var permissionsFilter = GetReadPermissionsCriteria(permissions);
@@ -125,8 +159,16 @@ namespace Tellma.Controllers
             // Filter
             query = query.Filter(filter);
 
-            // Before ordering or paging, retrieve the total count
-            int totalCount = await query.CountAsync();
+            // If requested, retrieve the total count before any ordering, paging, expanding or selecting
+            int? totalCount = null;
+            if (args.CountEntities)
+            {
+                totalCount = await query.CountAsync(MAXIMUM_COUNT);
+                if (totalCount >= MAXIMUM_COUNT)
+                {
+                    totalCount = int.MaxValue; // All we know is that the real count is >= MAXIMUM_COUNT
+                }
+            }
 
             // OrderBy
             query = OrderBy(query, orderby);
@@ -144,40 +186,43 @@ namespace Tellma.Controllers
             expandedQuery = expandedQuery.Select(select);
 
             // Load the data in memory
-            var result = await expandedQuery.ToListAsync();
+            var data = await expandedQuery.ToListAsync();
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
+            await ApplyReadPermissionsMask(data, query, permissions, defaultMask);
 
-            // Get any controller-specific extras
-            var extras = await GetExtras(result);
+            // Return
+            return (data, isPartial, totalCount);
+        }
 
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result, expand);
+        /// <summary>
+        /// Returns the <see cref="GetAggregateResponse"/> as per the specifications in the <see cref="GetAggregateArguments"/>
+        /// </summary>
+        protected virtual async Task<GetAggregateResponse> GetAggregateImpl(GetAggregateArguments args)
+        {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
 
-            // Prepare the result in a response object
-            return new GetResponse<TEntity>
+            // Load the data
+            var (data, isPartial) = await GetAggregateLoadData(args);
+
+            // Finally return the result
+            return new GetAggregateResponse
             {
-                Skip = skip,
-                Top = result.Count(),
-                OrderBy = args.OrderBy,
-                TotalCount = totalCount,
-
-                Result = result,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras,
-                ServerTime = serverTime
+                Top = args.Top,
+                IsPartial = isPartial,
+                ServerTime = serverTime,
+                
+                Result = data,
+                RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
             };
         }
 
         /// <summary>
-        /// Returns the entities as per the specifications in the get request
+        /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
         /// </summary>
-        protected virtual async Task<GetAggregateResponse> GetAggregateImplAsync(GetAggregateArguments args)
+        protected virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregateLoadData(GetAggregateArguments args)
         {
-            var serverTime = DateTimeOffset.UtcNow;
-
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
             var select = AggregateSelectExpression.Parse(args.Select);
@@ -213,25 +258,17 @@ namespace Tellma.Controllers
             query = query.Select(select);
 
             // Load the data in memory
-            var result = await query.ToListAsync();
+            var data = await query.ToListAsync();
 
             // Put a limit on the number of data points returned, to prevent DoS attacks
-            if(result.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
+            if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
             {
                 var msg = _localizer["Error_NumberOfDataPointsExceedsMaximum0", MAXIMUM_AGGREGATE_RESULT_SIZE];
                 throw new BadRequestException(msg);
             }
 
-            // Finally return the result
-            return new GetAggregateResponse
-            {
-                Top = args.Top,
-                IsPartial = isPartial,
-                ServerTime = serverTime,
-                
-                Result = result,
-                RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
-            };
+            // Return
+            return (data, isPartial);
         }
 
         /// <summary>
@@ -448,7 +485,7 @@ namespace Tellma.Controllers
         /// 3 - It makes it easier for clients to store and track entities in a central workspace
         /// </summary>
         /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
-        protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, ExpandExpression expand)
+        protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities)
         {
             // If the result is empty, nothing to do
             if (resultEntities == null || !resultEntities.Any())

@@ -7,6 +7,7 @@ export class EntitiesResponse<TEntity extends Entity = EntityWithKey> {
   Result: TEntity[];
   CollectionName: string;
   RelatedEntities: { [key: string]: EntityWithKey[]; };
+  IsPartial: boolean;
   ServerTime: string;
 }
 

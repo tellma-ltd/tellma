@@ -184,7 +184,7 @@ namespace Tellma.Controllers
             var me = await _repo.AdminUsers.FilterByIds(meId).FirstOrDefaultAsync();
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var relatedEntities = FlattenAndTrim(new List<AdminUser> { me }, null);
+            var relatedEntities = FlattenAndTrim(new List<AdminUser> { me });
 
             // Return
             return new GetByIdResponse<AdminUser>
@@ -297,7 +297,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
 
                 trx.Complete();
                 return Ok(response);

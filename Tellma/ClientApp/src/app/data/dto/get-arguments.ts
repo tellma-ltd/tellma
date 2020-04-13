@@ -7,5 +7,6 @@ export class GetArguments {
   filter?: string;
   expand?: string;
   select?: string;
+  countEntities?: boolean;
   unobtrusive?: boolean;
 }

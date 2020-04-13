@@ -18,7 +18,8 @@ import {
   NodeInfo,
   MasterDisplayMode,
   TreeRefreshMode,
-  DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE
+  DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE,
+  MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/entities/base/metadata';
@@ -26,6 +27,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
 import { SelectorChoice } from '../selector/selector.component';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { formatNumber } from '@angular/common';
 
 enum SearchView {
   tiles = 'tiles',
@@ -447,6 +449,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         search,
         select,
         filter,
+        countEntities: true
       }).pipe(
         tap((response: GetResponse) => {
           s = this.state; // get the source
@@ -832,6 +835,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get total(): number {
     return this.state.total;
+  }
+
+  get totalDisplay(): string {
+    const total = this.total;
+    if (total >= MAXIMUM_COUNT) {
+      return formatNumber(MAXIMUM_COUNT - 1, 'en-GB') + '+';
+    } else {
+      return total.toString();
+    }
   }
 
   onFirstPage() {

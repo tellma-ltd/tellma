@@ -55,7 +55,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("CustomClassification", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
+            Assert.Null(responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 

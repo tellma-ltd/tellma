@@ -46,6 +46,9 @@ namespace Tellma.Controllers
         /// </summary>
         protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args)
         {
+            // Calculate server time at the very beginning for consistency
+            var serverTime = DateTimeOffset.UtcNow;
+
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
             var select = SelectExpression.Parse(args.Select);
@@ -53,7 +56,12 @@ namespace Tellma.Controllers
             var orderby = OrderByExpression.Parse("Node");
             var ids = args.I ?? new List<TKey>();
 
-            return await GetByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby);
+            // Load data
+            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby);
+            var extras = await GetExtras(data);
+
+            // Transform and return
+            return TransformToEntitiesResponse(data, extras, serverTime);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all organization agents before creating any returns a 200 OK singleton collection")]
+        [Fact(DisplayName = "02 Getting all customer agents before creating any returns a 200 OK singleton collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
@@ -57,7 +57,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("Agent", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
+            Assert.Null(responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
@@ -78,7 +78,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("Agent", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
+            Assert.Null(responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 

@@ -25,7 +25,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         [Fact(DisplayName = "01 Getting all roles before creating any returns a 200 OK singleton collection")]
         public async Task Test01()
         {
-            var response = await Client.GetAsync(Url);
+            var response = await Client.GetAsync(Url + "?countEntities=true");
 
             // Call the API
             Output.WriteLine(await response.Content.ReadAsStringAsync());

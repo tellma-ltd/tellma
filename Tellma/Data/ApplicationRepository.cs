@@ -177,7 +177,7 @@ namespace Tellma.Data
         /// <typeparam name="T">The type of the <see cref="Queries.Query{T}"/></typeparam>
         public Query<T> Query<T>() where T : Entity
         {
-            return new Query<T>(GetFactory());
+            return new Query<T>(Factory);
         }
 
         /// <summary>
@@ -186,23 +186,18 @@ namespace Tellma.Data
         /// <typeparam name="T">The root type of the <see cref="Queries.AggregateQuery{T}"/></typeparam>
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity
         {
-            return new AggregateQuery<T>(GetFactory());
+            return new AggregateQuery<T>(Factory);
         }
 
-        private QueryArgumentsFactory GetFactory()
+        private async Task<QueryArguments> Factory()
         {
-            async Task<QueryArguments> Factory()
-            {
-                var conn = await GetConnectionAsync();
-                var tenantInfo = await GetTenantInfoAsync();
-                var userInfo = await GetUserInfoAsync();
-                var userId = userInfo.UserId ?? 0;
-                var userToday = _clientInfoAccessor.GetInfo().Today;
+            var conn = await GetConnectionAsync();
+            var tenantInfo = await GetTenantInfoAsync();
+            var userInfo = await GetUserInfoAsync();
+            var userId = userInfo.UserId ?? 0;
+            var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, Sources, userId, userToday, _localizer);
-            }
-
-            return Factory;
+            return new QueryArguments(conn, Sources, userId, userToday, _localizer);
         }
 
         /// <summary>

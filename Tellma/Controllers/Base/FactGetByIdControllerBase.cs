@@ -35,106 +35,160 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetByIdImplAsync(id, args);
+                var result = await GetByIdImpl(id, args);
                 return Ok(result);
             }, _logger);
         }
 
+        /////////////////////////////
+        // Endpoint Implementations
+        /////////////////////////////
+
         /// <summary>
-        /// Returns a single entity as per the ID and specifications in the get request
+        /// Returns the <see cref="GetByIdResponse{TEntity}"/> as per the Id and specifications in <see cref="GetByIdArguments"/>, after verifying the user's permissions
         /// </summary>
-        protected virtual async Task<GetByIdResponse<TEntity>> GetByIdImplAsync(TKey id, [FromQuery] GetByIdArguments args)
+        protected virtual async Task<GetByIdResponse<TEntity>> GetByIdImpl(TKey id, GetByIdArguments args)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
-            // Parse the parameters
-            var expand = ExpandExpression.Parse(args?.Expand);
-            var select = SelectExpression.Parse(args?.Select);
+            // Load the data
+            var entity = await GetByIdLoadData(id, args);
 
-            // Prepare the odata query
-            var repo = GetRepository();
-            var query = repo.Query<TEntity>();
-
-            // Add the filter by Id
-            query = query.FilterByIds(id);
-
-            // Apply read permissions
-            var permissions = await UserPermissions(Constants.Read);
-            var permissionsFilter = GetReadPermissionsCriteria(permissions);
-            query = query.Filter(permissionsFilter);
-
-            // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            var expandedQuery = query.Expand(expand);
-
-            // Apply the select, which has the general format 'Select=A,B/C,D'
-            expandedQuery = expandedQuery.Select(select);
-
-            // Load
-            var result = await expandedQuery.FirstOrDefaultAsync();
-            if (result == null)
-            {
-                // Complete lack of permissions was already handled in GetReadPermissionsCriteria
-                // IF the permissions are RLS, the user shouldn't be able to tell the difference
-                // between a record that doesn't exist and one that they don't have access to
-                throw new NotFoundException<TKey>(id);
-            }
-            
-            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var singleton = new List<TEntity> { result };
-            await ApplyReadPermissionsMask(singleton, query, permissions, GetDefaultMask());
-
-            // Get any controller-specific extras
+            // Load the extras
+            var singleton = new List<TEntity> { entity };
             var extras = await GetExtras(singleton);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(singleton, expand);
+            var relatedEntities = FlattenAndTrim(singleton);
 
-            // Prepare response
+            // Prepare the result in a response object
             return new GetByIdResponse<TEntity>
             {
-                Result = result,
-                CollectionName = GetCollectionName(typeof(TEntity)),
+                Result = entity,
                 RelatedEntities = relatedEntities,
+                CollectionName = GetCollectionName(typeof(TEntity)),
                 Extras = extras,
                 ServerTime = serverTime,
             };
         }
 
-        protected async Task<EntitiesResponse<TEntity>> GetByIdListAsync(TKey[] ids, ExpandExpression expand = null, SelectExpression select = null)
+        /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the Id and the specifications in the <see cref="GetByIdArguments"/>, after verifying the user's permissions
+        /// </summary>
+        protected virtual async Task<TEntity> GetByIdLoadData(TKey id, GetByIdArguments args)
         {
-            var result = await GetByCustomQuery(q => q.FilterByIds(ids), expand, select);
+            // Parse the parameters
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = SelectExpression.Parse(args?.Select);
 
-            // Sort the entities according to the original Ids, as a good practice
-            TEntity[] sortedResult = new TEntity[ids.Length];
-            Dictionary<TKey, TEntity> resultDic = result.Result.ToDictionary(e => e.Id);
-            for (int i = 0; i < ids.Length; i++)
+            // Load the data
+            var data = await LoadDataByIds(new TKey[] { id }, expand, select);
+
+            // Check that the entity exists, else return NotFound
+            var entity = data.SingleOrDefault();
+            if (entity == null)
             {
-                var id = ids[i];
-                if (resultDic.TryGetValue(id, out TEntity entity))
-                {
-                    sortedResult[i] = entity;
-                }
+                throw new NotFoundException<TKey>(id);
             }
 
-            result.Result = sortedResult;
-
-            // Return the sorted result
-            return result;
+            // Return
+            return entity;
         }
 
+        ///////////////////
+        // Helper Methods
+        ///////////////////
+
         /// <summary>
-        /// Returns an entities response based on custom filtering function applied to the query, as well as
-        /// optional select and expand arguments, checking the user permissions along the way
+        /// Helper function for all "action" web handlers (like activate and deactivate) that
+        /// wish to load a bunch of affected entities via their Ids and return them as an <see cref="EntitiesResponse{TEntity}"/>, after verifying the user's permissions
         /// </summary>
-        /// <param name="filterFunc">Allows you to apply any filteration you like to the query,</param>
-        /// <param name="expand">Optional expand argument</param>
-        /// <param name="select">Optional select argument</param>
-        protected async Task<EntitiesResponse<TEntity>> GetByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby = null)
+        protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(TKey[] ids, ExpandExpression expand = null, SelectExpression select = null)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
+            // Calculate server time at the very beginning for consistency
+            var data = await LoadDataByIds(ids, expand, select);
+
+            // Get the extras
+            var extras = await GetExtras(data);
+
+            // Transform the entities as an EntitiesResponse
+            var response = TransformToEntitiesResponse(data, extras, serverTime);
+
+            // Return
+            return response;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="ExpandExpression"/> and <see cref="SelectExpression"/>, after verifying the user's permissions
+        /// </summary>
+        protected virtual async Task<List<TEntity>> LoadDataByIds(TKey[] ids, ExpandExpression expand = null, SelectExpression select = null)
+        {
+            if (ids == null || ids.Length == 0)
+            {
+                return new List<TEntity>();
+            }
+            else
+            {
+                // Load data
+                var data = await LoadDataByCustomQuery(q => q.FilterByIds(ids), expand, select);
+
+                // If the data is only 
+                if (ids.Length == 1 && data.Count == 1)
+                {
+                    // No need to sort
+                    return data;
+                }
+                else
+                {
+                    // Sort the entities according to the original Ids, as a good practice
+                    TEntity[] dataSorted = new TEntity[ids.Length];
+                    Dictionary<TKey, TEntity> dataDic = data.ToDictionary(e => e.Id);
+                    for (int i = 0; i < ids.Length; i++)
+                    {
+                        var id = ids[i];
+                        if (dataDic.TryGetValue(id, out TEntity entity))
+                        {
+                            dataSorted[i] = entity;
+                        }
+                    }
+
+                    return dataSorted.ToList();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
+        /// </summary>
+        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Dictionary<string, object> extras, DateTimeOffset serverTime)
+        {
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(data);
+
+            // Prepare the result in a response object
+            return new EntitiesResponse<TEntity>
+            {
+                Result = data,
+                RelatedEntities = relatedEntities,
+                CollectionName = GetCollectionName(typeof(TEntity)),
+                Extras = extras,
+                ServerTime = serverTime,
+            };
+        }
+
+        /// <summary>
+        /// Returns an <see cref="List{TEntity}"/> based on a custom filtering function applied to the query, as well as
+        /// optional select and expand arguments, checking the user permissions along the way
+        /// </summary>
+        /// <param name="filterFunc">Allows any kind of filtering on the query</param>
+        /// <param name="expand">Optional expand argument</param>
+        /// <param name="select">Optional select argument</param>
+        protected async Task<List<TEntity>> LoadDataByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby = null)
+        {
             // Prepare a query of the result, and clone it
             var repo = GetRepository();
             var query = repo.Query<TEntity>();
@@ -142,32 +196,22 @@ namespace Tellma.Controllers
             // Apply custom filter function
             query = filterFunc(query);
 
-            // Expand the result as specified in the OData agruments and load into memory
-            var expandedQuery = query.Expand(expand);
-            expandedQuery = expandedQuery.Select(select);
-            expandedQuery = expandedQuery.OrderBy(orderby ?? OrderByExpression.Parse("Id")); // Required
-            var result = await expandedQuery.ToListAsync(); // this is potentially unordered, should that be a concern?
-
-            // Apply the permissions on the result
+            // Apply read permissions
             var permissions = await UserPermissions(Constants.Read);
-            var defaultMask = GetDefaultMask();
-            await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
+            var permissionsFilter = GetReadPermissionsCriteria(permissions);
+            query = query.Filter(permissionsFilter);
 
-            // Get any controller-specific extras
-            var extras = await GetExtras(result);
+            // Expand, Select and Order the result as specified in the OData agruments
+            var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? OrderByExpression.Parse("Id")); // Required
 
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result, expand);
+            // Load the result into memory
+            var data = await expandedQuery.ToListAsync(); // this is potentially unordered, should that be a concern?
 
-            // Prepare the result in a response object
-            return new EntitiesResponse<TEntity>
-            {
-                Result = result,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras,
-                ServerTime = serverTime,
-            };
+            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+            await ApplyReadPermissionsMask(data, query, permissions, GetDefaultMask());
+
+            // Return
+            return data;
         }
     }
 }

@@ -13,6 +13,6 @@ namespace Tellma.Controllers.Dto
 
         public string OrderBy { get; set; }
 
-        public int TotalCount { get; set; }
+        public int? TotalCount { get; set; }
     }
 }

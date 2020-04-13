@@ -43,7 +43,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
 
             // Call the API
-            var response = await Client.GetAsync(Url);
+            var response = await Client.GetAsync(Url + "?countEntities=true");
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK

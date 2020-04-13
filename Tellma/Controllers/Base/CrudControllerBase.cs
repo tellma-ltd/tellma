@@ -489,7 +489,7 @@ return the entities
                 EntitiesResponse<TEntity> result = null;
                 if (returnEntities && ids != null)
                 {
-                    result = await GetByIdListAsync(ids.ToArray(), expand, select);
+                    result = await LoadDataByIdsAndTransform(ids.ToArray(), expand, select);
                     await PostProcessSaveResponse(result);
                 }
 

@@ -76,7 +76,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -120,6 +120,7 @@ namespace Tellma.Controllers
         {
             throw new System.NotImplementedException();
         }
+        
         protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)
         {
             // Set defaults
@@ -152,6 +153,7 @@ namespace Tellma.Controllers
 
             return Task.FromResult(entities);
         }
+        
         protected override async Task SaveValidateAsync(List<AccountTypeForSave> entities)
         {
             // Check that codes are not duplicated within the arriving collection
