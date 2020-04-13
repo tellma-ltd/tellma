@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
-using Tellma.Controllers.DTO;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
@@ -84,7 +84,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException(errorMessage);
                 }
 
-                var response = await LoadDataByIdsAndTransform(ids);
+                var response = await LoadDataByIdsAndTransform(ids, null, null);
                 return Ok(response);
             }
             , _logger);
@@ -95,9 +95,9 @@ namespace Tellma.Controllers
             return _idRepo;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _adminRepo.UserPermissions(action, View);
+            return _adminRepo.UserPermissions(action, View, cancellation);
         }
 
         protected override Query<IdentityServerUser> Search(Query<IdentityServerUser> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)

@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -39,7 +40,8 @@ namespace Tellma.Controllers
             List<TEntity> resultEntities,
             Query<TEntity> query,
             IEnumerable<AbstractPermission> permissions,
-            MaskTree defaultMask)
+            MaskTree defaultMask,
+            CancellationToken cancellation)
         {
             bool defaultMaskIsUnrestricted = defaultMask == null || defaultMask.IsUnrestricted;
             bool allPermissionMasksAreEmpty = permissions.All(e => string.IsNullOrWhiteSpace(e.Mask));
@@ -228,7 +230,7 @@ namespace Tellma.Controllers
                     var criteriaWithIndexes = maskAndCriteriaArray
                         .Select((e, index) => new IndexAndCriteria { Criteria = e.Criteria, Index = index });
 
-                    var criteriaMapList = await query.GetIndexToIdMap<TKey>(criteriaWithIndexes);
+                    var criteriaMapList = await query.GetIndexToIdMap<TKey>(criteriaWithIndexes, cancellation);
 
                     // Go over the Ids in the result and apply all relevant masks to said entity
                     var entityType = typeof(TEntity);
@@ -307,7 +309,7 @@ namespace Tellma.Controllers
         /// </summary>
         protected virtual async Task CheckActionPermissions(string action, params TKey[] ids)
         {
-            var permissions = await UserPermissions(action);
+            var permissions = await UserPermissions(action, cancellation: default); // actions are non-cancellable
             if (!permissions.Any())
             {
                 // User has no permissions on this view whatsoever, forbid
@@ -331,8 +333,8 @@ namespace Tellma.Controllers
 
                 var filteredQuery = query.Filter(permissionsFilter);
 
-                var countBeforeFilter = await query.CountAsync();
-                var countAfterFilter = await filteredQuery.CountAsync();
+                var countBeforeFilter = await query.CountAsync(cancellation: default);
+                var countAfterFilter = await filteredQuery.CountAsync(cancellation: default);
 
                 if (countBeforeFilter > countAfterFilter)
                 {

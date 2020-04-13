@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
@@ -91,7 +92,7 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             // Inbox is always filtered per user
             IEnumerable<AbstractPermission> permissions = new List<AbstractPermission> {
@@ -105,11 +106,11 @@ namespace Tellma.Controllers
             return Task.FromResult(permissions);
         }
 
-        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<InboxRecord> result)
+        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<InboxRecord> result, CancellationToken cancellation)
         {
-            var userInfo = await _repo.GetUserInfoAsync();
+            var userInfo = await _repo.GetUserInfoAsync(cancellation);
             var userIdSingleton = new List<int> { userInfo.UserId.Value };
-            var info = (await _repo.InboxCounts__Load(userIdSingleton)).FirstOrDefault();
+            var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
 
             var extras = new Dictionary<string, object>
             {

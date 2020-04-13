@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
@@ -53,9 +54,9 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View);
+            return _repo.UserPermissions(action, View, cancellation);
         }
     }
 }

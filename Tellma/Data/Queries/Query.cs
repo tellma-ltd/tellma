@@ -263,9 +263,9 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Returns the total count of all the rows that will be returned by this query, this is usually useful before calling <see cref="Top(int)"/>
         /// </summary>
-        public async Task<int> CountAsync(int maximum = 0)
+        public async Task<int> CountAsync(CancellationToken cancellation, int maximum = 0)
         {
-            var args = await _factory();
+            var args = await _factory(cancellation);
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
@@ -358,7 +358,7 @@ namespace Tellma.Data.Queries
             try
             {
                 // Execute the query and return the result
-                int count = (int)await cmd.ExecuteScalarAsync();
+                int count = (int)await cmd.ExecuteScalarAsync(cancellation);
                 return count;
             }
             finally
@@ -378,9 +378,9 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Executes the <see cref="Query{T}"/> against the SQL database and loads the result into memory as a <see cref="List{T}"/>
         /// </summary>
-        public async Task<List<T>> ToListAsync()
+        public async Task<List<T>> ToListAsync(CancellationToken cancellation)
         {
-            var args = await _factory();
+            var args = await _factory(cancellation);
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
@@ -609,7 +609,8 @@ namespace Tellma.Data.Queries
                 statements: statements,
                 preparatorySql: null,
                 ps: ps,
-                conn: conn);
+                conn: conn,
+                cancellation: cancellation);
 
             // Return the entities
             return result.Cast<T>().ToList();
@@ -618,7 +619,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Executes the <see cref="Query{T}"/> against the SQL database returning only the first row if exists and null otherwise
         /// </summary>
-        public async Task<T> FirstOrDefaultAsync()
+        public async Task<T> FirstOrDefaultAsync(CancellationToken cancellation)
         {
             var query = this;
             if (_orderby == null)
@@ -635,7 +636,7 @@ namespace Tellma.Data.Queries
             }
 
             // We reuse ToList for first or default
-            var entities = await query.Top(1).ToListAsync();
+            var entities = await query.Top(1).ToListAsync(cancellation);
             return entities.FirstOrDefault();
         }
 
@@ -643,9 +644,9 @@ namespace Tellma.Data.Queries
         /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
         /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
         /// </summary>
-        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
         {
-            return await GetIndexMapInner<TKey>(criteriaIndexes);
+            return await GetIndexMapInner<TKey>(criteriaIndexes, cancellation);
         }
 
         /// <summary>
@@ -655,17 +656,17 @@ namespace Tellma.Data.Queries
         /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
         /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
         /// </summary>
-        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
         {
-            return await GetIndexMapInner<int>(criteriaIndexes);
+            return await GetIndexMapInner<int>(criteriaIndexes, cancellation);
         }
 
         /// <summary>
         /// Internal Implementation
         /// </summary>
-        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes, CancellationToken cancellation)
         {
-            var args = await _factory();
+            var args = await _factory(cancellation);
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
@@ -784,7 +785,7 @@ UNION
             try
             {
                 var result = new List<IndexedId<TKey>>();
-                using (var reader = await cmd.ExecuteReaderAsync())
+                using (var reader = await cmd.ExecuteReaderAsync(cancellation))
                 {
                     // Loop over the result from the database
                     while (await reader.ReadAsync())

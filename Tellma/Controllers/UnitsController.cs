@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -42,6 +43,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: true)
             , _logger);
         }
@@ -55,14 +57,16 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Unit>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Unit>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
@@ -74,7 +78,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -86,9 +90,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View);
+            return await _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override IRepository GetRepository()
@@ -157,7 +161,7 @@ namespace Tellma.Controllers
 
         protected override Query<Unit> GetAsQuery(List<UnitForSave> entities)
         {
-            return _repo.Units__AsQuery(entities);
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Data.Queries;
@@ -52,7 +53,7 @@ namespace Tellma.Data
         /// Initializes the connection if it is not already initialized
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> GetConnectionAsync()
+        private async Task<SqlConnection> GetConnectionAsync(CancellationToken cancellation = default)
         {
             if (_conn == null)
             {
@@ -81,25 +82,20 @@ namespace Tellma.Data
 
         public Query<T> Query<T>() where T : Entity
         {
-            return new Query<T>(GetFactory());
+            return new Query<T>(Factory);
         }
 
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity
         {
-            return new AggregateQuery<T>(GetFactory());
+            return new AggregateQuery<T>(Factory);
         }
 
-        private QueryArgumentsFactory GetFactory()
+        private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
-            async Task<QueryArguments> Factory()
-            {
-                var conn = await GetConnectionAsync();
-                var userToday = _clientInfoAccessor.GetInfo().Today;
+            var conn = await GetConnectionAsync(cancellation);
+            var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, Sources, 0, userToday, _localizer);
-            }
-
-            return Factory;
+            return new QueryArguments(conn, Sources, 0, userToday, _localizer);
         }
 
         private static string Sources(Type t)

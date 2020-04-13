@@ -38,10 +38,10 @@ namespace Tellma.Controllers
                 throw new BadRequestException("TenantId is required");
             }
 
-            string connString = await _shardResolver.GetConnectionString(tenantId);
-            await _repo.InitConnectionAsync(connString, setLastActive: false);
+            string connString = await _shardResolver.GetConnectionString(tenantId, cancellation: default);
+            await _repo.InitConnectionAsync(connString, setLastActive: false, cancellation: default);
 
-            var userInfo = await _repo.GetUserInfoAsync();
+            var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
             var userId = userInfo?.UserId;
             if (userId == null)
             {
@@ -49,7 +49,7 @@ namespace Tellma.Controllers
             }
 
             var userIdSingleton = new List<int> { userId.Value };
-            var info = (await _repo.InboxCounts__Load(userIdSingleton)).FirstOrDefault();
+            var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation: default)).FirstOrDefault();
 
             return new ServerNotificationSummary
             {

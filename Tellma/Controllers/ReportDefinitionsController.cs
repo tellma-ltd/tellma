@@ -13,6 +13,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -43,9 +44,9 @@ namespace Tellma.Controllers
             throw new NotImplementedException();
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View);
+            return await _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override IRepository GetRepository()

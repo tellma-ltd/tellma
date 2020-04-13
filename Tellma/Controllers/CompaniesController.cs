@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -41,11 +42,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<CompaniesForClient>> CompaniesForClient()
+        public async Task<ActionResult<CompaniesForClient>> CompaniesForClient(CancellationToken cancellation)
         {
             try
             {
-                var result = await GetForClientImpl();
+                var result = await GetForClientImpl(cancellation);
                 return Ok(result);
             }
             catch (BadRequestException ex)
@@ -59,27 +60,27 @@ namespace Tellma.Controllers
             }
         }
 
-        private async Task<CompaniesForClient> GetForClientImpl()
+        private async Task<CompaniesForClient> GetForClientImpl(CancellationToken cancellation)
         {
             var companies = new List<UserCompany>();
 
             var externalId = _externalUserAccessor.GetUserId();
             var externalEmail = _externalUserAccessor.GetUserEmail();
-            var (databaseIds, isAdmin) = await _repo.GetAccessibleDatabaseIds(externalId, externalEmail);
+            var (databaseIds, isAdmin) = await _repo.GetAccessibleDatabaseIds(externalId, externalEmail, cancellation);
 
             // Confirm each database Id by checking the respective DB
             foreach (var databaseId in databaseIds)
             {
                 try
                 {
-                    var connString = await _shardResolver.GetConnectionString(databaseId);
+                    var connString = await _shardResolver.GetConnectionString(databaseId, cancellation);
                     using var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null);
 
-                    await appRepo.InitConnectionAsync(connString, setLastActive: false);
-                    var userInfo = await appRepo.GetUserInfoAsync();
+                    await appRepo.InitConnectionAsync(connString, setLastActive: false, cancellation);
+                    var userInfo = await appRepo.GetUserInfoAsync(cancellation);
                     if (userInfo.UserId != null)
                     {
-                        var tenantInfo = await appRepo.GetTenantInfoAsync();
+                        var tenantInfo = await appRepo.GetTenantInfoAsync(cancellation);
                         companies.Add(new UserCompany
                         {
                             Id = databaseId,
@@ -124,7 +125,7 @@ namespace Tellma.Controllers
             // Confirm isAdmin by checking with the admin DB
             if (isAdmin)
             {
-                var adminUserInfo = await _repo.GetAdminUserInfoAsync();
+                var adminUserInfo = await _repo.GetAdminUserInfoAsync(cancellation);
                 isAdmin = adminUserInfo?.UserId != null;
             }
 

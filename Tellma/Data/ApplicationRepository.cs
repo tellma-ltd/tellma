@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Threading;
 
 namespace Tellma.Data
 {
@@ -65,7 +66,7 @@ namespace Tellma.Data
         /// this method makes it possible to conncet to a custom connection string instead, 
         /// this is useful when connecting to multiple tenants at the same time to do aggregate reporting for example
         /// </summary>
-        public async Task InitConnectionAsync(string connectionString, bool setLastActive)
+        public async Task InitConnectionAsync(string connectionString, bool setLastActive, CancellationToken cancellation)
         {
             if (_conn != null)
             {
@@ -81,19 +82,19 @@ namespace Tellma.Data
             var culture = CultureInfo.CurrentUICulture.Name;
             var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
-            (_userInfo, _tenantInfo) = await OnConnect(externalUserId, externalEmail, culture, neutralCulture, setLastActive);
+            (_userInfo, _tenantInfo) = await OnConnect(externalUserId, externalEmail, culture, neutralCulture, setLastActive, cancellation);
         }
 
         /// <summary>
         /// Initializes the connection if it is not already initialized
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> GetConnectionAsync()
+        private async Task<SqlConnection> GetConnectionAsync(CancellationToken cancellation = default)
         {
             if (_conn == null)
             {
-                string connString = await _shardResolver.GetConnectionString();
-                await InitConnectionAsync(connString, setLastActive: true);
+                string connString = await _shardResolver.GetConnectionString(null, cancellation);
+                await InitConnectionAsync(connString, setLastActive: true, cancellation);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -120,9 +121,9 @@ namespace Tellma.Data
         /// Loads a <see cref="UserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
         /// instance, subsequent calls are satisfied from a scoped cache
         /// </summary>
-        public async Task<UserInfo> GetUserInfoAsync()
+        public async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellation)
         {
-            await GetConnectionAsync(); // This automatically initializes the user info
+            await GetConnectionAsync(cancellation); // This automatically initializes the user info
             return _userInfo;
         }
 
@@ -138,9 +139,9 @@ namespace Tellma.Data
         /// Loads a <see cref="TenantInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
         /// instance, subsequent calls are satisfied from a scoped cache
         /// </summary>
-        public async Task<TenantInfo> GetTenantInfoAsync()
+        public async Task<TenantInfo> GetTenantInfoAsync(CancellationToken cancellation)
         {
-            await GetConnectionAsync(); // This automatically initializes the tenant info
+            await GetConnectionAsync(cancellation); // This automatically initializes the tenant info
             return _tenantInfo;
         }
 
@@ -189,11 +190,11 @@ namespace Tellma.Data
             return new AggregateQuery<T>(Factory);
         }
 
-        private async Task<QueryArguments> Factory()
+        private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
-            var conn = await GetConnectionAsync();
-            var tenantInfo = await GetTenantInfoAsync();
-            var userInfo = await GetUserInfoAsync();
+            var conn = await GetConnectionAsync(cancellation);
+            var tenantInfo = await GetTenantInfoAsync(cancellation);
+            var userInfo = await GetUserInfoAsync(cancellation);
             var userId = userInfo.UserId ?? 0;
             var userToday = _clientInfoAccessor.GetInfo().Today;
 
@@ -256,7 +257,7 @@ namespace Tellma.Data
 
         #region Stored Procedures
 
-        private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, bool setLastActive)
+        private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, bool setLastActive, CancellationToken cancellation)
         {
             UserInfo userInfo = null;
             TenantInfo tenantInfo = null;
@@ -275,8 +276,8 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                if (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
 
@@ -318,46 +319,11 @@ namespace Tellma.Data
             return (userInfo, tenantInfo);
         }
 
-        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
-        {
-            // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            cmd.Parameters.Add("UserId", userId);
-            cmd.Parameters.Add("ExternalId", externalId);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
-        {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-
-            // Parameters
-            cmd.Parameters.Add("UserId", userId);
-            cmd.Parameters.Add("ExternalEmail", externalEmail);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view)
+        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view, CancellationToken cancellation)
         {
             var result = new List<AbstractPermission>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -368,8 +334,8 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     result.Add(new AbstractPermission
@@ -385,11 +351,11 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewPrefix)
+        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewPrefix, CancellationToken cancellation)
         {
             var result = new List<AbstractPermission>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -400,8 +366,8 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_ViewPrefix__Permissions)}]";
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     result.Add(new AbstractPermission
@@ -417,7 +383,7 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<List<InboxNotificationInfo>> InboxCounts__Load(IEnumerable<int> userIds)
+        public async Task<List<InboxNotificationInfo>> InboxCounts__Load(IEnumerable<int> userIds, CancellationToken cancellation)
         {
             var result = new List<InboxNotificationInfo>(userIds.Count());
             if (userIds == null || !userIds.Any())
@@ -425,7 +391,7 @@ namespace Tellma.Data
                 return result;
             }
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 DataTable idsTable = RepositoryUtilities.DataTable(userIds.Select(id => new { Id = id }));
@@ -440,8 +406,8 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(InboxCounts__Load)}]";
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     string externalId = reader.GetString(i++);
@@ -460,13 +426,13 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<(Guid, User, IEnumerable<(string Key, string Value)>)> UserSettings__Load()
+        public async Task<(Guid, User, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
         {
             Guid version;
             var user = new User();
             var customSettings = new List<(string, string)>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Command
@@ -474,9 +440,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // User Settings
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
 
@@ -496,8 +462,8 @@ namespace Tellma.Data
                 }
 
                 // Custom settings
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     string key = reader.GetString(0);
                     string val = reader.GetString(1);
@@ -509,7 +475,7 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<(bool, Settings)> Settings__Load()
+        public async Task<(bool, Settings)> Settings__Load(CancellationToken cancellation)
         {
             // Returns 
             // (1) whether active leaf centers are multiple or single
@@ -518,7 +484,7 @@ namespace Tellma.Data
             bool isMultiCenter = false;
             Settings settings = new Settings();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
@@ -526,9 +492,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Load the version
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     isMultiCenter = reader.GetBoolean(0);
                 }
@@ -539,9 +505,9 @@ namespace Tellma.Data
                 }
 
                 // Next load settings
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     var props = typeof(Settings).GetMappedProperties();
                     foreach (var prop in props)
@@ -560,9 +526,9 @@ namespace Tellma.Data
                 }
 
                 // Next load functional currency
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     settings.FunctionalCurrency = new Currency();
                     var props = typeof(Currency).GetMappedProperties();
@@ -585,12 +551,12 @@ namespace Tellma.Data
             return (isMultiCenter, settings);
         }
 
-        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
+        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
         {
             Guid version;
             var permissions = new List<AbstractPermission>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
@@ -598,9 +564,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Load the version
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     version = reader.GetGuid(0);
                 }
@@ -610,9 +576,9 @@ namespace Tellma.Data
                 }
 
                 // Load the permissions
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     permissions.Add(new AbstractPermission
@@ -636,7 +602,7 @@ namespace Tellma.Data
             IEnumerable<DocumentDefinition>,
             IEnumerable<LineDefinition>,
             IEnumerable<AccountType>)> 
-            Definitions__Load()
+            Definitions__Load(CancellationToken cancellation)
         {
             Guid version;
             var lookupDefinitions = new List<LookupDefinition>();
@@ -647,7 +613,7 @@ namespace Tellma.Data
             var lineDefinitions = new List<LineDefinition>();
             var accountTypes = new List<AccountType>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
@@ -655,9 +621,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Definitions__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Load the version
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     version = reader.GetGuid(0);
                 }
@@ -669,8 +635,8 @@ namespace Tellma.Data
                 // Next load lookup definitions
                 var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
 
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LookupDefinition();
                     foreach (var prop in lookupDefinitionProps)
@@ -688,8 +654,8 @@ namespace Tellma.Data
                 // Next load agent definitions
                 var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
 
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new AgentDefinition();
                     foreach (var prop in agentDefinitionProps)
@@ -707,8 +673,8 @@ namespace Tellma.Data
                 // Next load resource definitions
                 var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
 
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ResourceDefinition();
                     foreach (var prop in resourceDefinitionProps)
@@ -724,11 +690,11 @@ namespace Tellma.Data
                 }
 
                 // Next load report definitions
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
                 var reportDefinitionsDic = new Dictionary<string, ReportDefinition>();
                 var reportDefinitionProps = typeof(ReportDefinition).GetMappedProperties();
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportDefinition();
                     foreach (var prop in reportDefinitionProps)
@@ -745,8 +711,8 @@ namespace Tellma.Data
 
                 // Parameters
                 var reportParameterDefinitionProps = typeof(ReportParameterDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportParameterDefinition();
                     foreach (var prop in reportParameterDefinitionProps)
@@ -765,8 +731,8 @@ namespace Tellma.Data
 
                 // Select
                 var reportSelectDefinitionProps = typeof(ReportSelectDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportSelectDefinition();
                     foreach (var prop in reportSelectDefinitionProps)
@@ -785,8 +751,8 @@ namespace Tellma.Data
 
                 // Rows
                 var reportRowDefinitionProps = typeof(ReportRowDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportRowDefinition();
                     foreach (var prop in reportRowDefinitionProps)
@@ -805,8 +771,8 @@ namespace Tellma.Data
 
                 // Columns
                 var reportColumnDefinitionProps = typeof(ReportColumnDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportColumnDefinition();
                     foreach (var prop in reportColumnDefinitionProps)
@@ -825,8 +791,8 @@ namespace Tellma.Data
 
                 // Measures
                 var reportMeasureDefinitionProps = typeof(ReportMeasureDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportMeasureDefinition();
                     foreach (var prop in reportMeasureDefinitionProps)
@@ -846,11 +812,11 @@ namespace Tellma.Data
                 reportDefinitions = reportDefinitionsDic.Values.ToList();
 
                 // Next load document definitions
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
                 var documentDefinitionsDic = new Dictionary<string, DocumentDefinition>();
                 var documentDefinitionProps = typeof(DocumentDefinition).GetMappedProperties();
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new DocumentDefinition();
                     foreach (var prop in documentDefinitionProps)
@@ -867,8 +833,8 @@ namespace Tellma.Data
 
                 // Document Definitions Line Definitions
                 var documentDefinitionLineDefinitionProps = typeof(DocumentDefinitionLineDefinition).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new DocumentDefinitionLineDefinition();
                     foreach (var prop in documentDefinitionLineDefinitionProps)
@@ -888,11 +854,11 @@ namespace Tellma.Data
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
 
                 // Next load line definitions
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
                 var lineDefinitionsDic = new Dictionary<string, LineDefinition>();
                 var lineDefinitionProps = typeof(LineDefinition).GetMappedProperties();
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinition();
                     foreach (var prop in lineDefinitionProps)
@@ -909,8 +875,8 @@ namespace Tellma.Data
 
                 // line definition entries
                 var lineDefinitionEntryProps = typeof(LineDefinitionEntry).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinitionEntry();
                     foreach (var prop in lineDefinitionEntryProps)
@@ -929,8 +895,8 @@ namespace Tellma.Data
 
                 // line definition columns
                 var lineDefinitionColumnProps = typeof(LineDefinitionColumn).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinitionColumn();
                     foreach (var prop in lineDefinitionColumnProps)
@@ -949,8 +915,8 @@ namespace Tellma.Data
 
                 // line definition state reason
                 var lineDefinitionStateReasonProps = typeof(LineDefinitionStateReason).GetMappedProperties();
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinitionStateReason();
                     foreach (var prop in lineDefinitionStateReasonProps)
@@ -970,8 +936,8 @@ namespace Tellma.Data
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
                 // Next load account types
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     var entity = new AccountType
@@ -1021,24 +987,6 @@ namespace Tellma.Data
         #endregion
 
         #region Units
-
-        public Query<Unit> Units__AsQuery(List<UnitForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Unit)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Unit>();
-            return query.FromSql($"[map].[{nameof(Units__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
 
         public async Task<IEnumerable<ValidationError>> Units_Validate__Save(List<UnitForSave> entities, int top)
         {
@@ -1190,23 +1138,6 @@ namespace Tellma.Data
         #endregion
 
         #region Agents
-
-        public Query<Agent> Agents__AsQuery(string definitionId, List<AgentForSave> entities)
-        {
-            // Parameters
-            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
-
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[AgentList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Agent>();
-            return query.FromSql($"[map].[{nameof(Agents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
-        }
 
         public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(string definitionId, List<AgentForSave> entities, int top)
         {
@@ -1406,21 +1337,6 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public Query<User> Users__AsQuery(List<UserForSave> entities)
-        {
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[UserList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<User>();
-            return query.FromSql($"[map].[{nameof(Users__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
-
         public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
         {
             entities.ForEach(e =>
@@ -1615,24 +1531,44 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
+        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
+        {
+            // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalId", externalId);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            cmd.Parameters.Add("UserId", userId);
+            cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         #endregion
 
         #region Roles
-
-        public Query<Role> Roles__AsQuery(List<RoleForSave> entities)
-        {
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[RoleList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Role>();
-            return query.FromSql($"[map].[{nameof(Roles__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
 
         public async Task<List<int>> Roles__Save(List<RoleForSave> entities, bool returnIds)
         {
@@ -1874,11 +1810,11 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<byte[]> Blobs__Get(string name)
+        public async Task<byte[]> Blobs__Get(string name, CancellationToken cancellation)
         {
             byte[] result = null;
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -1889,8 +1825,8 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
-                if (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellation);
+                if (await reader.ReadAsync(cancellation))
                 {
                     result = (byte[])reader[0];
                 }
@@ -1942,27 +1878,6 @@ namespace Tellma.Data
         #endregion
 
         #region Lookups
-
-        public Query<Lookup> Lookups__AsQuery(string definitionId, List<LookupForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
-
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Lookup)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-
-            // Query
-            var query = Query<Lookup>();
-            return query.FromSql($"[map].[{nameof(Lookups__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
-        }
 
         public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(string definitionId, List<LookupForSave> entities, int top)
         {
@@ -2118,24 +2033,6 @@ namespace Tellma.Data
 
         #region Currencies
 
-        public Query<Currency> Currencies__AsQuery(List<CurrencyForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Currency)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Currency>();
-            return query.FromSql($"[map].[{nameof(Currencies__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
-
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Save(List<CurrencyForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
@@ -2258,27 +2155,6 @@ namespace Tellma.Data
         #endregion
 
         #region Resources
-
-        public Query<Resource> Resources__AsQuery(string definitionId, List<ResourceForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
-
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Resource)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-
-            // Query
-            var query = Query<Resource>();
-            return query.FromSql($"[map].[{nameof(Resources__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
-        }
 
         public async Task Resources__Preprocess(string definitionId, List<ResourceForSave> entities)
         {
@@ -2489,24 +2365,6 @@ namespace Tellma.Data
         #endregion
 
         #region CustomClassifications
-
-        public Query<CustomClassification> CustomClassifications__AsQuery(List<CustomClassificationForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<CustomClassification>();
-            return query.FromSql($"[map].[{nameof(CustomClassifications__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
 
         public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__Save(List<CustomClassificationForSave> entities, int top)
         {
@@ -2914,25 +2772,6 @@ namespace Tellma.Data
 
         #region Accounts
 
-        public Query<Account> Accounts__AsQuery(List<AccountForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Account)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-
-            // Query
-            var query = Query<Account>();
-            return query.FromSql($"[map].[{nameof(Accounts__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
-
         public async Task Accounts__Preprocess(List<AccountForSave> entities)
         {
             var conn = await GetConnectionAsync();
@@ -3120,166 +2959,7 @@ namespace Tellma.Data
 
         #endregion
 
-        #region LookupDefinitions
-
-        public Query<Currency> LookupDefinitions__AsQuery(List<CurrencyForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Currency)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Currency>();
-            return query.FromSql($"[map].[{nameof(LookupDefinitions__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
-
-        public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Save(List<CurrencyForSave> entities, int top)
-        {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Currency)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(entitiesTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Save)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task LookupDefinitions__Save(List<CurrencyForSave> entities)
-        {
-            var result = new List<IndexedId>();
-
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Currency)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(entitiesTvp);
-
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Save)}]";
-
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public async Task LookupDefinitions__UpdateState(List<string> ids, string state)
-        {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[StringList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@State", state);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__UpdateState)}]";
-
-            // Execute
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Delete(List<string> ids, int top)
-        {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[IndexedStringList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@Top", top);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Delete)}]";
-
-            // Execute
-            return await RepositoryUtilities.LoadErrors(cmd);
-        }
-
-        public async Task LookupDefinitions__Delete(IEnumerable<string> ids)
-        {
-            var conn = await GetConnectionAsync();
-            using var cmd = conn.CreateCommand();
-            // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"[dbo].[StringList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            cmd.Parameters.Add(idsTvp);
-
-            // Command
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Delete)}]";
-
-            // Execute
-            try
-            {
-                await cmd.ExecuteNonQueryAsync();
-            }
-            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
-            {
-                throw new ForeignKeyViolationException();
-            }
-        }
-
-        #endregion
-
         #region Centers
-
-        public Query<Center> Centers__AsQuery(List<CenterForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(Center)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Center>();
-            return query.FromSql($"[map].[{nameof(Centers__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
 
         public async Task<IEnumerable<ValidationError>> Centers_Validate__Save(List<CenterForSave> entities, int top)
         {
@@ -3484,24 +3164,6 @@ namespace Tellma.Data
 
         #region EntryTypes
 
-        public Query<EntryType> EntryTypes__AsQuery(List<EntryTypeForSave> entities)
-        {
-            // This method returns the provided entities as a Query that can be selected, filtered etc...
-            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
-
-            // Parameters
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[{nameof(EntryType)}List]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<EntryType>();
-            return query.FromSql($"[map].[{nameof(EntryTypes__AsQuery)}] (@Entities)", null, entitiesTvp);
-        }
-
         public async Task<IEnumerable<ValidationError>> EntryTypes_Validate__Save(List<EntryTypeForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
@@ -3704,23 +3366,6 @@ namespace Tellma.Data
         #endregion
 
         #region Documents
-
-        public Query<Document> Documents__AsQuery(string definitionId, List<DocumentForSave> entities)
-        {
-            // Parameters
-            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
-
-            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-            {
-                TypeName = $"[dbo].[DocumentList]",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Query
-            var query = Query<Document>();
-            return query.FromSql($"[map].[{nameof(Documents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
-        }
 
         public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> docs)
         {
@@ -4734,10 +4379,10 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<decimal?> ConvertToFunctional(DateTime date, string currencyId, decimal amount)
+        public async Task<decimal?> ConvertToFunctional(DateTime date, string currencyId, decimal amount, CancellationToken cancellation)
         {
             decimal? result = null;
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -4758,7 +4403,7 @@ namespace Tellma.Data
                 cmd.CommandText = $"[wiz].[fn_{nameof(ConvertToFunctional)}]";
 
                 // Execute
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellation);
                 var resultObject = cmd.Parameters["@Result"].Value;
                 if (resultObject != DBNull.Value)
                 {

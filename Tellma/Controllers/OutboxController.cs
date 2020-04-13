@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
@@ -18,22 +19,13 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "outbox";
         private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
-        private readonly ILogger<OutboxController> _logger;
 
         public OutboxController(
             ApplicationRepository repo,
-            ITenantIdAccessor tenantIdAccessor,
-            IHubContext<ServerNotificationsHub,
-            INotifiedClient> hubContext,
             ILogger<OutboxController> logger,
             IStringLocalizer<Strings> localizer) : base(logger, localizer)
         {
             _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _hubContext = hubContext;
-            _logger = logger;
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -71,7 +63,7 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             // Outbox is always filtered per user
             IEnumerable<AbstractPermission> permissions = new List<AbstractPermission> {

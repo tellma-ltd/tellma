@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
@@ -46,10 +47,10 @@ namespace Tellma.Controllers
         // API
 
         [HttpGet]
-        public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args)
+        public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args, CancellationToken cancellation)
         {
             // Authorized access (Criteria are not supported here)
-            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings");
+            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings", cancellation);
             if (!readPermissions.Any())
             {
                 return StatusCode(403);
@@ -57,7 +58,7 @@ namespace Tellma.Controllers
 
             try
             {
-                return await GetImpl(args);
+                return await GetImpl(args, cancellation);
             }
             catch (BadRequestException ex)
             {
@@ -74,7 +75,7 @@ namespace Tellma.Controllers
         public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings");
+            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
             if (!updatePermissions.Any())
             {
                 return StatusCode(403);
@@ -98,14 +99,14 @@ namespace Tellma.Controllers
 
                 // Update the settings cache
                 var tenantId = _tenantIdAccessor.GetTenantId();
-                var settingsForClient = await LoadSettingsForClient(_repo);
+                var settingsForClient = await LoadSettingsForClient(_repo, cancellation: default);
                 _settingsCache.SetSettings(tenantId, settingsForClient);
 
                 // If requested, return the updated entity
                 if (args.ReturnEntities ?? false)
                 {
                     // If requested, return the same response you would get from a GET
-                    var res = await GetImpl(new GetByIdArguments { Expand = args.Expand });
+                    var res = await GetImpl(new GetByIdArguments { Expand = args.Expand }, cancellation: default);
                     var result = new SaveSettingsResponse
                     {
                         Entities = res.Entities,
@@ -164,13 +165,13 @@ namespace Tellma.Controllers
 
         // Helper methods
 
-        private async Task<GetEntityResponse<Settings>> GetImpl(GetByIdArguments args)
+        private async Task<GetEntityResponse<Settings>> GetImpl(GetByIdArguments args, CancellationToken cancellation)
         {
             var settings = await _repo.Settings
                 .Select(args.Select)
                 .Expand(args.Expand)
                 .OrderBy("PrimaryLanguageId")
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellation);
 
             if (settings == null)
             {
@@ -250,9 +251,9 @@ namespace Tellma.Controllers
             }
         }
 
-        public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo)
+        public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
-            var (isMultiCenter, settings) = await repo.Settings__Load();
+            var (isMultiCenter, settings) = await repo.Settings__Load(cancellation);
             if (settings == null)
             {
                 // This should never happen

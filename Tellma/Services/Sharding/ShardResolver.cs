@@ -37,7 +37,7 @@ namespace Tellma.Services.Sharding
             _options = options.Value;
         }
 
-        public async Task<string> GetConnectionString(int? tenantId = null)
+        public async Task<string> GetConnectionString(int? tenantId = null, CancellationToken cancellation = default)
         {
             int databaseId = tenantId ?? _tenantIdProvider.GetTenantId();
 
@@ -76,7 +76,7 @@ namespace Tellma.Services.Sharding
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                            connectionInfo = await repo.GetDatabaseConnectionInfo(databaseId: databaseId);
+                            connectionInfo = await repo.GetDatabaseConnectionInfo(databaseId, cancellation);
 
                             dbName = connectionInfo?.DatabaseName;
                         }

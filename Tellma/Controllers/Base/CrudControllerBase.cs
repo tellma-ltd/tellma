@@ -288,7 +288,7 @@ return the entities
             }
 
             var unrestrictedMask = new MaskTree();
-            var permissions = await UserPermissions(Constants.Update);
+            var permissions = await UserPermissions(Constants.Update, cancellation: default); // non-cancellable
             if (!permissions.Any())
             {
                 // User has no permissions on this table whatsoever; forbid
@@ -345,7 +345,7 @@ return the entities
 
                     // id => index in maskAndCriteriaArray
                     var criteriaMapList = await query
-                        .GetIndexToIdMap<TKey>(criteriaWithIndexes);
+                        .GetIndexToIdMap<TKey>(criteriaWithIndexes, cancellation: default);
 
                     // id => indices in maskAndCriteriaArray
                     var criteriaMapDictionary = criteriaMapList
@@ -388,7 +388,7 @@ return the entities
                 {
                     // index in newItems => index in maskAndCriteriaArray
                     var criteriaMapList = await GetAsQuery(entities)
-                        .GetIndexToIndexMap(criteriaWithIndexes);
+                        .GetIndexToIndexMap(criteriaWithIndexes, cancellation: default);
 
                     var criteriaMapDictionary = criteriaMapList
                         .GroupBy(e => e.Id)
@@ -444,7 +444,10 @@ return the entities
         /// This SQL result will be used to determine which of these entities earn which permission
         /// masks.
         /// </summary>
-        protected abstract Query<TEntity> GetAsQuery(List<TEntityForSave> entities);
+        protected virtual Query<TEntity> GetAsQuery(List<TEntityForSave> entities)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation.

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Services.BlobStorage
 {
@@ -26,7 +27,7 @@ namespace Tellma.Services.BlobStorage
             await _repo.Blobs__Delete(blobNames);
         }
 
-        public async Task<byte[]> LoadBlob(string blobName)
+        public async Task<byte[]> LoadBlob(string blobName, CancellationToken cancellation)
         {
             // Basic check
             if (blobName is null)
@@ -35,7 +36,7 @@ namespace Tellma.Services.BlobStorage
             }
 
             // Retrieve the blob
-            var blobContent = await _repo.Blobs__Get(blobName);
+            var blobContent = await _repo.Blobs__Get(blobName, cancellation);
             if (blobContent == null)
             {
                 throw new BlobNotFoundException(blobName);

@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -131,12 +132,12 @@ namespace Tellma.Controllers
         #endregion
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<AdminSettingsForClient>>> SettingsForClient()
+        public async Task<ActionResult<DataWithVersion<AdminSettingsForClient>>> SettingsForClient(CancellationToken cancellation)
         {
             try
             {
                 // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
-                var adminSettings = await _repo.Settings__Load();
+                var adminSettings = await _repo.Settings__Load(cancellation);
                 if (adminSettings == null)
                 {
                     throw new BadRequestException("Admin Settings were not initialized");
@@ -264,9 +265,9 @@ namespace Tellma.Controllers
         //    }
         //}
 
-        public static async Task<DataWithVersion<AdminSettingsForClient>> LoadSettingsForClient(AdminRepository repo)
+        public static async Task<DataWithVersion<AdminSettingsForClient>> LoadSettingsForClient(AdminRepository repo, CancellationToken cancellation)
         {
-            var settings = await repo.Settings__Load();
+            var settings = await repo.Settings__Load(cancellation);
             if (settings == null)
             {
                 // This should never happen

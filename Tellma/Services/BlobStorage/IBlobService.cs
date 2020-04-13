@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Services.BlobStorage
@@ -19,7 +20,7 @@ namespace Tellma.Services.BlobStorage
         /// Retrieves the blob specified by the given name
         /// </summary>
         /// <param name="blobName">The name of the blob to load</param>
-        Task<byte[]> LoadBlob(string blobName);
+        Task<byte[]> LoadBlob(string blobName, CancellationToken cancellation);
 
         /// <summary>
         /// Deletes the blobs specified by the given names

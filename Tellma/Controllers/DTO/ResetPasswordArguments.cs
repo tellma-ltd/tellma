@@ -1,4 +1,4 @@
-﻿namespace Tellma.Controllers.DTO
+﻿namespace Tellma.Controllers.Dto
 {
     public class ResetPasswordArguments
     {

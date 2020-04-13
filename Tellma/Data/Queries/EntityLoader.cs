@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Data.Queries
 {
@@ -42,7 +43,7 @@ namespace Tellma.Data.Queries
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated <see cref="DynamicEntity"/>s</returns>            
         public static async Task<List<DynamicEntity>> LoadAggregateStatement(
-            SqlStatement statement, string preparatorySql, SqlStatementParameters ps, SqlConnection conn)
+            SqlStatement statement, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation)
         {
             var result = new List<DynamicEntity>();
 
@@ -128,13 +129,13 @@ namespace Tellma.Data.Queries
                 // Results are loaded
                 try
                 {
-                    using var reader = await cmd.ExecuteReaderAsync();
+                    using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                     // Group the column map by the path (which represents the target entity)
                     var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: true);
 
                     // Loop over the result from the result set
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync(cancellation))
                     {
                         var dynamicEntity = new DynamicEntity();
                         HydrateDynamicProperties(reader, dynamicEntity, entityDef);
@@ -168,7 +169,7 @@ namespace Tellma.Data.Queries
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated entities with all related entities attached by means of navigation properties</returns>            
         public static async Task<List<Entity>> LoadStatements<T>(
-           List<SqlStatement> statements, string preparatorySql, SqlStatementParameters ps, SqlConnection conn) where T : Entity
+           List<SqlStatement> statements, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation) where T : Entity
         {
             var results = statements.ToDictionary(e => e.Query, e => new List<Entity>());
 
@@ -303,7 +304,7 @@ namespace Tellma.Data.Queries
 
             try
             {
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                 foreach (var statement in statements)
                 {
@@ -320,7 +321,7 @@ namespace Tellma.Data.Queries
                     }
 
                     // Loop over the result from the result set
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync(cancellation))
                     {
                         Entity record = AddEntity(reader, entityDef);
                         list.Add(record);
@@ -333,7 +334,7 @@ namespace Tellma.Data.Queries
                     }
 
                     // Go over to the next result set
-                    await reader.NextResultAsync();
+                    await reader.NextResultAsync(cancellation);
                 }
             }
             finally

@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Threading;
 
 namespace Tellma.Data
 {
@@ -56,12 +57,12 @@ namespace Tellma.Data
         /// Initializes the connection if it is not already initialized
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> GetConnectionAsync()
+        private async Task<SqlConnection> GetConnectionAsync(CancellationToken cancellation = default)
         {
             if (_conn == null)
             {
                 _conn = new SqlConnection(_connectionString);
-                await _conn.OpenAsync();
+                await _conn.OpenAsync(cancellation);
             }
 
             if (_userInfo == null)
@@ -72,7 +73,7 @@ namespace Tellma.Data
                 var culture = CultureInfo.CurrentUICulture.Name;
                 var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
-                _userInfo = await OnConnect(externalUserId, externalEmail, culture, neutralCulture);
+                _userInfo = await OnConnect(externalUserId, externalEmail, culture, neutralCulture, cancellation);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -87,12 +88,12 @@ namespace Tellma.Data
         /// to retrieve metadata from the admin database such as the accessible database Id
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> GetDirectoryConnectionAsync()
+        private async Task<SqlConnection> GetDirectoryConnectionAsync(CancellationToken cancellation = default)
         {
             if (_conn == null)
             {
                 _conn = new SqlConnection(_connectionString);
-                await _conn.OpenAsync();
+                await _conn.OpenAsync(cancellation);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -105,9 +106,9 @@ namespace Tellma.Data
         /// Loads a <see cref="AdminUserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
         /// instance, subsequent calls are satisfied from a scoped cache
         /// </summary>
-        public async Task<AdminUserInfo> GetAdminUserInfoAsync()
+        public async Task<AdminUserInfo> GetAdminUserInfoAsync(CancellationToken cancellation)
         {
-            await GetConnectionAsync(); // This automatically initializes the user info
+            await GetConnectionAsync(cancellation); // This automatically initializes the user info
             return _userInfo;
         }
 
@@ -128,27 +129,22 @@ namespace Tellma.Data
 
         public Query<T> Query<T>() where T : Entity
         {
-            return new Query<T>(GetFactory());
+            return new Query<T>(Factory);
         }
 
         public AggregateQuery<T> AggregateQuery<T>() where T : Entity
         {
-            return new AggregateQuery<T>(GetFactory());
+            return new AggregateQuery<T>(Factory);
         }
 
-        private QueryArgumentsFactory GetFactory()
+        private async Task<QueryArguments> Factory(CancellationToken cancellation)
         {
-            async Task<QueryArguments> Factory()
-            {
-                var conn = await GetConnectionAsync();
-                var userInfo = await GetAdminUserInfoAsync();
-                var userId = userInfo.UserId ?? 0;
-                var userToday = _clientInfoAccessor.GetInfo().Today;
+            var conn = await GetConnectionAsync(cancellation);
+            var userInfo = await GetAdminUserInfoAsync(cancellation);
+            var userId = userInfo.UserId ?? 0;
+            var userToday = _clientInfoAccessor.GetInfo().Today;
 
-                return new QueryArguments(conn, Sources, userId, userToday, _localizer);
-            }
-
-            return Factory;
+            return new QueryArguments(conn, Sources, userId, userToday, _localizer);
         }
 
         private static string Sources(Type t)
@@ -167,7 +163,7 @@ namespace Tellma.Data
 
         #region Stored Procedures
 
-        private async Task<AdminUserInfo> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
+        private async Task<AdminUserInfo> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture, CancellationToken cancellation)
         {
             AdminUserInfo result = null;
 
@@ -184,8 +180,8 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                if (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
 
@@ -208,11 +204,11 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view)
+        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view, CancellationToken cancellation)
         {
             var result = new List<AbstractPermission>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -223,8 +219,8 @@ namespace Tellma.Data
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
 
-                using var reader = await cmd.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     result.Add(new AbstractPermission
@@ -239,13 +235,13 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load()
+        public async Task<(Guid, AdminUser, IEnumerable<(string Key, string Value)>)> UserSettings__Load(CancellationToken cancellation)
         {
             Guid version;
             var user = new AdminUser();
             var customSettings = new List<(string, string)>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Command
@@ -253,10 +249,10 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                 // User Settings
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
 
@@ -272,8 +268,8 @@ namespace Tellma.Data
                 }
 
                 // Custom settings
-                await reader.NextResultAsync();
-                while (await reader.ReadAsync())
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
                 {
                     string key = reader.GetString(0);
                     string val = reader.GetString(1);
@@ -285,14 +281,14 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<AdminSettings> Settings__Load()
+        public async Task<AdminSettings> Settings__Load(CancellationToken cancellation)
         {
             // Returns 
             // (1) the settings with the functional currency expanded
 
             AdminSettings settings = new AdminSettings();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
@@ -300,9 +296,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     var props = typeof(AdminSettings).GetMappedProperties();
                     foreach (var prop in props)
@@ -324,12 +320,12 @@ namespace Tellma.Data
             return settings;
         }
 
-        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
+        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
         {
             Guid version;
             var permissions = new List<AbstractPermission>();
 
-            var conn = await GetConnectionAsync();
+            var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
@@ -337,9 +333,9 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
                 // Execute
-                using var reader = await cmd.ExecuteReaderAsync();
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
                 // Load the version
-                if (await reader.ReadAsync())
+                if (await reader.ReadAsync(cancellation))
                 {
                     version = reader.GetGuid(0);
                 }
@@ -349,9 +345,9 @@ namespace Tellma.Data
                 }
 
                 // Load the permissions
-                await reader.NextResultAsync();
+                await reader.NextResultAsync(cancellation);
 
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
                     permissions.Add(new AbstractPermission
@@ -370,11 +366,11 @@ namespace Tellma.Data
 
         #region Directory Stuff
 
-        public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId)
+        public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId, CancellationToken cancellation)
         {
             DatabaseConnectionInfo result = null;
 
-            var conn = await GetDirectoryConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
@@ -385,8 +381,8 @@ namespace Tellma.Data
                 cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
 
                 // Execute and Load
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                using var reader = await cmd.ExecuteReaderAsync(cancellation);
+                if (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
 
@@ -404,12 +400,12 @@ namespace Tellma.Data
             return result;
         }
 
-        public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email)
+        public async Task<(IEnumerable<int> DatabaseIds, bool IsAdmin)> GetAccessibleDatabaseIds(string externalId, string email, CancellationToken cancellation)
         {
             var databaseIds = new List<int>();
             var isAdmin = false;
 
-            var conn = await GetDirectoryConnectionAsync();
+            var conn = await GetDirectoryConnectionAsync(cancellation);
             using var cmd = conn.CreateCommand();
 
             // Parameters
@@ -421,17 +417,17 @@ namespace Tellma.Data
             cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
 
             // Execute and Load
-            using var reader = await cmd.ExecuteReaderAsync();
+            using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
             // First the DB Ids
-            while (await reader.ReadAsync())
+            while (await reader.ReadAsync(cancellation))
             {
                 databaseIds.Add(reader.GetInt32(0));
             }
 
             // Then Is Admin
-            await reader.NextResultAsync();
-            if (await reader.ReadAsync())
+            await reader.NextResultAsync(cancellation);
+            if (await reader.ReadAsync(cancellation))
             {
                 isAdmin = reader.GetBoolean(0);
             }

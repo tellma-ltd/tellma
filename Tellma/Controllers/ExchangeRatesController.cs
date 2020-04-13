@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -39,11 +40,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("convert-to-functional")]
-        public async Task<ActionResult<decimal>> ConvertToFunctional(DateTime date, string currencyId, decimal amount)
+        public async Task<ActionResult<decimal>> ConvertToFunctional(DateTime date, string currencyId, decimal amount, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _repo.ConvertToFunctional(date, currencyId, amount);
+                var result = await _repo.ConvertToFunctional(date, currencyId, amount, cancellation);
                 if (result == null)
                 {
                     return NotFound();
@@ -74,7 +75,7 @@ namespace Tellma.Controllers
             // Get the currencies that contribute to duplications, so that we can put their names in the error message
             // Get them outside the loop in a single DB query (for performance)
             var currencyIdArray = currencyDateHash.Select(e => e.CurrencyId).Distinct().ToArray();
-            var currencies = (await _repo.Currencies.FilterByIds(currencyIdArray).ToListAsync()).ToDictionary(e => e.Id);
+            var currencies = (await _repo.Currencies.FilterByIds(currencyIdArray).ToListAsync(cancellation: default)).ToDictionary(e => e.Id);
 
             foreach (var entity in entities)
             {
@@ -172,9 +173,9 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View);
+            return await _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override Query<ExchangeRate> Search(Query<ExchangeRate> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)

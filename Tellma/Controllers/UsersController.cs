@@ -81,11 +81,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient()
+        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (version, user, customSettings) = await _appRepo.UserSettings__Load();
+                var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
 
                 // prepare the result
                 var userSettingsForClient = new UserSettingsForClient
@@ -116,7 +116,7 @@ namespace Tellma.Controllers
         {
             await _appRepo.Users__SaveSettings(key, value);
 
-            return await UserSettingsForClient();
+            return await UserSettingsForClient(cancellation: default);
         }
 
         [HttpPut("invite")]
@@ -140,7 +140,7 @@ namespace Tellma.Controllers
                 await CheckActionPermissions("ResendInvitationEmail", id);
 
                 // Load the user
-                var user = await _appRepo.Users.FilterByIds(id).FirstOrDefaultAsync();
+                var user = await _appRepo.Users.FilterByIds(id).FirstOrDefaultAsync(cancellation: default);
                 if (user == null)
                 {
                     throw new NotFoundException<int>(id);
@@ -171,7 +171,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("{id}/image")]
-        public async Task<ActionResult> GetImage(int id)
+        public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -179,13 +179,13 @@ namespace Tellma.Controllers
                 if (id == _appRepo.GetUserInfo().UserId)
                 {
                     // A user can always view their own image, so we bypass read permissions
-                    User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(Entities.User.ImageId)).FirstOrDefaultAsync();
+                    User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(Entities.User.ImageId)).FirstOrDefaultAsync(cancellation);
                     imageId = me.ImageId;
                 }
                 else
                 {
                     // This enforces read permissions
-                    var user = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) });
+                    var user = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) }, cancellation);
                     imageId = user.ImageId;
                 }
 
@@ -194,7 +194,7 @@ namespace Tellma.Controllers
                 {
                     // Get the bytes
                     string blobName = BlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(blobName);
+                    var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                     Response.Headers.Add("x-image-id", imageId);
                     return File(imageBytes, "image/jpeg");
@@ -207,11 +207,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("me")]
-        public async Task<ActionResult<GetByIdResponse<User>>> GetMyUser()
+        public async Task<ActionResult<GetByIdResponse<User>>> GetMyUser(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                GetByIdResponse<User> result = await GetMyUserImpl();
+                GetByIdResponse<User> result = await GetMyUserImpl(cancellation);
                 return Ok(result);
             },
             _logger);
@@ -229,12 +229,12 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        private async Task<GetByIdResponse<User>> GetMyUserImpl()
+        private async Task<GetByIdResponse<User>> GetMyUserImpl(CancellationToken cancellation)
         {
             int meId = _appRepo.GetUserInfo().UserId.Value;
 
             // Prepare the odata query
-            var me = await _appRepo.Users.FilterByIds(meId).FirstOrDefaultAsync();
+            var me = await _appRepo.Users.FilterByIds(meId).FirstOrDefaultAsync(cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             var relatedEntities = FlattenAndTrim(new List<User> { me });
@@ -251,7 +251,7 @@ namespace Tellma.Controllers
         private async Task<GetByIdResponse<User>> SaveMyUserImpl([FromBody] MyUserForSave me)
         {
             int myId = _appRepo.GetUserInfo().UserId.Value;
-            var user = await _appRepo.Users.Expand("Roles").FilterByIds(myId).FirstOrDefaultAsync();
+            var user = await _appRepo.Users.Expand("Roles").FilterByIds(myId).FirstOrDefaultAsync(cancellation: default);
 
             // Create a user for save
             var userForSave = new UserForSave
@@ -307,7 +307,7 @@ namespace Tellma.Controllers
 
             // Save and retrieve response
             await SaveExecuteAsync(entities, null, false);
-            var response = await GetMyUserImpl();
+            var response = await GetMyUserImpl(cancellation: default);
 
             // Commit and return
             trx.Complete();
@@ -323,6 +323,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: true)
             , _logger);
         }
@@ -336,21 +337,23 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
             await CheckActionPermissions("IsActive", idsArray);
 
             // C# Validation
-            var userInfo = await _appRepo.GetUserInfoAsync();
+            var userInfo = await _appRepo.GetUserInfoAsync(cancellation: default);
             var userId = userInfo.UserId.Value;
             foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
@@ -376,7 +379,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -391,7 +394,7 @@ namespace Tellma.Controllers
         private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string name, string name2, string name3, string preferredLang)
         {
             // Load the info
-            var info = await _appRepo.GetTenantInfoAsync();
+            var info = await _appRepo.GetTenantInfoAsync(cancellation: default);
 
             // Use the recipient's preferred Language
             CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ?
@@ -664,7 +667,7 @@ namespace Tellma.Controllers
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // Make sure the user is not deleting his/her own account
-            var userInfo = await _appRepo.GetUserInfoAsync();
+            var userInfo = await _appRepo.GetUserInfoAsync(cancellation: default);
             var userId = userInfo.UserId.Value;
             foreach (var (id, index) in ids.Select((id, index) => (id, index)))
             {
@@ -712,14 +715,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override Query<User> GetAsQuery(List<UserForSave> entities)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _appRepo.Users__AsQuery(entities);
-        }
-
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        {
-            return _appRepo.UserPermissions(action, View);
+            return _appRepo.UserPermissions(action, View, cancellation);
         }
 
         private string BlobName(string guid)

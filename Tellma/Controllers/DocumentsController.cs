@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -72,7 +73,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
-        public async Task<ActionResult> GetAttachment(int docId, int attachmentId)
+        public async Task<ActionResult> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -81,7 +82,7 @@ namespace Tellma.Controllers
                 var doc = await GetByIdLoadData(docId, new GetByIdArguments
                 {
                     Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
-                });
+                }, cancellation);
 
                 // Get the blob name
                 var attachment = doc.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
@@ -89,7 +90,7 @@ namespace Tellma.Controllers
                 {
                     // Get the bytes
                     string blobName = BlobName(attachment.FileId);
-                    var fileBytes = await _blobService.LoadBlob(blobName);
+                    var fileBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                     // Get the content type
                     var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
@@ -368,13 +369,13 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        protected override async Task<GetByIdResponse<Document>> GetByIdImpl(int id, [FromQuery] GetByIdArguments args)
+        protected override async Task<GetByIdResponse<Document>> GetByIdImpl(int id, [FromQuery] GetByIdArguments args, CancellationToken cancellation)
         {
-            var response = await base.GetByIdImpl(id, args);
+            var response = await base.GetByIdImpl(id, args, cancellation);
             var entity = response.Result;
             if (entity.OpenedAt == null)
             {
-                var userInfo = await _repo.GetUserInfoAsync();
+                var userInfo = await _repo.GetUserInfoAsync(cancellation);
                 var userId = userInfo.UserId.Value;
 
                 if (entity.AssigneeId == userId)
@@ -400,19 +401,14 @@ namespace Tellma.Controllers
             return new FilteredRepository<Document>(_repo, filter);
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            var permissions = (await _repo.UserPermissions(action, View)).ToList();
+            var permissions = (await _repo.UserPermissions(action, View, cancellation)).ToList();
 
             // Add a special permission that lets you see the documents that were assigned to you
             permissions.AddRange(DocumentControllerUtil.HardCodedPermissions());
 
             return permissions;
-        }
-
-        protected override Query<Document> GetAsQuery(List<DocumentForSave> entities)
-        {
-            return _repo.Documents__AsQuery(DefinitionId, entities);
         }
 
         private DocumentDefinitionForClient CurrentDefinition
@@ -440,7 +436,7 @@ namespace Tellma.Controllers
             return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, map);
         }
 
-        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<Document> result)
+        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
         {
             var includeRequiredSignature = Request.Query["includeRequiredSignatures"].FirstOrDefault()?.ToString()?.ToLower() == "true";
             if (includeRequiredSignature)
@@ -449,7 +445,7 @@ namespace Tellma.Controllers
                 var docIds = result.Select(doc => new { doc.Id });
                 if (!docIds.Any())
                 {
-                    return await base.GetExtras(result);
+                    return await base.GetExtras(result, cancellation);
                 }
 
                 var docIdsTable = RepositoryUtilities.DataTable(docIds);
@@ -464,7 +460,7 @@ namespace Tellma.Controllers
                     .Expand("Role,Agent,User,SignedBy,OnBehalfOfUser,ProxyRole")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
-                var requiredSignatures = await query.ToListAsync();
+                var requiredSignatures = await query.ToListAsync(cancellation);
                 var relatedEntities = FlattenAndTrim(requiredSignatures);
                 requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
 
@@ -476,7 +472,7 @@ namespace Tellma.Controllers
             }
             else
             {
-                return await base.GetExtras(result);
+                return await base.GetExtras(result, cancellation);
             }
         }
 
@@ -1206,7 +1202,7 @@ namespace Tellma.Controllers
             {
                 // TODO: test
                 var definition = Definition();
-                var tenantInfo = await _repo.GetTenantInfoAsync();
+                var tenantInfo = await _repo.GetTenantInfoAsync(cancellation: default);
                 var titleSingular = tenantInfo.Localize(definition.TitleSingular, definition.TitleSingular2, definition.TitleSingular3);
 
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", titleSingular]);
@@ -1246,11 +1242,11 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             // Get all permissions pertaining to documents
             string prefix = DocumentsController.BASE_ADDRESS;
-            var permissions = (await _repo.GenericUserPermissions(action, prefix)).ToList();
+            var permissions = (await _repo.GenericUserPermissions(action, prefix, cancellation)).ToList();
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)

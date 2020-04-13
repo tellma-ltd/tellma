@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Data
@@ -13,25 +14,25 @@ namespace Tellma.Data
         /// <summary>
         /// Syntactic sugar for <see cref="ApplicationRepository.Action_View__Permissions(string, string)"/>
         /// </summary>
-        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, string view)
+        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, string view, CancellationToken cancellation)
         {
-            return await repo.Action_View__Permissions(action, view);
+            return await repo.Action_View__Permissions(action, view, cancellation);
         }
 
         /// <summary>
         /// Syntactic sugar for <see cref="AdminRepository.Action_View__Permissions(string, string)"/>
         /// </summary>
-        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this AdminRepository repo, string action, string view)
+        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this AdminRepository repo, string action, string view, CancellationToken cancellation)
         {
-            return await repo.Action_View__Permissions(action, view);
+            return await repo.Action_View__Permissions(action, view, cancellation);
         }
 
         /// <summary>
         /// Syntactic sugar for <see cref="ApplicationRepository.Action_ViewPrefix__Permissions(string, string)"/>
         /// </summary>
-        public static async Task<IEnumerable<AbstractPermission>> GenericUserPermissions(this ApplicationRepository repo, string action, string prefix)
+        public static async Task<IEnumerable<AbstractPermission>> GenericUserPermissions(this ApplicationRepository repo, string action, string prefix, CancellationToken cancellation)
         {
-            return await repo.Action_ViewPrefix__Permissions(action, prefix);
+            return await repo.Action_ViewPrefix__Permissions(action, prefix, cancellation);
         }
 
         /// <summary>

@@ -67,18 +67,18 @@ namespace Tellma.Controllers
                 // (1) Make sure the API caller have provided a tenantId, and extract it
                 try
                 {
+                    var cancellation = context.HttpContext.RequestAborted;
                     int tenantId = _tenantIdAccessor.GetTenantId();
-
 
                     // Init the database connection...
                     // The client sometimes makes ambient API calls, not in response to user interaction
                     // Such calls should not update LastAccess of that user, in this case the client 
-                    var connString = await _shardResolver.GetConnectionString(tenantId);
+                    var connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
                     bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
-                    await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive);
+                    await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive, cancellation);
 
                     // (2) Make sure the user is a member of this tenant
-                    UserInfo userInfo = await _appRepo.GetUserInfoAsync();
+                    UserInfo userInfo = await _appRepo.GetUserInfoAsync(cancellation);
 
                     if (userInfo.UserId == null)
                     {
@@ -128,7 +128,7 @@ namespace Tellma.Controllers
                     }
 
                     // (5) Set the tenant info in the context, to make it accessible for model metadata providers
-                    var tenantInfo = await _appRepo.GetTenantInfoAsync();
+                    var tenantInfo = await _appRepo.GetTenantInfoAsync(cancellation);
                     _tenantInfoAccessor.SetInfo(tenantId, tenantInfo);
 
                     // (6) Ensure the freshness of the definitions and settings caches
@@ -139,8 +139,11 @@ namespace Tellma.Controllers
                         if (serverVersion == null || serverVersion != databaseVersion)
                         {
                             // Update the cache
-                            var definitions = await DefinitionsController.LoadDefinitionsForClient(_appRepo);
-                            _definitionsCache.SetDefinitions(tenantId, definitions);
+                            var definitions = await DefinitionsController.LoadDefinitionsForClient(_appRepo, cancellation);
+                            if (!cancellation.IsCancellationRequested)
+                            {
+                                _definitionsCache.SetDefinitions(tenantId, definitions);
+                            }
                         }
                     }
                     {
@@ -150,8 +153,11 @@ namespace Tellma.Controllers
                         if (serverVersion == null || serverVersion != databaseVersion)
                         {
                             // Update the cache
-                            var settings = await SettingsController.LoadSettingsForClient(_appRepo);
-                            _settingsCache.SetSettings(tenantId, settings);
+                            var settings = await SettingsController.LoadSettingsForClient(_appRepo, cancellation);
+                            if (!cancellation.IsCancellationRequested)
+                            {
+                                _settingsCache.SetSettings(tenantId, settings);
+                            }
                         }
                     }
 

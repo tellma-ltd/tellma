@@ -13,6 +13,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -63,6 +64,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: true)
             , _logger);
         }
@@ -76,14 +78,16 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
@@ -95,7 +99,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -107,9 +111,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View);
+            return await _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override IRepository GetRepository()
@@ -303,16 +307,11 @@ namespace Tellma.Controllers
             {
                 // TODO: test
                 var definition = Definition();
-                var tenantInfo = await _repo.GetTenantInfoAsync();
+                var tenantInfo = await _repo.GetTenantInfoAsync(cancellation: default);
                 var titleSingular = tenantInfo.Localize(definition.TitleSingular, definition.TitleSingular2, definition.TitleSingular3);
 
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", titleSingular]);
             }
-        }
-
-        protected override Query<Resource> GetAsQuery(List<ResourceForSave> entities)
-        {
-            return _repo.Resources__AsQuery(DefinitionId, entities);
         }
     }
 
@@ -337,11 +336,11 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             // Get all permissions pertaining to resources
             string prefix = ResourcesController.BASE_ADDRESS;
-            var permissions = await _repo.GenericUserPermissions(action, prefix);
+            var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)

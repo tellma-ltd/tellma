@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -32,11 +33,11 @@ namespace Tellma.Controllers
 
         // Children-of is replicated in CrudTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
-        public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args)
+        public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetChildrenOfAsync(args);
+                var result = await GetChildrenOfAsync(args, cancellation);
                 return Ok(result);
             }, _logger);
         }
@@ -44,7 +45,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a single entity as per the ID and specifications in the get request
         /// </summary>
-        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args)
+        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
@@ -57,8 +58,8 @@ namespace Tellma.Controllers
             var ids = args.I ?? new List<TKey>();
 
             // Load data
-            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby);
-            var extras = await GetExtras(data);
+            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
+            var extras = await GetExtras(data, cancellation);
 
             // Transform and return
             return TransformToEntitiesResponse(data, extras, serverTime);

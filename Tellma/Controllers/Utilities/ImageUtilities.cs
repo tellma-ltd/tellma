@@ -33,7 +33,7 @@ namespace Tellma.Controllers.Utilities
                     .Select(nameof(IEntityWithImage.ImageId))
                     .Filter($"{nameof(IEntityWithImage.ImageId)} ne null")
                     .FilterByIds(idsWithNewImages)
-                    .ToListAsync();
+                    .ToListAsync(cancellation: default);
 
                 blobsToDelete = dbEntitiesWithNewImages
                     .Select(e => blobName(e.ImageId))

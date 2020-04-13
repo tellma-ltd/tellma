@@ -2,6 +2,7 @@
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Services.BlobStorage
@@ -43,7 +44,7 @@ namespace Tellma.Services.BlobStorage
         /// <summary>
         /// Retrieves the byte array with the specified name from the blob storage, using the credentials in the configuration providers
         /// </summary>
-        public async Task<byte[]> LoadBlob(string blobName)
+        public async Task<byte[]> LoadBlob(string blobName, CancellationToken cancellation)
         {
             // Get the cloud storage account from the settings
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_config.ConnectionString);
@@ -51,14 +52,14 @@ namespace Tellma.Services.BlobStorage
             // Open a cloud blob client and get a reference to the single container
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer container = blobClient.GetContainerReference(_config.ContainerName);
-            if (!await container.ExistsAsync())
+            if (!await container.ExistsAsync(null, null, cancellation))
             {
                 throw new BlobNotFoundException(blobName);
             }
 
             // Get a reference to the block blob
             CloudBlockBlob blob = container.GetBlockBlobReference(blobName);
-            if (!await blob.ExistsAsync())
+            if (!await blob.ExistsAsync(null, null, cancellation))
             {
                 throw new BlobNotFoundException(blobName);
             }
@@ -67,7 +68,7 @@ namespace Tellma.Services.BlobStorage
             byte[] result = new byte[0];
             using (MemoryStream stream = new MemoryStream())
             {
-                await blob.DownloadToStreamAsync(stream);
+                await blob.DownloadToStreamAsync(stream, null, null, null, cancellation);
                 result = stream.ToArray();
             }
 

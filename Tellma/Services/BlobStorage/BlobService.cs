@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tellma.Services.BlobStorage
@@ -17,9 +18,9 @@ namespace Tellma.Services.BlobStorage
             await _blobService.DeleteBlobsAsync(blobNames);
         }
 
-        public async Task<byte[]> LoadBlob(string blobName)
+        public async Task<byte[]> LoadBlob(string blobName, CancellationToken cancellation)
         {
-            return await _blobService.LoadBlob(blobName);
+            return await _blobService.LoadBlob(blobName, cancellation);
         }
 
         public async Task SaveBlobsAsync(IEnumerable<(string blobName, byte[] content)> blobs)

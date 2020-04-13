@@ -38,8 +38,10 @@ namespace Tellma.Controllers
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
-                // (1) Make sure the user has an active user 
-                AdminUserInfo userInfo = await _adminRepo.GetAdminUserInfoAsync();
+                var cancellation = context.HttpContext.RequestAborted;
+
+                // (1) Make sure the requester has an active user 
+                AdminUserInfo userInfo = await _adminRepo.GetAdminUserInfoAsync(cancellation);
 
                 if (userInfo.UserId == null)
                 {

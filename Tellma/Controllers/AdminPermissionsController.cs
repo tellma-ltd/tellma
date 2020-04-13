@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -27,12 +28,12 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient()
+        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient(CancellationToken cancellation)
         {
             try
             {
                 // Retrieve the user permissions and their current version
-                var (version, permissions)  = await _repo.Permissions__Load();
+                var (version, permissions)  = await _repo.Permissions__Load(cancellation);
 
                 // Arrange the permission in a DTO that is easy for clients to consume
                 var permissionsForClient = new PermissionsForClient();

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tellma.Services.Utilities;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -47,6 +48,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isDeprecated: false)
             , _logger);
         }
@@ -60,14 +62,16 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isDeprecated: true)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Account>>> Activate(List<int> ids, bool returnEntities, string expand, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<Account>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
@@ -79,7 +83,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -91,9 +95,9 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return await _repo.UserPermissions(action, View);
+            return await _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override IRepository GetRepository()
@@ -236,11 +240,6 @@ namespace Tellma.Controllers
             {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Account"]]);
             }
-        }
-
-        protected override Query<Account> GetAsQuery(List<AccountForSave> entities)
-        {
-            return _repo.Accounts__AsQuery(entities);
         }
 
         protected override OrderByExpression DefaultOrderBy()

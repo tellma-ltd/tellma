@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -58,12 +59,12 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("{id}/image")]
-        public async Task<ActionResult> GetImage(int id)
+        public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // This enforces read permissions
-                var agent = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Agent.ImageId) });
+                var agent = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Agent.ImageId) }, cancellation);
                 string imageId = agent.ImageId;
 
                 // Get the blob name
@@ -71,7 +72,7 @@ namespace Tellma.Controllers
                 {
                     // Get the bytes
                     string blobName = BlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(blobName);
+                    var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
 
                     Response.Headers.Add("x-image-id", imageId);
                     return File(imageBytes, "image/jpeg");
@@ -92,6 +93,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: true)
             , _logger);
         }
@@ -105,14 +107,16 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Agent>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Agent>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
@@ -124,7 +128,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -148,14 +152,9 @@ namespace Tellma.Controllers
             return new FilteredRepository<Agent>(_repo, filter);
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View);
-        }
-
-        protected override Query<Agent> GetAsQuery(List<AgentForSave> entities)
-        {
-            return _repo.Agents__AsQuery(DefinitionId, entities);
+            return _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
@@ -230,7 +229,7 @@ namespace Tellma.Controllers
                 .Select(nameof(Agent.ImageId))
                 .Filter($"{nameof(Agent.ImageId)} ne null")
                 .FilterByIds(ids.ToArray())
-                .ToListAsync();
+                .ToListAsync(cancellation: default);
 
             var blobsToDelete = dbEntitiesWithImageIds
                 .Select(e => BlobName(e.ImageId))
@@ -274,11 +273,11 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             // Get all permissions pertaining to agents
             string prefix = AgentsController.BASE_ADDRESS;
-            var permissions = await _repo.GenericUserPermissions(action, prefix);
+            var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Data.Queries
 {
@@ -112,9 +113,9 @@ namespace Tellma.Data.Queries
             return clone;
         }
 
-        public async Task<List<DynamicEntity>> ToListAsync()
+        public async Task<List<DynamicEntity>> ToListAsync(CancellationToken cancellation)
         {
-            var args = await _factory();
+            var args = await _factory(cancellation);
             var conn = args.Connection;
             var sources = args.Sources;
             var userId = args.UserId;
@@ -230,7 +231,8 @@ namespace Tellma.Data.Queries
                 statement: statement,
                 preparatorySql: null,
                 ps: ps,
-                conn: conn);
+                conn: conn,
+                cancellation: cancellation);
 
             return result;
         }

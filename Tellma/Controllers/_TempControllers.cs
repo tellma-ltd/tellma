@@ -7,6 +7,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
+
 namespace Tellma.Controllers
 {
     // Here I add all the readonly controllers we need for the JV
@@ -40,7 +42,7 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
             return Task.FromResult(TempUtil.UserPermissions(VIEW));
         }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Controllers.Dto;
@@ -68,11 +69,11 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> UserSettingsForClient()
+        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (version, user, customSettings) = await _repo.UserSettings__Load();
+                var (version, user, customSettings) = await _repo.UserSettings__Load(cancellation);
 
                 // prepare the result
                 var userSettingsForClient = new AdminUserSettingsForClient
@@ -99,7 +100,7 @@ namespace Tellma.Controllers
         {
             await _repo.AdminUsers__SaveSettings(key, value);
 
-            return await UserSettingsForClient();
+            return await UserSettingsForClient(cancellation: default);
         }
 
         //[HttpPut("invite")]
@@ -154,11 +155,11 @@ namespace Tellma.Controllers
         //}
 
         [HttpGet("me")]
-        public async Task<ActionResult<GetByIdResponse<AdminUser>>> GetMyUser()
+        public async Task<ActionResult<GetByIdResponse<AdminUser>>> GetMyUser(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                GetByIdResponse<AdminUser> result = await GetMyUserImpl();
+                GetByIdResponse<AdminUser> result = await GetMyUserImpl(cancellation);
                 return Ok(result);
             },
             _logger);
@@ -176,12 +177,12 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        private async Task<GetByIdResponse<AdminUser>> GetMyUserImpl()
+        private async Task<GetByIdResponse<AdminUser>> GetMyUserImpl(CancellationToken cancellation)
         {
-            int meId = (await _repo.GetAdminUserInfoAsync()).UserId.Value;
+            int meId = (await _repo.GetAdminUserInfoAsync(cancellation)).UserId.Value;
 
             // Prepare the odata query
-            var me = await _repo.AdminUsers.FilterByIds(meId).FirstOrDefaultAsync();
+            var me = await _repo.AdminUsers.FilterByIds(meId).FirstOrDefaultAsync(cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             var relatedEntities = FlattenAndTrim(new List<AdminUser> { me });
@@ -198,8 +199,8 @@ namespace Tellma.Controllers
 
         private async Task<GetByIdResponse<AdminUser>> SaveMyUserImpl([FromBody] MyAdminUserForSave me)
         {
-            int myId = (await _repo.GetAdminUserInfoAsync()).UserId.Value;
-            var user = await _repo.AdminUsers.Expand("Permissions").FilterByIds(myId).FirstOrDefaultAsync();
+            int myId = (await _repo.GetAdminUserInfoAsync(cancellation: default)).UserId.Value;
+            var user = await _repo.AdminUsers.Expand("Permissions").FilterByIds(myId).FirstOrDefaultAsync(cancellation: default);
 
             // Create a user for save
             var userForSave = new AdminUserForSave
@@ -249,7 +250,7 @@ namespace Tellma.Controllers
 
             // Save and retrieve response
             await SaveExecuteAsync(entities, null, false);
-            var response = await GetMyUserImpl();
+            var response = await GetMyUserImpl(cancellation: default);
 
             // Commit and return
             trx.Complete();
@@ -265,6 +266,7 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: true)
             , _logger);
         }
@@ -278,14 +280,16 @@ namespace Tellma.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
+                    select: args.Select,
                     isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
+            var selectExp = SelectExpression.Parse(select);
             var idsArray = ids.ToArray();
 
             // Check user permissions
@@ -297,7 +301,7 @@ namespace Tellma.Controllers
 
             if (returnEntities)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp);
+                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
 
                 trx.Complete();
                 return Ok(response);
@@ -498,7 +502,7 @@ namespace Tellma.Controllers
             }
 
             // Signal the client to refresh some cached stuff
-            int meId = (await _repo.GetAdminUserInfoAsync()).UserId.Value;
+            int meId = (await _repo.GetAdminUserInfoAsync(cancellation: default)).UserId.Value;
             if (entities.Any(e => e.Id == meId))
             {
                 Response.Headers.Set("x-admin-user-settings-version", Constants.Stale);
@@ -533,7 +537,7 @@ namespace Tellma.Controllers
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // Make sure the user is not deleting his/her own account
-            var userInfo = await _repo.GetAdminUserInfoAsync();
+            var userInfo = await _repo.GetAdminUserInfoAsync(cancellation: default);
             var index = ids.IndexOf(userInfo.UserId.Value);
             if (index >= 0)
             {
@@ -565,9 +569,9 @@ namespace Tellma.Controllers
             throw new NotImplementedException(nameof(GetAsQuery));
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            return _repo.UserPermissions(action, View);
+            return _repo.UserPermissions(action, View, cancellation);
         }
 
         protected override OrderByExpression DefaultOrderBy()

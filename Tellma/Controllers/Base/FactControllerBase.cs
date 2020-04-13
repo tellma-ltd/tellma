@@ -56,32 +56,32 @@ namespace Tellma.Controllers
 
         // HTTP Methods
         [HttpGet]
-        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args)
+        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetFactImpl(args);
+                var result = await GetFactImpl(args, cancellation);
                 return Ok(result);
             }, _logger);
         }
 
         [HttpGet("aggregate")]
-        public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args)
+        public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetAggregateImpl(args);
+                var result = await GetAggregateImpl(args, cancellation);
                 return Ok(result);
             }, _logger);
         }
 
         [HttpGet("export")]
-        public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
+        public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Get abstract grid
-                var response = await GetFactImpl(args);
+                var response = await GetFactImpl(args, cancellation);
                 var abstractFile = EntitiesToAbstractGrid(response, args);
                 return AbstractGridToFileResult(abstractFile, args.Format);
             }, _logger);
@@ -94,16 +94,16 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
         /// </summary>
-        protected virtual async Task<GetResponse<TEntity>> GetFactImpl(GetArguments args)
+        protected virtual async Task<GetResponse<TEntity>> GetFactImpl(GetArguments args, CancellationToken cancellation)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
             // Retrieves the raw data from the database, unflattend, untrimmed 
-            var (data, isPartial, totalCount) = await GetFactLoadData(args);
+            var (data, isPartial, totalCount) = await GetFactLoadData(args, cancellation);
 
             // Get any controller-specific extras
-            var extras = await GetExtras(data);
+            var extras = await GetExtras(data, cancellation);
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(data);
@@ -128,7 +128,7 @@ namespace Tellma.Controllers
         /// Returns a <see cref="List{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>,
         /// and also the total count if required
         /// </summary>
-        protected virtual async Task<(List<TEntity> Data, bool IsPartial, int? Count)> GetFactLoadData(GetArguments args)
+        protected virtual async Task<(List<TEntity> Data, bool IsPartial, int? Count)> GetFactLoadData(GetArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -140,7 +140,7 @@ namespace Tellma.Controllers
             var query = GetRepository().Query<TEntity>();
 
             // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(Constants.Read);
+            var permissions = await UserPermissions(Constants.Read, cancellation);
 
             // Filter out permissions with masks that would be violated by the filter or order by arguments
             var defaultMask = GetDefaultMask() ?? new MaskTree();
@@ -163,7 +163,7 @@ namespace Tellma.Controllers
             int? totalCount = null;
             if (args.CountEntities)
             {
-                totalCount = await query.CountAsync(MAXIMUM_COUNT);
+                totalCount = await query.CountAsync(cancellation, MAXIMUM_COUNT);
                 if (totalCount >= MAXIMUM_COUNT)
                 {
                     totalCount = int.MaxValue; // All we know is that the real count is >= MAXIMUM_COUNT
@@ -186,10 +186,10 @@ namespace Tellma.Controllers
             expandedQuery = expandedQuery.Select(select);
 
             // Load the data in memory
-            var data = await expandedQuery.ToListAsync();
+            var data = await expandedQuery.ToListAsync(cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            await ApplyReadPermissionsMask(data, query, permissions, defaultMask);
+            await ApplyReadPermissionsMask(data, query, permissions, defaultMask, cancellation);
 
             // Return
             return (data, isPartial, totalCount);
@@ -198,13 +198,13 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns the <see cref="GetAggregateResponse"/> as per the specifications in the <see cref="GetAggregateArguments"/>
         /// </summary>
-        protected virtual async Task<GetAggregateResponse> GetAggregateImpl(GetAggregateArguments args)
+        protected virtual async Task<GetAggregateResponse> GetAggregateImpl(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
             // Load the data
-            var (data, isPartial) = await GetAggregateLoadData(args);
+            var (data, isPartial) = await GetAggregateLoadData(args, cancellation);
 
             // Finally return the result
             return new GetAggregateResponse
@@ -221,7 +221,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
         /// </summary>
-        protected virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregateLoadData(GetAggregateArguments args)
+        protected virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregateLoadData(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -231,7 +231,7 @@ namespace Tellma.Controllers
             var query = GetRepository().AggregateQuery<TEntity>();
 
             // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(Constants.Read);
+            var permissions = await UserPermissions(Constants.Read, cancellation);
             var permissionsCount = permissions.Count();
 
             // Filter out permissions with masks that would be violated by the filter argument
@@ -258,7 +258,7 @@ namespace Tellma.Controllers
             query = query.Select(select);
 
             // Load the data in memory
-            var data = await query.ToListAsync();
+            var data = await query.ToListAsync(cancellation);
 
             // Put a limit on the number of data points returned, to prevent DoS attacks
             if (data.Count > MAXIMUM_AGGREGATE_RESULT_SIZE)
@@ -276,7 +276,7 @@ namespace Tellma.Controllers
         /// </summary>
         /// <param name="result">The unflattenned, untrimmed response to the GET request</param>
         /// <returns>An optional dictionary containing any extra information and an optional set of related entities</returns>
-        protected virtual Task<Dictionary<string, object>> GetExtras(IEnumerable<TEntity> result)
+        protected virtual Task<Dictionary<string, object>> GetExtras(IEnumerable<TEntity> result, CancellationToken cancellation)
         {
             return Task.FromResult<Dictionary<string, object>>(null);
         }
@@ -290,7 +290,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified level
         /// </summary>
-        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action);
+        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation);
 
         /// <summary>
         /// If the user has no permission masks defined (can see all), this mask is used.
@@ -470,7 +470,8 @@ namespace Tellma.Controllers
             List<TEntity> resultEntities,
             Query<TEntity> query,
             IEnumerable<AbstractPermission> permissions,
-            MaskTree defaultMask)
+            MaskTree defaultMask,
+            CancellationToken cancellation)
         {
             // TODO: is there is a solution to this?
             return Task.CompletedTask;
