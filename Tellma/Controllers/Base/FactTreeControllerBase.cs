@@ -2,13 +2,11 @@
 using Tellma.Controllers.Utilities;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -62,7 +60,7 @@ namespace Tellma.Controllers
             var extras = await GetExtras(data, cancellation);
 
             // Transform and return
-            return TransformToEntitiesResponse(data, extras, serverTime);
+            return TransformToEntitiesResponse(data, extras, serverTime, cancellation);
         }
     }
 }

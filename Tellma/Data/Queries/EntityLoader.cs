@@ -418,6 +418,8 @@ namespace Tellma.Data.Queries
                             }
                         }
                     }
+
+                    cancellation.ThrowIfCancellationRequested();
                 }
             }
 
@@ -461,6 +463,8 @@ namespace Tellma.Data.Queries
                         {
                             collectionEntities.Add(currentEntity);
                         }
+
+                        cancellation.ThrowIfCancellationRequested();
                     }
 
                     var fkName = query.ForeignKeyToPrincipalQuery;
@@ -481,6 +485,8 @@ namespace Tellma.Data.Queries
 
                         collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
                         collectionProp.SetValue(collectionEntity, collection);
+
+                        cancellation.ThrowIfCancellationRequested();
                     }
                 }
             }

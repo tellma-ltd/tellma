@@ -62,7 +62,7 @@ namespace Tellma.Controllers
             var extras = await GetExtras(data, cancellation);
 
             // Transform and Return
-            return TransformToEntitiesResponse(data, extras, serverTime);
+            return TransformToEntitiesResponse(data, extras, serverTime, cancellation);
         }
 
         [HttpDelete("with-descendants")]

@@ -61,7 +61,7 @@ namespace Tellma.Controllers
             var extras = await GetExtras(singleton, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(singleton);
+            var relatedEntities = FlattenAndTrim(singleton, cancellation);
 
             // Prepare the result in a response object
             return new GetByIdResponse<TEntity>
@@ -107,17 +107,20 @@ namespace Tellma.Controllers
         /// </summary>
         protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(TKey[] ids, ExpandExpression expand, SelectExpression select)
         {
+            // Actions are un-cancellable
+            CancellationToken noCancel = default;
+
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
             // Calculate server time at the very beginning for consistency
-            var data = await LoadDataByIds(ids, expand, select, cancellation: default);
+            var data = await LoadDataByIds(ids, expand, select, noCancel);
 
             // Get the extras
-            var extras = await GetExtras(data, cancellation: default);
+            var extras = await GetExtras(data, noCancel);
 
             // Transform the entities as an EntitiesResponse
-            var response = TransformToEntitiesResponse(data, extras, serverTime);
+            var response = TransformToEntitiesResponse(data, extras, serverTime, noCancel);
 
             // Return
             return response;
@@ -165,10 +168,10 @@ namespace Tellma.Controllers
         /// <summary>
         /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
         /// </summary>
-        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Dictionary<string, object> extras, DateTimeOffset serverTime)
+        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Dictionary<string, object> extras, DateTimeOffset serverTime, CancellationToken cancellation)
         {
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data);
+            var relatedEntities = FlattenAndTrim(data, cancellation);
 
             // Prepare the result in a response object
             return new EntitiesResponse<TEntity>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -39,11 +40,15 @@ namespace Tellma.Controllers
         // API
 
         [HttpGet]
-        public async Task<ActionResult<GetByIdResponse<GlobalSettings>>> Get([FromQuery] GetByIdArguments args)
+        public async Task<ActionResult<GetByIdResponse<GlobalSettings>>> Get([FromQuery] GetByIdArguments args, CancellationToken cancellation)
         {
             try
             {
-                return await GetImpl(args);
+                return await GetImpl(args, cancellation);
+            }
+            catch (TaskCanceledException)
+            {
+                return Ok();
             }
             catch (BadRequestException ex)
             {
@@ -131,6 +136,10 @@ namespace Tellma.Controllers
                 var result = GetForClientImpl();
                 return Ok(result);
             }
+            catch (TaskCanceledException)
+            {
+                return Ok();
+            }
             catch (BadRequestException ex)
             {
                 return BadRequest(ex.Message);
@@ -154,7 +163,7 @@ namespace Tellma.Controllers
 
         // Helper methods
 
-        private Task<GetByIdResponse<GlobalSettings>> GetImpl(GetByIdArguments args)
+        private Task<GetByIdResponse<GlobalSettings>> GetImpl(GetByIdArguments args, CancellationToken cancellation)
         {
             //M.GlobalSettings mSettings = await _repo.GlobalSettings.FirstOrDefaultAsync();
             //if (mSettings == null)

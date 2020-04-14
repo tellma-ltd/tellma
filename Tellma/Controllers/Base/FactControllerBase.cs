@@ -106,7 +106,7 @@ namespace Tellma.Controllers
             var extras = await GetExtras(data, cancellation);
 
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data);
+            var relatedEntities = FlattenAndTrim(data, cancellation);
 
             // Prepare the result in a response object
             return new GetResponse<TEntity>
@@ -486,7 +486,7 @@ namespace Tellma.Controllers
         /// 3 - It makes it easier for clients to store and track entities in a central workspace
         /// </summary>
         /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
-        protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities)
+        protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, CancellationToken cancellation)
         {
             // If the result is empty, nothing to do
             if (resultEntities == null || !resultEntities.Any())
@@ -565,6 +565,7 @@ namespace Tellma.Controllers
             foreach (var entity in resultEntities)
             {
                 FlattenAndTrimInner(entity);
+                cancellation.ThrowIfCancellationRequested();
             }
 
             // Return the result

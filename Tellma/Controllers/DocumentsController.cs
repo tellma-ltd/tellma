@@ -124,8 +124,8 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var selectExp = SelectExpression.Parse(args.Select);
                 var returnEntities = args.ReturnEntities ?? false;
                 var idsArray = ids.ToArray();
 
@@ -183,8 +183,8 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var selectExp = SelectExpression.Parse(args.Select);
                 var returnIds = args.ReturnEntities ?? false;
 
                 // C# Validation 
@@ -244,8 +244,8 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
+                var selectExp = SelectExpression.Parse(args.Select);
                 var returnIds = args.ReturnEntities ?? false;
 
                 // C# Validation 
@@ -461,7 +461,7 @@ namespace Tellma.Controllers
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(cancellation);
-                var relatedEntities = FlattenAndTrim(requiredSignatures);
+                var relatedEntities = FlattenAndTrim(requiredSignatures, cancellation);
                 requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
 
                 return new Dictionary<string, object>

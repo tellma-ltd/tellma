@@ -60,6 +60,10 @@ namespace Tellma.Controllers
             {
                 return await GetImpl(args, cancellation);
             }
+            catch (TaskCanceledException)
+            {
+                return Ok();
+            }
             catch (BadRequestException ex)
             {
                 return BadRequest(ex.Message);
@@ -141,6 +145,10 @@ namespace Tellma.Controllers
                 }
 
                 return Ok(result);
+            }
+            catch (TaskCanceledException)
+            {
+                return Ok();
             }
             catch (BadRequestException ex)
             {

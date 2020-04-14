@@ -72,7 +72,7 @@ namespace Tellma.Controllers
 
                     // Init the database connection...
                     // The client sometimes makes ambient API calls, not in response to user interaction
-                    // Such calls should not update LastAccess of that user, in this case the client 
+                    // Such calls should not update LastAccess of that user
                     var connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
                     bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
                     await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive, cancellation);
@@ -116,7 +116,7 @@ namespace Tellma.Controllers
                         // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                         // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
                         // to handle it for now. It can however happen artificually if the application is re-configured to a new identity provider,
-                        // or if someone messed with the database directly, but again out of scope for now.
+                        // or if someone messed with the identity database directly, but again out of scope for now.
                         context.Result = new BadRequestObjectResult("The sign-in email already exists but with a different external Id");
                         return;
                     }
@@ -207,6 +207,11 @@ namespace Tellma.Controllers
 
                     // Call the Action itself
                     await next();
+                }
+                catch (TaskCanceledException)
+                {
+                    context.Result = new OkResult();
+                    return;
                 }
                 catch (MultitenancyException ex)
                 {

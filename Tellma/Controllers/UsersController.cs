@@ -237,7 +237,7 @@ namespace Tellma.Controllers
             var me = await _appRepo.Users.FilterByIds(meId).FirstOrDefaultAsync(cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            var relatedEntities = FlattenAndTrim(new List<User> { me });
+            var relatedEntities = FlattenAndTrim(new List<User> { me }, cancellation);
 
             // Return
             return new GetByIdResponse<User>

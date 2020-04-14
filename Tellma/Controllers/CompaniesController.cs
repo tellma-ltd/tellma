@@ -49,6 +49,10 @@ namespace Tellma.Controllers
                 var result = await GetForClientImpl(cancellation);
                 return Ok(result);
             }
+            catch (TaskCanceledException)
+            {
+                return Ok();
+            }
             catch (BadRequestException ex)
             {
                 return BadRequest(ex.Message);

@@ -27,6 +27,10 @@ namespace Tellma.Controllers.Utilities
             {
                 return await func();
             }
+            catch (TaskCanceledException)
+            {
+                return new OkResult();
+            }
             catch (ForbiddenException)
             {
                 return new StatusCodeResult(403);
@@ -71,6 +75,10 @@ namespace Tellma.Controllers.Utilities
             try
             {
                 return await func();
+            }
+            catch (TaskCanceledException)
+            {
+                return new OkResult();
             }
             catch (ForbiddenException)
             {
