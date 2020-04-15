@@ -307,7 +307,7 @@ namespace Tellma.Controllers
         /// This is a utility method for permission actions that do not have a mask, it checks that the
         /// user has enough permissions to cover the entire list of Ids affected by the action
         /// </summary>
-        protected virtual async Task CheckActionPermissions(string action, params TKey[] ids)
+        protected virtual async Task CheckActionPermissions(string action, List<TKey> ids)
         {
             var permissions = await UserPermissions(action, cancellation: default); // actions are non-cancellable
             if (!permissions.Any())
@@ -329,7 +329,7 @@ namespace Tellma.Controllers
                 var query = GetRepository()
                     .Query<TEntity>()
                     .Select(SelectExpression.Parse("Id"))
-                    .FilterByIds(ids);
+                    .FilterByIds(ids.ToArray());
 
                 var filteredQuery = query.Filter(permissionsFilter);
 

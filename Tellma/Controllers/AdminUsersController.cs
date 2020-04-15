@@ -179,10 +179,11 @@ namespace Tellma.Controllers
 
         private async Task<GetByIdResponse<AdminUser>> GetMyUserImpl(CancellationToken cancellation)
         {
-            int meId = (await _repo.GetAdminUserInfoAsync(cancellation)).UserId.Value;
+            int myId = (await _repo.GetAdminUserInfoAsync(cancellation)).UserId.Value;
 
             // Prepare the odata query
-            var me = await _repo.AdminUsers.FilterByIds(meId).FirstOrDefaultAsync(cancellation);
+            var meyIdSingleton = new List<int> { myId };
+            var me = await _repo.AdminUsers.FilterByIds(meyIdSingleton).FirstOrDefaultAsync(cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             var relatedEntities = FlattenAndTrim(new List<AdminUser> { me }, cancellation);
@@ -200,7 +201,8 @@ namespace Tellma.Controllers
         private async Task<GetByIdResponse<AdminUser>> SaveMyUserImpl([FromBody] MyAdminUserForSave me)
         {
             int myId = (await _repo.GetAdminUserInfoAsync(cancellation: default)).UserId.Value;
-            var user = await _repo.AdminUsers.Expand("Permissions").FilterByIds(myId).FirstOrDefaultAsync(cancellation: default);
+            var myIdSingleton = new List<int> { myId };
+            var user = await _repo.AdminUsers.Expand("Permissions").FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation: default);
 
             // Create a user for save
             var userForSave = new AdminUserForSave
@@ -249,7 +251,7 @@ namespace Tellma.Controllers
             }
 
             // Save and retrieve response
-            await SaveExecuteAsync(entities, null, false);
+            await SaveExecuteAsync(entities, false);
             var response = await GetMyUserImpl(cancellation: default);
 
             // Commit and return
@@ -260,48 +262,27 @@ namespace Tellma.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isActive: true)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isActive: false)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<User>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
-        {
-            // Parse parameters
-            var expandExp = ExpandExpression.Parse(expand);
-            var selectExp = SelectExpression.Parse(select);
-            var idsArray = ids.ToArray();
-
+        private async Task<ActionResult<EntitiesResponse<User>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
+        { 
             // Check user permissions
-            await CheckActionPermissions("IsActive", idsArray);
+            await CheckActionPermissions("IsActive", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.AdminUsers__Activate(ids, isActive);
 
-            if (returnEntities)
+            if (args.ReturnEntities ?? false)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
+                var response = await LoadDataByIdsAndTransform(ids, args);
 
                 trx.Complete();
                 return Ok(response);
@@ -317,7 +298,7 @@ namespace Tellma.Controllers
         {
             // Use the recipient's preferred Language
             CultureInfo culture = new CultureInfo(_options.Localization?.DefaultUICulture ?? "en");
-            var localizer = _localizer.WithCulture(culture);
+            using var _ = new CultureScope(culture);
 
             // Prepare the parameters
             string userId = identityRecipient.Id;
@@ -332,7 +313,7 @@ namespace Tellma.Controllers
                     protocol: Request.Scheme);
 
             // Prepare the email
-            string emailSubject = localizer["InvitationEmailSubject0", localizer["AppName"]];
+            string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
             string emailBody = _emailTemplates.MakeInvitationEmail(
                  nameOfRecipient: nameOfRecipient,
                  nameOfInvitor: nameOfInvitor,
@@ -418,7 +399,7 @@ namespace Tellma.Controllers
             return Task.FromResult(entities);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AdminUserForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<AdminUserForSave> entities, bool returnIds)
         {
             // NOTE: this method is not optimized for massive bulk (e.g. 1,000+ users), since it relies
             // on querying identity through UserManager one email at a time but it should be acceptable

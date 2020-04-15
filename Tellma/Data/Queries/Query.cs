@@ -140,7 +140,7 @@ namespace Tellma.Data.Queries
         /// Restricts the <see cref="Query{T}"/> to loading the entities with the specified list of Ids
         /// </summary>
         /// <typeparam name="TKey">The type of the ids (either string or int)</typeparam>
-        public Query<T> FilterByIds<TKey>(params TKey[] ids)
+        public Query<T> FilterByIds<TKey>(IEnumerable<TKey> ids)
         {
             if (!IsEntityWithKey())
             {

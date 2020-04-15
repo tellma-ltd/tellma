@@ -1,4 +1,4 @@
-export class GetArguments {
+export interface GetArguments {
   top?: number;
   skip?: number;
   orderby?: string;
@@ -7,6 +7,7 @@ export class GetArguments {
   filter?: string;
   expand?: string;
   select?: string;
+  selectTemplate?: string;
   countEntities?: boolean;
   unobtrusive?: boolean;
 }

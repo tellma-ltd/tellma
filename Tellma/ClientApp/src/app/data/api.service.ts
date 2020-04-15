@@ -7,7 +7,8 @@ import { ActivateArguments } from './dto/activate-arguments';
 import { EntityForSave } from './entities/base/entity-for-save';
 import { GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
-import { GetResponse, EntitiesResponse } from './dto/get-response';
+import { GetResponse } from './dto/get-response';
+import { EntitiesResponse } from './dto/entities-response';
 import { Unit } from './entities/unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
@@ -52,7 +53,7 @@ import { AdminPermissionsForClient } from './dto/admin-permissions-for-client';
 import { CompaniesForClient } from './dto/companies-for-client';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { ResetPasswordArgs } from './dto/reset-password-args';
-import { ActionArguments } from './action-arguments';
+import { ActionArguments } from './dto/action-arguments';
 
 
 @Injectable({
@@ -790,6 +791,10 @@ export class ApiService {
           paramsArray.push(`select=${encodeURIComponent(args.select)}`);
         }
 
+        if (!!args.selectTemplate) {
+          paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
+        }
+
         this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
@@ -1084,19 +1089,11 @@ export class ApiService {
   }
 
   private activateFactory<TDto extends EntityForSave>(endpoint: string, cancellationToken$: Observable<void>) {
-    return (ids: (string | number)[], args: ActivateArguments) => {
+    return (ids: (string | number)[], args: ActivateArguments, extras?: { [key: string]: any }) => {
       args = args || {};
 
-      const paramsArray: string[] = [];
-
-      if (!!args.returnEntities) {
-        paramsArray.push(`returnEntities=${args.returnEntities}`);
-      }
-
-      if (!!args.expand) {
-        paramsArray.push(`expand=${args.expand}`);
-      }
-
+      const paramsArray: string[] = this.stringifyActionArguments(args);
+      this.addExtras(paramsArray, extras);
       const params: string = paramsArray.join('&');
       const url = appsettings.apiAddress + `api/${endpoint}/activate?${params}`;
 
@@ -1119,19 +1116,11 @@ export class ApiService {
   }
 
   private deactivateFactory<TDto extends EntityForSave>(endpoint: string, cancellationToken$: Observable<void>) {
-    return (ids: (string | number)[], args: ActivateArguments) => {
+    return (ids: (string | number)[], args: ActivateArguments, extras?: { [key: string]: any }) => {
       args = args || {};
 
-      const paramsArray: string[] = [];
-
-      if (!!args.returnEntities) {
-        paramsArray.push(`returnEntities=${args.returnEntities}`);
-      }
-
-      if (!!args.expand) {
-        paramsArray.push(`expand=${args.expand}`);
-      }
-
+      const paramsArray: string[] = this.stringifyActionArguments(args);
+      this.addExtras(paramsArray, extras);
       const params: string = paramsArray.join('&');
       const url = appsettings.apiAddress + `api/${endpoint}/deactivate?${params}`;
 
@@ -1184,6 +1173,10 @@ export class ApiService {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
     }
 
+    if (!!args.selectTemplate) {
+      paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
+    }
+
     if (!!args.countEntities) {
       paramsArray.push(`countEntities=true`);
     }
@@ -1201,12 +1194,16 @@ export class ApiService {
     const paramsArray: string[] = [
     ];
 
+    if (!!args.expand) {
+      paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+    }
+
     if (!!args.select) {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
     }
 
-    if (!!args.expand) {
-      paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+    if (!!args.selectTemplate) {
+      paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
     }
 
     if (!!args.returnEntities) {

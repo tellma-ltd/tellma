@@ -1,5 +1,5 @@
-export class SaveArguments {
-  expand?: string;
-  select?: string;
-  returnEntities ? = true;
+import { ActionArguments } from './action-arguments';
+
+// tslint:disable-next-line:no-empty-interface
+export interface SaveArguments extends ActionArguments {
 }

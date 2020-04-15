@@ -180,7 +180,7 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<string>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<string>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
         {
             await _repo.ReportDefinitions__Save(entities);
             Response.Headers.Set("x-definitions-version", Constants.Stale);

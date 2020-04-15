@@ -14,5 +14,12 @@
         /// properties of the principalentity and included entities are returned
         /// </summary>
         public string Select { get; set; }
+
+        /// <summary>
+        /// Each controller may associate some keywords with canned select parameters, so the API request
+        /// can supply only the keyword (instead of the full select param), if the controller recognizes 
+        /// the supplied keyword, the <see cref="Select"/> and <see cref="Expand"/> arguments are ignored
+        /// </summary>
+        public string SelectTemplate { get; set; }
     }
 }

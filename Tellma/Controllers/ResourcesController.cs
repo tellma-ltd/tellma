@@ -58,48 +58,27 @@ namespace Tellma.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isActive: true)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isActive: false)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Resource>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
         {
-            // Parse parameters
-            var expandExp = ExpandExpression.Parse(expand);
-            var selectExp = SelectExpression.Parse(select);
-            var idsArray = ids.ToArray();
-
             // Check user permissions
-            await CheckActionPermissions("IsActive", idsArray);
+            await CheckActionPermissions("IsActive", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Resources__Activate(ids, isActive);
 
-            if (returnEntities)
+            if (args.ReturnEntities ?? false)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
+                var response = await LoadDataByIdsAndTransform(ids, args);
 
                 trx.Complete();
                 return Ok(response);
@@ -282,7 +261,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {
             return await _repo.Resources__Save(DefinitionId, entities, returnIds: returnIds);
         }

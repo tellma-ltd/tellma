@@ -11,13 +11,15 @@ import { catchError, switchMap, tap, skip } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { EntitiesResponse } from '~/app/data/dto/get-response';
+import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { addSingleToWorkspace, addToWorkspace, computeSelectForDetailsPicker, FriendlyError } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService, MAXIMUM_COUNT } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
 import { EntityDescriptor, metadata } from '~/app/data/entities/base/metadata';
 import { environment } from '~/environments/environment';
+import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
+import { SaveArguments } from '~/app/data/dto/save-arguments';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -40,6 +42,15 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
   @Input()
   select: string;
+
+  @Input()
+  selectTemplate: string;
+
+  @Input()
+  additionalSelect: string; // Loaded after save in popup mode, should have been called saveSelect
+
+  @Input()
+  extraParams: { [key: string]: any };
 
   @Input()
   masterCrumb: string;
@@ -98,12 +109,6 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
 
   @Input()
   idString: string;
-
-  @Input()
-  additionalSelect: string; // Loaded in popup mode
-
-  @Input()
-  extraParams: { [key: string]: any };
 
   @Input()
   handleFreshExtras: (extras: { [key: string]: any }) => void;
@@ -451,8 +456,17 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
         // otherwise we need to fetch the usual id input of the screen
         const id = isCloning ? cloneId : this.idString;
 
+        // Prep the arguments
+        const args: GetByIdArguments = { };
+        if (!!this.selectTemplate) {
+          args.selectTemplate = this.selectTemplate;
+        } else {
+          args.expand = this.expand;
+          args.select = this.select;
+        }
+
         // server call
-        return this.crud.getById(id, { expand: this.expand, select: this.select }, this.extraParams).pipe(
+        return this.crud.getById(id, args, this.extraParams).pipe(
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
@@ -860,8 +874,20 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       }
 
       // prepare the save observable
-      const select = this.isPopupMode ? computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect) : this.select;
-      this.crud.save([this._editModel], { select, expand: this.expand, returnEntities: true }, this.extraParams).subscribe(
+      const args: SaveArguments = {
+        returnEntities: true
+      };
+
+      if (this.isPopupMode) {
+        // When saving in popup mode, only rely on additionalSelect supplied from the details-picker
+        args.select = computeSelectForDetailsPicker(this.entityDescriptor, this.additionalSelect);
+      } else {
+        args.expand = this.expand;
+        args.select = this.select;
+        args.selectTemplate = this.selectTemplate;
+      }
+
+      this.crud.save([this._editModel], args, this.extraParams).subscribe(
         (response: EntitiesResponse) => {
 
           // If we're updating, copy the old entity

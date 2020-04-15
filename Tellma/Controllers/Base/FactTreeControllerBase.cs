@@ -56,7 +56,7 @@ namespace Tellma.Controllers
             var ids = args.I ?? new List<TKey>();
 
             // Load data
-            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
+            var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
             var extras = await GetExtras(data, cancellation);
 
             // Transform and return

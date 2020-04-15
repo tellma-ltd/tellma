@@ -1,4 +1,4 @@
-import { EntitiesResponse } from './dto/get-response';
+import { EntitiesResponse } from './dto/entities-response';
 import { WorkspaceService } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { EntityWithKey } from './entities/base/entity-with-key';

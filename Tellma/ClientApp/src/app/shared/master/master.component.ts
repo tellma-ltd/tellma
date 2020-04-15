@@ -8,7 +8,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { GetResponse, EntitiesResponse } from '~/app/data/dto/get-response';
+import { GetResponse } from '~/app/data/dto/get-response';
+import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob, isSpecified } from '~/app/data/util';
 import {

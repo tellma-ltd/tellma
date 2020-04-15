@@ -47,6 +47,13 @@
         public string Select { get; set; }
 
         /// <summary>
+        /// Each controller may associate some keywords with canned select parameters, so the API request
+        /// can supply only the keyword (instead of the full select param), if the controller recognizes 
+        /// the supplied keyword, the <see cref="Select"/> and <see cref="Expand"/> arguments are ignored
+        /// </summary>
+        public string SelectTemplate { get; set; }
+
+        /// <summary>
         /// When set to true, instructs the server to include the <see cref="GetResponse{TEntity}.TotalCount"/> of the query
         /// (without the constraint of <see cref="Top"/> and <see cref="Skip"/>), the server
         /// counts results up to a certain maximum limit <see cref="FactControllerBase{TEntity}.MAXIMUM_COUNT"/>, or returns <see cref="int.MaxValue"/>

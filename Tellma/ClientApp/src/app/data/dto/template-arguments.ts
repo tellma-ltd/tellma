@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class TemplateArguments {
+export interface TemplateArguments {
   format?: 'csv' | 'xlsx';
 }
 

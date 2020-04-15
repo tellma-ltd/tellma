@@ -58,7 +58,7 @@ namespace Tellma.Controllers
             var ids = args.I ?? new List<TKey>();
 
             // Load the data
-            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby, cancellation);
+            var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby, cancellation);
             var extras = await GetExtras(data, cancellation);
 
             // Transform and Return
@@ -87,7 +87,7 @@ namespace Tellma.Controllers
                 return;
             }
 
-            await CheckActionPermissions(Constants.Delete, ids.ToArray());
+            await CheckActionPermissions(Constants.Delete, ids);
             await ValidateDeleteWithDescendantsAsync(ids);
             if (!ModelState.IsValid)
             {

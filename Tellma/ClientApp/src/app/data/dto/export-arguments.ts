@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 import { GetArguments } from './get-arguments';
 
-export class ExportArguments extends GetArguments {
+export interface ExportArguments extends GetArguments {
   format?: 'csv' | 'xlsx';
 }
 

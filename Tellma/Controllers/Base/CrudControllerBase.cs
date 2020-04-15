@@ -458,8 +458,6 @@ return the entities
             try
             {
                 // Parse arguments
-                var expand = ExpandExpression.Parse(args?.Expand);
-                var select = SelectExpression.Parse(args?.Select);
                 var returnEntities = args?.ReturnEntities ?? false;
 
                 // Trim all strings as a preprocessing step
@@ -486,13 +484,13 @@ return the entities
                 }
 
                 // Save and retrieve Ids
-                var ids = await SaveExecuteAsync(entities, expand, returnEntities);
+                var ids = await SaveExecuteAsync(entities, returnEntities);
 
                 // Use the Ids to retrieve the items
                 EntitiesResponse<TEntity> result = null;
                 if (returnEntities && ids != null)
                 {
-                    result = await LoadDataByIdsAndTransform(ids.ToArray(), expand, select);
+                    result = await LoadDataByIdsAndTransform(ids, args);
                     await PostProcessSaveResponse(result);
                 }
 
@@ -527,7 +525,7 @@ return the entities
         /// <summary>
         /// Persists the entities in the database, either creating them or updating, the call to this method is already wrapped inside a transaction
         /// </summary>
-        protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, ExpandExpression expand, bool returnIds);
+        protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, bool returnIds);
 
         /// <summary>
         /// Retrieves the <see cref="TransactionOptions"/> that are used in <see cref="Save(List{TEntityForSave}, SaveArguments)"/>,
@@ -578,7 +576,7 @@ return the entities
             }
 
             // Permissions
-            await CheckActionPermissions("Delete", ids.ToArray());
+            await CheckActionPermissions("Delete", ids);
 
             // Validate
             await DeleteValidateAsync(ids);

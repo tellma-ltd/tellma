@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Globalization;
 using System.Text.Encodings.Web;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Services.Email
 {
@@ -26,13 +27,14 @@ namespace Tellma.Services.Email
         public string MakeInvitationEmail(string nameOfRecipient, string nameOfInvitor, int validityInDays, string userId, string callbackUrl, CultureInfo culture = null)
         {
             culture ??= CultureInfo.CurrentUICulture;
-            var localizer = _localizer.WithCulture(culture);
-            string greeting = localizer["InvitationEmailGreeting0", nameOfRecipient];
-            string appName = localizer["AppName"];
-            string body = localizer["InvitationEmailBody012", nameOfInvitor, appName, validityInDays];
-            string buttonLabel = localizer["InvitationEmailButtonLabel"];
-            string conclusion = localizer["InvitationEmailConclusion"];
-            string signature = localizer["InvitationEmailSignature0", appName];
+            using var _ = new CultureScope(culture);
+
+            string greeting = _localizer["InvitationEmailGreeting0", nameOfRecipient];
+            string appName = _localizer["AppName"];
+            string body = _localizer["InvitationEmailBody012", nameOfInvitor, appName, validityInDays];
+            string buttonLabel = _localizer["InvitationEmailButtonLabel"];
+            string conclusion = _localizer["InvitationEmailConclusion"];
+            string signature = _localizer["InvitationEmailSignature0", appName];
 
             string mainContent = $@"
         <p style=""font-weight: bold;font-size: 120%;"">
@@ -53,20 +55,19 @@ namespace Tellma.Services.Email
             {signature}
         </p>
 ";
-
             return MakeEmail(mainContent, culture);
         }
 
         public string MakeEmail(string mainContent, CultureInfo culture = null)
         {
             culture ??= CultureInfo.CurrentUICulture;
-            var localizer = _localizer.WithCulture(culture);
+            using var _ = new CultureScope(culture);
 
-            var appName = localizer["AppName"];
+            var appName = _localizer["AppName"];
             var appDomain = AppDomain();
-            var copyRightNotice = localizer["CopyrightNotice0", DateTime.Today.Year];
-            var privacyPolicy = localizer["PrivacyPolicy"];
-            var termsOfService = localizer["TermsOfService"];
+            var copyRightNotice = _localizer["CopyrightNotice0", DateTime.Today.Year];
+            var privacyPolicy = _localizer["PrivacyPolicy"];
+            var termsOfService = _localizer["TermsOfService"];
             var direction = culture.TextInfo.IsRightToLeft ? "rtl" : "ltr";
 
             string result =

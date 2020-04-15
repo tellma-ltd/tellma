@@ -19,7 +19,8 @@ import {
 import { Router, Params } from '@angular/router';
 import { displayEntity, displayValue } from '~/app/shared/auto-cell/auto-cell.component';
 import { Entity } from '~/app/data/entities/base/entity';
-import { EntitiesResponse, GetResponse } from '~/app/data/dto/get-response';
+import { GetResponse } from '~/app/data/dto/get-response';
+import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { ReportOrderDirection, ChartType } from '~/app/data/entities/report-definition';
 
 export enum ReportView {

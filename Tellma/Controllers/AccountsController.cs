@@ -42,48 +42,27 @@ namespace Tellma.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Account>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isDeprecated: false)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isDeprecated: false), _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Account>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    select: args.Select,
-                    isDeprecated: true)
-            , _logger);
+            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isDeprecated: true), _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Account>>> Activate(List<int> ids, bool returnEntities, string expand, string select, bool isDeprecated)
+        private async Task<ActionResult<EntitiesResponse<Account>>> ActivateImpl(List<int> ids, ActionArguments args, bool isDeprecated)
         {
-            // Parse parameters
-            var expandExp = ExpandExpression.Parse(expand);
-            var selectExp = SelectExpression.Parse(select);
-            var idsArray = ids.ToArray();
-
             // Check user permissions
-            await CheckActionPermissions("IsDeprecated", idsArray);
+            await CheckActionPermissions("IsDeprecated", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
             await _repo.Accounts__Deprecate(ids, isDeprecated);
 
-            if (returnEntities)
+            if (args.ReturnEntities ?? false)
             {
-                var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
+                var response = await LoadDataByIdsAndTransform(ids, args);
 
                 trx.Complete();
                 return Ok(response);
@@ -215,7 +194,7 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, bool returnIds)
         {
             return await _repo.Accounts__Save(entities, returnIds: returnIds);
         }
