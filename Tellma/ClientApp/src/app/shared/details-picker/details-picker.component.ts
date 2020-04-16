@@ -160,7 +160,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           this.chooseItem(null);
         }
       }),
-      debounceTime(50), // 200 // takes it easy on the poor server
+      debounceTime(20), // 200 // takes it easy on the poor server
       switchMap(term => {
         if (!term || term.length < this.MIN_CHARS_TO_SEARCH) {
           return of(null);
