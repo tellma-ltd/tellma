@@ -1,13 +1,12 @@
 ﻿namespace Tellma.Controllers.Dto
 {
+    /// <summary>
+    /// Almost all API handlers that return data will expect arguments that contain "select"
+    /// and "expand" to specify what should be returned. All such argument DTOs inherit from
+    /// this base class
+    /// </summary>
     public class SelectExpandArguments
     {
-        /// <summary>
-        /// Equivalent to linq's "Include", determines which related entities to include in 
-        /// the result. If left empty then do not include any related entities
-        /// </summary>
-        public string Expand { get; set; }
-
         /// <summary>
         /// Equivalent to linq's "Select", determines which properties of the principal entities
         /// or of the expanded related entities to return in the result. If left empty then all
@@ -17,5 +16,11 @@
         /// select is enormous and unweildly yet very common
         /// </summary>
         public string Select { get; set; }
+
+        /// <summary>
+        /// Equivalent to linq's "Include", determines which related entities to include in 
+        /// the result. If left empty then do not include any related entities
+        /// </summary>
+        public string Expand { get; set; }
     }
 }
