@@ -134,7 +134,7 @@ namespace Tellma.Controllers
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse(args.OrderBy);
             var expand = ExpandExpression.Parse(args.Expand);
-            var select = SelectExpression.Parse(args.Select);
+            var select = ParseSelect(args.Select);
 
             // Prepare the query
             var query = GetRepository().Query<TEntity>();
@@ -689,6 +689,17 @@ namespace Tellma.Controllers
             var dtOffset = new DateTimeOffset(value.Value, offset);
 
             return dtOffset;
+        }
+
+        /// <summary>
+        /// Select argument may get huge and unweildly in certain cases, this method offers a chance
+        /// for controllers to optimize queries by understanding special concise "shorthands" in
+        /// the select string that get expanded into a proper select expression. This way clients
+        /// don't have to send large select string in the request for common scenarios
+        /// </summary>
+        protected virtual SelectExpression ParseSelect(string select)
+        {
+            return SelectExpression.Parse(select);
         }
     }
 }

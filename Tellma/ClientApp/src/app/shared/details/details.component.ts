@@ -47,7 +47,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   selectTemplate: string;
 
   @Input()
-  additionalSelect: string; // Loaded after save in popup mode, should have been called saveSelect
+  additionalSelect: string; // Loaded after save in popup mode, should have been called popupSaveSelect
 
   @Input()
   extraParams: { [key: string]: any };
@@ -456,16 +456,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
         // otherwise we need to fetch the usual id input of the screen
         const id = isCloning ? cloneId : this.idString;
 
-        // Prep the arguments
-        const args: GetByIdArguments = { };
-        if (!!this.selectTemplate) {
-          args.selectTemplate = this.selectTemplate;
-        } else {
-          args.expand = this.expand;
-          args.select = this.select;
-        }
-
         // server call
+        const args: GetByIdArguments = { expand: this.expand, select: this.select };
         return this.crud.getById(id, args, this.extraParams).pipe(
           tap((response: GetByIdResponse) => {
 
@@ -884,7 +876,6 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       } else {
         args.expand = this.expand;
         args.select = this.select;
-        args.selectTemplate = this.selectTemplate;
       }
 
       this.crud.save([this._editModel], args, this.extraParams).subscribe(

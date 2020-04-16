@@ -1,6 +1,5 @@
-export interface ActionArguments {
+import { SelectExpandArguments } from './select-expand-arguments';
+
+export interface ActionArguments extends SelectExpandArguments {
     returnEntities?: boolean;
-    expand?: string;
-    select?: string;
-    selectTemplate?: string;
 }

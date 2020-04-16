@@ -3,7 +3,7 @@
     /// <summary>
     /// DTO that carries the parameters for most Http GET all requests
     /// </summary>
-    public class GetArguments
+    public class GetArguments : SelectExpandArguments
     {
         private const int DEFAULT_PAGE_SIZE = 25;
 
@@ -32,26 +32,6 @@
         /// query experience
         /// </summary>
         public string Filter { get; set; }
-
-        /// <summary>
-        /// Equivalent to linq's "Include", determines which related entities to include in 
-        /// the result. If left empty then do not include any related entities
-        /// </summary>
-        public string Expand { get; set; }
-
-        /// <summary>
-        /// Equivalent to linq's "Select", determines which properties of the principal entities
-        /// or of the expanded related entities to return in the result. If left empty then all
-        /// properties of the principal entity and expanded entities are returned
-        /// </summary>
-        public string Select { get; set; }
-
-        /// <summary>
-        /// Each controller may associate some keywords with canned select parameters, so the API request
-        /// can supply only the keyword (instead of the full select param), if the controller recognizes 
-        /// the supplied keyword, the <see cref="Select"/> and <see cref="Expand"/> arguments are ignored
-        /// </summary>
-        public string SelectTemplate { get; set; }
 
         /// <summary>
         /// When set to true, instructs the server to include the <see cref="GetResponse{TEntity}.TotalCount"/> of the query

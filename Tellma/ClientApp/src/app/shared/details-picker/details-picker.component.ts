@@ -160,7 +160,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           this.chooseItem(null);
         }
       }),
-      debounceTime(200), // takes it easy on the poor server
+      debounceTime(50), // 200 // takes it easy on the poor server
       switchMap(term => {
         if (!term || term.length < this.MIN_CHARS_TO_SEARCH) {
           return of(null);
@@ -170,18 +170,13 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
           // Prepare the arguments
           const args: GetArguments = {
+            expand: this.expand,
+            select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect),
             search: term,
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
             filter: this.queryFilter
           };
-
-          if (!!this.selectTemplate) {
-            args.selectTemplate = this.selectTemplate;
-          } else {
-            args.expand = this.expand;
-            args.select = computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect);
-          }
 
           // Call the API and return the observable
           return this.api.get(args).pipe(
@@ -254,13 +249,10 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   private doFetchUnloadedItem(id: string | number) {
-    const args: GetByIdArguments = {};
-    if (!!this.selectTemplate) {
-      args.selectTemplate = this.selectTemplate;
-    } else {
-      args.expand = this.expand;
-      args.select = computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect);
-    }
+    const args: GetByIdArguments = {
+      expand: this.expand,
+      select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect),
+    };
 
     return this.api.getById(id, args).pipe(
       tap((response: GetByIdResponse) => {

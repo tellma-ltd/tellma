@@ -52,7 +52,7 @@ namespace Tellma.Controllers
 
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
-            var select = SelectExpression.Parse(args.Select);
+            var select = ParseSelect(args.Select);
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse("Node");
             var ids = args.I ?? new List<TKey>();

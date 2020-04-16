@@ -298,11 +298,6 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Select);
-                var expandExp = ExpandExpression.Parse(args.Expand);
-                var returnEntities = args.ReturnEntities ?? false;
-
                 // Check user permissions
                 await CheckActionPermissions("State", ids);
 
@@ -340,7 +335,7 @@ namespace Tellma.Controllers
 
                 await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
-                if (returnEntities)
+                if (args.ReturnEntities ?? false)
                 {
                     var response = await LoadDataByIdsAndTransform(ids, args);
 
@@ -1208,25 +1203,36 @@ namespace Tellma.Controllers
 
         #region Details Select
 
-        protected override SelectExpression SelectTemplate(string selectTemplate)
+        protected override SelectExpression ParseSelect(string select)
         {
-            if (selectTemplate == "Details")
+            // We provide a shorthand notation for common and huge select
+            // strings, this one is usually requested from the document details
+            // screen and it contains over 260 atoms
+            var shorthand = "$Details";
+            if (select == null)
             {
-                return _detailsSelect;
-            } 
+                return null;
+            }
+            else if (select.Trim() == shorthand)
+            {
+                return _detailsSelectExpression;
+            }
             else
             {
-                return base.SelectTemplate(selectTemplate);
+                select = select.Replace(shorthand, _detailsSelect);
+                return base.ParseSelect(select);
             }
         }
 
-        private static readonly SelectExpression _detailsSelect = new SelectExpression(DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly string _detailsSelect = string.Join(',', DocumentPaths());
+        private static readonly SelectExpression _detailsSelectExpression = 
+            new SelectExpression(DocumentPaths().Select(a => SelectAtom.Parse(a)));
 
         // ------------------------------------------------
         // Paths to return on the level of each entity type
         // ------------------------------------------------
 
-        private static IEnumerable<string> DocumentPaths() => DocumentProps
+        public static IEnumerable<string> DocumentPaths() => DocumentProps
             .Concat(LinePaths(nameof(Document.Lines)))
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
@@ -1243,10 +1249,10 @@ namespace Tellma.Controllers
             .Concat(UserPaths(nameof(Document.CreatedBy)))
             .Concat(UserPaths(nameof(Document.ModifiedBy)))
             .Concat(UserPaths(nameof(Document.Assignee)));
-        private static IEnumerable<string> LinePaths(string path = null) => LineProps
+        public static IEnumerable<string> LinePaths(string path = null) => LineProps
             .Concat(EntryPaths(nameof(Line.Entries)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> EntryPaths(string path = null) => EntryProps
+        public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
@@ -1256,41 +1262,42 @@ namespace Tellma.Controllers
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
+        public static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
             .Concat(UserPaths(nameof(Attachment.CreatedBy)))
             .Concat(UserPaths(nameof(Attachment.ModifiedBy)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> DocumentStateChangePaths(string path = null) => DocumentStateChangeProps
+        public static IEnumerable<string> DocumentStateChangePaths(string path = null) => DocumentStateChangeProps
             .Concat(UserPaths(nameof(DocumentStateChange.ModifiedBy)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> DocumentAssignmentPaths(string path = null) => DocumentAssignmentProps 
+        public static IEnumerable<string> DocumentAssignmentPaths(string path = null) => DocumentAssignmentProps
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> AgentPaths(string path = null) => AgentProps
+        public static IEnumerable<string> AgentPaths(string path = null) => AgentProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> EntryResourcePaths(string path = null) => 
-            CurrencyPaths(nameof(Resource.Currency))
-            .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
+        public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
+            .Concat( // Entry Resource also adds the Currency
+                CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            );
+        public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
             .Concat(ResourceUnitPaths(nameof(Resource.Units)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
+        public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
             .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> CenterPaths(string path = null) => CenterProps
+        public static IEnumerable<string> CenterPaths(string path = null) => CenterProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> UnitPaths(string path = null) => UnitProps
+        public static IEnumerable<string> UnitPaths(string path = null) => UnitProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> CurrencyPaths(string path = null) => CurrencyProps
+        public static IEnumerable<string> CurrencyPaths(string path = null) => CurrencyProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> UserPaths(string path = null) => UserProps
+        public static IEnumerable<string> UserPaths(string path = null) => UserProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> LookupPaths(string path = null) => LookupProps
+        public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
+        public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> AccountPaths(string path = null) => AccountProps
+        public static IEnumerable<string> AccountPaths(string path = null) => AccountProps
             .Concat(AccountTypePaths(nameof(Account.AccountType)))
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
@@ -1298,7 +1305,7 @@ namespace Tellma.Controllers
             .Concat(AgentPaths(nameof(Account.Agent)))
             .Concat(ResourcePaths(nameof(Account.Resource)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        private static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
+        public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
             .Select(p => path == null ? p : $"{path}/{p}");
 
         // -------------------------------------------------------------

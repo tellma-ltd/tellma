@@ -80,13 +80,8 @@ namespace Tellma.Controllers
         protected virtual async Task<TEntity> GetByIdLoadData(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
-            ExpandExpression expand = null;
-            SelectExpression select = SelectTemplate(args?.SelectTemplate);
-            if (select == null)
-            {
-                expand = ExpandExpression.Parse(args?.Expand);
-                select = SelectExpression.Parse(args?.Select);
-            } 
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = ParseSelect(args?.Select);
 
             // Load the data
             var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, cancellation);
@@ -100,11 +95,6 @@ namespace Tellma.Controllers
 
             // Return
             return entity;
-        }
-
-        protected virtual SelectExpression SelectTemplate(string selectTemplate)
-        {
-            return null;
         }
 
         ///////////////////
@@ -124,13 +114,8 @@ namespace Tellma.Controllers
             var serverTime = DateTimeOffset.UtcNow;
 
             // Get the data
-            SelectExpression select = SelectTemplate(args?.SelectTemplate);
-            ExpandExpression expand = null;
-            if (select == null)
-            {
-                select = SelectExpression.Parse(args?.Select);
-                expand = ExpandExpression.Parse(args?.Expand);
-            }
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = ParseSelect(args?.Select);
             var data = await GetEntitiesByIds(ids, expand, select, noCancel);
 
             // Get the extras

@@ -292,6 +292,8 @@ namespace Tellma.Controllers
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", titleSingular]);
             }
         }
+
+        protected override SelectExpression ParseSelect(string select) => ResourceControllerUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
     // Generic API, allows reading all resources
@@ -345,6 +347,8 @@ namespace Tellma.Controllers
         {
             return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
+
+        protected override SelectExpression ParseSelect(string select) => ResourceControllerUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
     internal class ResourceControllerUtil
@@ -369,5 +373,21 @@ namespace Tellma.Controllers
 
             return query;
         }
+
+        public static SelectExpression ParseSelect(string select, Func<string, SelectExpression> baseFunc)
+        {
+            string shorthand = "$DocumentDetailsForEntry";
+            if (select == null)
+            {
+                return null;
+            }
+            else
+            {
+                select = select.Replace(shorthand, _documentDetailsSelect);
+                return baseFunc(select);
+            }
+        }
+
+        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsController.EntryResourcePaths());
     }
 }

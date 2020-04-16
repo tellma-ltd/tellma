@@ -1,5 +1,5 @@
-export interface GetByIdArguments {
-  expand?: string;
-  select?: string;
-  selectTemplate?: string;
+import { SelectExpandArguments } from './select-expand-arguments';
+
+// tslint:disable-next-line:no-empty-interface
+export interface GetByIdArguments extends SelectExpandArguments {
 }

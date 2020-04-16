@@ -791,10 +791,6 @@ export class ApiService {
           paramsArray.push(`select=${encodeURIComponent(args.select)}`);
         }
 
-        if (!!args.selectTemplate) {
-          paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
-        }
-
         this.addExtras(paramsArray, extras);
 
         const params: string = paramsArray.join('&');
@@ -1158,7 +1154,6 @@ export class ApiService {
 
     if (!!args.orderby) {
       paramsArray.push(`orderBy=${args.orderby}`);
-      paramsArray.push(`desc=${!!args.desc}`);
     }
 
     if (!!args.filter) {
@@ -1171,10 +1166,6 @@ export class ApiService {
 
     if (!!args.select) {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
-    }
-
-    if (!!args.selectTemplate) {
-      paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
     }
 
     if (!!args.countEntities) {
@@ -1200,10 +1191,6 @@ export class ApiService {
 
     if (!!args.select) {
       paramsArray.push(`select=${encodeURIComponent(args.select)}`);
-    }
-
-    if (!!args.selectTemplate) {
-      paramsArray.push(`selectTemplate=${encodeURIComponent(args.selectTemplate)}`);
     }
 
     if (!!args.returnEntities) {

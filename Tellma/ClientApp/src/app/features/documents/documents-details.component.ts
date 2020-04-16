@@ -135,35 +135,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public reasonDetails: string;
   public reasonId: number;
 
-  public selectTemplate = 'Details';
-
-  // public expand = [
-  //   'DebitAgent', 'CreditAgent', 'NotedAgent', 'InvestmentCenter', 'Unit', 'Currency',
-  //   'DocumentLookup1', 'DocumentLookup2', 'DocumentLookup3', 'CreatedBy', 'ModifiedBy', 'Assignee']
-  //   .join(',') + ',' +
-
-  //   // Entry Account
-  //   ['Currency', 'Resource/Units', 'Agent', /* 'Resource/Currency', */
-  //     'EntryType', 'AccountType', 'Center']
-  //     .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
-
-  //   // Entry
-  //   ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
-  //     'EntryType', 'NotedAgent', 'Center', 'Unit']
-  //     .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
-
-  //   // Attachments
-  //   ['CreatedBy', 'ModifiedBy']
-  //     .map(prop => `Attachments/${prop}`).join(',') + ',' +
-
-  //   // StateHistory
-  //   ['ModifiedBy']
-  //     .map(prop => `StatesHistory/${prop}`).join(',') + ',' +
-
-  //   // Assignment history
-  //   ['Assignee', 'CreatedBy']
-  //     .map(prop => `AssignmentsHistory/${prop}`).join(',');
-
+  public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
+  public additionalSelectAccount = '$DocumentDetails';
+  public additionalSelectResource = '$DocumentDetailsForEntry';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -568,7 +542,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!!this.assigneeId) {
       this.documentsApi.assign([doc.Id], {
         returnEntities: true,
-        selectTemplate: this.selectTemplate,
+        select: this.select,
         assigneeId: this.assigneeId,
         comment: this.comment
       }, { includeRequiredSignatures: true }).pipe(
@@ -1110,57 +1084,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!account ? account.CenterId : null;
   }
 
-  // Account
-
-  public additionalSelectAccount =
-    // AccountType
-    [
-      // Misc
-      'EntryTypeParentId', 'IsResourceClassification',
-
-      // Definitions
-      'AgentDefinitionId', 'NotedAgentDefinitionId', 'ResourceDefinitionId',
-
-      // Assignments
-      'CurrencyAssignment', 'AgentAssignment', 'ResourceAssignment',
-      'CenterAssignment', 'EntryTypeAssignment', 'IdentifierAssignment',
-      'NotedAgentAssignment',
-
-      // Labels
-      'DueDateLabel', 'DueDateLabel2', 'DueDateLabel3',
-      'Time1Label', 'Time1Label2', 'Time1Label3',
-      'Time2Label', 'Time2Label2', 'Time2Label3',
-      'ExternalReferenceLabel', 'ExternalReferenceLabel2', 'ExternalReferenceLabel3',
-      'AdditionalReferenceLabel', 'AdditionalReferenceLabel2', 'AdditionalReferenceLabel3',
-      'NotedAgentNameLabel', 'NotedAgentNameLabel2', 'NotedAgentNameLabel3',
-      'NotedAmountLabel', 'NotedAmountLabel2', 'NotedAmountLabel3',
-      'NotedDateLabel', 'NotedDateLabel2', 'NotedDateLabel3'
-    ].map(prop => `AccountType/${prop}`).join(',') + ',' +
-
-    // Center
-    ['Name', 'Name2', 'Name3']
-      .map(prop => `Center/${prop}`).join(',') + ',' +
-
-    // EntryType
-    ['Name', 'Name2', 'Name3']
-      .map(prop => `EntryType/${prop}`).join(',') + ',' +
-
-    // Currency
-    ['Name', 'Name2', 'Name3', 'E']
-      .map(prop => `Currency/${prop}`).join(',') + ',' +
-
-    // Agent
-    ['Name', 'Name2', 'Name3', 'DefinitionId']
-      .map(prop => `Agent/${prop}`).join(',') + ',' +
-
-    // Resource
-    ['Name', 'Name2', 'Name3', 'DefinitionId']
-      .map(prop => `Resource/${prop}`).join(',') + ',' +
-
-    // Resource/Units
-    ['Unit/Name', 'Unit/Name2', 'Unit/Name3', 'Multiplier']
-      .map(prop => `Resource/Units/${prop}`).join(',');
-
   // AgentId
 
   public showAgent_Manual(entry: Entry): boolean {
@@ -1210,8 +1133,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // ResourceId
-
-  public additionalSelectResource = `Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier`;
 
   public showResource_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
@@ -1975,7 +1896,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineIds = this.lineIds(signature);
     this.documentsApi.sign(lineIds, {
       returnEntities: true,
-      selectTemplate: this.selectTemplate,
+      select: this.select,
       onBehalfOfUserId: signature.OnBehalfOfUserId,
       toState: yes ? Math.abs(signature.ToState) : -Math.abs(signature.ToState),
       roleId: signature.RoleId,
@@ -2000,8 +1921,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         if (confirmed) {
           this.documentsApi.unsign(this.signatureIds(signature), {
             returnEntities: true,
-            selectTemplate: this.selectTemplate,
-            select: undefined
+            select: this.select
           }, { includeRequiredSignatures: true }).pipe(
             tap(res => {
               addToWorkspace(res, this.workspace);
@@ -2771,7 +2691,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
     fn([doc.Id], {
       returnEntities: true,
-      selectTemplate: this.selectTemplate,
+      select: this.select,
     }, { includeRequiredSignatures: true }).pipe(
       tap(res => {
         addToWorkspace(res, this.workspace);

@@ -328,7 +328,7 @@ namespace Tellma.Controllers
 
                 var query = GetRepository()
                     .Query<TEntity>()
-                    .Select(SelectExpression.Parse("Id"))
+                    .Select(nameof(EntityWithKey<TKey>.Id))
                     .FilterByIds(ids.ToArray());
 
                 var filteredQuery = query.Filter(permissionsFilter);
