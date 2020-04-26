@@ -5,7 +5,7 @@
 -- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([PostingDate], [Id]): Clustered index
 	[Id]							INT				CONSTRAINT [PK_Documents] PRIMARY KEY IDENTITY,
 	-- Common to all document types
-	[DefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
+	[DefinitionId]					INT				NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]),
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	CONSTRAINT [IX_Documents__DocumentDefinitionId_SerialNumber] UNIQUE ([DefinitionId], [SerialNumber]),
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__State] CHECK ([State] BETWEEN -1 AND +1),
@@ -23,12 +23,12 @@
 	[Memo]							NVARCHAR (255),
 	[MemoIsCommon]					BIT				NOT NULL DEFAULT 1,
 	-- Agent Definition is specified in DocumentDefinition
-	[DebitAgentId]					INT	CONSTRAINT [FK_Documents__DebitAgentId] REFERENCES dbo.Agents([Id]), 
-	[DebitAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[CreditAgentId]					INT	CONSTRAINT [FK_Documents__CreditAgentId] REFERENCES dbo.Agents([Id]), 
-	[CreditAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
-	[NotedAgentId]					INT	CONSTRAINT [FK_Documents__NotedAgentId] REFERENCES dbo.Agents([Id]), 
-	[NotedAgentIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[DebitRelationId]				INT	CONSTRAINT [FK_Documents__DebitRelationId] REFERENCES dbo.[Relations]([Id]), 
+	[DebitRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
+	[CreditRelationId]				INT	CONSTRAINT [FK_Documents__CreditRelationId] REFERENCES dbo.[Relations]([Id]), 
+	[CreditRelationIsCommon]		BIT				NOT NULL DEFAULT 0,
+	[NotedRelationId]				INT	CONSTRAINT [FK_Documents__NotedRelationId] REFERENCES dbo.[Relations]([Id]), 
+	[NotedRelationIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[InvestmentCenterId]			INT,
 	[InvestmentCenterIsCommon]		BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),

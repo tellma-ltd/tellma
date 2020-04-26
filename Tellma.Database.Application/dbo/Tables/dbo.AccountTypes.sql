@@ -11,31 +11,13 @@
 	[Description3]				NVARCHAR (1024),
 	[Node]						HIERARCHYID			NOT NULL CONSTRAINT [UX_AccountTypes__Node] UNIQUE CLUSTERED,
 	[IsAssignable]				BIT					NOT NULL DEFAULT 1,
-	[CurrencyAssignment]		NCHAR (1)			NOT NULL DEFAULT N'A' CONSTRAINT [CK_AccountTypes__CurrencyAssignment] CHECK([CurrencyAssignment] IN (N'A',N'E')),
-	[AgentAssignment]			NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__AgentAssignment] CHECK([AgentAssignment] IN (N'N',N'A',N'E')),
-	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
-
 	[ResourceAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__ResourceAssignment] CHECK([ResourceAssignment] IN (N'N',N'A',N'E')),
-	[ResourceDefinitionId]		NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__ResourceDefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 
 	[IsResourceClassification]	AS CAST(
 										IIF([ResourceAssignment] IN (N'A',N'E')
 										AND [Code] NOT IN (N'CurrentInventoriesInTransit', N'WorkInProgress'), 1, 0)
 									AS BIT) PERSISTED,
-	[CenterAssignment]			NCHAR (1)			NOT NULL DEFAULT N'A' CONSTRAINT [CK_AccountTypes__CenterAssignment] CHECK([CenterAssignment] IN (N'A',N'E')),
-	[EntryTypeAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__EntryTypeAssignment] CHECK([EntryTypeAssignment] IN (N'N',N'A',N'E')),
 	[EntryTypeParentId]			INT					CONSTRAINT [FK_AccountTypes__EntryTypeParentId] REFERENCES [dbo].[EntryTypes] ([Id]),	
-	CONSTRAINT [CK_AccountTypes__EntryTypeAssignment_EntryTypeParentId] CHECK(
-		[EntryTypeAssignment] = N'N' AND [EntryTypeParentId] IS NULL OR
-		[EntryTypeAssignment] <> N'N' AND [EntryTypeParentId] IS NOT NULL
-		),
-	[IdentifierAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__IdentifierAssignment] CHECK([IdentifierAssignment] IN (N'N',N'A',N'E')),
-	[IdentifierLabel]			NVARCHAR (50),
-	[IdentifierLabel2]			NVARCHAR (50),
-	[IdentifierLabel3]			NVARCHAR (50),
-	[NotedAgentAssignment]		NCHAR (1)			NOT NULL DEFAULT N'N' CONSTRAINT [CK_AccountTypes__NotedAgentAssignment] CHECK([NotedAgentAssignment] IN (N'N',N'E')),
-	[NotedAgentDefinitionId]	NVARCHAR (50)		CONSTRAINT [FK_AccountTypes__NotedAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
-
 	[DueDateLabel]				NVARCHAR (50),
 	[DueDateLabel2]				NVARCHAR (50),
 	[DueDateLabel3]				NVARCHAR (50),

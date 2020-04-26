@@ -25,8 +25,8 @@ BEGIN -- Inserting
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 12, @DefinitionId = N'LeaseOutIssueAndSalesInvoiceNoVAT';
 	UPDATE @WL
 	SET
-		[AgentId0] = @Washm,
-		[AgentId1] = @1Babylon,
+		[RelationId0] = @Washm,
+		[RelationId1] = @1Babylon,
 		[ResourceId0] = @MonthlySubscription,
 		[Quantity0]	= 1,
 		[UnitId0] = @Month,

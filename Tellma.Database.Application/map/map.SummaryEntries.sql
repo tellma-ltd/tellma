@@ -2,7 +2,6 @@
 	@fromDate Date = '01.01.2018',
 	@toDate Date = '01.01.2019',
 	@CenterId INT = NULL,
-	@AgentDefinitionId NVARCHAR(50) = NULL,
 	@AccountTypeCode NVARCHAR (255) = NULL
 )
 RETURNS TABLE AS
@@ -15,11 +14,10 @@ RETURN
 	),
 	ReportAccounts AS (
 		SELECT A.[Id] FROM dbo.[Accounts] A
-		JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.Id
+		JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.Id
 		WHERE
 			(@CenterId IS NULL OR [CenterId] = @CenterId)
-		AND (@AgentDefinitionId IS NULL OR AC.[AgentDefinitionId]= @AgentDefinitionId)
-		AND (@AccountTypeCode IS NULL OR [AccountTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
+		AND (@AccountTypeCode IS NULL OR [IfrsTypeId] IN (SELECT [Id] FROM AccountTypesSubtree))
 	),
 	OpeningBalances AS (
 		SELECT
@@ -79,7 +77,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.[EntryTypeId], A.[AccountTypeId], A.[CustomClassificationId], A.[ResourceId], A.[AgentId],-- A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[IfrsTypeId], A.[ClassificationId], A.[ResourceId], A.[RelationId],-- A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents__Preprocess]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
@@ -18,7 +18,7 @@ BEGIN
 
 	SET NOCOUNT ON;
 	DECLARE @FunctionalCurrencyId NCHAR(3) = dbo.fn_FunctionalCurrencyId();
-	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId NVARCHAR(50);
+	DECLARE @ScriptWideLines dbo.WideLineList, @ScriptLineDefinitions dbo.StringList, @LineDefinitionId INT;
 	DECLARE @WL dbo.[WideLineList], @PreprocessedWideLines dbo.[WideLineList];
 	DECLARE @ScriptLines dbo.LineList, @ScriptEntries dbo.EntryList;
 	DECLARE @PreprocessedDocuments [dbo].[DocumentList], @PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
@@ -48,55 +48,47 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'CurrencyId';
 	UPDATE E
-	SET E.AgentId = BE.AgentId
+	SET E.[RelationId] = BE.[RelationId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
-	AND LDC.ColumnName = N'AgentId';
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+	AND LDC.ColumnName = N'RelationId';
 	UPDATE E
 	SET E.ResourceId = BE.ResourceId
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'ResourceId';
-	UPDATE E
-	SET E.AgentId = BE.AgentId
-	FROM @E E
-	JOIN dbo.Entries BE ON E.Id = BE.Id
-	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
-	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
-	AND LDC.ColumnName = N'AgentId';
 	UPDATE E
 	SET E.CenterId = BE.CenterId
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'CenterId';
 	UPDATE E
-	SET E.AgentId = BE.AgentId
+	SET E.EntryTypeId = BE.EntryTypeId
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
-	AND LDC.ColumnName = N'AgentId';
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+	AND LDC.ColumnName = N'EntryTypeId';
 	UPDATE E
 	SET E.DueDate = BE.DueDate
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'DueDate';
 	UPDATE E
 	SET E.MonetaryValue = BE.MonetaryValue
@@ -104,7 +96,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'MonetaryValue';
 	UPDATE E
 	SET E.Quantity = BE.Quantity
@@ -112,7 +104,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'Quantity';
 	UPDATE E
 	SET E.UnitId = BE.UnitId
@@ -120,7 +112,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'UnitId';
 	UPDATE E
 	SET E.Time1 = BE.Time1
@@ -128,7 +120,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'Time1';
 	UPDATE E
 	SET E.Time2 = BE.Time2
@@ -136,7 +128,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'Time2';
 	UPDATE E
 	SET E.ExternalReference = BE.ExternalReference
@@ -144,7 +136,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'ExternalReference';
 	UPDATE E
 	SET E.AdditionalReference = BE.AdditionalReference
@@ -152,23 +144,23 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'AdditionalReference';
 	UPDATE E
-	SET E.NotedAgentId = BE.NotedAgentId
+	SET E.[NotedRelationId] = BE.[NotedRelationId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
-	AND LDC.ColumnName = N'NotedAgentId';
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
+	AND LDC.ColumnName = N'NotedRelationId';
 	UPDATE E
 	SET E.NotedAgentName = BE.NotedAgentName
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedAgentName';
 	UPDATE E
 	SET E.NotedAmount = BE.NotedAmount
@@ -176,7 +168,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedAmount';
 	UPDATE E
 	SET E.NotedDate = BE.NotedDate
@@ -184,7 +176,7 @@ BEGIN --  Overwrite input with DB data that is read only
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
-	WHERE LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0
+	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedDate';
 END
 	-- Get line definition which have script to run
@@ -246,22 +238,21 @@ END
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
-		E.[CurrencyId]				= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
-		E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
-		E.[CenterId]				= COALESCE(A.[CenterId], E.[CenterId]),
-	--	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
-		E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+		E.[CurrencyId]			= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[RelationId]			= COALESCE(A.[RelationId], E.[RelationId]),
+		E.[ContractId]			= COALESCE(A.[RelationId], E.[ContractId]),
+		E.[ResourceId]			= COALESCE(A.[ResourceId], E.[ResourceId]),
+		E.[CenterId]			= COALESCE(A.[CenterId], E.[CenterId]),
+		E.[EntryTypeId]			= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE L.DefinitionId = N'ManualLine';
+	--WHERE L.DefinitionId = N'ManualLine';
 	-- for all lines, Get currency and identifier from Resources if available.
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
-	--	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Resources R ON E.ResourceId = R.Id;
@@ -284,7 +275,11 @@ END
 			SELECT [Node] FROM dbo.AccountTypes
 			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
 	);
-
+	DECLARE @PropertyPlantAndEquipment HIERARCHYID = (
+			SELECT [Node] FROM dbo.AccountTypes
+			WHERE [Code] = N'PropertyPlantAndEquipment'
+	);
+	
 	-- When there is only one center, use it everywhere
 	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1) = 1
 	BEGIN
@@ -295,24 +290,32 @@ END
 	END
 	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
 	BEGIN
-		UPDATE @PreprocessedDocuments
-		SET [InvestmentCenterId] = (
+		DECLARE @InvestmentCenterId INT = (
 			SELECT [Id]	FROM dbo.[Centers]
 			WHERE [CenterType] = N'Investment'
 			AND [IsActive] = 1 AND [IsLeaf] = 1
-		)
+		);
+		UPDATE @PreprocessedDocuments
+		SET [InvestmentCenterId] = @InvestmentCenterId
 		WHERE InvestmentCenterIsCommon = 1;
-
+		-- Manual Lines
 		UPDATE PE 
-		SET PE.CenterId = (
-			SELECT [Id] FROM dbo.[Centers]
-			WHERE [CenterType] = N'Investment'
-			AND [IsActive] = 1 AND [IsLeaf] = 1
-		)
+		SET PE.CenterId = @InvestmentCenterId
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON AC.[Id] = A.AccountTypeId
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[IfrsTypeId]
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0;
+		-- Smart Lines
+		UPDATE PE 
+		SET PE.CenterId = @InvestmentCenterId
+		FROM @PreprocessedEntries PE
+		JOIN @PreprocessedLines L ON PE.LineIndex = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND PE.[Index] = LDE.[Index]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
+		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
+		AND L.DefinitionId <> N'ManualLine';
 	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
@@ -335,7 +338,7 @@ END
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.Accounts A ON A.AccountTypeId IN (
+		JOIN dbo.Accounts A ON A.[IfrsTypeId] IN (
 			SELECT [Id] FROM AccountTypes 
 			WHERE [Node].IsDescendantOf((
 				SELECT [Node]
@@ -344,14 +347,12 @@ END
 			)) = 1
 			)
 			AND (A.[CenterId] IS NULL				OR A.[CenterId] = E.[CenterId])
-			AND (A.[AgentId] IS NULL				OR A.[AgentId] = E.[AgentId])
+			AND (A.[RelationId] IS NULL				OR A.[RelationId] = E.[RelationId])
 			AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
 			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 			AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
-			--AND (A.[Identifier] IS NULL			OR A.[Identifier] = E.[AccountIdentifier])
 		WHERE L.DefinitionId <> N'ManualLine'
 		AND A.IsDeprecated = 0
-		AND A.IsSmart = 1
 		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]
 	)
 	UPDATE E

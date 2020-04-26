@@ -3,7 +3,7 @@
 	[DocumentIndex]				INT		INDEX IX_LineList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
-	[DefinitionId]				NVARCHAR (50)	NOT NULL,
+	[DefinitionId]				INT				NOT NULL,
 	--[AgentId]					INT,
 	--[ResourceId]				INT,
 	--[CurrencyId]				NCHAR (3),

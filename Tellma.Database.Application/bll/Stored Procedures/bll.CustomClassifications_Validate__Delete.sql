@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](LC.[Name], LC.[Name2], LC.[Name3]) AS CustomClassificationName,
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
     FROM [dbo].[CustomClassifications] LC
-	JOIN [dbo].[Accounts] A ON A.[CustomClassificationId] = LC.Id
+	JOIN [dbo].[Accounts] A ON A.[ClassificationId] = LC.Id
 	JOIN @Ids FE ON FE.[Id] = LC.[Id];
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

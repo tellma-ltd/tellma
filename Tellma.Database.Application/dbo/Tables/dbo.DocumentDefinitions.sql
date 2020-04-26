@@ -1,7 +1,8 @@
 ﻿CREATE TABLE [dbo].[DocumentDefinitions] (
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
-	[Id]						NVARCHAR (50)	CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY,
+	[Id]						INT				CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY IDENTITY,
+	[Code]						NVARCHAR (50)	CONSTRAINT [UX_DocumentDefinitions] UNIQUE,
 	-- IsPrimal, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	-- Original is less confusing than Source Document. An SIV is not a source document, but can be primal
 	[IsOriginalDocument]		BIT				DEFAULT 1,

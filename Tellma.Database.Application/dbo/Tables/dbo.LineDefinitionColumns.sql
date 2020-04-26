@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[LineDefinitionColumns]
 (
 	[Id]					INT CONSTRAINT [PK_LineDefinitionColumns] PRIMARY KEY IDENTITY,
-	[LineDefinitionId]		NVARCHAR (50)	NOT NULL,
+	[LineDefinitionId]		INT				NOT NULL,
 	[Index]					INT				NOT NULL,
 	CONSTRAINT [IX_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
 	[ColumnName]			NVARCHAR (50)	NOT NULL,

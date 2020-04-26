@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Delete]
-	@DefinitionId NVARCHAR(255),
+	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName,
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
 	FROM [dbo].[Resources] R 
-	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.Id
+	JOIN [dbo].[ResourceDefinitions] RD ON R.[DefinitionId] = RD.[Id]
 	JOIN @Ids FE ON FE.[Id] = R.[Id]
 	JOIN dbo.Accounts A ON A.ResourceId = R.Id;
 	

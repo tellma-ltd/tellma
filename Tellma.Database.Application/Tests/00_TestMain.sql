@@ -11,7 +11,7 @@
 	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
 -- Critical screens for making a journal entry
 	Roles
-	Agents, -- screen shows list of relations with Agents
+	Relations, -- screen shows list of relations with Agents
 	Resources, -- screen for each ifrs type. Detail shows ResourceInstances
 	Accounts
 	Workflows, -- screen 
@@ -20,7 +20,7 @@
 BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[AccountClassifications]', RESEED, 0) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Relations]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Lines]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Entries]', RESEED, 0) WITH NO_INFOMSGS;
@@ -46,12 +46,12 @@ BEGIN TRY
 		:r ..\Samples\01_Basic\b_Units.sql
 		:r ..\Samples\01_Basic\c_Lookups.sql
 		
-		:r ..\Samples\02_Agents\01_Centers.sql
-		:r ..\Samples\02_Agents\02_Suppliers.sql
-		:r ..\Samples\02_Agents\03_Customers.sql
-		:r ..\Samples\02_Agents\04_Employees.sql
-		:r ..\Samples\02_Agents\05_Banks.sql
-		:r ..\Samples\02_Agents\06_Custodies.sql
+		:r ..\Samples\02_Relations\01_Centers.sql
+		:r ..\Samples\02_Relations\02_Suppliers.sql
+		:r ..\Samples\02_Relations\03_Customers.sql
+		:r ..\Samples\02_Relations\04_Employees.sql
+		:r ..\Samples\02_Relations\05_Banks.sql
+		:r ..\Samples\02_Relations\06_Custodies.sql
 
 		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
 		:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql

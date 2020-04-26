@@ -45,10 +45,10 @@ BEGIN
 										N'documents/cash-payment-vouchers'),
 	(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
 										N'documents/cash-receipt-vouchers'),
-	(2,5,N'Update', NULL,				N'agents/suppliers'),
+	(2,5,N'Update', NULL,				N'relations/suppliers'),
 
-	(0,9,N'Read',	NULL,				N'agents/cash-custodians'),
-	(1,9,N'Read',	NULL,				N'agents/cost-objects'),
+	(0,9,N'Read',	NULL,				N'relations/cash-custodians'),
+	(1,9,N'Read',	NULL,				N'relations/centers'),
 	(2,9,N'Read',	NULL,				N'currencies'),
 	(3,9,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
 	(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
@@ -59,7 +59,7 @@ BEGIN
 	(9,9,N'Read',	NULL,				N'centers'),
 	(10,9,N'Read',	NULL,				N'resources/services-expenses'),
 	(11,9,N'Read',	NULL,				N'roles'),
-	(12,9,N'Read',	NULL,				N'agents/suppliers'),
+	(12,9,N'Read',	NULL,				N'relations/suppliers'),
 	(13,9,N'Read',	NULL,				N'users');
 END
 

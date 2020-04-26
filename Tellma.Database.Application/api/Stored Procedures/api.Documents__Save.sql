@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Documents__Save]
-	@DefinitionId NVARCHAR(255),
+	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
@@ -29,11 +29,10 @@ BEGIN
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',
-	[AgentId]					INT '$.AgentId',
+	[RelationId]				INT '$.RelationId',
+	[ContractId]				INT '$.ContractId',
 	[ResourceId]				INT '$.ResourceId',
 	[CenterId]					INT '$.CenterId',
-	[AccountIdentifier]		NVARCHAR (10) '$.AccountIdentifier',
-	--[ResourceIdentifier]		NVARCHAR (10) '$.ResourceIdentifier',
 	[EntryTypeId]				INT '$.EntryTypeId',
 	--[BatchCode]					NVARCHAR (50) '$.BatchCode',
 	[DueDate]					DATE '$.DueDate',
@@ -46,7 +45,7 @@ BEGIN
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
 	[AdditionalReference]		NVARCHAR (50) '$.AdditionalReference',
-	[NotedAgentId]				INT '$.NotedAgentId',
+	[NotedRelationId]				INT '$.NotedRelationId',
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE '$.NotedDate'

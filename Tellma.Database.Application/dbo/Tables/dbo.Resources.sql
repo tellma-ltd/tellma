@@ -4,12 +4,12 @@
 CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of "real" Account Types.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
+	[DefinitionId]					INT					NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	-- TODO: to make sure we only use sensible account types, we add a field called
 	[AssetTypeId]					INT					CONSTRAINT [FK_Resources__AssetTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[RevenueTypeId]					INT					CONSTRAINT [FK_Resources__RevenueTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[ExpenseTypeId]					INT					CONSTRAINT [FK_Resources__ExpenseTypeId] REFERENCES dbo.AccountTypes([Id]),
-	--CONSTRAINT [CK_Resources__Id_AccountTypeId] UNIQUE ([Id], [AccountTypeId]),
+	--CONSTRAINT [CK_Resources__Id_IfrsTypeId] UNIQUE ([Id], [IfrsTypeId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]							NVARCHAR (255),
@@ -35,13 +35,15 @@ CREATE TABLE [dbo].[Resources] (
 
 	[ResidualMonetaryValue]			Decimal (19,4),
 	[ResidualValue]					Decimal (19,4),
+	-- For complex assets, we show in the register the root parent only, summarizing the tree book value
+	[ParentId]						INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	-- For inventory, we also need a CenterId of EntryTypeParentId OtherExpenseByFunction
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
 	--[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-	--[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
+	--[PreferredSupplierId]			INT,-- FK, Table Relations, specially for purchasing
 	-- The following properties are user-defined, used for reporting
 	[AvailableSince]				DATE, -- such as first availability date. makes sense with non-null identifier
 	[AvailableTill]					DATE, -- such as first discontinuity date

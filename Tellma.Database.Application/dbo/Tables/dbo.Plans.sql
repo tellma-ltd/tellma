@@ -4,7 +4,7 @@
 	[FromDate]				DATE			NOT NULL,
 	[ToDate]				DATE			NOT NULL,
 	CONSTRAINT [CK_Plans__FromDate_ToDate] CHECK ([FromDate] <= [ToDate]),
-	[CostObjectId]			INT				NOT NULL CONSTRAINT [FK_Plans__CostObjectId] REFERENCES [dbo].[Agents] ([Id]),
+	[CostObjectId]			INT				NOT NULL CONSTRAINT [FK_Plans__CostObjectId] REFERENCES [dbo].[Centers] ([Id]),
 	[ResourceLookup1Id]		INT,			-- UDL 
 	[ResourceLookup2Id]		INT,			-- UDL 
 	[ResourceLookup3Id]		INT,			-- UDL 

@@ -4,10 +4,10 @@ BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
 		[AssetTypeId],				[CurrencyId],	[ExpenseTypeId],		[ExpenseEntryTypeId],	[CenterId],	[Name],								[Identifier],	[Lookup1Id],												[Lookup2Id]) VALUES
-	(0,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC,	N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Microsoft'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(1,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Sales,N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(2,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Campus,N'Lenovo Ideapad S145',			N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Lenovo'),	dbo.fn_Lookup(N'operating-systems', N'Windows 10')),
-	(3,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@ProductionExtension,	@C101_B10,	N'Abdulrahman Used Laptop',			N'100022312',	NULL,														dbo.fn_Lookup(N'operating-systems', N'Windows 10'));
+	(0,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@AdministrativeExpense,	@C101_EXEC,	N'Microsoft Surface Pro (899 GBP)',	N'FZ889123',	dbo.fn_Lookup(@it_equipment_manufacturersDef, N'Microsoft'),dbo.fn_Lookup(@operating_systemsDef, N'Windows 10')),
+	(1,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Sales,N'Lenovo Laptop',					N'SS9898224',	dbo.fn_Lookup(@it_equipment_manufacturersDef, N'Lenovo'),	dbo.fn_Lookup(@operating_systemsDef, N'Windows 10')),
+	(2,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@DistributionCosts,		@C101_Campus,N'Lenovo Ideapad S145',			N'100022311',	dbo.fn_Lookup(@it_equipment_manufacturersDef, N'Lenovo'),	dbo.fn_Lookup(@operating_systemsDef, N'Windows 10')),
+	(3,@ComputerEquipmentMemberExtension,	@USD,	@DepreciationExpense,	@ProductionExtension,	@C101_B10,	N'Abdulrahman Used Laptop',			N'100022312',	NULL,														dbo.fn_Lookup(@operating_systemsDef, N'Windows 10'));
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],					[Multiplier]) VALUES
 	(0, 0, dbo.fn_UnitName__Id(N'yr'),	1),
@@ -15,7 +15,7 @@ BEGIN
 	(0, 2, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 3, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
-		@DefinitionId = N'computer-equipment',
+		@DefinitionId = @computer_equipmentDef,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -59,7 +59,7 @@ BEGIN
 	(0, 12, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 13, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
-		@DefinitionId = N'properties-plants-and-equipment',
+		@DefinitionId = @properties_plants_and_equipmentDef,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

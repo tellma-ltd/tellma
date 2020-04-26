@@ -186,7 +186,8 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DECLARE @WorkMonth INT, @Hour INT, @Month INT, @Year INT;
+DECLARE @WorkMonth INT, @Hour INT, @Month INT, @Year INT, @ea INT;
+SELECT @ea = [Id] FROM dbo.[Units] WHERE [Name] = N'ea';
 SELECT @WorkMonth = [Id] FROM dbo.[Units] WHERE [Name] = N'wmo';
 SELECT @Month = [Id] FROM dbo.[Units] WHERE [Name] = N'mo';
 SELECT @Hour = [Id] FROM dbo.[Units] WHERE [Name] = N'hr';

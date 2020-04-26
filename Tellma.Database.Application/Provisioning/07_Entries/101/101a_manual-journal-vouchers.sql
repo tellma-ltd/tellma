@@ -33,7 +33,7 @@ BEGIN -- Inserting
 	(0,			11,				N'ManualLine'),(1,			11,				N'ManualLine');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
+				[AccountId],	[EntryTypeId],										[RelationId],[CurrencyId],	[MonetaryValue],	[Value]) VALUES
 
 	(0, 0, 2,+1,@1GMFund,		@ProceedsFromBorrowingsClassifiedAsFinancingActivities,NULL,	@USD,			10000,				10000),--
 	(0, 1, 2,-1,@1MAPayable,	NULL,												NULL,		NULL,			10000,				10000),

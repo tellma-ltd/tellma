@@ -2,22 +2,22 @@
 	@FromDate DATE,
 	@ToDate DATE
 AS
-	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'Revenue');
-	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'ExpenseByNatureAbstract');
-	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'EquityAndLiabilitiesAbstract');
-	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'EquityAbstract');--TradeAndOtherPayables
-	DECLARE @TradeAndOtherNonCurrentPayables HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'TradeAndOtherNonCurrentPayables');
-	DECLARE @NonCurrentProvisionsAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE CODE = N'NonCurrentProvisionsAbstract');
+	DECLARE @RevenueNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'Revenue');
+	DECLARE @ExpenseByNatureAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'ExpenseByNatureAbstract');
+	DECLARE @EquityAndLiabilitiesAbstractNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'EquityAndLiabilitiesAbstract');
+	DECLARE @EquityAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'EquityAbstract');--TradeAndOtherPayables
+	DECLARE @TradeAndOtherNonCurrentPayables HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherNonCurrentPayables');
+	DECLARE @NonCurrentProvisionsAbstract HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Code] = N'NonCurrentProvisionsAbstract');
 	
 	DECLARE @ProfitFromOperations DECIMAL (19,4);
 	DECLARE @SalesRevenues DECIMAL (19,4);
 
 	DECLARE @CapitalEmployed DECIMAL (19,4);
-	
+
 	SELECT @SalesRevenues = ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
@@ -27,7 +27,7 @@ AS
 	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
@@ -37,7 +37,7 @@ AS
 	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.AccountTypeId = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE

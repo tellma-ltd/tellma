@@ -15,7 +15,7 @@ RETURN
 			[LineType]				NVARCHAR (255),
 			[OperationId]			INT,
 			[AccountId]				INT,
-			[AgentId]				INT,
+			[RelationId]			INT,
 			[AgentAccountId]		INT,
 			[ResourceId]			INT,
 			[Direction]				SMALLINT,
@@ -31,7 +31,7 @@ RETURN
 			[Memo]					NVARCHAR (255),
 			[Reference]				NVARCHAR (255),
 			[RelatedReference]		NVARCHAR (255),
-			[RelatedAgentId]		INT,
+			[NotedRelationId]		INT,
 			[RelatedResourceId]		INT,
 			[RelatedAmount]			DECIMAL (19,4)
 		) c;

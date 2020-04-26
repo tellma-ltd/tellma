@@ -51,7 +51,6 @@ BEGIN
 			[CurrencyId1] = [CurrencyId0],
 			[CurrencyId2] = [CurrencyId0],
 			[NotedAgentSource0] = [AgentId1],
-			[AccountIdentifier1] = [ExternalReference0],
 			[MonetaryValue1] = [NotedAmount0],
 			[MonetaryValue2] = [NotedAmount0] + [MonetaryValue0]
 		-----
@@ -77,7 +76,6 @@ SET [Script] = N'
 		[CurrencyId1] = [CurrencyId0],
 		[CurrencyId2] = [CurrencyId0],
 		[NotedAgentSource0] = [AgentId1],
-		[AccountIdentifier1] = [ExternalReference0],
 		[MonetaryValue1] = [NotedAmount0],
 		[MonetaryValue2] = [NotedAmount0] + [MonetaryValue0]
 	-----

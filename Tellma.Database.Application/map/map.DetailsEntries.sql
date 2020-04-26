@@ -16,11 +16,10 @@ E AS
 		E.[CenterId],
 		E.[Direction],
 		E.[AccountId],
-		--E.[AccountIdentifier]
-		E.[AgentId],
+		E.[RelationId],
+		E.[ContractId],
 		E.[EntryTypeId],
 		E.[ResourceId],
-		--E.[ResourceIdentifier],
 		E.[DueDate],
 		E.[MonetaryValue],
 		E.[CurrencyId],
@@ -31,7 +30,7 @@ E AS
 		E.[Value],
 		E.[ExternalReference],
 		E.[AdditionalReference],
-		E.[NotedAgentId],
+		E.[NotedRelationId],
 		E.[NotedAgentName],
 		E.[NotedAmount],
 		E.[NotedDate]

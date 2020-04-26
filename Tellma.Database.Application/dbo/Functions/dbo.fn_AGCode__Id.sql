@@ -6,7 +6,7 @@ RETURNS INT
 AS
 BEGIN
 	RETURN (
-		SELECT [Id] FROM dbo.Agents
+		SELECT [Id] FROM dbo.[Relations]
 		WHERE [Code] = @Code
 	)
 END;

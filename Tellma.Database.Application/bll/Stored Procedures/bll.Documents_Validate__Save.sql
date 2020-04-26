@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Save]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
@@ -86,7 +86,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[AccountTypes] AC ON LDE.[AccountTypeParentId] = AC.[Id] 
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON AC.[EntryTypeParentId] = ETA.[Id]
-	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0 AND L.[DefinitionId] <> N'ManualLine';
+	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
+	AND L.[DefinitionId] <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	-- Validate that ResourceId descends from LDE.AccountTypeParentId IFF it is has IsResourceClassification = 1
 	-- TODO: rewrite it into 3 validations rules:
 	-- if debiting an asset account, make sure it is compatible with R.AssetTypeId

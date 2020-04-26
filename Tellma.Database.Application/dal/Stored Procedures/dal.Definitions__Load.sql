@@ -8,7 +8,7 @@ SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 SELECT * FROM [dbo].[LookupDefinitions];
 
 -- Get the agent definitions
-SELECT * FROM [dbo].[AgentDefinitions];
+SELECT * FROM [dbo].[RelationDefinitions];
 
 -- Get the resource definitions
 SELECT * FROM [dbo].[ResourceDefinitions];
@@ -34,14 +34,11 @@ SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 
 -- Get the Account Types that are used by LineDefinitionEntries
 SELECT DISTINCT T.[Id],
-	T.[IsResourceClassification],
+	--T.[IsResourceClassification],
 	T.[EntryTypeParentId],
-	T.[ResourceDefinitionId],
-	T.[AgentDefinitionId],
-	T.[NotedAgentDefinitionId],
-	T.[IdentifierLabel],
-	T.[IdentifierLabel2],
-	T.[IdentifierLabel3],
+	--T.[ResourceDefinitionId],
+	--T.[AgentDefinitionId],
+	--T.[NotedAgentDefinitionId],
 	T.[DueDateLabel],
 	T.[DueDateLabel2],
 	T.[DueDateLabel3],

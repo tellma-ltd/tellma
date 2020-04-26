@@ -7,7 +7,7 @@
 	[RuleType]					NVARCHAR (50)	NOT NULL DEFAULT N'ByRole',
 	[RuleTypeEntryIndex]		INT,
 	[RoleId]					INT,
-	[Userid]					INT,
+	[UserId]					INT,
 	[PredicateType]				NVARCHAR(50),
 	[PredicateTypeEntryIndex]	INT,
 	[Value]						DECIMAL (19,4),

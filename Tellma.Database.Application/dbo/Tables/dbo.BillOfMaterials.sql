@@ -8,7 +8,7 @@
 	[Id]				INT NOT NULL PRIMARY KEY IDENTITY,
 	[Direction]			SMALLINT,-- Credit values are divided over debit resources.
 	[CenterId]			INT,
-	[AccountTypeId]		INT,-- RM, WIP, FG, O/H Control, Normal Loss w/scrap, Normal loss w/o scrap, Abnormal Loss
+	[IfrsTypeId]		INT,-- RM, WIP, FG, O/H Control, Normal Loss w/scrap, Normal loss w/o scrap, Abnormal Loss
 	[AgentDefinitionId]	INT,-- inventory-custodians, needed only for completed signatures
 	[ResourceId]		INT,-- Material, Labor, O/H. IF AccountType = O/H control, then this = driver resource (Labor, etc..)
 	[Quantity]			DECIMAL (19,4),

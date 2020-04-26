@@ -4,106 +4,117 @@
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
-	@WorkflowSignatures [WorkflowSignatureList] READONLY
+	@WorkflowSignatures [WorkflowSignatureList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
+	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @WorkflowIndexedIds [dbo].[IndexIdWithStringHeaderList];
 
-	MERGE INTO [dbo].[LineDefinitions] AS t
-	USING (
-		SELECT
-			[Index],
-			[Id],
-			[Description],
-			[Description2],
-			[Description3],
-			[TitleSingular],
-			[TitleSingular2],
-			[TitleSingular3],
-			[TitlePlural],
-			[TitlePlural2],
-			[TitlePlural3],
-			[AllowSelectiveSigning],
-			[ViewDefaultsToForm],
-			[Script]
-		FROM @Entities 
-	) AS s ON (t.Id = s.[Id])
-	WHEN MATCHED
-	-- TODO: reduce history table by excluding saves when the data did not change
-	-- Completed for main table. Sill needed for weak entities.
-		AND (
-		t.[TitleSingular]				<> s.[TitleSingular] OR	
-		t.[TitlePlural]					<> s.[TitlePlural] OR
-		t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
-		ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
-		ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
-		ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
-		ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
-		ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
-		ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
-		ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
-		ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
-		)
-	THEN
-		UPDATE SET
-			t.[Description]					= s.[Description],
-			t.[Description2]				= s.[Description2],
-			t.[Description3]				= s.[Description3],
-			t.[TitleSingular]				= s.[TitleSingular],
-			t.[TitleSingular2]				= s.[TitleSingular2],
-			t.[TitleSingular3]				= s.[TitleSingular3],
-			t.[TitlePlural]					= s.[TitlePlural],
-			t.[TitlePlural2]				= s.[TitlePlural2],
-			t.[TitlePlural3]				= s.[TitlePlural3],
-			t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
-			t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
-			t.[Script]						= s.[Script],
-			t.[SavedById]					= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT (
-			[Id],
-			[Description],
-			[Description2],
-			[Description3],
-			[TitleSingular],
-			[TitleSingular2],
-			[TitleSingular3],
-			[TitlePlural],
-			[TitlePlural2],
-			[TitlePlural3],
-			[AllowSelectiveSigning],
-			[ViewDefaultsToForm],
-			[Script]
-		)
-		VALUES (
-			s.[Id],
-			s.[Description],
-			s.[Description2],
-			s.[Description3],
-			s.[TitleSingular],
-			s.[TitleSingular2],
-			s.[TitleSingular3],
-			s.[TitlePlural],
-			s.[TitlePlural2],
-			s.[TitlePlural3],
-			s.[AllowSelectiveSigning],
-			s.[ViewDefaultsToForm],
-			s.[Script]
-		);
+	INSERT INTO @IndexedIds([Index], [Id])
+	SELECT x.[Index], x.[Id]
+	FROM
+	(
+		MERGE INTO [dbo].[LineDefinitions] AS t
+		USING (
+			SELECT
+				[Index],
+				[Id],
+				[Code],
+				[Description],
+				[Description2],
+				[Description3],
+				[TitleSingular],
+				[TitleSingular2],
+				[TitleSingular3],
+				[TitlePlural],
+				[TitlePlural2],
+				[TitlePlural3],
+				[AllowSelectiveSigning],
+				[ViewDefaultsToForm],
+				[Script]
+			FROM @Entities 
+		) AS s ON (t.[Id] = s.[Id])
+		WHEN MATCHED
+		-- TODO: reduce history table by excluding saves when the data did not change
+		-- Completed for main table. Sill needed for weak entities.
+			AND (
+			t.[Code]						<> s.[Code] OR
+			t.[TitleSingular]				<> s.[TitleSingular] OR	
+			t.[TitlePlural]					<> s.[TitlePlural] OR
+			t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
+			ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
+			ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
+			ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
+			ISNULL(t.[TitleSingular2], N'')	<> ISNULL(s.[TitleSingular2], N'') OR	
+			ISNULL(t.[TitlePlural2], N'')	<> ISNULL(s.[TitlePlural2], N'') OR
+			ISNULL(t.[TitleSingular3], N'')	<> ISNULL(s.[TitleSingular3], N'') OR	
+			ISNULL(t.[TitlePlural3], N'')	<> ISNULL(s.[TitlePlural3], N'') OR
+			ISNULL(t.[Script], N'')			<> ISNULL(s.[Script], N'')
+			)
+		THEN
+			UPDATE SET
+				t.[Code]						= s.[Code],
+				t.[Description]					= s.[Description],
+				t.[Description2]				= s.[Description2],
+				t.[Description3]				= s.[Description3],
+				t.[TitleSingular]				= s.[TitleSingular],
+				t.[TitleSingular2]				= s.[TitleSingular2],
+				t.[TitleSingular3]				= s.[TitleSingular3],
+				t.[TitlePlural]					= s.[TitlePlural],
+				t.[TitlePlural2]				= s.[TitlePlural2],
+				t.[TitlePlural3]				= s.[TitlePlural3],
+				t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
+				t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
+				t.[Script]						= s.[Script],
+				t.[SavedById]					= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT (
+				[Code],
+				[Description],
+				[Description2],
+				[Description3],
+				[TitleSingular],
+				[TitleSingular2],
+				[TitleSingular3],
+				[TitlePlural],
+				[TitlePlural2],
+				[TitlePlural3],
+				[AllowSelectiveSigning],
+				[ViewDefaultsToForm],
+				[Script]
+			)
+			VALUES (
+				s.[Code],
+				s.[Description],
+				s.[Description2],
+				s.[Description3],
+				s.[TitleSingular],
+				s.[TitleSingular2],
+				s.[TitleSingular3],
+				s.[TitlePlural],
+				s.[TitlePlural2],
+				s.[TitlePlural3],
+				s.[AllowSelectiveSigning],
+				s.[ViewDefaultsToForm],
+				s.[Script])
+		OUTPUT s.[Index], inserted.[Id]
+	) AS x;
 
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (
 		SELECT
 			LDE.[Id],
-			LD.[Id] AS [LineDefinitionId],
+			II.[Id] AS [LineDefinitionId],
 			LDE.[Index],
 			LDE.[Direction],
 			LDE.[AccountTypeParentId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
+		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
@@ -130,11 +141,12 @@ SET NOCOUNT ON;
 			s.[AccountTypeParentId],
 			s.[EntryTypeId]
 		);
+
 	MERGE [dbo].[LineDefinitionColumns] AS t
 	USING (
 		SELECT
 			LDC.[Id],
-			LD.[Id] AS [LineDefinitionId],
+			II.[Id] AS [LineDefinitionId],
 			LDC.[Index],
 			LDC.[ColumnName],
 			LDC.[EntryIndex],
@@ -146,6 +158,7 @@ SET NOCOUNT ON;
 			LDC.[InheritsFromHeader]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
+		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
@@ -165,11 +178,12 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
 		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
+
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
 		SELECT
 			LDSR.[Id],
-			LD.[Id] AS [LineDefinitionId],
+			II.[Id] AS [LineDefinitionId],
 			LDSR.[State],
 			LDSR.[Name],
 			LDSR.[Name2],
@@ -177,6 +191,7 @@ SET NOCOUNT ON;
 			LDSR.[IsActive]
 		FROM @LineDefinitionStateReasons LDSR
 		JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
+		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	)AS s
 	ON s.Id = t.Id
 	WHEN MATCHED THEN
@@ -191,12 +206,12 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[State], [Name],		[Name2], [Name3], [IsActive])
+		INSERT ([LineDefinitionId],		[State], [Name],	[Name2], [Name3], [IsActive])
 		VALUES (s.[LineDefinitionId], s.[State], s.[Name], s.[Name2], s.[Name3], s.[IsActive]);
 
 	WITH BW AS (
 		SELECT * FROM dbo.[Workflows]
-		WHERE LineDefinitionId IN (SELECT [Id] FROM @Entities)
+		WHERE LineDefinitionId IN (SELECT [Id] FROM @IndexedIds)
 	)
 	INSERT INTO @WorkflowIndexedIds([Index], [HeaderId], [Id])
 	SELECT x.[Index], x.[LineDefinitionId], x.[Id]
@@ -207,10 +222,11 @@ SET NOCOUNT ON;
 			SELECT
 				W.[Index],
 				W.[Id],
-				LD.[Id] AS [LineDefinitionId],
+				II.[Id] AS [LineDefinitionId],
 				W.[ToState]
 			FROM @Workflows W
 			JOIN @Entities LD ON W.[LineDefinitionIndex] = LD.[Index]
+			JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 		) AS s
 		ON s.[Id] = t.[Id]
 		WHEN MATCHED THEN
@@ -240,11 +256,11 @@ SET NOCOUNT ON;
 			WS.[Index],
 			WS.[Id],
 			WI.[Id] AS WorkflowId,
-			LD.[Id] AS [LineDefinitionId],
+			II.[Id] AS [LineDefinitionId],
 			WS.[RuleType],
 			WS.[RuleTypeEntryIndex],
 			WS.[RoleId],
-			WS.[Userid],
+			WS.[UserId],
 			WS.[PredicateType],
 			WS.[PredicateTypeEntryIndex],
 			WS.[Value],
@@ -252,15 +268,16 @@ SET NOCOUNT ON;
 		FROM @WorkflowSignatures WS
 		JOIN @WorkflowIndexedIds WI ON WS.[WorkflowIndex] = WI.[Index]
 		JOIN @Entities LD ON 
-			WI.[HeaderId] = LD.[Id]
+			WI.[HeaderId] = LD.[Code]
 		AND WS.[LineDefinitionIndex] = LD.[Index]
+		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	) AS s ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[RuleType]				= s.[RuleType],
 			t.[RuleTypeEntryIndex]		= s.[RuleTypeEntryIndex],
 			t.[RoleId]					= s.[RoleId],
-			t.[Userid]					= s.[Userid],
+			t.[UserId]					= s.[UserId],
 			t.[PredicateType]			= s.[PredicateType],
 			t.[PredicateTypeEntryIndex]	= s.[PredicateTypeEntryIndex],
 			t.[Value]					= s.[Value],
@@ -274,7 +291,7 @@ SET NOCOUNT ON;
 			[RuleType],
 			[RuleTypeEntryIndex],
 			[RoleId],
-			[Userid],
+			[UserId],
 			[PredicateType],
 			[PredicateTypeEntryIndex],
 			[Value],
@@ -285,9 +302,12 @@ SET NOCOUNT ON;
 			s.[RuleType],
 			s.[RuleTypeEntryIndex],
 			s.[RoleId],
-			s.[Userid],
+			s.[UserId],
 			s.[PredicateType],
 			s.[PredicateTypeEntryIndex],
 			s.[Value],
 			s.[ProxyRoleId]
 		);
+
+IF @ReturnIds = 1
+	SELECT * FROM @IndexedIds;

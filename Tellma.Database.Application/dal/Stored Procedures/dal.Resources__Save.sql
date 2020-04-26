@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
-	@DefinitionId NVARCHAR (255),
+	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits dbo.ResourceUnitList READONLY,
 	@ReturnIds BIT = 0

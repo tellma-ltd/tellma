@@ -21,7 +21,7 @@ AS
 	USING (
 		SELECT [Id]
 		FROM dbo.Accounts
-		WHERE [CustomClassificationId] IN (SELECT [Id] FROM @Ids)
+		WHERE [ClassificationId] IN (SELECT [Id] FROM @Ids)
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.[IsDeprecated] <> @IsDeprecated)
 	THEN

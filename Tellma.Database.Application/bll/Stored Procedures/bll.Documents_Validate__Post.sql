@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Post]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -43,7 +43,7 @@ SET NOCOUNT ON;
 	WHERE [Id] NOT IN (
 		SELECT DISTINCT [DocumentId] 
 		FROM dbo.[Lines] L
-		JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
+		JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Code]
 		WHERE
 			LD.[HasWorkflow] = 1 AND L.[State] = 4
 		OR	LD.[HasWorkflow] = 0 AND L.[State] = 0
@@ -57,15 +57,15 @@ SET NOCOUNT ON;
 		N'Error_LineIsMissingSignatures'
 	FROM @Ids D
 	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
-	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
+	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Code]
 	WHERE L.[State] Between 0 AND 3
 	AND LD.[HasWorkflow] = 1
 	-- validate that WflessLines can move to state 4
 	INSERT INTO @WflessLines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
 	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
 	FROM dbo.Lines L
-	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
-	WHERE L.[DocumentId] IN (SELECT [ID] FROM @Ids) 
+	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Code]
+	WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids) 
 	AND LD.HasWorkflow = 0;
 	--INSERT INTO @WflessDocuments([Index],[Id],[SerialNumber],[PostingDate],[Clearance],[DocumentLookup1Id],
 	--	[DocumentLookup2Id],[DocumentLookup3Id],[DocumentText1],[DocumentText2],[Memo],[MemoIsCommon],
@@ -81,14 +81,14 @@ SET NOCOUNT ON;
 	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	--WHERE FE.[Index] IN (SELECT DISTINCT [DocumentIndex] FROM @WflessLines);
 	INSERT INTO @WflessEntries ([Index],[LineIndex],[DocumentIndex],[Id],
-	[Direction],[AccountId],[CurrencyId],[AgentId],[ResourceId],[CenterId],
+	[Direction],[AccountId],[CurrencyId],[RelationId],[ResourceId],[CenterId],
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
-	[Time2]	,[ExternalReference],[AdditionalReference],[NotedAgentId],[NotedAgentName],
+	[Time2]	,[ExternalReference],[AdditionalReference],[NotedRelationId],[NotedAgentName],
 	[NotedAmount],[NotedDate])
 	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentId],E.[NotedAgentName],
+	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
@@ -103,7 +103,7 @@ SET NOCOUNT ON;
 		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
-	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
+	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Code]
 	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 	WHERE
 		LD.[HasWorkflow] = 1 AND L.[State] = 4

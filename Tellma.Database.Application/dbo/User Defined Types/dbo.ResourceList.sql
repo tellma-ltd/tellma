@@ -30,7 +30,7 @@
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
 
 	--[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-	--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
+	--[PreferredSupplierId]			INT,			-- FK, Table Relations, specially for purchasing
 
 	[AvailableSince]				DATE,			
 	[AvailableTill]					DATE,			

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Lookups_Validate__Delete]
-	@DefinitionId NVARCHAR(255),
+	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

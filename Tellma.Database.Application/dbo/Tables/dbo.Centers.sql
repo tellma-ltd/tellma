@@ -1,23 +1,7 @@
 ﻿CREATE TABLE [dbo].[Centers] (
-/*
-We identify business units as those whose managers may potentially prepare and submit a yearly budget. Eventually, those managers signatures 
-are required for expense approvals, and their performance is based either on expense, revenue, profit or investment
-WSI
-	Executive Office
-	Finance,
-	Marketing and Sales
-		Mgmt Office
-		AG - Sales
-		Bole - Sales
-	HR
-	MIS
-	Production
-	Maintenance
-	Coffee
-*/
--- some operations are used in the line corresponding to production event
 	[Id]					INT					CONSTRAINT [PK_Centers] PRIMARY KEY IDENTITY,
 -- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
+-- Expenses can be applied to Profit and cost, b
 	[CenterType]			NVARCHAR (50)		CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
 													N'Investment', N'Profit', N'Revenue', N'Cost')
 												),
@@ -25,7 +9,7 @@ WSI
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.Agents([Id]),
+	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Relations]([Id]),
 	--TODO: Replace IsActive with To Be Discontinued On
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.

@@ -7,11 +7,10 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[CurrencyId]				NCHAR (3)		,
-	[AgentId]					INT,
+	[RelationId]				INT,
+	[ContractId]				INT,
 	[ResourceId]				INT,
 	[CenterId]					INT,
-	[AccountIdentifier]			NVARCHAR (10),
-	--[ResourceIdentifier]		NVARCHAR (10),
 	[EntryTypeId]				INT,
 	--[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE,
@@ -24,7 +23,7 @@
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
+	[NotedRelationId]				INT,
 	[NotedAgentName]			NVARCHAR (50),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE

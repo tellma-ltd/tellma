@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Lookups_Validate__Save]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@Entities [LookupList] READONLY,
 	@Top INT = 10
 AS

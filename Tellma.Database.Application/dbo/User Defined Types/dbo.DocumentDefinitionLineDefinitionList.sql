@@ -4,7 +4,7 @@
 	[HeaderIndex]			INT		DEFAULT 0,
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]					INT		DEFAULT 0,
-	[LineDefinitionId]		NVARCHAR (50),
+	[LineDefinitionId]		INT,
 	UNIQUE ([HeaderIndex], [LineDefinitionId]),
 	[IsVisibleByDefault]	BIT
 );

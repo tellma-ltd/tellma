@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Users] (
-	[Id]					INT					CONSTRAINT [PK_Users] PRIMARY KEY IDENTITY,--CONSTRAINT [FK_Users__Id] REFERENCES [dbo].[Agents] ([Id]),
+	[Id]					INT					CONSTRAINT [PK_Users] PRIMARY KEY IDENTITY,
 	[ExternalId]			NVARCHAR (450),
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

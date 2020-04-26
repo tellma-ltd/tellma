@@ -78,7 +78,7 @@ BEGIN
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
 	JOIN #Mapping M ON [AT].[Code] = M.[AccountType]
 	--ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
 	WHERE D.[PostingDate] < DATEADD(DAY, 1, @toDate)

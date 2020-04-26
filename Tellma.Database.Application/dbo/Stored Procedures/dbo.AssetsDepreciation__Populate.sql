@@ -6,7 +6,7 @@
 	@Time1			DATETIME2 (2) = N'2020.01.01',
 	@Time2			DATETIME2 (2) = N'2020.01.31'
 AS
-	DECLARE @LineDefinitionId NVARCHAR (50) = N'PPEDepreciation';
+	DECLARE @LineDefinitionId INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEDepreciation');
 	-- Raise Exception if some information is missing
 
 --(0,8,	N'Entries', N'ResourceId',			1,	N'Asset',		N'الأصل',		1,4,0),
@@ -50,7 +50,7 @@ AS
 	JOIN dbo.Lines L ON E.LineId = L.Id
 	JOIN dbo.Documents D ON L.DocumentId = E.Id
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	WHERE A.AccountTypeId IN (SELECT [Id] FROM @PPETypeIds)
+	WHERE A.[IfrsTypeId] IN (SELECT [Id] FROM @PPETypeIds)
 	AND L.[State] = 4 AND D.[State] = 1
 	AND D.[PostingDate] <= @PostingDate
 	GROUP BY E.[ResourceId]
@@ -81,7 +81,7 @@ AS
 			(SELECT [Name] FROM dbo.[Units] WHERE [Id] = WL.UnitId1) AS Unit,
 			MonetaryValue1 As UsedMonetaryValue,
 			Value1 As UsedValue, 
-			AgentId0 AS [System],
+			RelationId0 AS [System],
 			(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
 			CurrencyId1 AS Currency, CenterId0 AS ExpCenter

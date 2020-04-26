@@ -11,7 +11,7 @@ DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinition
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],				[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+		[Code],							[TitleSingular],				[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',			N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
@@ -31,16 +31,19 @@ END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+		[Code],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
 	(1,	N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'قيد شراء نقدي',		N'Cash Purchase Vouchers',		N'قيود مشتريات نقدية',	N'CPRV',	N'money-check-alt',		N'Cash',			20),
 --	(2,	N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'قيد مرتب نقدي',		N'Cash Payroll Vouchers',		N'قيود مرتبات نقدية',	N'PRLV',	N'money-check-alt',		N'Cash',			20),
 	(3,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
 	(11,N'cash-sale-vouchers',			N'Cash Sale Voucher',			N'قيد بيع نقدي',		N'Cash Sale Vouchers',			N'قيود مبيعات نقدية',	N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
 	(13,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
+	(14,N'prepaid-services-sales-contracts',N'Prepaid Services Sales Contract',	N'عقد تقديم خدمات دفع مقدم',	N'Prepaid Services Sales Contracts',N'عقود تقديم خدمات دفع مقدم',	N'CSC',	N'file-invoice-dollar',	N'Sales',			50),
+	(15,N'postpaid-services-sales-contracts',N'Postpaid Services Sales Contract',	N'عقد تقديم خدمات دفع آجل',N'Postpaid Services Sales Contracts',N'عقود تقديم خدمات دفع آجل',	N'CRSC',N'file-invoice-dollar',	N'Sales',			50),
 	(21,N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
-	(31,N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
-
+	(31,N'leaseout-revenue-vouchers',	N'Rental/Subscription Revenue Voucher',	N'قيد إيرادات تأجير',	N'Rental Revenues Vouchers',N'قيود إيرادات تأجير',	N'RRRV',N'money-bill-wave',		N'Sales',			75)
+--	(32,N'service-revenue-vouchers',	N'Service Revenue Voucher',		N'قيد إيرادات خدمات',	N'Serviecs Revenues Vouchers',N'قيود إيرادات خدمات',	N'SRRV',	N'money-bill-wave',		N'Sales',			76);
+/*
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
 	(0,0,	N'ManualLine',				1),
@@ -53,7 +56,7 @@ BEGIN
 	-- cash-payroll-voucher: pay sheet, payroll, deductions,
 
 	-- cash-purchase-vouchers
-	(0,1,	N'CashPurchase',			1), -- includes invoice
+	(0,1,	N'CashPayment',			1), -- includes invoice
 	--(1,1,	N'ConsumableServiceReceiptNote',1),
 	(2,1,	N'GoodReceiptNote',			0),
 	--(3,1,	N'FixedAssetReceiptNote',	0),
@@ -61,33 +64,46 @@ BEGIN
 
 	-- cash-payment-vouchers
 	--(0,3,	N'PaymentToSupplier',		0), -- on credit for goods and services
-	(1,3,	N'PaymentToLessor',			1), -- for rentals and subscriptions
+	(1,3,	N'AdvancedPaymentToLessor',	1), -- for rentals and subscriptions
 	--(2,3,	N'RefundToCustomer',		1),
 	(3,3,	N'PaymentToOther',			1), -- including partner, creditor
 	(4,3,	N'CashTransferExchange',	1),
 	(5,3,	N'ManualLine',				1),
 	-- cash-sale-vouchers
-	(0,11,	N'CashSale',				1),  -- includes invoice
-	--(1,11,	N'GoodDeliveryNote',		1),
-	(2,11,	N'ManualLine',				1),
+	(0,11,	N'CashReceipt',				1),  -- includes invoice
+	(2,11,	N'ServiceDeliveryNote',		1),
+	(3,11,	N'ManualLine',				1),
 	-- cash-receipt-vouchers
-	--(0,12,	N'ReceiptFromCustomer',		1),  -- on credit, of goods and services
-	(1,13,	N'AdvancedReceiptFromLessee',1),  -- for period
-	(2,13,	N'DeferredReceiptFromLessee',1),  -- for period
+	--(0,13,	N'ReceiptFromCustomer',		1),  -- on credit, of goods and services
+	(1,13,	N'AdvancedReceiptFromCustomer',1),
+	(2,13,	N'DeferredReceiptFromCustomer',1),
 	(3,13,	N'ReceiptFromOther',		1),	 -- including partner, creditor
 	(4,13,	N'ManualLine',				1),
+	--services-rendering-contracts
+	(0,14,	N'AdvancedReceiptFromCustomer',1),
+	(1,14,	N'PrepaidServiceDelivery',	1), -- for prepaid customers
+	--services-rendering-contracts
+	(0,15,	N'DeferredReceiptFromCustomer',1),
+	(1,15,	N'PostpaidServiceDelivery',	1), -- for postpaid customers
+
 	-- 	expense-recognition-vouchers, for depreciation expenses and rental recognition
 	(0,21,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
-	(1,21,	N'LeaseIn',					1),-- software subscription, domain registration, office rental...
+	(1,21,	N'PrepaidLeaseIn',			1),-- software subscription, domain registration, office rental...
 	(9,21,	N'ManualLine',				0),
-	-- revenue-reognition-vouchers, for revenue recognition
-	(0,31,	N'LeaseOut',				1), -- for tax visible customers
-	(1,31,	N'ManualLine',				0);
+	-- leaseout-revenue-vouchers, for revenue recognition
+	(0,31,	N'PrepaidLeaseOut',			1), -- for prepaid customers
+	(1,31,	N'PostpaidLeaseOut',		1), -- for postpaid customers 
+	(2,31,	N'ManualLine',				0),
+	-- service-revenue-vouchers, for revenue recognition
+	(0,32,	N'PrepaidServiceDelivery',	1), -- for prepaid customers
+	(1,32,	N'PostpaidServiceDelivery',	1), -- for postpaid customers
+	(2,32,	N'ManualLine',				0);
+*/
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
@@ -106,7 +122,7 @@ END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
@@ -121,7 +137,7 @@ BEGIN
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+		[Code],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
 	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPV',		N'money-check-alt',		N'Cash',			20),
 	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'file-invoice-dollar',	N'Cash',			50),
@@ -152,7 +168,7 @@ END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
-		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');

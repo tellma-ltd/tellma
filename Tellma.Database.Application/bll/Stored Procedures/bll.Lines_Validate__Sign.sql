@@ -132,7 +132,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
 	JOIN dbo.Entries E ON L.[Id] = E.[LineId]
-	JOIN dbo.Agents AG ON AG.[Id] = E.[AgentId]
+	JOIN dbo.[Relations] AG ON AG.[Id] = E.[RelationId]
 	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
 	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 	WHERE WS.RuleType = N'ByAgent' AND WS.[RuleTypeEntryIndex]  = E.[Index]
@@ -164,17 +164,17 @@ SET NOCOUNT ON;
 	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
 	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
 	FROM dbo.Lines L
-	WHERE L.[Id] IN (SELECT [ID] FROM @Ids) 
+	WHERE L.[Id] IN (SELECT [Id] FROM @Ids) 
 
 	INSERT INTO @Entries ([Index],[LineIndex],[DocumentIndex],[Id],
-	[Direction],[AccountId],[CurrencyId],[AgentId],[ResourceId],[CenterId],
+	[Direction],[AccountId],[CurrencyId],[RelationId],[ResourceId],[CenterId],
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
-	[Time2]	,[ExternalReference],[AdditionalReference],[NotedAgentId],[NotedAgentName],
+	[Time2]	,[ExternalReference],[AdditionalReference],[NotedRelationId],[NotedAgentName],
 	[NotedAmount],[NotedDate])
 	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[AgentId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedAgentId],E.[NotedAgentName],
+	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];

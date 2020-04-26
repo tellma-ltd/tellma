@@ -1,6 +1,6 @@
 ﻿CREATE FUNCTION [dbo].[fn_Lookup]
 (
-	@LookupDefinitionId NVARCHAR(50),
+	@LookupDefinitionId INT,
 	@Name NVARCHAR(50)
 )
 RETURNS INT

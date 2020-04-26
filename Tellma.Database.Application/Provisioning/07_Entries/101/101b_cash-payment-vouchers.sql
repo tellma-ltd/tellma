@@ -27,7 +27,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 665,
 		[NotedAgentName0] = N'The family shawerma',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'49'
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
 	-- 4
@@ -39,7 +39,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 500,
 		[NotedAgentName0] = N'هيثم عوض محمد',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
 	-- 5
@@ -51,7 +51,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1380,
 		[NotedAgentName0] = N'720مطاعم صابرين 660- شاورما العائلة',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
 	-- 6
@@ -60,10 +60,10 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo] = N'Sold USD',
-		[AgentId1] = @GMSafe,
+		[RelationId1] = @GMSafe,
 		[CurrencyId1] = @USD,
 		[MonetaryValue1] = 2000,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 111000
 	WHERE [DocumentIndex] = 6 AND [Index] = 0;
@@ -76,7 +76,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1282.8,
 		[NotedAgentName0] = N'Mohammed Kamil',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'121109'
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
 	-- 22
@@ -88,7 +88,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 460,
 		[NotedAgentName0] = N'Ahmad AbdusSalam',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'121110'
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
 	-- 23
@@ -100,7 +100,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 55000,
 		[NotedAgentName0] = N'Former guards',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'121111'
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
 	-- 24
@@ -112,7 +112,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1011,
 		[NotedAgentName0] = N'Court',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[AgentId0] = @GMSafe,
+		[RelationId0] = @GMSafe,
 		[ExternalReference0] = N'GV-123'
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
@@ -258,11 +258,10 @@ BEGIN -- Inserting
 		[DocumentIndex],
 		[Id],
 		[Direction],
-		[AgentId],
+		[RelationId],
+		[ContractId],
 		[ResourceId],
 		[CenterId],
-		--[AccountIdentifier],
-		--[ResourceIdentifier],
 		[CurrencyId],
 		[EntryTypeId],
 		[DueDate],
@@ -274,7 +273,7 @@ BEGIN -- Inserting
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedAgentId],
+		[NotedRelationId],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate])
@@ -284,11 +283,10 @@ BEGIN -- Inserting
 		(SELECT [DocumentIndex] FROM @L WHERE [Index] = E.[LineId]),
 		[Id],
 		[Direction],
-		[AgentId],
+		[RelationId],
+		[ContractId],
 		[ResourceId],
 		[CenterId],
-		--[AccountIdentifier],
-		--[ResourceIdentifier],
 		[CurrencyId],
 		[EntryTypeId],
 		[DueDate],
@@ -300,7 +298,7 @@ BEGIN -- Inserting
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedAgentId],
+		[NotedRelationId],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate]
@@ -320,7 +318,7 @@ BEGIN -- Inserting
 
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-					[AccountId],	[EntryTypeId],			[AgentId],	[CurrencyId],	[MonetaryValue],[Value]) VALUES
+					[AccountId],	[EntryTypeId],			[RelationId],[CurrencyId],	[MonetaryValue],[Value]) VALUES
 	(0, 101, @DI1,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
 	(0, 102, @DI2,+1,@1Maintenance,	@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
 	(0, 103, @DI3,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
