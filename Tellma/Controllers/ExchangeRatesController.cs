@@ -141,7 +141,7 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ExchangeRateForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ExchangeRateForSave> entities, bool returnIds)
         {
             return await _repo.ExchangeRates__Save(entities, returnIds: returnIds);
         }

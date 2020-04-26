@@ -1,4 +1,4 @@
-import { ActionArguments } from '../action-arguments';
+import { ActionArguments } from './action-arguments';
 
 export interface AssignArguments extends ActionArguments {
     assigneeId: number;

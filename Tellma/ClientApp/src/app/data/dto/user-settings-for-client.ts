@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class UserSettingsForClient {
+export interface UserSettingsForClient {
   UserId: number;
   ImageId: string;
   Name: string;

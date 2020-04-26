@@ -50,8 +50,8 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Check permissions
-                var ids = new string[] { args.UserId }; // A single Id
-                await CheckActionPermissions("ResetPassword", ids);
+                var idSingleton = new List<string> { args.UserId }; // A single Id
+                await CheckActionPermissions("ResetPassword", idSingleton);
 
                 // Some basic validation
                 if (string.IsNullOrWhiteSpace(args.Password))
@@ -70,7 +70,7 @@ namespace Tellma.Controllers
                 var user = await _userManager.FindByIdAsync(args.UserId);
                 if (user == null)
                 {
-                    throw new NotFoundException<string>(ids);
+                    throw new NotFoundException<string>(idSingleton);
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -84,7 +84,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException(errorMessage);
                 }
 
-                var response = await LoadDataByIdsAndTransform(ids, null, null);
+                var response = await LoadDataByIdsAndTransform(idSingleton, null);
                 return Ok(response);
             }
             , _logger);

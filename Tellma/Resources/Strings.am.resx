@@ -85,24 +85,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
   </data>
-  <data name="Account_HasAdditionalReference" xml:space="preserve">
-    <value>ተጨማሪ ማጣቀሻ አለው</value>
-  </data>
-  <data name="Account_HasExternalReference" xml:space="preserve">
-    <value>የውጭ ማጣቀሻ አለው</value>
-  </data>
-  <data name="Account_HasNotedAgentId" xml:space="preserve">
-    <value>ወኪል ከመዘገበ</value>
-  </data>
-  <data name="Account_HasNotedAgentName" xml:space="preserve">
-    <value>ወኪል ስም ከመዘገበ</value>
-  </data>
-  <data name="Account_HasNotedAmount" xml:space="preserve">
-    <value>እንደተመለከትነው መጠን ያለው</value>
-  </data>
-  <data name="Account_HasNotedDate" xml:space="preserve">
-    <value>እንደተመለከትነው ቀን አለው</value>
-  </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>መለያ</value>
   </data>
@@ -111,6 +93,9 @@
   </data>
   <data name="Account_IsRelated" xml:space="preserve">
     <value>የሆነው ተዛማጅ</value>
+  </data>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>የሆነው ስማርት</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
@@ -153,6 +138,9 @@
   </data>
   <data name="AccountType_IdentifierAssignment" xml:space="preserve">
     <value>መለያ ምደባ</value>
+  </data>
+  <data name="AccountType_IdentifierLabel" xml:space="preserve">
+    <value>መለያ መሰየሚያ</value>
   </data>
   <data name="AccountType_IfrsConcept" xml:space="preserve">
     <value>IFRS ጽንሰ</value>
@@ -604,6 +592,9 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>ሒሳብ</value>
   </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>መለያ</value>
+  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ</value>
   </data>
@@ -923,7 +914,7 @@
     <value>የ {{0} እሴት ለ {1} መስክ ልክ ያልሆነ ነው ፣ ተቀባይነት ያላቸው እሴቶች የሚከተሉት ናቸው {2}።</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የመለወጫ ተመን</value>
+    <value>የምንዛሬ ዋጋ</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>

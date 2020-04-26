@@ -50,13 +50,13 @@ namespace Tellma.Controllers
 
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
-            var select = SelectExpression.Parse(args.Select);
+            var select = ParseSelect(args.Select);
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse("Node");
             var ids = args.I ?? new List<TKey>();
 
             // Load data
-            var data = await LoadDataByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
+            var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
             var extras = await GetExtras(data, cancellation);
 
             // Transform and return

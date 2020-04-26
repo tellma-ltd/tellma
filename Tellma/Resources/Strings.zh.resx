@@ -85,24 +85,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
   </data>
-  <data name="Account_HasAdditionalReference" xml:space="preserve">
-    <value>还有其他参考</value>
-  </data>
-  <data name="Account_HasExternalReference" xml:space="preserve">
-    <value>具有外部参考</value>
-  </data>
-  <data name="Account_HasNotedAgentId" xml:space="preserve">
-    <value>注意到代理</value>
-  </data>
-  <data name="Account_HasNotedAgentName" xml:space="preserve">
-    <value>注意到代理机构名称</value>
-  </data>
-  <data name="Account_HasNotedAmount" xml:space="preserve">
-    <value>注意到金额</value>
-  </data>
-  <data name="Account_HasNotedDate" xml:space="preserve">
-    <value>注意到日期</value>
-  </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>识别码</value>
   </data>
@@ -111,6 +93,9 @@
   </data>
   <data name="Account_IsRelated" xml:space="preserve">
     <value>相关的</value>
+  </data>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>是聪明</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
@@ -153,6 +138,9 @@
   </data>
   <data name="AccountType_IdentifierAssignment" xml:space="preserve">
     <value>标识符指定</value>
+  </data>
+  <data name="AccountType_IdentifierLabel" xml:space="preserve">
+    <value>标识标签</value>
   </data>
   <data name="AccountType_IfrsConcept" xml:space="preserve">
     <value>IFRS概念</value>
@@ -603,6 +591,9 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
+  </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>识别码</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>其他参考</value>

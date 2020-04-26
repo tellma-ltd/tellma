@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class DataWithVersion<T> {
+export interface DataWithVersion<T> {
     Version: string;
     Data: T;
 }

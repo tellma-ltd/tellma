@@ -85,27 +85,6 @@
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
   </data>
-  <data name="Account_HasAdditionalReference" xml:space="preserve">
-    <value>Has Additional Reference</value>
-  </data>
-  <data name="Account_HasExternalReference" xml:space="preserve">
-    <value>Has External Reference</value>
-  </data>
-  <data name="Account_HasIdentifier" xml:space="preserve">
-    <value>Has Identifier</value>
-  </data>
-  <data name="Account_HasNotedAgentId" xml:space="preserve">
-    <value>Has Noted Agent</value>
-  </data>
-  <data name="Account_HasNotedAgentName" xml:space="preserve">
-    <value>Has Noted Agent Name</value>
-  </data>
-  <data name="Account_HasNotedAmount" xml:space="preserve">
-    <value>Has Noted Amount</value>
-  </data>
-  <data name="Account_HasNotedDate" xml:space="preserve">
-    <value>Has Noted Date</value>
-  </data>
   <data name="Account_Identifier" xml:space="preserve">
     <value>Identifier</value>
   </data>
@@ -159,6 +138,9 @@
   </data>
   <data name="AccountType_IdentifierAssignment" xml:space="preserve">
     <value>Identifier Assignment</value>
+  </data>
+  <data name="AccountType_IdentifierLabel" xml:space="preserve">
+    <value>Identifier Label</value>
   </data>
   <data name="AccountType_IfrsConcept" xml:space="preserve">
     <value>IFRS Concept</value>
@@ -609,6 +591,9 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
+  </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>Identifier</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>

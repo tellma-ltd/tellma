@@ -2,7 +2,7 @@ import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } fr
 import { LineState } from '../entities/line';
 
 // tslint:disable:variable-name
-export class DefinitionsForClient {
+export interface DefinitionsForClient {
     Documents: { [definitionId: string]: DocumentDefinitionForClient };
     Lines: { [definitionId: string]: LineDefinitionForClient };
     Agents: { [definitionId: string]: AgentDefinitionForClient };

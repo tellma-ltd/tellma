@@ -1,4 +1,4 @@
-export class AdminPermissionsForClient {
+export interface AdminPermissionsForClient {
     [view: string]: {
       [action: string]: boolean;
     };

@@ -13,6 +13,8 @@ import { addToWorkspace, Key, addSingleToWorkspace, computeSelectForDetailsPicke
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
+import { GetByIdArguments } from '~/app/data/dto/get-by-id-arguments';
+import { GetArguments } from '~/app/data/dto/get-arguments';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -33,6 +35,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   @Input()
   additionalSelect: string = null;
+
+  @Input()
+  selectTemplate: string;
 
   @Input()
   filter: string;
@@ -133,14 +138,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     //   })
     // ).subscribe());
 
-    // use some RxJS magic to listen to user input and call the backend
+    // Use some RxJS magic to listen to user input and call the backend
     // in order to show the results in a dropdown
     this.subscriptions.add(fromEvent(this.input.nativeElement, 'input').pipe(
       //   filter(_ => !this._cacheMode),
       map((e: any) => e.target.value as string),
       tap(term => {
 
-        // here capture what the user is typing, in case s/he clicks on 'Create'
+        // Here capture what the user is typing, in case s/he clicks on 'Create'
         // we pass this value to the details template which can use it as an initial
         // value for the name saving the user from having to type it again
         this._initialText = term;
@@ -155,20 +160,26 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           this.chooseItem(null);
         }
       }),
-      debounceTime(200), // takes it easy on the poor server
+      debounceTime(20), // 200 // takes it easy on the poor server
       switchMap(term => {
         if (!term || term.length < this.MIN_CHARS_TO_SEARCH) {
           return of(null);
         } else {
+          // Show the spinner
           this.status = SearchStatus.showSpinner;
-          return this.api.get({ // TODO don't always use the API
+
+          // Prepare the arguments
+          const args: GetArguments = {
+            expand: this.expand,
+            select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect),
             search: term,
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
-            expand: this.expand,
-            filter: this.queryFilter,
-            select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
-          }).pipe(
+            filter: this.queryFilter
+          };
+
+          // Call the API and return the observable
+          return this.api.get(args).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
               this._errorMessage = friendlyError.error;
@@ -238,10 +249,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   private doFetchUnloadedItem(id: string | number) {
-    return this.api.getById(id, {
+    const args: GetByIdArguments = {
       expand: this.expand,
-      select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect)
-    }).pipe(
+      select: computeSelectForDetailsPicker(this.entityDescriptor(), this.additionalSelect),
+    };
+
+    return this.api.getById(id, args).pipe(
       tap((response: GetByIdResponse) => {
         addSingleToWorkspace(response, this.workspace);
         if (this.chosenItem === id) {

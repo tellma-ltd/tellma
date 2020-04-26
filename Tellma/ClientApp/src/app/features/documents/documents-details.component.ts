@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
-  DocumentDefinitionForClient, ResourceDefinitionForClient,
+  DocumentDefinitionForClient,
   LineDefinitionColumnForClient, LineDefinitionEntryForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
@@ -27,12 +27,11 @@ import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
-import { Unit } from '~/app/data/entities/unit';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { RequiredSignature } from '~/app/data/entities/required-signature';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { ActionArguments } from '~/app/data/action-arguments';
-import { EntitiesResponse } from '~/app/data/dto/get-response';
+import { ActionArguments } from '~/app/data/dto/action-arguments';
+import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
@@ -136,28 +135,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public reasonDetails: string;
   public reasonId: number;
 
-  public expand = 'CreatedBy,ModifiedBy,Assignee,' +
-    // Entry Account
-    ['Currency', /* 'Resource/Currency', */ 'Resource/Units', 'Agent',
-      'EntryType', 'AccountType', 'Center']
-      .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
-
-    // Entry
-    ['Currency', 'Resource/Currency', 'Resource/Units', 'Agent',
-      'EntryType', 'NotedAgent', 'Center', 'Unit']
-      .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
-
-    // Attachments
-    ['CreatedBy', 'ModifiedBy']
-      .map(prop => `Attachments/${prop}`).join(',') + ',' +
-
-    // Attachments
-    ['ModifiedBy']
-      .map(prop => `StatesHistory/${prop}`).join(',') + ',' +
-
-    // Assignment history
-    ['Assignee', 'CreatedBy']
-      .map(prop => `AssignmentsHistory/${prop}`).join(',');
+  public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
+  public additionalSelectAccount = '$DocumentDetails';
+  public additionalSelectResource = '$DocumentDetailsForEntry';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -562,7 +542,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!!this.assigneeId) {
       this.documentsApi.assign([doc.Id], {
         returnEntities: true,
-        expand: this.expand,
+        select: this.select,
         assigneeId: this.assigneeId,
         comment: this.comment
       }, { includeRequiredSignatures: true }).pipe(
@@ -1084,12 +1064,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.get('Resource', resourceId) as Resource;
   }
 
-  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
-    const resource = this.resource(entry);
-    const defId = !!resource ? resource.DefinitionId : null;
-    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
-    return resourceDefinition;
-  }
+  // private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
+  //   const resource = this.resource(entry);
+  //   const defId = !!resource ? resource.DefinitionId : null;
+  //   const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+  //   return resourceDefinition;
+  // }
 
   // Center
 
@@ -1103,57 +1083,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     return !!account ? account.CenterId : null;
   }
-
-  // Account
-
-  public additionalSelectAccount =
-    // AccountType
-    [
-      // Misc
-      'EntryTypeParentId', 'IsResourceClassification',
-
-      // Definitions
-      'AgentDefinitionId', 'NotedAgentDefinitionId', 'ResourceDefinitionId',
-
-      // Assignments
-      'CurrencyAssignment', 'AgentAssignment', 'ResourceAssignment',
-      'CenterAssignment', 'EntryTypeAssignment', 'IdentifierAssignment',
-      'NotedAgentAssignment',
-
-      // Labels
-      'DueDateLabel', 'DueDateLabel2', 'DueDateLabel3',
-      'Time1Label', 'Time1Label2', 'Time1Label3',
-      'Time2Label', 'Time2Label2', 'Time2Label3',
-      'ExternalReferenceLabel', 'ExternalReferenceLabel2', 'ExternalReferenceLabel3',
-      'AdditionalReferenceLabel', 'AdditionalReferenceLabel2', 'AdditionalReferenceLabel3',
-      'NotedAgentNameLabel', 'NotedAgentNameLabel2', 'NotedAgentNameLabel3',
-      'NotedAmountLabel', 'NotedAmountLabel2', 'NotedAmountLabel3',
-      'NotedDateLabel', 'NotedDateLabel2', 'NotedDateLabel3'
-    ].map(prop => `AccountType/${prop}`).join(',') + ',' +
-
-    // Center
-    ['Name', 'Name2', 'Name3']
-      .map(prop => `Center/${prop}`).join(',') + ',' +
-
-    // EntryType
-    ['Name', 'Name2', 'Name3']
-      .map(prop => `EntryType/${prop}`).join(',') + ',' +
-
-    // Currency
-    ['Name', 'Name2', 'Name3', 'E']
-      .map(prop => `Currency/${prop}`).join(',') + ',' +
-
-    // Agent
-    ['Name', 'Name2', 'Name3', 'DefinitionId']
-      .map(prop => `Agent/${prop}`).join(',') + ',' +
-
-    // Resource
-    ['Name', 'Name2', 'Name3', 'DefinitionId']
-      .map(prop => `Resource/${prop}`).join(',') + ',' +
-
-    // Resource/Units
-    ['Unit/Name', 'Unit/Name2', 'Unit/Name3', 'Multiplier']
-      .map(prop => `Resource/Units/${prop}`).join(',');
 
   // AgentId
 
@@ -1204,8 +1133,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   // ResourceId
-
-  public additionalSelectResource = `Units/Unit/Name,Units/Unit/Name2,Units/Unit/Name3,Units/Multiplier`;
 
   public showResource_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
@@ -1400,8 +1327,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Account Identifier
   public showAccountIdentifier_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at ? !!at.IdentifierLabel : false;
+    return !!at && at.IdentifierAssignment === 'E';
   }
+
+  // public readonlyAccountIdentifier_Manual(entry: Entry): boolean {
+  //   const account = this.account(entry);
+  //   return !!account && !!account.Identifier;
+  // }
+
+  // public readonlyValueAccountIdentifier_Manual(entry: Entry): string {
+  //   const account = this.account(entry);
+  //   return !!account ? account.Identifier : null;
+  // }
 
   public labelAccountIdentifier_Manual(entry: Entry): string {
     const at = this.accountType(entry);
@@ -1959,7 +1896,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const lineIds = this.lineIds(signature);
     this.documentsApi.sign(lineIds, {
       returnEntities: true,
-      expand: this.expand,
+      select: this.select,
       onBehalfOfUserId: signature.OnBehalfOfUserId,
       toState: yes ? Math.abs(signature.ToState) : -Math.abs(signature.ToState),
       roleId: signature.RoleId,
@@ -1984,8 +1921,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         if (confirmed) {
           this.documentsApi.unsign(this.signatureIds(signature), {
             returnEntities: true,
-            expand: this.expand,
-            select: undefined
+            select: this.select
           }, { includeRequiredSignatures: true }).pipe(
             tap(res => {
               addToWorkspace(res, this.workspace);
@@ -2755,7 +2691,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     fn: (ids: (number | string)[], args: ActionArguments, extras?: { [key: string]: any }) => Observable<EntitiesResponse<Document>>) {
     fn([doc.Id], {
       returnEntities: true,
-      expand: this.expand
+      select: this.select,
     }, { includeRequiredSignatures: true }).pipe(
       tap(res => {
         addToWorkspace(res, this.workspace);

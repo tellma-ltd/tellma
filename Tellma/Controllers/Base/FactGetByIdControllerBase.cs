@@ -81,10 +81,10 @@ namespace Tellma.Controllers
         {
             // Parse the parameters
             var expand = ExpandExpression.Parse(args?.Expand);
-            var select = SelectExpression.Parse(args?.Select);
+            var select = ParseSelect(args?.Select);
 
             // Load the data
-            var data = await LoadDataByIds(new TKey[] { id }, expand, select, cancellation);
+            var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, cancellation);
 
             // Check that the entity exists, else return NotFound
             var entity = data.SingleOrDefault();
@@ -105,7 +105,7 @@ namespace Tellma.Controllers
         /// Helper function for all "action" web handlers (like activate and deactivate) that
         /// wish to load a bunch of affected entities via their Ids and return them as an <see cref="EntitiesResponse{TEntity}"/>, after verifying the user's permissions
         /// </summary>
-        protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(TKey[] ids, ExpandExpression expand, SelectExpression select)
+        protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(List<TKey> ids, ActionArguments args)
         {
             // Actions are un-cancellable
             CancellationToken noCancel = default;
@@ -113,8 +113,10 @@ namespace Tellma.Controllers
             // Calculate server time at the very beginning for consistency
             var serverTime = DateTimeOffset.UtcNow;
 
-            // Calculate server time at the very beginning for consistency
-            var data = await LoadDataByIds(ids, expand, select, noCancel);
+            // Get the data
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = ParseSelect(args?.Select);
+            var data = await GetEntitiesByIds(ids, expand, select, noCancel);
 
             // Get the extras
             var extras = await GetExtras(data, noCancel);
@@ -129,19 +131,19 @@ namespace Tellma.Controllers
         /// <summary>
         /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="ExpandExpression"/> and <see cref="SelectExpression"/>, after verifying the user's permissions
         /// </summary>
-        protected virtual async Task<List<TEntity>> LoadDataByIds(TKey[] ids, ExpandExpression expand, SelectExpression select, CancellationToken cancellation)
+        protected virtual async Task<List<TEntity>> GetEntitiesByIds(List<TKey> ids, ExpandExpression expand, SelectExpression select, CancellationToken cancellation)
         {
-            if (ids == null || ids.Length == 0)
+            if (ids == null || ids.Count == 0)
             {
                 return new List<TEntity>();
             }
             else
             {
                 // Load data
-                var data = await LoadDataByCustomQuery(q => q.FilterByIds(ids), expand, select, null, cancellation);
+                var data = await GetEntitiesByCustomQuery(q => q.FilterByIds(ids), expand, select, null, cancellation);
 
                 // If the data is only 
-                if (ids.Length == 1 && data.Count == 1)
+                if (ids.Count == 1 && data.Count == 1)
                 {
                     // No need to sort
                     return data;
@@ -149,9 +151,9 @@ namespace Tellma.Controllers
                 else
                 {
                     // Sort the entities according to the original Ids, as a good practice
-                    TEntity[] dataSorted = new TEntity[ids.Length];
+                    TEntity[] dataSorted = new TEntity[ids.Count];
                     Dictionary<TKey, TEntity> dataDic = data.ToDictionary(e => e.Id);
-                    for (int i = 0; i < ids.Length; i++)
+                    for (int i = 0; i < ids.Count; i++)
                     {
                         var id = ids[i];
                         if (dataDic.TryGetValue(id, out TEntity entity))
@@ -191,7 +193,7 @@ namespace Tellma.Controllers
         /// <param name="filterFunc">Allows any kind of filtering on the query</param>
         /// <param name="expand">Optional expand argument</param>
         /// <param name="select">Optional select argument</param>
-        protected async Task<List<TEntity>> LoadDataByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby, CancellationToken cancellation)
+        protected async Task<List<TEntity>> GetEntitiesByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby, CancellationToken cancellation)
         {
             // Prepare a query of the result, and clone it
             var repo = GetRepository();

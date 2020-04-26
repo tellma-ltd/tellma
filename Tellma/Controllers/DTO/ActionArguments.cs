@@ -1,24 +1,10 @@
 ﻿namespace Tellma.Controllers.Dto
 {
-    public class ActionArguments
+    public class ActionArguments : SelectExpandArguments
     {
         /// <summary>
         /// Specifies that affected entities should be returned
         /// </summary>
         public bool? ReturnEntities { get; set; } = true;
-
-        /// <summary>
-        /// Specifies what navigation properties to expand in the returned entities
-        /// (if <see cref="ReturnEntities"/> is set to false
-        /// this parameter will be ignored
-        /// </summary>
-        public string Expand { get; set; }
-
-        /// <summary>
-        /// Specifies what properties to select in the returned entities
-        /// (if <see cref="ReturnEntities"/> is set to false
-        /// this parameter will be ignored
-        /// </summary>
-        public string Select { get; set; }
     }
 }

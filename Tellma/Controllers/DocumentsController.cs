@@ -77,7 +77,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // GetByIdImplAsync() enforces read permissions
+                // This enforces read permissions
                 string attachments = nameof(Document.Attachments);
                 var doc = await GetByIdLoadData(docId, new GetByIdArguments
                 {
@@ -123,15 +123,9 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Parse parameters
-                var expandExp = ExpandExpression.Parse(args.Expand);
-                var selectExp = SelectExpression.Parse(args.Select);
-                var returnEntities = args.ReturnEntities ?? false;
-                var idsArray = ids.ToArray();
-
                 // User permissions
                 // TODO: Check the user can read the document
-                await CheckActionPermissions("Read", idsArray);
+                await CheckActionPermissions("Read", ids);
 
                 // C# Validation 
                 // Goes here
@@ -161,9 +155,9 @@ namespace Tellma.Controllers
                 await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
                 // Return result
-                if (returnEntities)
+                if (args.ReturnEntities ?? false)
                 {
-                    var response = await LoadDataByIdsAndTransform(idsArray, expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(ids, args);
 
                     trx.Complete();
                     return Ok(response);
@@ -182,10 +176,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Parse parameters
-                var expandExp = ExpandExpression.Parse(args.Expand);
-                var selectExp = SelectExpression.Parse(args.Select);
-                var returnIds = args.ReturnEntities ?? false;
+                var returnEntities = args.ReturnEntities ?? false;
 
                 // C# Validation 
                 // Goes here
@@ -220,11 +211,11 @@ namespace Tellma.Controllers
                     args.RuleType,
                     args.RoleId,
                     args.SignedAt ?? DateTimeOffset.Now,
-                    returnIds: returnIds);
+                    returnIds: returnEntities);
 
-                if (returnIds)
+                if (returnEntities)
                 {
-                    var response = await LoadDataByIdsAndTransform(documentIds.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(documentIds.ToList(), args);
 
                     trx.Complete();
                     return Ok(response);
@@ -243,10 +234,7 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Parse parameters
-                var expandExp = ExpandExpression.Parse(args.Expand);
-                var selectExp = SelectExpression.Parse(args.Select);
-                var returnIds = args.ReturnEntities ?? false;
+                var returnEntities = args.ReturnEntities ?? false;
 
                 // C# Validation 
                 // Goes here
@@ -265,10 +253,10 @@ namespace Tellma.Controllers
                 }
 
                 // Unsign
-                var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnIds);
-                if (returnIds)
+                var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnEntities);
+                if (returnEntities)
                 {
-                    var response = await LoadDataByIdsAndTransform(documentIds.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(documentIds.ToList(), args);
 
                     trx.Complete();
                     return Ok(response);
@@ -310,14 +298,8 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Select);
-                var expandExp = ExpandExpression.Parse(args.Expand);
-                var returnEntities = args.ReturnEntities ?? false;
-                var idsArray = ids.ToArray();
-
                 // Check user permissions
-                await CheckActionPermissions("State", idsArray);
+                await CheckActionPermissions("State", ids);
 
                 // C# Validation 
                 // TODO
@@ -353,9 +335,9 @@ namespace Tellma.Controllers
 
                 await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
 
-                if (returnEntities)
+                if (args.ReturnEntities ?? false)
                 {
-                    var response = await LoadDataByIdsAndTransform(ids.ToArray(), expandExp, selectExp);
+                    var response = await LoadDataByIdsAndTransform(ids, args);
 
                     trx.Complete();
                     return Ok(response);
@@ -1107,7 +1089,7 @@ namespace Tellma.Controllers
             return $"[{docIndex}].{nameof(Document.Lines)}[{lineIndex}].{propName}";
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<DocumentForSave> entities, bool returnIds)
         {
             var blobsToSave = new List<(string, byte[])>();
 
@@ -1218,6 +1200,179 @@ namespace Tellma.Controllers
         {
             return $"{TenantId}/Attachments/{guid}";
         }
+
+        #region Details Select
+
+        protected override SelectExpression ParseSelect(string select)
+        {
+            // We provide a shorthand notation for common and huge select
+            // strings, this one is usually requested from the document details
+            // screen and it contains over 260 atoms
+            var shorthand = "$Details";
+            if (select == null)
+            {
+                return null;
+            }
+            else if (select.Trim() == shorthand)
+            {
+                return _detailsSelectExpression;
+            }
+            else
+            {
+                select = select.Replace(shorthand, _detailsSelect);
+                return base.ParseSelect(select);
+            }
+        }
+
+        private static readonly string _detailsSelect = string.Join(',', DocumentPaths());
+        private static readonly SelectExpression _detailsSelectExpression = 
+            new SelectExpression(DocumentPaths().Select(a => SelectAtom.Parse(a)));
+
+        // ------------------------------------------------
+        // Paths to return on the level of each entity type
+        // ------------------------------------------------
+
+        public static IEnumerable<string> DocumentPaths() => DocumentProps
+            .Concat(LinePaths(nameof(Document.Lines)))
+            .Concat(AttachmentPaths(nameof(Document.Attachments)))
+            .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
+            .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
+            .Concat(AgentPaths(nameof(Document.DebitAgent)))
+            .Concat(AgentPaths(nameof(Document.CreditAgent)))
+            .Concat(AgentPaths(nameof(Document.NotedAgent)))
+            .Concat(CenterPaths(nameof(Document.InvestmentCenter)))
+            .Concat(UnitPaths(nameof(Document.Unit)))
+            .Concat(CurrencyPaths(nameof(Document.Currency)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup1)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup2)))
+            .Concat(LookupPaths(nameof(Document.DocumentLookup3)))
+            .Concat(UserPaths(nameof(Document.CreatedBy)))
+            .Concat(UserPaths(nameof(Document.ModifiedBy)))
+            .Concat(UserPaths(nameof(Document.Assignee)));
+        public static IEnumerable<string> LinePaths(string path = null) => LineProps
+            .Concat(EntryPaths(nameof(Line.Entries)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryPaths(string path = null) => EntryProps
+            .Concat(AccountPaths(nameof(Entry.Account)))
+            .Concat(CurrencyPaths(nameof(Entry.Currency)))
+            .Concat(EntryResourcePaths(nameof(Entry.Resource)))
+            .Concat(AgentPaths(nameof(Entry.Agent)))
+            .Concat(EntryTypePaths(nameof(Entry.EntryType)))
+            .Concat(AgentPaths(nameof(Entry.NotedAgent)))
+            .Concat(CenterPaths(nameof(Entry.Center)))
+            .Concat(UnitPaths(nameof(Entry.Unit)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AttachmentPaths(string path = null) => AttachmentProps
+            .Concat(UserPaths(nameof(Attachment.CreatedBy)))
+            .Concat(UserPaths(nameof(Attachment.ModifiedBy)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> DocumentStateChangePaths(string path = null) => DocumentStateChangeProps
+            .Concat(UserPaths(nameof(DocumentStateChange.ModifiedBy)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> DocumentAssignmentPaths(string path = null) => DocumentAssignmentProps
+            .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
+            .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AgentPaths(string path = null) => AgentProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
+            .Concat( // Entry Resource also adds the Currency
+                CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            );
+        public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
+            .Concat(ResourceUnitPaths(nameof(Resource.Units)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps
+            .Concat(UnitPaths(nameof(ResourceUnit.Unit)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> CenterPaths(string path = null) => CenterProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> UnitPaths(string path = null) => UnitProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> CurrencyPaths(string path = null) => CurrencyProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> UserPaths(string path = null) => UserProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> LookupPaths(string path = null) => LookupProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountPaths(string path = null) => AccountProps
+            .Concat(AccountTypePaths(nameof(Account.AccountType)))
+            .Concat(CenterPaths(nameof(Account.Center)))
+            .Concat(EntryTypePaths(nameof(Account.EntryType)))
+            .Concat(CurrencyPaths(nameof(Account.Currency)))
+            .Concat(AgentPaths(nameof(Account.Agent)))
+            .Concat(ResourcePaths(nameof(Account.Resource)))
+            .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
+            .Select(p => path == null ? p : $"{path}/{p}");
+
+        // -------------------------------------------------------------
+        // Simple properties to include on the level of each entity type
+        // -------------------------------------------------------------
+
+        private static IEnumerable<string> DocumentProps => typeof(Document).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> LineProps => typeof(Line).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> EntryProps => typeof(Entry).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> AttachmentProps => typeof(Attachment).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> DocumentAssignmentProps => typeof(DocumentAssignment).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> DocumentStateChangeProps => typeof(DocumentStateChange).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
+        private static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
+        private static IEnumerable<string> UserProps => Enum(nameof(Entities.User.Name), nameof(Entities.User.Name2), nameof(Entities.User.Name3), nameof(Entities.User.ImageId));
+        private static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
+        private static IEnumerable<string> ResourceUnitsProps => Enum(nameof(ResourceUnit.Multiplier));
+        private static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
+        private static IEnumerable<string> AgentProps => Enum(nameof(Agent.Name), nameof(Agent.Name2), nameof(Agent.Name3), nameof(Agent.DefinitionId));
+        private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
+        private static IEnumerable<string> AccountProps => Enum(nameof(Account.Name), nameof(Account.Name2), nameof(Account.Name3));
+        private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3));
+        private static IEnumerable<string> AccountTypeProps => Enum(
+            // Names
+            nameof(AccountType.Name),
+            nameof(AccountType.Name2),
+            nameof(AccountType.Name3),
+
+            // Misc
+            nameof(AccountType.EntryTypeParentId),
+            nameof(AccountType.IsResourceClassification),
+
+            // Definitions
+            nameof(AccountType.AgentDefinitionId),
+            nameof(AccountType.NotedAgentDefinitionId),
+            nameof(AccountType.ResourceDefinitionId),
+
+            // Assignments
+            nameof(AccountType.CurrencyAssignment),
+            nameof(AccountType.AgentAssignment),
+            nameof(AccountType.ResourceAssignment),
+            nameof(AccountType.CenterAssignment),
+            nameof(AccountType.EntryTypeAssignment),
+            nameof(AccountType.IdentifierAssignment),
+            nameof(AccountType.NotedAgentAssignment),
+
+            // Labels
+            nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),
+            nameof(AccountType.Time1Label), nameof(AccountType.Time1Label2), nameof(AccountType.Time1Label3),
+            nameof(AccountType.Time2Label), nameof(AccountType.Time2Label), nameof(AccountType.Time2Label),
+            nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel), nameof(AccountType.ExternalReferenceLabel),
+            nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel),
+            nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
+            nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
+         );
+
+        // Helper method
+        private static IEnumerable<string> Enum(params string[] ps)
+        {
+            foreach (var p in ps)
+            {
+                yield return p;
+            }
+        }
+
+        #endregion
     }
 
     [Route("api/" + DocumentsController.BASE_ADDRESS)]

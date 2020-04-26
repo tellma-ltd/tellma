@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class AdminUserSettingsForClient {
+export interface AdminUserSettingsForClient {
   UserId: number;
   Name: string;
   CustomSettings: { [key: string]: string };

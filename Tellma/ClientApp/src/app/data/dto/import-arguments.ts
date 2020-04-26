@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class ImportArguments {
+export interface ImportArguments {
   mode?: 'Insert' | 'Update' | 'Merge';
 }
 

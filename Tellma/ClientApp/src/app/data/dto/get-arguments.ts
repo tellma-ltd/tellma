@@ -1,12 +1,11 @@
-export class GetArguments {
+import { SelectExpandArguments } from './select-expand-arguments';
+
+export interface GetArguments extends SelectExpandArguments {
   top?: number;
   skip?: number;
   orderby?: string;
-  desc?: boolean;
   search?: string;
   filter?: string;
-  expand?: string;
-  select?: string;
   countEntities?: boolean;
   unobtrusive?: boolean;
 }

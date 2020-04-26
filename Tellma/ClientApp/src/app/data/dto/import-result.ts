@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class ImportResult {
+export interface ImportResult {
   Inserted: number;
   Updated: number;
   Seconds: number;
