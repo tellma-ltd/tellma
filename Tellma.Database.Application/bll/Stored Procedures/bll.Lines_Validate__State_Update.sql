@@ -6,7 +6,8 @@
 	@ToState SMALLINT,
 	@Top INT = 10
 AS
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList]
+DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	-- The @Field is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -16,18 +17,18 @@ AS
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
-		(N'CurrencyId'),(N'RelationId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'DueDate'),(N'MonetaryValue'),
+		(N'CurrencyId'),(N'ContractId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'DueDate'),(N'MonetaryValue'),
 		(N'Quantity'),(N'UnitId'),(N'Time1'),(N'Time2'),(N'ExternalReference'),(N'AdditionalReference'),
-		(N'NotedRelationId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
+		(N'NotedContractId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 --	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
 	WHERE @ToState >= LDC.[RequiredState]
-	AND L.[DefinitionId] <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = 'ManualLine')
+	AND L.[DefinitionId] <> @ManualLineDef
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
-		FL.Id = N'RelationId'			AND E.[RelationId] IS NULL OR
+		FL.Id = N'ContractId'			AND E.[ContractId] IS NULL OR
 		FL.Id = N'ResourceId'			AND E.[ResourceId] IS NULL OR
 		FL.Id = N'CenterId'				AND E.[CenterId] IS NULL OR
 		FL.Id = N'EntryTypeId'			AND E.[EntryTypeId] IS NULL OR
@@ -39,7 +40,7 @@ AS
 		FL.Id = N'Time2'				AND E.[Time2] IS NULL OR
 		FL.Id = N'ExternalReference'	AND E.[ExternalReference] IS NULL OR
 		FL.Id = N'AdditionalReference'	AND E.[AdditionalReference] IS NULL OR
-		FL.Id = N'NotedRelationId'		AND E.[NotedRelationId] IS NULL OR
+		FL.Id = N'NotedContractId'		AND E.[NotedContractId] IS NULL OR
 		FL.Id = N'NotedAgentName'		AND E.[NotedAgentName] IS NULL OR
 		FL.Id = N'NotedAmount'			AND E.[NotedAmount] IS NULL OR
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
@@ -52,7 +53,7 @@ BEGIN
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
 	SELECT TOP (@Top)
 		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
-		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Relation3Resource4',
+		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Contract3Resource4',
 		L.[Index],
 		(SELECT [Code] FROM dbo.AccountTypes WHERE [Id] = LDE.[AccountTypeParentId]) AS AccountTypeParentCode,
 		E.[CurrencyId],
@@ -61,9 +62,9 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	LEFT JOIN dbo.[Relations] AG ON E.[RelationId] = AG.Id
+	LEFT JOIN dbo.[Contracts] AG ON E.[ContractId] = AG.Id
 	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE L.DefinitionId <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = 'ManualLine')
+	WHERE L.DefinitionId <> @ManualLineDef
 	AND E.AccountId IS NULL
 	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
 
@@ -75,16 +76,15 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	CROSS JOIN (VALUES
-		(N'AccountId'),(N'CurrencyId'),(N'RelationId'),(N'ContractId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue')
+		(N'AccountId'),(N'CurrencyId'),(N'ContractId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue')
 	) FL([Id])
 	LEFT JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	LEFT JOIN dbo.AccountTypes AC ON AC.Id = A.[IfrsTypeId]
-	WHERE L.DefinitionId = N'ManualLine' 
+	WHERE L.DefinitionId = @ManualLineDef
 	AND	(
 		FL.Id = N'AccountId'		AND E.[AccountId] IS NULL OR
 		FL.Id = N'CurrencyId'		AND E.[CurrencyId] IS NULL OR
 		FL.Id = N'CenterId'			AND E.[CenterId] IS NULL OR
-		--FL.Id = N'RelationId'		AND AC.[RelationDefinitionId] IS NOT NULL AND E.[RelationId] IS NULL OR
 		--FL.Id = N'ContractId'		AND AC.[ContractDefinitionId] IS NOT NULL AND E.[ContractId] IS NULL OR
 		FL.Id = N'ResourceId'		--AND AC.[ResourceAssignment] <> N'N' 
 		AND E.[ResourceId] IS NULL 
@@ -114,7 +114,7 @@ IF @ToState > 0
 	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
 	--JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentId] = [AT].[Id]
-	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> N'ManualLine';
+	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> @ManualLineDef;
 
 	/*
 		-- TODO: For the cases below, add the condition that Entry Type is enforced
@@ -137,7 +137,7 @@ IF @ToState > 0
 	JOIN [dbo].[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
 	WHERE ([E].[EntryTypeId] IS NULL)
 	AND [AT].[EntryTypeParentId] IS NOT NULL
-	AND L.DefinitionId = N'ManualLine';
+	AND L.DefinitionId = @ManualLineDef
 		
 	-- The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -154,7 +154,7 @@ IF @ToState > 0
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
-	AND L.[DefinitionId] = N'ManualLine';
+	AND L.[DefinitionId] = @ManualLineDef;
 
 
 	*/
@@ -177,20 +177,16 @@ BEGIN
 		SELECT MAX([Id]) AS [Index],
 			AccountId,
 			ResourceId,
-			[RelationId],
+			[ContractId],
 			DueDate,
-			--[AccountIdentifier],
-			--[ResourceIdentifier],
 			SUM([NormalizedQuantity]) AS [Quantity]			
 		FROM map.DetailsEntries() E
 		WHERE AccountId IN (SELECT [Id] FROM ConservativeAccounts)
 		GROUP BY
 			AccountId,
 			ResourceId,
-			[RelationId],
-			DueDate--,
-			--[AccountIdentifier],
-			--[ResourceIdentifier]
+			[ContractId],
+			DueDate
 		HAVING
 			SUM([NormalizedQuantity]) < 0
 	)

@@ -1,63 +1,60 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 /*
-Entry Type - Account Type - Center - Currency - Relation Definition - Agent
+Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	*/
 		
-	INSERT INTO @Accounts([Index],[Code],
-					[IfrsTypeId],			[Name],									[CurrencyId],	[CenterId],		[EntryTypeId],		[RelationId]) VALUES
+	INSERT INTO @Accounts([Index],
+		[Code], [DefinitionId],	[ClassificationId],	[IfrsTypeId],						[Name],							[CurrencyId],	[CenterId],		[EntryTypeId],		[ContractId]) VALUES
 	-- Assets Accounts
-	(10,N'1000',	@FixturesAndFittings,		N'Fixtures and fittings',				@USD,			NULL,			@PPEAdditions,			NULL),
-	(11,N'1010',	@OfficeEquipment,			N'Office equipment',					@USD,			NULL,			@PPEAdditions,			NULL),
-	(12,N'1020',	@ComputerEquipmentMemberExtension,N'Computer equipment',			@USD,			NULL,			@PPEAdditions,			NULL),
-	(13,N'1030',	@ComputerAccessoriesExtension,N'Computer accessories',				@USD,			NULL,			@PPEAdditions,			NULL),
+	(10,N'12001',@ppeADef,@NonCurrentAssets_AC,		@FixturesAndFittings,				N'Fixtures and fittings',		@USD,			NULL,			@PPEAdditions,			NULL),
+	(11,N'12002',@ppeADef,@NonCurrentAssets_AC,		@OfficeEquipment,					N'Office equipment',			@USD,			NULL,			@PPEAdditions,			NULL),
+	(12,N'12003',@ppeADef,@NonCurrentAssets_AC,		@OfficeEquipment,					N'Comp. equip. & acc.',			@USD,			NULL,			@PPEAdditions,			NULL),
 
-	(310,N'1100',	@FixturesAndFittings,		N'Acc. Dep.- Fixtures and fittings',	@USD,			NULL,			@PPEDepreciations,		NULL),
-	(311,N'1110',	@OfficeEquipment,			N'Acc. Dep.- Office equipment',			@USD,			NULL,			@PPEDepreciations,		NULL),
-	(312,N'1120',	@ComputerEquipmentMemberExtension,N'Acc. Dep.- Computer equipment',	@USD,			NULL,			@PPEDepreciations,		NULL),
-	(313,N'1130',	@ComputerAccessoriesExtension,N'Acc. Dep.- Computer accessories',	@USD,			NULL,			@PPEDepreciations,		NULL),
+	(310,N'12011',@ppeADef,@NonCurrentAssets_AC,	@FixturesAndFittings,				N'Acc. Dep.- Fixtures and fittings',@USD,		NULL,			@PPEDepreciations,		NULL),
+	(311,N'12012',@ppeADef,@NonCurrentAssets_AC,	@OfficeEquipment,					N'Acc. Dep.- Office equipment',	@USD,			NULL,			@PPEDepreciations,		NULL),
+	(312,N'12013',@ppeADef,@NonCurrentAssets_AC,	@OfficeEquipment,					N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@PPEDepreciations,		NULL),
 
-	(20,N'1201',	@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,					NULL),
-	(21,N'1202',	@CurrentTradeReceivables,			N'Banan ET',					@USD,			@C101_INV,		NULL,					NULL),
-	(22,N'1203',	@CurrentTradeReceivables,			N'PrimeLedgers A/R',			@USD,			@C101_INV,		NULL,					NULL),
-	(23,N'1204',	@TradeAndOtherCurrentReceivables,	N'Partners Withdrawals',		@USD,			@C101_INV,		NULL,					NULL),
-	--(24,N'1205',	@CurrentCarLoanReceivablesExtension,N'Abu Ammar Car Loan',			@USD,			@C101_INV,		NULL,					@Abu_Ammar),
-	--(25,N'1206',	@CurrentCarLoanReceivablesExtension,N'M. Ali Car Loan',				@USD,			@C101_INV,		NULL,					@M_Ali),
-	--(26,N'1207',	@CurrentCarLoanReceivablesExtension,N'El-Amin Car Loan',			@USD,			@C101_INV,		NULL,					@el_Amin),
-	(27,N'1208',	@CurrentValueAddedTaxReceivables,	N'VAT Input',					NULL,			@C101_INV,		NULL,					NULL),
-	--(28,N'1209',	@TradeAndOtherCurrentReceivables,	N'Commissions',					@USD,			@C101_INV,		NULL,					NULL),
-	(29,N'1210',	@CurrentTradeReceivables,			N'Office Rent',					@SDG,			@C101_INV,		NULL,					NULL),
-	(30,N'1211',	@CurrentPrepayments,				N'Internet Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
-	(31,N'1212',	@CurrentPrepayments,				N'Car Rent Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
-	(32,N'1213',	@CurrentPrepayments,				N'House Rent Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
-	(33,N'1214',	@CurrentPrepayments,				N'Maintenance Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
-	-- Non Current
---	(34,N'1215',	@NoncurrentCarLoansReceivablesExtension,N'Abu Ammar Car Loan - NC',	@USD,			@C101_INV,		NULL,					@Abu_Ammar),
---	(35,N'1216',	@NoncurrentCarLoansReceivablesExtension,N'M. Ali Car Loan - NC',	@USD,			@C101_INV,		NULL,					@M_Ali),
---	(36,N'1217',	@NoncurrentCarLoansReceivablesExtension,N'El-Amin Car Loan - NC',	@USD,			@C101_INV,		NULL,					@el_Amin),
-	
-	(38,N'1310',	@CurrentAccruedIncome,				N'Accrued Income',				NULL,			@C101_INV,		NULL,					NULL),
+	(20,N'11201',@customerADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,					NULL),
 
-	(41,N'1810',	@CashAndCashEquivalents,			N'GM Fund - SDG',				@SDG,			@C101_INV,		NULL,					@GMSafe),
-	(42,N'1811',	@CashAndCashEquivalents,			N'GM Fund - USD',				@USD,			@C101_INV,		NULL,					@GMSafe),
-	(43,N'1820',	@CashAndCashEquivalents,			N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,					@AdminSafe),
-	(44,N'1830',	@CashAndCashEquivalents,			N'KSA Fund',					@SAR,			@C101_INV,		NULL,					@KSASafe),
-	(45,N'1910',	@CashAndCashEquivalents,			N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,					@KRTBank),
+	(21,N'11211',@general_BSADef,@Debtors_AC,		@CurrentTradeReceivables,			N'Banan ET',					@USD,			@C101_INV,		NULL,					NULL),
+	(22,N'11212',@general_BSADef,@Debtors_AC,		@CurrentTradeReceivables,			N'PrimeLedgers A/R',			@USD,			@C101_INV,		NULL,					NULL),
+
+	(23,N'11221',@partnerADef,	@Debtors_AC,		@TradeAndOtherCurrentReceivables,	N'Partners Withdrawals',		@USD,			@C101_INV,		NULL,					NULL),
+													-- TODO: remove this extension
+	(24,N'12021',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'Abu Ammar Car Loan',			@USD,			@C101_INV,		NULL,					@Abu_Ammar),
+	(25,N'12022',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'M. Ali Car Loan',				@USD,			@C101_INV,		NULL,					@M_Ali),
+	(26,N'12023',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'El-Amin Car Loan',			@USD,			@C101_INV,		NULL,					@el_Amin),
+	(27,N'12031',@general_BSADef,@Debtors_AC,		@CurrentValueAddedTaxReceivables,	N'VAT Input',					NULL,			@C101_INV,		NULL,					NULL),
+--	(28,N'11206',@general_BSADef,@Debtors_AC,		@TradeAndOtherCurrentReceivables,	N'Commissions',					@USD,			@C101_INV,		NULL,					NULL),
+	(29,N'11231',@supplierADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Office Rent',					@SDG,			@C101_INV,		NULL,					NULL),
+	(30,N'11232',@supplierADef,	@Debtors_AC,		@CurrentPrepayments,				N'Internet Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
+	(31,N'11233',@supplierADef,	@Debtors_AC,		@CurrentPrepayments,				N'Car Rent Prepayment',			@SDG,			@C101_INV,		NULL,					NULL),
+	(32,N'11234',@supplierADef,	@Debtors_AC,		@CurrentPrepayments,				N'House Rent Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
+	(33,N'11235',@supplierADef,	@Debtors_AC,		@CurrentPrepayments,				N'Maintenance Prepayment',		@SDG,			@C101_INV,		NULL,					NULL),
+
+	(38,N'11241',@customerADef,	@Debtors_AC,		@CurrentAccruedIncome,				N'Accrued Income',				NULL,			@C101_INV,		NULL,					NULL),
+
+	(41,N'11111',@cashADef,		@BankAndCash_AC,	@CashOnHand,						N'GM Fund - SDG',				@SDG,			@C101_INV,		NULL,					@GMSafe),
+	(42,N'11112',@cashADef,		@BankAndCash_AC,	@CashOnHand,						N'GM Fund - USD',				@USD,			@C101_INV,		NULL,					@GMSafe),
+	(43,N'11113',@cashADef,		@BankAndCash_AC,	@CashOnHand,						N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,					@AdminSafe),
+	(44,N'11114',@cashADef,		@BankAndCash_AC,	@CashOnHand,						N'KSA Fund',					@SAR,			@C101_INV,		NULL,					@KSASafe),
+	(45,N'11121',@cashADef,		@BankAndCash_AC,	@BalancesWithBanks,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,					@KRTBank),
 
 	-- Equity and Liabilities accounts
-	(50,N'2010',	@IssuedCapital,						N'Issued Capital',				@USD,			@C101_INV,		NULL,					NULL),
-	(51,N'2020',	@RetainedEarnings,					N'Retained Earnings',			@USD,			@C101_INV,		NULL,					NULL),
+	(50,N'30001',@general_BSADef,@Equity_AC,		@IssuedCapital,						N'Issued Capital',				@USD,			@C101_INV,		NULL,					NULL),
+	(51,N'30002',@general_BSADef,@Equity_AC,		@RetainedEarnings,					N'Retained Earnings',			@USD,			@C101_INV,		NULL,					NULL),
 
-	(61,N'3010',	@CurrentPayablesToEmployeesExtension,N'Employees Payables - USD',	@USD,			@C101_INV,		NULL,					NULL),
-	(62,N'3011',	@CurrentPayablesToEmployeesExtension,N'Employees Payables - SDG',	@SDG,			@C101_INV,		NULL,					NULL),
-	(63,N'3015',	@TradeAndOtherCurrentPayables,		N'10% Retained Salaries',		@USD,			@C101_INV,		NULL,					NULL),
-	(64,N'3020',	@TradeAndOtherCurrentPayables,		N'PrimeLedgers A/P',			@USD,			@C101_INV,		NULL,					NULL),
-	/*
+	(61,N'21001',@employeeADef,@CurrentLiabilities_AC,@CurrentPayablesToEmployeesExtension,N'Employees Payables - USD',	@USD,			@C101_INV,		NULL,					NULL),
+	(62,N'21002',@employeeADef,@CurrentLiabilities_AC,@CurrentPayablesToEmployeesExtension,N'Employees Payables - SDG',	@SDG,			@C101_INV,		NULL,					NULL),
+	(63,N'21003',@employeeADef,@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,		N'10% Retained Salaries',	@USD,			@C101_INV,		NULL,					NULL),
+	(64,N'21004',@general_BSADef,@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'PrimeLedgers A/P',			@USD,			@C101_INV,		NULL,					NULL);
+/*
 	(65,N'3030',	@TradeAndOtherCurrentPayablesToTradeSuppliers,N'Trade Payables',	NULL,			@C101_INV,		NULL,				N'suppliers',		NULL),
 	(66,N'3035',	@AccrualsClassifiedAsCurrent,		N'Accrued Expenses',			NULL,			@C101_INV,		NULL,				N'suppliers',		NULL),
 	(67,N'3040',	@TradeAndOtherCurrentPayables,		N'Dividends Payables',			@USD,			@C101_INV,		NULL,				N'partners',		NULL),
 	(68,N'3045',	@TradeAndOtherCurrentPayables,		N'Borrowings from M/A',			@USD,			@C101_INV,		NULL,				N'partners',		@PartnerMA),
-	*/
+
 	(69,N'3049',	@DeferredIncomeClassifiedAsCurrent,	N'Deferred Income - USD',		@USD,			@C101_INV,		NULL,				NULL),
 	(70,N'3050',	@DeferredIncomeClassifiedAsCurrent,	N'Deferred Income - SDG',		@SDG,			@C101_INV,		NULL,				NULL),
 	(71,N'3110',	@CurrentSocialSecurityPayablesExtension,N'Employee Pensions',		@SDG,			@C101_INV,		NULL,				NULL),
@@ -140,7 +137,7 @@ Entry Type - Account Type - Center - Currency - Relation Definition - Agent
 
 	(250,N'B01',	@GainLossOnDisposalOfPropertyPlantAndEquipment,
 														N'Gain (loss) on disposal',	@USD,			@C101_INV,			NULL,					NULL);
-
+*/
 -- 5: Direct, Cost of sales
 -- 6: Indirect, Production, 7:service
 -- 8:Distribution

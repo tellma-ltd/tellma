@@ -8,9 +8,6 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[AssetTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([AssetTypeVisibility] IN (N'None', N'Optional', N'Required')),
-	[RevenueTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([RevenueTypeVisibility] IN (N'None', N'Optional', N'Required')),
-	[ExpenseTypeVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([ExpenseTypeVisibility] IN (N'None', N'Optional', N'Required')),
 	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
 	--[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
 	--[NameRegEx]							NVARCHAR (255), -- Null means manually defined

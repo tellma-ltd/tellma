@@ -18,7 +18,7 @@ WITH Docs AS (
 			L.[DefinitionId] AS LineDefinitionId,
 			L.[State] AS [LineState],
 			E.[Direction],
-			E.[Index], A.[Name] AS [Account], IIF(AC.[ResourceAssignment] = N'A',1,0) AS [R?],
+			E.[Index], A.[Name] AS [Account],
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
@@ -52,7 +52,7 @@ WITH Docs AS (
 	--	(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
 		Docs.[LineId], [LineDefinitionId],
 		[Index] AS [E/N], 
-		[Account], [R?], [CurrencyId],
+		[Account], [CurrencyId],
 		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
 		EC.[Name] AS [EntryClassification],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,

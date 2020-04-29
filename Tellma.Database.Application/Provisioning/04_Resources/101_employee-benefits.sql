@@ -2,14 +2,17 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[ExpenseTypeId],				[Name]) VALUES
-	(0,	@EmployeeBenefitsExpense,		N'Basic'),
-	(1, @EmployeeBenefitsExpense,		N'Labor (hourly)');
+	--	[ExpenseTypeId],				[Name]) VALUES
+	--(0,	@EmployeeBenefitsExpense,		N'Basic'),
+	--(1, @EmployeeBenefitsExpense,		N'Labor (hourly)');
+			[Name]) VALUES
+	(0,		N'Basic'),
+	(1,		N'Labor (hourly)');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],	[Multiplier]) VALUES
 	(0, 0, @WorkMonth,	1),
-	(0, 1, @Hour,		1);;
+	(0, 1, @Hour,		1);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
 		@DefinitionId = @employee_benefits_expensesDef,

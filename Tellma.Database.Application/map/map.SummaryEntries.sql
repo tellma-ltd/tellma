@@ -77,7 +77,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.[EntryTypeId], A.[IfrsTypeId], A.[ClassificationId], A.[ResourceId], A.[RelationId],-- A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[IfrsTypeId], A.[ClassificationId], A.[ResourceId], A.[ContractId],-- A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

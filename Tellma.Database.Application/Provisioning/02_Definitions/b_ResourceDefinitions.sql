@@ -29,9 +29,6 @@ BEGIN
 		[IdentifierLabel2]					= N'رقم التعريف',
 		[CurrencyVisibility]				= N'Required',
 		[DescriptionVisibility]				= N'Optional',
-		[AssetTypeVisibility]				= N'Required',
-		[ExpenseTypeVisibility]				= N'Required',
-		[ExpenseEntryTypeVisibility]		= N'Required',
 		[CenterVisibility]					= N'Required',
 		[ResidualMonetaryValueVisibility]	= N'Required',
 		[ResidualValueVisibility]			= N'Required'
@@ -39,8 +36,7 @@ BEGIN
 
 	UPDATE @ResourceDefinitions
 	SET 
-		[DescriptionVisibility]				= N'Optional',
-		[RevenueTypeVisibility]				= N'Required'
+		[DescriptionVisibility]				= N'Optional'
 	WHERE [Code] IN (N'revenue-services');
 
 	UPDATE @ResourceDefinitions

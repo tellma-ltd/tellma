@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ApportionmentRates]
 (
-	[Id] INT NOT NULL PRIMARY KEY IDENTITY
+	[Id]			INT PRIMARY KEY IDENTITY
 
 )

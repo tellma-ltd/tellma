@@ -16,7 +16,6 @@ E AS
 		E.[CenterId],
 		E.[Direction],
 		E.[AccountId],
-		E.[RelationId],
 		E.[ContractId],
 		E.[EntryTypeId],
 		E.[ResourceId],
@@ -30,7 +29,7 @@ E AS
 		E.[Value],
 		E.[ExternalReference],
 		E.[AdditionalReference],
-		E.[NotedRelationId],
+		E.[NotedContractId],
 		E.[NotedAgentName],
 		E.[NotedAmount],
 		E.[NotedDate]

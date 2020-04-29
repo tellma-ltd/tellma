@@ -27,9 +27,6 @@ SET NOCOUNT ON;
 				--[CodeRegEx], -- Null means manually defined
 				--[NameRegEx], -- Null means manually defined
 				-- Resource properties
-				[AssetTypeVisibility],
-				[RevenueTypeVisibility],	
-				[ExpenseTypeVisibility],
 				[IdentifierLabel],
 				[IdentifierLabel2],
 				[IdentifierLabel3],		
@@ -135,9 +132,6 @@ SET NOCOUNT ON;
 				--t.[CodeRegEx] = s.[CodeRegEx], -- Null means manually defined
 				--t.[NameRegEx] = s.[NameRegEx], -- Null means manually defined
 				-- Resource properties
-				t.[AssetTypeVisibility]		= s.[AssetTypeVisibility],
-				t.[RevenueTypeVisibility]	=s.[RevenueTypeVisibility],	
-				t.[ExpenseTypeVisibility]	=s.[ExpenseTypeVisibility],
 				t.[IdentifierLabel] = s.[IdentifierLabel],
 				t.[IdentifierLabel2] = s.[IdentifierLabel2],
 				t.[IdentifierLabel3] = s.[IdentifierLabel3],		
@@ -236,9 +230,6 @@ SET NOCOUNT ON;
 				--[CodeRegEx], -- Null means manually defined
 				--[NameRegEx], -- Null means manually defined
 				-- Resource properties
-				[AssetTypeVisibility],
-				[RevenueTypeVisibility],	
-				[ExpenseTypeVisibility],
 				[IdentifierLabel],
 				[IdentifierLabel2],
 				[IdentifierLabel3],		
@@ -337,9 +328,6 @@ SET NOCOUNT ON;
 				--s.[CodeRegEx], -- Null means manually defined
 				--s.[NameRegEx], -- Null means manually defined
 				-- Resource properties
-				s.[AssetTypeVisibility],
-				s.[RevenueTypeVisibility],	
-				s.[ExpenseTypeVisibility],
 				s.[IdentifierLabel],
 				s.[IdentifierLabel2],
 				s.[IdentifierLabel3],		

@@ -89,7 +89,7 @@ BEGIN -- Inserting
 	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[Units] MUM ON R.MassUnitId = MUM.Id
 	LEFT JOIN dbo.[Units] MUV ON R.VolumeUnitId = MUV.Id
-	JOIN dbo.[CustomClassifications] A ON CL.[AccountId] = A.[Id]
+	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.[EntryTypes] IEC ON CL.[EntryTypeId] = IEC.[Code]
 	WHERE CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;

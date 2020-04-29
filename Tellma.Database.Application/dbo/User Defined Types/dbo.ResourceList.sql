@@ -2,10 +2,6 @@
 	[Index]							INT					PRIMARY KEY,
 	[Id]							INT					NOT NULL DEFAULT 0,
 	--[OperatingSegmentId]			INT,
-	[AssetTypeId]					INT,
-	[RevenueTypeId]					INT,
-	[ExpenseTypeId]					INT,
-
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -29,8 +25,8 @@
 	[EconomicOrderQuantity]			Decimal (19,4),
 	--[AttachmentsFolderURL]			NVARCHAR (255), 
 
-	--[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-	--[PreferredSupplierId]			INT,			-- FK, Table Relations, specially for purchasing
+	--[CustomsReference]				NVARCHAR (255),
+	--[PreferredSupplierId]			INT,
 
 	[AvailableSince]				DATE,			
 	[AvailableTill]					DATE,			

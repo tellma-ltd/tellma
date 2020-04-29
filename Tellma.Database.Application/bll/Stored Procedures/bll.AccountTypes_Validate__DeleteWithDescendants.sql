@@ -30,7 +30,6 @@ SET NOCOUNT ON;
 	FROM @IndexesToDelete
 	WHERE [Id] IN (
 		SELECT [Id] FROM dbo.AccountTypes
-		WHERE [IsSystem] = 1
 	);
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

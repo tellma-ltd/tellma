@@ -10,7 +10,6 @@
 	[IfrsTypeId]			INT				NOT NULL,
 	[ClassificationId]		INT,
 -- Major properties: NULL means it is not defined.
-	[RelationId]			INT,
 	[ContractId]			INT,
 	[ResourceId]			INT,
 	[CurrencyId]			NCHAR (3),

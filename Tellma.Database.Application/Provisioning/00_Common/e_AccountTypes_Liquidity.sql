@@ -248,7 +248,6 @@ INSERT INTO @AT VALUES(185,0,1, 0,1,0,0,0,'/2/15/', NULL,N'IncomeTaxExpenseConti
 		@Entities = @AccountTypes,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	UPDATE dbo.[AccountTypes] SET IsSystem = 1 WHERE [Code] IN (SELECT [Code] FROM @AT WHERE IsSystem = 1);
 	UPDATE dbo.[AccountTypes] SET IsActive = 0 WHERE [Code] IN (SELECT [Code] FROM @AT WHERE IsActive = 0);
 
 	UPDATE DB

@@ -32,9 +32,6 @@ SET NOCOUNT ON;
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
 				t.[MainMenuSortKey]		= s.[MainMenuSortKey]
-
-		WHEN NOT MATCHED BY SOURCE THEN
-			DELETE
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (
 				[Code], [IsOriginalDocument],

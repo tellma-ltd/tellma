@@ -10,12 +10,18 @@ RETURN (
 			WS.RoleId,
 			COALESCE(
 				WS.UserId,
-				(SELECT UserId FROM dbo.[Relations] WHERE [Id] IN (
-					SELECT [RelationId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+				(SELECT UserId FROM dbo.[Contracts] WHERE [Id] IN (
+					SELECT [ContractId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)
 			) AS UserId,
-			(SELECT [RelationId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
+			(
+				SELECT AgentId FROM dbo.Contracts WHERE [Id] IN
+				(
+					SELECT [ContractId] FROM dbo.Entries
+					WHERE LineId = L.Id
+					AND [Index] = WS.[RuleTypeEntryIndex]
+				)
 			) AS AgentId,
 			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value],
 			W.ToState, WS.ProxyRoleId

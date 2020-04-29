@@ -45,7 +45,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Centers] C ON FE.[CenterId] = C.[Id]
 	LEFT JOIN dbo.[AccountDefinitionCenterTypes] AD
 		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND C.[CenterType] = AD.[CenterType]
-	WHERE AD.CenterType IS NULL;
+	WHERE (AD.CenterType IS NULL);
 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -54,8 +54,8 @@ SET NOCOUNT ON;
 		N'localize:Account_Currency'
 	FROM @Entities FE
 	LEFT JOIN dbo.[AccountDefinitionCurrencies] AD
-		ON FE.[DefinitionId] = AD.[Id] AND FE.[CurrencyId] = AD.[CurrencyId]
-	WHERE (AD.[CurrencyId] IS NULL);
+		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND FE.[CurrencyId] = AD.[CurrencyId]
+	WHERE (FE.[CurrencyId] IS NOT NULL AND AD.[CurrencyId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -65,20 +65,9 @@ SET NOCOUNT ON;
 	FROM @Entities FE
 	JOIN dbo.[Resources] R ON FE.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.[AccountDefinitionResourceDefinitions] AD
-		ON FE.[DefinitionId] = AD.[Id] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
+		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
 	WHERE (AD.[ResourceDefinitionId] IS NULL);
 	
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].RelationId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_Relation'
-	FROM @Entities FE
-	JOIN dbo.[Relations] R ON FE.[RelationId] = R.[Id]
-	LEFT JOIN dbo.[AccountDefinitionRelationDefinitions] AD
-		ON FE.[DefinitionId] = AD.[Id] AND R.[DefinitionId] = AD.[RelationDefinitionId]
-	WHERE (AD.[RelationDefinitionId] IS NULL);
-
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ContractId',
@@ -87,7 +76,7 @@ SET NOCOUNT ON;
 	FROM @Entities FE
 	JOIN dbo.[Documents] R ON FE.[ContractId] = R.[Id]
 	LEFT JOIN dbo.[AccountDefinitionContractDefinitions] AD
-		ON FE.[DefinitionId] = AD.[Id] AND R.[DefinitionId] = AD.[ContractDefinitionId]
+		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
 	WHERE (AD.[ContractDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -112,24 +101,24 @@ SET NOCOUNT ON;
 		N'Error_TheAccountClassification0IsNotLeaf',
 		FE.[ClassificationId]
 	FROM @Entities FE 
-	JOIN [dbo].[CustomClassifications] BE ON FE.[ClassificationId] = BE.Id
-	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[CustomClassifications]);
+	JOIN [dbo].[AccountClassifications] BE ON FE.[ClassificationId] = BE.Id
+	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
 
-	-- bll.Preprocess copies the RelationDefinition from Relation
-	---- If Relation Id is not null, then account and Relation must have same Relation definition
+	-- bll.Preprocess copies the ContractDefinition from Contract
+	---- If Contract Id is not null, then account and Contract must have same Contract definition
 	---- It is already added as FK constraint, but this will give a friendly error message
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	--SELECT TOP (@Top)
 	--	'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AgentId',
-	--	N'Error_TheAgentDefinition0IsNotCompatibleWithAgent1',
+	--	N'Error_TheContractDefinition0IsNotCompatibleWithContract1',
 	--	dbo.fn_Localize(AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AgentDefinition,
 	--	dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Agent]
 	--FROM @Entities FE 
-	--JOIN [dbo].[Relations] AG ON AG.[Id] = FE.[AgentId]
-	--LEFT JOIN dbo.[AgentDefinitions] AD ON AD.[Id] = FE.[AgentDefinitionId]
+	--JOIN [dbo].[Contracts] AG ON AG.[Id] = FE.[AgentId]
+	--LEFT JOIN dbo.[ContractDefinitions] AD ON AD.[Id] = FE.[ContractDefinitionId]
 	--WHERE (FE.[AgentDefinition] IS NOT NULL)
 	----AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
-	--AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
+	--AND (FE.ContractDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
 
 	-- If Resource Id is not null, and currency is not null, then Account and resource must have same currency
 	-- It is already added as FK constraint, but this will give a friendly error message
@@ -185,7 +174,7 @@ SET NOCOUNT ON;
 	AND FE.[CenterId] IS NOT NULL
 	AND FE.[CenterId] <> E.[CenterId]
 
-	-- Setting the relation value (whether it was null or not)
+	-- Setting the Contract value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different agent
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
 	SELECT TOP (@Top)
@@ -195,17 +184,17 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 		L.DefinitionId,
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS Agent
+		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]) AS [Contract]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.[Relations] AG ON AG.Id = E.[RelationId]
+	JOIN dbo.[Contracts] AG ON AG.Id = E.[ContractId]
 	WHERE L.[State] >= 0
-	AND FE.[RelationId] IS NOT NULL
-	AND FE.[RelationId] <> E.[RelationId]
+	AND FE.[ContractId] IS NOT NULL
+	AND FE.[ContractId] <> E.[ContractId]
 
 	-- Setting the resource value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different resource
@@ -250,29 +239,6 @@ SET NOCOUNT ON;
 	WHERE L.[State] >= 0
 	AND FE.[CurrencyId] IS NOT NULL
 	AND FE.[CurrencyId] <> E.[CurrencyId]
-
-	-- Changing the resource classification is allowed provided that the resources used in the entries are
-	-- compatible with the new classification
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheAccount0IsUsedIn12LineDefinition3WithResource4HavingIncompatibleClassification',
-		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
-		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
-		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource]
-	FROM @Entities FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
-	JOIN dbo.[AccountTypes] ARC ON ARC.[Id] = A.[IfrsTypeId]
-	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
-	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
-	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	JOIN dbo.Resources R ON R.Id = E.[ResourceId]
-	JOIN dbo.[AccountTypes] ERC ON ERC.[Id] = R.[AssetTypeId]
-	WHERE L.[State] >= 0
-	AND ERC.[Node].IsDescendantOf(ARC.[Node]) = 0;
 
 	-- Changing the Account entry type is allowed provided that the entry type used in the entries are
 	-- compatible with the new classification

@@ -81,14 +81,14 @@ SET NOCOUNT ON;
 	--JOIN dbo.Documents D ON FE.[Id] = D.[Id]
 	--WHERE FE.[Index] IN (SELECT DISTINCT [DocumentIndex] FROM @WflessLines);
 	INSERT INTO @WflessEntries ([Index],[LineIndex],[DocumentIndex],[Id],
-	[Direction],[AccountId],[CurrencyId],[RelationId],[ResourceId],[CenterId],
+	[Direction],[AccountId],[CurrencyId],[ContractId],[ResourceId],[CenterId],
 	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
-	[Time2]	,[ExternalReference],[AdditionalReference],[NotedRelationId],[NotedAgentName],
+	[Time2]	,[ExternalReference],[AdditionalReference],[NotedContractId],[NotedAgentName],
 	[NotedAmount],[NotedDate])
 	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
-	E.[Direction],E.[AccountId],E.[CurrencyId],E.[RelationId],E.[ResourceId],E.[CenterId],
+	E.[Direction],E.[AccountId],E.[CurrencyId],E.[ContractId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedRelationId],E.[NotedAgentName],
+	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedContractId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id];

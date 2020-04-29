@@ -29,7 +29,6 @@ BEGIN
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',
-	[RelationId]				INT '$.RelationId',
 	[ContractId]				INT '$.ContractId',
 	[ResourceId]				INT '$.ResourceId',
 	[CenterId]					INT '$.CenterId',
@@ -45,7 +44,7 @@ BEGIN
 	[Time2]						DATETIME2 (2) '$.Time2',	-- to time
 	[ExternalReference]			NVARCHAR (50) '$.ExternalReference',
 	[AdditionalReference]		NVARCHAR (50) '$.AdditionalReference',
-	[NotedRelationId]				INT '$.NotedRelationId',
+	[NotedContractId]				INT '$.NotedContractId',
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE '$.NotedDate'

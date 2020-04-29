@@ -1,12 +1,18 @@
 ﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
-	INSERT INTO @Resources ([Index],
-		[RevenueTypeId],				[Name],						[Name2]) VALUES
-	(0,	@RevenueFromRenderingOfServices, N'Monthly Subscription',	N'اشتراك شهري'),
-	(1, @RevenueFromRenderingOfServices, N'Yearly Support',			N'مساندة سنوية'),
-	(2, @RevenueFromRenderingOfServices, N'ERP Implementation',		N'تفعيل النظام'),
-	(3, @RevenueFromRenderingOfServices, N'ERP Stabilization',		N'استقرار النظام')	
+	--INSERT INTO @Resources ([Index],
+	--	[RevenueTypeId],				[Name],						[Name2]) VALUES
+	--(0,	@RevenueFromRenderingOfServices, N'Monthly Subscription',	N'اشتراك شهري'),
+	--(1, @RevenueFromRenderingOfServices, N'Yearly Support',			N'مساندة سنوية'),
+	--(2, @RevenueFromRenderingOfServices, N'ERP Implementation',		N'تفعيل النظام'),
+	--(3, @RevenueFromRenderingOfServices, N'ERP Stabilization',		N'استقرار النظام')	
+		INSERT INTO @Resources ([Index],
+		[Name],						[Name2]) VALUES
+	(0,	N'Monthly Subscription',	N'اشتراك شهري'),
+	(1, N'Yearly Support',			N'مساندة سنوية'),
+	(2, N'ERP Implementation',		N'تفعيل النظام'),
+	(3, N'ERP Stabilization',		N'استقرار النظام')	
 	;
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],

@@ -9,7 +9,6 @@
 	[Id0]						INT,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
-	[RelationId0]				INT,
 	[ContractId0]				INT,
 	[ResourceId0]				INT,
 	[CenterId0]					INT,
@@ -24,7 +23,7 @@
 	[Time20]					DATETIME2 (2),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
 	[AdditionalReference0]		NVARCHAR (50),
-	[NotedRelationId0]			INT,
+	[NotedContractId0]			INT,
 	[NotedAgentName0]			NVARCHAR (50),
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
@@ -32,7 +31,6 @@
 	[Id1]						INT,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
-	[RelationId1]				INT,
 	[ContractId1]				INT,
 	[ResourceId1]				INT,
 	[CenterId1]					INT,
@@ -47,7 +45,7 @@
 	[Time21]					DATETIME2 (2),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
 	[AdditionalReference1]		NVARCHAR (51),
-	[NotedRelationId1]			INT,
+	[NotedContractId1]			INT,
 	[NotedAgentName1]			NVARCHAR (51),
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
@@ -55,7 +53,6 @@
 	[Id2]						INT,
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[RelationId2]				INT,
 	[ContractId2]				INT,
 	[ResourceId2]				INT,
 	[CenterId2]					INT,
@@ -71,7 +68,7 @@
 	[Time22]					DATETIME2 (2),	-- to time
 	[ExternalReference2]		NVARCHAR (52),
 	[AdditionalReference2]		NVARCHAR (52),
-	[NotedRelationId2]			INT,
+	[NotedContractId2]			INT,
 	[NotedAgentName2]			NVARCHAR (52),
 	[NotedAmount2]				DECIMAL (29,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate2]				DATE

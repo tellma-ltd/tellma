@@ -21,10 +21,12 @@ END
 :r .\00_Common\w_IfrsConcepts.sql
 :r .\00_Common\c_Settings.sql
 :r .\00_Common\d_EntryTypes.sql
+:r .\03_Basic\a_Currencies.sql
 
 :r .\02_Definitions\a_LookupDefinitions.sql
 :r .\02_Definitions\b_ResourceDefinitions.sql
-:r .\02_Definitions\c_RelationDefinitions.sql
+:r .\02_Definitions\c_ContractDefinitions.sql
+:r .\02_Definitions\e_AccountDefinitions.sql
 
 :r .\00_Common\e_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
@@ -32,16 +34,16 @@ END
 :r .\01_Security\a_Users.sql
 :r .\01_Security\b_RolesMemberships.sql
 
---:r .\01_Definitions\e_LineDefinitions\100_LineDefinitions.sql
-:r .\02_Definitions\e_LineDefinitions\101_LineDefinitions.sql
---:r .\01_Definitions\e_LineDefinitions\102_LineDefinitions.sql
---:r .\01_Definitions\e_LineDefinitions\103_LineDefinitions.sql
---:r .\01_Definitions\e_LineDefinitions\104_LineDefinitions.sql
---:r .\01_Definitions\e_LineDefinitions\105_LineDefinitions.sql
-:r .\02_Definitions\e_LineDefinitions\999_LineDefinitions.sql
-:r .\02_Definitions\f_DocumentDefinitions.sql
+--:r .\01_Definitions\f_LineDefinitions\100_LineDefinitions.sql
+:r .\02_Definitions\f_LineDefinitions\101_LineDefinitions.sql
+--:r .\01_Definitions\f_LineDefinitions\102_LineDefinitions.sql
+--:r .\01_Definitions\f_LineDefinitions\103_LineDefinitions.sql
+--:r .\01_Definitions\f_LineDefinitions\104_LineDefinitions.sql
+--:r .\01_Definitions\f_LineDefinitions\105_LineDefinitions.sql
+:r .\02_Definitions\f_LineDefinitions\999_LineDefinitions.sql
+:r .\02_Definitions\g_DocumentDefinitions.sql
 
-:r .\03_Basic\a_Currencies.sql
+
 :r .\03_Basic\b_Units.sql
 :r .\03_Basic\c_Lookups.sql
 :r .\03_Basic\d_Centers.sql
@@ -61,19 +63,19 @@ END
 --:r .\04_Resources\d1_FG_vehicles.sql
 ----:r .\04_Resources\e1_CCE_received-checks.sql
 
-:r .\05_Relations\02_Creditors.sql
-:r .\05_Relations\03_Customers.sql
-:r .\05_Relations\04_Debtors.sql
-:r .\05_Relations\05_Partners.sql
-:r .\05_Relations\06_Suppliers.sql
-:r .\05_Relations\09_Custodians.sql
-:r .\05_Relations\09a_Warehouses.sql
-:r .\05_Relations\10_Employees.sql
+:r .\05_Contracts\02_Creditors.sql
+:r .\05_Contracts\03_Customers.sql
+:r .\05_Contracts\04_Debtors.sql
+:r .\05_Contracts\05_Partners.sql
+:r .\05_Contracts\06_Suppliers.sql
+:r .\05_Contracts\09_Custodians.sql
+:r .\05_Contracts\09a_Warehouses.sql
+:r .\05_Contracts\10_Employees.sql
 
 
-:r .\06_Accounts\b_CustomClassifications.sql
+:r .\06_Accounts\b_AccountClassifications.sql
 
---:r .\06_Accounts\101_Accounts.sql
+:r .\06_Accounts\101_Accounts.sql
 
 --:r .\06_Accounts\105_Accounts.sql
 --:r .\07_Entries\101\101a_manual-journal-vouchers.sql

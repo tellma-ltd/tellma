@@ -27,7 +27,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 665,
 		[NotedAgentName0] = N'The family shawerma',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'49'
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
 	-- 4
@@ -39,7 +39,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 500,
 		[NotedAgentName0] = N'هيثم عوض محمد',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
 	-- 5
@@ -51,7 +51,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1380,
 		[NotedAgentName0] = N'720مطاعم صابرين 660- شاورما العائلة',
 		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'00540'
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
 	-- 6
@@ -60,10 +60,10 @@ BEGIN -- Inserting
 	UPDATE @WL
 	SET
 		[Memo] = N'Sold USD',
-		[RelationId1] = @GMSafe,
+		[ContractId1] = @GMSafe,
 		[CurrencyId1] = @USD,
 		[MonetaryValue1] = 2000,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[CurrencyId0] = @SDG,
 		[MonetaryValue0] = 111000
 	WHERE [DocumentIndex] = 6 AND [Index] = 0;
@@ -76,7 +76,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1282.8,
 		[NotedAgentName0] = N'Mohammed Kamil',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'121109'
 	WHERE [DocumentIndex] = 21 AND [Index] = 0;
 	-- 22
@@ -88,7 +88,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 460,
 		[NotedAgentName0] = N'Ahmad AbdusSalam',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'121110'
 	WHERE [DocumentIndex] = 22 AND [Index] = 0;
 	-- 23
@@ -100,7 +100,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 55000,
 		[NotedAgentName0] = N'Former guards',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'121111'
 	WHERE [DocumentIndex] = 23 AND [Index] = 0;
 	-- 24
@@ -112,7 +112,7 @@ BEGIN -- Inserting
 		[MonetaryValue0] = 1011,
 		[NotedAgentName0] = N'Court',
 		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[RelationId0] = @GMSafe,
+		[ContractId0] = @GMSafe,
 		[ExternalReference0] = N'GV-123'
 	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
@@ -258,7 +258,6 @@ BEGIN -- Inserting
 		[DocumentIndex],
 		[Id],
 		[Direction],
-		[RelationId],
 		[ContractId],
 		[ResourceId],
 		[CenterId],
@@ -273,7 +272,7 @@ BEGIN -- Inserting
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedRelationId],
+		[NotedContractId],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate])
@@ -283,7 +282,6 @@ BEGIN -- Inserting
 		(SELECT [DocumentIndex] FROM @L WHERE [Index] = E.[LineId]),
 		[Id],
 		[Direction],
-		[RelationId],
 		[ContractId],
 		[ResourceId],
 		[CenterId],
@@ -298,7 +296,7 @@ BEGIN -- Inserting
 		[Time2],
 		[ExternalReference],
 		[AdditionalReference],
-		[NotedRelationId],
+		[NotedContractId],
 		[NotedAgentName],
 		[NotedAmount],
 		[NotedDate]
@@ -312,13 +310,13 @@ BEGIN -- Inserting
 	
 	INSERT INTO @L([Index], [DocumentIndex],
 	[DefinitionId],			[Memo]) VALUES
-	(101,@DI1,N'ManualLine', N'Shawarma'),
-	(102,@DI2,N'ManualLine', NULL),
-	(103,@DI3,N'ManualLine', N'Shawarma');
+	(101,@DI1,@ManualLineDef, N'Shawarma'),
+	(102,@DI2,@ManualLineDef, NULL),
+	(103,@DI3,@ManualLineDef, N'Shawarma');
 
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-					[AccountId],	[EntryTypeId],			[RelationId],[CurrencyId],	[MonetaryValue],[Value]) VALUES
+					[AccountId],	[EntryTypeId],			[CenterId],[CurrencyId],	[MonetaryValue],[Value]) VALUES
 	(0, 101, @DI1,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
 	(0, 102, @DI2,+1,@1Maintenance,	@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
 	(0, 103, @DI3,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
@@ -344,7 +342,7 @@ GOTO DONE
 	DELETE FROM @LinesIndexedIds;
 	INSERT INTO @LinesIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Lines
-	WHERE DefinitionId = N'ManualLine' AND DocumentId IN (SELECT [Id] FROM @DocsIndexedIds)
+	WHERE DefinitionId = @ManualLineDef AND DocumentId IN (SELECT [Id] FROM @DocsIndexedIds)
 
 	EXEC [api].[Lines__Sign]
 		@IndexedIds = @LinesIndexedIds,

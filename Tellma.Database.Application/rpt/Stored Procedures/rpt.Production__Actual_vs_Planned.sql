@@ -4,24 +4,20 @@
 	-- TODO: rewrite using summary entries
 AS
 BEGIN
-	WITH FinishedGoodsAccountTypes AS (
-		SELECT Id FROM dbo.[AccountTypes]
-		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[AccountTypes] WHERE [Code] = N'FinishedGoods')
-		) = 1
-	),
+	WITH
 	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
-			R.[Lookup1Id], J.[RelationId],
+			R.[Lookup1Id], J.[ContractId],
 			SUM(J.[AlgebraicMass]) AS [Mass],
 			SUM(J.[AlgebraicCount]) AS [Count]
 		FROM [map].[DetailsEntries]() J --(@FromDate, @ToDate) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
-		LEFT JOIN dbo.[AccountTypes] RC ON R.[AssetTypeId] = RC.Id
-		WHERE J.[EntryTypeId] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ProductionOfGoods') -- assuming that inventory entries require IfrsNoteExtension
-		-- TODO: we need a way to separate finished goods from the rest
-		AND R.[AssetTypeId] IN (SELECT [Id] FROM FinishedGoodsAccountTypes)
-		GROUP BY J.[RelationId], R.[Lookup1Id]
+		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
+		JOIN dbo.[AccountDefinitions] AD ON A.[DefinitionId] = AD.[Id]
+		-- assuming that inventory entries require IfrsNoteExtension
+		WHERE J.[EntryTypeId] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ProductionOfGoods') 
+		AND AD.[Code] = N'Inventory'
+		GROUP BY J.[ContractId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
 		SELECT 

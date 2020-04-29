@@ -18,9 +18,6 @@ SET NOCOUNT ON;
 			SELECT 	
 				[Index], [Id],
 				@DefinitionId AS [DefinitionId],
-				[AssetTypeId],
-				[ExpenseTypeId],
-				[RevenueTypeId],
 				[Name], 
 				[Name2], 
 				[Name3],
@@ -73,9 +70,6 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET
 				t.[DefinitionId]			= s.[DefinitionId],
-				t.[AssetTypeId]				= s.[AssetTypeId],
-				t.[ExpenseTypeId]			= s.[ExpenseTypeId],
-				t.[RevenueTypeId]			= s.[RevenueTypeId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -125,9 +119,6 @@ SET NOCOUNT ON;
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId],
-				[AssetTypeId], 
-				[ExpenseTypeId],
-				[RevenueTypeId],
 				[Name], [Name2], [Name3], [Identifier], [Code], [CurrencyId],
 				[MonetaryValue],
 				[Description],
@@ -169,10 +160,7 @@ SET NOCOUNT ON;
 				[Text2]			
 				)
 			VALUES (
-				s.[DefinitionId],
-				s.[AssetTypeId],
-				s.[ExpenseTypeId],
-				s.[RevenueTypeId],				
+				s.[DefinitionId],			
 				s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
 				s.[MonetaryValue],
 				s.[Description],

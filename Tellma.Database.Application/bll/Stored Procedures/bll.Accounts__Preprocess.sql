@@ -6,7 +6,7 @@ SET NOCOUNT ON;
 	/* 
 	
 	 [✓] IsRelated and IsSmart are set to 0 by default
-	 [✓] IF IsSmart = 0 THEN these are set to NULL: ResourceId, RelationId, Identifier, EntryTypeId
+	 [✓] IF IsSmart = 0 THEN these are set to NULL: ResourceId, ContractId, Identifier, EntryTypeId
 
 	*/
 
@@ -59,19 +59,6 @@ JOIN (
 	HAVING COUNT(*) = 1
 ) ADF ON A.[DefinitionId] = ADF.[AccountDefinitionId]
 
--- Relation
-UPDATE A
-SET A.[RelationId] = ADF.[RelationId]
-FROM @ProcessedEntities A
-JOIN (
-	SELECT ADC.[AccountDefinitionId], MIN(R.[Id]) AS [RelationId]
-	FROM dbo.[AccountDefinitionRelationDefinitions] ADC
-	JOIN dbo.Relations R ON R.[DefinitionId] = ADC.[RelationDefinitionId]
-	WHERE R.[IsActive] = 1
-	GROUP BY ADC.[AccountDefinitionId]
-	HAVING COUNT(*) = 1
-) ADF ON A.[DefinitionId] = ADF.[AccountDefinitionId]
-
 -- Contract
 UPDATE A
 SET A.[ContractId] = ADF.[ContractId]
@@ -79,8 +66,8 @@ FROM @ProcessedEntities A
 JOIN (
 	SELECT ADC.[AccountDefinitionId], MIN(R.[Id]) AS [ContractId]
 	FROM dbo.[AccountDefinitionContractDefinitions] ADC
-	JOIN dbo.[Documents] R ON R.[DefinitionId] = ADC.[ContractDefinitionId]
-	WHERE R.[State] <> -1
+	JOIN dbo.[Contracts] R ON R.[DefinitionId] = ADC.[ContractDefinitionId]
+	WHERE R.[IsActive] = 1
 	GROUP BY ADC.[AccountDefinitionId]
 	HAVING COUNT(*) = 1
 ) ADF ON A.[DefinitionId] = ADF.[AccountDefinitionId];

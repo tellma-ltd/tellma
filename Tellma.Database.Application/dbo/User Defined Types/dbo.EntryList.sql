@@ -7,7 +7,6 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[CurrencyId]				NCHAR (3)		,
-	[RelationId]				INT,
 	[ContractId]				INT,
 	[ResourceId]				INT,
 	[CenterId]					INT,
@@ -23,7 +22,7 @@
 	[Time2]						DATETIME2 (2),	-- to time
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedRelationId]				INT,
+	[NotedContractId]			INT,
 	[NotedAgentName]			NVARCHAR (50),
 	[NotedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE

@@ -24,7 +24,9 @@ BEGIN
 	DECLARE @PreprocessedDocuments [dbo].[DocumentList], @PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
 	DECLARE @D [dbo].[DocumentList], @L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
-	Declare @PreScript NVARCHAR(MAX) =N'
+	DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+
+	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
 	DECLARE @ProcessedWideLines WideLineList;
 
@@ -51,13 +53,13 @@ BEGIN --  Overwrite input with DB data that is read only
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'CurrencyId';
 	UPDATE E
-	SET E.[RelationId] = BE.[RelationId]
+	SET E.[ContractId] = BE.[ContractId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	AND LDC.ColumnName = N'RelationId';
+	AND LDC.ColumnName = N'ContractId';
 	UPDATE E
 	SET E.ResourceId = BE.ResourceId
 	FROM @E E
@@ -147,13 +149,13 @@ BEGIN --  Overwrite input with DB data that is read only
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'AdditionalReference';
 	UPDATE E
-	SET E.[NotedRelationId] = BE.[NotedRelationId]
+	SET E.[NotedContractId] = BE.[NotedContractId]
 	FROM @E E
 	JOIN dbo.Entries BE ON E.Id = BE.Id
 	JOIN dbo.Lines BL ON BE.[LineId] = BL.[Id]
 	JOIN dbo.LineDefinitionColumns LDC ON BL.DefinitionId = LDC.LineDefinitionId AND LDC.[EntryIndex] = BE.[Index]
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
-	AND LDC.ColumnName = N'NotedRelationId';
+	AND LDC.ColumnName = N'NotedContractId';
 	UPDATE E
 	SET E.NotedAgentName = BE.NotedAgentName
 	FROM @E E
@@ -234,20 +236,19 @@ END
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-	WHERE L.[DefinitionId] <> N'ManualLine';
+	WHERE L.[DefinitionId] <> @ManualLineDef;
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
 		E.[CurrencyId]			= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[RelationId]			= COALESCE(A.[RelationId], E.[RelationId]),
-		E.[ContractId]			= COALESCE(A.[RelationId], E.[ContractId]),
+		E.[ContractId]			= COALESCE(A.[ContractId], E.[ContractId]),
 		E.[ResourceId]			= COALESCE(A.[ResourceId], E.[ResourceId]),
 		E.[CenterId]			= COALESCE(A.[CenterId], E.[CenterId]),
 		E.[EntryTypeId]			= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	--WHERE L.DefinitionId = N'ManualLine';
+	--WHERE L.DefinitionId = @ManualLineDef;
 	-- for all lines, Get currency and identifier from Resources if available.
 	UPDATE E 
 	SET
@@ -315,7 +316,7 @@ END
 		JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
 		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
-		AND L.DefinitionId <> N'ManualLine';
+		AND L.DefinitionId <> @ManualLineDef;
 	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
@@ -328,7 +329,7 @@ END
 	WHERE
 		ER.ValidAsOf <= ISNULL(D.[PostingDate], @Today)
 	AND ER.ValidTill >	ISNULL(D.[PostingDate], @Today)
-	AND L.[DefinitionId] <> N'ManualLine';
+	AND L.[DefinitionId] <> @ManualLineDef;
 
 	-- TODO: Currently it sets the account to the first conformant
 	-- We better do it so that, if the stored account is one of the conformants, it leaves it.
@@ -347,11 +348,11 @@ END
 			)) = 1
 			)
 			AND (A.[CenterId] IS NULL				OR A.[CenterId] = E.[CenterId])
-			AND (A.[RelationId] IS NULL				OR A.[RelationId] = E.[RelationId])
+			AND (A.[ContractId] IS NULL				OR A.[ContractId] = E.[ContractId])
 			AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
 			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
 			AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
-		WHERE L.DefinitionId <> N'ManualLine'
+		WHERE L.DefinitionId <> @ManualLineDef
 		AND A.IsDeprecated = 0
 		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]
 	)
