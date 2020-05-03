@@ -94,6 +94,9 @@ SET NOCOUNT ON;
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
+	
+	-- Signal clients to refresh their cache
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

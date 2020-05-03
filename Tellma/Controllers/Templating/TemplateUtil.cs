@@ -1,4 +1,8 @@
-﻿namespace Tellma.Controllers.Templating
+﻿using System.Globalization;
+using Tellma.Controllers.Dto;
+using Tellma.Data;
+
+namespace Tellma.Controllers.Templating
 {
     public static class TemplateUtil
     {
@@ -28,6 +32,34 @@
         public static VariableEvaluator VariableThatThrows(string varName)
         {
             return () => throw new TemplateException($"Attempt to evaluate a variable '{varName}' before it has been loaded");
+        }
+
+        /// <summary>
+        /// Returns the <see cref="CultureInfo"/> based on <see cref="GenerateMarkupArguments"/>.
+        /// Throws an exception if not one of the supported cultures in the provided <see cref="TenantInfo"/>
+        /// </summary>
+        public static CultureInfo GetCulture(GenerateMarkupArguments args, TenantInfo tenantInfo)
+        {
+            // Some validation
+            if (args.Culture != null && tenantInfo.PrimaryLanguageId != args.Culture && tenantInfo.SecondaryLanguageId != args.Culture && tenantInfo.TernaryLanguageId != args.Culture)
+            {
+                throw new BadRequestException($"Culture {args.Culture} is not supported in this company");
+            }
+
+            var culture = CultureInfo.CurrentUICulture;
+            if (!string.IsNullOrWhiteSpace(args.Culture))
+            {
+                try
+                {
+                    culture = new CultureInfo(args.Culture);
+                }
+                catch (CultureNotFoundException)
+                {
+                    throw new BadRequestException($"Culture {args.Culture} does not exist");
+                }
+            }
+
+            return culture;
         }
     }
 }

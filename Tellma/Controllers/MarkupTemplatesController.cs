@@ -117,7 +117,7 @@ namespace Tellma.Controllers
         {
             // Everything to input in the template service
             var templates = new string[] { entity.DownloadName, entity.Body };
-            var culture = await GetCulture(args, cancellation);
+            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output
             var outputs = await _templateService.GenerateMarkup(templates, null, null, culture, cancellation);
@@ -141,7 +141,7 @@ namespace Tellma.Controllers
             };
             var preloadedQuery = new QueryByFilterInfo(entity.Collection, entity.DefinitionId, args.Filter, args.OrderBy, args.Top, args.Skip, ids: args.I);
             var templates = new string[] { entity.DownloadName, entity.Body };
-            var culture = await GetCulture(args, cancellation);
+            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output
             var outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
@@ -162,7 +162,7 @@ namespace Tellma.Controllers
             };
             var preloadedQuery = new QueryByIdInfo(entity.Collection, entity.DefinitionId, id);
             var templates = new string[] { entity.DownloadName, entity.Body };
-            var culture = await GetCulture(args, cancellation);
+            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
 
             // Generate the output
             var outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
@@ -171,24 +171,6 @@ namespace Tellma.Controllers
 
             // Return as a file
             return (body, downloadName);
-        }
-
-        private async Task<CultureInfo> GetCulture(GenerateMarkupArguments args, CancellationToken cancellation)
-        {
-            // Some validation
-            var tenantInfo = await _repo.GetTenantInfoAsync(cancellation);
-            if (args.Culture != null && tenantInfo.PrimaryLanguageId != args.Culture && tenantInfo.SecondaryLanguageId != args.Culture && tenantInfo.TernaryLanguageId != args.Culture)
-            {
-                throw new BadRequestException($"Culture {args.Culture} is not supported in this company");
-            }
-
-            var culture = CultureInfo.CurrentUICulture;
-            if (!string.IsNullOrWhiteSpace(args.Culture))
-            {
-                culture = new CultureInfo(args.Culture);
-            }
-
-            return culture;
         }
 
         private string AppendExtension(string downloadName, MarkupPreviewTemplate entity)

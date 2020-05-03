@@ -508,8 +508,22 @@ export class ApiService {
       cancel: this.updateStateFactory(definitionId, 'cancel', cancellationToken$),
       uncancel: this.updateStateFactory(definitionId, 'uncancel', cancellationToken$),
       getAttachment: (docId: string | number, attachmentId: string | number) => {
-
         const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+      printById: (docId: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
+        const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
+        const params: string = paramsArray.join('&');
+
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/print/${templateId}?${params}`;
+
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);

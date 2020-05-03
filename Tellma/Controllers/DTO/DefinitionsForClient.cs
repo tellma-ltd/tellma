@@ -226,12 +226,25 @@ namespace Tellma.Controllers.Dto
         public bool CanReachState3 { get; set; }
         public bool HasWorkflow { get; set; }
         public List<DocumentDefinitionLineDefinitionForClient> LineDefinitions { get; set; }
+        public List<DocumentDefinitionMarkupTemplateForClient> MarkupTemplates { get; set; }
     }
 
     public class DocumentDefinitionLineDefinitionForClient
     {
         public string LineDefinitionId { get; set; }
         public bool IsVisibleByDefault { get; set; }
+    }
+
+    public class DocumentDefinitionMarkupTemplateForClient
+    {
+        public int MarkupTemplateId { get; set; }
+        public string Name { get; set; }
+        public string Name2 { get; set; }
+        public string Name3 { get; set; }
+        public bool SupportsPrimaryLanguage { get; set; }
+        public bool SupportsSecondaryLanguage { get; set; }
+        public bool SupportsTernaryLanguage { get; set; }
+        public string Usage { get; set; }
     }
 
     public class LineDefinitionForClient // related entity for document definition

@@ -24,6 +24,8 @@ SELECT * FROM [map].[ReportMeasureDefinitions]() ORDER BY [Index];
 -- Get the document definitions
 SELECT * FROM [map].[DocumentDefinitions]();
 SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index];
+SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [MarkupTemplateId] FROM [dbo].[DocumentDefinitionMarkupTemplates])
+SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] ORDER BY [Index];
 
 -- Get the line definitions
 SELECT * FROM [map].[LineDefinitions]();

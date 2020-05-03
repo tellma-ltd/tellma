@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.SignalR;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Tellma.Controllers.Templating;
+using System.Text;
 
 namespace Tellma.Controllers
 {
@@ -47,17 +49,6 @@ namespace Tellma.Controllers
                 var contentType = ContentType(fileName);
                 return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
-        }
-
-        private string ContentType(string fileName)
-        {
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(fileName, out string contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-
-            return contentType;
         }
 
         [HttpPut("assign")]
@@ -203,6 +194,17 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
+        [HttpGet("{docId}/print/{templateId}")]
+        public async Task<ActionResult> PrintById(int docId, int templateId, [FromQuery] GenerateMarkupByIdArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var (fileBytes, fileName) = await _service.PrintById(docId, templateId, args, cancellation);
+                var contentType = ContentType(fileName);
+                return File(fileContents: fileBytes, contentType: contentType, fileName);
+            }, _logger);
+        }
+
         protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()
         {
             return _service;
@@ -210,7 +212,8 @@ namespace Tellma.Controllers
 
         protected override Extras TransformExtras(Extras extras, CancellationToken cancellation)
         {
-            if (extras != null && extras.TryGetValue("RequiredSignatures", out object requiredSignaturesObj)) {
+            if (extras != null && extras.TryGetValue("RequiredSignatures", out object requiredSignaturesObj))
+            {
                 var requiredSignatures = requiredSignaturesObj as List<RequiredSignature>;
 
                 var relatedEntities = FlattenAndTrim(requiredSignatures, cancellation);
@@ -221,11 +224,23 @@ namespace Tellma.Controllers
 
             return extras;
         }
+
+        private string ContentType(string fileName)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(fileName, out string contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
+        }
     }
 
     public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
     {
         private readonly IStringLocalizer _localizer;
+        private readonly TemplateService _templateService;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
@@ -242,13 +257,14 @@ namespace Tellma.Controllers
         private string Lines => "Lines";
         private string Entries => "Entries";
 
-        public DocumentsService(IStringLocalizer<Strings> localizer,
+        public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
             IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor,
             IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(localizer)
         {
             _localizer = localizer;
+            _templateService = templateService;
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
             _tenantIdAccessor = tenantIdAccessor;
@@ -515,7 +531,7 @@ namespace Tellma.Controllers
             var (doc, _) = await GetById(docId, new GetByIdArguments
             {
                 Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
-            }, 
+            },
             cancellation);
 
             // Get the blob name
@@ -534,6 +550,90 @@ namespace Tellma.Controllers
             {
                 throw new NotFoundException<int>(attachmentId);
             }
+        }
+
+        public async Task<(byte[] FileBytes, string FileName)> PrintById(int docId, int templateId, GenerateMarkupArguments args, CancellationToken cancellation)
+        {
+            var collection = "Document";
+            var defId = DefinitionId;
+            var def = Definition();
+
+            if (def.MarkupTemplates == null || !def.MarkupTemplates.Any(e => e.MarkupTemplateId == templateId))
+            {
+                // A proper UI will only allow the user to use supported template
+                throw new BadRequestException($"The requested templateId {templateId} is not one of the supported templates for document definition {DefinitionId}");
+            }
+
+            var template = await _repo.Query<MarkupTemplate>().FilterByIds(new int[] { templateId }).FirstOrDefaultAsync(cancellation);
+            if (template == null)
+            {
+                // Shouldn't happen in theory cause of previous check, but just to be extra safe
+                throw new BadRequestException($"The template with Id {templateId} does not exist");
+            }
+
+            // The errors below should be prevented through SQL validation, but just to be safe
+            if (template.Usage != MarkupTemplateConst.QueryById)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
+            }
+
+            if (template.MarkupLanguage != "text/html")
+            {
+                throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
+            }
+
+            if (template.Collection != collection)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have Collection = '{collection}'");
+            }
+
+            if (template.DefinitionId != defId)
+            {
+                throw new BadRequestException($"The template with Id {templateId} does not have DefinitionId = '{defId}'");
+            }
+
+            // Onto the printing itself
+
+            var templates = new string[] { template.DownloadName, template.Body };
+            var culture = TemplateUtil.GetCulture(args, await _repo.GetTenantInfoAsync(cancellation));
+
+            var preloadedQuery = new QueryByIdInfo(collection, defId, docId.ToString());
+            var inputVariables = new Dictionary<string, object>
+            {
+                ["$Source"] = $"{collection}/{defId}",
+                ["$Id"] = docId
+            };
+
+            // Generate the output
+            string[] outputs;
+            try
+            {
+                outputs = await _templateService.GenerateMarkup(templates, inputVariables, preloadedQuery, culture, cancellation);
+            }
+            catch (TemplateException ex)
+            {
+                throw new BadRequestException(ex.Message);
+            }
+
+            var downloadName = outputs[0];
+            var body = outputs[1];
+
+            // Change the body to bytes
+            var bodyBytes = Encoding.UTF8.GetBytes(body);
+
+            // Do some sanitization of the downloadName
+            if (string.IsNullOrWhiteSpace(downloadName))
+            {
+                downloadName = docId.ToString();
+            }
+
+            if (!downloadName.ToLower().EndsWith(".html"))
+            {
+                downloadName += ".html";
+            }
+
+            // Return as a file
+            return (bodyBytes, downloadName);
         }
 
         public override async Task<(Document, Extras)> GetById(int id, GetByIdArguments args, CancellationToken cancellation)

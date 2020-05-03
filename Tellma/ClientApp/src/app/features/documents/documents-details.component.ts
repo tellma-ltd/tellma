@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient,
-  LineDefinitionColumnForClient, LineDefinitionEntryForClient
+  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DocumentDefinitionMarkupTemplateForClient, DefinitionForClient, DefinitionsForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -16,7 +16,7 @@ import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import {
   addToWorkspace, getDataURL, downloadBlob,
   fileSizeDisplay, mergeEntitiesInWorkspace,
-  toLocalDateISOString, FriendlyError
+  toLocalDateISOString, FriendlyError, printBlob
 } from '~/app/data/util';
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
@@ -3091,6 +3091,81 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get functionalName() {
     return this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName');
   }
+
+  public get showPrint(): boolean {
+    return this.printingTemplates.length > 0;
+  }
+
+  private _printingTemplatesDefinitions: DefinitionsForClient;
+  private _printingTemplatesResult: PrintingTemplate[];
+
+  public get printingTemplates(): PrintingTemplate[] {
+    const ws = this.ws;
+    if (this._printingTemplatesDefinitions !== ws.definitions) {
+      this._printingTemplatesDefinitions = ws.definitions;
+      const result: PrintingTemplate[] = [];
+
+      const settings = ws.settings;
+      const def = this.definition;
+      for (const template of def.MarkupTemplates.filter(e => e.Usage === 'QueryById')) {
+        const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
+          + (template.SupportsSecondaryLanguage ? 1 : 0)
+          + (template.SupportsTernaryLanguage ? 1 : 0);
+
+        if (template.SupportsPrimaryLanguage) {
+          const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.PrimaryLanguageId
+          });
+        }
+
+        if (template.SupportsSecondaryLanguage) {
+          const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.SecondaryLanguageId
+          });
+        }
+
+        if (template.SupportsTernaryLanguage) {
+          const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
+          result.push({
+            name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
+            templateId: template.MarkupTemplateId,
+            culture: settings.TernaryLanguageId
+          });
+        }
+      }
+
+      this._printingTemplatesResult = result;
+    }
+
+    return this._printingTemplatesResult;
+  }
+
+  public onPrint(doc: Document, template: PrintingTemplate): void {
+    if (!doc || !doc.Id || !template) {
+      return;
+    }
+
+    this.documentsApi.printById(doc.Id, template.templateId, { culture: template.culture })
+      .pipe(
+        tap(blob => printBlob(blob)),
+        catchError(friendlyError => {
+          this.details.displayModalError(friendlyError.error);
+          return of();
+        })
+      ).subscribe();
+  }
+}
+
+export interface PrintingTemplate {
+  name: () => string;
+  templateId: number;
+  culture: string;
 }
 
 /* Rules for showing and hiding chart states

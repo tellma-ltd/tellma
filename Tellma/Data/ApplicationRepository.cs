@@ -852,7 +852,50 @@ namespace Tellma.Data
                     documentDefinition.LineDefinitions.Add(entity);
                 }
 
+                // Load the markup templates
+                var markupTemplates = new Dictionary<int, MarkupTemplate>();
+                var markupTemplateProps = typeof(MarkupTemplate).GetMappedProperties();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new MarkupTemplate();
+                    foreach (var prop in markupTemplateProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    markupTemplates.Add(entity.Id, entity);
+                }
+
+                // Document Definitions Markup Templates
+                var documentDefinitionMarkupTemplateProps = typeof(DocumentDefinitionMarkupTemplate).GetMappedProperties();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DocumentDefinitionMarkupTemplate();
+                    foreach (var prop in documentDefinitionMarkupTemplateProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    // Link with the markup template
+                    entity.MarkupTemplate = markupTemplates[entity.MarkupTemplateId.Value];
+
+                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId];
+                    documentDefinition.MarkupTemplates ??= new List<DocumentDefinitionMarkupTemplate>();
+                    documentDefinition.MarkupTemplates.Add(entity);
+                }
+
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
+
 
                 // Next load line definitions
                 await reader.NextResultAsync(cancellation);
