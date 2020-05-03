@@ -201,7 +201,7 @@ SELECT @RC_Inv = [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment';
 	--(9,N'Tellma',				N'تلما',				N'24',	NULL,			5),
 	--(10,N'1st Floor',			N'ط - 1',				N'30',	NULL,			0);
 
-DECLARE @C101_INV INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'');
+DECLARE @C101_INV INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'10');
 DECLARE @C101_UNALLOC INT	= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'10');
 DECLARE @C101_EXEC INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'11');
 DECLARE @C101_Sales INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'12');

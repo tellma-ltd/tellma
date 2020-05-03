@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitionEntries__Pivot]
 	@Index INT,
 	@DocumentIndex INT,
-	@DefinitionId NVARCHAR (50)
+	@DefinitionId INT
 AS
 	DECLARE @WideLines dbo.WideLineList;
 
@@ -16,8 +16,6 @@ AS
 		--WL.[AgentId0]					= LDE.[AgentId],
 		--WL.[ResourceId0]				= LDE.[ResourceId],
 		--WL.[CenterId0]				= LDE.[CenterId],
-		--WL.[AccountIdentifier0]		= LDE.[AccountIdentifier],
-		--WL.[ResourceIdentifier0]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId0]				= LDE.[CurrencyId],
 		--WL.[EntryTypeId0]				= LDE.[EntryTypeId],
 		--WL.[DueDate0]					= LDE.[DueDate],
@@ -44,8 +42,6 @@ AS
 		--WL.[AgentId1]					= LDE.[AgentId],
 		--WL.[ResourceId1]				= LDE.[ResourceId],
 		--WL.[CenterId1]	= LDE.[ResponsibilityCenterId],
-		--WL.[AccountIdentifier1]			= LDE.[AccountIdentifier],
-		--WL.[ResourceIdentifier1]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId1]				= LDE.[CurrencyId],
 		--WL.[EntryTypeId1]				= LDE.[EntryTypeId],
 		--WL.[DueDate1]					= LDE.[DueDate],
@@ -72,8 +68,6 @@ AS
 		--WL.[AgentId2]					= LDE.[AgentId],
 		--WL.[ResourceId2]				= LDE.[ResourceId],
 		--WL.[CenterId2]				= LDE.[CenterId],
-		--WL.[AccountIdentifier2]			= LDE.[AccountIdentifier],
-		--WL.[ResourceIdentifier2]		= LDE.[ResourceIdentifier],
 		--WL.[CurrencyId2]				= LDE.[CurrencyId],
 		--WL.[EntryTypeId2]				= LDE.[EntryTypeId],
 		--WL.[DueDate2]					= LDE.[DueDate],

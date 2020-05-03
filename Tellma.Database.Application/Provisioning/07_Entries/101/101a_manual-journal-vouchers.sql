@@ -24,16 +24,16 @@ BEGIN -- Inserting
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			2,				N'ManualLine'),(1,			2,				N'ManualLine'),
-	(0,			3,				N'ManualLine'),(1,			3,				N'ManualLine'),
-	(0,			7,				N'ManualLine'),(1,			7,				N'ManualLine'),
-	(0,			8,				N'ManualLine'),(1,			8,				N'ManualLine'),
-	(0,			9,				N'ManualLine'),(1,			9,				N'ManualLine'),
-	(0,			10,				N'ManualLine'),(1,			10,				N'ManualLine'),(2,			10,				N'ManualLine'),
-	(0,			11,				N'ManualLine'),(1,			11,				N'ManualLine');
+	(0,			2,				@ManualLineDef),(1,			2,				@ManualLineDef),
+	(0,			3,				@ManualLineDef),(1,			3,				@ManualLineDef),
+	(0,			7,				@ManualLineDef),(1,			7,				@ManualLineDef),
+	(0,			8,				@ManualLineDef),(1,			8,				@ManualLineDef),
+	(0,			9,				@ManualLineDef),(1,			9,				@ManualLineDef),
+	(0,			10,				@ManualLineDef),(1,			10,				@ManualLineDef),(2,			10,				@ManualLineDef),
+	(0,			11,				@ManualLineDef),(1,			11,				@ManualLineDef);
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-				[AccountId],	[EntryTypeId],										[AgentId],	[CurrencyId],	[MonetaryValue],	[Value]) VALUES
+				[AccountId],	[EntryTypeId],										[ContractId],[CurrencyId],	[MonetaryValue],	[Value]) VALUES
 
 	(0, 0, 2,+1,@1GMFund,		@ProceedsFromBorrowingsClassifiedAsFinancingActivities,NULL,	@USD,			10000,				10000),--
 	(0, 1, 2,-1,@1MAPayable,	NULL,												NULL,		NULL,			10000,				10000),

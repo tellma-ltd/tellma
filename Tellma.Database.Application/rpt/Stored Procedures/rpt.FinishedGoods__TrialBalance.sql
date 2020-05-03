@@ -14,7 +14,6 @@ BEGIN
 			@FromDate,
 			@ToDate,
 			@CenterId,
-			NULL,
 			N'FinishedGoods'
 		)
 		GROUP BY ResourceId

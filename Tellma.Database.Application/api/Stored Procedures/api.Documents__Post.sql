@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Documents__Post]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS

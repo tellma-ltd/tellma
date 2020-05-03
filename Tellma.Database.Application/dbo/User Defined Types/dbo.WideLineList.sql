@@ -9,11 +9,9 @@
 	[Id0]						INT,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
-	[AgentId0]					INT,
+	[ContractId0]				INT,
 	[ResourceId0]				INT,
 	[CenterId0]					INT,
-	[AccountIdentifier0]		NVARCHAR (10),
-	[ResourceIdentifier0]		NVARCHAR (10),
 	[CurrencyId0]				NCHAR (3),
 	[EntryTypeId0]				INT,
 	[DueDate0]					DATE,
@@ -25,7 +23,7 @@
 	[Time20]					DATETIME2 (2),	-- to time
 	[ExternalReference0]		NVARCHAR (50),
 	[AdditionalReference0]		NVARCHAR (50),
-	[NotedAgentId0]				INT,
+	[NotedContractId0]			INT,
 	[NotedAgentName0]			NVARCHAR (50),
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
@@ -33,11 +31,9 @@
 	[Id1]						INT,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
-	[AgentId1]					INT,
+	[ContractId1]				INT,
 	[ResourceId1]				INT,
 	[CenterId1]					INT,
-	[AccountIdentifier1]		NVARCHAR (10),
-	[ResourceIdentifier1]		NVARCHAR (10),
 	[CurrencyId1]				NCHAR (3),
 	[EntryTypeId1]				INT,
 	[DueDate1]					DATE,
@@ -49,7 +45,7 @@
 	[Time21]					DATETIME2 (2),	-- to time
 	[ExternalReference1]		NVARCHAR (51),
 	[AdditionalReference1]		NVARCHAR (51),
-	[NotedAgentId1]				INT,
+	[NotedContractId1]			INT,
 	[NotedAgentName1]			NVARCHAR (51),
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
@@ -57,11 +53,9 @@
 	[Id2]						INT,
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[AgentId2]					INT,
+	[ContractId2]				INT,
 	[ResourceId2]				INT,
 	[CenterId2]					INT,
-	[AccountIdentifier2]		NVARCHAR (10),
-	[ResourceIdentifier2]		NVARCHAR (10),
 	[CurrencyId2]				NCHAR (3),
 	[EntryTypeId2]				INT,
 	[DueDate2]					DATE,
@@ -74,7 +68,7 @@
 	[Time22]					DATETIME2 (2),	-- to time
 	[ExternalReference2]		NVARCHAR (52),
 	[AdditionalReference2]		NVARCHAR (52),
-	[NotedAgentId2]				INT,
+	[NotedContractId2]			INT,
 	[NotedAgentName2]			NVARCHAR (52),
 	[NotedAmount2]				DECIMAL (29,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate2]				DATE

@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[ValidationErrorList] AS TABLE (
-	[Key]			NVARCHAR (255),
-	[ErrorName]		NVARCHAR (255),
+	[Key]			NVARCHAR (225),
+	[ErrorName]		NVARCHAR (225),
 	[Argument0]		NVARCHAR (255),
 	[Argument1]		NVARCHAR (255),
 	[Argument2]		NVARCHAR (255),

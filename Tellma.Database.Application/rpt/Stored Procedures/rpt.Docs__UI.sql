@@ -18,7 +18,7 @@ WITH Docs AS (
 			L.[DefinitionId] AS LineDefinitionId,
 			L.[State] AS [LineState],
 			E.[Direction],
-			E.[Index], A.[Name] AS [Account], AC.[AgentDefinitionId] AS [AD], IIF(AC.[ResourceAssignment] = N'A',1,0) AS [R?],
+			E.[Index], A.[Name] AS [Account],
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
@@ -29,7 +29,7 @@ WITH Docs AS (
 		LEFT JOIN dbo.[Lines] L ON D.[Id] = L.[DocumentId]
 		LEFT JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 		LEFT JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-		LEFT JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
+		LEFT JOIN dbo.[AccountTypes] AC ON A.[IfrsTypeId] = AC.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
 	)-- select * from Docs
 	,
@@ -52,7 +52,7 @@ WITH Docs AS (
 	--	(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
 		Docs.[LineId], [LineDefinitionId],
 		[Index] AS [E/N], 
-		[Account], [AD], [R?], [CurrencyId],
+		[Account], [CurrencyId],
 		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
 		EC.[Name] AS [EntryClassification],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,

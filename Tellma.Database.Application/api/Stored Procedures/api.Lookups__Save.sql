@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Lookups__Save]
-	@DefinitionId NVARCHAR (50),
+	@DefinitionId INT,
 	@Entities [LookupList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT

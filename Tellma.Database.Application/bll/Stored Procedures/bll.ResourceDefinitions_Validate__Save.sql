@@ -10,11 +10,11 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheCode0IsDuplicated',
-		[Id]
+		[Code]
 	FROM @Entities
-	WHERE [Id] IN (
-		SELECT [Id] FROM @Entities
-		GROUP BY [Id]
+	WHERE [Code] IN (
+		SELECT [Code] FROM @Entities
+		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	);
 

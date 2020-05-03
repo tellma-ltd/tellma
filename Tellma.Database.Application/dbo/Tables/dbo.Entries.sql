@@ -5,17 +5,20 @@
 	[Index]						INT				NOT NULL DEFAULT 0,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
+	--?
+	[AccountDefinitionId]		INT				NOT NULL CONSTRAINT [FK_Entries__AccountDefinitionId] REFERENCES [dbo].[AccountDefinitions] ([Id]),
+	--?
 	[CurrencyId]				NCHAR (3)		NULL CONSTRAINT [FK_Entries__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	-- Agent Id is required in Entries only if we have Agent Definition in the account
-	[AgentId]					INT				NULL REFERENCES dbo.Agents([Id]),
-	-- Resource Id is Required in Entries only if we have resource classification in the account
+	-- Contract Id is required in Entries only if we have Contract definition in the account definition
+	[ContractId]				INT				NULL REFERENCES dbo.[Contracts]([Id]),
+	-- Resource Id is Required in Entries only if we have resource definition in the account definition
 	[ResourceId]				INT				NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
-	-- required when the resource classification is anything but Cash
-	[CenterId]					INT				NULL REFERENCES dbo.[Centers]([Id]),
-	[AccountIdentifier]			NVARCHAR (10),
-	--[ResourceIdentifier]		NVARCHAR (10),
+	-- Center Id is Required in Entries only if we have center type in the account definition
+	[CenterId]					INT				NOT NULL REFERENCES dbo.[Centers]([Id]),
+	-- Entry Type Id is Required in Entries only if we have Parent Entry type in the account definition
 	[EntryTypeId]				INT				CONSTRAINT [FK_Entries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	-- Due Date is required only for certain resources, 
+	-- ?Part of Account Definition?!?!
 	[DueDate]					DATE			NULL, -- applies to temporary accounts, such as loans and borrowings	
 	[MonetaryValue]				DECIMAL (19,4)	NULL,--			NOT NULL DEFAULT 0,
 -- Tracking additive measures
@@ -30,7 +33,7 @@
 	-- Decimal1, Decimal2, Decimal3: VAT percent, WIP percent completion: DM, DL, O/H
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
-	[NotedAgentId]				INT,
+	[NotedContractId]			INT				NULL CONSTRAINT [FK_Entries__NotedContractId] REFERENCES dbo.Contracts([Id]),
 	[NotedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[NotedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
 	[NotedDate]					DATE,

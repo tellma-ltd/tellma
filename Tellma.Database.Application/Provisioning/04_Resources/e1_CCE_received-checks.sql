@@ -1,5 +1,5 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],					[TitlePlural],		[TitleSingular]) VALUES
+	[Code],					[TitlePlural],		[TitleSingular]) VALUES
 	( N'received-checks',	N'Received Checks',	N'Received Check');
 
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;

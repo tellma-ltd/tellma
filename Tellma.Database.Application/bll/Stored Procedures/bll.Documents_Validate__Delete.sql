@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Delete]
-	@DefinitionId NVARCHAR(50),
+	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

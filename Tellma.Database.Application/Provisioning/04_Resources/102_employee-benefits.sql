@@ -1,20 +1,32 @@
 ﻿IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
+	--INSERT INTO @Resources ([Index],
+	--					[ExpenseTypeId],					[Name]) VALUES
+	--(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
+	--(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Transportation Allowance'),
+	--(2, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Day Overtime'),
+	--(3, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Night Overtime'),
+	--(4, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Rest Overtime'),
+	--(5, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Holiday Overtime'),
+	--(6, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)'),
+	--(7, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (daily)'),
+	--(8, dbo.fn_ATCode__Id(N'OtherShorttermEmployeeBenefits'),N'Data package'),
+	--(9, dbo.fn_ATCode__Id(N'SocialSecurityContributions'),	N'SS Contribution (11%)'),
+	--(10, dbo.fn_ATCode__Id(N'WagesAndSalaries'),			N'Meal Allowance');
 	INSERT INTO @Resources ([Index],
-						[ExpenseTypeId],					[Name]) VALUES
-	(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
-	(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Transportation Allowance'),
-	(2, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Day Overtime'),
-	(3, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Night Overtime'),
-	(4, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Rest Overtime'),
-	(5, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Holiday Overtime'),
-	(6, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)'),
-	(7, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (daily)'),
-	(8, dbo.fn_ATCode__Id(N'OtherShorttermEmployeeBenefits'),N'Data package'),
-	(9, dbo.fn_ATCode__Id(N'SocialSecurityContributions'),	N'SS Contribution (11%)'),
-	(10, dbo.fn_ATCode__Id(N'WagesAndSalaries'),			N'Meal Allowance');
-
+		[Name]) VALUES
+	(0,	N'Basic'),
+	(1, N'Transportation Allowance'),
+	(2, N'Day Overtime'),
+	(3, N'Night Overtime'),
+	(4, N'Rest Overtime'),
+	(5, N'Holiday Overtime'),
+	(6, N'Labor (hourly)'),
+	(7, N'Labor (daily)'),
+	(8, N'Data package'),
+	(9, N'SS Contribution (11%)'),
+	(10,N'Meal Allowance');
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],						[Multiplier]) VALUES
 	(0, 0, dbo.fn_UnitName__Id(N'wmo'),		1),
@@ -30,7 +42,7 @@ BEGIN
 	(0, 10, dbo.fn_UnitName__Id(N'wmo'),	1);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = N'employee-benefits-expenses',
+		@DefinitionId = @employee_benefits_expensesDef,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

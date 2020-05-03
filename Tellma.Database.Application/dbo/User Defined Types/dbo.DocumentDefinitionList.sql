@@ -1,6 +1,7 @@
 ﻿CREATE TYPE [dbo].[DocumentDefinitionList] AS TABLE (
 	[Index]						INT	PRIMARY KEY,
-	[Id]						NVARCHAR (50) NOT NULL UNIQUE,
+	[Id]						INT	NOT NULL DEFAULT 0,
+	[Code]						NVARCHAR (50) NOT NULL UNIQUE,
 	[IsOriginalDocument]		BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired = 0
 	[TitleSingular]				NVARCHAR (255),
 	[TitleSingular2]			NVARCHAR (255),

@@ -15,7 +15,7 @@ SET [State] = 4 * @State
 WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
 AND [State] <> 4 * @State
 AND [DefinitionId] IN (
-	SELECT [Id]
+	SELECT [Code]
 	FROM map.[LineDefinitions]()
 	WHERE [HasWorkflow] = 0
 );

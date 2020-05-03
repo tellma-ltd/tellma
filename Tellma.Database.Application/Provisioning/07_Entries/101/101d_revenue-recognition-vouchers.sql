@@ -1,7 +1,7 @@
 ﻿/* LOV consists of the following tabs
 	(0,1,	N'LeaseOutInvoiceAndIssueNoVAT',1),
 	(0,1,	N'LeaseOutInvoiceAndIssueNoVAT',1),
-	(1,1,	N'ManualLine',		1)
+	(1,1,	@ManualLineDef,		1)
 */
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN -- Inserting
@@ -25,8 +25,8 @@ BEGIN -- Inserting
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 12, @DefinitionId = N'LeaseOutIssueAndSalesInvoiceNoVAT';
 	UPDATE @WL
 	SET
-		[AgentId0] = @Washm,
-		[AgentId1] = @1Babylon,
+		[ContractId0] = @Washm,
+		[ContractId1] = @1Babylon,
 		[ResourceId0] = @MonthlySubscription,
 		[Quantity0]	= 1,
 		[UnitId0] = @Month,

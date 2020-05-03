@@ -1,10 +1,10 @@
 ﻿CREATE TABLE [dbo].LineDefinitionEntries (
 	[Id]						INT					CONSTRAINT [PK_LineDefinitionEntries] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[LineDefinitionId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] REFERENCES [dbo].[LineDefinitions] ([Id]),
-	[Index]				INT					NOT NULL  CONSTRAINT [CK_LineDefinitionEntries_Index]	CHECK([Index] >= 0),
+	[LineDefinitionId]			INT					NOT NULL CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] REFERENCES [dbo].[LineDefinitions] ([Id]),
+	[Index]						INT					NOT NULL  CONSTRAINT [CK_LineDefinitionEntries_Index]	CHECK([Index] >= 0),
 	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [Index]),
 	[Direction]					SMALLINT			NOT NULL CHECK([Direction] IN (-1, +1)),
-	[AccountTypeParentId]		INT					NOT NULL CONSTRAINT [FK_LineDefinitionEntries__AccountTypeParentId] REFERENCES dbo.AccountTypes([Id]),
+	[AccountTypeParentId]		INT					NOT NULL CONSTRAINT [FK_LineDefinitionEntries__AccountDefinitionId] REFERENCES dbo.AccountTypes([Id]),
 	[EntryTypeId]				INT					CONSTRAINT [FK_LineDefinitionEntries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	[SavedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionEntries__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]					DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,

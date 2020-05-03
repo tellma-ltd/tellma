@@ -6,7 +6,7 @@ AS
 RETURN
 	SELECT c.*
 	FROM OPENJSON (@json) p
-		CROSS APPLY OpenJson(p.value, N'$.TransactionEntries') 
+		CROSS APPLY OpenJson(p.value, N'$.Entries') 
 		WITH (
 			[Index]					INT,
 			[DocumentIndex]			INT,
@@ -15,11 +15,10 @@ RETURN
 			[LineType]				NVARCHAR (255),
 			[OperationId]			INT,
 			[AccountId]				INT,
-			[AgentId]				INT,
-			[AgentAccountId]		INT,
+			[ContractId]			INT,
 			[ResourceId]			INT,
 			[Direction]				SMALLINT,
-			[DECIMAL (19,4)Amount]			DECIMAL (19,4),
+			[Amount]			DECIMAL (19,4),
 			[Mass]					DECIMAL,
 			[Volume]				DECIMAL,
 			[Count]					DECIMAL,
@@ -31,7 +30,7 @@ RETURN
 			[Memo]					NVARCHAR (255),
 			[Reference]				NVARCHAR (255),
 			[RelatedReference]		NVARCHAR (255),
-			[RelatedAgentId]		INT,
+			[NotedContractId]		INT,
 			[RelatedResourceId]		INT,
 			[RelatedAmount]			DECIMAL (19,4)
 		) c;

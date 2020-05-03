@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[DocumentAssignments] (
--- When document is assigned to someone, who in turn can only post or assign to someone else
+-- When document is assigned to someone, who in turn can only close or assign to someone else
 -- if the assignee does not open the document, any user can still forward it to someone else
 	[DocumentId]	INT					CONSTRAINT [PK_DocumentAssignments__DocumentId] PRIMARY KEY
 										CONSTRAINT [FK_DocumentAssignments__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,

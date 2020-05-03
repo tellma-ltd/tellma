@@ -21,7 +21,7 @@ SET NOCOUNT ON;
 	-- cannot change functional currency if there are valueable documented with finanlized lines
 	IF dbo.fn_FunctionalCurrencyId() <> @FunctionalCurrencyId
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-    SELECT DISTINCT TOP (@TOP)
+    SELECT DISTINCT TOP (@Top)
 		'FunctionalCurrencyId',
 		N'Error_Document0HasForeignCurrency',
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N]
