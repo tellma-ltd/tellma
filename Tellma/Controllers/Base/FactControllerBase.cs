@@ -29,9 +29,133 @@ namespace Tellma.Controllers
     public abstract class FactControllerBase<TEntity> : ControllerBase
         where TEntity : Entity
     {
-        // Private Fields
         private readonly ILogger _logger;
+
+        public FactControllerBase(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Retrieves the raw data from the database, unflattend, untrimmed 
+                var service = GetFactService();
+                var (data, extras, isPartial, totalCount) = await service.GetFact(args, cancellation);
+
+                // Flatten and Trim
+                var relatedEntities = FlattenAndTrim(data, cancellation);
+
+                // Prepare the result in a response object
+                var result = new GetResponse<TEntity>
+                {
+                    Skip = args.Skip,
+                    Top = data.Count,
+                    OrderBy = args.OrderBy,
+                    TotalCount = totalCount,
+                    IsPartial = isPartial,
+                    Result = data,
+                    RelatedEntities = relatedEntities,
+                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    Extras = extras,
+                    ServerTime = serverTime
+                };
+
+                return Ok(result);
+            }, _logger);
+        }
+
+        [HttpGet("aggregate")]
+        public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Load the data
+                var (data, isPartial) = await GetFactService().GetAggregate(args, cancellation);
+
+                // Finally return the result
+                var result = new GetAggregateResponse
+                {
+                    Top = args.Top,
+                    IsPartial = isPartial,
+                    ServerTime = serverTime,
+
+                    Result = data,
+                    RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
+                };
+
+                return Ok(result);
+            }, _logger);
+        }
+
+        #region Export Stuff
+
+        //[HttpGet("export")]
+        //public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
+        //{
+        //    return await ControllerUtilities.InvokeActionImpl(async () =>
+        //    {
+        //        // Get abstract grid
+        //        var service = GetFactService();
+        //        var (response, _, _) = await service.GetFact(args, cancellation);
+        //        var abstractFile = EntitiesToAbstractGrid(response, args);
+        //        return AbstractGridToFileResult(abstractFile, args.Format);
+        //    }, _logger);
+        //}
+
+        /////////////////////////////
+        // Endpoint Implementations
+        /////////////////////////////
+
+        #endregion
+
+        protected abstract FactServiceBase<TEntity> GetFactService();
+
+        /// <summary>
+        /// Takes a list of <see cref="Entity"/>s, and for every entity it inspects the navigation properties, if a navigation property
+        /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
+        /// "relatedEntities" hash set, this has several advantages:
+        /// 1 - JSON.NET will not have to deal with circular references
+        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
+        /// 3 - It makes it easier for clients to store and track entities in a central workspace
+        /// </summary>
+        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
+        protected Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, CancellationToken cancellation)
+        {
+            return ControllerUtilities.FlattenAndTrim(resultEntities, cancellation);
+        }
+
+        /// <summary>
+        /// Retrieves the collection name from the Entity type
+        /// </summary>
+        protected static string GetCollectionName(Type entityType)
+        {
+            return entityType.GetRootType().Name;
+        }
+    }
+
+    public abstract class ServiceBase
+    {
+        public ValidationErrorsDictionary ModelState { get; } = new ValidationErrorsDictionary();
+    }
+
+    public abstract class FactServiceBase<TEntity> : ServiceBase
+        where TEntity : Entity
+    {
         private readonly IStringLocalizer _localizer;
+
+        public FactServiceBase(IStringLocalizer localizer)
+        {
+            _localizer = localizer;
+        }
 
         /// <summary>
         /// The default maximum page size returned by the <see cref="GetFact(GetArguments)"/>,
@@ -45,90 +169,16 @@ namespace Tellma.Controllers
         /// </summary>
         private static int MAXIMUM_AGGREGATE_RESULT_SIZE => 65536;
 
+        /// <summary>
+        /// Queries that have a total count of more than this will not be counted since it
+        /// impacts performance. <see cref="int.MaxValue"/> is returned instead
+        /// </summary>
         private static int MAXIMUM_COUNT => 10000; // IMPORTANT: Keep in sync with client side
-
-        // Constructor
-        public FactControllerBase(ILogger logger, IStringLocalizer localizer)
-        {
-            _logger = logger;
-            _localizer = localizer;
-        }
-
-        // HTTP Methods
-        [HttpGet]
-        public virtual async Task<ActionResult<GetResponse<TEntity>>> GetFact([FromQuery] GetArguments args, CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetFactImpl(args, cancellation);
-                return Ok(result);
-            }, _logger);
-        }
-
-        [HttpGet("aggregate")]
-        public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args, CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                var result = await GetAggregateImpl(args, cancellation);
-                return Ok(result);
-            }, _logger);
-        }
-
-        [HttpGet("export")]
-        public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                // Get abstract grid
-                var response = await GetFactImpl(args, cancellation);
-                var abstractFile = EntitiesToAbstractGrid(response, args);
-                return AbstractGridToFileResult(abstractFile, args.Format);
-            }, _logger);
-        }
-
-        /////////////////////////////
-        // Endpoint Implementations
-        /////////////////////////////
 
         /// <summary>
         /// Returns the <see cref="GetResponse{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>
         /// </summary>
-        protected virtual async Task<GetResponse<TEntity>> GetFactImpl(GetArguments args, CancellationToken cancellation)
-        {
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
-
-            // Retrieves the raw data from the database, unflattend, untrimmed 
-            var (data, isPartial, totalCount) = await GetFactLoadData(args, cancellation);
-
-            // Get any controller-specific extras
-            var extras = await GetExtras(data, cancellation);
-
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data, cancellation);
-
-            // Prepare the result in a response object
-            return new GetResponse<TEntity>
-            {
-                Skip = args.Skip,
-                Top = data.Count,
-                OrderBy = args.OrderBy,
-                TotalCount = totalCount,
-                IsPartial = isPartial,
-                Result = data,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras,
-                ServerTime = serverTime
-            };
-        }
-
-        /// <summary>
-        /// Returns a <see cref="List{TEntity}"/> as per the specifications in the <see cref="GetArguments"/>,
-        /// and also the total count if required
-        /// </summary>
-        protected virtual async Task<(List<TEntity> Data, bool IsPartial, int? Count)> GetFactLoadData(GetArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<TEntity> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -187,41 +237,19 @@ namespace Tellma.Controllers
 
             // Load the data in memory
             var data = await expandedQuery.ToListAsync(cancellation);
+            var extras = await GetExtras(data, cancellation);
 
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             await ApplyReadPermissionsMask(data, query, permissions, defaultMask, cancellation);
 
             // Return
-            return (data, isPartial, totalCount);
-        }
-
-        /// <summary>
-        /// Returns the <see cref="GetAggregateResponse"/> as per the specifications in the <see cref="GetAggregateArguments"/>
-        /// </summary>
-        protected virtual async Task<GetAggregateResponse> GetAggregateImpl(GetAggregateArguments args, CancellationToken cancellation)
-        {
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
-
-            // Load the data
-            var (data, isPartial) = await GetAggregateLoadData(args, cancellation);
-
-            // Finally return the result
-            return new GetAggregateResponse
-            {
-                Top = args.Top,
-                IsPartial = isPartial,
-                ServerTime = serverTime,
-                
-                Result = data,
-                RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
-            };
+            return (data, extras, isPartial, totalCount);
         }
 
         /// <summary>
         /// Returns a <see cref="List{DynamicEntity}"/> as per the specifications in the <see cref="GetAggregateArguments"/>,
         /// </summary>
-        protected virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregateLoadData(GetAggregateArguments args, CancellationToken cancellation)
+        public virtual async Task<(List<DynamicEntity> Data, bool IsPartial)> GetAggregate(GetAggregateArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -272,21 +300,22 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Gives controllers the chance to include custom data with all GET responses
+        /// Select argument may get huge and unweildly in certain cases, this method offers a chance
+        /// for controllers to optimize queries by understanding special concise "shorthands" in
+        /// the select string that get expanded into a proper select expression. This way clients
+        /// don't have to send large select string in the request for common scenarios
         /// </summary>
-        /// <param name="result">The unflattenned, untrimmed response to the GET request</param>
-        /// <returns>An optional dictionary containing any extra information and an optional set of related entities</returns>
-        protected virtual Task<Dictionary<string, object>> GetExtras(IEnumerable<TEntity> result, CancellationToken cancellation)
+        protected virtual SelectExpression ParseSelect(string select)
         {
-            return Task.FromResult<Dictionary<string, object>>(null);
+            return SelectExpression.Parse(select);
         }
-        
+
         /// <summary>
         /// Get the DbContext source on which the controller is based
         /// </summary>
         /// <returns></returns>
         protected abstract IRepository GetRepository();
-
+        
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified level
         /// </summary>
@@ -339,24 +368,6 @@ namespace Tellma.Controllers
             return FilterViolatedPermissionsInner(permissions, defaultMask, userMask);
         }
 
-        private IEnumerable<AbstractPermission> FilterViolatedPermissionsInner(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, MaskTree userMask)
-        {
-            defaultMask = Normalize(defaultMask);
-            return permissions.Where(e =>
-            {
-                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.Parse(e.Mask));
-                return permissionMask.Covers(userMask);
-            });
-        }
-
-        private MaskTree Normalize(MaskTree tree)
-        {
-            tree.Validate(typeof(TEntity), _localizer);
-            tree.Normalize(typeof(TEntity));
-
-            return tree;
-        }
-
         private MaskTree UpdateUserMaskAsPerFilter(FilterExpression filter, MaskTree userMask)
         {
             if (filter != null)
@@ -397,6 +408,24 @@ namespace Tellma.Controllers
             }
 
             return userMask;
+        }
+
+        private MaskTree Normalize(MaskTree tree)
+        {
+            tree.Validate(typeof(TEntity), _localizer);
+            tree.Normalize(typeof(TEntity));
+
+            return tree;
+        }
+
+        private IEnumerable<AbstractPermission> FilterViolatedPermissionsInner(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, MaskTree userMask)
+        {
+            defaultMask = Normalize(defaultMask);
+            return permissions.Where(e =>
+            {
+                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.Parse(e.Mask));
+                return permissionMask.Covers(userMask);
+            });
         }
 
         /// <summary>
@@ -448,19 +477,19 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
+        /// Applies the default order which is over "Id" property descending
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        protected abstract OrderByExpression DefaultOrderBy();
+
+        /// <summary>
         /// Specifies the maximum page size to be returned by GET, defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>
         /// </summary>
         protected virtual int MaximumPageSize()
         {
             return DEFAULT_MAX_PAGE_SIZE;
         }
-
-        /// <summary>
-        /// Applies the default order which is over "Id" property descending
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        protected abstract OrderByExpression DefaultOrderBy();
 
         /// <summary>
         /// If the user is subject to field-level access control, this method hides all the fields
@@ -478,228 +507,126 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Takes a list of <see cref="Entity"/>s, and for every entity it inspects the navigation properties, if a navigation property
-        /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
-        /// "relatedEntities" hash set, this has several advantages:
-        /// 1 - JSON.NET will not have to deal with circular references
-        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
-        /// 3 - It makes it easier for clients to store and track entities in a central workspace
+        /// Gives controllers the chance to include custom data with all GET responses
         /// </summary>
-        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
-        protected virtual Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, CancellationToken cancellation)
+        /// <param name="result">The unflattenned, untrimmed response to the GET request</param>
+        /// <returns>An optional dictionary containing any extra information and an optional set of related entities</returns>
+        protected virtual Task<Extras> GetExtras(IEnumerable<TEntity> result, CancellationToken cancellation)
         {
-            // If the result is empty, nothing to do
-            if (resultEntities == null || !resultEntities.Any())
-            {
-                return new Dictionary<string, IEnumerable<Entity>>();
-            }
-
-            var relatedEntities = new HashSet<Entity>();
-            var resultHash = resultEntities.ToHashSet();
-
-            // Method for efficiently retrieving the nav and nav collection properties of any entity
-            var cacheNavigationProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
-            IEnumerable<PropertyInfo> NavProps(Entity entity)
-            {
-                if (!cacheNavigationProperties.TryGetValue(entity.GetType(), out IEnumerable<PropertyInfo> properties))
-                {
-                    // Return all navigation properties that Entity or list types
-                    properties = cacheNavigationProperties[entity.GetType()] =
-                        entity.GetType().GetProperties().Where(e =>
-                            e.PropertyType.IsEntity() ||  /* nav property */
-                            e.PropertyType.IsList()); /* nav collection property */
-                }
-
-                return properties;
-            }
-
-            // Recursively trims and flattens the entity and all entities reachable from it
-            var alreadyFlattenedAndTrimmed = new HashSet<Entity>();
-            void FlattenAndTrimInner(Entity entity)
-            {
-                if (entity == null || alreadyFlattenedAndTrimmed.Contains(entity))
-                {
-                    return;
-                }
-
-                // This ensures Flatten is executed on every entity only once
-                alreadyFlattenedAndTrimmed.Add(entity);
-
-                foreach (var navProp in NavProps(entity))
-                {
-                    if (navProp.PropertyType.IsList())
-                    {
-                        var collection = navProp.GetValue(entity);
-                        if (collection != null)
-                        {
-                            foreach (var item in collection.Enumerate<Entity>())
-                            {
-                                FlattenAndTrimInner(item);
-                            }
-                        }
-                    }
-                    else if (navProp.GetValue(entity) is Entity relatedEntity) // Checks for null
-                    {
-                        // If the type is a strong one trim the property and add the entity to relatedEntities
-                        if (navProp.PropertyType.IsStrongEntity())
-                        {
-                            // This property has a strong type, so we set it to null and put its value in the
-                            // related entities collection (unless it is part of the main result)
-
-                            // Set the property to null
-                            navProp.SetValue(entity, null);
-                            if (!resultHash.Contains(relatedEntity))
-                            {
-                                // Unless it is part of the main result, add it to relatedEntities
-                                relatedEntities.Add(relatedEntity);
-                            }
-                        }
-
-                        // Recursively call flatten on the related entity whether it's strong or weak
-                        FlattenAndTrimInner(relatedEntity);
-                    }
-                }
-            }
-
-            // Flatten every entity
-            foreach (var entity in resultEntities)
-            {
-                FlattenAndTrimInner(entity);
-                cancellation.ThrowIfCancellationRequested();
-            }
-
-            // Return the result
-            return relatedEntities
-                .GroupBy(e => e.GetType().GetRootType().Name)
-                .ToDictionary(g => g.Key, g => g.AsEnumerable()); ;
+            return Task.FromResult<Extras>(null);
         }
 
-        /// <summary>
-        /// Retrieves the collection name from the Entity type
-        /// </summary>
-        protected static string GetCollectionName(Type entityType)
-        {
-            return entityType.GetRootType().Name;
-        }
+        #region Export
 
-        /// <summary>
-        /// Transforms an Entity response into an abstract grid that can be transformed into an file
-        /// </summary>
-        protected AbstractDataGrid EntitiesToAbstractGrid(GetResponse<TEntity> response, ExportArguments args)
-        {
-            throw new NotImplementedException();
-        }
+        ///// <summary>
+        ///// Transforms an Entity response into an abstract grid that can be transformed into an file
+        ///// </summary>
+        //protected AbstractDataGrid EntitiesToAbstractGrid(List<TEntity> response, ExportArguments args)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
-        // Maybe we should move these to ControllerUtilities
+        //// Maybe we should move these to a Utiltites class
 
-        protected FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
-        {
-            // Get abstract grid
+        //protected FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
+        //{
+        //    // Get abstract grid
 
-            FileHandlerBase handler;
-            string contentType;
-            if (format == FileFormats.Xlsx)
-            {
-                handler = new ExcelHandler(_localizer);
-                contentType = MimeTypes.Xlsx;
-            }
-            else if (format == FileFormats.Csv)
-            {
-                handler = new CsvHandler(_localizer);
-                contentType = MimeTypes.Csv;
-            }
-            else
-            {
-                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
-            }
+        //    FileHandlerBase handler;
+        //    string contentType;
+        //    if (format == FileFormats.Xlsx)
+        //    {
+        //        handler = new ExcelHandler(_localizer);
+        //        contentType = MimeTypes.Xlsx;
+        //    }
+        //    else if (format == FileFormats.Csv)
+        //    {
+        //        handler = new CsvHandler(_localizer);
+        //        contentType = MimeTypes.Csv;
+        //    }
+        //    else
+        //    {
+        //        throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+        //    }
 
-            var fileStream = handler.ToFileStream(abstractFile);
-            fileStream.Seek(0, System.IO.SeekOrigin.Begin);
-            return File(fileStream, contentType);
-        }
+        //    var fileStream = handler.ToFileStream(abstractFile);
+        //    fileStream.Seek(0, System.IO.SeekOrigin.Begin);
+        //    return new FileStreamResult(fileStream, contentType);
+        //}
 
-        // DateTime utilities
+        //// DateTime utilities
 
-        /// <summary>
-        /// Changes the DateTimeOffset into a DateTime in the local time of the user suitable for exporting
-        /// </summary>
-        protected DateTime? ToExportDateTime(DateTimeOffset? offset)
-        {
-            if (offset == null)
-            {
-                return null;
-            }
+        ///// <summary>
+        ///// Changes the DateTimeOffset into a DateTime in the local time of the user suitable for exporting
+        ///// </summary>
+        //protected DateTime? ToExportDateTime(DateTimeOffset? offset)
+        //{
+        //    if (offset == null)
+        //    {
+        //        return null;
+        //    }
 
-            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone 
-            return TimeZoneInfo.ConvertTime(offset.Value, timeZone).DateTime;
-        }
+        //    var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone 
+        //    return TimeZoneInfo.ConvertTime(offset.Value, timeZone).DateTime;
+        //}
 
-        /// <summary>
-        /// Returns the default format for dates and date times
-        /// </summary>
-        protected string ExportDateTimeFormat(bool dateOnly)
-        {
-            return dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm";
-        }
+        ///// <summary>
+        ///// Returns the default format for dates and date times
+        ///// </summary>
+        //protected string ExportDateTimeFormat(bool dateOnly)
+        //{
+        //    return dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm";
+        //}
 
-        /// <summary>
-        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
-        /// </summary>
-        protected DateTime? ParseImportedDateTime(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
+        ///// <summary>
+        ///// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
+        ///// </summary>
+        //protected DateTime? ParseImportedDateTime(object value)
+        //{
+        //    if (value == null)
+        //    {
+        //        return null;
+        //    }
 
-            DateTime dateTime;
+        //    DateTime dateTime;
 
-            if (value.GetType() == typeof(double))
-            {
-                // Double indicates the OLE Automation date typically represented in excel
-                dateTime = DateTime.FromOADate((double)value);
-            }
-            else
-            {
-                // Parse the import value into a DateTime
-                var valueString = value.ToString();
-                dateTime = DateTime.ParseExact(valueString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-            }
+        //    if (value.GetType() == typeof(double))
+        //    {
+        //        // Double indicates the OLE Automation date typically represented in excel
+        //        dateTime = DateTime.FromOADate((double)value);
+        //    }
+        //    else
+        //    {
+        //        // Parse the import value into a DateTime
+        //        var valueString = value.ToString();
+        //        dateTime = DateTime.ParseExact(valueString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        //    }
 
 
-            return dateTime;
-        }
+        //    return dateTime;
+        //}
 
-        /// <summary>
-        /// Changes the DateTime into a DateTimeOffset by adding the user's local timezone, this effectively
-        /// acts as the reverse of <see cref="ToExportDateTime(DateTimeOffset?)"/>
-        /// </summary>
-        protected DateTimeOffset? AddUserTimeZone(DateTime? value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
+        ///// <summary>
+        ///// Changes the DateTime into a DateTimeOffset by adding the user's local timezone, this effectively
+        ///// acts as the reverse of <see cref="ToExportDateTime(DateTimeOffset?)"/>
+        ///// </summary>
+        //protected DateTimeOffset? AddUserTimeZone(DateTime? value)
+        //{
+        //    if (value == null)
+        //    {
+        //        return null;
+        //    }
 
-            // The date time supplied in the import does not the contain time zone offset
-            // The code below adds the current user time zone to the date time supplied
-            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone   
-            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
-            var dtOffset = new DateTimeOffset(value.Value, offset);
+        //    // The date time supplied in the import does not the contain time zone offset
+        //    // The code below adds the current user time zone to the date time supplied
+        //    var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone   
+        //    var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
+        //    var dtOffset = new DateTimeOffset(value.Value, offset);
 
-            return dtOffset;
-        }
+        //    return dtOffset;
+        //}
 
-        /// <summary>
-        /// Select argument may get huge and unweildly in certain cases, this method offers a chance
-        /// for controllers to optimize queries by understanding special concise "shorthands" in
-        /// the select string that get expanded into a proper select expression. This way clients
-        /// don't have to send large select string in the request for common scenarios
-        /// </summary>
-        protected virtual SelectExpression ParseSelect(string select)
-        {
-            return SelectExpression.Parse(select);
-        }
+        #endregion
     }
 }

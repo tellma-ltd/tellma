@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
@@ -19,14 +17,26 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "details-entries";
 
+        private readonly DetailsEntriesService _service;
+
+        public DetailsEntriesController(DetailsEntriesService service, ILogger<DetailsEntriesController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<DetailsEntry, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class DetailsEntriesService : FactWithIdServiceBase<DetailsEntry, int>
+    {
         private readonly ApplicationRepository _repo;
 
-        private string View => BASE_ADDRESS;
+        private string View => DetailsEntriesController.BASE_ADDRESS;
 
-        public DetailsEntriesController(
-            ILogger<DetailsEntriesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public DetailsEntriesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
         {
             _repo = repo;
         }
@@ -50,5 +60,6 @@ namespace Tellma.Controllers
         {
             return OrderByExpression.Parse(nameof(DetailsEntry.AccountId));
         }
+
     }
 }

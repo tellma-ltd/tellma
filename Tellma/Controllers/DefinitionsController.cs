@@ -19,13 +19,10 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class DefinitionsController : ControllerBase
     {
-        // Private fields
-
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ILogger<SettingsController> _logger;
 
-        public DefinitionsController(IDefinitionsCache definitionsCache,
-            ILogger<SettingsController> logger)
+        public DefinitionsController(IDefinitionsCache definitionsCache,  ILogger<SettingsController> logger)
         {
             _definitionsCache = definitionsCache;
             _logger = logger;
@@ -51,7 +48,10 @@ namespace Tellma.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    }
 
+    public class DefinitionsService : ServiceBase
+    {
         private static string MapVisibility(string visibility)
         {
             if (visibility == Visibility.None)

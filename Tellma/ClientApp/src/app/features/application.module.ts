@@ -31,7 +31,7 @@ import {
   faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt, faLock, faFile,
   faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileArchive, faFileImage,
   faFileAudio, faFileVideo, faThumbsUp, faThumbsDown, faEllipsisV, faEllipsisH, faArchive,
-  faLaptop, faMicrochip, faLaptopCode, faUser, faUserTie, faUserTag, faUserShield,
+  faLaptop, faMicrochip, faLaptopCode, faUser, faUserTie, faUserTag, faUserShield, faFileCode,
   faUsersCog,
   faFemale,
   faMale,
@@ -45,7 +45,16 @@ import {
   faLockOpen,
   faInbox,
   faShareSquare,
-  faShare
+  faShare,
+  faPrint,
+  faCode,
+  faCaretRight,
+  faCaretLeft,
+  faFont,
+  faArrowsAltV,
+  faArrowsAltH,
+  faImage,
+  faPortrait
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -93,6 +102,12 @@ import { OutboxComponent } from './outbox/outbox.component';
 import { IfrsConceptsMasterComponent } from './ifrs-concepts/ifrs-concepts-master.component';
 import { IfrsConceptsDetailsComponent } from './ifrs-concepts/ifrs-concepts-details.component';
 import { IfrsConceptsPickerComponent } from './ifrs-concepts/ifrs-concepts-picker.component';
+import { AceModule } from 'ngx-ace-wrapper';
+import { ACE_CONFIG } from 'ngx-ace-wrapper';
+import { AceConfigInterface } from 'ngx-ace-wrapper';
+import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
+import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
+import { DocumentsPickerComponent } from './documents/documents-picker.component';
 
 const routes: Routes = [
   {
@@ -390,6 +405,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Exchange Rates
+      {
+        path: 'markup-templates',
+        component: MarkupTemplatesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'markup-templates/:id',
+        component: MarkupTemplatesDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -420,6 +447,9 @@ const routes: Routes = [
     pathMatch: 'full'
   }
 ];
+
+const DEFAULT_ACE_CONFIG: AceConfigInterface = {
+};
 
 @NgModule({
   declarations: [
@@ -488,10 +518,20 @@ const routes: Routes = [
     IfrsConceptsMasterComponent,
     IfrsConceptsDetailsComponent,
     IfrsConceptsPickerComponent,
+    MarkupTemplatesMasterComponent,
+    MarkupTemplatesDetailsComponent,
+    DocumentsPickerComponent,
   ],
   imports: [
     SharedModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    AceModule
+  ],
+  providers: [
+    {
+      provide: ACE_CONFIG,
+      useValue: DEFAULT_ACE_CONFIG
+    }
   ]
 })
 export class ApplicationModule {
@@ -502,7 +542,7 @@ export class ApplicationModule {
       faThumbsUp, faThumbsDown, faPaperclip, faExclamation, faLockOpen,
 
       // File icons
-      faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt,
+      faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileCode,
       faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
 
       // Main menu icons
@@ -510,7 +550,7 @@ export class ApplicationModule {
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
       faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale, faBook, faChartBar, faChartArea,
-      faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare
+      faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait
     );
   }
 }

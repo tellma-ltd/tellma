@@ -940,6 +940,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>Forget This Browser</value>
   </data>
@@ -1131,6 +1134,39 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
+  </data>
+  <data name="MarkupTemplate" xml:space="preserve">
+    <value>Markup Template</value>
+  </data>
+  <data name="MarkupTemplate_Body" xml:space="preserve">
+    <value>Body</value>
+  </data>
+  <data name="MarkupTemplate_Collection" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
+    <value>Download Name</value>
+  </data>
+  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
+    <value>Markup Language</value>
+  </data>
+  <data name="MarkupTemplate_Supports" xml:space="preserve">
+    <value>Supports</value>
+  </data>
+  <data name="MarkupTemplate_Usage" xml:space="preserve">
+    <value>Usage</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
+    <value>From Master Screen</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
+    <value>From Details Screen</value>
+  </data>
+  <data name="MarkupTemplates" xml:space="preserve">
+    <value>Markup Templates</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>Members</value>

@@ -545,6 +545,13 @@
     <Build Include="map\map.Outbox.sql" />
     <Build Include="map\IfrsConcepts.sql" />
     <None Include="Provisioning\03_Basic\d_Centers.sql" />
+    <Build Include="dbo\Tables\dbo.MarkupTemplates.sql" />
+    <Build Include="dbo\User Defined Types\dbo.MarkupTemplateList.sql" />
+    <Build Include="bll\Stored Procedures\bll.MarkupTemplates_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarkupTemplates__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.MarkupTemplates_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.MarkupTemplates__Delete.sql" />
+    <Build Include="map\map.MarkupTemplates.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

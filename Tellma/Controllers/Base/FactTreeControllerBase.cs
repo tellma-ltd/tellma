@@ -24,30 +24,49 @@ namespace Tellma.Controllers
         private readonly ILogger _logger;
 
         // Constructor
-        public FactTreeControllerBase(ILogger logger, IStringLocalizer localizer) : base(logger, localizer)
+        public FactTreeControllerBase(ILogger logger) : base(logger)
         {
             _logger = logger;
         }
 
-        // Children-of is replicated in CrudTreeControllerBase, please keep them in sync
+        // IMPORTANT: Children-of is replicated in CrudTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetChildrenOfAsync(args, cancellation);
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Load the data
+                var service = GetFactTreeService();
+                var (data, extras) = await service.GetChildrenOf(args, cancellation);
+
+                var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
                 return Ok(result);
             }, _logger);
         }
 
-        /// <summary>
-        /// Returns a single entity as per the ID and specifications in the get request
-        /// </summary>
-        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args, CancellationToken cancellation)
+        protected override FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService()
         {
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
+            return GetFactTreeService();
+        }
 
+        protected abstract FactTreeServiceBase<TEntity, TKey> GetFactTreeService();
+    }
+
+    public abstract class FactTreeServiceBase<TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
+        where TEntity : EntityWithKey<TKey>
+    {
+        public FactTreeServiceBase(IStringLocalizer localizer) : base(localizer)
+        {
+        }
+
+        /// <summary>
+        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>
+        /// </summary>
+        public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
+        {
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
             var select = ParseSelect(args.Select);
@@ -55,12 +74,12 @@ namespace Tellma.Controllers
             var orderby = OrderByExpression.Parse("Node");
             var ids = args.I ?? new List<TKey>();
 
-            // Load data
-            var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby, cancellation);
+            // Load the data
+            var data = await GetEntitiesByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby, cancellation);
             var extras = await GetExtras(data, cancellation);
 
-            // Transform and return
-            return TransformToEntitiesResponse(data, extras, serverTime, cancellation);
+            // Transform and Return
+            return (data, extras);
         }
     }
 }

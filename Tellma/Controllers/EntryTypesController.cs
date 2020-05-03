@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -20,55 +21,58 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "entry-types";
 
-        private readonly ApplicationRepository _repo;
+        private readonly EntryTypesService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
 
-        private string View => BASE_ADDRESS;
-
-        public EntryTypesController(
-            ILogger<EntryTypesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public EntryTypesController(EntryTypesService service, ILogger<EntryTypesController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<EntryType>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+
+            }, _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<EntryType>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+
+            }, _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<EntryType>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
+        protected override CrudTreeServiceBase<EntryTypeForSave, EntryType, int> GetCrudTreeService()
         {
-            // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            return _service;
+        }
+    }
 
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.EntryTypes__Activate(ids, isActive);
+    public class EntryTypesService : CrudTreeServiceBase<EntryTypeForSave, EntryType, int>
+    {
+        private readonly ApplicationRepository _repo;
+        private readonly IStringLocalizer _localizer;
 
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+        private string View => EntryTypesController.BASE_ADDRESS;
 
-                trx.Complete();
-                return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+        public EntryTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -165,7 +169,7 @@ namespace Tellma.Controllers
                 await _repo.EntryTypes__Delete(ids);
             }
             catch (ForeignKeyViolationException)
-            {               
+            {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["EntryType"]]);
             }
         }
@@ -189,6 +193,39 @@ namespace Tellma.Controllers
             catch (ForeignKeyViolationException)
             {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["EntryType"]]);
+            }
+        }
+
+        public Task<(List<EntryType>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: true);
+        }
+
+        public Task<(List<EntryType>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        private async Task<(List<EntryType>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsActive", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.EntryTypes__Activate(ids, isActive);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
             }
         }
     }

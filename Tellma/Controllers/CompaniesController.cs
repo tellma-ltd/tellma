@@ -1,16 +1,15 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
 using Tellma.Data;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.Identity;
 using Tellma.Services.Sharding;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Tellma.Controllers
 {
@@ -20,25 +19,13 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class CompaniesController : ControllerBase
     {
-        // Private fields
+        private readonly CompaniesService _service;
+        private readonly ILogger<CompaniesController> _logger;
 
-        private readonly AdminRepository _repo;
-        private readonly ILogger _logger;
-        private readonly IShardResolver _shardResolver;
-        private readonly IExternalUserAccessor _externalUserAccessor;
-        private readonly IClientInfoAccessor _clientInfoAccessor;
-
-
-        // Constructor
-
-        public CompaniesController(AdminRepository db, ILogger<CompaniesController> logger,
-            IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
+        public CompaniesController(CompaniesService service, ILogger<CompaniesController> logger)
         {
-            _repo = db;
+            _service = service;
             _logger = logger;
-            _shardResolver = shardResolver;
-            _externalUserAccessor = externalUserAccessor;
-            _clientInfoAccessor = clientInfoAccessor;
         }
 
         [HttpGet("client")]
@@ -46,7 +33,7 @@ namespace Tellma.Controllers
         {
             try
             {
-                var result = await GetForClientImpl(cancellation);
+                var result = await _service.GetForClient(cancellation);
                 return Ok(result);
             }
             catch (TaskCanceledException)
@@ -63,8 +50,27 @@ namespace Tellma.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    }
 
-        private async Task<CompaniesForClient> GetForClientImpl(CancellationToken cancellation)
+    public class CompaniesService : ServiceBase
+    {
+        private readonly AdminRepository _repo;
+        private readonly ILogger _logger;
+        private readonly IShardResolver _shardResolver;
+        private readonly IExternalUserAccessor _externalUserAccessor;
+        private readonly IClientInfoAccessor _clientInfoAccessor;
+
+        public CompaniesService(AdminRepository db, ILogger<CompaniesController> logger,
+            IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
+        {
+            _repo = db;
+            _logger = logger;
+            _shardResolver = shardResolver;
+            _externalUserAccessor = externalUserAccessor;
+            _clientInfoAccessor = clientInfoAccessor;
+        }
+
+        public async Task<CompaniesForClient> GetForClient(CancellationToken cancellation)
         {
             var companies = new List<UserCompany>();
 
@@ -99,32 +105,6 @@ namespace Tellma.Controllers
                     _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, User email: {_externalUserAccessor.GetUserEmail()}, {ex.GetType().Name}: {ex.Message}");
                 }
             }
-
-            //companies.Add(new UserCompany
-            //{
-            //    Id = 101,
-            //    Name = "Jenna and Co.",
-            //});
-
-            //companies.Add(new UserCompany
-            //{
-            //    Id = 102,
-            //    Name = "Wang Ltd.",
-            //    Name2 = "旺有限公司"
-            //});
-
-            //companies.Add(new UserCompany
-            //{
-            //    Id = 103,
-            //    Name = "Nova Investments",
-            //});
-
-            //companies.Add(new UserCompany
-            //{
-            //    Id = 103,
-            //    Name = "Ibdaa Media",
-            //    Name2 = "الإبداع للإنتاج الفني"
-            //});
 
             // Confirm isAdmin by checking with the admin DB
             if (isAdmin)

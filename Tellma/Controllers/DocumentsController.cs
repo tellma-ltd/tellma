@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace Tellma.Controllers
 {
@@ -27,49 +29,13 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "documents/";
 
-        private string ManualJournalVouchers => "manual-journal-vouchers";
-        private string ManualLine => "ManualLine";
-        private string Lines => "Lines";
-        private string Entries => "Entries";
-
+        private readonly DocumentsService _service;
         private readonly ILogger<DocumentsController> _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IBlobService _blobService;
-        private readonly IDefinitionsCache _definitionsCache;
-        private readonly ISettingsCache _settingsCache;
-        private readonly IClientInfoAccessor _clientInfo;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
-        private readonly ITenantInfoAccessor _tenantInfoAccessor;
-        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
 
-        private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
-
-        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
-            throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
-        private DocumentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents?
-            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
-
-        private string View => $"{BASE_ADDRESS}{DefinitionId}";
-
-        public DocumentsController(ILogger<DocumentsController> logger, IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
-            IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor,
-            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext) : base(logger, localizer)
+        public DocumentsController(DocumentsService service, ILogger<DocumentsController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _blobService = blobService;
-            _definitionsCache = definitionsCache;
-            _settingsCache = settingsCache;
-            _clientInfo = clientInfo;
-            _modelMetadataProvider = modelMetadataProvider;
-            _tenantInfoAccessor = tenantInfoAccessor;
-            _hubContext = hubContext;
         }
 
         [HttpGet("{docId}/attachments/{attachmentId}")]
@@ -77,33 +43,9 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // This enforces read permissions
-                string attachments = nameof(Document.Attachments);
-                var doc = await GetByIdLoadData(docId, new GetByIdArguments
-                {
-                    Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
-                }, cancellation);
-
-                // Get the blob name
-                var attachment = doc.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
-                if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
-                {
-                    // Get the bytes
-                    string blobName = BlobName(attachment.FileId);
-                    var fileBytes = await _blobService.LoadBlob(blobName, cancellation);
-
-                    // Get the content type
-                    var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
-                    var contentType = ContentType(fileName);
-
-                    // Return the file
-                    return File(fileBytes, contentType);
-                }
-                else
-                {
-                    return NotFound($"Attachment with Id {attachmentId} was not found in document with Id {docId}");
-                }
-
+                var (fileBytes, fileName) = await _service.GetAttachment(docId, attachmentId, cancellation);
+                var contentType = ContentType(fileName);
+                return File(fileContents: fileBytes, contentType: contentType, fileName);
             }, _logger);
         }
 
@@ -123,48 +65,16 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // User permissions
-                // TODO: Check the user can read the document
-                await CheckActionPermissions("Read", ids);
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Assign(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                // C# Validation 
-                // Goes here
-
-                // Execute and return
-                using var trx = ControllerUtilities.CreateTransaction();
-
-                // Validate
-                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-                var errors = await _repo.Documents_Validate__Assign(
-                    ids,
-                    args.AssigneeId,
-                    args.Comment,
-                    top: remainingErrorCount
-                    );
-
-                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
-                if (!ModelState.IsValid)
-                {
-                    throw new UnprocessableEntityException(ModelState);
-                }
-
-                // Actual Assignment
-                var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
-
-                // Notify relevant parties
-                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
-
-                // Return result
                 if (args.ReturnEntities ?? false)
                 {
-                    var response = await LoadDataByIdsAndTransform(ids, args);
-
-                    trx.Complete();
                     return Ok(response);
                 }
                 else
                 {
-                    trx.Complete();
                     return Ok();
                 }
             }
@@ -176,53 +86,16 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var returnEntities = args.ReturnEntities ?? false;
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.SignLines(lineIds, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                // C# Validation 
-                // Goes here
-
-                // Execute and return
-                using var trx = ControllerUtilities.CreateTransaction();
-
-                // Validate
-                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-                var errors = await _repo.Lines_Validate__Sign(
-                    lineIds,
-                    args.OnBehalfOfUserId,
-                    args.RuleType,
-                    args.RoleId,
-                    args.ToState,
-                    top: remainingErrorCount
-                    );
-
-                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
-                if (!ModelState.IsValid)
+                if (args.ReturnEntities ?? false)
                 {
-                    throw new UnprocessableEntityException(ModelState);
-                }
-
-                // Sign
-                var documentIds = await _repo.Lines__SignAndRefresh(
-                    lineIds,
-                    args.ToState,
-                    args.ReasonId,
-                    args.ReasonDetails,
-                    args.OnBehalfOfUserId,
-                    args.RuleType,
-                    args.RoleId,
-                    args.SignedAt ?? DateTimeOffset.Now,
-                    returnIds: returnEntities);
-
-                if (returnEntities)
-                {
-                    var response = await LoadDataByIdsAndTransform(documentIds.ToList(), args);
-
-                    trx.Complete();
                     return Ok(response);
                 }
                 else
                 {
-                    trx.Complete();
                     return Ok();
                 }
             }
@@ -234,36 +107,16 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var returnEntities = args.ReturnEntities ?? false;
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.UnsignLines(signatureIds, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
-                // C# Validation 
-                // Goes here
-
-                // Execute and return
-                using var trx = ControllerUtilities.CreateTransaction();
-
-                // Validate
-                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-                var errors = await _repo.LineSignatures_Validate__Delete(signatureIds, top: remainingErrorCount);
-                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
-
-                if (!ModelState.IsValid)
+                if (args.ReturnEntities ?? false)
                 {
-                    throw new UnprocessableEntityException(ModelState);
-                }
-
-                // Unsign
-                var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnEntities);
-                if (returnEntities)
-                {
-                    var response = await LoadDataByIdsAndTransform(documentIds.ToList(), args);
-
-                    trx.Complete();
                     return Ok(response);
                 }
                 else
                 {
-                    trx.Complete();
                     return Ok();
                 }
             }
@@ -273,88 +126,419 @@ namespace Tellma.Controllers
         [HttpPut("post")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Post([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Post));
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Post(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+                if (args.ReturnEntities ?? false)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }, _logger);
         }
 
         [HttpPut("unpost")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Unpost([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Unpost));
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Unpost(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+                if (args.ReturnEntities ?? false)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }, _logger);
         }
 
         [HttpPut("cancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Cancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Cancel));
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Cancel(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+                if (args.ReturnEntities ?? false)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }, _logger);
         }
 
         [HttpPut("uncancel")]
         public async Task<ActionResult<EntitiesResponse<Document>>> Uncancel([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Uncancel));
-        }
-
-        private async Task<ActionResult<EntitiesResponse<Document>>> UpdateDocumentState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
-        {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Check user permissions
-                await CheckActionPermissions("State", ids);
-
-                // C# Validation 
-                // TODO
-
-                // Transaction
-                using var trx = ControllerUtilities.CreateTransaction();
-
-                // Validate
-                int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-                var errors = transition switch
-                {
-                    nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId, ids, top: remainingErrorCount),
-                    nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId, ids, top: remainingErrorCount),
-                    nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId, ids, top: remainingErrorCount),
-                    nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId, ids, top: remainingErrorCount),
-                    _ => throw new BadRequestException($"Unknown transition {transition}"),
-                };
-
-                ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
-                if (!ModelState.IsValid)
-                {
-                    throw new UnprocessableEntityException(ModelState);
-                }
-
-                var notificationInfos = transition switch
-                {
-                    nameof(Post) => await _repo.Documents__Post(ids),
-                    nameof(Unpost) => await _repo.Documents__Unpost(ids),
-                    nameof(Cancel) => await _repo.Documents__Cancel(ids),
-                    nameof(Uncancel) => await _repo.Documents__Uncancel(ids),
-                    _ => throw new BadRequestException($"Unknown transition {transition}"),
-                };
-
-                await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Uncancel(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
                 {
-                    var response = await LoadDataByIdsAndTransform(ids, args);
-
-                    trx.Complete();
                     return Ok(response);
                 }
                 else
                 {
-                    trx.Complete();
                     return Ok();
                 }
-            }
-            , _logger);
+            }, _logger);
         }
 
-        protected override async Task<GetByIdResponse<Document>> GetByIdImpl(int id, [FromQuery] GetByIdArguments args, CancellationToken cancellation)
+        protected override CrudServiceBase<DocumentForSave, Document, int> GetCrudService()
         {
-            var response = await base.GetByIdImpl(id, args, cancellation);
-            var entity = response.Result;
+            return _service;
+        }
+
+        protected override Extras TransformExtras(Extras extras, CancellationToken cancellation)
+        {
+            if (extras != null && extras.TryGetValue("RequiredSignatures", out object requiredSignaturesObj)) {
+                var requiredSignatures = requiredSignaturesObj as List<RequiredSignature>;
+
+                var relatedEntities = FlattenAndTrim(requiredSignatures, cancellation);
+                requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
+
+                extras["RequiredSignaturesRelatedEntities"] = relatedEntities;
+            }
+
+            return extras;
+        }
+    }
+
+    public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
+    {
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IBlobService _blobService;
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IClientInfoAccessor _clientInfo;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
+        private readonly ITenantInfoAccessor _tenantInfoAccessor;
+        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        private string ManualJournalVouchers => "manual-journal-vouchers";
+        private string ManualLine => "ManualLine";
+        private string Lines => "Lines";
+        private string Entries => "Entries";
+
+        public DocumentsService(IStringLocalizer<Strings> localizer,
+            ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
+            IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
+            IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor,
+            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
+            _tenantIdAccessor = tenantIdAccessor;
+            _tenantIdAccessor = tenantIdAccessor;
+            _blobService = blobService;
+            _definitionsCache = definitionsCache;
+            _settingsCache = settingsCache;
+            _clientInfo = clientInfo;
+            _modelMetadataProvider = modelMetadataProvider;
+            _tenantInfoAccessor = tenantInfoAccessor;
+            _hubContext = hubContext;
+            _contextAccessor = contextAccessor;
+        }
+
+
+        #region Context Params
+
+        private bool? _includeRequiredSignaturesOverride;
+        private string _definitionIdOverride;
+        private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
+
+        private string DefinitionId => _definitionIdOverride ??
+            _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
+            throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(DocumentsService)}");
+        private bool IncludeRequiredSignatures =>
+            _includeRequiredSignaturesOverride ?? GetQueryParameter("includeRequiredSignatures")?.ToLower() == "true";
+
+        private string GetQueryParameter(string name)
+        {
+            var query = _contextAccessor.HttpContext?.Request?.Query;
+            if (query != null && query.TryGetValue(name, out StringValues value))
+            {
+                return value.FirstOrDefault();
+            }
+
+            return null;
+        }
+
+        private string View => $"{DocumentsController.BASE_ADDRESS}{DefinitionId}";
+
+        private DocumentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents?
+            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+
+        #endregion
+
+        #region State & Workflow
+
+        public async Task<(List<Document>, Extras)> Assign(List<int> ids, [FromQuery] AssignArguments args)
+        {
+            // User permissions
+            // TODO: Check the user can read the document
+            await CheckActionPermissions("Read", ids);
+
+            // C# Validation 
+            // Goes here
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Validate
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var errors = await _repo.Documents_Validate__Assign(
+                ids,
+                args.AssigneeId,
+                args.Comment,
+                top: remainingErrorCount
+                );
+
+            ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Actual Assignment
+            var notificationInfos = await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment, recordInHistory: true);
+
+            // Notify relevant parties
+            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+            // Return result
+            if (args.ReturnEntities ?? false)
+            {
+                var response = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return response;
+            }
+            else
+            {
+                trx.Complete();
+                return default;
+            }
+
+        }
+
+        public async Task<(List<Document>, Extras)> SignLines(List<int> lineIds, SignArguments args)
+        {
+            var returnEntities = args.ReturnEntities ?? false;
+
+            // C# Validation 
+            // Goes here
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Validate
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var errors = await _repo.Lines_Validate__Sign(
+                lineIds,
+                args.OnBehalfOfUserId,
+                args.RuleType,
+                args.RoleId,
+                args.ToState,
+                top: remainingErrorCount
+                );
+
+            ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Sign
+            var documentIds = await _repo.Lines__SignAndRefresh(
+                lineIds,
+                args.ToState,
+                args.ReasonId,
+                args.ReasonDetails,
+                args.OnBehalfOfUserId,
+                args.RuleType,
+                args.RoleId,
+                args.SignedAt ?? DateTimeOffset.Now,
+                returnIds: returnEntities);
+
+            if (returnEntities)
+            {
+                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+
+                trx.Complete();
+                return response;
+            }
+            else
+            {
+                trx.Complete();
+                return default;
+            }
+        }
+
+        public async Task<(List<Document>, Extras)> UnsignLines(List<int> signatureIds, ActionArguments args)
+        {
+            var returnEntities = args.ReturnEntities ?? false;
+
+            // C# Validation 
+            // Goes here
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Validate
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var errors = await _repo.LineSignatures_Validate__Delete(signatureIds, top: remainingErrorCount);
+            ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Unsign
+            var documentIds = await _repo.LineSignatures__DeleteAndRefresh(signatureIds, returnIds: returnEntities);
+            if (returnEntities)
+            {
+                var response = await GetByIds(documentIds.ToList(), args, cancellation: default);
+
+                trx.Complete();
+                return response;
+            }
+            else
+            {
+                trx.Complete();
+                return default;
+            }
+        }
+
+        public async Task<(List<Document>, Extras)> Post(List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdateDocumentState(ids, args, nameof(Post));
+        }
+
+        public async Task<(List<Document>, Extras)> Unpost(List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdateDocumentState(ids, args, nameof(Unpost));
+        }
+
+        public async Task<(List<Document>, Extras)> Cancel(List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdateDocumentState(ids, args, nameof(Cancel));
+        }
+
+        public async Task<(List<Document>, Extras)> Uncancel(List<int> ids, [FromQuery] ActionArguments args)
+        {
+            return await UpdateDocumentState(ids, args, nameof(Uncancel));
+        }
+
+        private async Task<(List<Document>, Extras)> UpdateDocumentState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
+        {
+            // Check user permissions
+            await CheckActionPermissions("State", ids);
+
+            // C# Validation 
+            // TODO
+
+            // Transaction
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Validate
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var errors = transition switch
+            {
+                nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId, ids, top: remainingErrorCount),
+                nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId, ids, top: remainingErrorCount),
+                nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId, ids, top: remainingErrorCount),
+                nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId, ids, top: remainingErrorCount),
+                _ => throw new BadRequestException($"Unknown transition {transition}"),
+            };
+
+            ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            var notificationInfos = transition switch
+            {
+                nameof(Post) => await _repo.Documents__Post(ids),
+                nameof(Unpost) => await _repo.Documents__Unpost(ids),
+                nameof(Cancel) => await _repo.Documents__Cancel(ids),
+                nameof(Uncancel) => await _repo.Documents__Uncancel(ids),
+                _ => throw new BadRequestException($"Unknown transition {transition}"),
+            };
+
+            await _hubContext.NotifyInboxAsync(TenantId, notificationInfos);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var response = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return response;
+            }
+            else
+            {
+                trx.Complete();
+                return default;
+            }
+        }
+
+        #endregion
+
+        public async Task<(byte[] FileBytes, string FileName)> GetAttachment(int docId, int attachmentId, CancellationToken cancellation)
+        {
+            // This enforces read permissions
+            string attachments = nameof(Document.Attachments);
+            var (doc, _) = await GetById(docId, new GetByIdArguments
+            {
+                Select = $"{attachments}/{nameof(Attachment.FileId)},{attachments}/{nameof(Attachment.FileName)},{attachments}/{nameof(Attachment.FileExtension)}"
+            }, 
+            cancellation);
+
+            // Get the blob name
+            var attachment = doc?.Attachments?.FirstOrDefault(att => att.Id == attachmentId);
+            if (attachment != null && !string.IsNullOrWhiteSpace(attachment.FileId))
+            {
+                // Get the bytes
+                string blobName = BlobName(attachment.FileId);
+                var fileBytes = await _blobService.LoadBlob(blobName, cancellation);
+
+                // Get the content type
+                var fileName = $"{attachment.FileName ?? "Attachment"}.{attachment.FileExtension}";
+                return (fileBytes, fileName);
+            }
+            else
+            {
+                throw new NotFoundException<int>(attachmentId);
+            }
+        }
+
+        public override async Task<(Document, Extras)> GetById(int id, GetByIdArguments args, CancellationToken cancellation)
+        {
+            var (entity, extras) = await base.GetById(id, args, cancellation);
             if (entity.OpenedAt == null)
             {
                 var userInfo = await _repo.GetUserInfoAsync(cancellation);
@@ -374,7 +558,7 @@ namespace Tellma.Controllers
                 }
             }
 
-            return response;
+            return (entity, extras);
         }
 
         protected override IRepository GetRepository()
@@ -388,7 +572,7 @@ namespace Tellma.Controllers
             var permissions = (await _repo.UserPermissions(action, View, cancellation)).ToList();
 
             // Add a special permission that lets you see the documents that were assigned to you
-            permissions.AddRange(DocumentControllerUtil.HardCodedPermissions());
+            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions());
 
             return permissions;
         }
@@ -415,13 +599,12 @@ namespace Tellma.Controllers
             {
                 (prefix, DefinitionId)
             };
-            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, map);
+            return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, map);
         }
 
-        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
+        protected override async Task<Extras> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
         {
-            var includeRequiredSignature = Request.Query["includeRequiredSignatures"].FirstOrDefault()?.ToString()?.ToLower() == "true";
-            if (includeRequiredSignature)
+            if (IncludeRequiredSignatures)
             {
                 // DocumentIds parameter
                 var docIds = result.Select(doc => new { doc.Id });
@@ -443,13 +626,10 @@ namespace Tellma.Controllers
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(cancellation);
-                var relatedEntities = FlattenAndTrim(requiredSignatures, cancellation);
-                requiredSignatures.ForEach(rs => rs.EntityMetadata = null); // Smaller response size
 
-                return new Dictionary<string, object>
+                return new Extras
                 {
-                    ["RequiredSignatures"] = requiredSignatures,
-                    ["RequiredSignaturesRelatedEntities"] = relatedEntities
+                    ["RequiredSignatures"] = requiredSignatures
                 };
             }
             else
@@ -1201,6 +1381,18 @@ namespace Tellma.Controllers
             return $"{TenantId}/Attachments/{guid}";
         }
 
+        public DocumentsService SetIncludeRequiredSignatures(bool val)
+        {
+            _includeRequiredSignaturesOverride = val;
+            return this;
+        }
+
+        public DocumentsService SetDefinitionId(string definitionId)
+        {
+            _definitionIdOverride = definitionId;
+            return this;
+        }
+
         #region Details Select
 
         protected override SelectExpression ParseSelect(string select)
@@ -1225,8 +1417,7 @@ namespace Tellma.Controllers
         }
 
         private static readonly string _detailsSelect = string.Join(',', DocumentPaths());
-        private static readonly SelectExpression _detailsSelectExpression = 
-            new SelectExpression(DocumentPaths().Select(a => SelectAtom.Parse(a)));
+        private static readonly SelectExpression _detailsSelectExpression = new SelectExpression(DocumentPaths().Select(a => SelectAtom.Parse(a)));
 
         // ------------------------------------------------
         // Paths to return on the level of each entity type
@@ -1379,14 +1570,28 @@ namespace Tellma.Controllers
     [ApplicationController]
     public class DocumentsGenericController : FactWithIdControllerBase<Document, int>
     {
+        private readonly DocumentsGenericService _service;
+
+        public DocumentsGenericController(DocumentsGenericService service, ILogger<DocumentsGenericController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<Document, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class DocumentsGenericService : FactWithIdServiceBase<Document, int>
+    {
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
 
-        public DocumentsGenericController(
-            ILogger<DocumentsGenericController> logger,
+        public DocumentsGenericService(
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            IDefinitionsCache definitionsCache) : base(logger, localizer)
+            IDefinitionsCache definitionsCache) : base(localizer)
         {
             _repo = repo;
             _definitionsCache = definitionsCache;
@@ -1420,7 +1625,7 @@ namespace Tellma.Controllers
             }
 
             // Add a special permission that lets you see the documents that were assigned to you
-            permissions.AddRange(DocumentControllerUtil.HardCodedPermissions());
+            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions());
 
             // Return the massaged permissions
             return permissions;
@@ -1434,7 +1639,7 @@ namespace Tellma.Controllers
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
                 new List<(string, string)>(); // Avoiding null reference exception at all cost
 
-            return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
+            return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -1443,7 +1648,7 @@ namespace Tellma.Controllers
         }
     }
 
-    internal class DocumentControllerUtil
+    internal class DocumentServiceUtil
     {
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here

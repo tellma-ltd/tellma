@@ -23,18 +23,41 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "report-definitions";
 
-        private readonly ILogger _logger;
+        private readonly ReportDefinitionsService _service;
+
+        public ReportDefinitionsController(ReportDefinitionsService service, ILogger<ReportDefinitionsController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override CrudServiceBase<ReportDefinitionForSave, ReportDefinition, string> GetCrudService()
+        {
+            return _service;
+        }
+
+        protected override Task OnSuccessfulSave(List<ReportDefinition> data, Extras extras)
+        {
+            Response.Headers.Set("x-definitions-version", Constants.Stale);
+            return base.OnSuccessfulSave(data, extras);
+        }
+
+        protected override Task OnSuccessfulDelete(List<string> ids)
+        {
+            Response.Headers.Set("x-definitions-version", Constants.Stale);
+            return base.OnSuccessfulDelete(ids);
+        }
+    }
+
+    public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, string>
+    {
+
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string View => BASE_ADDRESS;
+        private string View => ReportDefinitionsController.BASE_ADDRESS;
 
-        public ReportDefinitionsController(
-            ILogger<ReportDefinitionsController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public ReportDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
         {
-            _logger = logger;
             _localizer = localizer;
             _repo = repo;
         }
@@ -183,7 +206,6 @@ namespace Tellma.Controllers
         protected override async Task<List<string>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
         {
             await _repo.ReportDefinitions__Save(entities);
-            Response.Headers.Set("x-definitions-version", Constants.Stale);
             return entities.Select(e => e.Id).ToList();
         }
 
@@ -202,7 +224,6 @@ namespace Tellma.Controllers
             try
             {
                 await _repo.ReportDefinitions__Delete(ids);
-                Response.Headers.Set("x-definitions-version", Constants.Stale);
             }
             catch (ForeignKeyViolationException)
             {

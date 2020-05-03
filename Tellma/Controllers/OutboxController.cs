@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using Tellma.Controllers.Dto;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
-using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Controllers
 {
@@ -18,12 +16,25 @@ namespace Tellma.Controllers
     public class OutboxController : FactWithIdControllerBase<OutboxRecord, int>
     {
         public const string BASE_ADDRESS = "outbox";
+
+        private readonly OutboxService _service;
+
+        public OutboxController(OutboxService service, ILogger<OutboxController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<OutboxRecord, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class OutboxService : FactWithIdServiceBase<OutboxRecord, int>
+    {
         private readonly ApplicationRepository _repo;
 
-        public OutboxController(
-            ApplicationRepository repo,
-            ILogger<OutboxController> logger,
-            IStringLocalizer<Strings> localizer) : base(logger, localizer)
+        public OutboxService(ApplicationRepository repo, IStringLocalizer<Strings> localizer) : base(localizer)
         {
             _repo = repo;
         }
@@ -46,9 +57,9 @@ namespace Tellma.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var assigneeProp = nameof(OutboxRecord.Assignee);
-                var nameProp = $"{assigneeProp}/{nameof(Entities.User.Name)}";
-                var name2Prop = $"{assigneeProp}/{nameof(Entities.User.Name2)}";
-                var name3Prop = $"{assigneeProp}/{nameof(Entities.User.Name3)}";
+                var nameProp = $"{assigneeProp}/{nameof(User.Name)}";
+                var name2Prop = $"{assigneeProp}/{nameof(User.Name2)}";
+                var name3Prop = $"{assigneeProp}/{nameof(User.Name3)}";
 
                 var commentProp = nameof(OutboxRecord.Comment);
                 var memoProp = $"{nameof(OutboxRecord.Document)}/{nameof(Document.Memo)}";

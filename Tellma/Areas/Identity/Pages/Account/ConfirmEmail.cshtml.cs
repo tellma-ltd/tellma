@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Tellma.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

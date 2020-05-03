@@ -13,6 +13,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
 
 namespace Tellma.Controllers
 {
@@ -22,20 +23,48 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "summary-entries";
 
-        private readonly ILogger _logger;
+        private readonly SummaryEntriesService _service;
+
+        public SummaryEntriesController(SummaryEntriesService service,
+            ILogger<SummaryEntriesController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactServiceBase<SummaryEntry> GetFactService()
+        {
+            return _service;
+        }
+    }
+
+    public class SummaryEntriesService : FactServiceBase<SummaryEntry>
+    {
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
-        private string View => BASE_ADDRESS;
+        private string View => SummaryEntriesController.BASE_ADDRESS;
 
-        public SummaryEntriesController(
-            ILogger<SummaryEntriesController> logger,
+        private Dictionary<string, object> _parameterOverride = new Dictionary<string, object>();
+
+        public void SetParameter(string key, object value)
+        {
+            _parameterOverride.Add(key, value);
+        }
+
+        public bool ClearParameter(string key)
+        {
+            return _parameterOverride.Remove(key);
+        }
+
+        public SummaryEntriesService(
+            IHttpContextAccessor contextAccessor,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            ISettingsCache settingsCache) : base(logger, localizer)
+            ISettingsCache settingsCache) : base(localizer)
         {
-            _logger = logger;
+            _contextAccessor = contextAccessor;
             _localizer = localizer;
             _repo = repo;
             _settingsCache = settingsCache;
@@ -57,9 +86,23 @@ namespace Tellma.Controllers
         private DateTime? GetDate(string key, bool isRequired)
         {
             DateTime? date = null;
-            if (Request.Query.ContainsKey(key))
+            IQueryCollection query = _contextAccessor.HttpContext?.Request?.Query;            
+
+            if (_parameterOverride.TryGetValue(key, out object dateObj))
             {
-                string dateString = Request.Query[key].FirstOrDefault();
+                if (dateObj is DateTime)
+                {
+                    date = (DateTime) dateObj;
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new BadRequestException($"Bug: The parameter {key} must be a {nameof(DateTime)} object");
+                }
+            }
+            else if (query != null && query.ContainsKey(key))
+            {
+                string dateString = query[key].FirstOrDefault();
                 try
                 {
                     date = DateTime.Parse(dateString);

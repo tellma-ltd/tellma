@@ -7,6 +7,6 @@ namespace Tellma.Controllers.Dto
     {
         public TEntity Result { get; set; }
 
-        public Dictionary<string, IEnumerable<Entity>> Entities { get; set; }
+        public Dictionary<string, IEnumerable<Entity>> RelatedEntities { get; set; }
     }
 }

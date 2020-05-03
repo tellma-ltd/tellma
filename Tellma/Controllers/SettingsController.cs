@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Entities;
 using Tellma.Services.ApiAuthentication;
@@ -22,114 +23,113 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class SettingsController : ControllerBase
     {
-        // Private fields
-
-        private readonly ApplicationRepository _repo;
+        private readonly SettingsService _service;
         private readonly ILogger<SettingsController> _logger;
-        private readonly IStringLocalizer _localizer;
         private readonly ISettingsCache _settingsCache;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
 
-        public SettingsController(ApplicationRepository repo,
+        public SettingsController(SettingsService service,
             ILogger<SettingsController> logger,
-            IStringLocalizer<Strings> localizer,
-            ISettingsCache settingsCache,
-            ITenantIdAccessor tenantIdAccessor)
+            ISettingsCache settingsCache)
         {
-            _repo = repo;
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
             _settingsCache = settingsCache;
-            _tenantIdAccessor = tenantIdAccessor;
         }
 
-
-        // API
-
         [HttpGet]
-        public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args, CancellationToken cancellation)
+        public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] SelectExpandArguments args, CancellationToken cancellation)
         {
-            // Authorized access (Criteria are not supported here)
-            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings", cancellation);
-            if (!readPermissions.Any())
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                return StatusCode(403);
-            }
+                var settings = await _service.Get(args, cancellation);
 
-            try
-            {
-                return await GetImpl(args, cancellation);
-            }
-            catch (TaskCanceledException)
-            {
-                return Ok();
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+                var singleton = new Settings[] { settings };
+                var relatedEntities = ControllerUtilities.FlattenAndTrim(singleton, cancellation: default);
+
+                var result = new GetEntityResponse<Settings>
+                {
+                    Result = settings,
+                    RelatedEntities = relatedEntities
+                };
+
+                return Ok(result);
+            },
+            _logger);
         }
 
         [HttpPost]
         public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
-            // Authorized access (Criteria are not supported here)
-            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
-            if (!updatePermissions.Any())
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                return StatusCode(403);
-            }
+                var (settings, settingsForClient) = await _service.Save(settingsForSave, args);
 
-            try
-            {
-                // Trim all string fields just in case
-                settingsForSave.TrimStringProperties();
+                var singleton = new Settings[] { settings };
+                var relatedEntities = ControllerUtilities.FlattenAndTrim(singleton, cancellation: default);
 
-                // Validate
-                ValidateAndPreprocessSettings(settingsForSave);
-
-                if (!ModelState.IsValid)
+                var result = new SaveSettingsResponse
                 {
-                    return UnprocessableEntity(ModelState);
-                }
+                    Result = settings,
+                    RelatedEntities = relatedEntities,
+                    SettingsForClient = settingsForClient
+                };
 
-                // Persist
-                await _repo.Settings__Save(settingsForSave);
+                return Ok(result);
+            },
+            _logger);
 
-                // Update the settings cache
-                var tenantId = _tenantIdAccessor.GetTenantId();
-                var settingsForClient = await LoadSettingsForClient(_repo, cancellation: default);
-                _settingsCache.SetSettings(tenantId, settingsForClient);
+            //// Authorized access (Criteria are not supported here)
+            //var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
+            //if (!updatePermissions.Any())
+            //{
+            //    return StatusCode(403);
+            //}
 
-                // If requested, return the updated entity
-                if (args.ReturnEntities ?? false)
-                {
-                    // If requested, return the same response you would get from a GET
-                    var res = await GetImpl(new GetByIdArguments { Expand = args.Expand }, cancellation: default);
-                    var result = new SaveSettingsResponse
-                    {
-                        Entities = res.Entities,
-                        Result = res.Result,
-                        SettingsForClient = settingsForClient
-                    };
+            //try
+            //{
+            //    // Trim all string fields just in case
+            //    settingsForSave.TrimStringProperties();
 
-                    return result;
-                }
-                else
-                {
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            //    // Validate
+            //    ValidateAndPreprocessSettings(settingsForSave);
+
+            //    if (!ModelState.IsValid)
+            //    {
+            //        return UnprocessableEntity(ModelState);
+            //    }
+
+            //    // Persist
+            //    await _repo.Settings__Save(settingsForSave);
+
+            //    // Update the settings cache
+            //    var tenantId = _tenantIdAccessor.GetTenantId();
+            //    var settingsForClient = await LoadSettingsForClient(_repo, cancellation: default);
+            //    _settingsCache.SetSettings(tenantId, settingsForClient);
+
+            //    // If requested, return the updated entity
+            //    if (args.ReturnEntities ?? false)
+            //    {
+            //        // If requested, return the same response you would get from a GET
+            //        var res = await GetImpl(new GetByIdArguments { Expand = args.Expand }, cancellation: default);
+            //        var result = new SaveSettingsResponse
+            //        {
+            //            Entities = res.Entities,
+            //            Result = res.Result,
+            //            SettingsForClient = settingsForClient
+            //        };
+
+            //        return result;
+            //    }
+            //    else
+            //    {
+            //        return Ok();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+            //    return BadRequest(ex.Message);
+            //}
         }
 
         [HttpGet("client")]
@@ -137,7 +137,7 @@ namespace Tellma.Controllers
         {
             try
             {
-                // Simply retrieves the cached settings, which were refreshed by ApplicationApiAttribute
+                // Simply retrieves the cached settings, which were refreshed by ApplicationControllerAttribute
                 var result = _settingsCache.GetCurrentSettingsIfCached();
                 if (result == null)
                 {
@@ -169,12 +169,35 @@ namespace Tellma.Controllers
 
             return Ok();
         }
+    }
 
+    public class SettingsService : ServiceBase
+    {
+        private readonly ApplicationRepository _repo;
+        private readonly IStringLocalizer _localizer;
+        private readonly ISettingsCache _settingsCache;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
 
-        // Helper methods
-
-        private async Task<GetEntityResponse<Settings>> GetImpl(GetByIdArguments args, CancellationToken cancellation)
+        public SettingsService(ApplicationRepository repo,
+            IStringLocalizer<Strings> localizer,
+            ISettingsCache settingsCache,
+            ITenantIdAccessor tenantIdAccessor)
         {
+            _repo = repo;
+            _localizer = localizer;
+            _settingsCache = settingsCache;
+            _tenantIdAccessor = tenantIdAccessor;
+        }
+
+        public async Task<Settings> Get(SelectExpandArguments args, CancellationToken cancellation)
+        {
+            // Authorized access (Criteria are not supported here)
+            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings", cancellation);
+            if (!readPermissions.Any())
+            {
+                throw new ForbiddenException();
+            }
+
             var settings = await _repo.Settings
                 .Select(args.Select)
                 .Expand(args.Expand)
@@ -184,15 +207,50 @@ namespace Tellma.Controllers
             if (settings == null)
             {
                 // Programmer mistake
-                throw new BadRequestException("Settings have not been initialized");
+                throw new InvalidOperationException("Bug: Settings have not been initialized");
             }
 
-            var result = new GetEntityResponse<Settings>
-            {
-                Result = settings,
-            };
+            return settings;
+        }
 
-            return result;
+        public async Task<(Settings, DataWithVersion<SettingsForClient>)> Save(SettingsForSave settingsForSave, SaveArguments args)
+        {
+            // Authorized access (Criteria are not supported here)
+            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
+            if (!updatePermissions.Any())
+            {
+                throw new ForbiddenException();
+            }
+            // Trim all string fields just in case
+            settingsForSave.TrimStringProperties();
+
+            // Validate
+            ValidateAndPreprocessSettings(settingsForSave);
+
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Persist
+            await _repo.Settings__Save(settingsForSave);
+
+            // Update the settings cache
+            var tenantId = _tenantIdAccessor.GetTenantId();
+            var settingsForClient = await LoadSettingsForClient(_repo, cancellation: default);
+            _settingsCache.SetSettings(tenantId, settingsForClient);
+
+            // If requested, return the updated entity
+            if (args.ReturnEntities ?? false)
+            {
+                // If requested, return the same response you would get from a GET
+                var res = await Get(args, cancellation: default);
+                return (res, settingsForClient);
+            }
+            else
+            {
+                return default;
+            }
         }
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)

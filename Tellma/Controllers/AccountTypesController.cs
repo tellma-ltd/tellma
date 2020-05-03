@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -20,55 +21,56 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "account-types";
 
+        private readonly AccountTypesService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<Strings> _localizer;
-        private readonly ApplicationRepository _repo;
 
-        private string View => BASE_ADDRESS;
-
-        public AccountTypesController(
-            ILogger<AccountTypesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public AccountTypesController(AccountTypesService service, ILogger<AccountTypesController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<AccountType>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => Activate(ids: ids, args, isActive: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () => 
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<AccountType>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => Activate(ids: ids, args, isActive: false), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<AccountType>>> Activate(List<int> ids, ActionArguments args, bool isActive)
+        protected override CrudTreeServiceBase<AccountTypeForSave, AccountType, int> GetCrudTreeService()
         {
-            // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            return _service;
+        }
+    }
 
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.AccountTypes__Activate(ids, isActive);
+    public class AccountTypesService : CrudTreeServiceBase<AccountTypeForSave, AccountType, int>
+    {
+        private readonly IStringLocalizer<Strings> _localizer;
+        private readonly ApplicationRepository _repo;
 
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+        private string View => AccountTypesController.BASE_ADDRESS;
 
-                trx.Complete();
-                return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+        public AccountTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -103,7 +105,7 @@ namespace Tellma.Controllers
         {
             throw new System.NotImplementedException();
         }
-        
+
         protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)
         {
             // Set defaults
@@ -136,7 +138,7 @@ namespace Tellma.Controllers
 
             return Task.FromResult(entities);
         }
-        
+
         protected override async Task SaveValidateAsync(List<AccountTypeForSave> entities)
         {
             // Check that codes are not duplicated within the arriving collection
@@ -207,7 +209,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountType"]]);
             }
         }
-       
+
         protected override async Task ValidateDeleteWithDescendantsAsync(List<int> ids)
         {
             // SQL validation
@@ -227,6 +229,39 @@ namespace Tellma.Controllers
             catch (ForeignKeyViolationException)
             {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountType"]]);
+            }
+        }
+
+        public Task<(List<AccountType>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: true);
+        }
+
+        public Task<(List<AccountType>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        private async Task<(List<AccountType>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsActive", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.AccountTypes__Activate(ids, isActive);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
             }
         }
     }

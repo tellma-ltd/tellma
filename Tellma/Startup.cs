@@ -148,10 +148,7 @@ namespace Tellma
                     // 400 bad request, this makes it easier for clients to distinguish 
                     // such kinds of errors and handle them in a special way, for example:
                     // by showing them on the fields with a red color
-                    opt.InvalidModelStateResponseFactory = ctx =>
-                        {
-                            return new UnprocessableEntityObjectResult(ctx.ModelState);
-                        };
+                    opt.InvalidModelStateResponseFactory = ctx => new UnprocessableEntityObjectResult(ctx.ModelState);
                 });
 
                 // Embedded Client Application
@@ -175,6 +172,12 @@ namespace Tellma
 
                 // Adds and configures SignalR
                 services.AddSignalRImplementation(_env);
+
+                // Add service for generating markup from templates
+                services.AddMarkupTemplates();
+
+                // Add the business logic services (DocumentsService, AgentsService, etc...)
+                services.AddBusinessServices();
             }
             catch (Exception ex)
             {

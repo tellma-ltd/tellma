@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,26 +22,13 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "identity-server-users";
 
-        private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly AdminRepository _adminRepo;
-        private readonly IdentityRepository _idRepo;
-        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly IdentityServerUsersService _service;
+        private readonly ILogger<IdentityServerUsersController> _logger;
 
-        private string View => BASE_ADDRESS;
-
-        public IdentityServerUsersController(
-            ILogger<IdentityServerUsersController> logger,
-            IStringLocalizer<Strings> localizer,
-            AdminRepository adminRepo,
-            IdentityRepository idRepo,
-            UserManager<EmbeddedIdentityServerUser> userManager) : base(logger, localizer)
+        public IdentityServerUsersController(IdentityServerUsersService service, ILogger<IdentityServerUsersController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _adminRepo = adminRepo;
-            _idRepo = idRepo;
-            _userManager = userManager;
         }
 
         [HttpPut("reset-password")]
@@ -49,45 +36,86 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // Check permissions
-                var idSingleton = new List<string> { args.UserId }; // A single Id
-                await CheckActionPermissions("ResetPassword", idSingleton);
-
-                // Some basic validation
-                if (string.IsNullOrWhiteSpace(args.Password))
-                {
-                    throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Password"]]);
-                }
-
-                // Some basic validation
-                if (string.IsNullOrWhiteSpace(args.UserId))
-                {
-                    // Developer mistake
-                    throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, "UserId"]);
-                }
-
-                // Go ahead and reset the password as specified
-                var user = await _userManager.FindByIdAsync(args.UserId);
-                if (user == null)
-                {
-                    throw new NotFoundException<string>(idSingleton);
-                }
-
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, token, args.Password);
-
-                // IF something goes wrong report an error
-                if (!result.Succeeded)
-                {
-                    var errors = result.Errors.Select(e => e.Description);
-                    var errorMessage = string.Join(", ", errors);
-                    throw new BadRequestException(errorMessage);
-                }
-
-                var response = await LoadDataByIdsAndTransform(idSingleton, null);
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.ResetPassword(args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             }
             , _logger);
+        }
+
+        protected override FactGetByIdServiceBase<IdentityServerUser, string> GetFactGetByIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class IdentityServerUsersService : FactGetByIdServiceBase<IdentityServerUser, string>
+    {
+        private readonly IStringLocalizer _localizer;
+        private readonly AdminRepository _adminRepo;
+        private readonly IdentityRepository _idRepo;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+
+        private string View => IdentityServerUsersController.BASE_ADDRESS;
+
+        public IdentityServerUsersService(
+            IStringLocalizer<Strings> localizer,
+            AdminRepository adminRepo,
+            IdentityRepository idRepo,
+            IServiceProvider serviceProvider) : base(localizer)
+        {
+            _localizer = localizer;
+            _adminRepo = adminRepo;
+            _idRepo = idRepo;
+
+            _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
+
+        }
+
+        public async Task<(List<IdentityServerUser>, Extras)> ResetPassword(ResetPasswordArguments args)
+        {
+            // Check permissions
+            var idSingleton = new List<string> { args.UserId }; // A single Id
+            await CheckActionPermissions("ResetPassword", idSingleton);
+
+            // Some basic validation
+            if (string.IsNullOrWhiteSpace(args.Password))
+            {
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Password"]]);
+            }
+
+            // Some basic validation
+            if (string.IsNullOrWhiteSpace(args.UserId))
+            {
+                // Developer mistake
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, "UserId"]);
+            }
+
+            if (_userManager == null)
+            {
+                throw new InvalidOperationException($"Bug: Could not resolve UserManager in {nameof(IdentityServerUsersService)}");
+            }
+
+            // Go ahead and reset the password as specified
+            var user = await _userManager.FindByIdAsync(args.UserId);
+            if (user == null)
+            {
+                throw new NotFoundException<string>(idSingleton);
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, args.Password);
+
+            // IF something goes wrong report an error
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                var errorMessage = string.Join(", ", errors);
+                throw new BadRequestException(errorMessage);
+            }
+
+            return await GetByIds(idSingleton, null, cancellation: default);
         }
 
         protected override IRepository GetRepository()

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Tellma.Controllers.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -18,50 +19,63 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminPermissionsController : ControllerBase
     {
-        private readonly AdminRepository _repo;
+        private readonly AdminPermissionsService _service;
         private readonly ILogger _logger;
 
-        public AdminPermissionsController(AdminRepository repo, ILogger<PermissionsController> logger)
+        public AdminPermissionsController(AdminPermissionsService service, ILogger<PermissionsController> logger)
         {
-            _repo = repo;
+            _service = service;
             _logger = logger;
         }
 
         [HttpGet("client")]
         public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient(CancellationToken cancellation)
         {
-            try
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Retrieve the user permissions and their current version
-                var (version, permissions)  = await _repo.Permissions__Load(cancellation);
-
-                // Arrange the permission in a DTO that is easy for clients to consume
-                var permissionsForClient = new PermissionsForClient();
-                foreach (var gView in permissions.GroupBy(e => e.View))
-                {
-                    string view = gView.Key;
-                    Dictionary<string, bool> viewActions = gView
-                        .GroupBy(e => e.Action)
-                        .ToDictionary(g => g.Key, g => true);
-
-                    permissionsForClient[view] = viewActions;
-                }
-
-                // Tag the permissions for client with their current version
-                var result = new DataWithVersion<PermissionsForClient>
-                {
-                    Version = version.ToString(),
-                    Data = permissionsForClient
-                };
-
-                // Return the result
+                var result = await _service.PermissionsForClient(cancellation);
                 return Ok(result);
-            }
-            catch (Exception ex)
+            },
+            _logger);
+        }
+    }
+
+    public class AdminPermissionsService : ServiceBase
+    {
+        private readonly AdminRepository _repo;
+
+        public AdminPermissionsService(AdminRepository repo)
+        {
+            _repo = repo;
+        }
+
+        public virtual async Task<DataWithVersion<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
+        {
+            // Retrieve the user permissions and their current version
+            var (version, permissions) = await _repo.Permissions__Load(cancellation);
+
+            // Arrange the permission in a DTO that is easy for clients to consume
+            var permissionsForClient = new PermissionsForClient();
+            foreach (var gView in permissions.GroupBy(e => e.View))
             {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
+                string view = gView.Key;
+                Dictionary<string, bool> viewActions = gView
+                    .GroupBy(e => e.Action)
+                    .ToDictionary(g => g.Key, g => true);
+
+                permissionsForClient[view] = viewActions;
             }
+
+            // Tag the permissions for client with their current version
+            var result = new DataWithVersion<PermissionsForClient>
+            {
+                Version = version.ToString(),
+                Data = permissionsForClient
+            };
+
+            // Return the result
+            return result;
         }
     }
 }

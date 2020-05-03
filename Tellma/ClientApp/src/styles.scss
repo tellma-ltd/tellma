@@ -590,6 +590,7 @@ input.t-h2,
 }
 
 $studio-pane-width: 13.5rem;
+$studio-wide-pane-width: 30rem;
 $studio-pane-border: 1px;
 $slightly-less-white: rgba(255, 255, 255, 0.9);
 
@@ -599,6 +600,11 @@ $slightly-less-white: rgba(255, 255, 255, 0.9);
   color: $whitish !important;
   border-right: $studio-pane-border solid $gray-900;
   border-left: 0 solid $gray-900;
+}
+
+.t-studio-pane.t-wide-studio-pane {
+  width: $studio-wide-pane-width;
+  min-width: $studio-wide-pane-width;
 }
 
 .t-collapsed-studio-pane {

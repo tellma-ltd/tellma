@@ -23,7 +23,22 @@ namespace Tellma.Controllers
         where TEntity : EntityWithKey<TKey>
     {
         // Constructor
-        public FactWithIdControllerBase(ILogger logger, IStringLocalizer localizer) : base(logger, localizer)
+        public FactWithIdControllerBase(ILogger logger) : base(logger)
+        {
+        }
+
+        protected override FactServiceBase<TEntity> GetFactService()
+        {
+            return GetFactWithIdService();
+        }
+
+        protected abstract FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService();
+    }
+
+    public abstract class FactWithIdServiceBase<TEntity, TKey> : FactServiceBase<TEntity>
+        where TEntity : EntityWithKey<TKey>
+    {
+        public FactWithIdServiceBase(IStringLocalizer localizer) : base(localizer)
         {
         }
 

@@ -34,9 +34,9 @@ DELETE FROM [dbo].[Currencies] WHERE Id NOT IN (Select FunctionalCurrencyId FROM
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[Units];
 DELETE FROM [dbo].[CustomClassifications];
+DELETE FROM [dbo].[AccountTypes];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
-DELETE FROM [dbo].[AccountTypes];
 DELETE FROM [dbo].[EntryTypes];
 	
 DELETE FROM [dbo].[DocumentDefinitionLineDefinitions];
@@ -44,6 +44,7 @@ DELETE FROM [dbo].[DocumentDefinitions];
 DELETE FROM [dbo].[LineDefinitions];
 DELETE FROM [dbo].[IfrsConcepts];
 DELETE FROM [dbo].[Centers];
+DELETE FROM [dbo].[MarkupTemplates];
 
 
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

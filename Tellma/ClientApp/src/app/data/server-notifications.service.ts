@@ -64,7 +64,7 @@ export class ServerNotificationsService {
       this.workspace.offline = false;
     } catch (err) {
       this.workspace.offline = true;
-      console.error('Error starting SignalR connection...');
+      // console.error('Error starting SignalR connection...');
 
       // Keep trying every second while the user is sigend in
       setTimeout(_ => this.start(), 1000);
@@ -98,7 +98,7 @@ export class ServerNotificationsService {
 
   private onclose = (err: Error): void => {
     if (!!err) {
-      console.error('SignalR connection closed unexpectedly...');
+      // console.error('SignalR connection closed unexpectedly...');
 
       // Set offline
       this.workspace.offline = true;
