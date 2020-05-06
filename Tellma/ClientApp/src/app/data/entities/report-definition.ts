@@ -233,6 +233,11 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'inbox',
                         'share-square',
                         'share',
+                        'print',
+                        'code',
+                        'font',
+                        'image',
+                        'portrait',
 
                         'camera',
                         'camera-retro',

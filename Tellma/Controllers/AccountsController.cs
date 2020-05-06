@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tellma.Services.Utilities;
 using System.Threading;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -20,58 +20,60 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "accounts";
 
+        private readonly AccountsService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
-        private readonly ISettingsCache _settingsCache;
 
-        private string View => BASE_ADDRESS;
-
-        public AccountsController(
-            ILogger<AccountsController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            ISettingsCache settingsCache) : base(logger, localizer)
+        public AccountsController(ILogger<AccountsController> logger, AccountsService service) : base(logger)
         {
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
-            _settingsCache = settingsCache;
+            _service = service;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Account>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isDeprecated: false), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Account>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isDeprecated: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deprecate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Account>>> ActivateImpl(List<int> ids, ActionArguments args, bool isDeprecated)
+        protected override CrudServiceBase<AccountForSave, Account, int> GetCrudService()
         {
-            // Check user permissions
-            await CheckActionPermissions("IsDeprecated", ids);
+            return _service;
+        }
+    }
 
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Accounts__Deprecate(ids, isDeprecated);
+    public class AccountsService : CrudServiceBase<AccountForSave, Account, int>
+    {
+        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountPaths());
 
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
+        private readonly ISettingsCache _settingsCache;
 
-                trx.Complete();
-                return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+        private string View => AccountsController.BASE_ADDRESS;
+
+        public AccountsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, ISettingsCache settingsCache) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
+            _settingsCache = settingsCache;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -148,7 +150,7 @@ namespace Tellma.Controllers
                 if (entity.IsSmart.Value)
                 {
                     // Can we add any validation here?
-                } 
+                }
                 else
                 {
                     // These are required for smart accounts
@@ -240,6 +242,37 @@ namespace Tellma.Controllers
             }
         }
 
-        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsController.AccountPaths());
+        public Task<(List<Account>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsDeprecated(ids, args, isDeprecated: false);
+        }
+
+        public Task<(List<Account>, Extras)> Deprecate(List<int> ids, ActionArguments args)
+        {
+            return SetIsDeprecated(ids, args, isDeprecated: true);
+        }
+
+        private async Task<(List<Account>, Extras)> SetIsDeprecated(List<int> ids, ActionArguments args, bool isDeprecated)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsDeprecated", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Accounts__Deprecate(ids, isDeprecated);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
+            }
+        }
     }
 }

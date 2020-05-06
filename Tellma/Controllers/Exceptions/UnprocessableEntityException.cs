@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
+using Tellma.Controllers.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -9,11 +9,11 @@ namespace Tellma.Controllers
     /// </summary>
     public class UnprocessableEntityException : Exception
     {
-        public UnprocessableEntityException(ModelStateDictionary modelState)
+        public UnprocessableEntityException(ValidationErrorsDictionary validationErrors)
         {
-            ModelState = modelState;
+            ModelState = validationErrors;
         }
 
-        public ModelStateDictionary ModelState { get; private set; }
+        public ValidationErrorsDictionary ModelState { get; private set; }
     }
 }

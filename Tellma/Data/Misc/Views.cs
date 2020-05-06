@@ -180,6 +180,14 @@
                         Actions = new ActionInfo[] {}
                     },
                     new ViewInfo {
+                        Id = "markup-templates",
+                        Name = "MarkupTemplates",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[] { }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

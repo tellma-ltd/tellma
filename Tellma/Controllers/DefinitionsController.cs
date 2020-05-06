@@ -19,13 +19,10 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class DefinitionsController : ControllerBase
     {
-        // Private fields
-
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ILogger<SettingsController> _logger;
 
-        public DefinitionsController(IDefinitionsCache definitionsCache,
-            ILogger<SettingsController> logger)
+        public DefinitionsController(IDefinitionsCache definitionsCache,  ILogger<SettingsController> logger)
         {
             _definitionsCache = definitionsCache;
             _logger = logger;
@@ -51,7 +48,10 @@ namespace Tellma.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    }
 
+    public class DefinitionsService : ServiceBase
+    {
         private static string MapVisibility(string visibility)
         {
             if (visibility == Visibility.None)
@@ -491,6 +491,18 @@ namespace Tellma.Controllers
                     IsVisibleByDefault = d.IsVisibleByDefault ?? false
                 })?.ToList() ?? new List<DocumentDefinitionLineDefinitionForClient>(),
 
+                MarkupTemplates = def.MarkupTemplates?.Select(d => new DocumentDefinitionMarkupTemplateForClient
+                {
+                    MarkupTemplateId = d.MarkupTemplateId.Value,
+                    Name = d.MarkupTemplate?.Name,
+                    Name2 = d.MarkupTemplate?.Name2,
+                    Name3 = d.MarkupTemplate?.Name3,
+                    SupportsPrimaryLanguage = d.MarkupTemplate?.SupportsPrimaryLanguage ?? false,
+                    SupportsSecondaryLanguage = d.MarkupTemplate?.SupportsSecondaryLanguage ?? false,
+                    SupportsTernaryLanguage = d.MarkupTemplate?.SupportsTernaryLanguage ?? false,
+                    Usage = d.MarkupTemplate?.Usage
+                })?.ToList() ?? new List<DocumentDefinitionMarkupTemplateForClient>(),
+
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
@@ -758,7 +770,7 @@ namespace Tellma.Controllers
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
             };
 
-            // Map Lines and Documents (Special handling
+            // Map Lines and Documents (Special handling)
             var accountTypesDic = accountTypes.ToDictionary(e => e.Id, e => e);
             result.Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, accountTypesDic, result.Agents, result.Resources));
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));

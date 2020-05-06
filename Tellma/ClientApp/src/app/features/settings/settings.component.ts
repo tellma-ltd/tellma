@@ -78,7 +78,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
         this._viewModel = response.Result;
 
         // Add related items to the workspace
-        mergeEntitiesInWorkspace(response.Entities, this.workspace);
+        mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
 
         // Notify everyone
         this.workspace.notifyStateChanged();
@@ -302,7 +302,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           // update the workspace with the DTO from the server
           this._viewModel = response.Result;
-          mergeEntitiesInWorkspace(response.Entities, this.workspace);
+          mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
 
           // Notify everyone
           this.workspace.notifyStateChanged();

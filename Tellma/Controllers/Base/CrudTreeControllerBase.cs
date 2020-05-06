@@ -26,30 +26,67 @@ namespace Tellma.Controllers
     {
         private readonly ILogger _logger;
 
-        public CrudTreeControllerBase(ILogger logger, IStringLocalizer localizer) : base(logger, localizer)
+        public CrudTreeControllerBase(ILogger logger) : base(logger)
         {
             _logger = logger;
         }
 
-        // Children-of is replicated in FactTreeControllerBase, please keep them in sync
+        // IMPORTANT: Children-of is replicated in FactTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args, CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetChildrenOf_Impl(args, cancellation);
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Load the data
+                var service = GetCrudTreeService();
+                var (data, extras) = await service.GetChildrenOf(args, cancellation);
+
+                var result = TransformToEntitiesResponse(data, extras, serverTime, cancellation);
                 return Ok(result);
             }, _logger);
         }
 
-        /// <summary>
-        /// Returns a single entity as per the ID and specifications in the get request
-        /// </summary>
-        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOf_Impl(GetChildrenArguments<TKey> args, CancellationToken cancellation)
+        [HttpDelete("with-descendants")]
+        public virtual async Task<ActionResult> DeleteWithDescendants([FromQuery] List<TKey> i)
         {
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
+            // "i" parameter is given a short name to allow a large number of
+            // ids to be passed in the query string before the url size limit
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
 
+                // Load the data
+                var service = GetCrudTreeService();
+                await service.DeleteWithDescendants(i);
+                return Ok();
+            }, _logger);
+        }
+
+        protected override CrudServiceBase<TEntityForSave, TEntity, TKey> GetCrudService()
+        {
+            return GetCrudTreeService();
+        }
+
+        protected abstract CrudTreeServiceBase<TEntityForSave, TEntity, TKey> GetCrudTreeService();
+    }
+
+    public abstract class CrudTreeServiceBase<TEntityForSave, TEntity, TKey> : CrudServiceBase<TEntityForSave, TEntity, TKey>
+        where TEntityForSave : EntityWithKey<TKey>, new()
+        where TEntity : EntityWithKey<TKey>, new()
+    {
+        public CrudTreeServiceBase(IStringLocalizer localizer) : base(localizer)
+        {
+        }
+
+        /// <summary>
+        /// Returns a list of entities as per the specifications in the <see cref="GetChildrenArguments{TKey}"/>
+        /// </summary>
+        public virtual async Task<(List<TEntity>, Extras)> GetChildrenOf(GetChildrenArguments<TKey> args, CancellationToken cancellation)
+        {
             // Parse the parameters
             var expand = ExpandExpression.Parse(args.Expand);
             var select = ParseSelect(args.Select);
@@ -62,25 +99,13 @@ namespace Tellma.Controllers
             var extras = await GetExtras(data, cancellation);
 
             // Transform and Return
-            return TransformToEntitiesResponse(data, extras, serverTime, cancellation);
-        }
-
-        [HttpDelete("with-descendants")]
-        public virtual async Task<ActionResult> DeleteWithDescendants([FromQuery] List<TKey> i)
-        {
-            // "i" parameter is given a short name to allow a large number of
-            // ids to be passed in the query string before the url size limit
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                await DeleteWithDescendants_Impl(i);
-                return Ok();
-            }, _logger);
+            return (data, extras);
         }
 
         /// <summary>
         /// Deletes the current node and all the nodes descending from it
         /// </summary>
-        protected virtual async Task DeleteWithDescendants_Impl(List<TKey> ids)
+        public virtual async Task DeleteWithDescendants(List<TKey> ids)
         {
             if (ids == null || !ids.Any())
             {

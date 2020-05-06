@@ -243,6 +243,7 @@ namespace Tellma.Data
                 nameof(ReportColumnDefinition) => "[map].[ReportColumnDefinitions]()",
                 nameof(ReportMeasureDefinition) => "[map].[ReportMeasureDefinitions]()",
                 nameof(ExchangeRate) => "[map].[ExchangeRates]()",
+                nameof(MarkupTemplate) => "[map].[MarkupTemplates]()",
                 // Fact tables
                 nameof(RequiredSignature) => "[map].[DocumentsRequiredSignatures](@DocumentIds)",
                 nameof(DetailsEntry) => "[map].[DetailsEntries]()",
@@ -851,7 +852,50 @@ namespace Tellma.Data
                     documentDefinition.LineDefinitions.Add(entity);
                 }
 
+                // Load the markup templates
+                var markupTemplates = new Dictionary<int, MarkupTemplate>();
+                var markupTemplateProps = typeof(MarkupTemplate).GetMappedProperties();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new MarkupTemplate();
+                    foreach (var prop in markupTemplateProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    markupTemplates.Add(entity.Id, entity);
+                }
+
+                // Document Definitions Markup Templates
+                var documentDefinitionMarkupTemplateProps = typeof(DocumentDefinitionMarkupTemplate).GetMappedProperties();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var entity = new DocumentDefinitionMarkupTemplate();
+                    foreach (var prop in documentDefinitionMarkupTemplateProps)
+                    {
+                        // get property value
+                        var propValue = reader[prop.Name];
+                        propValue = propValue == DBNull.Value ? null : propValue;
+
+                        prop.SetValue(entity, propValue);
+                    }
+
+                    // Link with the markup template
+                    entity.MarkupTemplate = markupTemplates[entity.MarkupTemplateId.Value];
+
+                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId];
+                    documentDefinition.MarkupTemplates ??= new List<DocumentDefinitionMarkupTemplate>();
+                    documentDefinition.MarkupTemplates.Add(entity);
+                }
+
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
+
 
                 // Next load line definitions
                 await reader.NextResultAsync(cancellation);
@@ -4433,6 +4477,135 @@ namespace Tellma.Data
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
+        }
+
+        #endregion
+
+        #region MarkupTemplates
+
+        public async Task<IEnumerable<ValidationError>> MarkupTemplates_Validate__Save(List<MarkupTemplateForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(MarkupTemplate)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(MarkupTemplates_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> MarkupTemplates__Save(List<MarkupTemplateForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(MarkupTemplate)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MarkupTemplates__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task<IEnumerable<ValidationError>> MarkupTemplates_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(MarkupTemplates_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task MarkupTemplates__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(MarkupTemplates__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
         }
 
         #endregion

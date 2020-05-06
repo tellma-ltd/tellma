@@ -12,8 +12,6 @@ import { metadata_CustomClassification } from '../custom-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { Entity } from './entity';
 import { metadata_Center } from '../center';
 import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
@@ -26,6 +24,9 @@ import { metadata_ExchangeRate } from '../exchange-rate';
 import { metadata_InboxRecord } from '../inbox-record';
 import { metadata_OutboxRecord } from '../outbox-record';
 import { metadata_IfrsConcept } from '../ifrs-concept';
+import { metadata_MarkupTemplate } from '../markup-template';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { Entity } from './entity';
 
 export const metadata: {
     [collection: string]: (
@@ -53,6 +54,7 @@ export const metadata: {
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
     SummaryEntry: metadata_SummaryEntry,
+    MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
 

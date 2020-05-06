@@ -37,6 +37,7 @@ import { IdentityServerUser } from './entities/identity-server-user';
 import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
+import { MarkupTemplate } from './entities/markup-template';
 
 enum WhichWorkspace {
   /**
@@ -353,6 +354,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   DetailsEntry: EntityWorkspace<DetailsEntry>;
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
+  MarkupTemplate: EntityWorkspace<MarkupTemplate>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -382,6 +384,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Line = {};
     this.ExchangeRate = {};
     this.DetailsEntry = {};
+    this.MarkupTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
 

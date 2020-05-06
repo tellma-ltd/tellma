@@ -139,7 +139,7 @@ namespace Tellma.Controllers
                         if (serverVersion == null || serverVersion != databaseVersion)
                         {
                             // Update the cache
-                            var definitions = await DefinitionsController.LoadDefinitionsForClient(_appRepo, cancellation);
+                            var definitions = await DefinitionsService.LoadDefinitionsForClient(_appRepo, cancellation);
                             if (!cancellation.IsCancellationRequested)
                             {
                                 _definitionsCache.SetDefinitions(tenantId, definitions);
@@ -153,7 +153,7 @@ namespace Tellma.Controllers
                         if (serverVersion == null || serverVersion != databaseVersion)
                         {
                             // Update the cache
-                            var settings = await SettingsController.LoadSettingsForClient(_appRepo, cancellation);
+                            var settings = await SettingsService.LoadSettingsForClient(_appRepo, cancellation);
                             if (!cancellation.IsCancellationRequested)
                             {
                                 _settingsCache.SetSettings(tenantId, settings);

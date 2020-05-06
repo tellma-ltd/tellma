@@ -22,11 +22,9 @@ namespace Tellma.Controllers
     public abstract class FactGetByIdControllerBase<TEntity, TKey> : FactWithIdControllerBase<TEntity, TKey>
         where TEntity : EntityWithKey<TKey>
     {
-        // Private Fields
         private readonly ILogger _logger;
 
-        // Constructor
-        public FactGetByIdControllerBase(ILogger logger, IStringLocalizer localizer) : base(logger, localizer)
+        public FactGetByIdControllerBase(ILogger logger) : base(logger)
         {
             _logger = logger;
         }
@@ -36,48 +34,99 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetByIdImpl(id, args, cancellation);
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Load the data
+                var service = GetFactGetByIdService();
+                var (entity, extras) = await service.GetById(id, args, cancellation);
+
+                // Load the extras
+                var singleton = new List<TEntity> { entity };
+
+                // Flatten and Trim
+                var relatedEntities = FlattenAndTrim(singleton, cancellation);
+
+                // Prepare the result in a response object
+                var result = new GetByIdResponse<TEntity>
+                {
+                    Result = entity,
+                    RelatedEntities = relatedEntities,
+                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    Extras = extras,
+                    ServerTime = serverTime,
+                };
                 return Ok(result);
             }, _logger);
         }
 
-        /////////////////////////////
-        // Endpoint Implementations
-        /////////////////////////////
+        protected override FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService()
+        {
+            return GetFactGetByIdService();
+        }
+
+        protected abstract FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService();
+
+        ///// <summary>
+        ///// Helper function for all "action" web handlers (like activate and deactivate) that
+        ///// wish to load a bunch of affected entities via their Ids and return them as an <see cref="EntitiesResponse{TEntity}"/>, after verifying the user's permissions
+        ///// </summary>
+        //protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(List<TKey> ids, SelectExpandArguments args)
+        //{
+        //    // Actions are un-cancellable
+        //    CancellationToken noCancel = default;
+
+        //    // Calculate server time at the very beginning for consistency
+        //    var serverTime = DateTimeOffset.UtcNow;
+
+        //    // Get the data
+        //    var service = GetFactGetByIdService();
+        //    var (data, extras) = await service.GetByIds(ids, args, noCancel);
+
+        //    // Transform the entities as an EntitiesResponse
+        //    var response = TransformToEntitiesResponse(data, extras, serverTime, noCancel);
+
+        //    // Return
+        //    return response;
+        //}
 
         /// <summary>
-        /// Returns the <see cref="GetByIdResponse{TEntity}"/> as per the Id and specifications in <see cref="GetByIdArguments"/>, after verifying the user's permissions
+        /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
         /// </summary>
-        protected virtual async Task<GetByIdResponse<TEntity>> GetByIdImpl(TKey id, GetByIdArguments args, CancellationToken cancellation)
+        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Extras extras, DateTimeOffset serverTime, CancellationToken cancellation)
         {
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
-
-            // Load the data
-            var entity = await GetByIdLoadData(id, args, cancellation);
-
-            // Load the extras
-            var singleton = new List<TEntity> { entity };
-            var extras = await GetExtras(singleton, cancellation);
-
             // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(singleton, cancellation);
+            var relatedEntities = FlattenAndTrim(data, cancellation);
 
             // Prepare the result in a response object
-            return new GetByIdResponse<TEntity>
+            return new EntitiesResponse<TEntity>
             {
-                Result = entity,
+                Result = data,
                 RelatedEntities = relatedEntities,
                 CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras,
+                Extras = TransformExtras(extras, cancellation),
                 ServerTime = serverTime,
             };
         }
 
+        protected virtual Extras TransformExtras(Extras extras, CancellationToken cancellation)
+        {
+            return extras;
+        }
+    }
+
+    public abstract class FactGetByIdServiceBase<TEntity, TKey> : FactWithIdServiceBase<TEntity, TKey>
+        where TEntity : EntityWithKey<TKey>
+    {
+        // Private Fields
+        public FactGetByIdServiceBase(IStringLocalizer localizer) : base(localizer)
+        {
+        }
+
         /// <summary>
-        /// Returns a <see cref="List{TEntity}"/> as per the Id and the specifications in the <see cref="GetByIdArguments"/>, after verifying the user's permissions
+        /// Returns a <see cref="TEntity"/> as per the Id and the specifications in the <see cref="GetByIdArguments"/>, after verifying the user's permissions
         /// </summary>
-        protected virtual async Task<TEntity> GetByIdLoadData(TKey id, GetByIdArguments args, CancellationToken cancellation)
+        public virtual async Task<(TEntity, Extras)> GetById(TKey id, GetByIdArguments args, CancellationToken cancellation)
         {
             // Parse the parameters
             var expand = ExpandExpression.Parse(args?.Expand);
@@ -85,6 +134,7 @@ namespace Tellma.Controllers
 
             // Load the data
             var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, cancellation);
+            var extras = await GetExtras(data, cancellation);
 
             // Check that the entity exists, else return NotFound
             var entity = data.SingleOrDefault();
@@ -94,38 +144,23 @@ namespace Tellma.Controllers
             }
 
             // Return
-            return entity;
+            return (entity, extras);
         }
 
-        ///////////////////
-        // Helper Methods
-        ///////////////////
-
         /// <summary>
-        /// Helper function for all "action" web handlers (like activate and deactivate) that
-        /// wish to load a bunch of affected entities via their Ids and return them as an <see cref="EntitiesResponse{TEntity}"/>, after verifying the user's permissions
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="SelectExpandArguments"/>, after verifying the user's permissions
         /// </summary>
-        protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(List<TKey> ids, ActionArguments args)
+        public virtual async Task<(List<TEntity>, Extras)> GetByIds(List<TKey> ids, SelectExpandArguments args, CancellationToken cancellation)
         {
-            // Actions are un-cancellable
-            CancellationToken noCancel = default;
-
-            // Calculate server time at the very beginning for consistency
-            var serverTime = DateTimeOffset.UtcNow;
-
-            // Get the data
+            // Parse the parameters
             var expand = ExpandExpression.Parse(args?.Expand);
             var select = ParseSelect(args?.Select);
-            var data = await GetEntitiesByIds(ids, expand, select, noCancel);
 
-            // Get the extras
-            var extras = await GetExtras(data, noCancel);
+            // Load the data
+            var data = await GetEntitiesByIds(ids, expand, select, cancellation);
+            var extras = await GetExtras(data, cancellation);
 
-            // Transform the entities as an EntitiesResponse
-            var response = TransformToEntitiesResponse(data, extras, serverTime, noCancel);
-
-            // Return
-            return response;
+            return (data, extras);
         }
 
         /// <summary>
@@ -165,25 +200,6 @@ namespace Tellma.Controllers
                     return dataSorted.ToList();
                 }
             }
-        }
-
-        /// <summary>
-        /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
-        /// </summary>
-        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Dictionary<string, object> extras, DateTimeOffset serverTime, CancellationToken cancellation)
-        {
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data, cancellation);
-
-            // Prepare the result in a response object
-            return new EntitiesResponse<TEntity>
-            {
-                Result = data,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = extras,
-                ServerTime = serverTime,
-            };
         }
 
         /// <summary>

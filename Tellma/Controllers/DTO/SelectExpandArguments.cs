@@ -1,4 +1,6 @@
-﻿namespace Tellma.Controllers.Dto
+﻿using System.Collections.Generic;
+
+namespace Tellma.Controllers.Dto
 {
     /// <summary>
     /// Almost all API handlers that return data will expect arguments that contain "select"

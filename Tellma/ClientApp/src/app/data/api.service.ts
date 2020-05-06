@@ -54,6 +54,9 @@ import { CompaniesForClient } from './dto/companies-for-client';
 import { IdentityServerUser } from './entities/identity-server-user';
 import { ResetPasswordArgs } from './dto/reset-password-args';
 import { ActionArguments } from './dto/action-arguments';
+import { GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments } from './dto/generate-markup-arguments';
+import { MarkupPreviewResponse } from './dto/markup-preview-response';
+import { MarkupPreviewTemplate } from './dto/markup-preview-template';
 
 
 @Injectable({
@@ -350,6 +353,50 @@ export class ApiService {
     };
   }
 
+  public markupTemplatesApi(cancellationToken$: Observable<void>) {
+    return {
+      preview: (entity: MarkupPreviewTemplate, args: GenerateMarkupArguments) => {
+        const paramsArray = this.stringifyArguments(args);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/markup-templates/preview?${params}`;
+        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+      previewByFilter: (entity: MarkupPreviewTemplate, args: GenerateMarkupByFilterArguments) => {
+        const paramsArray = this.stringifyArguments(args);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/markup-templates/preview-by-filter?${params}`;
+        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+      previewById: (id: string | number, entity: MarkupPreviewTemplate, args: GenerateMarkupByIdArguments) => {
+        const paramsArray = this.stringifyArguments(args);
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/markup-templates/preview-by-id/${id}?${params}`;
+        const obs$ = this.http.put<MarkupPreviewResponse>(url, entity).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      }
+    };
+  }
+
   public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
       assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
@@ -461,8 +508,22 @@ export class ApiService {
       cancel: this.updateStateFactory(definitionId, 'cancel', cancellationToken$),
       uncancel: this.updateStateFactory(definitionId, 'uncancel', cancellationToken$),
       getAttachment: (docId: string | number, attachmentId: string | number) => {
-
         const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/attachments/${attachmentId}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+      printById: (docId: string | number, templateId: number, args: GenerateMarkupByIdArguments) => {
+        const paramsArray = [`culture=${encodeURIComponent(args.culture)}`];
+        const params: string = paramsArray.join('&');
+
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/${docId}/print/${templateId}?${params}`;
+
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
             const friendlyError = friendlify(error, this.trx);
@@ -1195,6 +1256,18 @@ export class ApiService {
 
     if (!!args.returnEntities) {
       paramsArray.push(`returnEntities=${args.returnEntities}`);
+    }
+
+    return paramsArray;
+  }
+
+  stringifyArguments(args: { [key: string]: any }) {
+    const paramsArray: string[] = [];
+    const keys = Object.keys(args);
+    for (const key of keys) {
+      if (args[key] !== null && args[key] !== undefined) {
+        paramsArray.push(`${key}=${encodeURIComponent(args[key].toString())}`);
+      }
     }
 
     return paramsArray;

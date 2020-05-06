@@ -7,7 +7,7 @@ namespace Tellma.Data.Queries
     /// <summary>
     /// Represents an Entity with variable properties, this is typically used to contain the results of aggregate queries
     /// in which case the properties will be the requested dimensions and measures, it is implemented as a dictionary
-    /// which is serialized by JSON.NET as a normal object where every key is a property
+    /// which is serialized by JSON.NET as a normal object where every dictionary key becomes a JSON property
     /// </summary>
     public class DynamicEntity : Entity, IDictionary<string, object>
     {

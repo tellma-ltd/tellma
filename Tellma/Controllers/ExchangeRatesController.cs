@@ -20,23 +20,13 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "exchange-rates";
 
+        private readonly ExchangeRatesService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
-        private readonly ISettingsCache _settingsCache;
 
-        private string View => BASE_ADDRESS;
-
-        public ExchangeRatesController(
-            ILogger<ExchangeRatesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            ISettingsCache settingsCache) : base(logger, localizer)
+        public ExchangeRatesController(ExchangeRatesService service, ILogger<ExchangeRatesController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
-            _settingsCache = settingsCache;
         }
 
         [HttpGet("convert-to-functional")]
@@ -44,16 +34,49 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _repo.ConvertToFunctional(date, currencyId, amount, cancellation);
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return Ok(result.Value);
-                }
-            }, _logger);
+                var result = await _service.ConvertToFunctional(date, currencyId, amount, cancellation);
+                return Ok(result);
+            },
+            _logger);
+        }
+
+        protected override CrudServiceBase<ExchangeRateForSave, ExchangeRate, int> GetCrudService()
+        {
+            return _service;
+        }
+    }
+
+    public class ExchangeRatesService : CrudServiceBase<ExchangeRateForSave, ExchangeRate, int>
+    {
+        public const string BASE_ADDRESS = "exchange-rates";
+
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
+        private readonly ISettingsCache _settingsCache;
+
+        private string View => BASE_ADDRESS;
+
+        public ExchangeRatesService(
+            IStringLocalizer<Strings> localizer,
+            ApplicationRepository repo,
+            ISettingsCache settingsCache) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
+            _settingsCache = settingsCache;
+        }
+
+        public async Task<decimal> ConvertToFunctional(DateTime date, string currencyId, decimal amount, CancellationToken cancellation)
+        {
+            var result = await _repo.ConvertToFunctional(date, currencyId, amount, cancellation);
+            if (result == null)
+            {
+                throw new NotFoundException<(DateTime, string)>((date, currencyId));
+            }
+            else
+            {
+                return result.Value;
+            }
         }
 
         protected override Query<ExchangeRate> GetAsQuery(List<ExchangeRateForSave> entities)
@@ -195,7 +218,7 @@ namespace Tellma.Controllers
                 var desc3Prop = $"{currencyProp}/{nameof(Currency.Description3)}";
 
                 // Prepare the filter string
-                var filterString =  $"{idProp} {Ops.contains} '{search}' or {nameProp} {Ops.contains} '{search}' or {name2Prop} {Ops.contains} '{search}' or {name3Prop} {Ops.contains} '{search}' or {descProp} {Ops.contains} '{search}' or {desc2Prop} {Ops.contains} '{search}' or {desc3Prop} {Ops.contains} '{search}'";
+                var filterString = $"{idProp} {Ops.contains} '{search}' or {nameProp} {Ops.contains} '{search}' or {name2Prop} {Ops.contains} '{search}' or {name3Prop} {Ops.contains} '{search}' or {descProp} {Ops.contains} '{search}' or {desc2Prop} {Ops.contains} '{search}' or {desc3Prop} {Ops.contains} '{search}'";
 
                 // If the search is a date, include documents with that date
                 if (DateTime.TryParse(search.Trim(), out DateTime searchDate))

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition> : EntityWithKey<string>
+    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition, TDocumentDefinitionMarkupTemplate> : EntityWithKey<string>
     {
         public bool? IsOriginalDocument { get; set; }
 
@@ -64,14 +64,17 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(DocumentDefinitionLineDefinition.DocumentDefinitionId))]
         public List<TDocumentDefinitionLineDefinition> LineDefinitions { get; set; }
+
+        [ForeignKey(nameof(DocumentDefinitionMarkupTemplate.DocumentDefinitionId))]
+        public List<TDocumentDefinitionMarkupTemplate> MarkupTemplates { get; set; }
     }
 
-    public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave>
+    public class DocumentDefinitionForSave : DocumentDefinitionForSave<DocumentDefinitionLineDefinitionForSave, DocumentDefinitionMarkupTemplateForSave>
     {
 
     }
 
-    public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition>
+    public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition, DocumentDefinitionMarkupTemplate>
     {
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

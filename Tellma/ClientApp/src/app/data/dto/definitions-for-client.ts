@@ -1,5 +1,6 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
 import { LineState } from '../entities/line';
+import { MarkupTemplateUsage } from '../entities/markup-template';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -183,6 +184,18 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CanReachState3: boolean;
     HasWorkflow: boolean;
     LineDefinitions: DocumentDefinitionLineDefinitionForClient[];
+    MarkupTemplates: DocumentDefinitionMarkupTemplateForClient[];
+}
+
+export interface DocumentDefinitionMarkupTemplateForClient {
+    MarkupTemplateId: number;
+    Name: string;
+    Name2: string;
+    Name3: string;
+    SupportsPrimaryLanguage: boolean;
+    SupportsSecondaryLanguage: boolean;
+    SupportsTernaryLanguage: boolean;
+    Usage: MarkupTemplateUsage;
 }
 
 export interface DocumentDefinitionLineDefinitionForClient {

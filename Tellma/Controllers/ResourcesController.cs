@@ -1,19 +1,19 @@
-﻿using Tellma.Controllers.Dto;
-using Tellma.Controllers.Utilities;
-using Tellma.Data;
-using Tellma.Data.Queries;
-using Tellma.Entities;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
+using Tellma.Controllers.Utilities;
+using Tellma.Data;
+using Tellma.Data.Queries;
+using Tellma.Entities;
 
 namespace Tellma.Controllers
 {
@@ -24,70 +24,90 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "resources/";
 
+        private readonly ResourcesService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
-        private readonly IDefinitionsCache _definitionsCache;
-        private readonly ISettingsCache _settingsCache;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
 
-        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
-            throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
-
-        private ResourceDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?
-            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
-
-        private string View => $"{BASE_ADDRESS}{DefinitionId}";
-
-        public ResourcesController(
-            ILogger<ResourcesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            IDefinitionsCache definitionsCache,
-            ISettingsCache settingsCache,
-            IModelMetadataProvider modelMetadataProvider) : base(logger, localizer)
+        public ResourcesController(ResourcesService service, ILogger<ResourcesController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
-            _definitionsCache = definitionsCache;
-            _settingsCache = settingsCache;
-            _modelMetadataProvider = modelMetadataProvider;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, 
+            _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Resource>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, 
+            _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Resource>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
+        protected override CrudServiceBase<ResourceForSave, Resource, int> GetCrudService()
         {
-            // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            return _service;
+        }
+    }
 
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Resources__Activate(ids, isActive);
+    public class ResourcesService : CrudServiceBase<ResourceForSave, Resource, int>
+    {
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly ISettingsCache _settingsCache;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
 
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+        private string _definitionIdOverride;
 
-                trx.Complete();
-                return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+        private string DefinitionId => _definitionIdOverride ??
+            _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
+            throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ResourcesService)}");
+
+        /// <summary>
+        /// Overrides the default behavior of reading the definition Id from the route data
+        /// </summary>
+        public ResourcesService SetDefinitionId(string definitionId)
+        {
+            _definitionIdOverride = definitionId;
+            return this;
+        }
+
+        private ResourceDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?
+            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+
+        private string View => $"{ResourcesController.BASE_ADDRESS}{DefinitionId}";
+
+        public ResourcesService(
+            IStringLocalizer<Strings> localizer,
+            ApplicationRepository repo,
+            IDefinitionsCache definitionsCache,
+            ISettingsCache settingsCache,
+            IHttpContextAccessor contextAccessor,
+            IModelMetadataProvider modelMetadataProvider) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
+            _definitionsCache = definitionsCache;
+            _settingsCache = settingsCache;
+            _contextAccessor = contextAccessor;
+            _modelMetadataProvider = modelMetadataProvider;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -246,7 +266,7 @@ namespace Tellma.Controllers
                     {
                         string propName = (selector.Body as MemberExpression).Member.Name; // The name of the property we're validating
                         string path = $"[{index}].{propName}";
-                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)? .DisplayName;
+                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)?.DisplayName;
                         string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
 
                         ModelState.AddModelError(path, errorMsg);
@@ -294,6 +314,39 @@ namespace Tellma.Controllers
         }
 
         protected override SelectExpression ParseSelect(string select) => ResourceControllerUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+
+        public Task<(List<Resource>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: true);
+        }
+
+        public Task<(List<Resource>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        private async Task<(List<Resource>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsActive", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Resources__Activate(ids, isActive);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
+            }
+        }
     }
 
     // Generic API, allows reading all resources
@@ -302,12 +355,24 @@ namespace Tellma.Controllers
     [ApplicationController]
     public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
     {
+        private readonly ResourcesGenericService _service;
+
+        public ResourcesGenericController(ResourcesGenericService service, ILogger<ResourcesGenericController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<Resource, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class ResourcesGenericService : FactWithIdServiceBase<Resource, int>
+    {
         private readonly ApplicationRepository _repo;
 
-        public ResourcesGenericController(
-            ILogger<ResourcesGenericController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public ResourcesGenericService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
         {
             _repo = repo;
         }
@@ -388,6 +453,6 @@ namespace Tellma.Controllers
             }
         }
 
-        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsController.EntryResourcePaths());
+        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.EntryResourcePaths());
     }
 }

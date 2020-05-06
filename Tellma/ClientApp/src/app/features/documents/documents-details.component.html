@@ -1,7 +1,7 @@
 <t-details *ngIf="found;else pageNotFound" collection="Document" [definitionId]="definitionId" [createFunc]="create"
-    [cloneFunc]="clone" [mode]="mode" [additionalSelect]="additionalSelect"
-    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
-    [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
+    [cloneFunc]="clone" [mode]="mode" [additionalSelect]="additionalSelect" [masterCrumb]="masterCrumb"
+    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
+    [documentHeaderTemplate]="documentHeader" [actions]="[
     ]" [sidebarTemplate]="showSidebar ? sidebar: null" [registerPristineFunc]="registerPristineFunc"
     [isDirtyFunc]="isDirtyFunc" [extraParams]="extraParams" [handleFreshExtras]="handleFreshExtras"
     [toolbarTemplate]="toolbar" [encodeCustomStateFunc]="encodeCustomStateFunc" [select]="select">
@@ -21,6 +21,20 @@
 
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
+    <!-- Print Dropdown -->
+    <div *ngIf="!isEdit && showPrint" class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+        <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
+            ngbDropdownToggle>
+            {{ 'Print' | translate }}
+        </button>
+        <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+            <button type="button" class="dropdown-item t-transparent-background btn-light"
+                *ngFor="let template of printingTemplates" ngbDropdownItem (click)="onPrint(model, template)">
+                {{ template.name() }}
+            </button>
+        </div>
+    </div>
+
     <!-- Unpost -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
         container="body" *ngIf="!isEdit && showUnpost(model, extras?.RequiredSignatures)">

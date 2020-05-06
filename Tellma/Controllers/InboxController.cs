@@ -21,23 +21,13 @@ namespace Tellma.Controllers
     public class InboxController : FactWithIdControllerBase<InboxRecord, int>
     {
         public const string BASE_ADDRESS = "inbox";
-        private readonly ApplicationRepository _repo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+
+        private readonly InboxService _service;
         private readonly ILogger<InboxController> _logger;
 
-        public InboxController(
-            ApplicationRepository repo,
-            ITenantIdAccessor tenantIdAccessor,
-            IHubContext<ServerNotificationsHub,
-            INotifiedClient> hubContext,
-            ILogger<InboxController> logger,
-            IStringLocalizer<Strings> localizer) : base(logger, localizer)
+        public InboxController(InboxService service, ILogger<InboxController> logger) : base(logger)
         {
-            _repo = repo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _hubContext = hubContext;
-            _logger = logger;
+            _service = service;
         }
 
         [HttpPut("check")]
@@ -45,15 +35,43 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var infos = await _repo.Inbox__Check(now);
-
-                // Notify the user
-                var tenantId = _tenantIdAccessor.GetTenantId();
-                await _hubContext.NotifyInboxAsync(tenantId, infos, updateInboxList: false);
-
+                await _service.CheckInbox(now);
                 return Ok();
             }
             , _logger);
+        }
+
+        protected override FactWithIdServiceBase<InboxRecord, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class InboxService : FactWithIdServiceBase<InboxRecord, int>
+    {
+        private readonly ApplicationRepository _repo;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
+
+        public InboxService(
+            ApplicationRepository repo,
+            ITenantIdAccessor tenantIdAccessor,
+            IHubContext<ServerNotificationsHub,
+            INotifiedClient> hubContext,
+            IStringLocalizer<Strings> localizer) : base(localizer)
+        {
+            _repo = repo;
+            _tenantIdAccessor = tenantIdAccessor;
+            _hubContext = hubContext;
+        }
+
+        public async Task CheckInbox(DateTimeOffset now)
+        {
+            var infos = await _repo.Inbox__Check(now);
+
+            // Notify the user
+            var tenantId = _tenantIdAccessor.GetTenantId();
+            await _hubContext.NotifyInboxAsync(tenantId, infos, updateInboxList: false);
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -106,13 +124,13 @@ namespace Tellma.Controllers
             return Task.FromResult(permissions);
         }
 
-        protected override async Task<Dictionary<string, object>> GetExtras(IEnumerable<InboxRecord> result, CancellationToken cancellation)
+        protected override async Task<Extras> GetExtras(IEnumerable<InboxRecord> result, CancellationToken cancellation)
         {
             var userInfo = await _repo.GetUserInfoAsync(cancellation);
             var userIdSingleton = new List<int> { userInfo.UserId.Value };
             var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
 
-            var extras = new Dictionary<string, object>
+            var extras = new Extras
             {
                 ["Count"] = info?.Count,
                 ["UnknownCount"] = info?.UnknownCount

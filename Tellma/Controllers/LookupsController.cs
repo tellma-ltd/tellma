@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
 
 namespace Tellma.Controllers
 {
@@ -23,65 +24,101 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "lookups/";
 
-        private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
-        private readonly IDefinitionsCache _definitionsCache;
+        private readonly LookupsService _service;
+        private readonly ILogger<LookupsController> _logger;
 
-        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ?? 
-            throw new BadRequestException("URI must be of the form 'api/lookups/{definitionId}'");
-
-        private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
-            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
-
-        private string View => $"{BASE_ADDRESS}{DefinitionId}";
-
-        public LookupsController(
-            ILogger<LookupsController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            IDefinitionsCache definitionsCache) : base(logger, localizer)
+        public LookupsController(LookupsService service, ILogger<LookupsController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
-            _definitionsCache = definitionsCache;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Lookup>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+
+            }, _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Lookup>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
-        }
-
-        private async Task<ActionResult<EntitiesResponse<Lookup>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
-        {
-            // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
-
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Lookups__Activate(ids, isActive);
-
-            if (args.ReturnEntities ?? false)
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var response = await LoadDataByIdsAndTransform(ids, args);
-
-                trx.Complete();
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+
+            }, _logger);
         }
+
+        protected override CrudServiceBase<LookupForSave, Lookup, int> GetCrudService()
+        {
+            return _service;
+        }
+    }
+
+    public class LookupsService : CrudServiceBase<LookupForSave, Lookup, int>
+    {
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private string _definitionIdOverride;
+
+        private string DefinitionId => _definitionIdOverride ??
+            _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
+            throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(LookupsService)}");
+
+        private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
+            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+
+        private string View => $"{LookupsController.BASE_ADDRESS}{DefinitionId}";
+
+        public LookupsService(
+            ILogger<LookupsController> logger,
+            IStringLocalizer<Strings> localizer,
+            ApplicationRepository repo,
+            IDefinitionsCache definitionsCache,
+            IHttpContextAccessor contextAccessor) : base(localizer)
+        {
+            _logger = logger;
+            _localizer = localizer;
+            _repo = repo;
+            _definitionsCache = definitionsCache;
+            _contextAccessor = contextAccessor;
+        }
+
+        #region Public Members
+
+        /// <summary>
+        /// Overrides the default behavior of reading the definition Id from the route data
+        /// </summary>
+        public LookupsService SetDefinitionId(string definitionId)
+        {
+            _definitionIdOverride = definitionId;
+            return this;
+        }
+
+        public Task<(List<Lookup>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: true);
+        }
+
+        public Task<(List<Lookup>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        #endregion
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
@@ -96,21 +133,8 @@ namespace Tellma.Controllers
 
         protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            string search = args.Search;
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
+            return LookupServiceUtil.SearchImpl(query, args, filteredPermissions);
 
-                var name = nameof(Lookup.Name);
-                var name2 = nameof(Lookup.Name2);
-                var name3 = nameof(Lookup.Name3);
-                var code = nameof(Lookup.Code);
-
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
-            }
-
-            return query;
         }
 
         protected override async Task SaveValidateAsync(List<LookupForSave> entities)
@@ -158,6 +182,114 @@ namespace Tellma.Controllers
         protected override OrderByExpression DefaultOrderBy()
         {
             return OrderByExpression.Parse("SortKey,Id desc");
+        }
+
+        private async Task<(List<Lookup>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsActive", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Lookups__Activate(ids, isActive);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
+            }
+        }
+    }
+
+    [Route("api/" + LookupsController.BASE_ADDRESS)]
+    [ApplicationController]
+    public class LookupsGenericController : FactWithIdControllerBase<Lookup, int>
+    {
+        private readonly LookupsGenericService _service;
+
+        public LookupsGenericController(LookupsGenericService service, ILogger<LookupsGenericController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactWithIdServiceBase<Lookup, int> GetFactWithIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class LookupsGenericService : FactWithIdServiceBase<Lookup, int>
+    {
+        private readonly ApplicationRepository _repo;
+
+        public LookupsGenericService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        {
+            _repo = repo;
+        }
+
+        protected override IRepository GetRepository() => _repo;
+
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
+        {
+            // Get all permissions pertaining to Lookups
+            string prefix = LookupsController.BASE_ADDRESS;
+            var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
+
+            // Massage the permissions by adding definitionId = definitionId as an extra clause 
+            // (since the controller will not filter the results per any specific definition Id)
+            foreach (var permission in permissions.Where(e => e.View != "all"))
+            {
+                string definitionId = permission.View.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionPredicate = $"{nameof(Lookup.DefinitionId)} {Ops.eq} '{definitionId}'";
+                if (!string.IsNullOrWhiteSpace(permission.Criteria))
+                {
+                    permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
+                }
+                else
+                {
+                    permission.Criteria = definitionPredicate;
+                }
+            }
+
+            // Return the massaged permissions
+            return permissions;
+        }
+
+        protected override Query<Lookup> Search(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            return LookupServiceUtil.SearchImpl(query, args, filteredPermissions);
+        }
+    }
+
+    internal class LookupServiceUtil
+    {
+        /// <summary>
+        /// This is needed in both the generic and specific controllers, so we move it out here
+        /// </summary>
+        public static Query<Lookup> SearchImpl(Query<Lookup> query, GetArguments args, IEnumerable<AbstractPermission> _)
+        {
+            string search = args.Search;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(Lookup.Name);
+                var name2 = nameof(Lookup.Name2);
+                var name3 = nameof(Lookup.Name3);
+                var code = nameof(Lookup.Code);
+
+                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
+                query = query.Filter(FilterExpression.Parse(filterString));
+            }
+
+            return query;
         }
     }
 }

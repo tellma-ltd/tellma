@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
+using Tellma.Controllers.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -27,21 +28,17 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class AdminSettingsController : ControllerBase
     {
+        private readonly AdminSettingsService _service;
+
         // Private fields
 
-        private readonly AdminRepository _repo;
         private readonly ILogger<SettingsController> _logger;
-        private readonly IStringLocalizer _localizer;
 
-        public AdminSettingsController(AdminRepository repo,
-            ILogger<SettingsController> logger,
-            IStringLocalizer<Strings> localizer)
+        public AdminSettingsController(AdminSettingsService service, ILogger<SettingsController> logger)
         {
-            _repo = repo;
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
         }
-
 
         // API
 
@@ -75,103 +72,75 @@ namespace Tellma.Controllers
         //    }
         //}
 
-    //[HttpPost]
-    //public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
-    //{
-    //    // Authorized access (Criteria are not supported here)
-    //    var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings");
-    //    if (!updatePermissions.Any())
-    //    {
-    //        return StatusCode(403);
-    //    }
+        //[HttpPost]
+        //public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
+        //{
+        //    // Authorized access (Criteria are not supported here)
+        //    var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings");
+        //    if (!updatePermissions.Any())
+        //    {
+        //        return StatusCode(403);
+        //    }
 
-    //    try
-    //    {
-    //        // Trim all string fields just in case
-    //        settingsForSave.TrimStringProperties();
+        //    try
+        //    {
+        //        // Trim all string fields just in case
+        //        settingsForSave.TrimStringProperties();
 
-    //        // Validate
-    //        ValidateAndPreprocessSettings(settingsForSave);
+        //        // Validate
+        //        ValidateAndPreprocessSettings(settingsForSave);
 
-    //        if (!ModelState.IsValid)
-    //        {
-    //            return UnprocessableEntity(ModelState);
-    //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return UnprocessableEntity(ModelState);
+        //        }
 
-    //        // Persist
-    //        await _repo.Settings__Save(settingsForSave);
+        //        // Persist
+        //        await _repo.Settings__Save(settingsForSave);
 
-    //        // Update the settings cache
-    //        var tenantId = _tenantIdAccessor.GetTenantId();
-    //        var settingsForClient = await LoadSettingsForClient(_repo);
-    //        _settingsCache.SetSettings(tenantId, settingsForClient);
+        //        // Update the settings cache
+        //        var tenantId = _tenantIdAccessor.GetTenantId();
+        //        var settingsForClient = await LoadSettingsForClient(_repo);
+        //        _settingsCache.SetSettings(tenantId, settingsForClient);
 
-    //        // If requested, return the updated entity
-    //        if (args.ReturnEntities ?? false)
-    //        {
-    //            // If requested, return the same response you would get from a GET
-    //            var res = await GetImpl(new GetByIdArguments { Expand = args.Expand });
-    //            var result = new SaveSettingsResponse
-    //            {
-    //                Entities = res.Entities,
-    //                Result = res.Result,
-    //                SettingsForClient = settingsForClient
-    //            };
+        //        // If requested, return the updated entity
+        //        if (args.ReturnEntities ?? false)
+        //        {
+        //            // If requested, return the same response you would get from a GET
+        //            var res = await GetImpl(new GetByIdArguments { Expand = args.Expand });
+        //            var result = new SaveSettingsResponse
+        //            {
+        //                Entities = res.Entities,
+        //                Result = res.Result,
+        //                SettingsForClient = settingsForClient
+        //            };
 
-    //            return result;
-    //        }
-    //        else
-    //        {
-    //            return Ok();
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-    //        return BadRequest(ex.Message);
-    //    }
-    //}
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            return Ok();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
-    #endregion
+        #endregion
 
-    [HttpGet("client")]
+        [HttpGet("client")]
         public async Task<ActionResult<DataWithVersion<AdminSettingsForClient>>> SettingsForClient(CancellationToken cancellation)
         {
-            try
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
-                var adminSettings = await _repo.Settings__Load(cancellation);
-                if (adminSettings == null)
-                {
-                    throw new BadRequestException("Admin Settings were not initialized");
-                }
-
-                var adminSettingsForClient = new AdminSettingsForClient
-                {
-                    CreatedAt = adminSettings.CreatedAt
-                };
-
-                var result = new DataWithVersion<AdminSettingsForClient>
-                {
-                    Data = adminSettingsForClient,
-                    Version = adminSettings.SettingsVersion.ToString()
-                };
-
+                var result = await _service.SettingsForClient(cancellation);
                 return Ok(result);
-            }
-            catch (TaskCanceledException)
-            {
-                return Ok();
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            }, 
+            _logger);
         }
 
         [HttpGet("ping")]
@@ -182,7 +151,6 @@ namespace Tellma.Controllers
 
             return Ok();
         }
-
 
         // Helper methods
 
@@ -302,6 +270,43 @@ namespace Tellma.Controllers
 
             return result;
         }
+    }
 
+    public class AdminSettingsService : ServiceBase
+    {
+        // Private fields
+
+        private readonly AdminRepository _repo;
+        private readonly IStringLocalizer _localizer;
+
+        public AdminSettingsService(AdminRepository repo,
+            IStringLocalizer<Strings> localizer)
+        {
+            _repo = repo;
+            _localizer = localizer;
+        }
+
+        public async Task<DataWithVersion<AdminSettingsForClient>> SettingsForClient(CancellationToken cancellation)
+        {
+            // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
+            var adminSettings = await _repo.Settings__Load(cancellation);
+            if (adminSettings == null)
+            {
+                throw new BadRequestException("Admin Settings were not initialized");
+            }
+
+            var adminSettingsForClient = new AdminSettingsForClient
+            {
+                CreatedAt = adminSettings.CreatedAt
+            };
+
+            var result = new DataWithVersion<AdminSettingsForClient>
+            {
+                Data = adminSettingsForClient,
+                Version = adminSettings.SettingsVersion.ToString()
+            };
+
+            return result;
+        }
     }
 }

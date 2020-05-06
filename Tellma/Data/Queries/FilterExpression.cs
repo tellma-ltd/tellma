@@ -63,14 +63,14 @@ namespace Tellma.Data.Queries
         // All the symbols, we use spaces before and after the operators to tell them apart
         // Special handling for "not(E)" we need to allow for no space before or after it, and at
         // the same time cannot get confused with property names like "Notes"
-        private static readonly List<string> _symbols = new List<string>(new string[] { // the order matters
+        private static readonly List<string> _symbols = new List<string> { // the order matters
 
                     // Logical Operators
                     " and ", " or ", "not",
                     
                     // Parentheses
                     "(", ")",
-                });
+                };
 
         /// <summary>
         /// Lexical Analysis: Turns the filter expression into a stream of recognized tokens
@@ -197,17 +197,25 @@ namespace Tellma.Data.Queries
                         {
                             throw new InvalidOperationException("Incorrectly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
                         }
-
-                        output.Push(FilterConjunction.Make(left: output.Pop(), right: output.Pop()));
-                        break;
+                        else
+                        {
+                            var right = output.Pop();
+                            var left = output.Pop();
+                            output.Push(FilterConjunction.Make(left: left, right: right));
+                            break;
+                        }
                     case "or":
                         if (output.Count < 2)
                         {
                             throw new InvalidOperationException("Incorrectly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
                         }
-
-                        output.Push(FilterDisjunction.Make(left: output.Pop(), right: output.Pop()));
-                        break;
+                        else
+                        {
+                            var right = output.Pop();
+                            var left = output.Pop();
+                            output.Push(FilterDisjunction.Make(left: left, right: right));
+                            break;
+                        }
                     case "not":
                         if (output.Count < 1)
                         {
@@ -256,7 +264,7 @@ namespace Tellma.Data.Queries
 
                         return peek != "(" &&
                             (
-                                peek == "not" || peekInfo.Precedence > opInfo.Precedence ||
+                                peek == "not" || peekInfo.Precedence < opInfo.Precedence ||
                                 (peekInfo.Precedence == opInfo.Precedence && peekInfo.IsLeftAssociative)
                             );
                     }
@@ -274,12 +282,6 @@ namespace Tellma.Data.Queries
                 }
                 else if (token == ")")
                 {
-                    if (ops.Count == 0)
-                    {
-                        // There should have been a left paren in the stack
-                        throw new InvalidOperationException("Filter expression contains mismatched parentheses");
-                    }
-
                     // Keep popping from the operator queue until you hit a left paren
                     while (ops.Count > 0 && ops.Peek() != "(")
                     {
@@ -300,7 +302,7 @@ namespace Tellma.Data.Queries
                 }
                 else
                 {
-                    // It's a simple atom, add it the output
+                    // It's a simple atom, add it to the output
                     AddToOutput(token);
                 }
             }

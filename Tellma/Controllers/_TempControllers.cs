@@ -25,14 +25,25 @@ namespace Tellma.Controllers
     [ApplicationController]
     public class VoucherBookletsController : FactGetByIdControllerBase<VoucherBooklet, int>
     {
+        private readonly VoucherBookletsService _service;
+
+        public VoucherBookletsController(ILogger<VoucherBookletsController> logger, VoucherBookletsService service) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactGetByIdServiceBase<VoucherBooklet, int> GetFactGetByIdService() => _service;
+    }
+
+    public class VoucherBookletsService : FactGetByIdServiceBase<VoucherBooklet, int>
+    {
         private readonly ApplicationRepository _repo;
 
         private string VIEW => "voucher-booklets";
 
-        public VoucherBookletsController(
-            ILogger<VoucherBookletsController> logger,
+        public VoucherBookletsService(
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+            ApplicationRepository repo) : base(localizer)
         {
             _repo = repo;
         }

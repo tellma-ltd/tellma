@@ -16,14 +16,27 @@ namespace Tellma.Controllers
     public class IfrsConceptsController : FactGetByIdControllerBase<IfrsConcept, int>
     {
         public const string BASE_ADDRESS = "ifrs-concepts";
-        private string View => BASE_ADDRESS;
+
+        private readonly IfrsConceptsService _service;
+
+        public IfrsConceptsController(IfrsConceptsService service, ILogger<IfrsConceptsController> logger) : base(logger)
+        {
+            _service = service;
+        }
+
+        protected override FactGetByIdServiceBase<IfrsConcept, int> GetFactGetByIdService()
+        {
+            return _service;
+        }
+    }
+
+    public class IfrsConceptsService : FactGetByIdServiceBase<IfrsConcept, int>
+    {
+        private string View => IfrsConceptsController.BASE_ADDRESS;
 
         private readonly ApplicationRepository _repo;
 
-        public IfrsConceptsController(
-            ApplicationRepository repo,
-            ILogger<IfrsConceptsController> logger,
-            IStringLocalizer<Strings> localizer) : base(logger, localizer)
+        public IfrsConceptsService(ApplicationRepository repo, IStringLocalizer<Strings> localizer) : base(localizer)
         {
             _repo = repo;
         }

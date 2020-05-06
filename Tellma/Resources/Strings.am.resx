@@ -940,6 +940,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>facebook</value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>ፋይል</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>ይህ አሳሽ እርሳ</value>
   </data>
@@ -1131,6 +1134,39 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>ማውጫ ደርድር ቁልፍ</value>
+  </data>
+  <data name="MarkupTemplate" xml:space="preserve">
+    <value>ምልክት አድርግ አብነት</value>
+  </data>
+  <data name="MarkupTemplate_Body" xml:space="preserve">
+    <value>አካል</value>
+  </data>
+  <data name="MarkupTemplate_Collection" xml:space="preserve">
+    <value>ስብስብ</value>
+  </data>
+  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
+    <value>መግለጫ</value>
+  </data>
+  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
+    <value>አውርድ ስም</value>
+  </data>
+  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
+    <value>ለውጥ ያዥ ቋንቋ</value>
+  </data>
+  <data name="MarkupTemplate_Supports" xml:space="preserve">
+    <value>ድጋፎች</value>
+  </data>
+  <data name="MarkupTemplate_Usage" xml:space="preserve">
+    <value>አጠቃቀም</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
+    <value>ማስተር ማያ ገጽ</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
+    <value>ዝርዝሮች ማያ ገጽ</value>
+  </data>
+  <data name="MarkupTemplates" xml:space="preserve">
+    <value>ምልክት አድርግ አብነቶች</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>አባላት</value>

@@ -1,0 +1,46 @@
+﻿<style>
+    .p-2 {
+        padding: 0.5rem;
+    }
+
+    .px-3 {
+        padding: 0 1rem;
+    }
+</style>
+<div class="px-3">
+    <h1 class="red bold">People's voices must be heard</h1>
+    <code></code>
+</div>
+<div>
+    <img style="width: 100%" src="{{companyLogo}}" />
+</div>
+<br />
+<a href="https://www.wikipedia.org">Go to Wikipedia Bro</a>
+<div class="azure p-2" style="page-break-after: always;">Your developer journey with iText begins here {{doc.SerialNumber}} and (كلكم راع)</div>
+<table style="width:100%; border-collapse: collapse;margin-top:30px;" class="border">
+    <thead>
+        <tr>
+            <th>Memo</th>
+            <th>Age</th>
+            <th class="right">Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ *foreach line in doc.Lines }}
+        <tr>
+            <td>{{ line.Memo }}</td>
+        </tr>
+
+        {{ *end foreach }}
+        <!--<tr>
+            <td>ዋናው ገጽ</td>
+            <td>28</td>
+            <td class="right">1,500</td>
+        </tr>
+        <tr>
+            <td>Ulber</td>
+            <td>47</td>
+            <td class="right">1,700</td>
+        </tr>-->
+    </tbody>
+</table>

@@ -940,6 +940,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>文件</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>忘记这个浏览器</value>
   </data>
@@ -1131,6 +1134,39 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>菜单排序关键字</value>
+  </data>
+  <data name="MarkupTemplate" xml:space="preserve">
+    <value>标记模板</value>
+  </data>
+  <data name="MarkupTemplate_Body" xml:space="preserve">
+    <value>身体</value>
+  </data>
+  <data name="MarkupTemplate_Collection" xml:space="preserve">
+    <value>采集</value>
+  </data>
+  <data name="MarkupTemplate_DefinitionId" xml:space="preserve">
+    <value>定义</value>
+  </data>
+  <data name="MarkupTemplate_DownloadName" xml:space="preserve">
+    <value>下载名称</value>
+  </data>
+  <data name="MarkupTemplate_MarkupLanguage" xml:space="preserve">
+    <value>标记语言</value>
+  </data>
+  <data name="MarkupTemplate_Supports" xml:space="preserve">
+    <value>支持</value>
+  </data>
+  <data name="MarkupTemplate_Usage" xml:space="preserve">
+    <value>用法</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryByFilter" xml:space="preserve">
+    <value>从主屏幕</value>
+  </data>
+  <data name="MarkupTemplate_Usage_QueryById" xml:space="preserve">
+    <value>从详细信息窗口</value>
+  </data>
+  <data name="MarkupTemplates" xml:space="preserve">
+    <value>标记模板</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>会员</value>

@@ -153,12 +153,9 @@ export function downloadBlob(blob: Blob, fileName: string) {
     // Below is a trick for downloading files without opening
     // a new window. This is a more elegant user experience
     const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.setAttribute('style', 'display: none');
     a.href = url;
     a.download = fileName || 'file';
     a.click();
-    a.remove();
 
     // Best practice to prevent a memory leak, especially in a SPA
     window.URL.revokeObjectURL(url);
@@ -319,4 +316,42 @@ export function toLocalDateISOString(date: Date): string {
         }
 
         return `${year}-${month}-${day}`;
+}
+
+function closePrint() {
+  // Cleanup durty once the user closes the print dialog
+  document.body.removeChild(this.__container__);
+  window.URL.revokeObjectURL(this.__url__);
+}
+
+function setPrintFactory(url: string): () => void {
+  // As soon as the iframe is loaded and ready
+  return function() {
+    this.contentWindow.__container__ = this;
+    this.contentWindow.__url__ = url;
+    this.contentWindow.onbeforeunload = closePrint;
+    this.contentWindow.onafterprint = closePrint;
+    this.contentWindow.focus(); // Required for IE
+    this.contentWindow.print();
+  };
+}
+
+/**
+ * Attaches the given blob in a hidden iFrame and calls print() on
+ * that iframe, and then takes care cleanup duty afterwards.
+ * This function was inspired from MDN: https://mzl.la/2YfOs1v
+ */
+export function printBlob(blob: Blob): void {
+  const url = window.URL.createObjectURL(blob);
+
+  const oHiddFrame = document.createElement('iframe');
+  oHiddFrame.onload = setPrintFactory(url);
+  oHiddFrame.style.position = 'fixed';
+  oHiddFrame.style.right = '0';
+  oHiddFrame.style.bottom = '0';
+  oHiddFrame.style.width = '0';
+  oHiddFrame.style.height = '0';
+  oHiddFrame.style.border = '0';
+  oHiddFrame.src = url;
+  document.body.appendChild(oHiddFrame);
 }

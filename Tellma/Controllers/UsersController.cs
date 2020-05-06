@@ -23,6 +23,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace Tellma.Controllers
 {
@@ -33,51 +35,13 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "users";
 
-        private readonly ApplicationRepository _appRepo;
-        private readonly AdminRepository _adminRepo;
-        private readonly ITenantIdAccessor _tenantIdAccessor;
-        private readonly IBlobService _blobService;
-        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly UsersService _service;
         private readonly ILogger _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly EmailTemplatesProvider _emailTemplates;
-        private readonly GlobalOptions _options;
-        private readonly IStringLocalizer _localizer;
-        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
 
-        // This is created and disposed across multiple methods
-        private TransactionScope _adminTrxScope;
-        private TransactionScope _identityTrxScope;
-
-        private string View => BASE_ADDRESS;
-
-        public UsersController(
-            ApplicationRepository appRepo,
-            AdminRepository adminRepo,
-            IModelMetadataProvider metadataProvider,
-            ILogger<UsersController> logger,
-            IOptions<GlobalOptions> options,
-            IServiceProvider serviceProvider,
-            IEmailSender emailSender,
-            EmailTemplatesProvider emailTemplates,
-            IStringLocalizer<Strings> localizer,
-            ITenantIdAccessor tenantIdAccessor,
-            IBlobService blobService) : base(logger, localizer)
+        public UsersController(UsersService service, ILogger<UsersController> logger) : base(logger)
         {
-            _appRepo = appRepo;
-            _adminRepo = adminRepo;
-            _tenantIdAccessor = tenantIdAccessor;
-            _blobService = blobService;
-            _metadataProvider = metadataProvider;
+            _service = service;
             _logger = logger;
-            _emailSender = emailSender;
-            _emailTemplates = emailTemplates;
-            _options = options.Value;
-            _localizer = localizer;
-
-            // we use this trick since this is an optional dependency, it will resolve to null if 
-            // the embedded identity server is not enabled
-            _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
         [HttpGet("client")]
@@ -85,90 +49,34 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
-
-                // prepare the result
-                var userSettingsForClient = new UserSettingsForClient
-                {
-                    UserId = user.Id,
-                    Name = user.Name,
-                    Name2 = user.Name2,
-                    Name3 = user.Name3,
-                    ImageId = user.ImageId,
-                    PreferredLanguage = user.PreferredLanguage,
-                    CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
-                };
-
-                var result = new DataWithVersion<UserSettingsForClient>
-                {
-                    Version = version.ToString(),
-                    Data = userSettingsForClient
-                };
-
+                var result = await _service.UserSettingsForClient(cancellation);
                 return Ok(result);
-            }, _logger);
+            },
+            _logger);
         }
 
         [HttpPost("client")]
         public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> SaveUserSetting(
-            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)] string key,
+            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = Constants.Error_TheField0IsRequired)] string key,
             [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
-        {
-            await _appRepo.Users__SaveSettings(key, value);
-
-            return await UserSettingsForClient(cancellation: default);
-        }
-
-        [HttpPut("invite")]
-        public async Task<ActionResult> ResendInvitationEmail(int id)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                if (!_options.EmailEnabled)
-                {
-                    // Developer mistake
-                    throw new BadRequestException("Email is not enabled in this installation");
-                }
+                var result = await _service.SaveUserSetting(key, value);
+                return Ok(result);
+            },
+            _logger);
+        }
 
-                if (!this._options.EmbeddedIdentityServerEnabled)
-                {
-                    // Developer mistake
-                    throw new BadRequestException("Embedded identity is not enabled in this installation");
-                }
-
-                // Check if the user has permission
-                var idSingleton = new List<int> { id };
-                await CheckActionPermissions("ResendInvitationEmail", idSingleton);
-
-                // Load the user
-                var user = await _appRepo.Users.FilterByIds(idSingleton).FirstOrDefaultAsync(cancellation: default);
-                if (user == null)
-                {
-                    throw new NotFoundException<int>(id);
-                }
-
-                if (!string.IsNullOrWhiteSpace(user.ExternalId))
-                {
-                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-                }
-
-                string toEmail = user.Email;
-                var idUser = await _userManager.FindByEmailAsync(toEmail);
-                if (idUser == null)
-                {
-                    throw new NotFoundException<string>(toEmail);
-                }
-
-                if (idUser.EmailConfirmed)
-                {
-                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
-                }
-
-                var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
-                await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
-                return base.Ok();
-
-            }, _logger);
+        [HttpPut("invite")]
+        public async Task<ActionResult> ResendInvitationEmail(int userId)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                await _service.ResentInvitationEmail(userId);
+                return Ok();
+            },
+            _logger);
         }
 
         [HttpGet("{id}/image")]
@@ -176,35 +84,11 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                string imageId;
-                if (id == _appRepo.GetUserInfo().UserId)
-                {
-                    // A user can always view their own image, so we bypass read permissions
-                    User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(Entities.User.ImageId)).FirstOrDefaultAsync(cancellation);
-                    imageId = me.ImageId;
-                }
-                else
-                {
-                    // This enforces read permissions
-                    var user = await GetByIdLoadData(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) }, cancellation);
-                    imageId = user.ImageId;
-                }
-
-                // Get the blob name
-                if (imageId != null)
-                {
-                    // Get the bytes
-                    string blobName = BlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
-
-                    Response.Headers.Add("x-image-id", imageId);
-                    return File(imageBytes, "image/jpeg");
-                }
-                else
-                {
-                    return NotFound("This user does not have a picture");
-                }
-            }, _logger);
+                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                Response.Headers.Add("x-image-id", imageId);
+                return File(imageBytes, "image/jpeg");
+            },
+            _logger);
         }
 
         [HttpGet("me")]
@@ -212,8 +96,9 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                GetByIdResponse<User> result = await GetMyUserImpl(cancellation);
-                return Ok(result);
+                User user = await _service.GetMyUser(cancellation);
+                GetByIdResponse<User> response = TransformToResponse(user, cancellation);
+                return Ok(response);
             },
             _logger);
         }
@@ -223,21 +108,42 @@ namespace Tellma.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                GetByIdResponse<User> result = await SaveMyUserImpl(me);
+                User user = await _service.SaveMyUser(me);
+                GetByIdResponse<User> result = TransformToResponse(user, cancellation: default);
                 Response.Headers.Set("x-user-settings-version", Constants.Stale);
                 return Ok(result);
 
             }, _logger);
         }
 
-        private async Task<GetByIdResponse<User>> GetMyUserImpl(CancellationToken cancellation)
+        [HttpPut("activate")]
+        public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            int myId = _appRepo.GetUserInfo().UserId.Value;
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            },
+            _logger);
+        }
 
-            // Prepare the odata query
-            var myIdSingleton = new List<int> { myId };
-            var me = await _appRepo.Users.FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation);
+        [HttpPut("deactivate")]
+        public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            },
+            _logger);
+        }
 
+        private GetByIdResponse<User> TransformToResponse(User me, CancellationToken cancellation)
+        {
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             var relatedEntities = FlattenAndTrim(new List<User> { me }, cancellation);
 
@@ -250,7 +156,153 @@ namespace Tellma.Controllers
             };
         }
 
-        private async Task<GetByIdResponse<User>> SaveMyUserImpl([FromBody] MyUserForSave me)
+        protected override CrudServiceBase<UserForSave, User, int> GetCrudService()
+        {
+            return _service;
+        }
+    }
+
+    public class UsersService : CrudServiceBase<UserForSave, User, int>
+    {
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly LinkGenerator _linkGenerator;
+        private readonly ApplicationRepository _appRepo;
+        private readonly AdminRepository _adminRepo;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IBlobService _blobService;
+        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly IEmailSender _emailSender;
+        private readonly EmailTemplatesProvider _emailTemplates;
+        private readonly GlobalOptions _options;
+        private readonly IStringLocalizer _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+
+        // This is created and disposed across multiple methods
+        private TransactionScope _adminTrxScope;
+        private TransactionScope _identityTrxScope;
+
+        private string View => UsersController.BASE_ADDRESS;
+
+        public UsersService(
+            IHttpContextAccessor contextAccessor,
+            LinkGenerator linkGenerator,
+            ApplicationRepository appRepo,
+            AdminRepository adminRepo,
+            IModelMetadataProvider metadataProvider,
+            IOptions<GlobalOptions> options,
+            IServiceProvider serviceProvider,
+            IEmailSender emailSender,
+            EmailTemplatesProvider emailTemplates,
+            IStringLocalizer<Strings> localizer,
+            ITenantIdAccessor tenantIdAccessor,
+            IBlobService blobService) : base(localizer)
+        {
+            _contextAccessor = contextAccessor;
+            _linkGenerator = linkGenerator;
+            _appRepo = appRepo;
+            _adminRepo = adminRepo;
+            _tenantIdAccessor = tenantIdAccessor;
+            _blobService = blobService;
+            _metadataProvider = metadataProvider;
+            _emailSender = emailSender;
+            _emailTemplates = emailTemplates;
+            _options = options.Value;
+            _localizer = localizer;
+
+            // we use this trick since this is an optional dependency, it will resolve to null if 
+            // the embedded identity server is not enabled
+            _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
+        }
+
+        public async Task<DataWithVersion<UserSettingsForClient>> SaveUserSetting(string key, string value)
+        {
+            await _appRepo.Users__SaveSettings(key, value);
+            return await UserSettingsForClient(cancellation: default);
+        }
+
+        public async Task<DataWithVersion<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
+        {
+            var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
+
+            // prepare the result
+            var userSettingsForClient = new UserSettingsForClient
+            {
+                UserId = user.Id,
+                Name = user.Name,
+                Name2 = user.Name2,
+                Name3 = user.Name3,
+                ImageId = user.ImageId,
+                PreferredLanguage = user.PreferredLanguage,
+                CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
+            };
+
+            var result = new DataWithVersion<UserSettingsForClient>
+            {
+                Version = version.ToString(),
+                Data = userSettingsForClient
+            };
+
+            return result;
+        }
+
+        public async Task ResentInvitationEmail(int userId)
+        {
+            if (!_options.EmailEnabled)
+            {
+                // Developer mistake
+                throw new BadRequestException("Email is not enabled in this installation");
+            }
+
+            if (!_options.EmbeddedIdentityServerEnabled)
+            {
+                // Developer mistake
+                throw new BadRequestException("Embedded identity is not enabled in this installation");
+            }
+
+            // Check if the user has permission
+            var idSingleton = new List<int> { userId };
+            await CheckActionPermissions("ResendInvitationEmail", idSingleton);
+
+            // Load the user
+            var user = await _appRepo.Users.FilterByIds(idSingleton).FirstOrDefaultAsync(cancellation: default);
+            if (user == null)
+            {
+                throw new NotFoundException<int>(userId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.ExternalId))
+            {
+                throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
+            }
+
+            string toEmail = user.Email;
+            var idUser = await _userManager.FindByEmailAsync(toEmail);
+            if (idUser == null)
+            {
+                throw new NotFoundException<string>(toEmail);
+            }
+
+            if (idUser.EmailConfirmed)
+            {
+                throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
+            }
+
+            var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
+            await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
+        }
+
+        public async Task<User> GetMyUser(CancellationToken cancellation)
+        {
+            int myId = _appRepo.GetUserInfo().UserId.Value;
+
+            // Prepare the odata query
+            var myIdSingleton = new List<int> { myId };
+            var me = await _appRepo.Users.FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation);
+
+            return me;
+        }
+
+        public async Task<User> SaveMyUser([FromBody] MyUserForSave me)
         {
             int myId = _appRepo.GetUserInfo().UserId.Value;
             var myIdSingleton = new List<int> { myId };
@@ -310,26 +362,55 @@ namespace Tellma.Controllers
 
             // Save and retrieve response
             await SaveExecuteAsync(entities, returnIds: false);
-            var response = await GetMyUserImpl(cancellation: default);
+            var response = await GetMyUser(cancellation: default);
 
             // Commit and return
             trx.Complete();
             return response;
         }
 
-        [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
+            string imageId;
+            if (id == _appRepo.GetUserInfo().UserId)
+            {
+                // A user can always view their own image, so we bypass read permissions
+                User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(User.ImageId)).FirstOrDefaultAsync(cancellation);
+                imageId = me.ImageId;
+            }
+            else
+            {
+                // This enforces read permissions
+                var (user, _) = await GetById(id, new GetByIdArguments { Select = nameof(User.ImageId) }, cancellation);
+                imageId = user.ImageId;
+            }
+
+            // Get the blob name
+            if (imageId != null)
+            {
+                // Get the bytes
+                string blobName = BlobName(imageId);
+                var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
+
+                return (imageId, imageBytes);
+            }
+            else
+            {
+                throw new NotFoundException<int>(id);
+            }
         }
 
-        [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public Task<(List<User>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
+            return SetIsActive(ids, args, isActive: true);
         }
 
-        private async Task<ActionResult<EntitiesResponse<User>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
+        public Task<(List<User>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        private async Task<(List<User>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
             await CheckActionPermissions("IsActive", ids);
@@ -361,59 +442,16 @@ namespace Tellma.Controllers
 
             if (args.ReturnEntities ?? false)
             {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+                var response = await GetByIds(ids, args, cancellation: default);
 
                 trx.Complete();
-                return Ok(response);
+                return response;
             }
             else
             {
                 trx.Complete();
-                return Ok();
+                return default;
             }
-        }
-
-        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string name, string name2, string name3, string preferredLang)
-        {
-            // Load the info
-            var info = await _appRepo.GetTenantInfoAsync(cancellation: default);
-
-            // Use the recipient's preferred Language
-            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ?
-                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang);
-            using var _ = new CultureScope(culture);
-
-            // Prepare the parameters
-            string userId = identityRecipient.Id;
-            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityRecipient);
-            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
-            string nameOfInvitor =
-                info.SecondaryLanguageId == culture.Name ? info.ShortCompanyName2 ?? info.ShortCompanyName :
-                info.TernaryLanguageId == culture.Name ? info.ShortCompanyName3 ?? info.ShortCompanyName :
-                info.ShortCompanyName;
-
-            string nameOfRecipient =
-                info.SecondaryLanguageId == name ? name2 ?? name :
-                info.TernaryLanguageId == name ? name3 ?? name :
-                name;
-
-            string callbackUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-                    protocol: Request.Scheme);
-
-            // Prepare the email
-            string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
-            string emailBody = _emailTemplates.MakeInvitationEmail(
-                 nameOfRecipient: nameOfRecipient,
-                 nameOfInvitor: nameOfInvitor,
-                 validityInDays: Constants.TokenExpiryInDays,
-                 userId: userId,
-                 callbackUrl: callbackUrl,
-                 culture: culture);
-
-            return (emailSubject, emailBody);
         }
 
         protected override IRepository GetRepository()
@@ -544,9 +582,7 @@ namespace Tellma.Controllers
                         if (!result.Succeeded)
                         {
                             string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                            _logger.LogError(msg);
-
-                            throw new BadRequestException($"An unexpected error occurred while creating an account for '{email}'");
+                            throw new InvalidOperationException(msg);
                         }
                     }
 
@@ -706,6 +742,53 @@ namespace Tellma.Controllers
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
             return $"{tenantId}/Users/{guid}";
+        }
+
+        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string name, string name2, string name3, string preferredLang)
+        {
+            // Load the info
+            var info = await _appRepo.GetTenantInfoAsync(cancellation: default);
+
+            // Use the recipient's preferred Language
+            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ?
+                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang);
+            using var _ = new CultureScope(culture);
+
+            // Prepare the parameters
+            string userId = identityRecipient.Id;
+            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityRecipient);
+            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
+            string nameOfInvitor =
+                info.SecondaryLanguageId == culture.Name ? info.ShortCompanyName2 ?? info.ShortCompanyName :
+                info.TernaryLanguageId == culture.Name ? info.ShortCompanyName3 ?? info.ShortCompanyName :
+                info.ShortCompanyName;
+
+            string nameOfRecipient =
+                info.SecondaryLanguageId == name ? name2 ?? name :
+                info.TernaryLanguageId == name ? name3 ?? name :
+                name;
+
+            string callbackUrl = _linkGenerator.GetUriByPage(
+                    httpContext: _contextAccessor.HttpContext ?? throw new InvalidOperationException("Unable to access the HttpContext to generate invitation links"),
+                    page: "/Account/ConfirmEmail");
+
+            //string callbackUrl = Url.Page(
+            //        "/Account/ConfirmEmail",
+            //        pageHandler: null,
+            //        values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
+            //        protocol: Request.Scheme);
+
+            // Prepare the email
+            string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];
+            string emailBody = _emailTemplates.MakeInvitationEmail(
+                 nameOfRecipient: nameOfRecipient,
+                 nameOfInvitor: nameOfInvitor,
+                 validityInDays: Constants.TokenExpiryInDays,
+                 userId: userId,
+                 callbackUrl: callbackUrl,
+                 culture: culture);
+
+            return (emailSubject, emailBody);
         }
     }
 }

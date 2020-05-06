@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -20,55 +21,58 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "roles";
 
+        private readonly RolesService _service;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
-        private readonly ApplicationRepository _repo;
 
-        private string View => BASE_ADDRESS;
-
-        public RolesController(
-            ILogger<RolesController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+        public RolesController(RolesService service, ILogger<RolesController> logger) : base(logger)
         {
+            _service = service;
             _logger = logger;
-            _localizer = localizer;
-            _repo = repo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: true), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Activate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, 
+            _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.InvokeActionImpl(() => ActivateImpl(ids: ids, args, isActive: false), _logger);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+                return Ok(response);
+            }, 
+            _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Role>>> ActivateImpl(List<int> ids, ActionArguments args, bool isActive)
+        protected override CrudServiceBase<RoleForSave, Role, int> GetCrudService()
         {
-            // Check user permissions
-            await CheckActionPermissions("IsActive", ids);
+            return _service;
+        }
+    }
 
-            // Execute and return
-            using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Roles__Activate(ids, isActive);
+    public class RolesService : CrudServiceBase<RoleForSave, Role, int>
+    {
+        private readonly IStringLocalizer _localizer;
+        private readonly ApplicationRepository _repo;
 
-            if (args.ReturnEntities ?? false)
-            {
-                var response = await LoadDataByIdsAndTransform(ids, args);
+        private string View => RolesController.BASE_ADDRESS;
 
-                trx.Complete();
-                return Ok(response);
-            }
-            else
-            {
-                trx.Complete();
-                return Ok();
-            }
+        public RolesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        {
+            _localizer = localizer;
+            _repo = repo;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -90,7 +94,7 @@ namespace Tellma.Controllers
 
                 var name = nameof(Role.Name);
                 var name2 = nameof(Role.Name2);
-                var name3 = nameof(Role.Name3); 
+                var name3 = nameof(Role.Name3);
                 var code = nameof(Role.Code);
 
                 query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
@@ -202,6 +206,39 @@ namespace Tellma.Controllers
             catch (ForeignKeyViolationException)
             {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Role"]]);
+            }
+        }
+
+        public Task<(List<Role>, Extras)> Activate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: true);
+        }
+
+        public Task<(List<Role>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        {
+            return SetIsActive(ids, args, isActive: false);
+        }
+
+        private async Task<(List<Role>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        {
+            // Check user permissions
+            await CheckActionPermissions("IsActive", ids);
+
+            // Execute and return
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _repo.Roles__Activate(ids, isActive);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var (data, extras) = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return (data, extras);
+            }
+            else
+            {
+                trx.Complete();
+                return (null, null);
             }
         }
     }

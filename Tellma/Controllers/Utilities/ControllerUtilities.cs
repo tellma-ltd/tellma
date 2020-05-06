@@ -12,6 +12,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Threading;
+using System.Reflection;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -53,7 +55,7 @@ namespace Tellma.Controllers.Utilities
             }
             catch (UnprocessableEntityException ex)
             {
-                return new UnprocessableEntityObjectResult(ex.ModelState);
+                return new UnprocessableEntityObjectResult(ToModelState(ex.ModelState));
             }
             catch (BadRequestException ex)
             {
@@ -102,7 +104,7 @@ namespace Tellma.Controllers.Utilities
             }
             catch (UnprocessableEntityException ex)
             {
-                return new UnprocessableEntityObjectResult(ex.ModelState);
+                return new UnprocessableEntityObjectResult(ToModelState(ex.ModelState));
             }
             catch (BadRequestException ex)
             {
@@ -116,9 +118,26 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
+        /// Transforms a business logic layer <see cref="ValidationErrorsDictionary"/> to the web controller's <see cref="ModelStateDictionary"/>
+        /// </summary>
+        public static ModelStateDictionary ToModelState(ValidationErrorsDictionary validationErrors)
+        {
+            var result = new ModelStateDictionary();
+            foreach (var (key, errors) in validationErrors.AllErrors)
+            {
+                foreach (var error in errors)
+                {
+                    result.AddModelError(key, error);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ModelStateDictionary"/>
         /// </summary>
-        public static void ValidateUniqueIds<TEntity>(List<TEntity> entities, ModelStateDictionary modelState, IStringLocalizer localizer) where TEntity : EntityWithKey
+        public static void ValidateUniqueIds<TEntity>(List<TEntity> entities, ValidationErrorsDictionary modelState, IStringLocalizer localizer) where TEntity : EntityWithKey
         {
             if (entities is null)
             {
@@ -197,7 +216,7 @@ namespace Tellma.Controllers.Utilities
         /// <summary>
         /// The method localizes every error in the collection and adds it to the <see cref="ModelStateDictionary"/>
         /// </summary>
-        public static void AddLocalizedErrors(this ModelStateDictionary modelState, IEnumerable<ValidationError> errors, IStringLocalizer localizer)
+        public static void AddLocalizedErrors(this ValidationErrorsDictionary modelState, IEnumerable<ValidationError> errors, IStringLocalizer localizer)
         {
             foreach (var error in errors)
             {
@@ -250,6 +269,103 @@ namespace Tellma.Controllers.Utilities
                 Expression.Assign(
                     Expression.MakeMemberAccess(typeParam, prop),
                     valueParam), typeParam, valueParam);
+        }
+
+        /// <summary>
+        /// Takes a list of <see cref="Entity"/>'s, and for every entity it inspects the navigation properties, if a navigation property
+        /// contains an <see cref="Entity"/> with a strong type, it sets that property to null, and moves the strong entity into a separate
+        /// "relatedEntities" hash set, this has several advantages:
+        /// 1 - JSON.NET will not have to deal with circular references
+        /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
+        /// 3 - It makes it easier for clients to store and track entities in a central workspace
+        /// </summary>
+        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
+        public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, CancellationToken cancellation)
+        {
+            // If the result is empty, nothing to do
+            if (resultEntities == null || !resultEntities.Any())
+            {
+                return new Dictionary<string, IEnumerable<Entity>>();
+            }
+
+            var relatedEntities = new HashSet<Entity>();
+            var resultHash = resultEntities.ToHashSet();
+
+            // Method for efficiently retrieving the nav and nav collection properties of any entity
+            var cacheNavigationProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
+            IEnumerable<PropertyInfo> NavProps(Entity entity)
+            {
+                if (!cacheNavigationProperties.TryGetValue(entity.GetType(), out IEnumerable<PropertyInfo> properties))
+                {
+                    // Return all navigation properties that Entity or list types
+                    properties = cacheNavigationProperties[entity.GetType()] =
+                        entity.GetType().GetProperties().Where(e =>
+                            e.PropertyType.IsEntity() ||  /* nav property */
+                            e.PropertyType.IsList()); /* nav collection property */
+                }
+
+                return properties;
+            }
+
+            // Recursively trims and flattens the entity and all entities reachable from it
+            var alreadyFlattenedAndTrimmed = new HashSet<Entity>();
+            void FlattenAndTrimInner(Entity entity)
+            {
+                if (entity == null || alreadyFlattenedAndTrimmed.Contains(entity))
+                {
+                    return;
+                }
+
+                // This ensures Flatten is executed on every entity only once
+                alreadyFlattenedAndTrimmed.Add(entity);
+
+                foreach (var navProp in NavProps(entity))
+                {
+                    if (navProp.PropertyType.IsList())
+                    {
+                        var collection = navProp.GetValue(entity);
+                        if (collection != null)
+                        {
+                            foreach (var item in collection.Enumerate<Entity>())
+                            {
+                                FlattenAndTrimInner(item);
+                            }
+                        }
+                    }
+                    else if (navProp.GetValue(entity) is Entity relatedEntity) // Checks for null
+                    {
+                        // If the type is a strong one trim the property and add the entity to relatedEntities
+                        if (navProp.PropertyType.IsStrongEntity())
+                        {
+                            // This property has a strong type, so we set it to null and put its value in the
+                            // related entities collection (unless it is part of the main result)
+
+                            // Set the property to null
+                            navProp.SetValue(entity, null);
+                            if (!resultHash.Contains(relatedEntity))
+                            {
+                                // Unless it is part of the main result, add it to relatedEntities
+                                relatedEntities.Add(relatedEntity);
+                            }
+                        }
+
+                        // Recursively call flatten on the related entity whether it's strong or weak
+                        FlattenAndTrimInner(relatedEntity);
+                    }
+                }
+            }
+
+            // Flatten every entity
+            foreach (var entity in resultEntities)
+            {
+                FlattenAndTrimInner(entity);
+                cancellation.ThrowIfCancellationRequested();
+            }
+
+            // Return the result
+            return relatedEntities
+                .GroupBy(e => e.GetType().GetRootType().Name)
+                .ToDictionary(g => g.Key, g => g.AsEnumerable()); ;
         }
     }
 }

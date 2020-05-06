@@ -2,7 +2,7 @@
 import { Location, formatNumber } from '@angular/common';
 import {
   Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef,
-  ViewChild, Output, SimpleChanges, OnChanges, HostListener, ChangeDetectorRef, DoCheck
+  ViewChild, Output, HostListener, DoCheck
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router, Params, NavigationExtras } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -1008,6 +1008,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   }
 
   private navigateTo(id: string | number) {
+    const entityDesc = this.entityDescriptor;
     if (!!id) {
       const entity = this.workspace.current[this.collection][id];
       const nextDefId = entity['DefinitionId'];
@@ -1015,7 +1016,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
       // Navigate intelligently depending on whether the next entity has a definition Id
       // This allows navigating through a generic collection of entities of different definition Ids
       const navExtras: NavigationExtras = { relativeTo: this.route };
-      if (!!nextDefId) {
+      if (!!entityDesc.definitionIds && !!nextDefId) {
         this.router.navigate(['../..', nextDefId, id], navExtras);
       } else {
         this.router.navigate(['..', id], navExtras);
