@@ -14,7 +14,9 @@ BEGIN
 	(1,			N'Ahmad Abdussalam',N'أحمد عبدالسلام',	N'E2'),
 	(101,		N'Abu Ammar',		N'أبو عمار',		N'E101'),
 	(102,		N'Mohamad Ali',		N'محمد علي',		N'E102'),
-	(103,		N'elAmin elTayeb',	N'الأمين الطيب',		N'E103')
+	(103,		N'elAmin elTayeb',	N'الأمين الطيب',		N'E103'),
+	(104,		N'M. Kamil',		N'محمد كامل',		N'E099')
+
 	;
 
 	--INSERT INTO @AgentRates([Index], [HeaderIndex],
@@ -100,7 +102,7 @@ BEGIN
 	END;
 
 	DECLARE @Abu_Ammar INT, @M_Ali INT, @el_Amin INT;
-	DECLARE @MohamadAkra int, @AhmadAkra int;
+	DECLARE @MohamadAkra int, @AhmadAkra int, @MKamil INT;
 	
 	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
@@ -110,6 +112,7 @@ BEGIN
 		@Abu_Ammar = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Abu Ammar'), 
 		@M_Ali = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Ali'), 
 		@el_Amin = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'elAmin elTayeb'), 
+		@MKamil = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'M. Kamil'),
 		@MohamadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Akra'), 
 		@AhmadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ahmad Akra'), 
 		@BadegeKebede = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 

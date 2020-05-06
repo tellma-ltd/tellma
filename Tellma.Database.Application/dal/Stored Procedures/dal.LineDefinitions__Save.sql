@@ -110,7 +110,7 @@ SET NOCOUNT ON;
 			II.[Id] AS [LineDefinitionId],
 			LDE.[Index],
 			LDE.[Direction],
-			LDE.[AccountTypeParentId],
+			LDE.[AccountDefinitionId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -121,7 +121,7 @@ SET NOCOUNT ON;
 		UPDATE SET
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
-			t.[AccountTypeParentId]		= s.[AccountTypeParentId],
+			t.[AccountDefinitionId]		= s.[AccountDefinitionId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -131,14 +131,14 @@ SET NOCOUNT ON;
 			[LineDefinitionId],
 			[Index],
 			[Direction],
-			[AccountTypeParentId],
+			[AccountDefinitionId],
 			[EntryTypeId]
 		)
 		VALUES (
 			s.[LineDefinitionId],
 			s.[Index],
 			s.[Direction],
-			s.[AccountTypeParentId],
+			s.[AccountDefinitionId],
 			s.[EntryTypeId]
 		);
 
@@ -268,7 +268,7 @@ SET NOCOUNT ON;
 		FROM @WorkflowSignatures WS
 		JOIN @WorkflowIndexedIds WI ON WS.[WorkflowIndex] = WI.[Index]
 		JOIN @Entities LD ON 
-			WI.[HeaderId] = LD.[Code]
+			WI.[HeaderId] = LD.[Id]
 		AND WS.[LineDefinitionIndex] = LD.[Index]
 		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	) AS s ON s.[Id] = t.[Id]

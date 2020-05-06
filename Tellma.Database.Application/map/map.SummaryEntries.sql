@@ -31,9 +31,8 @@ RETURN
 			SUM(E.[AlgebraicValue]) AS [Opening]
 		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
-		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 
-			(@fromDate IS NOT NULL AND D.[PostingDate] < @fromDate)
+			(@fromDate IS NOT NULL AND L.[PostingDate] < @fromDate)
 		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY E.AccountId, E.[CurrencyId]
 	),
@@ -54,10 +53,9 @@ RETURN
 			SUM(CASE WHEN [Direction] < 0 THEN -E.[Value] ELSE 0 END) AS [Credit]
 		FROM [map].[DetailsEntries]() E
 		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
-		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		WHERE 
-			(@fromDate IS NULL OR D.[PostingDate] >= @fromDate)
-		AND (@toDate IS NULL OR D.[PostingDate] < DATEADD(DAY, 1, @toDate))
+			(@fromDate IS NULL OR L.[PostingDate] >= @fromDate)
+		AND (@toDate IS NULL OR L.[PostingDate] < DATEADD(DAY, 1, @toDate))
 		AND E.AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY E.AccountId, E.[EntryTypeId], E.[CurrencyId]
 	),

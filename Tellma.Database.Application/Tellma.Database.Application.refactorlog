@@ -1374,4 +1374,74 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountClassifications]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="033f22f9-b284-452e-9f7d-75016a2be697" ChangeDateTime="05/02/2020 09:16:09">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeParentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8c2cf911-6ca8-4331-8d63-e58febc9c295" ChangeDateTime="05/02/2020 14:02:42">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[MapId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MapFunction]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="376198fd-4faf-4ed6-904b-7a8dbd4ac7ce" ChangeDateTime="05/04/2020 17:15:01">
+    <Property Name="ElementName" Value="[api].[Documents__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="54329967-47b9-45dc-a62e-9d77f6237682" ChangeDateTime="05/04/2020 17:16:22">
+    <Property Name="ElementName" Value="[api].[Documents__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f06a320-52c1-440f-9f33-b7ac7c6973cc" ChangeDateTime="05/04/2020 17:16:59">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ac4939c-3828-48d2-b772-3118f93c7c83" ChangeDateTime="05/04/2020 17:17:24">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="93a086f7-1e0f-4de3-a9fc-b32e98dc3cb1" ChangeDateTime="05/04/2020 17:17:48">
+    <Property Name="ElementName" Value="[dal].[Documents__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2351137a-7997-4d8d-82cc-6c390d2c0d44" ChangeDateTime="05/04/2020 17:20:45">
+    <Property Name="ElementName" Value="[dal].[Documents__Open]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Preview]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="abf67ce3-1ec5-4783-9e15-020c38587246" ChangeDateTime="05/04/2020 17:22:02">
+    <Property Name="ElementName" Value="[dal].[Documents__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="57423184-8297-4824-9d28-f0632e62cf2c" ChangeDateTime="05/05/2020 08:53:58">
+    <Property Name="ElementName" Value="[bll].[Lines_Validate__State_Update]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines_Validate__State_Data]" />
+  </Operation>
 </Operations>

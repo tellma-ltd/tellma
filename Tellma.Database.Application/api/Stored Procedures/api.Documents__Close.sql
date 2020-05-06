@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[Documents__Post]
+﻿CREATE PROCEDURE [api].[Documents__Close]
 	@DefinitionId INT,
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -6,17 +6,10 @@ AS
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Documents_Validate__Post]
+	EXEC [bll].[Documents_Validate__Close]
 		@DefinitionId = @DefinitionId,
-		@Ids = @IndexedIds;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Ids = @IndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
@@ -27,5 +20,4 @@ AS
 
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = NULL
-		;
+		@AssigneeId = NULL;

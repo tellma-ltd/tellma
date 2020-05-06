@@ -4,6 +4,8 @@
 	[DocumentId]				INT					NOT NULL CONSTRAINT [FK_Lines__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[DefinitionId]				INT					NOT NULL CONSTRAINT [FK_Lines__DefinitionId] REFERENCES [dbo].[LineDefinitions] ([Id]),
 	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Lines__State] CHECK ([State] BETWEEN -4 AND +4),
+	[PostingDate]				DATE				CONSTRAINT [CK_Lines__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
+	CONSTRAINT [CK_Lines__State_PostingDate] CHECK([State] < 4 OR [PostingDate] IS NOT NULL),
 	--[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	--[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
 	--[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),

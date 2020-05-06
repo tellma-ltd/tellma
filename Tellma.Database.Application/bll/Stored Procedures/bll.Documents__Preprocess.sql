@@ -2,7 +2,7 @@
 	@DefinitionId INT,
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
-	@Entries [dbo].EntryList READONLY,
+	@Entries [dbo].[EntryList] READONLY,
 	@PreprocessedEntriesJson NVARCHAR (MAX) = NULL OUTPUT 
 AS
 BEGIN
@@ -240,16 +240,15 @@ END
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
-		E.[CurrencyId]			= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[ContractId]			= COALESCE(A.[ContractId], E.[ContractId]),
-		E.[ResourceId]			= COALESCE(A.[ResourceId], E.[ResourceId]),
-		E.[CenterId]			= COALESCE(A.[CenterId], E.[CenterId]),
-		E.[EntryTypeId]			= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[ContractId]		= COALESCE(A.[ContractId], E.[ContractId]),
+		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
+		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
+		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	--WHERE L.DefinitionId = @ManualLineDef;
-	-- for all lines, Get currency and identifier from Resources if available.
+	JOIN dbo.Accounts A ON E.AccountId = A.Id;
+	-- for all lines, Get currency from Resources if available.
 	UPDATE E 
 	SET
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
@@ -268,9 +267,6 @@ END
 	SET E.[UnitId] = RU.UnitId
 	FROM @PreprocessedEntries E
 	JOIN RU ON E.ResourceId = RU.ResourceId;
-	-- When currency is null, set it to functional currency
-	--UPDATE @PreprocessedEntries
-	--SET CurrencyId = COALESCE(CurrencyId, @FunctionalCurrencyId);
 
 	DECLARE @BalanceSheetRoot HIERARCHYID = (
 			SELECT [Node] FROM dbo.AccountTypes
@@ -308,53 +304,63 @@ END
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
 		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0;
 		-- Smart Lines
-		UPDATE PE 
-		SET PE.CenterId = @InvestmentCenterId
-		FROM @PreprocessedEntries PE
-		JOIN @PreprocessedLines L ON PE.LineIndex = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND PE.[Index] = LDE.[Index]
-		JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
-		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
-		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
-		AND L.DefinitionId <> @ManualLineDef;
+		--UPDATE PE 
+		--SET PE.CenterId = @InvestmentCenterId
+		--FROM @PreprocessedEntries PE
+		--JOIN @PreprocessedLines L ON PE.LineIndex = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
+		--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND PE.[Index] = LDE.[Index]
+		--JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
+		--WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
+		--AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
+		--AND L.DefinitionId <> @ManualLineDef;
 	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN @Documents D ON L.DocumentIndex = D.[Index]
+--	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId
 	JOIN dbo.Currencies C ON E.CurrencyId = C.[Id]
 	WHERE
-		ER.ValidAsOf <= ISNULL(D.[PostingDate], @Today)
-	AND ER.ValidTill >	ISNULL(D.[PostingDate], @Today)
+		ER.ValidAsOf <= ISNULL(L.[PostingDate], @Today)
+	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
 	AND L.[DefinitionId] <> @ManualLineDef;
 
 	-- TODO: Currently it sets the account to the first conformant
 	-- We better do it so that, if the stored account is one of the conformants, it leaves it.
 	-- else, it assigns the first acceptable one.
+
+
 	WITH ConformantAccounts AS (
-		SELECT MIN(A.[Id]) AS AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
+		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.Accounts A ON A.[IfrsTypeId] IN (
-			SELECT [Id] FROM AccountTypes 
-			WHERE [Node].IsDescendantOf((
-				SELECT [Node]
-				FROM dbo.AccountTypes  
-				WHERE [Id] = LDE.[AccountTypeParentId]
-			)) = 1
-			)
-			AND (A.[CenterId] IS NULL				OR A.[CenterId] = E.[CenterId])
-			AND (A.[ContractId] IS NULL				OR A.[ContractId] = E.[ContractId])
-			AND (A.[ResourceId] IS NULL				OR A.[ResourceId] = E.[ResourceId])
-			AND (A.[CurrencyId] IS NULL				OR A.[CurrencyId] = E.[CurrencyId])
-			AND (A.[EntryTypeId] IS NULL			OR A.[EntryTypeId] = E.[EntryTypeId])
+		JOIN dbo.AccountDefinitions AD ON AD.Id = LDE.[AccountDefinitionId]
+		JOIN dbo.AccountMappings AM ON
+		-- 0: Direct Map
+			(AD.[MapFunction] = 0 AND AD.[Id] = AM.AccountDefinitionId)
+		-- 1: By Contract
+		OR	(AD.[MapFunction] = 1 AND AD.[Id] = AM.AccountDefinitionId AND E.ContractId = AM.ContractId)
+		-- 2: By Resource
+		OR	(AD.[MapFunction] = 2 AND AD.[Id] = AM.AccountDefinitionId AND E.[ResourceId] = AM.[ResourceId])
+		-- 3: By Center
+		OR	(AD.[MapFunction] = 3 AND AD.[Id] = AM.AccountDefinitionId AND E.[CenterId] = AM.[CenterId])
 		WHERE L.DefinitionId <> @ManualLineDef
-		AND A.IsDeprecated = 0
-		GROUP BY  E.[Index], E.[LineIndex], E.[DocumentIndex]
+		UNION
+		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
+		FROM @PreprocessedEntries E
+		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
+		JOIN dbo.AccountDefinitions AD ON AD.Id = LDE.[AccountDefinitionId]
+		JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+		JOIN dbo.AccountMappings AM ON
+		-- 21: By Resource Lookup1
+			(AD.[MapFunction] = 21 AND AD.[Id] = AM.AccountDefinitionId AND R.Lookup1Id = AM.ResourceLookup1Id)
+		-- 22: By Resource Lookup1 and Contract Id
+		OR	(AD.[MapFunction] = 22 AND AD.[Id] = AM.AccountDefinitionId AND R.Lookup1Id = AM.ResourceLookup1Id AND AM.ContractId = E.ContractId)
+		WHERE L.DefinitionId <> @ManualLineDef
 	)
 	UPDATE E
 	SET E.AccountId = CA.AccountId

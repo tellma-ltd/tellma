@@ -1,5 +1,4 @@
 ﻿	DECLARE @Suppliers dbo.[ContractList];
-	DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT, @Stora INT, @Phoenix INT;
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Suppliers
@@ -59,6 +58,8 @@ BEGIN
 	Print 'Suppliers: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT, @Stora INT, @Phoenix INT;
 SELECT
 	@BananIT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Banan Information technologies, plc'),
 	@Regus = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Regus'),
@@ -68,3 +69,6 @@ SELECT
 	@Stora =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Stora Enso'),
 	@Phoenix =  (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Phoenix Pulp')
 	;
+
+DECLARE @FamilyShawarma INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'The Family Shawerma');
+DECLARE @GenericSupplier INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'suppliers', NULL) WHERE [Name] = N'Generic Supplier');

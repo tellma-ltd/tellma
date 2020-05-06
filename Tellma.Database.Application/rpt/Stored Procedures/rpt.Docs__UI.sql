@@ -5,7 +5,7 @@ BEGIN
 WITH Docs AS (
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
-			CAST(D.[PostingDate] AS NVARCHAR(30)) AS [PostingDate],
+			CAST(L.[PostingDate] AS NVARCHAR(30)) AS [PostingDate],
 			D.[DefinitionId] AS DocumentDefinitionId,
 			[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 			D.[State],
@@ -21,7 +21,9 @@ WITH Docs AS (
 			E.[Index], A.[Name] AS [Account],
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryTypeId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
-			E.[Value]
+			E.[Value],
+			C.[Name] AS [Contract],
+			EC.[Name] AS [EntryType]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
@@ -30,13 +32,15 @@ WITH Docs AS (
 		LEFT JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 		LEFT JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 		LEFT JOIN dbo.[AccountTypes] AC ON A.[IfrsTypeId] = AC.[Id]
+		LEFT JOIN dbo.[Contracts] C ON E.[ContractId] = C.[Id]
+		LEFT JOIN dbo.[EntryTypes] EC ON E.[EntryTypeId] = EC.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
 	)-- select * from Docs
 	,
 	DocsFirst AS (
 		SELECT L.DocumentId, MIN(E.[LineId]) AS [LineId]
 		FROM dbo.[Entries] E
-		LEFT JOIN dbo.[Lines] L ON E.[LineId] = L.Id
+		JOIN dbo.[Lines] L ON E.[LineId] = L.Id
 		WHERE L.DocumentId IN (SELECT [Id] FROM @DIds)
 		GROUP BY L.DocumentId
 	)
@@ -54,12 +58,12 @@ WITH Docs AS (
 		[Index] AS [E/N], 
 		[Account], [CurrencyId],
 		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
-		EC.[Name] AS [EntryClassification],-- [Direction], 
+		EntryType,-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
 		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit,
-		[LineState]
+		[LineState], Docs.[Contract]
 	FROM Docs
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
-	LEFT JOIN dbo.[EntryTypes] EC ON [EntryTypeId] = EC.[Id]
+
 	ORDER BY Docs.[LineId];
 END;

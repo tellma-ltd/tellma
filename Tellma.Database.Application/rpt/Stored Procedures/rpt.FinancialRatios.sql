@@ -19,10 +19,9 @@ AS
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
-		D.PostingDate >= @FromDate AND D.PostingDate < @ToDate
-	AND D.[State] = +1 AND L.[State] = +4
+		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
+	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@RevenueNode) = 1;
 	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
@@ -31,18 +30,17 @@ AS
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
-		D.PostingDate >= @FromDate AND D.PostingDate < @ToDate
-	AND D.[State] = +1 AND L.[State] = +4
+		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
+	AND L.[State] = +4
 	AND AC.[Node].IsDescendantOf(@ExpenseByNatureAbstractNode) = 1;
 	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
-	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
-		D.PostingDate >= @FromDate AND D.PostingDate < @ToDate
-	AND D.[State] = +1 AND L.[State] = +4
+		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
+	AND L.[State] = +4
 	AND (
 		AC.[Node].IsDescendantOf(@EquityAbstract) = 1 OR
 		AC.[Node].IsDescendantOf(@TradeAndOtherNonCurrentPayables) = 1 OR

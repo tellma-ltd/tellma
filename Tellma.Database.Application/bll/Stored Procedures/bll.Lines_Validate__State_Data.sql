@@ -1,9 +1,9 @@
-﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Update]
+﻿CREATE PROCEDURE [bll].[Lines_Validate__State_Data]
 -- @Lines and @Entries are read from the database just before calling.
 	-- @Documents DocumentList READONLY,
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
-	@ToState SMALLINT,
+	@State SMALLINT,
 	@Top INT = 10
 AS
 DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -22,9 +22,8 @@ DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] 
 		(N'NotedContractId'),(N'NotedAgentName'),(N'NotedAmount'),(N'NotedDate')
 	) FL([Id])
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
---	JOIN @Documents D ON D.[Index] = L.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
-	WHERE @ToState >= LDC.[RequiredState]
+	WHERE @State >= LDC.[RequiredState]
 	AND L.[DefinitionId] <> @ManualLineDef
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
@@ -46,16 +45,52 @@ DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] 
 		FL.Id = N'NotedDate'			AND E.[NotedDate] IS NULL
 	);
 
-	-- No Null account when moving to state 4
-IF @ToState = 4 -- finalized
+	-- No Null account when in state 4
+IF @State = 4 -- posted
 BEGIN
+	DECLARE @ArchiveDate DATE;
+	-- Posting Date not null
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_LinePostingDateIsRequired'
+	FROM @Lines L
+	WHERE L.[PostingDate] IS NULL;
+	-- Null Values are not allowed
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' +
+			CAST([Index]  AS NVARCHAR (255))+ ']',
+		N'Error_TransactionHasNullValue'
+	FROM @Entries
+	WHERE [Value] IS NULL;
+
+	-- Lines must be balanced
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TransactionHasDebitCreditDifference0',
+		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
+	FROM @Lines L
+	JOIN dbo.Lines BE ON L.[Id] = BE.[Id]
+	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
+	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
+	WHERE LD.[HasWorkflow] = 0 AND BE.[State] = 0
+	GROUP BY L.[DocumentIndex], L.[Index]
+	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
+
 	-- for smart screens, account must be guessed by now
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
 	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
 		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Contract3Resource4',
 		L.[Index],
-		(SELECT [Code] FROM dbo.AccountTypes WHERE [Id] = LDE.[AccountTypeParentId]) AS AccountTypeParentCode,
+		(SELECT [Code] FROM dbo.AccountDefinitions WHERE [Id] = LDE.[AccountDefinitionId]) AS AccountDefinitionCode,
 		E.[CurrencyId],
 		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
 		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
@@ -68,30 +103,70 @@ BEGIN
 	AND E.AccountId IS NULL
 	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
 
-	-- for manual JV, account/currency/center/ must be entered
+	-- account/currency/center/ must not be null
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT TOP (@Top)
-		'[' + CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index]  AS NVARCHAR (255))+ '].' + FL.[Id],
 		N'Error_TheFieldIsRequired'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	CROSS JOIN (VALUES
-		(N'AccountId'),(N'CurrencyId'),(N'ContractId'),(N'ResourceId'),(N'CenterId'),(N'EntryTypeId'),(N'MonetaryValue')
+		(N'AccountId'),(N'CurrencyId'),(N'CenterId')
 	) FL([Id])
-	LEFT JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	LEFT JOIN dbo.AccountTypes AC ON AC.Id = A.[IfrsTypeId]
-	WHERE L.DefinitionId = @ManualLineDef
-	AND	(
+	--WHERE L.DefinitionId = @ManualLineDef
+	WHERE	(
 		FL.Id = N'AccountId'		AND E.[AccountId] IS NULL OR
 		FL.Id = N'CurrencyId'		AND E.[CurrencyId] IS NULL OR
-		FL.Id = N'CenterId'			AND E.[CenterId] IS NULL OR
-		--FL.Id = N'ContractId'		AND AC.[ContractDefinitionId] IS NOT NULL AND E.[ContractId] IS NULL OR
-		FL.Id = N'ResourceId'		--AND AC.[ResourceAssignment] <> N'N' 
-		AND E.[ResourceId] IS NULL 
+		FL.Id = N'CenterId'			AND E.[CenterId] IS NULL
 	)
+
+	-- Depending on account, contract and/or resource and/or entry type might be required
+	-- NOTE: the conformance with resource definition and account definition is in [bll].[Documents_Validate__Save]
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + '].ResourceId',
+		N'Error_TheField0IsRequired',
+		N'localize:Entry_Resource'
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	JOIN dbo.[AccountDefinitionResourceDefinitions] AD ON A.[DefinitionId] = AD.[AccountDefinitionId]
+	WHERE (E.[ResourceId] IS NULL);
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + '].ContractId',
+		N'Error_TheField0IsRequired',
+		N'localize:Entry_Contract'
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	JOIN dbo.[AccountDefinitionContractDefinitions] AD ON A.[DefinitionId] = AD.[AccountDefinitionId]
+	WHERE (E.[ContractId] IS NULL);
+	
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
+		N'Error_TheField0IsRequired',
+		N'localize:Entry_EntryType'
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
+	JOIN dbo.[AccountTypes] AC ON A.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
+	JOIN dbo.[EntryTypes] ETC ON E.[EntryTypeId] = ETC.[Id]
+	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
 END
 	-- No deprecated account, for any positive state
-IF @ToState > 0
+IF @State > 0
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(L.[Index] AS NVARCHAR (255)),'') + ']', 
@@ -160,7 +235,7 @@ IF @ToState > 0
 	*/
 
 -- Not allowed to cause negative balance in conservative accounts
-IF @ToState = 3 
+IF @State = 3 
 BEGIN
 	DECLARE @InventoriesTotal HIERARCHYID = 
 		(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'InventoriesTotal');

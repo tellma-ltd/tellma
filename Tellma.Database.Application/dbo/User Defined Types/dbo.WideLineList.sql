@@ -4,9 +4,10 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
+	[PostingDate]				DATE,
 	[Memo]						NVARCHAR (255),
 	
-	[Id0]						INT,
+	[Id0]						INT				NOT NULL DEFAULT 0,
 	[Direction0]				SMALLINT,
 	[AccountId0]				INT,
 	[ContractId0]				INT,
@@ -28,7 +29,7 @@
 	[NotedAmount0]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate0]				DATE,
 
-	[Id1]						INT,
+	[Id1]						INT				NOT NULL DEFAULT 0,
 	[Direction1]				SMALLINT,
 	[AccountId1]				INT,
 	[ContractId1]				INT,
@@ -50,7 +51,7 @@
 	[NotedAmount1]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate1]				DATE,
 
-	[Id2]						INT,
+	[Id2]						INT				NULL DEFAULT 0, -- since a wide line may be two entries only
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
 	[ContractId2]				INT,

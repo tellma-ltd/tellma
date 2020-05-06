@@ -18,18 +18,18 @@ SET NOCOUNT ON;
 	-- No inactive Resource, No inactive User
 
 	IF @OnBehalfOfuserId IS NULL SET @OnBehalfOfuserId = @UserId
-	-- Must not sign a document that is already posted/canceled
+	-- Must not sign lines in a document that is already closed/canceled
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		CASE
-			WHEN D.[State] = 1 THEN N'Error_CannotSignPostedDocuments'
+			WHEN D.[State] = 1 THEN N'Error_CannotSignClosedDocuments'
 			WHEN D.[State] = -1 THEN N'Error_CannotSignCanceledDocuments'
 		END
 	FROM @Ids FE
 	JOIN dbo.Lines L ON FE.[Id] = L.[Id]
 	JOIN [dbo].[Documents] D ON D.[Id] = L.[DocumentId]
-	WHERE D.[State] <> 0; -- Posted or Canceled
+	WHERE D.[State] <> 0; -- Closed or Canceled
 
 	IF @RuleType = N'ByRole'
 	IF @RoleId NOT IN (
@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 		);
 	END
 
-	-- cannot sign a line by Agent, if Agent/UserId is null
+	-- cannot sign a line by Agent, if Contract/Agent/UserId is null
 	IF @RuleType = N'ByAgent'
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT
@@ -147,40 +147,36 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
 	WHERE E.[Id] IS NULL;
 
-	DECLARE /* @Documents DocumentList, */ @Lines LineList, @Entries EntryList;
-	--INSERT INTO @Documents([Index],[Id],[SerialNumber],[PostingDate],[Clearance],[DocumentLookup1Id],
-	--	[DocumentLookup2Id],[DocumentLookup3Id],[DocumentText1],[DocumentText2],[Memo],[MemoIsCommon],
-	--	[DebitAgentId],[DebitAgentIsCommon],[CreditAgentId],[CreditAgentIsCommon],[NotedAgentId],[NotedAgentIsCommon],
-	--	[InvestmentCenterId],[InvestmentCenterIsCommon],[Time1],[Time1IsCommon],[Time2],[Time2IsCommon],
-	--	[Quantity],[QuantityIsCommon],[UnitId],[UnitIsCommon],[CurrencyId],[CurrencyIsCommon])
-	--SELECT 0,D.[Id],D.[SerialNumber],D.[PostingDate],D.[Clearance],D.[DocumentLookup1Id],
-	--	D.[DocumentLookup2Id],D.[DocumentLookup3Id],D.[DocumentText1],D.[DocumentText2],D.[Memo],D.[MemoIsCommon],
-	--	D.[DebitAgentId],D.[DebitAgentIsCommon],D.[CreditAgentId],D.[CreditAgentIsCommon],D.[NotedAgentId],D.[NotedAgentIsCommon],
-	--	D.[InvestmentCenterId],D.[InvestmentCenterIsCommon],D.[Time1],D.[Time1IsCommon],D.[Time2],D.[Time2IsCommon],
-	--	D.[Quantity],D.[QuantityIsCommon],D.[UnitId],D.[UnitIsCommon],D.[CurrencyId],D.[CurrencyIsCommon]
-	--FROM dbo.[Documents] D
-	--WHERE D.[Id] IN (SELECT [DocumentId] FROM dbo.[Lines] BE JOIN @Ids FE ON BE.[Id] = FE.[Id])
+	-- I had to use the following trick to avoid nested calls.
+	IF EXISTS(SELECT * FROM @ValidationErrors)
+	BEGIN
+		SELECT TOP (@Top) * FROM @ValidationErrors;
+		RETURN
+	END;
 
-	INSERT INTO @Lines([Index], [DocumentIndex], [Id], [DefinitionId], [Memo])
-	SELECT L.[Index], L.[DocumentId], L.[Id], L.[DefinitionId], L.[Memo]
+	DECLARE @Lines LineList, @Entries EntryList;
+
+	INSERT INTO @Lines(
+			[Index],	[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo])
+	SELECT	[Index],	[DocumentId],	[Id], [DefinitionId], [PostingDate], [Memo]
 	FROM dbo.Lines L
-	WHERE L.[Id] IN (SELECT [Id] FROM @Ids) 
+	WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
+	AND [DefinitionId] IN (SELECT [Id] FROM map.LineDefinitions() WHERE [HasWorkflow] = 1)
 
-	INSERT INTO @Entries ([Index],[LineIndex],[DocumentIndex],[Id],
-	[Direction],[AccountId],[CurrencyId],[ContractId],[ResourceId],[CenterId],
-	[EntryTypeId],[DueDate],[MonetaryValue],[Quantity],[UnitId],[Value],[Time1],
-	[Time2]	,[ExternalReference],[AdditionalReference],[NotedContractId],[NotedAgentName],
-	[NotedAmount],[NotedDate])
-	SELECT E.[Index],L.[Index],L.[DocumentId],E.[Id],
+	INSERT INTO @Entries (
+	[Index], [LineIndex], [DocumentIndex], [Id],
+	[Direction], [AccountId], [CurrencyId], [ContractId], [ResourceId], [CenterId],
+	[EntryTypeId], [DueDate], [MonetaryValue], [Quantity], [UnitId], [Value], [Time1],
+	[Time2], [ExternalReference], [AdditionalReference], [NotedContractId], [NotedAgentName],
+	[NotedAmount], [NotedDate])
+	SELECT
+	E.[Index],L.[Index],L.[DocumentIndex],E.[Id],
 	E.[Direction],E.[AccountId],E.[CurrencyId],E.[ContractId],E.[ResourceId],E.[CenterId],
 	E.[EntryTypeId],E.[DueDate],E.[MonetaryValue],E.[Quantity],E.[UnitId],E.[Value],E.[Time1],
-	E.[Time2]	,E.[ExternalReference],E.[AdditionalReference],E.[NotedContractId],E.[NotedAgentName],
+	E.[Time2],E.[ExternalReference],E.[AdditionalReference],E.[NotedContractId],E.[NotedAgentName],
 	E.[NotedAmount],E.[NotedDate]
 	FROM dbo.Entries E
-	JOIN dbo.Lines L ON E.[LineId] = L.[Id];
+	JOIN @Lines L ON E.[LineId] = L.[Id];
 
-	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lines_Validate__State_Update]
-	/* @Documents = @Documents, */ @Lines = @Lines, @Entries = @Entries, @ToState = @ToState;
-
-	SELECT TOP (@Top) * FROM @ValidationErrors;
+	EXEC [bll].[Lines_Validate__State_Data]
+		@Lines = @Lines, @Entries = @Entries, @State = @ToState;

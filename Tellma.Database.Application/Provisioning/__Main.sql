@@ -43,10 +43,10 @@ END
 :r .\02_Definitions\f_LineDefinitions\999_LineDefinitions.sql
 :r .\02_Definitions\g_DocumentDefinitions.sql
 
-
 :r .\03_Basic\b_Units.sql
 :r .\03_Basic\c_Lookups.sql
-:r .\03_Basic\d_Centers.sql
+:r .\03_Basic\d_Segments.sql
+:r .\03_Basic\e_Centers.sql
 
 :r .\04_Resources\101_property-plant-and-equipment.sql
 :r .\04_Resources\101_employee-benefits.sql
@@ -62,24 +62,23 @@ END
 
 --:r .\04_Resources\d1_FG_vehicles.sql
 ----:r .\04_Resources\e1_CCE_received-checks.sql
-
+:r .\05_Contracts\01_Agents.sql
 :r .\05_Contracts\02_Creditors.sql
 :r .\05_Contracts\03_Customers.sql
 :r .\05_Contracts\04_Debtors.sql
 :r .\05_Contracts\05_Partners.sql
 :r .\05_Contracts\06_Suppliers.sql
-:r .\05_Contracts\09_Custodians.sql
-:r .\05_Contracts\09a_Warehouses.sql
+:r .\05_Contracts\08_CashCustodians.sql
+:r .\05_Contracts\09_Warehouses.sql
 :r .\05_Contracts\10_Employees.sql
 
-
 :r .\06_Accounts\b_AccountClassifications.sql
-
 :r .\06_Accounts\101_Accounts.sql
-
+:r .\06_Accounts\101_AccountsMappings.sql
 --:r .\06_Accounts\105_Accounts.sql
 --:r .\07_Entries\101\101a_manual-journal-vouchers.sql
---:r .\07_Entries\101\101b_cash-payment-vouchers.sql
+--:r .\07_Entries\101\101b_cash-purchase-vouchers.sql
+:r .\07_Entries\101\101c_cash-payment-vouchers.sql
 --:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 
 DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (

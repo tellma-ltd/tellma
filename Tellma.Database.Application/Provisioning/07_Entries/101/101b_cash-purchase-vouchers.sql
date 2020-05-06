@@ -7,56 +7,65 @@ BEGIN -- Inserting
 	(4,			'2019.01.03',	N'Maintenance'),
 	(5,			'2019.01.03',	N'Meals 2'),
 	(6,			'2019.01.05',	N'Sold USD'),
-	(21,		'2019.01.06',	N'Mohammed Kamil 2018 Vacation and 10% Deductions'),
-	(22,		'2019.01.06',	N'Ahmad Abdussalam Gift Allowance'),
-	(23,		'2019.01.06',	N'Paid first installment for the former workers as per the court ruling. Total amount is 110,000 SDG. The remaining portion will be paid next month.'),
-	(24,		'2019.01.06',	N'Court ruling execution fees: Former workers against Banan case')
-	--(25,		'2019.01.07',	N'Sold USD and received in BOK'),
-	--(26,		'2019.01.07',	N'Employees Dec 2018 Salaries Payment')
+	(25,		'2019.01.07',	N'Sold USD and received in BOK')
 	;
 	UPDATE @D Set [MemoIsCommon] = 0;
 	-- Requesting
 	EXEC sys.sp_set_session_context 'UserId', @mohamad_akra;
 	-- 0
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = N'PaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 0, @DefinitionId = @C_PaymentToSupplierDef;
 	UPDATE @WL
 	SET
-		[Memo] = N'Shawarma',
-		[CurrencyId0] = @SDG,
+		[Memo] = N'Meals, the family shawerma',
+		[NotedDate1] = N'2019.01.01',
+		[ExternalReference1] = N'49',
+		[NotedContractId1] = @FamilyShawarma, -- used others
+		[CurrencyId2] = @SDG,
 		[MonetaryValue0] = 665,
-		[NotedAgentName0] = N'The family shawerma',
-		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'49'
+		[MonetaryValue1] = 0,
+		[ContractId2] = @GMSafe,
+		[ExternalReference2] = N'RCT 3001',
+		[CenterId2] = @C101_INV
 	WHERE [DocumentIndex] = 0 AND [Index] = 0;
+
 	-- 4
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = N'PaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 4, @DefinitionId = @C_PaymentToSupplierDef;
 	UPDATE @WL
 	SET
-		[CurrencyId0] = @SDG,
+		[Memo] = N'Garden Maintenance - هيثم عوض محمد',
+		[NotedDate1] = N'2019.01.01',
+		[ExternalReference1] = N'53',
+		[NotedContractId1] = @GenericSupplier, -- used others
+		[CurrencyId2] = @SDG,
 		[MonetaryValue0] = 500,
-		[NotedAgentName0] = N'هيثم عوض محمد',
-		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'00540'
+		[MonetaryValue1] = 0,
+		[ContractId2] = @GMSafe,
+		[ExternalReference2] = N'RCT 3011',
+		[CenterId2] = @C101_INV
 	WHERE [DocumentIndex] = 4 AND [Index] = 0;
 	-- 5
+
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = N'PaymentToOther';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 5, @DefinitionId = @C_PaymentToSupplierDef;
 	UPDATE @WL
 	SET
-		[CurrencyId0] = @SDG,
+		[Memo] =  N'720مطاعم صابرين 660- شاورما العائلة',
+		[NotedDate1] = N'2019.01.01',
+		[ExternalReference1] = N'00540',
+		[NotedContractId1] = @GenericSupplier, -- used others
+		[CurrencyId2] = @SDG,
 		[MonetaryValue0] = 1380,
-		[NotedAgentName0] = N'720مطاعم صابرين 660- شاورما العائلة',
-		[EntryTypeId0] = @PaymentsToSuppliersForGoodsAndServices,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'00540'
+		[MonetaryValue1] = 0,
+		[ContractId2] = @GMSafe,
+		[ExternalReference2] = N'RCT 3021',
+		[CenterId2] = @C101_INV	
 	WHERE [DocumentIndex] = 5 AND [Index] = 0;
+
 	-- 6
 	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 6, @DefinitionId = N'CashTransferExchange';
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 6, @DefinitionId = @CashTransferExchangeDef;
 	UPDATE @WL
 	SET
 		[Memo] = N'Sold USD',
@@ -65,70 +74,44 @@ BEGIN -- Inserting
 		[MonetaryValue1] = 2000,
 		[ContractId0] = @GMSafe,
 		[CurrencyId0] = @SDG,
-		[MonetaryValue0] = 111000
+		[MonetaryValue0] = 111000,
+		[CenterId0] = @C101_INV	
 	WHERE [DocumentIndex] = 6 AND [Index] = 0;
-	-- 21
-	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 21, @DefinitionId = N'PaymentToOther';
-	UPDATE @WL
-	SET
-		[CurrencyId0] = @USD,
-		[MonetaryValue0] = 1282.8,
-		[NotedAgentName0] = N'Mohammed Kamil',
-		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'121109'
-	WHERE [DocumentIndex] = 21 AND [Index] = 0;
-	-- 22
-	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 22, @DefinitionId = N'PaymentToOther';
-	UPDATE @WL
-	SET
-		[CurrencyId0] = @USD,
-		[MonetaryValue0] = 460,
-		[NotedAgentName0] = N'Ahmad AbdusSalam',
-		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'121110'
-	WHERE [DocumentIndex] = 22 AND [Index] = 0;
-	-- 23
-	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 23, @DefinitionId = N'PaymentToOther';
-	UPDATE @WL
-	SET
-		[CurrencyId0] = @SDG,
-		[MonetaryValue0] = 55000,
-		[NotedAgentName0] = N'Former guards',
-		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'121111'
-	WHERE [DocumentIndex] = 23 AND [Index] = 0;
-	-- 24
-	INSERT INTO @WL
-	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 24, @DefinitionId = N'PaymentToOther';
-	UPDATE @WL
-	SET
-		[CurrencyId0] = @SDG,
-		[MonetaryValue0] = 1011,
-		[NotedAgentName0] = N'Court',
-		[EntryTypeId0] = @PaymentsToAndOnBehalfOfEmployees,
-		[ContractId0] = @GMSafe,
-		[ExternalReference0] = N'GV-123'
-	WHERE [DocumentIndex] = 24 AND [Index] = 0;
 
-	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo])
-	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [Memo]
+	-- 25
+	INSERT INTO @WL
+	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 25, @DefinitionId = @CashTransferExchangeDef;
+	UPDATE @WL
+	SET
+		[Memo] = N'Sold USD',
+		[ContractId1] = @GMSafe,
+		[CurrencyId1] = @USD,
+		[MonetaryValue1] = 300,
+		[ContractId0] = @KRTBank,
+		[CurrencyId0] = @SDG,
+		[MonetaryValue0] = 19500,
+		[CenterId0] = @C101_INV	
+	WHERE [DocumentIndex] = 25 AND [Index] = 0;
+
+	INSERT INTO @L([Index], [DocumentIndex], [Id], 	[DefinitionId], [PostingDate], [Memo])
+	SELECT [Index], [DocumentIndex], [Id], 	[DefinitionId], [PostingDate], [Memo]
 	FROM @WL
 	INSERT INTO @E
 	EXEC [bll].[WideLines__Unpivot] @WL;
 
+	UPDATE L
+	SET
+		L.PostingDate = IIF(D.[PostingDateIsCommon]=1, D.PostingDate,L.[PostingDate]),
+		L.Memo = IIF(D.[MemoIsCommon]=1, COALESCE(D.Memo,L.[Memo]), L.[Memo])
+	FROM @L L JOIN @D D ON L.[DocumentIndex] = D.[Index]
+
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'cash-payment-vouchers',
+		@DefinitionId = @cash_purchase_vouchersDef,
 		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment Lines Saving: Draft' + @ValidationErrorsJson
+		Print 'Cash Purchase Lines Saving: Draft' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -136,7 +119,7 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
 		FROM dbo.Documents 
-	WHERE DefinitionId = N'cash-payment-vouchers'
+	WHERE DefinitionId = @cash_purchase_vouchersDef
 	AND Id IN (
 		SELECT DocumentId FROM dbo.Lines WHERE [State] = 0
 	);
@@ -151,7 +134,7 @@ BEGIN -- Inserting
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment Lines Signing: Requesting' + @ValidationErrorsJson
+		Print 'Cash Purchase Lines Signing: Requesting' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
@@ -170,7 +153,7 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
 	FROM dbo.Documents 
-	WHERE DefinitionId = N'cash-payment-vouchers'
+	WHERE DefinitionId = @cash_purchase_vouchersDef
 	AND Id IN (
 		SELECT DocumentId FROM dbo.Lines WHERE [State] = 1
 	);
@@ -222,11 +205,9 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id]
 	FROM dbo.Documents 
-	WHERE DefinitionId = N'cash-payment-vouchers'
-	AND Id IN (
-		SELECT DocumentId FROM dbo.Lines WHERE [State] = 3
-	);
-	-- Reviewing
+	WHERE DefinitionId = @cash_purchase_vouchersDef
+
+	-- Posting
 	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;		
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
@@ -238,17 +219,17 @@ BEGIN -- Inserting
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment Lines Signing: Reviewing' + @ValidationErrorsJson
+		Print 'Cash Purchase Lines Signing: Posting' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
 	DELETE FROM @D; DELETE FROM @L; DELETE FROM @E; DELETE FROM @WL;
 	INSERT INTO @D([Index], [Id], [PostingDate], [Memo], [MemoIsCommon])
 	SELECT [Id], [Id],[PostingDate], [Memo], [MemoIsCommon]
-	FROM dbo.Documents WHERE DefinitionId = N'cash-payment-vouchers';
+	FROM dbo.Documents WHERE DefinitionId = @cash_purchase_vouchersDef;
 
-	INSERT INTO @L([Index],	[DocumentIndex], [Id], [DefinitionId], [Memo])
-	SELECT			[Id],	[DocumentId], 	[Id], [DefinitionId], [Memo]
+	INSERT INTO @L([Index],	[DocumentIndex], [Id], [DefinitionId], [PostingDate], [Memo])
+	SELECT			[Index],[DocumentId], 	[Id], [DefinitionId], [PostingDate], [Memo]
 	FROM dbo.Lines L
 	WHERE DocumentId IN (SELECT [Id] FROM @D)
 
@@ -257,11 +238,13 @@ BEGIN -- Inserting
 		[LineIndex],
 		[DocumentIndex],
 		[Id],
+		[IsSystem],
 		[Direction],
+		[AccountId],
+		[CurrencyId],
 		[ContractId],
 		[ResourceId],
 		[CenterId],
-		[CurrencyId],
 		[EntryTypeId],
 		[DueDate],
 		[MonetaryValue],
@@ -277,15 +260,17 @@ BEGIN -- Inserting
 		[NotedAmount],
 		[NotedDate])
 	SELECT
-		ROW_NUMBER() OVER(ORDER BY [Id]) - 1 AS [Index],
-		[LineId],
-		(SELECT [DocumentIndex] FROM @L WHERE [Index] = E.[LineId]),
+		[Index],
+		(SELECT [Index] FROM @L WHERE [Id] = E.[LineId]),
+		(SELECT [DocumentIndex] FROM @L WHERE [Id] = E.[LineId]),
 		[Id],
+		[IsSystem],
 		[Direction],
+		[AccountId],
+		[CurrencyId],
 		[ContractId],
 		[ResourceId],
 		[CenterId],
-		[CurrencyId],
 		[EntryTypeId],
 		[DueDate],
 		[MonetaryValue],
@@ -303,54 +288,55 @@ BEGIN -- Inserting
 	FROM dbo.Entries E
 	WHERE LineId IN (SELECT [Id] FROM @L)
 
-	DECLARE @DI1 INT, @DI2 INT, @DI3 INT;
 	SELECT @DI1 = [Id] FROM dbo.Documents WHERE [Memo] = N'Meals 1';
 	SELECT @DI2 = [Id] FROM dbo.Documents WHERE [Memo] = N'Maintenance';
 	SELECT @DI3 = [Id] FROM dbo.Documents WHERE [Memo] = N'Meals 2';
 	
 	INSERT INTO @L([Index], [DocumentIndex],
-	[DefinitionId],			[Memo]) VALUES
-	(101,@DI1,@ManualLineDef, N'Shawarma'),
-	(102,@DI2,@ManualLineDef, NULL),
-	(103,@DI3,@ManualLineDef, N'Shawarma');
-
+	[DefinitionId],				[PostingDate], [Memo]) VALUES
+	(100,@DI1,@ManualLineDef,	'2019.01.01',	N'Shawarma'),
+	(101,@DI2,@ManualLineDef,	'2019.01.03',	N'Garden Maintenance'),
+	(102,@DI3,@ManualLineDef,	'2019.01.03',	N'Shawarma');
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
-					[AccountId],	[EntryTypeId],			[CenterId],[CurrencyId],	[MonetaryValue],[Value]) VALUES
-	(0, 101, @DI1,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			665,			12.55),
-	(0, 102, @DI2,+1,@1Maintenance,	@AdministrativeExpense,	@1Overhead,	@SDG,			500,			9.09),
-	(0, 103, @DI3,+1,@1Meals,		@AdministrativeExpense, @1Overhead,	@SDG,			1380,			25.09);
+					[AccountId],		[CurrencyId],	[MonetaryValue],[Value]) VALUES
+	(0, 100, @DI1,+1,@1Meals,			@SDG,			665,			6.65),
+	(1, 100, @DI1,-1,@1DocumentControl,	@SDG,			665,			6.65),
+	(0, 101, @DI2,+1,@1Maintenance,		@SDG,			500,			5),
+	(1, 101, @DI2,-1,@1DocumentControl,	@SDG,			500,			5),
+	(0, 102, @DI3,+1,@1Meals,			@SDG,			1380,			13.8),
+	(1, 102, @DI3,-1,@1DocumentControl,	@SDG,			1380,			13.8)
 
 	EXEC sys.sp_set_session_context 'UserId', @jiad_akra;
-GOTO DONE
 
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'cash-payment-vouchers',
+		@DefinitionId = @cash_purchase_vouchersDef,
 		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Cash Payment voucher: manual Lines Saving: Draft' + @ValidationErrorsJson
+		Print 'Cash purchase voucher: manual Lines Saving: Draft' + @ValidationErrorsJson
 		GOTO Err_Label;
 	END;
 
+
 	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Documents
-	WHERE DefinitionId = N'cash-payment-vouchers' AND [State] = 0;
-
-	DELETE FROM @LinesIndexedIds;
-	INSERT INTO @LinesIndexedIds([Index], [Id])
-	SELECT ROW_NUMBER() OVER(ORDER BY [Id]) - 1, [Id] FROM dbo.Lines
-	WHERE DefinitionId = @ManualLineDef AND DocumentId IN (SELECT [Id] FROM @DocsIndexedIds)
-
-	EXEC [api].[Lines__Sign]
-		@IndexedIds = @LinesIndexedIds,
-		@ToState = 4, -- finalized
-		@OnBehalfOfuserId = @jiad_akra,
-		@RuleType = N'ByRole',
-		@RoleId = @1Comptroller,
-		@SignedAt = @Now,
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]
+	FROM dbo.Documents 
+	WHERE DefinitionId = @cash_purchase_vouchersDef
+	AND [State] = 0;
+		
+	EXEC [api].[Documents__Close]
+		@DefinitionId = @cash_purchase_vouchersDef,
+		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Cash purchase closing: ' + @ValidationErrorsJson
+		GOTO Err_Label;
+	END;
+GOTO DONE
 DONE:
 END

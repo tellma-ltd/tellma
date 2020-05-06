@@ -22,9 +22,8 @@ BEGIN
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
-	WHERE @fromDate <= D.[PostingDate] AND D.[PostingDate] < DATEADD(DAY, 1, @toDate)
+	WHERE @fromDate <= L.[PostingDate] AND L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	-- The #Mapping table can be persisted and used to add the column IFRS310000_ConceptId to the fact table.
 	AND [AT].[Code] IN (
 		N'Revenue',

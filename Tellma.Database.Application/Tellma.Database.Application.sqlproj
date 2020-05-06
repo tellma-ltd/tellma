@@ -319,8 +319,8 @@
     <Build Include="dal\Stored Procedures\dal.LookupDefinitions__UpdateState.sql" />
     <Build Include="map\map.LookupDefinitions.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Post.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Close.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Close.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_Lines__Ready.sql" />
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
@@ -357,8 +357,8 @@
     <Build Include="map\map.Documents.sql" />
     <Build Include="map\map.Lines.sql" />
     <Build Include="map\map.Entries.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Unpost.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Unpost.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Open.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="dbo\Functions\dbo.fn_ETCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionStateReasons.sql" />
@@ -384,7 +384,7 @@
     <None Include="Provisioning\05_Contracts\06_Suppliers.sql" />
     <None Include="Provisioning\05_Contracts\03_Customers.sql" />
     <None Include="Provisioning\05_Contracts\10_Employees.sql" />
-    <None Include="Provisioning\05_Contracts\09_Custodians.sql" />
+    <None Include="Provisioning\05_Contracts\08_CashCustodians.sql" />
     <None Include="Provisioning\05_Contracts\05_Partners.sql" />
     <None Include="Provisioning\04_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Provisioning\04_Resources\101_property-plant-and-equipment.sql" />
@@ -483,7 +483,7 @@
     <None Include="Provisioning\02_Definitions\f_LineDefinitions\104_LineDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\f_LineDefinitions\105_LineDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\f_LineDefinitions\999_LineDefinitions.sql" />
-    <None Include="Provisioning\05_Contracts\09a_Warehouses.sql" />
+    <None Include="Provisioning\05_Contracts\09_Warehouses.sql" />
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="map\map.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithHeaderList.sql" />
@@ -500,8 +500,8 @@
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__SaveAndRefresh.sql" />
     <Build Include="map\map.LineDefinitionEntries.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Post.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Unpost.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Close.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Open.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Uncancel.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Production__Actual_vs_Planned.sql" />
     <Build Include="map\map.DocumentDefinitions.sql" />
@@ -515,7 +515,7 @@
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
-    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Update.sql" />
+    <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data.sql" />
     <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
     <Build Include="wiz\Stored Procedures\wiz.GainLossOnExchange__Prepare.sql" />
@@ -530,21 +530,22 @@
     <Build Include="dbo\Tables\dbo.AbsorptionRates.sql" />
     <None Include="Provisioning\00_Common\e_AccountTypes_Liquidity.sql" />
     <Build Include="dal\Stored Procedures\dal.InboxCounts__Load.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Open.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Preview.sql" />
     <Build Include="dal\Stored Procedures\dal.Inbox__Check.sql" />
     <Build Include="map\map.Inbox.sql" />
     <Build Include="map\map.Outbox.sql" />
     <Build Include="map\IfrsConcepts.sql" />
-    <None Include="Provisioning\03_Basic\d_Centers.sql" />
+    <None Include="Provisioning\03_Basic\e_Centers.sql" />
     <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountDefinitionCenterTypes.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitionCurrencies.sql" />
     <Build Include="dbo\Tables\dbo.AccountDefinitionResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountDefinitionContractDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountMappings.sql" />
     <Build Include="dbo\Tables\dbo.Agents.sql" />
     <Build Include="wiz\Stored Procedures\wiz.Paysheet__Prepare.sql" />
     <Build Include="wiz\Stored Procedures\wiz.AssetsDepreciation__Populate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Segments__Save.sql" />
+    <Build Include="dbo\Tables\dbo.Segments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -575,13 +576,17 @@
     <None Include="Provisioning\07_Entries\01E5_manual-journal-vouchers.sql" />
     <None Include="Provisioning\06_Accounts\101_Accounts.sql" />
     <None Include="Provisioning\07_Entries\101\101a_manual-journal-vouchers.sql" />
-    <None Include="Provisioning\07_Entries\101\101b_cash-payment-vouchers.sql" />
+    <None Include="Provisioning\07_Entries\101\101b_cash-purchase-vouchers.sql" />
     <None Include="Provisioning\00_Common\f_RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_revenue_services.sql" />
     <None Include="101.AzureBananSDTraining.publish.xml" />
     <None Include="Provisioning\02_Definitions\e_AccountDefinitions.sql" />
+    <None Include="Provisioning\03_Basic\d_Segments.sql" />
+    <None Include="Provisioning\06_Accounts\101_AccountsMappings.sql" />
+    <None Include="Provisioning\05_Contracts\01_Agents.sql" />
+    <None Include="Provisioning\07_Entries\101\101c_cash-payment-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
