@@ -327,39 +327,34 @@ END
 	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
 	AND L.[DefinitionId] <> @ManualLineDef;
 
-	-- TODO: Currently it sets the account to the first conformant
-	-- We better do it so that, if the stored account is one of the conformants, it leaves it.
-	-- else, it assigns the first acceptable one.
-
-
 	WITH ConformantAccounts AS (
 		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountDefinitions AD ON AD.Id = LDE.[AccountDefinitionId]
+		JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
 		JOIN dbo.AccountMappings AM ON
 		-- 0: Direct Map
-			(AD.[MapFunction] = 0 AND AD.[Id] = AM.AccountDefinitionId)
+			(AD.[MapFunction] = 0 AND AD.[Id] = AM.[AccountDesignationId])
 		-- 1: By Contract
-		OR	(AD.[MapFunction] = 1 AND AD.[Id] = AM.AccountDefinitionId AND E.ContractId = AM.ContractId)
+		OR	(AD.[MapFunction] = 1 AND AD.[Id] = AM.[AccountDesignationId] AND E.ContractId = AM.ContractId)
 		-- 2: By Resource
-		OR	(AD.[MapFunction] = 2 AND AD.[Id] = AM.AccountDefinitionId AND E.[ResourceId] = AM.[ResourceId])
+		OR	(AD.[MapFunction] = 2 AND AD.[Id] = AM.[AccountDesignationId] AND E.[ResourceId] = AM.[ResourceId])
 		-- 3: By Center
-		OR	(AD.[MapFunction] = 3 AND AD.[Id] = AM.AccountDefinitionId AND E.[CenterId] = AM.[CenterId])
+		OR	(AD.[MapFunction] = 3 AND AD.[Id] = AM.[AccountDesignationId] AND E.[CenterId] = AM.[CenterId])
 		WHERE L.DefinitionId <> @ManualLineDef
 		UNION
 		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.AccountDefinitions AD ON AD.Id = LDE.[AccountDefinitionId]
+		JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
 		JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		JOIN dbo.AccountMappings AM ON
 		-- 21: By Resource Lookup1
-			(AD.[MapFunction] = 21 AND AD.[Id] = AM.AccountDefinitionId AND R.Lookup1Id = AM.ResourceLookup1Id)
+			(AD.[MapFunction] = 21 AND AD.[Id] = AM.[AccountDesignationId] AND R.Lookup1Id = AM.ResourceLookup1Id)
 		-- 22: By Resource Lookup1 and Contract Id
-		OR	(AD.[MapFunction] = 22 AND AD.[Id] = AM.AccountDefinitionId AND R.Lookup1Id = AM.ResourceLookup1Id AND AM.ContractId = E.ContractId)
+		OR	(AD.[MapFunction] = 22 AND AD.[Id] = AM.[AccountDesignationId] AND R.Lookup1Id = AM.ResourceLookup1Id AND AM.ContractId = E.ContractId)
 		WHERE L.DefinitionId <> @ManualLineDef
 	)
 	UPDATE E

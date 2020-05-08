@@ -180,9 +180,6 @@ WHERE [Index] NOT IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex
 UPDATE @AccountTypes SET IsAssignable = 0
 WHERE [Index] IN (SELECT [ParentIndex] FROM @AccountTypes WHERE [ParentIndex] IS NOT NULL)
 
-DECLARE @CurrentCarLoanReceivablesExtension INT, @PartnersWithdrawalExtension INT;
-
-
 EXEC [api].[AccountTypes__Save]
 	@Entities = @AccountTypes,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -236,12 +233,12 @@ DECLARE @AccrualsClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WH
 DECLARE @DeferredIncomeClassifiedAsCurrent INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'DeferredIncomeClassifiedAsCurrent'); 
 
 DECLARE @CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax'); 
-DECLARE @CurrentSocialSecurityPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentSocialSecurityPayablesExtension'); 
+--DECLARE @CurrentSocialSecurityPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentSocialSecurityPayablesExtension'); 
 DECLARE @CurrentValueAddedTaxPayables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentValueAddedTaxPayables'); 
-DECLARE @CurrentZakatPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentZakatPayablesExtension'); 
-DECLARE @CurrentEmployeeIncomeTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentEmployeeIncomeTaxPayablesExtension'); 
-DECLARE @CurrentEmployeeStampTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentEmployeeStampTaxPayablesExtension'); 
-DECLARE @CurrentPayablesToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPayablesToEmployeesExtension'); 
+--DECLARE @CurrentZakatPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentZakatPayablesExtension'); 
+--DECLARE @CurrentEmployeeIncomeTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentEmployeeIncomeTaxPayablesExtension'); 
+--DECLARE @CurrentEmployeeStampTaxPayablesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentEmployeeStampTaxPayablesExtension'); 
+--DECLARE @CurrentPayablesToEmployeesExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPayablesToEmployeesExtension'); 
 
 DECLARE @Revenue INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'Revenue');
 DECLARE @RevenueFromRenderingOfServices INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'RevenueFromRenderingOfServices');
@@ -265,6 +262,9 @@ DECLARE @OtherShorttermEmployeeBenefits INT = (SELECT [Id] FROM dbo.AccountTypes
 
 DECLARE @TerminationBenefitsExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TerminationBenefitsExpense');
 DECLARE @DepreciationExpense INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'DepreciationExpense');
+
+DECLARE @OtherGainsLosses INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherGainsLosses');
+
 DECLARE @GainLossOnDisposalOfPropertyPlantAndEquipment INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'GainLossOnDisposalOfPropertyPlantAndEquipmentExtension');
 
 DECLARE @OtherExpenseByNature INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherExpenseByNature');

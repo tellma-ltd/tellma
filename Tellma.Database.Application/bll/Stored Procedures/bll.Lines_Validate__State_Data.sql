@@ -75,33 +75,12 @@ BEGIN
 		N'Error_TransactionHasDebitCreditDifference0',
 		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS NetDifference
 	FROM @Lines L
-	JOIN dbo.Lines BE ON L.[Id] = BE.[Id]
-	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
-	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
-	WHERE LD.[HasWorkflow] = 0 AND BE.[State] = 0
+--	JOIN dbo.Lines BE ON L.[Id] = BE.[Id]
+--	JOIN map.[LineDefinitions]() LD ON L.[DefinitionId] = LD.[Id]
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+--	WHERE LD.[HasWorkflow] = 0 AND BE.[State] = 0
 	GROUP BY L.[DocumentIndex], L.[Index]
 	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
-
-	-- for smart screens, account must be guessed by now
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0],[Argument1],[Argument2],[Argument3],[Argument4])
-	SELECT TOP (@Top)
-		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
-			CAST(E.[Index]  AS NVARCHAR (255))+ '].AccountId',
-		N'Error_LineNoAccountForEntryIndex0WithAccountType1Currency2Contract3Resource4',
-		L.[Index],
-		(SELECT [Code] FROM dbo.AccountDefinitions WHERE [Id] = LDE.[AccountDefinitionId]) AS AccountDefinitionCode,
-		E.[CurrencyId],
-		dbo.fn_Localize(AG.[Name], AG.[Name2], AG.[Name3]),
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3])
-	FROM @Lines L
-	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
-	LEFT JOIN dbo.LineDefinitionEntries LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
-	LEFT JOIN dbo.[Contracts] AG ON E.[ContractId] = AG.Id
-	LEFT JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE L.DefinitionId <> @ManualLineDef
-	AND E.AccountId IS NULL
-	AND (E.[Value] <> 0 OR E.[Quantity] IS NOT NULL AND E.[Quantity] <> 0)
 
 	-- account/currency/center/ must not be null
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -115,7 +94,6 @@ BEGIN
 	CROSS JOIN (VALUES
 		(N'AccountId'),(N'CurrencyId'),(N'CenterId')
 	) FL([Id])
-	--WHERE L.DefinitionId = @ManualLineDef
 	WHERE	(
 		FL.Id = N'AccountId'		AND E.[AccountId] IS NULL OR
 		FL.Id = N'CurrencyId'		AND E.[CurrencyId] IS NULL OR
@@ -134,7 +112,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountDefinitionResourceDefinitions] AD ON A.[DefinitionId] = AD.[AccountDefinitionId]
+	JOIN dbo.[AccountDesignationResourceDefinitions] AD ON A.[DesignationId] = AD.[AccountDesignationId]
 	WHERE (E.[ResourceId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -147,7 +125,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountDefinitionContractDefinitions] AD ON A.[DefinitionId] = AD.[AccountDefinitionId]
+	JOIN dbo.[AccountDesignationContractDefinitions] AD ON A.[DesignationId] = AD.[AccountDesignationId]
 	WHERE (E.[ContractId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -176,7 +154,58 @@ IF @State > 0
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
-	
+
+	WITH FE_AB (EntryId, AccountBalanceId) AS (
+		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
+		FROM @Lines FE
+		JOIN @Entries E ON FE.[Index] = E.[LineIndex] AND FE.[DocumentIndex] = E.[DocumentIndex]
+		JOIN dbo.Lines L ON FE.[Id] = L.[Id]
+		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
+		JOIN dbo.AccountBalances AB ON
+			(E.[CenterId] = AB.[CenterId])
+		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
+		AND (AB.[CurrencyId] = E.[CurrencyId])
+		AND (E.[AccountId] = AB.[AccountId])
+		WHERE AB.BalanceEnforcedState <= @State
+		AND AB.[BalanceEnforcedState] BETWEEN 1 AND 4
+		AND (L.[State] >= AB.[BalanceEnforcedState] OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
+	),
+	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
+		SELECT TOP (@Top)
+			AB.[Id] AS [AccountBalanceId], 
+			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
+		FROM dbo.Documents D
+		JOIN dbo.Lines L ON L.DocumentId = D.[Id]
+		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
+		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
+		JOIN dbo.AccountBalances AB ON
+			(E.[CenterId] = AB.[CenterId])
+		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
+		AND (AB.[CurrencyId] = E.[CurrencyId])
+		AND (E.[AccountId] = AB.[AccountId])
+		WHERE AB.Id IN (Select [AccountBalanceId] FROM FE_AB)
+		AND ((L.[State] >= AB.[BalanceEnforcedState]) OR 
+			L.[Id] IN (Select [Id] FROM @Lines)
+			AND LD.[HasWorkflow] = 0
+			AND L.[State] = 0)
+		GROUP BY AB.[Id], AB.[MinMonetaryBalance], AB.[MaxMonetaryBalance], AB.[MinQuantity], AB.[MaxQuantity]
+		HAVING SUM(E.[Direction] * E.[MonetaryValue]) NOT BETWEEN AB.[MinMonetaryBalance] AND AB.[MaxMonetaryBalance]
+		OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT
+		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheEntryCausesOffLimitBalance0' AS [ErrorName],
+		BE.NetBalance
+	FROM @Lines L
+	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
+	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
+	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
+
 	---- Some Entry Definitions with some Account Types require an Entry Type
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	--SELECT TOP (@Top)
@@ -234,46 +263,5 @@ IF @State > 0
 
 	*/
 
--- Not allowed to cause negative balance in conservative accounts
-IF @State = 3 
-BEGIN
-	DECLARE @InventoriesTotal HIERARCHYID = 
-		(SELECT [Node] FROM dbo.[AccountTypes] WHERE Code = N'InventoriesTotal');
-	WITH
-	ConservativeAccounts AS (
-		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[IfrsTypeId] IN (
-			SELECT [Id] FROM dbo.[AccountTypes]
-			WHERE [Node].IsDescendantOf(@InventoriesTotal) = 1
-		)
-		AND [Id] IN (SELECT [Id] FROM @Entries)
-	),
-	OffendingEntries AS (
-		SELECT MAX([Id]) AS [Index],
-			AccountId,
-			ResourceId,
-			[ContractId],
-			DueDate,
-			SUM([NormalizedQuantity]) AS [Quantity]			
-		FROM map.DetailsEntries() E
-		WHERE AccountId IN (SELECT [Id] FROM ConservativeAccounts)
-		GROUP BY
-			AccountId,
-			ResourceId,
-			[ContractId],
-			DueDate
-		HAVING
-			SUM([NormalizedQuantity]) < 0
-	)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT TOP (@Top)
-		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheResource0Account1Shortage2',
-		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource], 
-		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account],
-		D.[Quantity] -- 
-	FROM OffendingEntries D
-	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
-	JOIN dbo.Resources R ON A.ResourceId = R.Id
-END
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

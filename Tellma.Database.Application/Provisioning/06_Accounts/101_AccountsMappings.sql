@@ -1,4 +1,4 @@
-﻿--[AccountDefinitionId],
+﻿--[AccountDesignationId],
 --[MapFunction],
 --[CenterId],
 --[ContractId],
@@ -7,15 +7,22 @@
 --[CurrencyId],
 --[AccountId]
 INSERT INTO dbo.AccountMappings([MapFunction],
-[AccountDefinitionId],		[AccountId]) VALUES
+[AccountDesignationId],		[AccountId]) VALUES
 (0,@document_controlADef,	@1DocumentControl),
-(0,@vat_receivableADef,		@1VATInput);
+(0,@vat_receivableADef,		@1VATInput),
+(0,@vat_payableADef,		@1VATOutput),
+(0,@exchange_gain_lossADef,	@1ExchangeGainLoss),
+(0,@exchange_varianceADef,	@1ExchangeVariance)
 
 INSERT INTO dbo.AccountMappings([MapFunction],
-[AccountDefinitionId], [ContractId],	[AccountId]) VALUES
-(1,@cashADef,			@GMSafe,		@1GMFund),
-(1,@cashADef,			@AdminPettyCash,@1AdminPC),
-(1,@cashADef,			@KRTBank,		@1BOK);
+[AccountDesignationId], [ContractId],		[AccountId]) VALUES
+(1,@cashADef,			@GMSafe,			@1GMFund),
+(1,@cashADef,			@AdminPettyCash,	@1AdminPC),
+(1,@cashADef,			@KRTBank,			@1BOK),
+(1,@supplierADef,		@GenericSupplier,	@1CashSuppliers),
+(1,@supplierADef,		@FamilyShawarma,	@1CashSuppliers)
+
+;
 /*
 @general_BSADef
 @general_PLADef

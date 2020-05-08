@@ -52,7 +52,7 @@ BEGIN
 	--		-SUM([Direction] * [Time])
 	--	FROM dbo.Entries DLE
 	--	JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
-	--	WHERE A.[AccountDefinitionId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
+	--	WHERE A.[AccountDesignationId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
 	--	GROUP BY DLE.[AccountId], A.[AgentId], A.[ResourceId]
 	--	HAVING SUM([Direction] * [Value]) <> 0
 	--),
@@ -73,7 +73,7 @@ BEGIN
 	--		-SUM([AccruedValue])
 	--	FROM EmployeesAccruals EA
 	--	JOIN dbo.Accounts A ON EA.AccountId = A.[Id]
-	--	WHERE A.[AccountDefinitionId]  = @SalariesAccrualsTaxableAccountDef
+	--	WHERE A.[AccountDesignationId]  = @SalariesAccrualsTaxableAccountDef
 	--	GROUP BY A.[AgentId]
 	--	HAVING -SUM([AccruedValue])<> 0
 	--),
@@ -90,7 +90,7 @@ BEGIN
 	--	JOIN dbo.Accounts A ON E.EmployeeId = A.[AgentId]
 	--	LEFT JOIN EmployeeIncomeTaxes EIT ON E.EmployeeId = EIT.EmployeeId
 	--	WHERE
-	--		A.AccountDefinitionId = @EmployeesPayableAccountDef
+	--		A.AccountDesignationId = @EmployeesPayableAccountDef
 	--		AND E.TotalIncome <> ISNULL(EIT.IncomeTax,0)
 	--)
 	---- We reverse the accrual effect

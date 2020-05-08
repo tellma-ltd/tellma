@@ -43,4 +43,4 @@
 	DECLARE @Workflows dbo.[WorkflowList];
 	DECLARE @WorkflowSignatures dbo.WorkflowSignatureList;
 
-	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT;
+	DECLARE @DI1 INT, @DI2 INT, @DI3 INT, @DI4 INT, @DI5 INT, @DI6 INT, @DI7 INT, @DI8 INT;

@@ -26,7 +26,7 @@ END
 :r .\02_Definitions\a_LookupDefinitions.sql
 :r .\02_Definitions\b_ResourceDefinitions.sql
 :r .\02_Definitions\c_ContractDefinitions.sql
-:r .\02_Definitions\e_AccountDefinitions.sql
+:r .\02_Definitions\e_AccountDesignations.sql
 
 :r .\00_Common\e_AccountTypes.sql
 :r .\00_Common\f_RuleTypes.sql
@@ -76,9 +76,8 @@ END
 :r .\06_Accounts\101_Accounts.sql
 :r .\06_Accounts\101_AccountsMappings.sql
 --:r .\06_Accounts\105_Accounts.sql
---:r .\07_Entries\101\101a_manual-journal-vouchers.sql
---:r .\07_Entries\101\101b_cash-purchase-vouchers.sql
-:r .\07_Entries\101\101c_cash-payment-vouchers.sql
+:r .\07_Entries\101\101a_manual-journal-vouchers.sql
+:r .\07_Entries\101\101b_cash-payment-vouchers.sql
 --:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
 
 DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (

@@ -8,17 +8,14 @@
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
-DECLARE @C_PaymentToSupplierDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'C_PaymentToSupplier');
-DECLARE @C_GoodReceiptDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'C_GoodReceipt');
-DECLARE @C_PurchaseExpenseDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'C_PurchaseExpense');
+DECLARE @GoodReceiptDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'GoodReceipt');
+DECLARE @PurchaseExpenseDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PurchaseExpense');
 
 DECLARE @PaymentToSupplierDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentToSupplier');
 DECLARE @PaymentToOtherDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentToOther');
 DECLARE @CashTransferExchangeDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'CashTransferExchange');
 
 DECLARE @LeaseInDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'LeaseIn');
-
-DECLARE @C_PaymentFromCustomerDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'C_PaymentFromCustomer');
 
 DECLARE @PaymentFromCustomerDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromCustomer');
 DECLARE @PaymentFromOtherDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromOther');

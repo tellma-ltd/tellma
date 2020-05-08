@@ -33,9 +33,8 @@ BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Code],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
-	(1,	N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'قيد شراء نقدي',		N'Cash Purchase Vouchers',		N'قيود مشتريات نقدية',	N'CPRV',	N'money-check-alt',		N'Cash',			20),
---	(2,	N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'قيد مرتب نقدي',		N'Cash Payroll Vouchers',		N'قيود مرتبات نقدية',	N'PRLV',	N'money-check-alt',		N'Cash',			20),
 	(3,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
+--	(2,	N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'قيد مرتب نقدي',		N'Cash Payroll Vouchers',		N'قيود مرتبات نقدية',	N'PRLV',	N'money-check-alt',		N'Cash',			20),
 	(4,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'قيد مصروفات إيجار',	N'Lease in Expense Vouchers',	N'قيود مصروفات إيجارات',N'ERV',	N'file-contract',		N'Purchasing',		20),
 
 	(11,N'cash-sale-vouchers',			N'Cash Sale Voucher',			N'قيد بيع نقدي',		N'Cash Sale Vouchers',			N'قيود مبيعات نقدية',	N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
@@ -46,17 +45,15 @@ BEGIN
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
 	(0,0,	@ManualLineDef,				1),
 	-- cash-purchase-vouchers
-	(0,1,	@C_PaymentToSupplierDef,	1), -- includes invoice
-	(1,1,	@C_GoodReceiptDef,			0),
-	(2,1,	@C_PurchaseExpenseDef,		0),
+	(0,1,	@PaymentToSupplierDef,		1), -- includes invoice
+	(9,1,	@PaymentToOtherDef,			1), -- including partner, creditor
+	(1,1,	@GoodReceiptDef,			0),
+	(2,1,	@PurchaseExpenseDef,		0),
 	(8,1,	@CashTransferExchangeDef,	1),
-	(9,1,	@ManualLineDef,				0), -- might be able to remove it, if we handle all cases
+	(10,1,	@ManualLineDef,				0), -- might be able to remove it, if we handle all cases
 
 	-- cash-payment-vouchers
-	(1,3,	@PaymentToSupplierDef,		0), -- on credit for goods and services
-	(9,3,	@PaymentToOtherDef,			1), -- including partner, creditor
-	(10,3,	@CashTransferExchangeDef,	1),
-	(11,3,	@ManualLineDef,				1),
+
 
 	--- lease-in-vouchers, for subscription and rental recognition
 	--(0,4,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
@@ -64,7 +61,7 @@ BEGIN
 	(9,4,	@ManualLineDef,				0),
 
 	-- cash-sale-vouchers
-	(0,11,	@C_PaymentFromCustomerDef,	1),  -- includes invoice
+	(0,11,	@PaymentFromCustomerDef,	1),  -- includes invoice
 	--(2,11,	N'ServiceDeliveryNote',		1),
 	(3,11,	@ManualLineDef,				1),
 	-- cash-receipt-vouchers
@@ -223,5 +220,4 @@ EXEC dal.DocumentDefinitions__Save
 
 DECLARE @manual_journal_vouchersDef INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'manual-journal-vouchers'); 
 
-DECLARE @cash_purchase_vouchersDef INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-purchase-vouchers'); 
 DECLARE @cash_payment_vouchersDef INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-payment-vouchers');

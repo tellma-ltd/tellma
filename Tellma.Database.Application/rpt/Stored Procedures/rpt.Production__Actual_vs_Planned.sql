@@ -5,18 +5,20 @@
 AS
 BEGIN
 	WITH
-	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
+	Actual([ResourceLookup1Id],	[Mass], [Count]) AS (
 		SELECT 
-			R.[Lookup1Id], J.[ContractId],
+			R.[Lookup1Id],
 			SUM(J.[AlgebraicMass]) AS [Mass],
 			SUM(J.[AlgebraicCount]) AS [Count]
-		FROM [map].[DetailsEntries]() J --(@FromDate, @ToDate) J
+		FROM [map].[DetailsEntries]() J
+		JOIN dbo.Lines L ON J.LineId = L.Id
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
-		JOIN dbo.[AccountDefinitions] AD ON A.[DefinitionId] = AD.[Id]
-		-- assuming that inventory entries require IfrsNoteExtension
-		WHERE J.[EntryTypeId] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ProductionOfGoods') 
-		AND AD.[Code] = N'Inventory'
+		JOIN dbo.[AccountTypes] RT ON A.[IfrsTypeId] = RT.[Id]
+		WHERE J.[EntryTypeId] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InventoryProductionExtension') 
+		AND RT.[Code] = N'FinishedGoods'
+		AND L.[State] = 4
+		AND L.PostingDate Between @fromDate AND @ToDate
 		GROUP BY J.[ContractId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
@@ -43,7 +45,7 @@ BEGIN
 		AND Activity = N'Production'
 		GROUP BY ResourceLookup1Id, [MassUnitId], [CountUnitId], [FromDate], [ToDate]
 	),
-	Planned([ResourceLookup1Id], [Mass], [Count])	AS (
+	Planned([ResourceLookup1Id], [Mass], [Count]) AS (
 		SELECT ResourceLookup1Id, 
 		SUM([Mass]) AS [Mass], 
 		SUM([Count]) AS [Count]

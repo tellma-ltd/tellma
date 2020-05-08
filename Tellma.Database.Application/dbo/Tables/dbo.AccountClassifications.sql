@@ -1,7 +1,6 @@
 ﻿CREATE TABLE [dbo].[AccountClassifications] (
 	[Id]								INT					CONSTRAINT [PK_AccountClassifications] PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]							INT					CONSTRAINT [FK_AccountClassifications__ParentId] REFERENCES [dbo].[AccountClassifications] ([Id]),
-	-- This one is not needed, and must be replaces with AccountDefinition
 	[Name]								NVARCHAR (255),
 	[Name2]								NVARCHAR (255),
 	[Name3]								NVARCHAR (255),

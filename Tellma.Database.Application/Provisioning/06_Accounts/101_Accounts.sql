@@ -5,7 +5,7 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 */
 		
 	INSERT INTO @Accounts([Index],
-		[Code], [DefinitionId],	[ClassificationId],	[IfrsTypeId],						[Name],							[CurrencyId],	[CenterId],		[EntryTypeId],		[ContractId]) VALUES
+		[Code], [DesignationId],[ClassificationId],	[IfrsTypeId],						[Name],							[CurrencyId],	[CenterId],		[EntryTypeId],		[ContractId]) VALUES
 	-- Assets Accounts
 	(10,N'12001',@ppeADef,@NonCurrentAssets_AC,		@FixturesAndFittings,				N'Fixtures and fittings',		@USD,			NULL,			@PPEAdditions,		NULL),
 	(11,N'12002',@ppeADef,@NonCurrentAssets_AC,		@OfficeEquipment,					N'Office equipment',			@USD,			NULL,			@PPEAdditions,		NULL),
@@ -15,7 +15,8 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(311,N'12012',@ppeADef,@NonCurrentAssets_AC,	@OfficeEquipment,					N'Acc. Dep.- Office equipment',	@USD,			NULL,			@PPEDepreciations,	NULL),
 	(312,N'12013',@ppeADef,@NonCurrentAssets_AC,	@OfficeEquipment,					N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@PPEDepreciations,	NULL),
 
-	(20,N'11201',@customerADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,				NULL),
+	(15,N'11201',@customerADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Trade Receivables',			NULL,			@C101_INV,		NULL,				NULL),
+	(20,N'11209',@customerADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Cash Customers',				NULL,			@C101_INV,		NULL,				NULL),
 
 	(21,N'11211',@general_BSADef,@Debtors_AC,		@CurrentTradeReceivables,			N'Banan ET',					@USD,			@C101_INV,		NULL,				NULL),
 	(22,N'11212',@general_BSADef,@Debtors_AC,		@CurrentTradeReceivables,			N'PrimeLedgers A/R',			@USD,			@C101_INV,		NULL,				NULL),
@@ -25,7 +26,7 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(24,N'12021',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'Abu Ammar Car Loan',			@USD,			@C101_INV,		NULL,				@Abu_Ammar),
 	(25,N'12022',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'M. Ali Car Loan',				@USD,			@C101_INV,		NULL,				@M_Ali),
 	(26,N'12023',@employeeADef,	@Debtors_AC,		@OtherNoncurrentReceivables,		N'El-Amin Car Loan',			@USD,			@C101_INV,		NULL,				@el_Amin),
-	(27,N'12031',@general_BSADef,@Debtors_AC,		@CurrentValueAddedTaxReceivables,	N'VAT Input',					NULL,			@C101_INV,		NULL,				NULL),
+	(27,N'12031',@vat_receivableADef,@Debtors_AC,	@CurrentValueAddedTaxReceivables,	N'VAT Input',					NULL,			@C101_INV,		NULL,				NULL),
 --	(28,N'11206',@general_BSADef,@Debtors_AC,		@TradeAndOtherCurrentReceivables,	N'Commissions',					@USD,			@C101_INV,		NULL,				NULL),
 	(29,N'11231',@supplierADef,	@Debtors_AC,		@CurrentTradeReceivables,			N'Office Rent',					@SDG,			@C101_INV,		NULL,				NULL),
 	(30,N'11232',@supplierADef,	@Debtors_AC,		@CurrentPrepayments,				N'Internet Prepayment',			@SDG,			@C101_INV,		NULL,				NULL),
@@ -46,19 +47,24 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(51,N'30002',@general_BSADef,@Equity_AC,		@RetainedEarnings,					N'Retained Earnings',			@USD,			@C101_INV,		NULL,				NULL),
 	(59,N'30099',@document_controlADef,@Equity_AC,	@OtherEquityInterest,				N'Document Control',			NULL,			@C101_INV,		NULL,				NULL),
 
-	(61,N'21101',@employeeADef,	@CurrentLiabilities_AC,@CurrentPayablesToEmployeesExtension,N'Employees Payables - USD',@USD,			@C101_INV,		NULL,				NULL),
-	(62,N'21102',@employeeADef,	@CurrentLiabilities_AC,@CurrentPayablesToEmployeesExtension,N'Employees Payables - SDG',@SDG,			@C101_INV,		NULL,				NULL),
+	(61,N'21101',@employeeADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,N'Employees Payables - USD',@USD,			@C101_INV,		NULL,				NULL),
+	(62,N'21102',@employeeADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,N'Employees Payables - SDG',@SDG,			@C101_INV,		NULL,				NULL),
 	(63,N'21103',@employeeADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'10% Retained Salaries',		@USD,			@C101_INV,		NULL,				NULL),
 	(64,N'21201',@general_BSADef,@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'PrimeLedgers A/P',			@USD,			@C101_INV,		NULL,				NULL),
 
 	(65,N'21202',@supplierADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayablesToTradeSuppliers,N'Trade Payables',	NULL,			@C101_INV,		NULL,				NULL),
 	(66,N'21203',@supplierADef,	@CurrentLiabilities_AC,@AccrualsClassifiedAsCurrent,	N'Accrued Expenses',			NULL,			@C101_INV,		NULL,				NULL),
-	(67,N'21301',@partnerADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Dividends Payables',			@USD,			@C101_INV,		NULL,				NULL),
-	(68,N'21302',@partnerADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Borrowings from M/A',			@USD,			@C101_INV,		NULL,				@PartnerMA),
+	(67,N'21299',@supplierADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Cash Suppliers',				NULL,			@C101_INV,		NULL,				NULL),
 
-	(75,N'21401',@eitaxADef,	@CurrentLiabilities_AC,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,
+	(68,N'21301',@partnerADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Dividends Payables',			@USD,			@C101_INV,		NULL,				NULL),
+	(70,N'21302',@partnerADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Borrowings from M/A',			@USD,			@C101_INV,		NULL,				@PartnerMA),
+	
+	(73,N'21401',@vat_payableADef,@CurrentLiabilities_AC,@CurrentValueAddedTaxPayables,
+																						N'VAT Output',					@SDG,			@C101_INV,		NULL,				NULL),
+
+	(75,N'21402',@eitaxADef,	@CurrentLiabilities_AC,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,
 																						N'Employees Income Tax',		@SDG,			@C101_INV,		NULL,				NULL),
-	(76,N'21402',@estaxADef,	@CurrentLiabilities_AC,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,
+	(76,N'21403',@estaxADef,	@CurrentLiabilities_AC,@CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax,
 																						N'Employees Stamp Tax',			@SDG,			@C101_INV,		NULL,				NULL),
 
 
@@ -67,7 +73,6 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(70,N'3050',	@DeferredIncomeClassifiedAsCurrent,	N'Deferred Income - SDG',		@SDG,			@C101_INV,		NULL,				NULL),
 	(71,N'3110',	@CurrentSocialSecurityPayablesExtension,N'Employee Pensions',		@SDG,			@C101_INV,		NULL,				NULL),
 	(72,N'3120',	@CurrentZakatPayablesExtension,		N'Zakat',						@SDG,			@C101_INV,		NULL,				NULL),
-	(73,N'3130',	@CurrentValueAddedTaxPayables,		N'VAT Output',					NULL,			@C101_INV,		NULL,				NULL),
 --	(74,N'3140',	@CurrentTradeAndOtherPayables,		N'Income Tax',					@SDG,			@C101_INV,		NULL,				NULL),
 */
 
@@ -84,7 +89,9 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(130,N'50065',@purchase_expenseADef,@Expenses_AC,@CommunicationExpense,				N'Internet & Tel',				NULL,			@C101_Sys,		@ServiceExtension,	NULL),
 	(140,N'50070',@purchase_expenseADef,@Expenses_AC,@UtilitiesExpense,					N'Electricity',					@SDG,			@C101_PWG,		@ServiceExtension,	NULL),
 	(190,N'50100',@employee_bonusADef,@Expenses_AC,	@EmployeeBenefitsExpense,			N'Bonuses',						NULL,			NULL,			NULL,				NULL),
-	(195,N'50120',@employee_bonusADef,@Expenses_AC,	@TerminationBenefitsExpense,		N'Termination Benefits',		@SDG,			NULL,			NULL,				NULL)
+	(195,N'50120',@employee_bonusADef,@Expenses_AC,	@TerminationBenefitsExpense,		N'Termination Benefits',		@SDG,			NULL,			NULL,				NULL),
+	(200,N'50401',@exchange_gain_lossADef,@Expenses_AC,	@OtherGainsLosses,				N'Exchange Loss (Gain)',		@USD,			NULL,			NULL,				NULL),
+	(205,N'50402',@exchange_varianceADef,@Expenses_AC,	@OtherGainsLosses,				N'Exchange Variance',			@USD,			NULL,			NULL,				NULL)
 
 /*
 -- 5: Direct, Cost of sales
@@ -214,7 +221,13 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	DECLARE @1Revenues INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Revenues');
 	DECLARE @1DocumentControl INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Document Control');
 	DECLARE @1VATInput INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'VAT Input');
+	DECLARE @1VATOutput INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'VAT Output');
+
 	DECLARE @1RetainedSalaries INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'10% Retained Salaries');
 	DECLARE @1Bonuses INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Bonuses');
 	DECLARE @1Termination INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Termination Benefits');
+	DECLARE @1CashSuppliers INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Cash Suppliers');
+	DECLARE @1CashCustomers INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Cash Customers');
+	DECLARE @1ExchangeGainLoss INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Exchange Loss (Gain)');
+	DECLARE @1ExchangeVariance INT = (SELECT [Id] FROM dbo.Accounts WHERE [Name] = N'Exchange Variance');
 END

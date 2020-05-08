@@ -536,10 +536,9 @@
     <Build Include="map\map.Outbox.sql" />
     <Build Include="map\IfrsConcepts.sql" />
     <None Include="Provisioning\03_Basic\e_Centers.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitionCenterTypes.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitionResourceDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitionContractDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDesignations.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDesignationResourceDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDesignationContractDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountMappings.sql" />
     <Build Include="dbo\Tables\dbo.Agents.sql" />
     <Build Include="wiz\Stored Procedures\wiz.Paysheet__Prepare.sql" />
@@ -555,6 +554,7 @@
     <Build Include="dbo\User Defined Types\dbo.DocumentDefinitionMarkupTemplateList.sql" />
     <Build Include="dal\Stored Procedures\dal.Segments__Save.sql" />
     <Build Include="dbo\Tables\dbo.Segments.sql" />
+    <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -585,17 +585,16 @@
     <None Include="Provisioning\07_Entries\01E5_manual-journal-vouchers.sql" />
     <None Include="Provisioning\06_Accounts\101_Accounts.sql" />
     <None Include="Provisioning\07_Entries\101\101a_manual-journal-vouchers.sql" />
-    <None Include="Provisioning\07_Entries\101\101b_cash-purchase-vouchers.sql" />
+    <None Include="Provisioning\07_Entries\101\101b_cash-payment-vouchers.sql" />
     <None Include="Provisioning\00_Common\f_RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101d_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_revenue_services.sql" />
     <None Include="101.AzureBananSDTraining.publish.xml" />
-    <None Include="Provisioning\02_Definitions\e_AccountDefinitions.sql" />
+    <None Include="Provisioning\02_Definitions\e_AccountDesignations.sql" />
     <None Include="Provisioning\03_Basic\d_Segments.sql" />
     <None Include="Provisioning\06_Accounts\101_AccountsMappings.sql" />
     <None Include="Provisioning\05_Contracts\01_Agents.sql" />
-    <None Include="Provisioning\07_Entries\101\101c_cash-payment-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

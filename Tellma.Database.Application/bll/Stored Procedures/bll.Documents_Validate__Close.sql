@@ -44,19 +44,56 @@ SET NOCOUNT ON;
 	WHERE
 			LD.[HasWorkflow] = 1 AND L.[State] BETWEEN 0 AND 3;
 
-	-- cannot close if the document control account has non zero balance
+	-- For contracts lines where [BalanceEnforcedState] = 5, the enforcement is at the document closing level
+	WITH FE_AB (EntryId, AccountBalanceId) AS (
+		SELECT E.[Id] AS EntryId, AB.[Id] AS AccountBalanceId
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
+		JOIN @Ids D ON L.[DocumentId] = D.[Id]
+		JOIN dbo.AccountBalances AB ON
+			(E.[CenterId] = AB.[CenterId])
+		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
+		AND (AB.[CurrencyId] = E.[CurrencyId])
+		AND (E.[AccountId] = AB.[AccountId])
+		WHERE AB.BalanceEnforcedState = 5
+		AND (L.[State] = 4 OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
+	),
+	BreachingEntries ([AccountBalanceId], [NetBalance]) AS (
+		SELECT TOP (@Top)
+			AB.[Id] AS [AccountBalanceId], 
+			FORMAT(SUM(E.[Direction] * E.[MonetaryValue]), 'N', 'en-us') AS NetBalance
+		FROM dbo.Documents D
+		JOIN dbo.Lines L ON L.DocumentId = D.[Id]
+		JOIN map.LineDefinitions () LD ON L.[DefinitionId] = LD.[Id]
+		JOIN dbo.Entries E ON L.[Id] = E.[LineId]
+		JOIN dbo.AccountBalances AB ON
+			(E.[CenterId] = AB.[CenterId])
+		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
+		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
+		AND (AB.[CurrencyId] = E.[CurrencyId])
+		AND (E.[AccountId] = AB.[AccountId])
+		WHERE AB.Id IN (Select AccountBalanceId FROM FE_AB)
+		AND ((L.[State] = 4 AND D.[State] = 1) OR 
+			(D.[Id] IN (Select [Id] FROM @Ids)) AND 
+				(L.[State] = 4 OR LD.HasWorkflow = 0 AND L.[State] = 0))
+		GROUP BY AB.[Id], AB.[MinMonetaryBalance], AB.[MaxMonetaryBalance], AB.[MinQuantity], AB.[MaxQuantity]
+		HAVING SUM(E.[Direction] * E.[MonetaryValue]) NOT BETWEEN AB.[MinMonetaryBalance] AND AB.[MaxMonetaryBalance]
+		OR SUM(E.[Direction] * E.[Quantity]) NOT BETWEEN AB.[MinQuantity] AND AB.[MaxQuantity]
+	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheDocumentHasControlBalance0',
-		FORMAT(SUM(E.[Direction] * E.[Value]), 'N', 'en-us') AS ControlBalance
-	FROM @Ids FE
-	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
-	JOIN dbo.[Entries] E ON E.[LineId] = L.[Id]
-	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	WHERE A.[DefinitionId] = (SELECT [Id] FROM dbo.AccountDefinitions WHERE [Code] = N'document-control')
-	GROUP BY FE.[Index]
-	HAVING SUM(E.[Direction] * E.[Value]) <> 0
+	SELECT
+		'[' + CAST(D.[Index] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
+			CAST(E.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheEntryCausesOffLimitBalance0' AS [ErrorName],
+		BE.NetBalance
+	FROM @Ids D
+	JOIN dbo.Lines L ON L.[DocumentId] = D.[Id]
+	JOIN dbo.Entries E ON E.[LineId] = L.[Id]
+	JOIN FE_AB ON E.[Id] = FE_AB.[EntryId]
+	JOIN BreachingEntries BE ON FE_AB.[AccountBalanceId] = BE.[AccountBalanceId]
 
 	INSERT INTO @Lines(
 			[Index],	[DocumentIndex],[Id], [DefinitionId], [PostingDate], [Memo])
