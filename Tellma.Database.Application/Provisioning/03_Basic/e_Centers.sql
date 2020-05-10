@@ -1,4 +1,4 @@
-﻿DECLARE @Centers dbo.CenterList;
+﻿DECLARE @Centers dbo.CenterList; 
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @Centers([Index],
@@ -16,21 +16,23 @@ BEGIN
 	-- revenues can be assigned to Profit leaves only
 	-- All other accounts to @investment leaves only
 
-	INSERT INTO @Centers([Index],							-- ResponsibilityType	CenterClassification
-		[Name],					[Name2],				[Code],[CenterType],	[ParentIndex]) VALUES
-	(1,N'Banan - Unallocated',	N'شركة بنان - غ مخصص',	N'10',	N'Investment',	0),
-	(2,N'Executive Office',		N'المكتب التنفيذي',	N'11',	N'Cost',		0),
-	(3,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		0), -- 	DistributionAndAdministrativeExpense
-	(4,N'System Admin',			N'إدارة النظم',			N'13',	N'Cost',		0),
-	(5,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		0),
-	(6,N'Products',				N'المنتجات',			N'2',	N'Revenue',		0),
-	(7,N'B10/HCM',				N'بابل',				N'21',	N'Profit',		5), -- should we say: ExpenseByFunctionExtension
-	(8,N'BSmart',				N'بيسمارت',				N'22',	N'Profit',		5),
-	(9,N'Campus',				N'كامبوس',				N'23',	N'Profit',		5),
-	(10,N'Tellma',				N'تلما',				N'24',	N'Profit',		5),
-	(11,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		0);
+	INSERT INTO @Centers([Index],[ParentIndex],
+		[Name],					[Name2],				[Code],[CenterType],	[ExpenseEntryTypeId]) VALUES
+	(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Investment',	NULL),
+	(2,0,N'Departments',		N'الإدارات',				N'1',	N'Cost',		NULL),
+	(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
+	(4,2,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),
+	(5,2,N'System Admin',		N'إدارة النظم',			N'13',	N'Cost',		@ServiceExtension),
+	(6,2,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		@ServiceExtension),
+	--(7,2,N'Cafeteria',			N'الوجبات',				N'15',	N'Cost',		@ServiceExtension),
+	(8,0,N'Products',			N'المنتجات',			N'2',	N'Profit',		NULL),
+	(9,7,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
+	(10,7,N'BSmart',			N'بيسمارت',				N'22',	N'Profit',		@CostOfSales),
+	(11,7,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
+	(12,7,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
+	(13,0,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		@CostOfSales);
 
-	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'2');
+	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'1', N'2');
 --	Dr. Tellma: WIP Acct, Resource:Job XYZ, Qty:1 [Open a new job]
 --	Dr. Tellma: Travel
 --		Cr. Cash
@@ -157,7 +159,6 @@ BEGIN
 				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
 	SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
 	FROM dbo.Settings
-
 	INSERT INTO @Centers([Index],
 		[Name],						[Name2],[Code], [CenterType], [ParentIndex]) VALUES -- HasBS, HasRevenues, HasExpenses 
 	(1,N'Soreti Trading - AA',		N'',	N'0',	N'Investment',			0), -- ADM
@@ -172,9 +173,9 @@ BEGIN
 	(1,N'Bajaj - Administration',	N'',	N'42',	N'Investment',			0),
 	(1,N'Bajaj - Sales',			N'',	N'43',	N'Investment',			0),
 	(1,N'Bajaj - Materials',		N'',	N'44',	N'Investment',			0),
-	(1,N'Bajaj - Production',		N'',	N'45',	N'Investment',			0)
-	;
+	(1,N'Bajaj - Production',		N'',	N'45',	N'Investment',			0);
 END
+UPDATE @Centers SET [SegmentId] = @MAIN_OS;
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -190,23 +191,26 @@ DECLARE @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production I
 
 SELECT @RC_Inv = [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment';
 
-	--(1,N'Banan - Unallocated',	N'شركة بنان - غ مخصص',	N'10',	NULL,			0),
-	--(2,N'Executive Office',		N'المكتب التنفيذي',	N'11',	NULL,			0),
-	--(3,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	NULL,			0), -- 	DistributionAndAdministrativeExpense
-	--(4,N'System Admin',			N'إدارة النظم',			N'13',	NULL,			0),
-	--(5,N'Products',				N'المنتجات',			N'2',	N'Revenue',		0),
-	--(6,N'B10/HCM',				N'بابل',				N'21',	NULL,			5), -- should we say: ExpenseByFunctionExtension
-	--(7,N'BSmart',				N'بيسمارت',				N'22',	NULL,			5),
-	--(8,N'Campus',				N'كامبوس',				N'23',	NULL,			5),
-	--(9,N'Tellma',				N'تلما',				N'24',	NULL,			5),
-	--(10,N'1st Floor',			N'ط - 1',				N'30',	NULL,			0);
+	--(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Investment',	NULL),
+	--(2,0,N'Departments',		N'الإدارات',				N'1',	N'Cost',		NULL),
+	--(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
+	--(4,2,N'Sales Unit',		N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),
+	--(5,2,N'System Admin',		N'إدارة النظم',			N'13',	N'Cost',		@ServiceExtension),
+	--(6,2,N'Power Gen.',		N'إنتاج الكهرباء',		N'14',	N'Cost',		@ServiceExtension),
+	--(7,0,N'Products',			N'المنتجات',			N'2',	N'Profit',		NULL),
+	--(8,7,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
+	--(9,7,N'BSmart',			N'بيسمارت',				N'22',	N'Profit',		@CostOfSales),
+	--(10,7,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
+	--(11,7,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
+	--(12,0,N'1st Floor',		N'ط - 1',				N'30',	N'Profit',		@CostOfSales);
 
-DECLARE @C101_INV INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'10');
-DECLARE @C101_UNALLOC INT	= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'10');
+DECLARE @C101_INV INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'00');
+DECLARE @C101_UNALLOC INT	= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'00');
 DECLARE @C101_EXEC INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'11');
 DECLARE @C101_Sales INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'12');
 DECLARE @C101_Sys INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'13');
 DECLARE @C101_PWG INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'14');
+--DECLARE @C101_FD INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'15');
 DECLARE @C101_B10 INT		= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'21');
 DECLARE @C101_BSmart INT	= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'22');
 DECLARE @C101_Campus INT	= (SELECT [Id] FROM dbo.Centers WHERE [Code] = N'23');

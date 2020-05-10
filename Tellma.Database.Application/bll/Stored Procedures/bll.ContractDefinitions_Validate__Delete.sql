@@ -9,10 +9,10 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheContractDefinitionIsUsedInAccountDefinition0',
+		N'Error_TheContractDefinitionIsUsedInAccountDesignation0',
 		dbo.fn_Localize(AD.[Name], AD.[Name2], AD.[Name3]) AS [Account]
 	FROM @Ids FE
-	JOIN dbo.AccountDefinitionContractDefinitions ADRD ON ADRD.[ContractDefinitionId] = FE.[Id]
-	JOIN dbo.AccountDefinitions AD ON AD.[Id] = ADRD.[AccountDefinitionId]
+	JOIN dbo.[AccountDesignationContractDefinitions] ADRD ON ADRD.[ContractDefinitionId] = FE.[Id]
+	JOIN dbo.[AccountDesignations] AD ON AD.[Id] = ADRD.[AccountDesignationId]
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

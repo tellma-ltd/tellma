@@ -1374,4 +1374,144 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountClassifications]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="033f22f9-b284-452e-9f7d-75016a2be697" ChangeDateTime="05/02/2020 09:16:09">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeParentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8c2cf911-6ca8-4331-8d63-e58febc9c295" ChangeDateTime="05/02/2020 14:02:42">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[MapId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MapFunction]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="376198fd-4faf-4ed6-904b-7a8dbd4ac7ce" ChangeDateTime="05/04/2020 17:15:01">
+    <Property Name="ElementName" Value="[api].[Documents__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="54329967-47b9-45dc-a62e-9d77f6237682" ChangeDateTime="05/04/2020 17:16:22">
+    <Property Name="ElementName" Value="[api].[Documents__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f06a320-52c1-440f-9f33-b7ac7c6973cc" ChangeDateTime="05/04/2020 17:16:59">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ac4939c-3828-48d2-b772-3118f93c7c83" ChangeDateTime="05/04/2020 17:17:24">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="93a086f7-1e0f-4de3-a9fc-b32e98dc3cb1" ChangeDateTime="05/04/2020 17:17:48">
+    <Property Name="ElementName" Value="[dal].[Documents__Post]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Close]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2351137a-7997-4d8d-82cc-6c390d2c0d44" ChangeDateTime="05/04/2020 17:20:45">
+    <Property Name="ElementName" Value="[dal].[Documents__Open]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Preview]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="abf67ce3-1ec5-4783-9e15-020c38587246" ChangeDateTime="05/04/2020 17:22:02">
+    <Property Name="ElementName" Value="[dal].[Documents__Unpost]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Open]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="57423184-8297-4824-9d28-f0632e62cf2c" ChangeDateTime="05/05/2020 08:53:58">
+    <Property Name="ElementName" Value="[bll].[Lines_Validate__State_Update]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lines_Validate__State_Data]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="af7f7a3b-1f11-43fd-83bb-2f5f28c05a1f" ChangeDateTime="05/06/2020 14:37:59">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SystemTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fa2281d6-711d-4d60-9973-ce77e9eb9206" ChangeDateTime="05/06/2020 14:47:59">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[SystemTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DesignationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bb2ac166-5eb7-40ce-b86e-4672f2972e54" ChangeDateTime="05/06/2020 14:51:13">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountDesignations]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ae4817fe-ccb0-4c5f-9501-e3c54c39b656" ChangeDateTime="05/06/2020 14:51:58">
+    <Property Name="ElementName" Value="[dbo].[AccountMappings].[AccountDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountMappings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDesignationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f41c1e4b-47f6-4719-ae95-04b71a389cb6" ChangeDateTime="05/06/2020 14:53:24">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitionContractDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountDesignationContractDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="408beca5-90b4-4e87-a35d-15ffe8dabad7" ChangeDateTime="05/06/2020 14:53:51">
+    <Property Name="ElementName" Value="[dbo].[AccountDesignationContractDefinitions].[AccountDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDesignationContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDesignationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="946f5208-3315-44eb-bcda-50676155172c" ChangeDateTime="05/06/2020 14:54:38">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitionResourceDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountDesignationResourceDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="58da438f-384e-48e8-aa14-9ae1f828ad32" ChangeDateTime="05/06/2020 14:55:10">
+    <Property Name="ElementName" Value="[dbo].[AccountDesignationResourceDefinitions].[AccountDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDesignationResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDesignationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ffe894a8-971c-4ccb-8725-206b718d18fc" ChangeDateTime="05/06/2020 14:56:48">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountDesignationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9fc6747f-0e0c-4383-aca8-fc24513d4cff" ChangeDateTime="05/07/2020 14:41:34">
+    <Property Name="ElementName" Value="[dbo].[Contracts].[CashSafety]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Contracts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[BalanceEnforcedState]" />
+  </Operation>
 </Operations>

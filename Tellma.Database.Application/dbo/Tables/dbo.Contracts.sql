@@ -9,7 +9,8 @@
 	[Name3]						NVARCHAR (255),
 	--[ShortName]					NVARCHAR (255),		-- Nickname
 	[Code]						NVARCHAR (50),
-	[AgentId]					INT				CONSTRAINT [FK_Constracts__Agents] REFERENCES dbo.Agents([Id]),
+	[AgentId]					INT				CONSTRAINT [FK_Constracts__AgentId] REFERENCES dbo.[Agents]([Id]),
+	[CurrencyId]				NCHAR (3)		CONSTRAINT [FK_Constracts__CurrencyId] REFERENCES dbo.[Currencies]([Id]),
 --	Common
 	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
 	--[IsLocal]					BIT,

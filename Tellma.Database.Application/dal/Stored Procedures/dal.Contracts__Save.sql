@@ -19,6 +19,7 @@ SET NOCOUNT ON;
 			SELECT [Index], [Id], --[OperatingSegmentId],
 				@DefinitionId AS [DefinitionId], [Name], [Name2], [Name3], [Code],
 				[AgentId],
+				[CurrencyId],
 				[TaxIdentificationNumber], --[ImageId], -- imageId is handled separately in the code below.
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
@@ -44,6 +45,7 @@ SET NOCOUNT ON;
 				t.[Name3]					= s.[Name3],
 				t.[Code]					= s.[Code],
 				t.[AgentId]					= s.[AgentId],
+				t.[CurrencyId]				= s.[CurrencyId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 			--	t.[ImageId]					= s.[ImageId],
 				--t.[IsLocal]					= s.[IsLocal],
@@ -94,6 +96,7 @@ SET NOCOUNT ON;
 			INSERT (--[OperatingSegmentId],
 				[DefinitionId], [Name], [Name2], [Name3], [Code],
 				[AgentId],
+				[CurrencyId],
 				[TaxIdentificationNumber],--,[ImageId]
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
@@ -111,6 +114,7 @@ SET NOCOUNT ON;
 			VALUES (--s.[OperatingSegmentId],
 				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code],
 				s.[AgentId],
+				s.[CurrencyId],
 				s.[TaxIdentificationNumber],--, s[ImageId]
 				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
 				--s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],

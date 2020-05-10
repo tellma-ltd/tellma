@@ -3,6 +3,7 @@
 	[Id]							INT				NOT NULL DEFAULT 0,
 	[SerialNumber]					INT,
 	[PostingDate]					DATE,
+	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0,
 	[DocumentLookup1Id]				INT, -- e.g., cash machine serial in the case of a sale
 	[DocumentLookup2Id]				INT,

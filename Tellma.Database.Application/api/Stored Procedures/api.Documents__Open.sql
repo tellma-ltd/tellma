@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[Documents__Unpost]
+﻿CREATE PROCEDURE [api].[Documents__Open]
 	@DefinitionId INT,
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -6,7 +6,7 @@ AS
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Documents_Validate__Unpost]
+	EXEC [bll].[Documents_Validate__Open]
 		@DefinitionId = @DefinitionId,
 		@Ids = @IndexedIds;
 

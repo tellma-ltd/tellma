@@ -6,36 +6,33 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- None of the mapped accounts can have non zero balance
-	--WITH
-	--ActiveAccounts([Index], [AccountDefinitionId], [Value], [MonetaryValue], [Mass], [Resource], [Agent])
-	--AS (
-	--	SELECT I.[Index], DLE.AccountId, 
-	--		SUM(DLE.[Direction] * DLE.[Value]) AS [Value],
-	--		SUM(DLE.[Direction] * DLE.[MonetaryValue]),
-	--		SUM(DLE.[Direction] * DLE.[Mass]),
-	--		ISNULL(R.[Name], N''), ISNULL(AG.[Name], N'')
-	--	-- TODO: Add the remaining units
-	--	FROM dbo.Entries DLE
-	--	JOIN dbo.Lines DL ON DLE.[LineId] = DL.[Id]
-	--	JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
-	--	JOIN dbo.Accounts A ON DLE.AccountId = A.Id
-	--	JOIN @Ids I ON I.[Id] = A.[AccountClassificationId]
-	--	LEFT JOIN dbo.Resources R ON R.[Id] = A.[ResourceId]
-	--	LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[AgentId]
-	--	WHERE D.[State] = 5 -- N'Closed'
-	--	GROUP BY I.[Index], DLE.AccountId, R.[Name], AG.[Name], RC.[Name]
-	--	HAVING
-	--		SUM(DLE.[Direction] * DLE.[Value]) <> 0
-	--	OR	SUM(DLE.[Direction] * DLE.[MonetaryValue]) <> 0
-	--	OR	SUM(DLE.[Direction] * DLE.[Mass]) <> 0
-	--)
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	--	SELECT TOP (@Top)
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-	--	N'Error_TheAccountClassificationHasBalance0InResource1Agent2',
-	--	[Value] AS Argument0, [Resource] AS [Argument1], [Agent] AS [Argument2]
-	--FROM ActiveAccounts
+IF @IsDeprecated = 1
+BEGIN
+	WITH
+	ActiveAccounts([Index], [AccountId], [Value], [MonetaryValue])
+	AS (
+		SELECT I.[Index], E.AccountId, 
+			SUM(E.[Direction] * E.[Value]) AS [Value],
+			SUM(E.[Direction] * E.[MonetaryValue])
+		-- TODO: Add the remaining units
+		FROM dbo.Entries E
+		JOIN dbo.Lines L ON E.[LineId] = L.[Id]
+		JOIN dbo.Accounts A ON E.AccountId = A.Id
+		JOIN @Ids I ON I.[Id] = A.[ClassificationId]
+		WHERE L.[State] = 4 -- N'Posted'
+		GROUP BY I.[Index], E.AccountId
+		HAVING
+			SUM(E.[Direction] * E.[Value]) <> 0
+		OR	SUM(E.[Direction] * E.[MonetaryValue]) <> 0
+	)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheAccountClassificationHasAccount0WithNonZeroBalance',
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3])
+	FROM ActiveAccounts AA
+	JOIN dbo.Accounts A ON AA.AccountId = A.[Id]
+END
 
-	SELECT TOP(@Top) * FROM @ValidationErrors;
-RETURN 0
+SELECT TOP(@Top) * FROM @ValidationErrors;
+

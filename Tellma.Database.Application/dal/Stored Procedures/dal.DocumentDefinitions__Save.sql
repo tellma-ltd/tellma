@@ -84,7 +84,7 @@ USING (
 		DDMT.[MarkupTemplateId]
 	FROM @Entities DD
 	JOIN @IndexedIds II ON DD.[Index] = II.[Index]
-	JOIN @DocumentDefinitionLineDefinitions DDMT ON DD.[Index] = DDMT.[HeaderIndex]
+	JOIN @DocumentDefinitionMarkupTemplates DDMT ON DD.[Index] = DDMT.[HeaderIndex]
 ) AS s
 ON s.Id = t.Id
 WHEN MATCHED THEN

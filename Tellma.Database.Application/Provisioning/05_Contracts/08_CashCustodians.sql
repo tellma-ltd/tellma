@@ -5,10 +5,11 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Custodians
 	([Index],	[Name],						[Name2],					[UserId]) VALUES
-	(0,			N'elAmin Attayyib - Cash',	N'الأمين الطيب - نقدية',	@amtaam),
-	(1,			N'Ahmad Abdussalam - Cash', N'أحمد عبد السلام - نقدية',	@aasalam),
-	(2,			N'Bank of Khartoum',		N'بنك الخرطوم',				@amtaam),
-	(3,			N'Omar el-Samani - Cash',	N'عمر السماني - نقدية',	@Omer)
+	(0,			N'GM Safe',					N'خزنة المدير العام',		@amtaam),
+--	(1,			N'GM Safe - USD',			N'خزنة المدير العام - دولار',	@amtaam),
+	(2,			N'Ahmad Abdussalam - Cash', N'أحمد عبد السلام - نقدية',	@aasalam),
+	(3,			N'Bank of Khartoum',		N'بنك الخرطوم',				@amtaam),
+	(4,			N'Admin Petty Cash',		N'النثرية الإدارية',		@Omer)
 	;
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodians
@@ -38,7 +39,8 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
-	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'elAmin Attayyib - Cash' AND [DefinitionId] = @cash_custodiansDef);
-	DECLARE @AdminSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Omar el-Samani - Cash' AND [DefinitionId] =  @cash_custodiansDef);
+	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe' AND [DefinitionId] = @cash_custodiansDef);
+--	DECLARE @GMSafeUSD INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe - USD' AND [DefinitionId] = @cash_custodiansDef);
+	DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @cash_custodiansDef);
 	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @cash_custodiansDef);
 	DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @cash_custodiansDef);

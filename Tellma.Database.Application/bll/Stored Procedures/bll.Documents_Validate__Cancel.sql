@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 		dbo.fn_StateId__State(L.[State])
 	FROM @Ids D
 	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
-	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Code]
+	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE (L.[State] >= 0 AND LD.[HasWorkflow] = 1)
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

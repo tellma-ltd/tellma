@@ -10,14 +10,12 @@ BEGIN
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @PreprocessedEntriesJson NVARCHAR (MAX), @PreprocessedEntries dbo.EntryList;
 
---	INSERT INTO @PreprocessedEntries
 	EXEC bll.[Documents__Preprocess]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @Lines,
 		@Entries = @Entries,
 		@PreprocessedEntriesJson = @PreprocessedEntriesJson OUTPUT;
-	--PRINT N'api.Documents__Save: PreprocessedEntriesJson = ' + ISNULL(@PreprocessedEntriesJson, N'');
 	
 	INSERT INTO @PreprocessedEntries
 	SELECT * FROM OpenJson(@PreprocessedEntriesJson)
@@ -26,6 +24,7 @@ BEGIN
 	[LineIndex]					INT '$.LineIndex',
 	[DocumentIndex]				INT '$.DocumentIndex',
 	[Id]						INT '$.Id',
+	[IsSystem]					BIT '$.IsSystem',
 	[Direction]					SMALLINT '$.Direction',
 	[AccountId]					INT '$.AccountId',
 	[CurrencyId]				NCHAR (3) '$.CurrencyId',
@@ -48,25 +47,27 @@ BEGIN
 	[NotedAgentName]			NVARCHAR (50) '$.NotedAgentName',
 	[NotedAmount]				DECIMAL (19,4) '$.NotedAmount', 	-- used in Tax accounts, to store the quantiy of taxable item
 	[NotedDate]					DATE '$.NotedDate'
-	)
-	INSERT INTO @ValidationErrors
+	);
+
+	-- Add here Code that is handled by C#
+	-- For functional currency, Value = Monetary Value
+	UPDATE E
+	SET E.[Value] = E.[MonetaryValue]
+	FROM @PreprocessedEntries E
+	JOIN @Lines L ON E.[LineIndex] = L.[Index] AND E.DocumentIndex = L.DocumentIndex
+	WHERE E.[CurrencyId] = dbo.fn_FunctionalCurrencyId()
+	AND L.DefinitionId <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+
 	EXEC [bll].[Documents_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
-		@Entries = @PreprocessedEntries;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Entries = @PreprocessedEntries,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 	
-
 	EXEC [dal].[Documents__SaveAndRefresh]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,

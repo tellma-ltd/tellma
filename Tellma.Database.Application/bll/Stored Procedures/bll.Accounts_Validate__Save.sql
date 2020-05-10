@@ -51,27 +51,11 @@ SET NOCOUNT ON;
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	-- Below we make sure the selected values conform to their definitions
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CenterId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_Center'
-	FROM @Entities FE
-	JOIN dbo.[Centers] C ON FE.[CenterId] = C.[Id]
-	LEFT JOIN dbo.[AccountDefinitionCenterTypes] AD
-		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND C.[CenterType] = AD.[CenterType]
-	WHERE (AD.CenterType IS NULL);
+	-- TODO: Entry Type appears in: Account Types, Account Definitions, Accounts, Entries, ...
+	-- The flow is not clear.
+	-- Currency appears in Account, Resource, Contract,
+	-- The flow also is not clear
 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT TOP (@Top)
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].CurrencyId',
-		N'Error_TheField0IsIncompatible',
-		N'localize:Account_Currency'
-	FROM @Entities FE
-	LEFT JOIN dbo.[AccountDefinitionCurrencies] AD
-		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND FE.[CurrencyId] = AD.[CurrencyId]
-	WHERE (FE.[CurrencyId] IS NOT NULL AND AD.[CurrencyId] IS NULL);
-	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
@@ -79,8 +63,8 @@ SET NOCOUNT ON;
 		N'localize:Account_Resource'
 	FROM @Entities FE
 	JOIN dbo.[Resources] R ON FE.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.[AccountDefinitionResourceDefinitions] AD
-		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
+	LEFT JOIN dbo.[AccountDesignationResourceDefinitions] AD
+		ON FE.[DesignationId] = AD.[AccountDesignationId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
 	WHERE (AD.[ResourceDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -90,8 +74,8 @@ SET NOCOUNT ON;
 		N'localize:Account_Contract'
 	FROM @Entities FE
 	JOIN dbo.[Documents] R ON FE.[ContractId] = R.[Id]
-	LEFT JOIN dbo.[AccountDefinitionContractDefinitions] AD
-		ON FE.[DefinitionId] = AD.[AccountDefinitionId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
+	LEFT JOIN dbo.[AccountDesignationContractDefinitions] AD
+		ON FE.[DesignationId] = AD.[AccountDesignationId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
 	WHERE (AD.[ContractDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -100,8 +84,8 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_EntryType'
 	FROM @Entities FE
-	JOIN dbo.[AccountDefinitions] AD ON FE.[DefinitionId] = AD.[Id]
-	JOIN dbo.[EntryTypes] ETP ON AD.[EntryTypeParentId] = ETP.[Id]
+	JOIN dbo.[AccountTypes] AC ON FE.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
 	JOIN dbo.[EntryTypes] ETC ON FE.[EntryTypeId] = ETC.[Id]
 	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
 
@@ -165,7 +149,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	WHERE L.[State] >= 0
-	AND FE.[DefinitionId] <> A.[DefinitionId]
+	AND FE.[DesignationId] <> A.[DesignationId]
 
 	-- Setting the center value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different center

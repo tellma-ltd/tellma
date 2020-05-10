@@ -62,11 +62,10 @@ BEGIN
 		ROUND(ER.[Rate] * SUM(E.[Direction] * E.[MonetaryValue]) - SUM(E.[Direction] * E.[Value]), @E) AS [NetGainLoss]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
-		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 		JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId AND @PostingDate >= ER.ValidAsOf AND @PostingDate < ER.ValidTill
 		AND E.[AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
-		AND L.[State] = 4 AND D.[State] = 1
-		AND D.[PostingDate] <= @PostingDate
+		AND L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate
 		GROUP BY E.[AccountId], E.[ContractId], E.[ResourceId], E.[CurrencyId], ER.Rate
 		HAVING SUM(E.[Direction] * E.[Value]) * ER.Rate <> SUM(E.[Direction] * E.[MonetaryValue])
 	),

@@ -4,6 +4,7 @@
 	[DocumentIndex]				INT					INDEX IX_EntryList_DocumentIndex ([DocumentIndex]),
 	PRIMARY KEY ([Index], [LineIndex], [DocumentIndex]),
 	[Id]						INT					NOT NULL DEFAULT 0,
+	[IsSystem]					BIT					NOT NULL DEFAULT 0,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[CurrencyId]				NCHAR (3)		,

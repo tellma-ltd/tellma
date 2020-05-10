@@ -5,5 +5,5 @@
 	[Name2]			NVARCHAR (255),
 	[Name3]			NVARCHAR (255),
 	[Code]			NVARCHAR (255),
-	INDEX IX_ResourceLookupList__Name ([Name])
+	INDEX IX_LookupList__Name ([Name])
 );

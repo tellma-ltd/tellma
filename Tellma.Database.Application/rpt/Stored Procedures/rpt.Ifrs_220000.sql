@@ -18,10 +18,9 @@ BEGIN
 	SELECT [AT].[Code] , SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
-	WHERE D.[PostingDate] < DATEADD(DAY, 1, @toDate)
+	WHERE L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	-- TODO: consider subtypes of the ones below as well
 	-- The #Mapping table can be persisted and used to add the column IFRS220000_ConceptId to the fact table.
 	AND [AT].[Code] IN (

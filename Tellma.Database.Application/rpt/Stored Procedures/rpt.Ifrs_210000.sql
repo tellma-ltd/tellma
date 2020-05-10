@@ -76,12 +76,11 @@ BEGIN
 	SELECT M.[Concept],	SUM(E.[AlgerbaicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
-	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
 	JOIN #Mapping M ON [AT].[Code] = M.[AccountType]
 	--ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
-	WHERE D.[PostingDate] < DATEADD(DAY, 1, @toDate)
+	WHERE L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	GROUP BY M.[Concept]
 	
 	-- TODO: Calculate NoncontrollingInterests by adding weighted average of Equity for tenants

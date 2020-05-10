@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 
 				[Index], [Id],
-				[DefinitionId],
+				[DesignationId],
 				[CenterId],
 				[Name], 
 				[Name2], 
@@ -32,7 +32,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[DefinitionId]		= s.[DefinitionId],
+				t.[DesignationId]		= s.[DesignationId],
 				t.[CenterId]			= s.[CenterId],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
@@ -48,7 +48,7 @@ SET NOCOUNT ON;
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DefinitionId],
+				[DesignationId],
 				[CenterId],
 				[Name], 
 				[Name2], 
@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 				[CurrencyId],
 				[EntryTypeId])
 			VALUES (
-				s.[DefinitionId],
+				s.[DesignationId],
 				s.[CenterId],
 				s.[Name], 
 				s.[Name2], 

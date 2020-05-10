@@ -37,11 +37,10 @@ AS
 				E.[ResourceId]
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
-		JOIN dbo.Documents D ON L.DocumentId = E.Id
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 		WHERE A.[IfrsTypeId] IN (SELECT [Id] FROM @PPETypeIds)
-		AND L.[State] = 4 AND D.[State] = 1
-		AND D.[PostingDate] <= @PostingDate
+		AND L.[State] = 4
+		AND L.[PostingDate] <= @PostingDate
 		GROUP BY E.[ResourceId]
 		HAVING SUM(E.[Direction] * E.[Quantity]) > 0 OR SUM(E.[Direction] * E.[MonetaryValue]) > 0 OR  SUM(E.[Direction] * E.[Value]) > 0
 	),

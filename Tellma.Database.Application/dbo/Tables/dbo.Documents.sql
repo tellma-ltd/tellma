@@ -9,7 +9,7 @@
 	[State]							SMALLINT		NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__State] CHECK ([State] BETWEEN -1 AND +1),
 	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[PostingDate]					DATE			CONSTRAINT [CK_Documents__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
-	CONSTRAINT [Documents__PostingDate_State] CHECK([State] < 1 OR [PostingDate] IS NOT NULL),
+	[PostingDateIsCommon]			BIT				NOT NULL DEFAULT 1,
 	[Clearance]						TINYINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Documents__Clearance] CHECK ([Clearance] BETWEEN 0 AND 2),
 	-- Dynamic properties defined by document type specification..  -- e.g., cash machine serial in the case of a sale
 	[DocumentLookup1Id]				INT				CONSTRAINT [FKDocuments__DocumentLookup1Id] REFERENCES dbo.Lookups([Id]),

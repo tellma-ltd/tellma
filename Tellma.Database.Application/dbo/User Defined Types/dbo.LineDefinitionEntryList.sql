@@ -4,6 +4,6 @@
 	PRIMARY KEY ([Index], [HeaderIndex]),
 	[Id]						INT		DEFAULT 0,
 	[Direction]					SMALLINT,
-	[AccountTypeParentId]		INT		NOT NULL,
+	[AccountDesignationId]		INT		NOT NULL,
 	[EntryTypeId]				INT
 );

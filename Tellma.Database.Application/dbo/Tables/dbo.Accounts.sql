@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Accounts] (
 	[Id]					INT				CONSTRAINT [PK_Accounts] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[DefinitionId]			INT				NOT NULL CONSTRAINT [FK_Accounts__AccountDefinitionId] REFERENCES [dbo].[AccountDefinitions] ([Id]),
+	[DesignationId]			INT				NOT NULL CONSTRAINT [FK_Accounts__DesignationId] REFERENCES [dbo].[AccountDesignations] ([Id]),
 	[CenterId]				INT				CONSTRAINT [FK_Accounts__CenterId] REFERENCES [dbo].[Centers] ([Id]),
 	[Name]					NVARCHAR (255)	NOT NULL,
 	[Name2]					NVARCHAR (255),
@@ -12,7 +12,7 @@
 	[ContractId]			INT				CONSTRAINT [FK_Accounts__ContractId] REFERENCES [dbo].[Contracts] ([Id]),
 	[ResourceId]			INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]			NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	[EntryTypeId]			INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES dbo.[EntryTypes],
+	[EntryTypeId]			INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],
 	[IsDeprecated]			BIT				NOT NULL DEFAULT 0,
 	-- Audit details
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

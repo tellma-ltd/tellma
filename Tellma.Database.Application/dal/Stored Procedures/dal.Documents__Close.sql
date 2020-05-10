@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dal].[Documents__Post]
+﻿CREATE PROCEDURE [dal].[Documents__Close]
 	@Ids [dbo].[IdList] READONLY
 AS
 BEGIN

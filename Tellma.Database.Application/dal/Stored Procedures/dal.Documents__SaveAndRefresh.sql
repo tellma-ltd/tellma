@@ -23,6 +23,7 @@ BEGIN
 			SELECT 
 				[Index], [Id],
 				[PostingDate],
+				[PostingDateIsCommon],
 				[Clearance],
 				[Memo], -- [Frequency], [Repetitions],
 				[MemoIsCommon],
@@ -57,6 +58,7 @@ BEGIN
 												t.[SerialNumber],
 												s.[ManualSerialNumber]),
 				t.[PostingDate]				= s.[PostingDate],
+				t.[PostingDateIsCommon]		= s.[PostingDateIsCommon],
 				t.[Clearance]				= s.[Clearance],
 				t.[Memo]					= s.[Memo],
 				t.[MemoIsCommon]			= s.[MemoIsCommon],
@@ -85,6 +87,7 @@ BEGIN
 				[DefinitionId],
 				[SerialNumber], 
 				[PostingDate],
+				[PostingDateIsCommon],
 				[Clearance],
 				[Memo],
 				[MemoIsCommon],
@@ -111,6 +114,7 @@ BEGIN
 				@DefinitionId,
 				IIF(@IsOriginalDocument = 1, s.[AutoSerialNumber], s.[ManualSerialNumber]),
 				s.[PostingDate],
+				s.[PostingDateIsCommon],
 				s.[Clearance],
 				s.[Memo],
 				s.[MemoIsCommon],
@@ -151,6 +155,7 @@ BEGIN
 				DI.Id AS DocumentId,
 				L.[DefinitionId],
 				L.[Index],
+				L.[PostingDate],
 				L.[Memo]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
@@ -159,12 +164,13 @@ BEGIN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
 				t.[Index]				= s.[Index],
+				t.[PostingDate]			= s.[PostingDate],
 				t.[Memo]				= s.[Memo],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [DefinitionId], [Index], [Memo])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[Memo])
+			INSERT ([DocumentId], [DefinitionId], [Index], [PostingDate], [Memo])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[Memo])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]
@@ -178,7 +184,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Id], LI.Id AS [LineId], E.[Index], E.[Direction], E.[AccountId],  E.[CurrencyId],
+			E.[Id], LI.Id AS [LineId], E.[Index], E.[IsSystem], E.[Direction], E.[AccountId],  E.[CurrencyId],
 			E.[ContractId], E.[ResourceId], E.[CenterId],
 			E.[EntryTypeId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Quantity], E.[UnitId], E.[Value],
@@ -195,6 +201,7 @@ BEGIN
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
+			t.[IsSystem]				= s.[IsSystem], 
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[CurrencyId]				= s.[CurrencyId],
@@ -218,7 +225,7 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [Index], [Direction], [AccountId], [CurrencyId],
+		INSERT ([LineId], [Index], [IsSystem], [Direction], [AccountId], [CurrencyId],
 			[ContractId], [ResourceId], [CenterId],
 			[EntryTypeId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Quantity], [UnitId], [Value],
@@ -230,7 +237,7 @@ BEGIN
 			[NotedAmount], 
 			[NotedDate]
 		)
-		VALUES (s.[LineId], s.[Index], s.[Direction], s.[AccountId], s.[CurrencyId],
+		VALUES (s.[LineId], s.[Index], s.[IsSystem], s.[Direction], s.[AccountId], s.[CurrencyId],
 			s.[ContractId], s.[ResourceId], s.[CenterId],
 			s.[EntryTypeId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Quantity], s.[UnitId], s.[Value],

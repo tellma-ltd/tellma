@@ -6,6 +6,7 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (30),
 	[AgentId]					INT,
+	[CurrencyId]				NCHAR (3),
 --	Common
 --	[AgentType]					NVARCHAR (30)		NOT NULL,  -- -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
 	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
