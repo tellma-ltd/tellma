@@ -56,13 +56,11 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("client")]
-        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> SaveUserSetting(
-            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = Constants.Error_TheField0IsRequired)] string key,
-            [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
+        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await _service.SaveUserSetting(key, value);
+                var result = await _service.SaveUserSetting(args);
                 return Ok(result);
             },
             _logger);
@@ -194,8 +192,11 @@ namespace Tellma.Controllers
             _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
-        public async Task<DataWithVersion<AdminUserSettingsForClient>> SaveUserSetting(string key, string value)
+        public async Task<DataWithVersion<AdminUserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
         {
+            var key = args.Key;
+            var value = args.Value;
+
             await _repo.AdminUsers__SaveSettings(key, value);
             return await UserSettingsForClient(cancellation: default);
         }

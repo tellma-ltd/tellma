@@ -67,29 +67,6 @@ namespace Tellma.Controllers
 
         protected abstract FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService();
 
-        ///// <summary>
-        ///// Helper function for all "action" web handlers (like activate and deactivate) that
-        ///// wish to load a bunch of affected entities via their Ids and return them as an <see cref="EntitiesResponse{TEntity}"/>, after verifying the user's permissions
-        ///// </summary>
-        //protected async Task<EntitiesResponse<TEntity>> LoadDataByIdsAndTransform(List<TKey> ids, SelectExpandArguments args)
-        //{
-        //    // Actions are un-cancellable
-        //    CancellationToken noCancel = default;
-
-        //    // Calculate server time at the very beginning for consistency
-        //    var serverTime = DateTimeOffset.UtcNow;
-
-        //    // Get the data
-        //    var service = GetFactGetByIdService();
-        //    var (data, extras) = await service.GetByIds(ids, args, noCancel);
-
-        //    // Transform the entities as an EntitiesResponse
-        //    var response = TransformToEntitiesResponse(data, extras, serverTime, noCancel);
-
-        //    // Return
-        //    return response;
-        //}
-
         /// <summary>
         /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
         /// </summary>

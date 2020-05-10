@@ -338,20 +338,21 @@ function setPrintFactory(url: string): () => void {
 
 /**
  * Attaches the given blob in a hidden iFrame and calls print() on
- * that iframe, and then takes care cleanup duty afterwards.
+ * that iframe, and then takes care of cleanup duty afterwards.
  * This function was inspired from MDN: https://mzl.la/2YfOs1v
  */
 export function printBlob(blob: Blob): void {
   const url = window.URL.createObjectURL(blob);
-
-  const oHiddFrame = document.createElement('iframe');
-  oHiddFrame.onload = setPrintFactory(url);
-  oHiddFrame.style.position = 'fixed';
-  oHiddFrame.style.right = '0';
-  oHiddFrame.style.bottom = '0';
-  oHiddFrame.style.width = '0';
-  oHiddFrame.style.height = '0';
-  oHiddFrame.style.border = '0';
-  oHiddFrame.src = url;
-  document.body.appendChild(oHiddFrame);
+  const iframe = document.createElement('iframe');
+  iframe.onload = setPrintFactory(url);
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.sandbox.add('allow-same-origin');
+  iframe.sandbox.add('allow-modals');
+  iframe.src = url;
+  document.body.appendChild(iframe);
 }

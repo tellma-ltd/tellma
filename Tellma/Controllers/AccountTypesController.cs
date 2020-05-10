@@ -141,24 +141,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<AccountTypeForSave> entities)
         {
-            // Check that codes are not duplicated within the arriving collection
-            var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
-            if (duplicateCodes.Any())
-            {
-                // Hash the entities' indices for performance
-                Dictionary<AccountTypeForSave, int> indices = entities.ToIndexDictionary();
-
-                foreach (var groupWithDuplicateCodes in duplicateCodes)
-                {
-                    foreach (var entity in groupWithDuplicateCodes)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
-                    }
-                }
-            }
-
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
                 // If EntryTypeAssignment is either Account of Entry, then EntryTypeParentId must be specified

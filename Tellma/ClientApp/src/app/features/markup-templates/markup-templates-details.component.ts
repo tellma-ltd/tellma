@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, SecurityContext } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -483,6 +483,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       tap((res: MarkupPreviewResponse) => {
         this.fileDownloadName = res.DownloadName;
 
+        // const safeBody = this.sanitizer.sanitize(SecurityContext.HTML, res.Body);
+        // console.log(safeBody);
+
         const blob = new Blob([res.Body], { type: template.MarkupLanguage });
         this.blob = blob;
 
@@ -490,7 +493,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
           window.URL.revokeObjectURL(this.url);
         }
         this.url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
-        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.url);
+        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.url); // We just made it and it's definitely safe
         this.contenType = template.MarkupLanguage;
         this.fileSizeDisplay = fileSizeDisplay(blob.size);
         this.loading = false;

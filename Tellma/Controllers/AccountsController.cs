@@ -131,22 +131,8 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<AccountForSave> entities)
         {
-            // Find duplicate codes within the saved list
-            var duplicateCodes = entities
-                .Where(e => e.Code != null)
-                .GroupBy(e => e.Code)
-                .Where(g => g.Count() > 1)
-                .SelectMany(g => g)
-                .ToHashSet();
-
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                // Check that the code is unique within the saved list
-                if (duplicateCodes.Contains(entity))
-                {
-                    ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
-                }
-
                 if (entity.IsSmart.Value)
                 {
                     // Can we add any validation here?

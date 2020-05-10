@@ -1046,7 +1046,7 @@ export class ApiService {
         return obs$;
       },
 
-      import: (args: ImportArguments, files: any) => {
+      import: (args: ImportArguments, files: FileList) => {
         args = args || {};
 
         const paramsArray: string[] = [];
@@ -1057,8 +1057,10 @@ export class ApiService {
 
         const formData = new FormData();
 
-        for (const file of files) {
-          formData.append(file.name, file);
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          formData.append(file.name, file, file.name);
         }
 
         this.showRotator = true;

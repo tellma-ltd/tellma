@@ -32,6 +32,21 @@ SET NOCOUNT ON;
 	FROM @Entities FE 
 	JOIN [dbo].[Accounts] BE ON FE.Code = BE.Code
 	WHERE (FE.Id <> BE.Id);
+
+	-- Code must not be duplicated in the uploaded list (Depends on SQL Collation)
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT TOP (@Top)
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
+		N'Error_TheCode0IsDuplicated',
+		[Code]
+	FROM @Entities
+	WHERE [Code] IN (
+		SELECT [Code]
+		FROM @Entities
+		WHERE [Code] IS NOT NULL
+		GROUP BY [Code]
+		HAVING COUNT(*) > 1
+	)
 	
 	--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	-- Below we make sure the selected values conform to their definitions

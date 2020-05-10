@@ -269,14 +269,14 @@ namespace Tellma.Services.Utilities
         /// nullable types also it cannot handle DateTimeOffset
         /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
         /// </summary>
-        public static object ChangeType(this object obj, Type conversion, TimeZoneInfo sourceTimeZone = null)
+        public static object ChangeType(this object obj, Type targetType, TimeZoneInfo sourceTimeZone = null)
         {
             if (obj is null)
             {
                 return null;
             }
 
-            var t = conversion;
+            var t = targetType;
             if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
                 t = Nullable.GetUnderlyingType(t);

@@ -22,10 +22,11 @@
 <!-- Extra toolbar buttons -->
 <ng-template #toolbar let-model="model" let-extras="extras" let-isEdit="isEdit">
     <!-- Print Dropdown -->
-    <div *ngIf="!isEdit && showPrint" class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+    <div *ngIf="!isEdit && showPrint" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
         <button type="button" class="btn btn-sm btn-light text-primary t-white-button t-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
-            {{ 'Print' | translate }}
+            <fa-icon icon="print"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Print' | translate }}</span>
         </button>
         <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
             <button type="button" class="dropdown-item t-transparent-background btn-light"
@@ -33,6 +34,10 @@
                 {{ template.name() }}
             </button>
         </div>
+    </div>
+
+    <div class="t-vertical-align-middle d-inline-block" style="min-width: 30px;">
+        <t-spinner *ngIf="isPrinting"></t-spinner>
     </div>
 
     <!-- Unpost -->
