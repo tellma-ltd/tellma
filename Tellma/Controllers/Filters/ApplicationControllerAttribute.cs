@@ -38,7 +38,6 @@ namespace Tellma.Controllers
         {
             private readonly ApplicationRepository _appRepo;
             private readonly ITenantIdAccessor _tenantIdAccessor;
-            private readonly IShardResolver _shardResolver;
             private readonly ITenantInfoAccessor _tenantInfoAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
@@ -46,12 +45,11 @@ namespace Tellma.Controllers
             private readonly ISettingsCache _settingsCache;
             private readonly ILogger<ApplicationApiFilter> _logger;
 
-            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
+            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
                 IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
-                _shardResolver = shardResolver;
                 _tenantInfoAccessor = tenantInfoAccessor;
                 _externalUserAccessor = externalUserAccessor;
                 _serviceProvider = serviceProvider;
@@ -73,9 +71,8 @@ namespace Tellma.Controllers
                     // Init the database connection...
                     // The client sometimes makes ambient API calls, not in response to user interaction
                     // Such calls should not update LastAccess of that user
-                    var connString = await _shardResolver.GetConnectionString(tenantId, cancellation);
                     bool unobtrusive = AllowUnobtrusive && context.HttpContext.Request.Query["unobtrusive"].FirstOrDefault()?.ToString()?.ToLower() == "true";
-                    await _appRepo.InitConnectionAsync(connString, setLastActive: !unobtrusive, cancellation);
+                    await _appRepo.InitConnectionAsync(tenantId, setLastActive: !unobtrusive, cancellation);
 
                     // (2) Make sure the user is a member of this tenant
                     UserInfo userInfo = await _appRepo.GetUserInfoAsync(cancellation);
@@ -244,7 +241,7 @@ namespace Tellma.Controllers
         /// </summary>
         private class UnobtrusiveApplicationApiFilter : ApplicationApiFilter
         {
-            public UnobtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, shardResolver, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
+            public UnobtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
             {
             }
 
@@ -256,7 +253,7 @@ namespace Tellma.Controllers
         /// </summary>
         private class ObtrusiveApplicationApiFilter : ApplicationApiFilter
         {
-            public ObtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, IShardResolver shardResolver, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, shardResolver, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
+            public ObtrusiveApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor, IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsCache, ISettingsCache settingsCache, ILogger<ApplicationApiFilter> logger) : base(tenantIdAccessor, appRepo, tenantInfoAccessor, externalUserAccessor, serviceProvider, definitionsCache, settingsCache, logger)
             {
             }
 

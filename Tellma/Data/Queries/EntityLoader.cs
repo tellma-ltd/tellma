@@ -1,15 +1,14 @@
-﻿using Tellma.Entities;
-using Tellma.Services.Utilities;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Entities.Descriptors;
+using Tellma.Entities;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Data.Queries
 {
@@ -96,11 +95,11 @@ namespace Tellma.Data.Queries
                 }
 
                 // This recursive method hydrates the dynamic properties from the reader according to the entityDef tree
-                void HydrateDynamicProperties(SqlDataReader reader, DynamicEntity entity, ColumnMapTree entityDef)
+                void HydrateDynamicProperties(SqlDataReader reader, DynamicEntity entity, ColumnMapTrie entityDef)
                 {
-                    foreach (var (propInfo, index, aggregation, function) in entityDef.Properties)
+                    foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
                     {
-                        if (propInfo.PropertyType == typeof(HierarchyId))
+                        if (propDesc.IsHierarchyId)
                         {
                             continue;
                         }
@@ -109,13 +108,13 @@ namespace Tellma.Data.Queries
                         if (dbValue != DBNull.Value)
                         {
                             // char still comes from the DB as a string
-                            if (propInfo.PropertyType == typeof(char?))
+                            if (propDesc.Type == typeof(char?))
                             {
                                 dbValue = dbValue.ToString()[0]; // gets the char
                             }
 
                             // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                            string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation, function);
+                            string propName = DynamicPropertyName(entityDef.Path, propDesc.Name, aggregation, function);
                             entity[propName] = dbValue;
                         }
                     }
@@ -132,7 +131,7 @@ namespace Tellma.Data.Queries
                     using var reader = await cmd.ExecuteReaderAsync(cancellation);
 
                     // Group the column map by the path (which represents the target entity)
-                    var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: true);
+                    var entityDef = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: true);
 
                     // Loop over the result from the result set
                     while (await reader.ReadAsync(cancellation))
@@ -169,7 +168,11 @@ namespace Tellma.Data.Queries
         /// <param name="conn">The SQL Server connection through which to execute the SQL script</param>
         /// <returns>The list of hydrated entities with all related entities attached by means of navigation properties</returns>            
         public static async Task<List<Entity>> LoadStatements<T>(
-           List<SqlStatement> statements, string preparatorySql, SqlStatementParameters ps, SqlConnection conn, CancellationToken cancellation) where T : Entity
+           List<SqlStatement> statements,
+           string preparatorySql,
+           SqlStatementParameters ps,
+           SqlConnection conn,
+           CancellationToken cancellation) where T : Entity
         {
             var results = statements.ToDictionary(e => e.Query, e => new List<Entity>());
 
@@ -192,47 +195,34 @@ namespace Tellma.Data.Queries
                 conn.Open();
             }
 
-            var memory = new HashSet<(object Id, ColumnMapTree Tree)>(); // Remembers which (Id, tree) combinations have been added already
-            var allIdEntities = new IndexedEntities(); // This data structure is a dictionary that maps Type -> Id -> Entity, and will contain all loaded entities with Ids
-
-            // This recursive method will return one of 3 things: 
+            // This recursive method will return one of 2 things: 
             // 1 - Either a proper EntityWithKey, if the entity definition contains an Id index
             // 2 - Or a Fact Entity (without Id), if the entity defintion does not contain an Id index
-            // 3 - Or a DynamicEntity (a dictionary), if the entity defintion does not contain an Id index and this is an aggregate query
-            Entity AddEntity(SqlDataReader reader, ColumnMapTree entityDef)
+            static Entity AddEntity(SqlDataReader reader, ColumnMapTrie entityTrie)
             {
                 Entity entity;
                 var isHydrated = false;
-                var entityType = entityDef.Type; // TODO: The specific type to use when instantiating the entity: should come from discriminator e.g. Agent
 
-                if (entityDef.IdExists)
+                if (entityTrie.IdExists) // This is an entity with a unique Id
                 {
-                    var collectionType = entityType.GetRootType();
-
-                    // Make sure the dictionary that tracks this type is created already
-                    if (!allIdEntities.TryGetValue(collectionType, out IndexedEntitiesOfType entitiesOfType))
-                    {
-                        entitiesOfType = allIdEntities[collectionType] = new IndexedEntitiesOfType();
-                    }
-
                     // Get the Id of this entity
-                    var dbId = reader[entityDef.IdIndex];
+                    var dbId = reader[entityTrie.IdIndex];
                     if (dbId == DBNull.Value)
                     {
                         return null;
                     }
 
                     var id = dbId;
-                    entitiesOfType.TryGetValue(id, out EntityWithKey keyEntity);
 
-                    if (keyEntity == null)
+                    var entitiesOfType = entityTrie.EntitiesOfType;
+                    if (!entitiesOfType.TryGetValue(id, out EntityWithKey keyEntity))
                     {
                         // If the entity has not been created already, create it and flag it for hydration
-                        keyEntity = Activator.CreateInstance(entityType) as EntityWithKey;
+                        keyEntity = entityTrie.Descriptor.Create() as EntityWithKey;
                         keyEntity.SetId(dbId);
 
                         entitiesOfType.Add(id, keyEntity);
-                        memory.Add((id, entityDef));
+                        entityTrie.HydratedIds.Add(id);
 
                         // New entity
                         isHydrated = false;
@@ -240,7 +230,7 @@ namespace Tellma.Data.Queries
                     else
                     {
                         // Otherwise check if it has been added from the same part of the join tree or from a different one
-                        if (memory.Add((id, entityDef)))
+                        if (entityTrie.HydratedIds.Add(id))
                         {
                             // Entity added before, but from a different part of the join tree, flag it for hydration
                             isHydrated = false;
@@ -260,16 +250,16 @@ namespace Tellma.Data.Queries
                     isHydrated = false;
 
                     // Create the entity
-                    entity = Activator.CreateInstance(entityType) as Entity;
+                    entity = entityTrie.Descriptor.Create();
                 }
 
                 // As an optimization, only hydrate again if not hydrated before
                 if (!isHydrated)
                 {
                     // Hydrate the simple properties at the current entityDef level
-                    foreach (var (propInfo, index, aggregation, function) in entityDef.Properties)
+                    foreach (var (propDesc, index, aggregation, function) in entityTrie.Properties)
                     {
-                        if (propInfo.PropertyType == typeof(HierarchyId))
+                        if (propDesc.IsHierarchyId)
                         {
                             continue;
                         }
@@ -278,29 +268,35 @@ namespace Tellma.Data.Queries
                         if (dbValue != DBNull.Value)
                         {
                             // char still comes from the DB as a string
-                            if (propInfo.PropertyType == typeof(char?))
+                            if (propDesc.Type == typeof(char?))
                             {
                                 dbValue = dbValue.ToString()[0]; // gets the char
                             }
 
-                            propInfo.SetValue(entity, dbValue);
+                            propDesc.SetValue(entity, dbValue);
                         }
 
-                        entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
+                        entity.EntityMetadata[propDesc.Name] = FieldMetadata.Loaded;
                     }
                 }
 
                 // Recursively call the next levels down
-                foreach (var subEntityDef in entityDef.Children)
+                foreach (var subEntityTrie in entityTrie.Children)
                 {
-                    AddEntity(reader, subEntityDef);
+                    AddEntity(reader, subEntityTrie);
                 }
 
                 return entity;
             }
 
+            // This data structure is a dictionary that maps Type -> Id -> Entity, and will contain all loaded entities with Ids
+            var allIdEntities = new IndexedEntities();
+
             // This collection will be returned at the end
             var result = new List<Entity>();
+
+            // This will contain all the descriptors of all the loaded entities
+            var descriptors = new HashSet<TypeDescriptor>();
 
             try
             {
@@ -311,10 +307,19 @@ namespace Tellma.Data.Queries
                     var list = results[statement.Query];
 
                     // Group the column map by the path (which represents the target entity)
-                    var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate: false);
+                    var entityTrie = ColumnMapTrie.Build(statement.ResultDescriptor, statement.ColumnMap, isAggregate: false);
+
+                    // Assigns the appropriate EntitiesOfType at every level of the trie (If missing creates a new empty one)
+                    entityTrie.InitializeEntitiesOfTypeDictionaries(allIdEntities);
+
+                    // Grab all the entity descriptors loaded by this statement
+                    foreach (var descriptor in entityTrie.AllEntityDescriptors())
+                    {
+                        descriptors.Add(descriptor);
+                    }
 
                     // Sanity checking: if this isn't an aggregate query, 
-                    if (entityDef.Children.Any(e => !e.IdExists))
+                    if (entityTrie.Children.Any(e => !e.IdExists))
                     {
                         // Developer mistake
                         throw new InvalidOperationException($"The query for '{statement.Sql}' is not an aggregate query but is missing essential Ids");
@@ -323,7 +328,7 @@ namespace Tellma.Data.Queries
                     // Loop over the result from the result set
                     while (await reader.ReadAsync(cancellation))
                     {
-                        Entity record = AddEntity(reader, entityDef);
+                        Entity record = AddEntity(reader, entityTrie);
                         list.Add(record);
                     }
 
@@ -365,38 +370,21 @@ namespace Tellma.Data.Queries
                 }
             }
 
-            // The method below efficiently retrieves the navigation properties of each entity
-            Type cacheType = null;
-            List<(PropertyInfo NavProp, PropertyInfo FkProp)> navAndFkCache = null;
-            List<(PropertyInfo NavProp, PropertyInfo FkProp)> GetNavAndFkProps(Entity entity)
+            // Here we populate the navigation properties, after the simple properties have been populated
+            foreach (var descriptor in descriptors)
             {
-                if (entity.GetType() != cacheType) // In a single root type we might have entities belonging to multiple different deriving types
-                {
-                    cacheType = entity.GetType();
-                    navAndFkCache = new List<(PropertyInfo NavProp, PropertyInfo FkProp)>();
+                var navProps = descriptor.NavigationProperties
+                    .Where(p => allIdEntities.TryGetValue(p.Type, out IndexedEntitiesOfType ofType) && ofType.Any());
 
-                    IEnumerable<PropertyInfo> nonListProperties = cacheType.GetProperties()
-                            .Where(e => !e.PropertyType.IsList());
-
-                    navAndFkCache = nonListProperties
-                        .Where(p => p.ForeignKeyProperty() != null && allIdEntities.ContainsKey(p.PropertyType.GetRootType()))
-                        .Select(p => (p, p.ForeignKeyProperty()))
-                        .ToList();
-                }
-
-                return navAndFkCache;
-            }
-
-            // All simple properties are populated before, but not navigation properties, those are done here
-            foreach (var (rootType, entitiesOfType) in allEntities.Where(e => e.Value.Any()))
-            {
-                // Loop over all entities and use the method above to hydrate the navigation properties
+                var entitiesOfType = allEntities[descriptor.Type];
                 foreach (var entity in entitiesOfType)
                 {
-                    foreach (var (navProp, fkProp) in GetNavAndFkProps(entity))
+                    foreach (var navProp in navProps)
                     {
+                        var fkProp = navProp.ForeignKey;
+
                         // The nav property can only be loaded if the FK property is loaded first
-                        if (fkProp.Name == "Id" || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
+                        if (entity.EntityMetadata.IsLoaded(fkProp.Name))
                         {
                             var fkValue = fkProp.GetValue(entity);
                             if (fkValue == null)
@@ -406,7 +394,7 @@ namespace Tellma.Data.Queries
                             }
                             else
                             {
-                                var propCollectionType = navProp.PropertyType.GetRootType();
+                                var propCollectionType = navProp.Type.GetRootType();
                                 var entitiesOfPropertyType = allIdEntities[propCollectionType]; // It must be available since we checked earlier that it is
                                 entitiesOfPropertyType.TryGetValue(fkValue, out EntityWithKey navPropValue);
                                 if (navPropValue != null)
@@ -418,8 +406,6 @@ namespace Tellma.Data.Queries
                             }
                         }
                     }
-
-                    cancellation.ThrowIfCancellationRequested();
                 }
             }
 
@@ -440,15 +426,19 @@ namespace Tellma.Data.Queries
                     var collectionPropName = pathToCollection[pathToCollection.Count - 1];
 
                     // In the first step, we collect the collection entities in a hashset, by following the paths from the principal query result list
-                    var collectionEntities = new HashSet<Entity>();
+                    var collectionEntities = new HashSet<EntityWithKey>();
+                    CollectionPropertyDescriptor collectionProp = null;
+
                     foreach (var principalEntity in principalEntities)
                     {
                         // We go down the path updating currentEntity as we go
                         var currentEntity = principalEntity;
+                        var currentDescriptor = query.PrincipalQuery.ResultDescriptor;
                         foreach (var step in pathToCollectionEntity)
                         {
-                            var prop = currentEntity.GetType().GetProperty(step);
+                            var prop = currentDescriptor.Property(step);
                             currentEntity = prop.GetValue(currentEntity) as Entity;
+                            currentDescriptor = prop.GetEntityDescriptor();
 
                             // Check if the nextObject is null
                             if (currentEntity == null)
@@ -461,27 +451,29 @@ namespace Tellma.Data.Queries
                         // Add the object (if any) to the collection entities
                         if (currentEntity != null)
                         {
-                            collectionEntities.Add(currentEntity);
+                            collectionEntities.Add((EntityWithKey)currentEntity);
+                        }
+
+                        // Grab the collection property
+                        if (collectionProp == null)
+                        {
+                            collectionProp = currentDescriptor.CollectionProperty(collectionPropName);
                         }
 
                         cancellation.ThrowIfCancellationRequested();
                     }
 
                     var fkName = query.ForeignKeyToPrincipalQuery;
-                    var fkProp = query.ResultType.GetProperty(fkName);
-                    var groupedCollections = list.GroupBy(e => fkProp.GetValue(e)).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
+                    var fkProp = query.ResultDescriptor.Property(fkName);
+                    var groupedCollections = list.GroupBy(e => fkProp.GetValue(e)).ToDictionary(g => g.Key, g => MakeList(query.ResultDescriptor, g));
 
-                    PropertyInfo collectionProp = null;
-                    foreach (var collectionEntity in collectionEntities.Cast<EntityWithKey>())
+                    foreach (var collectionEntity in collectionEntities)
                     {
-                        // Rule every entity with collections attached to it must be a EntityWithKey
-                        if (collectionProp == null)
-                        {
-                            collectionProp = collectionEntity.GetType().GetProperty(collectionPropName);
-                        }
-
                         var id = collectionEntity.GetId();
-                        var collection = groupedCollections.ContainsKey(id) ? groupedCollections[id] : MakeList(query.ResultType);
+                        if(!groupedCollections.TryGetValue(id, out IList collection))
+                        {
+                            collection = query.ResultDescriptor.CreateList();
+                        }
 
                         collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
                         collectionProp.SetValue(collectionEntity, collection);
@@ -495,26 +487,12 @@ namespace Tellma.Data.Queries
             return result;
         }
 
-        public static PropertyInfo ForeignKeyProperty(this PropertyInfo _propInfo)
-        {
-            var fkName = _propInfo.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
-            if (!string.IsNullOrWhiteSpace(fkName))
-            {
-                return _propInfo.DeclaringType.GetProperty(fkName);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         /// <summary>
         /// Just a helper method for returning a generic IList
         /// </summary>
-        private static IList MakeList(Type t, IEnumerable collection = null)
+        private static IList MakeList(TypeDescriptor desc, IEnumerable collection = null)
         {
-            var listType = typeof(List<>).MakeGenericType(t);
-            var list = (IList)Activator.CreateInstance(listType);
+            var list = desc.CreateList();
             if (collection != null)
             {
                 foreach (var item in collection)
@@ -526,17 +504,16 @@ namespace Tellma.Data.Queries
             return list;
         }
 
-
         /// <summary>
         /// A tree structure representing the columns of an SQL select statement, in a
         /// way that makes hydrating the Entities from the statement result more efficient
         /// </summary>
-        private class ColumnMapTree : Dictionary<string, ColumnMapTree>
+        private class ColumnMapTrie : Dictionary<string, ColumnMapTrie>
         {
             /// <summary>
             /// The type of the Entity representing this level
             /// </summary>
-            public Type Type { get; set; }
+            public TypeDescriptor Descriptor { get; set; }
 
             /// <summary>
             /// When no IdIndex is set, this level is not Entityable
@@ -546,7 +523,7 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// All the properties at this level mentioned by all the paths
             /// </summary>
-            public List<(PropertyInfo Property, int Index, string Aggregation, string Function)> Properties { get; set; } = new List<(PropertyInfo, int, string, string)>();
+            public List<(PropertyDescriptor Property, int Index, string Aggregation, string Function)> Properties { get; set; } = new List<(PropertyDescriptor, int, string, string)>();
 
             /// <summary>
             /// The segment of the path leading up to this level
@@ -561,23 +538,21 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// The children of the current tree level
             /// </summary>
-            public IEnumerable<ColumnMapTree> Children { get => Values; }
+            public IEnumerable<ColumnMapTrie> Children { get => Values; }
 
             /// <summary>
-            /// Takes a root type and a bunch of paths and constructs the entire <see cref="ColumnMapTree"/> which is useful
+            /// Takes a root type and a bunch of paths and constructs the entire <see cref="ColumnMapTrie"/> which is useful
             /// for efficiently hydrating Entities and dynamic results from the SQL query result,
             /// a single tree is associated with a single SQL select statement
             /// </summary>
-            public static ColumnMapTree Build(Type type, List<SqlStatementColumn> columnMap, bool isAggregate)
+            public static ColumnMapTrie Build(TypeDescriptor rootDescriptor, List<SqlStatementColumn> columnMap, bool isAggregate)
             {
-                var root = new ColumnMapTree { Type = type, Path = new string[0] };
+                var root = new ColumnMapTrie { Descriptor = rootDescriptor, Path = new string[0] };
                 for (var i = 0; i < columnMap.Count; i++)
                 {
+                    // Phase (1) Go down the path
                     var columnInfo = columnMap[i];
                     var path = columnInfo.Path;
-                    var propName = columnInfo.Property;
-                    var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
-                    var function = string.IsNullOrWhiteSpace(columnInfo.Function) ? null : columnInfo.Function;
                     var currentTree = root;
 
                     for (int j = 0; j < path.Count; j++)
@@ -586,16 +561,16 @@ namespace Tellma.Data.Queries
 
                         if (!currentTree.ContainsKey(step))
                         {
-                            var prop = currentTree.Type.GetProperty(step);
-                            if (prop == null)
+                            var propDescriptor = currentTree.Descriptor.Property(step);
+                            if (propDescriptor == null)
                             {
                                 // Developer mistake
-                                throw new InvalidOperationException($"Property {step} was not found on type {currentTree.Type.Name}");
+                                throw new InvalidOperationException($"Property {step} was not found on type {currentTree.Descriptor.Name}");
                             }
 
-                            currentTree[step] = new ColumnMapTree
+                            currentTree[step] = new ColumnMapTrie
                             {
-                                Type = prop.PropertyType,
+                                Descriptor = propDescriptor.GetEntityDescriptor(),
                                 Path = new ArraySegment<string>(path.Array, path.Offset, j + 1),
                             };
                         }
@@ -603,16 +578,22 @@ namespace Tellma.Data.Queries
                         currentTree = currentTree[step];
                     }
 
+                    // Phase (1) Set the property info
+                    var propName = columnInfo.Property;
+                    var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
+                    var function = string.IsNullOrWhiteSpace(columnInfo.Function) ? null : columnInfo.Function;
+
+
                     // In flat queries, the Id is given special treatment for efficiency, since it used to connect related entities together
-                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && string.IsNullOrWhiteSpace(function) && currentTree.Type.IsSubclassOf(typeof(EntityWithKey)))
+                    if (!isAggregate && propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && string.IsNullOrWhiteSpace(function) && currentTree.Descriptor.HasId)
                     {
                         // This IdIndex is only set for Entityable path terminals
                         currentTree.IdIndex = i;
                     }
                     else
                     {
-                        var propInfo = currentTree.Type.GetProperty(propName);
-                        currentTree.Properties.Add((propInfo, i, aggregation, function));
+                        var propDescriptor = currentTree.Descriptor.Property(propName);
+                        currentTree.Properties.Add((propDescriptor, i, aggregation, function));
                     }
                 }
 
@@ -626,18 +607,66 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// Ensures that if a parent has Id, that the children do as well, if this fails it exposes a programmer mistake
             /// </summary>
-            private static void ValidateIds(ColumnMapTree currentTree, bool parentIdExists = false)
+            private static void ValidateIds(ColumnMapTrie currentTree, bool parentIdExists = false)
             {
                 if (!currentTree.IdExists && parentIdExists)
                 {
                     // Developer mistake
-                    throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Type.Name}' is missing its Id");
+                    throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Descriptor.Name}' is missing its Id");
                 }
 
                 bool currentIdExists = currentTree.IdExists;
                 foreach (var childTree in currentTree.Children)
                 {
                     ValidateIds(childTree, currentIdExists);
+                }
+            }
+
+            /// <summary>
+            /// Optimization used by the loader to remember which entities where hydrated at this trie level to skip hydrating them again
+            /// </summary>
+            public HashSet<object> HydratedIds { get; } = new HashSet<object>();
+
+            /// <summary>
+            /// The loaded entities of the type of this trie level
+            /// </summary>
+            public IndexedEntitiesOfType EntitiesOfType { get; set; }
+
+            /// <summary>
+            /// To optimize loading entities, this method grabs the appropriate <see cref="EntitiesOfType"/>
+            /// for this trie level and stores it in the trie level, it creates it if it can't finds it.
+            /// </summary>
+            public void InitializeEntitiesOfTypeDictionaries(IndexedEntities allIdEntities)
+            {
+                var type = Descriptor.Type;
+                if (!allIdEntities.TryGetValue(type, out IndexedEntitiesOfType entities))
+                {
+                    entities = allIdEntities[type] = new IndexedEntitiesOfType();
+                }
+
+                EntitiesOfType = entities;
+                foreach (var child in Children)
+                {
+                    child.InitializeEntitiesOfTypeDictionaries(allIdEntities);
+                }
+            }
+
+            /// <summary>
+            /// Traverses the trees and returns for every loaded type the corresponding list of navigation properties from the descriptor.
+            /// Some types may be returned more than once if they are loaded on more than one level of the trie
+            /// </summary>
+            public IEnumerable<TypeDescriptor> AllEntityDescriptors()
+            {
+                // For this level
+                yield return Descriptor;
+
+                // For children
+                foreach (var child in Children)
+                {
+                    foreach (var descriptor in child.AllEntityDescriptors())
+                    {
+                        yield return descriptor;
+                    }
                 }
             }
         }

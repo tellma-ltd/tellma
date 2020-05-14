@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -18,7 +19,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The root type of the result
         /// </summary>
-        public Type ResultType { get; set; }
+        public TypeDescriptor ResultDescriptor { get; set; }
 
         /// <summary>
         /// Maps every column index to a path, property and aggregation function

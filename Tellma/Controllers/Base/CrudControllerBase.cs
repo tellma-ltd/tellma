@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Controllers.Dto;
@@ -134,22 +132,22 @@ namespace Tellma.Controllers
         }
 
 
-        [HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
-        public virtual async Task<ActionResult<ImportResult>> Import2([FromQuery] ImportArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                IFormFile formFile = Request.Form.Files.FirstOrDefault();
-                var contentType = formFile?.ContentType;
-                var fileName = formFile?.FileName;
-                using var fileStream = formFile?.OpenReadStream();
+        //[HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
+        //public virtual async Task<ActionResult<ImportResult>> Import2([FromQuery] ImportArguments args)
+        //{
+        //    return await ControllerUtilities.InvokeActionImpl(async () =>
+        //    {
+        //        IFormFile formFile = Request.Form.Files.FirstOrDefault();
+        //        var contentType = formFile?.ContentType;
+        //        var fileName = formFile?.FileName;
+        //        using var fileStream = formFile?.OpenReadStream();
 
-                var service = GetCrudService();
-                var result = await service.Import(fileStream, fileName, contentType, args);
+        //        var service = GetCrudService();
+        //        var result = await service.Import(fileStream, fileName, contentType, args);
 
-                return Ok(result);
-            }, _logger);
-        }
+        //        return Ok(result);
+        //    }, _logger);
+        //}
 
 
         //#region Import Stuff
@@ -377,10 +375,12 @@ namespace Tellma.Controllers
         where TEntity : EntityWithKey<TKey>, new()
     {
         private readonly IStringLocalizer _localizer;
+        // private readonly MetadataProvider _metadata;
 
         public CrudServiceBase(IStringLocalizer localizer) : base(localizer)
         {
             _localizer = localizer;
+            // _metadata = metadata;
         }
 
         #region Save
@@ -749,39 +749,88 @@ return the entities
 
         #endregion
 
-        public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
+        //public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
+        //{
+        //    if (fileStream == null)
+        //    {
+        //        throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+        //    }
+
+        //    // Determine an appropriate file handler based on the file metadata
+        //    IDataExtracter extractor = GetSuitableExtracter(fileName, contentType);
+
+        //    // Extract the data
+        //    IEnumerable<string[]> data = extractor.Extract(fileStream);
+        //    if (!data.Any())
+        //    {
+        //        throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
+        //    }
+
+        //    // Map the columns
+        //    var headers = data.First();
+        //    var mappingInfo = MapColumns(headers);
+
+
+        //    // Load related entities (including principal entities if update or merge)
+
+
+        //    // Parse the data 
+
+        //    try
+        //    {
+        //        // Save the data
+
+        //        // Return import result
+        //    }
+        //    catch (UnprocessableEntityException ex)
+        //    {
+        //        // Map errors to row numbers
+        //    }
+
+        //    throw new NotImplementedException();
+        //}
+
+        protected MappingInfo MapColumns(string[] headers)
         {
-            if (fileStream == null)
-            {
-                throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
-            }
-
-            // Determine an appropriate file handler based on the file metadata
-            IDataExtracter extractor = GetSuitableExtracter(fileName, contentType);
-
-            // Extract the data
-            IEnumerable<string[]> data = extractor.Extract(fileStream);
-
-            // Map the columns
-
-
-            // Load related entities (including principal entities if update or merge)
-
-
-            // Parse the data 
-
-            try
-            {
-                // Save the data
-
-                // Return import result
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                // Map errors to row numbers
-            }
-
             throw new NotImplementedException();
+            //var result = new MappingInfo();
+            //foreach (var header in headers)
+            //{
+            //    var steps = SplitHeader(header);
+            //    var currentType = typeof(TEntityForSave);
+
+            //    foreach (var step in steps)
+            //    {
+            //        var match = _metadata.GetMetadataForProperties(currentType).FirstOrDefault(p => p.DisplayName == step);
+            //        match.
+            //    }
+            //}
+        }
+
+        private IEnumerable<string> SplitHeader(string header)
+        {
+            var builder = new StringBuilder();
+            for (int i = 0; i < header.Length; i++)
+            {
+                char c = header[i];
+                if (c == '/')
+                {
+                    if (i + 1 < header.Length && header[i + 1] == '/') // Escaped
+                    {
+                        builder.Append(c);
+                        i++; // Ignore the second forward slash
+                    }
+                    else
+                    {
+                        yield return builder.ToString();
+                        builder = new StringBuilder();
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
         }
 
         private IDataExtracter GetSuitableExtracter(string fileName, string contentType)

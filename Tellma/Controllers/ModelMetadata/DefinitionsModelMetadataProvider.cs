@@ -344,5 +344,12 @@ namespace Tellma.Controllers
             var currentLangIndex = cultureName == tenantInfo.TernaryLanguageId ? 3 : cultureName == tenantInfo.SecondaryLanguageId ? 2 : 1;
             return currentLangIndex == 3 ? (s3 ?? s) : currentLangIndex == 2 ? (s2 ?? s) : s;
         }
+        public static string Localize(this SettingsForClient settings, string s, string s2, string s3)
+        {
+            var cultureName = CultureInfo.CurrentUICulture.Name;
+
+            var currentLangIndex = cultureName == settings.TernaryLanguageId ? 3 : cultureName == settings.SecondaryLanguageId ? 2 : 1;
+            return currentLangIndex == 3 ? (s3 ?? s) : currentLangIndex == 2 ? (s2 ?? s) : s;
+        }
     }
 }

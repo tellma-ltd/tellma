@@ -707,7 +707,7 @@ namespace Tellma.Controllers
             if (IncludeRequiredSignatures)
             {
                 // DocumentIds parameter
-                var docIds = result.Select(doc => new { doc.Id });
+                var docIds = result.Select(doc => new IdListItem { Id = doc.Id });
                 if (!docIds.Any())
                 {
                     return await base.GetExtras(result, cancellation);

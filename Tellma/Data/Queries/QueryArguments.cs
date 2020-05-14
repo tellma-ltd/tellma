@@ -26,6 +26,6 @@ namespace Tellma.Data.Queries
 
         public DateTime? UserToday { get; }
 
-        public IStringLocalizer Localizer { get; set; }
+        public IStringLocalizer Localizer { get; }
     }
 }

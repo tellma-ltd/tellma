@@ -13,9 +13,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
+            //return services.AddSingleton<MetadataProvider>();
+
             return services
+               // .AddSingleton<MetadataProvider>()
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
                 .AddSingleton<ISettingsCache, SettingsCache>()
+
+                // TODO: Delete
                 .AddSingleton<IModelMetadataProvider, DefinitionsModelMetadataProvider>();
         }
     }

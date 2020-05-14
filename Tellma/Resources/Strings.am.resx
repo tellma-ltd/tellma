@@ -118,9 +118,6 @@
   <data name="AccountType_AgentDefinition" xml:space="preserve">
     <value>ወኪል ፍቺ</value>
   </data>
-  <data name="AccountType_CenterAssignment" xml:space="preserve">
-    <value>ማዕከል ምደባ</value>
-  </data>
   <data name="AccountType_CurrencyAssignment" xml:space="preserve">
     <value>የምንዛሬ ምደባ</value>
   </data>
@@ -676,8 +673,14 @@
   <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
     <value>አንድ {0} መንገድ የዳሰሳ መስክ {1} ጋር ሊያቋርጥ አይችልም.</value>
   </data>
+  <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
+    <value>በ {0} መንገድ የዳሰሳ መስክ እንደ የዋለው አንድ ቀላል መስክ {1} ይዟል.</value>
+  </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
+  </data>
+  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>ወኪል DefinitionId «{0}» ሊገኝ አልቻለም</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>
@@ -783,6 +786,9 @@
   </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>አይነት {1} ላይ ንብረት {0} ስብስብ ነው, ስለዚህ ወደ {2} መንገድ ላይ አይፈቀድም.</value>
+  </data>
+  <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>ሀብት DefinitionId «{0}» ሊገኝ አልቻለም</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>ሁለተኛ ቋንቋ ዋና ቋንቋ ጋር አንድ አይነት ሊሆን አይችልም.</value>
@@ -906,6 +912,9 @@
   </data>
   <data name="Error_UnknownFileFormat" xml:space="preserve">
     <value>ያልታወቀ የፋይል ቅርጸት.</value>
+  </data>
+  <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
+    <value>የተሰቀለ ፋይል ባዶ ነበር</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>ተጠቃሚው «{0} 'አስቀድመው ግብዣ ተቀብለውታል.</value>

@@ -319,7 +319,7 @@ export function toLocalDateISOString(date: Date): string {
 }
 
 function closePrint() {
-  // Cleanup durty once the user closes the print dialog
+  // Cleanup duty once the user closes the print dialog
   document.body.removeChild(this.__container__);
   window.URL.revokeObjectURL(this.__url__);
 }

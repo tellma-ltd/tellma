@@ -204,7 +204,6 @@ namespace Tellma.Controllers.ImportExport
         public PropertyInfo UserKey { get; set; }
     }
 
-
     public enum UserKeyType
     {
         String, Int

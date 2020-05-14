@@ -1,6 +1,8 @@
-﻿namespace Tellma.Data
+﻿using Tellma.Entities;
+
+namespace Tellma.Data
 {
-    public class IndexedImageId
+    public class IndexedImageId : Entity
     {
         public int Index { get; set; }
         public string ImageId { get; set; }

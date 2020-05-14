@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -29,7 +30,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The root data type of the query from which all the paths start. In the case of aggregate queries the actual result will be a DynamicEntity
         /// </summary>
-        public Type ResultType { get; set; }
+        public TypeDescriptor ResultType { get; set; }
 
         /// <summary>
         /// Implementation of <see cref="IQueryInternal"/> 
@@ -70,7 +71,7 @@ namespace Tellma.Data.Queries
             return new SqlStatement
             {
                 Sql = sql,
-                ResultType = ResultType,
+                ResultDescriptor = ResultType,
                 ColumnMap = selectClause.GetColumnMap(),
                 Query = null, // Not used anyways
             };
@@ -79,7 +80,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the join tree 
         /// </summary>
-        private JoinTree PrepareJoin()
+        private JoinTrie PrepareJoin()
         {
             // construct the join tree
             var allPaths = new List<string[]>();
@@ -94,14 +95,14 @@ namespace Tellma.Data.Queries
             }
 
             // This will represent the mapping from paths to symbols
-            var joinTree = JoinTree.Make(ResultType, allPaths);
+            var joinTree = JoinTrie.Make(ResultType, allPaths);
             return joinTree;
         }
 
         /// <summary>
         /// Prepares a data structure containing all the information needed to construct the SELECT and GROUP BY clauses of the aggregate query
         /// </summary>
-        private SqlSelectGroupByClause PrepareSelect(JoinTree joinTree)
+        private SqlSelectGroupByClause PrepareSelect(JoinTrie joinTree)
         {
             var selects = new HashSet<(string Symbol, string PropName, string Aggregate, string Modifier)>(); // To ensure uniqueness
             var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, string Modifier)>();
@@ -130,7 +131,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
+        private string PrepareWhere(Func<Type, string> sources, JoinTrie joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
             string whereSql = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday) ?? "";
 
@@ -146,7 +147,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the ORDER BY clause of the SQL query using the <see cref="Select"/> argument: ORDER BY ABC
         /// </summary>
-        private string PrepareOrderBy(JoinTree joinTree)
+        private string PrepareOrderBy(JoinTrie joinTree)
         {
             var orderByAtoms = Select.Where(e => !string.IsNullOrEmpty(e.OrderDirection));
             var orderByAtomsCount = orderByAtoms.Count();

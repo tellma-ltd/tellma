@@ -674,10 +674,16 @@
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
+    <value>مسار {0} لا ينبغي أن ينتهي بحقل أساسي مثل {1}</value>
+  </data>
+  <data name="Error_A0PathContainsSimpleField1UsedLikeNavigation" xml:space="preserve">
+    <value>مسار {0} يحتوي على حقل أساسي {1} مستخدم كحقل تنقل</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
+  </data>
+  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف الذمة ({0})</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
@@ -783,6 +789,9 @@
   </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
+  </data>
+  <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف المورد ({0})</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
@@ -906,6 +915,9 @@
   </data>
   <data name="Error_UnknownFileFormat" xml:space="preserve">
     <value>صيغة الملف غير معروفة</value>
+  </data>
+  <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
+    <value>الملف المرفوع ليس فيه بيانات</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>المستخدم ({0}) قد قبل الدعوة</value>

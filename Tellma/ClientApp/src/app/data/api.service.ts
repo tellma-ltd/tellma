@@ -88,10 +88,11 @@ export class ApiService {
         return obs$;
       },
       saveForClient: (key: string, value: string) => {
-        const keyParam = `key=${encodeURIComponent(key)}`;
-        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appsettings.apiAddress + `api/admin-users/client?` + keyParam + valueParam;
-        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, null).pipe(
+        const body = { key, value };
+        const url = appsettings.apiAddress + `api/admin-users/client`;
+        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, body, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -590,10 +591,11 @@ export class ApiService {
         return obs$;
       },
       saveForClient: (key: string, value: string) => {
-        const keyParam = `key=${encodeURIComponent(key)}`;
-        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appsettings.apiAddress + `api/users/client?` + keyParam + valueParam;
-        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
+        const body = { key, value };
+        const url = appsettings.apiAddress + `api/users/client`;
+        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, body, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

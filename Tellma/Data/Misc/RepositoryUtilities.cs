@@ -1,15 +1,11 @@
-﻿using Tellma.Data.Queries;
-using Tellma.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
+using Tellma.Entities;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data
 {
@@ -19,7 +15,7 @@ namespace Tellma.Data
         /// Constructs a SQL data table containing all the public properties of the 
         /// entities' type and populates the data table with the provided entities
         /// </summary>
-        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
+        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false) where T : Entity
         {
             DataTable table = new DataTable();
             if (addIndex)
@@ -54,7 +50,7 @@ namespace Tellma.Data
             return table;
         }
 
-        public static DataTable DataTableWithHeaderIndex<THeader, TLines>(IEnumerable<THeader> entities, Func<THeader, List<TLines>> linesFunc)
+        public static DataTable DataTableWithHeaderIndex<THeader, TLines>(IEnumerable<THeader> entities, Func<THeader, List<TLines>> linesFunc) where THeader : Entity where TLines : Entity
         {
             DataTable table = new DataTable();
 
@@ -96,7 +92,7 @@ namespace Tellma.Data
             return table;
         }
 
-        public static DataTable DataTableWithParentIndex<T>(IEnumerable<T> entities, Func<T, int?> parentIndexFunc)
+        public static DataTable DataTableWithParentIndex<T>(IEnumerable<T> entities, Func<T, int?> parentIndexFunc) where T : Entity
         {
             DataTable table = new DataTable();
 
@@ -213,21 +209,21 @@ namespace Tellma.Data
             return (docsTable, linesTable, entriesTable);
         }
 
-        private static IEnumerable<PropertyInfo> AddColumnsFromProperties<T>(DataTable table)
+        private static IEnumerable<PropertyDescriptor> AddColumnsFromProperties<T>(DataTable table) where T : Entity
         {
-            var props = typeof(T).GetMappedProperties();
+            var props = TypeDescriptor.Get<T>().SimpleProperties;
             foreach (var prop in props)
             {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var propType = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
                 var column = new DataColumn(prop.Name, propType);
                 if (propType == typeof(string))
                 {
                     // For string columns, it is more performant to explicitly specify the maximum column size
                     // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
+                    int maxLength = prop.MaxLength;
+                    if (maxLength > 0)
                     {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                        column.MaxLength = maxLength;
                     }
                 }
 
