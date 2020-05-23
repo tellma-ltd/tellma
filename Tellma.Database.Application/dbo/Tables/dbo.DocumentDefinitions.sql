@@ -3,17 +3,15 @@
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
 	[Id]						INT				CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY IDENTITY,
 	[Code]						NVARCHAR (50)	CONSTRAINT [UX_DocumentDefinitions__Code] UNIQUE,
-	-- IsPrimal, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
-	-- Original is less confusing than Source Document. An SIV is not a source document, but can be primal
+	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	[IsOriginalDocument]		BIT				DEFAULT 1,
+	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Clause, 2: Event
 	[TitleSingular]				NVARCHAR (255),
 	[TitleSingular2]			NVARCHAR (255),
 	[TitleSingular3]			NVARCHAR (255),
 	[TitlePlural]				NVARCHAR (255),
 	[TitlePlural2]				NVARCHAR (255),
 	[TitlePlural3]				NVARCHAR (255),
-
---	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,

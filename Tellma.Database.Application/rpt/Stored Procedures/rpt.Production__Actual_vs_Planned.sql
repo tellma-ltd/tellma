@@ -4,26 +4,27 @@
 	-- TODO: rewrite using summary entries
 AS
 BEGIN
+	DECLARE @InventoryProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InventoryProductionExtension');
+	DECLARE @FinishedGoods INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'FinishedGoods');
 	WITH
-	Actual([ResourceLookup1Id],	[Mass], [Count]) AS (
-		SELECT 
-			R.[Lookup1Id],
+	Actual([ResourceId], [Mass], [Count]) AS (
+		SELECT
+			J.[ResourceId],
 			SUM(J.[AlgebraicMass]) AS [Mass],
 			SUM(J.[AlgebraicCount]) AS [Count]
 		FROM [map].[DetailsEntries]() J
 		JOIN dbo.Lines L ON J.LineId = L.Id
-		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		JOIN dbo.[Accounts] A ON J.AccountId = A.[Id]
-		JOIN dbo.[AccountTypes] RT ON A.[IfrsTypeId] = RT.[Id]
-		WHERE J.[EntryTypeId] = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'InventoryProductionExtension') 
-		AND RT.[Code] = N'FinishedGoods'
+		WHERE J.[EntryTypeId] = @InventoryProductionExtension 
+		AND A.[AccountTypeId] = @FinishedGoods
 		AND L.[State] = 4
-		AND L.PostingDate Between @fromDate AND @ToDate
-		GROUP BY J.[ContractId], R.[Lookup1Id]
+		AND L.PostingDate Between @fromDate AND @toDate
+		GROUP BY J.[ResourceId]
 	),
-	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
+	-- TODO: use map.DetailsBudgetEntries
+	Planned([ResourceId], [Mass], [Count]) AS (
 		SELECT 
-		ResourceLookup1Id,
+		ResourceId,
 		SUM([Mass]) * (
 			DATEDIFF(
 				DAY,
@@ -31,33 +32,25 @@ BEGIN
 				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
 		) As [Mass],
-		[MassUnitId],
 		SUM([Count]) * (
 			DATEDIFF(
 				DAY,
 				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
 				(CASE WHEN ToDate < @toDate THEN ToDate Else @toDate END)
 			) + 1
-		) As [Count],
-		[CountUnitId]
-		FROM dbo.Plans
+		) As [Count]
+		FROM dbo.[BudgetEntries] BE
+		JOIN dbo.[Budgets] B ON B.[Id] = BE.[BudgetId]
 		WHERE (ToDate >= @fromDate AND FromDate <= @ToDate)
-		AND Activity = N'Production'
-		GROUP BY ResourceLookup1Id, [MassUnitId], [CountUnitId], [FromDate], [ToDate]
-	),
-	Planned([ResourceLookup1Id], [Mass], [Count]) AS (
-		SELECT ResourceLookup1Id, 
-		SUM([Mass]) AS [Mass], 
-		SUM([Count]) AS [Count]
-		FROM PlannedDetails P
-		GROUP BY ResourceLookup1Id
+		AND [EntryTypeId] = @InventoryProductionExtension
+		GROUP BY [ResourceId], [FromDate], [ToDate]
 	)
-	SELECT RL.Id, RL.SortKey, RL.[Name],
+	SELECT RL.Id, RL.[Name],
 		A.[Mass] AS MassActual, P.Mass As MassPlanned, A.Mass/P.Mass * 100 As [PercentOfMassPlanned],
 		A.[Count] AS CountActual, P.[Count] AS CountPlanned, A.[Count]/P.[Count] * 100 As [PercentOfCountPlanned]
-	FROM dbo.[Lookups] RL
-	LEFT JOIN Actual A ON RL.Id = A.ResourceLookup1Id
-	LEFT JOIN Planned P ON RL.Id = P.ResourceLookup1Id
+	FROM dbo.[Resources] RL
+	LEFT JOIN Actual A ON RL.Id = A.ResourceId
+	LEFT JOIN Planned P ON RL.Id = P.ResourceId
 	AND 
 	(
 		(A.Mass IS NOT NULL AND A.Mass <> 0) OR 

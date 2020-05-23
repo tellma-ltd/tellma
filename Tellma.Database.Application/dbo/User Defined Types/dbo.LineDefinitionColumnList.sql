@@ -11,5 +11,7 @@
 	[Label3]				NVARCHAR (50),
 	[RequiredState]			SMALLINT		NOT NULL DEFAULT 4,
 	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4,
-	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0
+	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0,
+	[IsVisibleInTemplate]	BIT				NOT NULL DEFAULT 1,
+	CHECK ([IsVisibleInTemplate] = 1 OR [RequiredState] > 2)
 );

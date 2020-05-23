@@ -30,7 +30,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	(2,		N'Dammam Sales',	N'الدمام - مبيعات');
 
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @inventory_custodiansDef,
+		@DefinitionId = @warehousesCD,
 		@Entities = @Warehouses,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -40,8 +40,8 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 	
-	DECLARE	@4WH_RM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@inventory_custodiansDef, NULL) WHERE [Name] = N'RM Warehouse');
-	DECLARE	@4WH_FG INT = (SELECT [Id] FROM [dbo].fi_Contracts(@inventory_custodiansDef, NULL) WHERE [Name] = N'FG Warehouse');
-	DECLARE	@5WH_JED INT = (SELECT [Id] FROM [dbo].fi_Contracts(@inventory_custodiansDef, NULL) WHERE [Name] = N'Jeddah Sales');
-	DECLARE	@5WH_RUH INT = (SELECT [Id] FROM [dbo].fi_Contracts(@inventory_custodiansDef, NULL) WHERE [Name] = N'Riyadh Sales');
-	DECLARE	@6WH_DAM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@inventory_custodiansDef, NULL) WHERE [Name] = N'Dammam Sales');
+	DECLARE	@4WH_RM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@warehousesCD, NULL) WHERE [Name] = N'RM Warehouse');
+	DECLARE	@4WH_FG INT = (SELECT [Id] FROM [dbo].fi_Contracts(@warehousesCD, NULL) WHERE [Name] = N'FG Warehouse');
+	DECLARE	@5WH_JED INT = (SELECT [Id] FROM [dbo].fi_Contracts(@warehousesCD, NULL) WHERE [Name] = N'Jeddah Sales');
+	DECLARE	@5WH_RUH INT = (SELECT [Id] FROM [dbo].fi_Contracts(@warehousesCD, NULL) WHERE [Name] = N'Riyadh Sales');
+	DECLARE	@6WH_DAM INT = (SELECT [Id] FROM [dbo].fi_Contracts(@warehousesCD, NULL) WHERE [Name] = N'Dammam Sales');

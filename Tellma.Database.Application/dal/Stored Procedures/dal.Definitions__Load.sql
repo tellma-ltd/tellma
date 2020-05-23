@@ -66,4 +66,4 @@ SELECT DISTINCT T.[Id],
 	--T.[NotedDateLabel2],
 	--T.[NotedDateLabel3]
 	FROM [dbo].[AccountTypes] T
-	JOIN [map].[LineDefinitionEntries]() LDE ON T.[Id] = LDE.[AccountDesignationId]
+	JOIN [map].[LineDefinitionEntries]() LDE ON T.[Id] = LDE.[AccountTypeParentId]

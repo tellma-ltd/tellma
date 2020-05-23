@@ -38,7 +38,7 @@ AS
 		FROM dbo.Entries E
 		JOIN dbo.Lines L ON E.LineId = L.Id
 		JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-		WHERE A.[IfrsTypeId] IN (SELECT [Id] FROM @PPETypeIds)
+		WHERE A.[AccountTypeId] IN (SELECT [Id] FROM @PPETypeIds)
 		AND L.[State] = 4
 		AND L.[PostingDate] <= @PostingDate
 		GROUP BY E.[ResourceId]

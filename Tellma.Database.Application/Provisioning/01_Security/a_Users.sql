@@ -51,6 +51,16 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	(3,		N'Tareq Fakhrani',	N'طارق فخراني',N'tareq.Fakhrani@simpex.co.sa'),
 	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
+IF @DB = N'106' -- Simpex, SAR, en/ar
+	INSERT INTO @Users
+	([Index],[Name],			[Name2],		[Email]) VALUES
+	(0,		N'Mulat Derege',	NULL,			N'mulatderege@soreti.com.et'),
+	(1,		N'Birhanu',			NULL,			N'birhanu@soreti.com.et'),
+	(2,		N'Abu Bakr elHadi',	NULL,			N'abubakr.elhadi@banan-it.com'),
+	(3,		N'Abraham Tenker',	NULL,			N'Abrham.Tenker@banan-it.com'),
+	(4,		N'Mosab elHafiz',	NULL,			N'mosab.elhafiz@banan-it.com'),	
+	(5,		N'Yisak Fikadu',	NULL,			N'yisak.fikadu@banan-it.com')
+	;
 
 DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 EXEC [dal].[Users__Save]

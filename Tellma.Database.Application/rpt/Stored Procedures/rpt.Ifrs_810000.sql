@@ -16,7 +16,7 @@ BEGIN
 	)
 	SELECT	N'NameOfReportingEntityOrOtherMeansOfIdentification',
 			dbo.fn_Localize([ShortCompanyName], [ShortCompanyName2], [ShortCompanyName3]) FROM dbo.Settings
-	UNION
+	--UNION
 	--SELECT	N'DomicileOfEntity',
 	--		dbo.fn_Localize([DomicileOfEntity], [DomicileOfEntity2], [DomicileOfEntity3]) FROM dbo.Settings
 	--UNION

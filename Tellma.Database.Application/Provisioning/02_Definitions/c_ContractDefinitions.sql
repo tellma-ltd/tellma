@@ -1,140 +1,94 @@
 ﻿DECLARE @ContractDefinitions dbo.ContractDefinitionList;
+
 IF NOT EXISTS(SELECT * FROM dbo.[ContractDefinitions])
 BEGIN
 	IF @DB = N'100' -- ACME, USD, en/ar/zh playground
 	BEGIN
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitleSingular2],	[TitleSingular3], [TitlePlural],[TitlePlural2],		[TitlePlural3]) VALUES
-		--(0,N'cost-units',	N'Cost Unit',	N'وحدة التكلفة',	N'成本单位',		N'Cost Units',	N'وحدات التكلفة',	N'成本单位'),
-		--(1,N'cost-centers',	N'Cost Center',	N'مركز التكلفة',	N'成本中心',		N'Cost Centers',N'مراكز التكلفة',	N'成本中心'),
-		(2,N'creditors',	N'Creditor',	N'الدائن',			N'债权人',		N'Creditors',	N'الدائنون',		N'债权人'),
-		(3,N'customers',	N'Customer',	N'الزبون',			N'顾客',			N'Customers',	N'الزبائن',			N'顾客'),
-		(4,N'debtors',		N'Debtor',		N'المدين',			N'债务人',		N'Debtors',		N'المدينون',		N'债务人'),
-		(5,N'owners',		N'Owner',		N'المالك',			N'所有者',		N'Owners',		N'المالكون',		N'拥有者'),
-		(6,N'suppliers',	N'Supplier',	N'المورد',			N'供应商',		N'Suppliers',	N'الموردون',		N'供应商'),
-		(7,N'tax-agencies',	N'Tax Agency',	N'الإدارة الضريبية',N'税务局',		N'Tax Agencies',N'الإدارات الضريبية',N'税务机关'),
-		(8,N'banks',		N'Bank',		N'البنك',			N'银行',			N'Banks',		N'البنوك',			N'银行业务'),
-		(9,N'custodies',	N'Custody',		N'الخزنة',			N'保管',			N'Custodies',	N'الخزائن',			N'保管人'),
-		(10,N'employees',	N'Employee',	N'الموظف',			N'雇员',			N'Employees',	N'الموظفون',		N'雇员');
-
+		INSERT INTO @ContractDefinitions([Index], [Code], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+		(0, N'creditors', N'Creditor', N'债权人', N'Creditor', N'Creditors', N'债权人', N'Creditors', N'hands', N'Financials',10),
+		(1, N'debtors', N'Debtor', N'债务人', N'Debtor', N'Debtors', N'债务人', N'Debtors', N'hand-holding-usd', N'Financials',60),
+		(2, N'owners', N'Owner', N'所有者', N'Owner', N'Owners', N'拥有者', N'Owners', N'power-off', N'Financials',70),
+		(3, N'partners', N'Partner', N'伙伴', N'Partner', N'Partners', N'伙伴', N'Partners', N'user-tie', N'Financials',40),
+		(4, N'suppliers', N'Supplier', N'供应商', N'Supplier', N'Suppliers', N'供应商', N'Suppliers', N'truck', N'Purchasing',50),
+		(5, N'customers', N'Customer', N'顾客', N'Customer', N'Customers', N'顾客', N'Customers', N'balance-scale', N'Sales',80),
+		(6, N'employees', N'Employee', N'雇员', N'Employee', N'Employees', N'雇员', N'Employees', N'user-friends', N'HumanCapital',80),
+		(7, N'bank-accounts', N'Bank Account', N'银行账户', N'Bank Account', N'Bank Accounts', N'银行账户', N'Bank Accounts', N'book', N'Cash',90),
+		(8, N'cash-accounts', N'Cash Account', N'现金账户', N'Cash Account', N'Cash Accounts', N'现金账户', N'Cash Accounts', N'money-check-alt', N'Cash',100),
+		(9, N'warehouses', N'Warehouse', N'仓库', N'Warehouse', N'Warehouses', N'货仓', N'Warehouses', N'warehouse', N'Financials',60),
+		(10, N'foreign-imports', N'Foreign Import', N'国外进口', N'Foreign Import', N'Foreign Imports', N'国外进口', N'Foreign Imports', N'file-import', N'Purchasing',120),
+		(11, N'foreign-exports', N'Foreign Export', N'对外出口', N'Foreign Export', N'Foreign Exports', N'国外出口', N'Foreign Exports', N'file-export', N'Sales',120);
 	END
 	ELSE IF @DB = N'101' -- Banan SD, USD, en
 	BEGIN
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],					[TitleSingular],				[TitleSingular2],		[TitlePlural],		[TitlePlural2],			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
-		(1,N'creditors',		N'Creditor',					N'الدائن',				N'Creditors',		N'الدائنون',			N'hands',			N'Cash',			100),
-		(2,N'customers',		N'Customer',					N'الزبون',				N'Customers',		N'الزبائن',				N'user-friends',	N'Sales',			500),
-		(4,N'debtors',			N'Debtor',						N'المدين',				N'Debtors',			N'المدينون',			N'hand-holding-usd',N'Cash',			200),
-		(5,N'partners',			N'Partner',						N'الشريك',				N'Partners',		N'الشركاء',				N'user-tie',		N'Financials',		300),
-		(6,N'suppliers',		N'Supplier',					N'المورد',				N'Suppliers',		N'الموردون',			N'truck',			N'Purchasing',		500),
--- storage deal: long term, transit deal: short term
-		(7,N'inventory-custodians',	N'Warehouse - Transit Line',N'المخزن - الترانزيت',	N'Warehouses - Transit Lines',N'المخازن - الترانزيت',N'home',	N'Purchasing',		600),
---	
-		(8,N'cash-custodians',	N'Cash Custodian',				N'الخزنة، البنك',		N'Cash Custodians',N'الخزن، البنوك',		N'lock',			N'Cash',			300);
-
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],			[TitleSingular],[TitleSingular2],[TitlePlural],[TitlePlural2],	[JobVisibility], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-		(9,N'employees',N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Optional',	N'user-friends', N'HumanCapital', 50);
-		
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],						[TitleSingular],		[TitleSingular2],		[TitlePlural],			[TitlePlural2],			[Prefix]) VALUES
-	
-		(10,N'bank-accounts',		N'Bank Account',		N'حساب بنك',			N'Bank Accounts',		N'حسابات بنك',			N'BA'),--		N'book',				N'Financials',		0),
-		(11,N'cash-accounts',		N'Cash Account',		N'حساب نقد',			N'Cash Accounts',		N'حسابات نقد',			N'CA'),--	N'money-check-alt',		N'Cash',			20),
-		(12,N'warehouses',			N'Warehouse',			N'مخزن',				N'Warehouses',			N'مخازن',				N'W'),
-		(13,N'foreign-shipments',	N'Foreign Shipment',	N'شحن خارجي',			N'Foreign Shipments',	N'شحنات خارجية',		N'LC');
-
+		PRINT N''
 	END
 	ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	BEGIN
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitlePlural], [TaxIdentificationNumberVisibility]) VALUES
-
-		(2,N'creditors',	N'Creditor',	N'Creditors',  NULL),
-		(3,N'customers',	N'Customer',	N'Customers',  N'Optional'),
-		(4,N'debtors',		N'Debtor',		N'Debtors',  NULL),
---		(5,N'owners',		N'Owner',		N'Owners',  NULL),
-		(6,N'suppliers',	N'Supplier',	N'Suppliers',  N'Optional'),
-		(8,N'banks',		N'Bank',		N'Banks',  NULL),
-		(9,N'custodies',	N'Custody',		N'Custodies',  NULL);
-
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitlePlural],	[TaxIdentificationNumberVisibility],	[JobVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'Employees',	N'Optional',							N'Required');
+		PRINT N''
 	END
 	ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh car service
 	BEGIN
-	INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitleSingular2],[TitlePlural],		[TitlePlural2]) VALUES
-		(2,N'creditors',	N'Creditor',	N'债权人',		N'Creditors',		N'债权人'),
-		(3,N'customers',	N'Customer',	N'顾客',			N'Customers',		N'顾客'),
-		(4,N'debtors',		N'Debtor',		N'债务人',		N'Debtors',			N'债务人'),
---		(5,N'owners',		N'Owner',		N'所有者',		N'Owners',			N'拥有者'),
-		(6,N'suppliers',	N'Supplier',	N'供应商',		N'Suppliers',		N'供应商'),
-		(7,N'tax-agencies',	N'Tax Agency',	N'税务局',		N'Tax Agencies',	N'税务机关'),
-		(8,N'banks',		N'Bank',		N'银行',			N'Banks',			N'银行业务'),
-		(9,N'custodies',	N'Custody',		N'保管',			N'Custodies',		N'保管人');
-
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2],[TaxIdentificationNumberVisibility],
-		[JobVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'雇员',			N'Employees',	N'雇员',		N'Optional',
-		N'Optional');
+		PRINT N''
 	END
 	ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am manyfacturing and sales
 	BEGIN
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitleSingular2],	[TitlePlural],	[TitlePlural2]) VALUES
-		(2,N'creditors',	N'Creditor',	N'الدائن',			N'Creditors',	N'الدائنون'),
-		(3,N'customers',	N'Customer',	N'الزبون',			N'Customers',	N'الزبائن'),
-		(4,N'debtors',		N'Debtor',		N'المدين',			N'Debtors',		N'المدينون'),
-	--	(5,N'owners',		N'Owner',		N'المالك',			N'Owners',		N'المالكون'),
-		(6,N'suppliers',	N'Supplier',	N'المورد',			N'Suppliers',	N'الموردون'),
-	--	(7,N'tax-agencies',	N'Tax Agency',	N'الإدارة الضريبية',N'Tax Agencies',N'الإدارات الضريبية'),
-		(8,N'banks',		N'Bank',		N'البنك',			N'Banks',		N'البنوك'),
-		(9,N'custodies',	N'Custody',		N'الخزنة',			N'Custodies',	N'الخزائن')	;
-
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2], [TaxIdentificationNumberVisibility],
-		[JobVisibility]) VALUES
-		(10,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',N'Optional',		
-		N'Required');
+		INSERT INTO @ContractDefinitions([Index], [Code], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+		(0, N'creditors', N'Creditor', N'አበዳሪ', N'Creditor', N'Creditors', N'አበዳሪዎች', N'Creditors', N'hands', N'Financials',10),
+		(1, N'debtors', N'Debtor', N'አበዳሪ', N'Debtor', N'Debtors', N'አበዳሪዎች', N'Debtors', N'hand-holding-usd', N'Financials',60),
+		(2, N'owners', N'Owner', N'ባለቤት', N'Owner', N'Owners', N'ባለቤቶች', N'Owners', N'power-off', N'Financials',70),
+		(3, N'partners', N'Partner', N'አጋር', N'Partner', N'Partners', N'አጋሮች', N'Partners', N'user-tie', N'Financials',40),
+		(4, N'suppliers', N'Supplier', N'አቅራቢ', N'Supplier', N'Suppliers', N'አቅራቢዎች', N'Suppliers', N'truck', N'Purchasing',50),
+		(5, N'customers', N'Customer', N'ደንበኛው', N'Customer', N'Customers', N'ደንበኞች', N'Customers', N'balance-scale', N'Sales',80),
+		(6, N'employees', N'Employee', N'ተቀጣሪ', N'Employee', N'Employees', N'ሠራተኞች', N'Employees', N'user-friends', N'HumanCapital',80),
+		(7, N'bank-accounts', N'Bank Account', N'የባንክ ሒሳብ', N'Bank Account', N'Bank Accounts', N'የባንክ ሂሳቦች', N'Bank Accounts', N'book', N'Cash',90),
+		(8, N'cash-accounts', N'Cash Account', N'የጥሬ ገንዘብ ሂሳብ', N'Cash Account', N'Cash Accounts', N'የጥሬ ገንዘብ መለያዎች', N'Cash Accounts', N'money-check-alt', N'Cash',100),
+		(9, N'warehouses', N'Warehouse', N'መጋዘን', N'Warehouse', N'Warehouses', N'መጋዘኖች', N'Warehouses', N'warehouse', N'Financials',60),
+		(10, N'foreign-imports', N'Foreign Import', N'የውጭ አስመጪ', N'Foreign Import', N'Foreign Imports', N'የውጭ ማስመጣት', N'Foreign Imports', N'file-import', N'Purchasing',120),
+		(11, N'foreign-exports', N'Foreign Export', N'የውጭ መላኪያ', N'Foreign Export', N'Foreign Exports', N'የውጭ ንግድ', N'Foreign Exports', N'file-export', N'Sales',120);
 	END
 	ELSE IF @DB = N'105' -- Simpex, SAR, en/ar trading
 	BEGIN
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],				[TitleSingular],[TitleSingular2],	[TitlePlural],	[TitlePlural2],[MainMenuSection]) VALUES
-		(2,N'creditors',	N'Creditor',	N'الدائن',			N'Creditors',	N'الدائنون', N'Financials'),
-		(3,N'customers',	N'Customer',	N'الزبون',			N'Customers',	N'الزبائن', N'Financials'),
-		(4,N'debtors',		N'Debtor',		N'المدين',			N'Debtors',		N'المدينون', N'Financials'),
-	--	(5,N'owners',		N'Owner',		N'المالك',			N'Owners',		N'المالكون'),
-		(6,N'suppliers',	N'Supplier',	N'المورد',			N'Suppliers',	N'الموردون', N'Financials'),
-	--	(7,N'tax-agencies',	N'Tax Agency',	N'الإدارة الضريبية',N'Tax Agencies',N'الإدارات الضريبية', N'Financials'),
-		(8,N'banks',		N'Bank',		N'البنك',			N'Banks',		N'البنوك', N'Financials'),
-		(9,N'custodies',	N'Custody',		N'الخزنة',			N'Custodies',	N'الخزائن', N'Financials'),	
-		(10,N'warehouses',	N'Warehouse',	N'المخزن',			N'Warehouses',	N'المخازن', N'Financials')
-		;
-		INSERT INTO @ContractDefinitions([Index],
-		[Code],			[TitleSingular],[TitleSingular2], [TitlePlural], [TitlePlural2],	[JobVisibility]) VALUES
-		(11,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Required');
+		PRINT N''
+	END
+	ELSE IF @DB = N'106' -- Soreti, ETB, en/am
+	BEGIN
+		INSERT INTO @ContractDefinitions([Index], [Code], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
+		(0, N'creditors', N'Creditor', N'አበዳሪ', N'Creditor', N'Creditors', N'አበዳሪዎች', N'Creditors', N'hands', N'Financials',10),
+		(1, N'debtors', N'Debtor', N'አበዳሪ', N'Debtor', N'Debtors', N'አበዳሪዎች', N'Debtors', N'hand-holding-usd', N'Financials',60),
+		(2, N'owners', N'Owner', N'ባለቤት', N'Owner', N'Owners', N'ባለቤቶች', N'Owners', N'power-off', N'Financials',70),
+		(3, N'partners', N'Partner', N'አጋር', N'Partner', N'Partners', N'አጋሮች', N'Partners', N'user-tie', N'Financials',40),
+		(4, N'suppliers', N'Supplier', N'አቅራቢ', N'Supplier', N'Suppliers', N'አቅራቢዎች', N'Suppliers', N'truck', N'Purchasing',50),
+		(5, N'customers', N'Customer', N'ደንበኛው', N'Customer', N'Customers', N'ደንበኞች', N'Customers', N'balance-scale', N'Sales',80),
+		(6, N'employees', N'Employee', N'ተቀጣሪ', N'Employee', N'Employees', N'ሠራተኞች', N'Employees', N'user-friends', N'HumanCapital',80),
+		(7, N'bank-accounts', N'Bank Account', N'የባንክ ሒሳብ', N'Bank Account', N'Bank Accounts', N'የባንክ ሂሳቦች', N'Bank Accounts', N'book', N'Cash',90),
+		(8, N'cash-accounts', N'Cash Account', N'የጥሬ ገንዘብ ሂሳብ', N'Cash Account', N'Cash Accounts', N'የጥሬ ገንዘብ መለያዎች', N'Cash Accounts', N'money-check-alt', N'Cash',100),
+		(9, N'warehouses', N'Warehouse', N'መጋዘን', N'Warehouse', N'Warehouses', N'መጋዘኖች', N'Warehouses', N'warehouse', N'Financials',60),
+		(10, N'foreign-imports', N'Foreign Import', N'የውጭ አስመጪ', N'Foreign Import', N'Foreign Imports', N'የውጭ ማስመጣት', N'Foreign Imports', N'file-import', N'Purchasing',120),
+		(11, N'foreign-exports', N'Foreign Export', N'የውጭ መላኪያ', N'Foreign Export', N'Foreign Exports', N'የውጭ ንግድ', N'Foreign Exports', N'file-export', N'Sales',120);
 	END
 END
-
 EXEC [api].[ContractDefinitions__Save]
 	@Entities = @ContractDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	DECLARE @creditorsDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'creditors');
-	DECLARE @customersDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'customers');
-	DECLARE @debtorsDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'debtors');
-	DECLARE @partnersDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'partners');
-	DECLARE @suppliersDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'suppliers');
-	DECLARE @inventory_custodiansDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'inventory-custodians');
-	DECLARE @cash_custodiansDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'cash-custodians');
-	DECLARE @employeesDef INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'employees');
+
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
 	Print 'ContractDefinitions: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+
+	DECLARE @creditorsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'creditors');
+	DECLARE @debtorsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'debtors');
+	DECLARE @ownersCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'owners');
+	DECLARE @partnersCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'partners');
+	DECLARE @suppliersCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'suppliers');
+	DECLARE @customersCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'customers');
+	DECLARE @employeesCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'employees');
+	DECLARE @bank_accountsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'bank-accounts');
+	DECLARE @cash_accountsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'cash-accounts');
+	DECLARE @warehousesCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'warehouses');
+	DECLARE @foreign_importsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'foreign-imports');
+	DECLARE @foreign_exportsCD INT = (SELECT [Id] FROM dbo.[ContractDefinitions] WHERE [Code] = N'foreign-exports');
+

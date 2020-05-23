@@ -24,7 +24,10 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	SET @ShortCompanyName2 = N'سيمبكس'
 END
-
+IF @DB = N'106' -- Walia Steel, ETB, en/am
+BEGIN
+	SET @ShortCompanyName2 = N'ሶሬቲ ትሬዲንግ'
+END
 EXEC [api].[Settings__Save]
 	@ShortCompanyName = @ShortCompanyName,
 	@ShortCompanyName2 = @ShortCompanyName2,

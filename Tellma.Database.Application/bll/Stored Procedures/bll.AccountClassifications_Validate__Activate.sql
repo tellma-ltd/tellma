@@ -1,12 +1,12 @@
-﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Deprecate]
+﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@IsDeprecated BIT,
+	@IsActive BIT,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-IF @IsDeprecated = 1
+IF @IsActive = 0
 BEGIN
 	WITH
 	ActiveAccounts([Index], [AccountId], [Value], [MonetaryValue])

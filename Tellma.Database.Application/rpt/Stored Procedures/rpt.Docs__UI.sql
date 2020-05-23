@@ -31,7 +31,7 @@ WITH Docs AS (
 		LEFT JOIN dbo.[Lines] L ON D.[Id] = L.[DocumentId]
 		LEFT JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
 		LEFT JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-		LEFT JOIN dbo.[AccountTypes] AC ON A.[IfrsTypeId] = AC.[Id]
+		LEFT JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 		LEFT JOIN dbo.[Contracts] C ON E.[ContractId] = C.[Id]
 		LEFT JOIN dbo.[EntryTypes] EC ON E.[EntryTypeId] = EC.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)

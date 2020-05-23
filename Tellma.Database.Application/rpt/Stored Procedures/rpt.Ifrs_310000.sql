@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[Ifrs_310000]
+﻿CREATE PROCEDURE [rpt].[Ifrs_310000] -- EXEC [rpt].[Ifrs_310000] @fromDate='2019.01.1', @toDate = '2019.03.31'
 --[310000] Statement of comprehensive income, profit or loss, by function of expense
 	@fromDate DATE, 
 	@toDate DATE
@@ -20,7 +20,7 @@ BEGIN
 	SELECT COALESCE([ET].[Code], [AT].[Code]) AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	LEFT JOIN dbo.EntryTypes [ET] ON [ET].[Id] = E.[EntryTypeId]
 	WHERE @fromDate <= L.[PostingDate] AND L.[PostingDate] < DATEADD(DAY, 1, @toDate)

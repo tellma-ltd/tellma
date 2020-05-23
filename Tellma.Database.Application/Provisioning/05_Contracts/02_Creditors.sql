@@ -22,7 +22,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N'Tellma.' + @DB
 
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @creditorsDef,
+		@DefinitionId = @creditorsCD,
 		@Entities = @Creditors,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

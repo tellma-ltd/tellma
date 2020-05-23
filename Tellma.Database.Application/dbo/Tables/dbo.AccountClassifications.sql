@@ -5,8 +5,8 @@
 	[Name2]								NVARCHAR (255),
 	[Name3]								NVARCHAR (255),
 	[Code]								NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountClassifications__Code] UNIQUE CLUSTERED,
-	-- Deprecated means, it does not appear to the user when classifying an account
-	[IsDeprecated]						BIT					NOT NULL DEFAULT 0,
+	-- Inactive means, it does not appear to the user when classifying an account
+	[IsActive]							BIT					NOT NULL DEFAULT 1,
 	-- Audit details
 	[CreatedAt]							DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]						INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AccountClassifications__CreatedById] REFERENCES [dbo].[Users] ([Id]),

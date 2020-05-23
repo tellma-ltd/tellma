@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [api].[AccountClassifications__Deprecate]
+﻿CREATE PROCEDURE [api].[AccountClassifications__Activate]
 	@IndexedIds [dbo].[IndexedIdList] READONLY,
-	@IsDeprecated BIT,
+	@IsActive BIT,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -8,8 +8,9 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 	
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[AccountClassifications_Validate__Deprecate]
-		@Ids = @IndexedIds;
+	EXEC [bll].[AccountClassifications_Validate__Activate]
+		@Ids = @IndexedIds,
+		@IsActive = @IsActive;
 	
 	SELECT @ValidationErrorsJson = 
 	(
@@ -22,7 +23,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[AccountClassifications__Deprecate]
+	EXEC [dal].[AccountClassifications__Activate]
 		@Ids = @Ids,
-		@IsDeprecated = @IsDeprecated;
+		@IsActive = @IsActive;
 END;

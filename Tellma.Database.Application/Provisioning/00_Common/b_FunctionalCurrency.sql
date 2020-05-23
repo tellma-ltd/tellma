@@ -38,7 +38,12 @@ BEGIN
 		([Id],	[Name],		[Name2],[Description],	[Description2],	[E]) VALUES
 		(N'SAR', N'Riyal',	N'ريال',	N'Saudi Riyal',	N'ريال سعودي',		2);
 	END
-
+	ELSE IF @DB = N'106' -- Soreti, ETB, en/am manyfacturing and sales
+	BEGIN
+		INSERT INTO @FunctionalCurrencies
+		([Id],	[Name],		[Name2],[Description],		[Description2],	[E]) VALUES
+		(N'ETB', N'Birr',	N'ብር',	N'Ethiopian Birr',	N'የኢትዮጵያ ብር',	2);
+	END
 	DELETE FROM @FunctionalCurrencies WHERE [Id] IN (SELECT [Id] FROM dbo.[Currencies])
 	EXEC [api].Currencies__Save
 		@Entities = @FunctionalCurrencies,

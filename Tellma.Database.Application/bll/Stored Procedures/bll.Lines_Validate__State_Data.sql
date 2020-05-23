@@ -7,7 +7,7 @@
 	@Top INT = 10
 AS
 DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	-- The @Field is required if Line State >= RequiredState of line def column
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -24,7 +24,7 @@ DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] 
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = FL.[Id]
 	WHERE @State >= LDC.[RequiredState]
-	AND L.[DefinitionId] <> @ManualLineDef
+	AND L.[DefinitionId] <> @ManualLineLD
 	AND	(
 		FL.Id = N'CurrencyId'			AND E.[CurrencyId] IS NULL OR
 		FL.Id = N'ContractId'			AND E.[ContractId] IS NULL OR
@@ -112,7 +112,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountDesignationResourceDefinitions] AD ON A.[DesignationId] = AD.[AccountDesignationId]
+	JOIN dbo.[AccountTypeResourceDefinitions] AD ON A.[AccountTypeId] = AD.[AccountTypeId]
 	WHERE (E.[ResourceId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -125,7 +125,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountDesignationContractDefinitions] AD ON A.[DesignationId] = AD.[AccountDesignationId]
+	JOIN dbo.[AccountTypeContractDefinitions] AD ON A.[AccountTypeId] = AD.[AccountTypeId]
 	WHERE (E.[ContractId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -138,7 +138,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypes] AC ON A.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
 	JOIN dbo.[EntryTypes] ETC ON E.[EntryTypeId] = ETC.[Id]
 	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
@@ -218,7 +218,7 @@ IF @State > 0
 	--JOIN [dbo].[LineDefinitionEntries] LDE ON LDE.LineDefinitionId = L.DefinitionId AND LDE.[Index] = E.[Index]
 	--JOIN [dbo].[LineDefinitionColumns] LDC ON LDC.LineDefinitionId = L.DefinitionId AND LDC.[EntryIndex] = E.[Index] AND LDC.[ColumnName] = N'EntryTypeId'
 	--JOIN [dbo].[AccountTypes] [AT] ON LDE.[AccountTypeParentId] = [AT].[Id]
-	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> @ManualLineDef;
+	--WHERE (E.[EntryTypeId] IS NULL) AND [AT].[EntryTypeParentId] IS NOT NULL AND L.DefinitionId <> @ManualLineLD;
 
 	/*
 		-- TODO: For the cases below, add the condition that Entry Type is enforced
@@ -238,10 +238,10 @@ IF @State > 0
 	FROM @Entries [E]
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN [dbo].[Accounts] [A] ON [E].[AccountId] = [A].[Id]
-	JOIN [dbo].[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
+	JOIN [dbo].[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	WHERE ([E].[EntryTypeId] IS NULL)
 	AND [AT].[EntryTypeParentId] IS NOT NULL
-	AND L.DefinitionId = @ManualLineDef
+	AND L.DefinitionId = @ManualLineLD
 		
 	-- The Entry Type must be compatible with the Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -254,11 +254,11 @@ IF @State > 0
 	FROM @Entries E
 	JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].Id
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].Id
 	JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	JOIN dbo.[EntryTypes] ETA ON [AT].[EntryTypeParentId] = ETA.[Id]
 	WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
-	AND L.[DefinitionId] = @ManualLineDef;
+	AND L.[DefinitionId] = @ManualLineLD;
 
 
 	*/

@@ -13,9 +13,13 @@
 	[RequiredState]			SMALLINT		NOT NULL DEFAULT 4,
 	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4,
 	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0,
-	[SavedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionColumns__SavedById] REFERENCES [dbo].[Users] ([Id]),
-	[ValidFrom]				DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,
-	[ValidTo]				DATETIME2			GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
+	[IsVisibleInTemplate]	BIT				NOT NULL DEFAULT 1,
+	CONSTRAINT [CK_LineDefinitionColumns__RequiredState_IsVisibleInTemplate] CHECK (
+			[IsVisibleInTemplate] = 1 OR [RequiredState] > 2
+		),
+	[SavedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionColumns__SavedById] REFERENCES [dbo].[Users] ([Id]),
+	[ValidFrom]				DATETIME2		GENERATED ALWAYS AS ROW START NOT NULL,
+	[ValidTo]				DATETIME2		GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
 	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[LineDefinitionColumnsHistory]));

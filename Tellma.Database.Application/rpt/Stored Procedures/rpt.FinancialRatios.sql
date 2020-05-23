@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[FinancialRatios]
+﻿CREATE PROCEDURE [rpt].[FinancialRatios] -- [rpt].[FinancialRatios] @fromDate = N'2019.01.01', @ToDate =  N'2019.01.31'
 	@FromDate DATE,
 	@ToDate DATE
 AS
@@ -17,7 +17,7 @@ AS
 	SELECT @SalesRevenues = ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	WHERE
 		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
@@ -26,7 +26,7 @@ AS
 	SELECT @ProfitFromOperations = @SalesRevenues + ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE
@@ -36,7 +36,7 @@ AS
 	SELECT @CapitalEmployed = ISNULL(SUM(AlgebraicValue), 0)
 	FROM map.DetailsEntries() E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	JOIN dbo.AccountTypes AC ON A.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.AccountTypes AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.Lines L ON E.[LineId] = L.[Id]
 	WHERE
 		L.PostingDate >= @FromDate AND L.PostingDate < @ToDate
@@ -46,7 +46,6 @@ AS
 		AC.[Node].IsDescendantOf(@TradeAndOtherNonCurrentPayables) = 1 OR
 		AC.[Node].IsDescendantOf(@NonCurrentProvisionsAbstract) = 1
 	);
-
 
 	-- Ratios
 	DECLARE @OperatingProfitMargin DECIMAL (19,4) =
@@ -58,3 +57,8 @@ AS
 	DECLARE @ReturnOnCapitalEmployed DECIMAL (19,4) =
 		-- @OperatingProfitMargin * @AssetsTurnover
 		IIF(@CapitalEmployed = 0, NULL, @ProfitFromOperations / @CapitalEmployed) * 100;
+
+	SELECT
+		@OperatingProfitMargin		AS OperatingProfitMargin,
+		@AssetsTurnover				AS AssetsTurnover,
+		@ReturnOnCapitalEmployed	AS ReturnOnCapitalEmployed;

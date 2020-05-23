@@ -38,6 +38,6 @@ SET NOCOUNT ON;
 		N'Error_TheTypeIsUsedInAccount0',
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account
 	FROM @IndexesToDelete FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[IfrsTypeId]
+	JOIN dbo.Accounts A ON FE.[Id] = A.[AccountTypeId]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

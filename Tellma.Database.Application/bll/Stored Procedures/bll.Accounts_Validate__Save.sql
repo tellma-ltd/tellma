@@ -48,8 +48,8 @@ SET NOCOUNT ON;
 		N'localize:Account_Resource'
 	FROM @Entities FE
 	JOIN dbo.[Resources] R ON FE.[ResourceId] = R.[Id]
-	LEFT JOIN dbo.[AccountDesignationResourceDefinitions] AD
-		ON FE.[DesignationId] = AD.[AccountDesignationId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
+	LEFT JOIN dbo.[AccountTypeResourceDefinitions] AD
+		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[ResourceDefinitionId]
 	WHERE (AD.[ResourceDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -59,8 +59,8 @@ SET NOCOUNT ON;
 		N'localize:Account_Contract'
 	FROM @Entities FE
 	JOIN dbo.[Documents] R ON FE.[ContractId] = R.[Id]
-	LEFT JOIN dbo.[AccountDesignationContractDefinitions] AD
-		ON FE.[DesignationId] = AD.[AccountDesignationId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
+	LEFT JOIN dbo.[AccountTypeContractDefinitions] AD
+		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
 	WHERE (AD.[ContractDefinitionId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -69,7 +69,7 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_EntryType'
 	FROM @Entities FE
-	JOIN dbo.[AccountTypes] AC ON FE.[IfrsTypeId] = AC.[Id]
+	JOIN dbo.[AccountTypes] AC ON FE.[AccountTypeId] = AC.[Id]
 	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
 	JOIN dbo.[EntryTypes] ETC ON FE.[EntryTypeId] = ETC.[Id]
 	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
@@ -118,7 +118,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
 	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
 	WHERE (FE.[CurrencyId] <> R.[CurrencyId])
-
+	-- Trying to change the account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -134,7 +134,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
 	WHERE L.[State] >= 0
-	AND FE.[DesignationId] <> A.[DesignationId]
+	AND FE.[AccountTypeId] <> A.[AccountTypeId]
 
 	-- Setting the center value (whether it was null or not)
 	-- is not allowed if the account has been used already in an line but with different center

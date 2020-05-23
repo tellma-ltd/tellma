@@ -22,13 +22,14 @@ BEGIN
 	);
 	DECLARE @ForeignExchangeGainLossAccount INT = (
 		SELECT MIN([Id]) FROM dbo.Accounts
-		WHERE [IfrsTypeId] = (
-			SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'GainLossOnForeignExchangeExtension'
+		WHERE [AccountTypeId] = (
+			SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'exchange-variance'
 		)
 	);
 
 	DECLARE @E INT;
 	SELECT @E = E FROM dbo.Currencies WHERE [Id] = dbo.fn_FunctionalCurrencyId();
+	
 	WITH 
 	ExchangeVarianceAccountTypes AS
 	(
@@ -46,7 +47,7 @@ BEGIN
 	CashAndCashEquivalentsAccounts AS
 	(
 		SELECT [Id] FROM dbo.Accounts
-		WHERE [IfrsTypeId] IN (
+		WHERE [AccountTypeId] IN (
 			SELECT [Id] FROM dbo.AccountTypes
 			WHERE [Node].IsDescendantOf(@CashAndCashEquivalentsNode) = 1
 		)
@@ -54,7 +55,7 @@ BEGIN
 	ExchangeVarianceAccounts AS 
 	(
 		SELECT [Id] FROM dbo.[Accounts]
-		WHERE [IfrsTypeId] IN (SELECT [Id] FROM ExchangeVarianceAccountTypes)
+		WHERE [AccountTypeId] IN (SELECT [Id] FROM ExchangeVarianceAccountTypes)
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY E.[AccountId]) AS [Index],
@@ -85,7 +86,7 @@ BEGIN
 		[EntryTypeId])
 	SELECT
 		[Index],
-		[Index] AS [LineIndex],
+		0 AS [LineIndex],
 		SIGN([NetgainLoss]) AS [Direction],
 		[AccountId], [ContractId], [ResourceId], 0,
 		ABS([NetgainLoss]) AS [Value],
@@ -95,7 +96,7 @@ BEGIN
 	UNION
 	SELECT
 		[Index],
-		[Index] AS [LineIndex],
+		0 AS [LineIndex],
 		[Direction],
 		[AccountId], NULL,			NULL,		NULL,
 		[Value],

@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET()
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @IsOriginalDocument BIT = (SELECT IsOriginalDocument FROM dbo.DocumentDefinitions WHERE [Id] = @DefinitionId);
-	DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
 	
@@ -89,7 +89,7 @@ SET NOCOUNT ON;
 	--JOIN dbo.[EntryTypes] ETE ON E.[EntryTypeId] = ETE.Id
 	--JOIN dbo.[EntryTypes] ETA ON AC.[EntryTypeParentId] = ETA.[Id]
 	--WHERE ETE.[Node].IsDescendantOf(ETA.[Node]) = 0
-	--AND L.[DefinitionId] <> @ManualLineDef;
+	--AND L.[DefinitionId] <> @ManualLineLD;
 
 	-- verify that all required fields are available
 	DECLARE @LineState SMALLINT, /* @D DocumentList, */ @L LineList, @E EntryList;

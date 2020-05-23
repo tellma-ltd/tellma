@@ -20,59 +20,89 @@ BEGIN
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,				1),
+	(0,0,	@ManualLineLD,				1),
 	(0,1,	N'CashPayment',				1),
-	(1,1,	@ManualLineDef,				1),
+	(1,1,	@ManualLineLD,				1),
 	(2,1,	N'PurchaseInvoice',			0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',		1),
 	(0,3,	N'LeaseOut',				1),
-	(1,3,	@ManualLineDef,				0);
+	(1,3,	@ManualLineLD,				0);
 END
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
-	(3,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
---	(2,	N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'قيد مرتب نقدي',		N'Cash Payroll Vouchers',		N'قيود مرتبات نقدية',	N'PRLV',	N'money-check-alt',		N'Cash',			20),
-	(4,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'قيد مصروفات إيجار',	N'Lease in Expense Vouchers',	N'قيود مصروفات إيجارات',N'ERV',	N'file-contract',		N'Purchasing',		20),
+	INSERT @DocumentDefinitions([Index],[DocumentType],
+		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
+	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
+	(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
+	(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
+	(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
+	(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
 
-	(11,N'cash-sale-vouchers',			N'Cash Sale Voucher',			N'قيد بيع نقدي',		N'Cash Sale Vouchers',			N'قيود مبيعات نقدية',	N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
-	(13,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
-	(31,N'revenue-vouchers',			N'Revenue Voucher',				N'قيد إيرادات',			N'Revenues Vouchers',N'قيود إيرادات تأجير',	N'RRRV',N'money-bill-wave',		N'Sales',			75)
+	(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
+	(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
+	(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
+	(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
 
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,				1),
+	(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
+
+INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
+	(0,0,	@ManualLineLD,							1),
 	-- cash-purchase-vouchers
-	(0,1,	@PaymentToSupplierDef,		1), -- includes invoice
-	(9,1,	@PaymentToOtherDef,			1), -- including partner, creditor
-	(1,1,	@GoodReceiptDef,			0),
-	(2,1,	@PurchaseExpenseDef,		0),
-	(8,1,	@CashTransferExchangeDef,	1),
-	(10,1,	@ManualLineDef,				0), -- might be able to remove it, if we handle all cases
-
+	(0,1,	@PaymentToSupplierCashPurchaseLD,		1),
+	(1,1,	@StockReceiptCashPurchaseLD,			1),
+	(2,1,	@ConsumableServiceReceiptCashPurchaseLD,1),
+	(8,1,	@CashTransferExchangeLD,				0),
+	(9,1,	@ManualLineLD,							0), -- this can be removed if a budget system is activated
 	-- cash-payment-vouchers
-
-
+	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
+	(1,2,	@PrepaymentToSupplierLD,				1),
+	(2,2,	@PaymentToSupplierAccrualLD,			1),
+	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
+	(9,2,	@ManualLineLD,							0),
+	-- cash-payroll-vouchers
+	(0,3,	@PaymentToEmployeeLD,					1),
+	(9,3,	@ManualLineLD,							0),
 	--- lease-in-vouchers, for subscription and rental recognition
-	--(0,4,	N'PPEDepreciation',			1), -- where depreciation is calculated by days
-	(1,4,	@LeaseInDef,				1),-- software subscription, domain registration, office rental...
-	(9,4,	@ManualLineDef,				0),
-
+	(0,4,	@LeaseInPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,4,	@LeaseInPostinvoicedLD,					0),-- hotels, 
+	(9,4,	@ManualLineLD,							0),
+	--- gs-receipt-vouchers, for prepaid and post invoiced
+	(0,5,	@StockReceiptCreditPurchaseLD,			0),	-- suppliers with credit line
+	(1,5,	@StockReceiptPrepaidLD,					0),--  , 
+	(2,5,	@StockReceiptPostInvoicedLD,			0),--  , 
+	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,1),-- fuel consumption,
+	(4,5,	@ConsumableServiceReceiptPrepaidLD,		0),-- tickets paid in cash, 
+	(5,5,	@ConsumableServiceReceiptPostInvoicedLD,0),-- utilities, 
+	(9,5,	@ManualLineLD,							0),
 	-- cash-sale-vouchers
-	(0,11,	@PaymentFromCustomerDef,	1),  -- includes invoice
-	--(2,11,	N'ServiceDeliveryNote',		1),
-	(3,11,	@ManualLineDef,				1),
+	(0,11,	@PaymentFromCustomerCashSaleLD,			1),
+	--(1,11,	@StockIssueCashSaleLD,					1),
+	--(2,11,	@ServiceIssueCashSaleLD,				1), -- TODO: Add it for completion
+	(9,11,	@ManualLineLD,							0), -- this
 	-- cash-receipt-vouchers
-	(0,13,	@PaymentFromCustomerDef,	1),  -- on credit, of goods and services
-	(3,13,	@PaymentFromOtherDef,		1),	 -- including partner, creditor
-	(4,13,	@ManualLineDef,				1),
-
-	-- leaseout-revenue-vouchers, for revenue recognition
-	(0,31,	@ServiceDeliveryDef,		1), -- for prepaid customers
-	(1,31,	@LeaseOutDef,				1), -- for postpaid customers 
-	(2,31,	@ManualLineDef,				0);
+	(0,12,	@PaymentFromCustomerCreditSaleLD,		0),	
+	(1,12,	@PrepaymentFromCustomerLD,				1),
+	(2,12,	@PaymentFromCustomerAccrualLD,			1),
+	(8,12,	@PaymentFromOtherLD,					1), -- including partner, creditor
+	(9,12,	@ManualLineLD,							0),
+	--- lease-out-vouchers, for subscription and rental recognition
+	(0,14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,14,	@LeaseOutPostinvoicedLD,				0),-- hotels, 
+	(9,14,	@ManualLineLD,							0),
+	--- gs-issue-vouchers, for prepaid and post invoiced
+	(0,15,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
+	(1,15,	@StockIssuePrepaidLD,					0),--  , 
+	(2,15,	@StockIssuePostInvoicedLD,				0),--  , 
+	--(3,15,	@ServiceIssueCreditSaleLD,				1),--
+	--(4,15,	@ServiceIssuePrepaidLD,					0),--
+	--(5,15,	@ServiceIssuePostInvoicedLD,			0),-- 
+	(9,15,	@ManualLineLD,							0),
+	--- lease-out-templates, for subscription and rental agreements
+	(0,-14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
+	;
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -83,13 +113,11 @@ BEGIN
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
 	(3,	N'withholding-tax-vouchers',N'Withholding Tax Voucher',	N'إشعار خصم ضريبة',N'Withholding Tax Vouchers',N'إشعارات خصم ضريبة',	N'WT')
 	--N'et-sales-witholding-tax-vouchers'
-
-
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,		1),
+	(0,0,	@ManualLineLD,		1),
 	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineDef,		1),
+	(1,1,	@ManualLineLD,		1),
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
@@ -100,44 +128,88 @@ BEGIN
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
-
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,		1),
+	(0,0,	@ManualLineLD,		1),
 	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineDef,		1),
+	(1,1,	@ManualLineLD,		1),
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);END
-ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+ELSE IF @DB IN (N'104', N'106') -- Walia Steel | SITCO, ETB, en/am, 
 BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],							[TitleSingular],				[TitleSingular2],		[TitlePlural],					[TitlePlural2],			[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',		N'Manual Journal Vouchers',		N'قيود تسوية يدوية',	N'JV',		N'book',				N'Financials',		0),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'قيد دفع نقدي',		N'Cash Payment Vouchers',		N'قيود دفع نقدية',		N'CPV',		N'money-check-alt',		N'Cash',			20),
-	(2,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'قيد قبض نقدي',		N'Cash Receipt Vouchers',		N'قيود قبض نقدية',		N'CRV',		N'file-invoice-dollar',	N'Cash',			50),
-	(3,	N'expense-recognition-vouchers',N'Expense Recognition Voucher',	N'قيد إثبات مصروفات',	N'Expense Recognition Vouchers',N'قيود إثبات مصروفات',	N'ERV',		N'file-contract',		N'Purchasing',		20),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'قيد إثبات إيرادات',	N'Revenue Recognition Vouchers',N'قيود إثبات إيرادات',	N'RRV',		N'money-bill-wave',		N'Sales',			75);
+	INSERT @DocumentDefinitions([Index],[DocumentType],
+		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
+	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
+	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
+	(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
+	(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
+	(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
+	(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
+
+	(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
+	(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
+	(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
+	(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
+
+	(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],					[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,						1),
+			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
+	(0,0,	@ManualLineLD,							1),
+	-- cash-purchase-vouchers
+	(0,1,	@PaymentToSupplierCashPurchaseLD,		1),
+	(1,1,	@StockReceiptCashPurchaseLD,			1),
+	(2,1,	@ConsumableServiceReceiptCashPurchaseLD,1),
+	(8,1,	@CashTransferExchangeLD,				0),
+	(9,1,	@ManualLineLD,							0), -- this can be removed if a budget system is activated
 	-- cash-payment-vouchers
-	(0,1,	N'CashPurchase',1), -- if goods were received, then fill a separate GRN/GRIV
-	(1,1,	N'PaymentToOther',				1), -- for non-suppliers
-	(2,1,	N'CashReceiptFromOther',			0), -- for exchange
-	(3,1,	@ManualLineDef,						0),
+	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
+	(1,2,	@PrepaymentToSupplierLD,				1),
+	(2,2,	@PaymentToSupplierAccrualLD,			1),
+	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
+	(9,2,	@ManualLineLD,							0),
+	-- cash-payroll-vouchers
+	(0,3,	@PaymentToEmployeeLD,					1),
+	(9,3,	@ManualLineLD,							0),
+	--- lease-in-vouchers, for subscription and rental recognition
+	(0,4,	@LeaseInPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,4,	@LeaseInPostinvoicedLD,					0),-- hotels, 
+	(9,4,	@ManualLineLD,							0),
+	--- gs-receipt-vouchers, for prepaid and post invoiced
+	(0,5,	@StockReceiptCreditPurchaseLD,			0),	-- suppliers with credit line
+	(1,5,	@StockReceiptPrepaidLD,					0),--  , 
+	(2,5,	@StockReceiptPostInvoicedLD,			0),--  , 
+	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,1),-- fuel consumption,
+	(4,5,	@ConsumableServiceReceiptPrepaidLD,		0),-- tickets paid in cash, 
+	(5,5,	@ConsumableServiceReceiptPostInvoicedLD,0),-- utilities, 
+	(9,5,	@ManualLineLD,							0),
+	-- cash-sale-vouchers
+	(0,11,	@PaymentFromCustomerCashSaleLD,			1),
+	--(1,11,	@StockIssueCashSaleLD,					1),
+	--(2,11,	@ServiceIssueCashSaleLD,				1),
+	(9,11,	@ManualLineLD,							0), -- this
 	-- cash-receipt-vouchers
-	(0,2,	N'CashReceiptFromCustomerAndSalesInvoiceVAT',1),  -- for tax visible customers
-	(1,2,	N'CashReceiptFromCustomer',			1), -- for tax invisible customers
-	(2,2,	N'CashReceiptFromOther',			0), -- for non-customers
-	-- revenue-recognition-vouchers, for revenue recognition of rentals
-	(0,3,	N'LeaseOutIssue',					1), -- for tax visible customers
---	(1,3,	N'LeaseOutIssueAndSalesInvoiceNoVAT',1), -- for tax invisible customers
-	(2,3,	@ManualLineDef,						0),
-	-- 	asset-depreciation-vouchers, for depreciation expenses recognition
-	(0,4,	N'DailyAssetDepreciation',			1), -- where depreciation is calculated by days
-	(1,4,	@ManualLineDef,						0);
-
+	(0,12,	@PaymentFromCustomerCreditSaleLD,		0),	
+	(1,12,	@PrepaymentFromCustomerLD,				1),
+	(2,12,	@PaymentFromCustomerAccrualLD,			1),
+	(8,12,	@PaymentFromOtherLD,					1), -- including partner, creditor
+	(9,12,	@ManualLineLD,							0),
+	--- lease-out-vouchers, for subscription and rental recognition
+	(0,14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,14,	@LeaseOutPostinvoicedLD,				0),-- hotels, 
+	(9,14,	@ManualLineLD,							0),
+	--- gs-issue-vouchers, for prepaid and post invoiced
+	--(0,15,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
+	--(1,15,	@StockIssuePrepaidLD,					0),--  , 
+	--(2,15,	@StockIssuePostInvoicedLD,				0),--  , 
+	--(3,15,	@ServiceIssueCreditSaleLD,				1),--
+	--(4,15,	@ServiceIssuePrepaidLD,					0),--
+	--(5,15,	@ServiceIssuePostInvoicedLD,			0),-- 
+	(9,15,	@ManualLineLD,							0),
+	--- lease-out-templates, for subscription and rental agreements
+	(0,-14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
+	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
+	;
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
@@ -146,16 +218,24 @@ BEGIN
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
-
-
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineDef,		1),
+	(0,0,	@ManualLineLD,		1),
 	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineDef,		1),
+	(1,1,	@ManualLineLD,		1),
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
+
+UPDATE DD
+SET DD.[TitleSingular2] = T.[Translated]
+FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
+
+UPDATE DD
+SET	DD.[TitlePlural2] = T.[Translated]
+FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
+
+SKIP_DD:
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
@@ -218,6 +298,8 @@ EXEC dal.DocumentDefinitions__Save
 	
 	--(N'production-events', NULL, NULL, N'PRD');
 
-DECLARE @manual_journal_vouchersDef INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'manual-journal-vouchers'); 
-
-DECLARE @cash_payment_vouchersDef INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-payment-vouchers');
+DECLARE @manual_journal_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'manual-journal-vouchers'); 
+DECLARE @cash_purchase_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-purchase-vouchers');
+DECLARE @cash_payment_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-payment-vouchers');
+DECLARE @lease_out_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'lease-out-vouchers');
+DECLARE @lease_out_templatesDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'lease-out-templates');

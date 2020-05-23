@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [rpt].[Ifrs_220000]
 --[220000] Statement of financial position, order of liquidity
+--EXEC [rpt].[Ifrs_220000] @toDate = '2019.03.31'
 	@toDate DATE
 AS
 BEGIN
@@ -10,56 +11,78 @@ BEGIN
 		[Value]				DECIMAL
 	);
 	DECLARE @IfrsDisclosureId NVARCHAR (255) = N'StatementOfFinancialPositionAbstract';
+	CREATE TABLE  #Mapping (
+		[AccountType]	NVARCHAR (255),
+		[Concept]		NVARCHAR (255)
+	);
+	-- The #Mapping table can be persisted and used to add the column IFRS210000_ConceptId to the fact table.
+	INSERT INTO #Mapping VALUES
+	(N'PropertyPlantAndEquipment',				N'PropertyPlantAndEquipment'),
+	(N'InvestmentProperty',						N'InvestmentProperty'),
+	(N'Goodwill',								N'Goodwill'),
+	(N'IntangibleAssetsOtherThanGoodwill',		N'IntangibleAssetsOtherThanGoodwill'),
+	(N'InvestmentAccountedForUsingEquityMethod',N'InvestmentAccountedForUsingEquityMethod'),
+	(N'InvestmentsInSubsidiariesJointVenturesAndAssociates',
+												N'InvestmentsInSubsidiariesJointVenturesAndAssociates'),
+	(N'NoncurrentBiologicalAssets',				N'BiologicalAssets'		 ),
+	(N'NoncurrentReceivables',					N'TradeAndOtherReceivables'),
+	(N'NoncurrentInventories',					N'InventoriesTotal' ),
+	(N'DeferredTaxAssets',						N'DeferredTaxAssets'),
+	(N'CurrentTaxAssetsNoncurrent',				N'CurrentTaxAssets'),
+	(N'OtherNoncurrentFinancialAssets',			N'OtherFinancialAssets'),
+	(N'OtherNoncurrentNonfinancialAssets',		N'OtherNonfinancialAssets'),
+	(N'NoncurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral',
+												N'NoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral'),
+
+	(N'Inventories',							N'InventoriesTotal'),
+	(N'TradeAndOtherCurrentReceivables',		N'TradeAndOtherReceivables'),
+	(N'CurrentTaxAssetsCurrent',				N'CurrentTaxAssets'),
+	(N'CurrentBiologicalAssets',				N'BiologicalAssets'),
+	(N'OtherCurrentFinancialAssets',			N'OtherFinancialAssets'),
+	(N'OtherCurrentNonfinancialAssets',			N'OtherNonfinancialAssets'),
+	(N'CashAndCashEquivalents',					N'CashAndCashEquivalents'),
+	(N'CurrentNoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral',
+												N'NoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral'),
+	(N'NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners',
+												N'NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners'),
+
+	(N'IssuedCapital',							N'IssuedCapital'),
+	(N'RetainedEarnings',						N'RetainedEarnings'),
+	(N'SharePremium',							N'SharePremium'),
+	(N'TreasuryShares',							N'TreasuryShares'),
+	(N'OtherEquityInterest',					N'OtherEquityInterest'),
+	(N'OtherReserves',							N'OtherReserves'),
+
+	(N'NoncurrentProvisionsForEmployeeBenefits',N'ProvisionsForEmployeeBenefits'),
+	(N'OtherLongtermProvisions',				N'OtherProvisions'),
+	(N'NoncurrentPayables',						N'TradeAndOtherPayables'),
+	(N'DeferredTaxLiabilities',					N'DeferredTaxLiabilities'),
+	(N'CurrentTaxLiabilitiesNoncurrent',		N'CurrentTaxLiabilities'),
+	(N'OtherNoncurrentFinancialLiabilities',	N'OtherFinancialLiabilities'),
+	(N'OtherNoncurrentNonfinancialLiabilities',	N'OtherNonfinancialLiabilities'),
+
+	(N'CurrentProvisionsForEmployeeBenefits',	N'ProvisionsForEmployeeBenefits'),
+	(N'OtherShorttermProvisions',				N'OtherProvisions'),
+	(N'TradeAndOtherCurrentPayables',			N'TradeAndOtherPayables'),
+	(N'CurrentTaxLiabilitiesCurrent',			N'CurrentTaxLiabilities'),
+	(N'OtherCurrentFinancialLiabilities',		N'OtherFinancialLiabilities'),
+	(N'OtherCurrentNonfinancialLiabilities',	N'OtherCurrentNonfinancialLiabilities'),
+	('LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale',
+												 N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale')
 
 	INSERT INTO #IfrsDisclosureDetails (
 			[Concept],
 			[Value]
 	)
-	SELECT [AT].[Code] , SUM(E.[AlgebraicValue]) AS [Value]
+	SELECT M.[Concept],	SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
+	JOIN #Mapping M --ON [AT].[Code] = M.[AccountType]
+	ON [AT].[Code] COLLATE SQL_Latin1_General_CP1_CI_AS = M.[AccountType] COLLATE SQL_Latin1_General_CP1_CI_AS
 	WHERE L.[PostingDate] < DATEADD(DAY, 1, @toDate)
-	-- TODO: consider subtypes of the ones below as well
-	-- The #Mapping table can be persisted and used to add the column IFRS220000_ConceptId to the fact table.
-	AND [AT].[Code] IN (
-		N'PropertyPlantAndEquipment',
-		N'InvestmentProperty',
-		N'Goodwill',
-		N'IntangibleAssetsOtherThanGoodwill',
-		N'OtherFinancialAssets',
-		N'OtherNonfinancialAssets',
-		N'InsuranceContractsIssuedThatAreAssets',
-		N'ReinsuranceContractsHeldThatAreAssets',
-		N'InvestmentAccountedForUsingEquityMethod',
-		N'InvestmentsInSubsidiariesJointVenturesAndAssociates',
-		N'BiologicalAssets',
-		N'NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners',
-		N'InventoriesTotal',
-		N'CurrentTaxAssets',
-		N'DeferredTaxAssets',
-		N'TradeAndOtherReceivables',
-		N'CashAndCashEquivalents',	
-		N'NoncashAssetsPledgedAsCollateralForWhichTransfereeHasRightByContractOrCustomToSellOrRepledgeCollateral',
-		N'IssuedCapital',		
-		N'RetainedEarnings',
-		N'SharePremium',
-		N'TreasuryShares',
-		N'OtherEquityInterest',
-		N'OtherReserves',
-		N'TradeAndOtherPayables',
-		N'ProvisionsForEmployeeBenefits',
-		N'OtherProvisions',
-		N'OtherFinancialLiabilities',
-		N'OtherNonfinancialLiabilities',
-		N'InsuranceContractsIssuedThatAreLiabilities',
-		N'ReinsuranceContractsHeldThatAreLiabilities',
-		N'CurrentTaxLiabilities',
-		N'DeferredTaxLiabilities',
-		N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale'
-	)
-	GROUP BY [AT].[Code] 
+	GROUP BY M.[Concept]
 	
 	-- TODO: Calculate NoncontrollingInterests by adding weighted average of Equity for tenants
 /*
@@ -72,11 +95,12 @@ BEGIN
 	WHERE [IsControllingInterest] = 0
 	AND [Concept] = N'Equity'
 */
+	-- Table #Rollups can be persisted as IFRS220000_Concepts, with ParentId to allow rollup of values in the tree
 	CREATE TABLE #Rollups (
 		[ParentConcept]	NVARCHAR (255),
 		[ChildConcept]	NVARCHAR (255)
-
 	)
+
 	INSERT INTO #Rollups
 	([ParentConcept],	[ChildConcept]) VALUES
 	(N'Assets',			N'PropertyPlantAndEquipment'),
@@ -115,7 +139,7 @@ BEGIN
 	(N'Liability',		N'CurrentTaxLiabilities'),
 	(N'Liability',		N'DeferredTaxLiabilities'),
 	(N'Liability',		N'LiabilitiesIncludedInDisposalGroupsClassifiedAsHeldForSale');
-	
+
 	INSERT INTO #IfrsDisclosureDetails (
 			[Concept],
 			[Value]

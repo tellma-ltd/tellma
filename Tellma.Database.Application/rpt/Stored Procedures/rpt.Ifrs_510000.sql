@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[Ifrs_510000]
+﻿CREATE PROCEDURE [rpt].[Ifrs_510000] -- EXEC [rpt].[Ifrs_510000] @fromDate='2019.01.1', @toDate = '2019.03.31'
 --[510000] Statement of cash flows, direct method
 	@fromDate DATE, 
 	@toDate DATE
@@ -20,7 +20,7 @@ BEGIN
 	SELECT E.[EntryTypeId] AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE (@fromDate <= L.[PostingDate]) AND (L.[PostingDate] < DATEADD(DAY, 1, @toDate))
 	

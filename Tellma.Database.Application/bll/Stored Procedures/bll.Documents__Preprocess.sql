@@ -24,7 +24,7 @@ BEGIN
 	DECLARE @PreprocessedDocuments [dbo].[DocumentList], @PreprocessedLines [dbo].[LineList], @PreprocessedEntries [dbo].[EntryList];
 	DECLARE @D [dbo].[DocumentList], @L [dbo].[LineList], @E [dbo].[EntryList];
 	DECLARE @Today DATE = CAST(GETDATE() AS DATE);
-	DECLARE @ManualLineDef INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
+	DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 
 	DECLARE @PreScript NVARCHAR(MAX) =N'
 	SET NOCOUNT ON
@@ -42,7 +42,37 @@ BEGIN
 	INSERT INTO @D SELECT * FROM @Documents;
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
-BEGIN --  Overwrite input with DB data that is read only
+BEGIN
+--	Overwrite input with data specified in the template (or clause)
+	UPDATE E
+	SET
+		E.[Direction]		= COALESCE(ES.[Direction], E.[Direction]),
+		E.[AccountId]		= COALESCE(ES.[AccountId], E.[AccountId]),
+		E.[CurrencyId]		= COALESCE(ES.[CurrencyId], E.[CurrencyId]),
+		E.[ContractId]		= COALESCE(ES.[ContractId], E.[ContractId]),
+		E.[ResourceId]		= COALESCE(ES.[ResourceId], E.[ResourceId]),
+		E.[CenterId]		= COALESCE(ES.[CenterId], E.[CenterId]),
+		E.[EntryTypeId]		= COALESCE(ES.[EntryTypeId], E.[EntryTypeId]),
+		E.[DueDate]			= COALESCE(ES.[DueDate], E.[DueDate]),
+		E.[MonetaryValue]	= COALESCE(L.[Multiplier] * ES.[MonetaryValue], E.[MonetaryValue]),
+		E.[Quantity]		= COALESCE(L.[Multiplier] * ES.[Quantity], E.[Quantity]),
+		E.[UnitId]			= COALESCE(ES.[UnitId], E.[UnitId]),
+--		E.[Value]			= COALESCE(L.[Multiplier] * ES.[Value], E.[Value]),
+		E.[Time1]			= COALESCE(ES.[Time1], E.[Time1]),
+		E.[Time2]			= COALESCE(ES.[Time2], E.[Time2]),
+		E.[ExternalReference]= COALESCE(ES.[ExternalReference], E.[ExternalReference]),
+		E.[AdditionalReference]= COALESCE(ES.[AdditionalReference], E.[AdditionalReference]),
+		E.[NotedContractId]	= COALESCE(ES.[NotedContractId], E.[NotedContractId]),
+		E.[NotedAgentName]	= COALESCE(ES.[NotedAgentName], E.[NotedAgentName]),
+		E.[NotedAmount]		= COALESCE(ES.[NotedAmount], E.[NotedAmount]),
+		E.[NotedDate]		= COALESCE(ES.[NotedDate], E.[NotedDate])
+	FROM @E E
+	JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Lines LS ON L.[TemplateLineId] = LS.[Id]
+	JOIN dbo.Entries ES ON ES.[LineId] = LS.[Id]
+	WHERE E.[Index] = ES.[Index]
+ 
+ --  Overwrite input with DB data that is read only
 	-- TODO : Overwrite readonly Memo
 	UPDATE E
 	SET E.CurrencyId = BE.CurrencyId
@@ -236,7 +266,7 @@ END
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-	WHERE L.[DefinitionId] <> @ManualLineDef;
+	WHERE L.[DefinitionId] <> @ManualLineLD;
 	-- Copy information from Account to entries
 	UPDATE E 
 	SET
@@ -300,7 +330,7 @@ END
 		SET PE.CenterId = @InvestmentCenterId
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[IfrsTypeId]
+		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
 		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0;
 		-- Smart Lines
@@ -312,7 +342,7 @@ END
 		--JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
 		--WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
 		--AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
-		--AND L.DefinitionId <> @ManualLineDef;
+		--AND L.DefinitionId <> @ManualLineLD;
 	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
@@ -325,42 +355,47 @@ END
 	WHERE
 		ER.ValidAsOf <= ISNULL(L.[PostingDate], @Today)
 	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
-	AND L.[DefinitionId] <> @ManualLineDef;
+	AND L.[DefinitionId] <> @ManualLineLD;
 
+	--WITH ConformantAccounts AS (
+	--	SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
+	--	FROM @PreprocessedEntries E
+	--	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	--	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
+	--	JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
+	--	JOIN dbo.AccountMappings AM ON (AD.[Id] = AM.[DesignationId])
+	--	WHERE L.DefinitionId <> @ManualLineLD
+	--	AND	(AM.[ContractId] IS NULL OR E.[ContractId] = AM.[ContractId])
+	--	AND	(AM.[ResourceId] IS NULL OR E.[ResourceId] = AM.[ResourceId])
+	--	AND	(AM.[CenterId] IS NULL OR E.[CenterId] = AM.[CenterId])
+	--	AND (AM.[CurrencyId] IS NULL OR AM.[CurrencyId] = E.[CurrencyId])
+	--	-- TODO: in Account mappings, copy Account properties to mapping
+	--)
+	--UPDATE E
+	--SET E.AccountId = CA.AccountId
+	--FROM @PreprocessedEntries E
+	--JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex];
+
+	-- TODO: LDE has Account Type Parent Is now, so fix it
 	WITH ConformantAccounts AS (
-		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
+		SELECT A.Id AS AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
-		JOIN dbo.AccountMappings AM ON
-		-- 0: Direct Map
-			(AD.[MapFunction] = 0 AND AD.[Id] = AM.[AccountDesignationId])
-		-- 1: By Contract
-		OR	(AD.[MapFunction] = 1 AND AD.[Id] = AM.[AccountDesignationId] AND E.ContractId = AM.ContractId)
-		-- 2: By Resource
-		OR	(AD.[MapFunction] = 2 AND AD.[Id] = AM.[AccountDesignationId] AND E.[ResourceId] = AM.[ResourceId])
-		-- 3: By Center
-		OR	(AD.[MapFunction] = 3 AND AD.[Id] = AM.[AccountDesignationId] AND E.[CenterId] = AM.[CenterId])
-		WHERE L.DefinitionId <> @ManualLineDef
-		UNION
-		SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
-		FROM @PreprocessedEntries E
-		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
-		JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
-		JOIN dbo.AccountMappings AM ON
-		-- 21: By Resource Lookup1
-			(AD.[MapFunction] = 21 AND AD.[Id] = AM.[AccountDesignationId] AND R.Lookup1Id = AM.ResourceLookup1Id)
-		-- 22: By Resource Lookup1 and Contract Id
-		OR	(AD.[MapFunction] = 22 AND AD.[Id] = AM.[AccountDesignationId] AND R.Lookup1Id = AM.ResourceLookup1Id AND AM.ContractId = E.ContractId)
-		WHERE L.DefinitionId <> @ManualLineDef
+		JOIN dbo.[AccountTypes] AD ON AD.Id = LDE.[AccountTypeParentId]
+		JOIN dbo.Accounts A ON (AD.[Id] = A.[AccountTypeId])
+		WHERE L.DefinitionId <> @ManualLineLD
+		AND	(A.[ContractId] IS NULL OR E.[ContractId] = A.[ContractId])
+		AND	(A.[ResourceId] IS NULL OR E.[ResourceId] = A.[ResourceId])
+		AND	(A.[CenterId] IS NULL OR E.[CenterId] = A.[CenterId])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = E.[CurrencyId])
 	)
 	UPDATE E
 	SET E.AccountId = CA.AccountId
 	FROM @PreprocessedEntries E
 	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex]
+
+
 	-- Return the populated entries.
 	-- (Later we may need to return the populated lines and documents as well)
 	SELECT @PreprocessedEntriesJson = 
