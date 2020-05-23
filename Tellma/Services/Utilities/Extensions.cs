@@ -144,15 +144,6 @@ namespace Tellma.Services.Utilities
         }
 
         /// <summary>
-        /// Returns true if the property name is "Parent" and there is another
-        /// property on the same type called "Node" with a type of HierarchyId
-        /// </summary>
-        public static bool IsParent(this PropertyInfo @this)
-        {
-            return @this.Name == "Parent" && @this.DeclaringType.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
-        }
-
-        /// <summary>
         /// Determines whether this type is <see cref="DateTime"/> or a 
         /// <see cref="DateTimeOffset"/> or a nullable version thereof
         /// </summary>
@@ -269,14 +260,14 @@ namespace Tellma.Services.Utilities
         /// nullable types also it cannot handle DateTimeOffset
         /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
         /// </summary>
-        public static object ChangeType(this object obj, Type conversion, TimeZoneInfo sourceTimeZone = null)
+        public static object ChangeType(this object obj, Type targetType, TimeZoneInfo sourceTimeZone = null)
         {
             if (obj is null)
             {
                 return null;
             }
 
-            var t = conversion;
+            var t = targetType;
             if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
                 t = Nullable.GetUnderlyingType(t);

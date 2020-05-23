@@ -68,7 +68,7 @@ export class ImportComponent implements OnInit, OnDestroy {
     );
   }
 
-  onImport(input: any) {
+  onImport(input: HTMLInputElement) {
     const files = input.files;
 
     if (files.length === 0) {

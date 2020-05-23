@@ -13,9 +13,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics;
-using Microsoft.Extensions.Primitives;
-using IdentityModel;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Tellma
 {

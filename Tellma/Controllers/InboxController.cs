@@ -28,6 +28,7 @@ namespace Tellma.Controllers
         public InboxController(InboxService service, ILogger<InboxController> logger) : base(logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpPut("check")]

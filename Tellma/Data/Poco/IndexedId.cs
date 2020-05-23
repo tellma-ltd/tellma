@@ -1,13 +1,13 @@
-﻿namespace Tellma.Data
+﻿using Tellma.Entities;
+
+namespace Tellma.Data
 {
     /// <summary>
     /// Maps an entity Id to an index
     /// </summary>
     /// <typeparam name="TKey">The type of the Id</typeparam>
-    public class IndexedId<TKey>
+    public class IndexedId<TKey> : EntityWithKey<TKey>
     {
-        public TKey Id { get; set; }
-
         public int Index { get; set; }
     }
 

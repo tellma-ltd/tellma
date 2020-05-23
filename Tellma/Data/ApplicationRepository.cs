@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
+using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Data
 {
@@ -29,6 +30,7 @@ namespace Tellma.Data
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
 
         private SqlConnection _conn;
         private UserInfo _userInfo;
@@ -39,12 +41,14 @@ namespace Tellma.Data
         #region Lifecycle
 
         public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor,
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer,
+            ITenantIdAccessor tenantIdAccessor)
         {
             _shardResolver = shardResolver;
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
+            _tenantIdAccessor = tenantIdAccessor;
         }
 
         public void Dispose()
@@ -66,14 +70,17 @@ namespace Tellma.Data
         /// this method makes it possible to conncet to a custom connection string instead, 
         /// this is useful when connecting to multiple tenants at the same time to do aggregate reporting for example
         /// </summary>
-        public async Task InitConnectionAsync(string connectionString, bool setLastActive, CancellationToken cancellation)
+        public async Task InitConnectionAsync(int databaseId, bool setLastActive, CancellationToken cancellation)
         {
             if (_conn != null)
             {
                 throw new InvalidOperationException("The connection is already initialized");
             }
 
+            string connectionString = await _shardResolver.GetConnectionString(databaseId, cancellation);
             _conn = new SqlConnection(connectionString);
+
+            // Open the SQL connection
             await _conn.OpenAsync();
 
             // Always call OnConnect SP as soon as you create the connection
@@ -93,8 +100,8 @@ namespace Tellma.Data
         {
             if (_conn == null)
             {
-                string connString = await _shardResolver.GetConnectionString(null, cancellation);
-                await InitConnectionAsync(connString, setLastActive: true, cancellation);
+                int databaseId = _tenantIdAccessor.GetTenantId();
+                await InitConnectionAsync(databaseId, setLastActive: true, cancellation);
             }
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
@@ -395,7 +402,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync(cancellation);
             using (var cmd = conn.CreateCommand())
             {
-                DataTable idsTable = RepositoryUtilities.DataTable(userIds.Select(id => new { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(userIds.Select(id => new IdListItem { Id = id }));
                 var idsTvp = new SqlParameter("@UserIds", idsTable)
                 {
                     TypeName = $"[dbo].[IdList]",
@@ -1109,7 +1116,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1132,7 +1139,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -1155,7 +1162,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1290,7 +1297,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1319,7 +1326,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -1343,7 +1350,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1494,7 +1501,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -1520,7 +1527,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IdList]",
@@ -1557,7 +1564,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1742,7 +1749,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1771,7 +1778,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -1794,7 +1801,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -1821,7 +1828,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new { Id = id }));
+            DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new StringListItem { Id = id }));
             var namesTvp = new SqlParameter("@BlobNames", namesTable)
             {
                 TypeName = $"[dbo].[StringList]",
@@ -2002,7 +2009,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2025,7 +2032,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2049,7 +2056,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2126,7 +2133,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[StringList]",
@@ -2149,7 +2156,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedStringList]",
@@ -2172,7 +2179,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[StringList]",
@@ -2335,7 +2342,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2358,7 +2365,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2382,7 +2389,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2487,7 +2494,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2510,7 +2517,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2533,7 +2540,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2562,7 +2569,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2585,7 +2592,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2690,7 +2697,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2713,7 +2720,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2736,7 +2743,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2765,7 +2772,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2788,7 +2795,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2931,7 +2938,7 @@ namespace Tellma.Data
             // Parameters
             var isDeprecatedParam = new SqlParameter("@IsDeprecated", isDeprecated);
 
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -2954,7 +2961,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -2977,7 +2984,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3082,7 +3089,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3105,7 +3112,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3128,7 +3135,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3157,7 +3164,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3180,7 +3187,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3285,7 +3292,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3308,7 +3315,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3331,7 +3338,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3360,7 +3367,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3383,7 +3390,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3642,7 +3649,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3672,7 +3679,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IdList]",
@@ -3710,7 +3717,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3736,7 +3743,7 @@ namespace Tellma.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
                     TypeName = $"[dbo].[IdList]",
@@ -3774,7 +3781,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3802,7 +3809,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3833,7 +3840,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3875,7 +3882,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3901,7 +3908,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3928,7 +3935,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3951,7 +3958,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -3976,7 +3983,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -3999,7 +4006,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -4026,7 +4033,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -4049,7 +4056,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -4074,7 +4081,7 @@ namespace Tellma.Data
             using var cmd = conn.CreateCommand();
 
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -4247,7 +4254,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedStringList]",
@@ -4270,7 +4277,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[StringList]",
@@ -4376,7 +4383,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -4399,7 +4406,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",
@@ -4561,7 +4568,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IndexedIdList]",
@@ -4584,7 +4591,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"[dbo].[IdList]",

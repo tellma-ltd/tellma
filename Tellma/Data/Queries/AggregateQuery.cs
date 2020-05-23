@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -122,6 +123,8 @@ namespace Tellma.Data.Queries
             var userToday = args.UserToday;
             var localizer = args.Localizer;
 
+            var rootDesc = TypeDescriptor.Get<T>();
+
             // ------------------------ Validation Step
             // Create the expressions. As for filter: turn all the filters into expressions and AND them together
             AggregateSelectExpression selectExp = _select;
@@ -136,7 +139,7 @@ namespace Tellma.Data.Queries
             }
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, filterExp, localizer);
+            ValidatePathsAndProperties(selectExp, filterExp, rootDesc, localizer);
 
             //// ------------------------ Entityable analysis
             //// Grab all paths that terminate with "Id"
@@ -207,7 +210,7 @@ namespace Tellma.Data.Queries
             // Prepare the internal query (this one should not have any select paths containing Parent property)
             AggregateQueryInternal query = new AggregateQueryInternal
             {
-                ResultType = typeof(T),
+                ResultType = rootDesc,
                 Select = selectExp,
                 Filter = filterExp,
                 Top = _top
@@ -240,7 +243,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Protects against SQL injection attacks
         /// </summary>
-        private void ValidatePathsAndProperties(AggregateSelectExpression selectExp, FilterExpression filterExp, IStringLocalizer localizer)
+        private void ValidatePathsAndProperties(AggregateSelectExpression selectExp, FilterExpression filterExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
         {
             // This is important to avoid SQL injection attacks
 
@@ -255,7 +258,7 @@ namespace Tellma.Data.Queries
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(typeof(T), localizer, "select",
+                selectPathValidator.Validate(rootDesc, localizer, "select",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -272,7 +275,7 @@ namespace Tellma.Data.Queries
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(typeof(T), localizer, "filter",
+                filterPathTree.Validate(rootDesc, localizer, "filter",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);

@@ -1,9 +1,7 @@
-﻿using Tellma.Controllers.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection;
 using System.Text;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -14,23 +12,23 @@ namespace Tellma.Data.Queries
     /// IMPORTANT: This class is used internally in <see cref="QueryInternal"/> and <see cref="AggregateQueryInternal"/>
     /// and is not to be used directly anywhere else in the solution
     /// </summary>
-    public class JoinTree : Dictionary<string, JoinTree>
+    public class JoinTrie : Dictionary<string, JoinTrie>
     {
         /// <summary>
-        /// Creates a new <see cref="JoinTree"/>
+        /// Creates a new <see cref="JoinTrie"/>
         /// </summary>
-        /// <param name="type">The root <see cref="Entity"/> type of this join tree</param>
+        /// <param name="entityDescriptor">The <see cref="EntityDescriptor"/> of the root type of this join tree</param>
         /// <param name="foreignKeyName">Optionally: the foreign key pointing to the parent join tree</param>
-        public JoinTree(Type type, string foreignKeyName = null)
+        public JoinTrie(TypeDescriptor entityDescriptor, string foreignKeyName = null)
         {
-            Type = type ?? throw new ArgumentNullException(nameof(type));
+            EntityDescriptor = entityDescriptor ?? throw new ArgumentNullException(nameof(entityDescriptor));
             ForeignKeyName = foreignKeyName;
         }
 
         /// <summary>
         /// The DTO type of the current node
         /// </summary>
-        public Type Type { get; private set; }
+        public TypeDescriptor EntityDescriptor { get; private set; }
 
         /// <summary>
         /// The foreign key on the *parent* DTO
@@ -45,11 +43,11 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Gets the child tree reachable through the provided path
         /// </summary>
-        public JoinTree this[ArraySegment<string> path]
+        public JoinTrie this[ArraySegment<string> path]
         {
             get
             {
-                JoinTree current = this;
+                JoinTrie current = this;
                 for (int i = 0; i < path.Count; i++)
                 {
                     var step = path[i];
@@ -68,7 +66,7 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Transforms the <see cref="JoinTree"/> into an SQL JOIN clause. For example: <c>FROM [dbo].[Table1] AS [P] LEFT JOIN [dbo].[Table2] AS [P1] ON [P].[Table2Id] = [P2].[Id]</c>
+        /// Transforms the <see cref="JoinTrie"/> into an SQL JOIN clause. For example: <c>FROM [dbo].[Table1] AS [P] LEFT JOIN [dbo].[Table2] AS [P1] ON [P].[Table2Id] = [P2].[Id]</c>
         /// </summary>
         public string GetSql(Func<Type, string> sources, string fromSql, string parentSymbol = null)
         {
@@ -88,12 +86,12 @@ namespace Tellma.Data.Queries
                     InitializeSymbols();
                 }
 
-                string source =  string.IsNullOrWhiteSpace(fromSql) ? sources(Type) : fromSql;
+                string source =  string.IsNullOrWhiteSpace(fromSql) ? sources(EntityDescriptor.Type) : fromSql;
                 builder.Append($"FROM {fromSql ?? source} As [{Symbol}]");
             }
             else
             {
-                string source = sources(Type);
+                string source = sources(EntityDescriptor.Type);
                 builder.AppendLine();
                 builder.Append($"LEFT JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
             }
@@ -127,13 +125,13 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Creates a <see cref="JoinTree"/> from a list of paths
+        /// Creates a <see cref="JoinTrie"/> from a list of paths
         /// </summary>
-        public static JoinTree Make(Type type, IEnumerable<string[]> paths)
+        public static JoinTrie Make(TypeDescriptor rootDesc, IEnumerable<string[]> paths)
         {
-            if (type == null)
+            if (rootDesc == null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException(nameof(rootDesc));
             }
 
             if (paths == null)
@@ -141,34 +139,34 @@ namespace Tellma.Data.Queries
                 throw new ArgumentNullException(nameof(paths));
             }
 
-            var result = new JoinTree(type, foreignKeyName: null);
+            var result = new JoinTrie(rootDesc, foreignKeyName: null);
             foreach (var path in paths)
             {
-                var currentType = type;
+                var currentDesc = rootDesc;
                 var currentTree = result;
                 foreach (var step in path)
                 {
-                    var prop = currentType.GetProperty(step);
-                    if (prop == null)
+                    var navProp = currentDesc.NavigationProperty(step);
+                    if (navProp == null)
                     {
                         // Programmer mistake
-                        throw new InvalidOperationException($"Property '{step}' does not exist on type {currentType.Name}");
+                        throw new InvalidOperationException($"Navigation property '{step}' does not exist on type {currentDesc.Name}");
                     }
 
                     if (!currentTree.ContainsKey(step))
                     {
-                        string foreignKeyName = prop.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
+                        string foreignKeyName = navProp.ForeignKey.Name;
                         if (string.IsNullOrWhiteSpace(foreignKeyName))
                         {
                             // Programmer mistake
-                            throw new InvalidOperationException($"Navigation property '{step}' on type {currentType.Name} is not adorned with the name of the foreign key property");
+                            throw new InvalidOperationException($"Navigation property '{step}' on type {currentDesc.Name} is not adorned with the name of the foreign key property");
                         }
 
-                        currentTree[step] = new JoinTree(prop.PropertyType, foreignKeyName: foreignKeyName);
+                        currentTree[step] = new JoinTrie(navProp.TypeDescriptor, foreignKeyName: foreignKeyName);
                     }
 
-                    currentType = prop.PropertyType;
                     currentTree = currentTree[step];
+                    currentDesc = currentTree.EntityDescriptor;
                 }
             }
 

@@ -18,7 +18,6 @@ namespace Tellma.Controllers
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase
     {
-        private readonly ApplicationRepository _repo;
         private readonly PermissionsService _service;
         private readonly ILogger _logger;
 

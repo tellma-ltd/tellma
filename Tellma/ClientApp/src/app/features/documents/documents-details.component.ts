@@ -35,6 +35,7 @@ import { EntitiesResponse } from '~/app/data/dto/entities-response';
 import { getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { DocumentStateChange } from '~/app/data/entities/document-state-change';
 import { formatDate } from '@angular/common';
+import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
@@ -3096,21 +3097,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.printingTemplates.length > 0;
   }
 
+  private _printingTemplatesSettings: SettingsForClient;
   private _printingTemplatesDefinitions: DefinitionsForClient;
   private _printingTemplatesResult: PrintingTemplate[];
 
   public get printingTemplates(): PrintingTemplate[] {
     const ws = this.ws;
-    if (this._printingTemplatesDefinitions !== ws.definitions) {
+    if (this._printingTemplatesDefinitions !== ws.definitions ||
+      this._printingTemplatesSettings !== ws.settings) {
       this._printingTemplatesDefinitions = ws.definitions;
+      this._printingTemplatesSettings = ws.settings;
       const result: PrintingTemplate[] = [];
 
       const settings = ws.settings;
       const def = this.definition;
       for (const template of def.MarkupTemplates.filter(e => e.Usage === 'QueryById')) {
         const langCount = (template.SupportsPrimaryLanguage ? 1 : 0)
-          + (template.SupportsSecondaryLanguage ? 1 : 0)
-          + (template.SupportsTernaryLanguage ? 1 : 0);
+          + (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId ? 1 : 0)
+          + (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId ? 1 : 0);
 
         if (template.SupportsPrimaryLanguage) {
           const postfix = langCount > 1 ? ` (${settings.PrimaryLanguageSymbol})` : ``;
@@ -3121,7 +3125,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           });
         }
 
-        if (template.SupportsSecondaryLanguage) {
+        if (template.SupportsSecondaryLanguage && !!settings.SecondaryLanguageId) {
           const postfix = langCount > 1 ? ` (${settings.SecondaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
@@ -3130,7 +3134,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           });
         }
 
-        if (template.SupportsTernaryLanguage) {
+        if (template.SupportsTernaryLanguage && !!settings.TernaryLanguageId) {
           const postfix = langCount > 1 ? ` (${settings.TernaryLanguageSymbol})` : ``;
           result.push({
             name: () => `${ws.getMultilingualValueImmediate(template, 'Name')}${postfix}`,
@@ -3146,19 +3150,39 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._printingTemplatesResult;
   }
 
+  private printingSubscription: Subscription;
+
   public onPrint(doc: Document, template: PrintingTemplate): void {
     if (!doc || !doc.Id || !template) {
       return;
     }
 
-    this.documentsApi.printById(doc.Id, template.templateId, { culture: template.culture })
+    // Cancel any existing printing query
+    if (!!this.printingSubscription) {
+      this.printingSubscription.unsubscribe();
+    }
+
+    // New printing query
+    this.printingSubscription = this.documentsApi
+      .printById(doc.Id, template.templateId, { culture: template.culture })
       .pipe(
-        tap(blob => printBlob(blob)),
+        tap(blob => {
+          this.printingSubscription = null;
+          printBlob(blob);
+        }),
         catchError(friendlyError => {
+          this.printingSubscription = null;
           this.details.displayModalError(friendlyError.error);
           return of();
+        }),
+        finalize(() => {
+          this.printingSubscription = null;
         })
       ).subscribe();
+  }
+
+  public get isPrinting(): boolean {
+    return !!this.printingSubscription;
   }
 }
 

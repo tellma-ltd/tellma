@@ -3,13 +3,12 @@ using Tellma.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -107,6 +106,16 @@ namespace Tellma.Data.Queries
         {
             return Expand(ExpandExpression.Parse(expand));
         }
+
+        ///// <summary>
+        ///// Filters the query according to the supplied definition Id. Permits only the visible columns according to the definition
+        ///// </summary>
+        //public Query<T> DefinitionId(string definitionId)
+        //{
+        //    var clone = Clone();
+        //    clone._definitionId = definitionId;
+        //    return clone.Filter($"DefinitionId eq {definitionId}");
+        //}
 
         /// <summary>
         /// Applies a <see cref="FilterExpression"/> to filter the result
@@ -272,18 +281,19 @@ namespace Tellma.Data.Queries
             var userToday = args.UserToday;
             var localizer = args.Localizer;
 
+            var resultDesc = TypeDescriptor.Get<T>();
+
             SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
             FilterExpression filterExp = _filterConditions?.Aggregate(
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, null, filterExp, null, localizer);
+            ValidatePathsAndProperties(selectExp, null, filterExp, null, resultDesc, localizer);
 
             // Prepare the query
             var flatQuery = new QueryInternal
             {
-                ResultType = typeof(T),
-                KeyType = typeof(T).GetProperty("Id")?.PropertyType, // NULL if there is no key
+                ResultDescriptor = resultDesc,
                 Select = selectExp,
                 Filter = filterExp,
                 Ids = _ids,
@@ -387,8 +397,10 @@ namespace Tellma.Data.Queries
             var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
-            _orderby ??= (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
-                throw new InvalidOperationException($"Query<{typeof(T).Name}> was executed without an orderby clause"));
+            var resultDesc = TypeDescriptor.Get<T>();
+
+            _orderby ??= (IsEntityWithKey() ? OrderByExpression.Parse("Id desc") :
+                throw new InvalidOperationException($"Query<{resultDesc.Type.Name}> was executed without an orderby clause"));
 
             // Prepare all the query parameters
             SelectExpression selectExp = _select;
@@ -398,7 +410,7 @@ namespace Tellma.Data.Queries
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, localizer);
+            ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, resultDesc, localizer);
 
             // ------------------------ Step #1
 
@@ -407,44 +419,47 @@ namespace Tellma.Data.Queries
             var segments = new Dictionary<ArraySegment<string>, QueryInternal>(new PathEqualityComparer());
 
             // Helper method for creating a an internal query, will be used later in both the select and the expand loops
-            QueryInternal MakeFlatQuery(ArraySegment<string> previousFullPath, ArraySegment<string> subPath, Type type)
+            QueryInternal MakeFlatQuery(ArraySegment<string> previousFullPath, ArraySegment<string> subPath, TypeDescriptor desc)
             {
                 QueryInternal principalQuery = previousFullPath == null ? null : segments[previousFullPath];
                 ArraySegment<string> pathToCollectionPropertyInPrincipal = previousFullPath == null ? null : subPath;
-                Type keyType = type.GetProperty("Id")?.PropertyType;
 
-                if (principalQuery != null && keyType == null)
+                if (principalQuery != null && desc.KeyType == KeyType.None)
                 {
                     // Programmer mistake
-                    throw new InvalidOperationException($"Type {type.Name} has no Id property, yet it is used as a navigation collection on another entity");
+                    throw new InvalidOperationException($"Type {desc.Name} has no Id property, yet it is used as a navigation collection on another entity");
                 }
 
                 string foreignKeyToPrincipalQuery = null;
                 bool isAncestorExpand = false;
                 if (principalQuery != null)
                 {
-                    // This loop retrieves the collection property
-                    var collectionProperty = principalQuery.ResultType.GetProperty(pathToCollectionPropertyInPrincipal[0]);
-                    for (int i = 1; i < pathToCollectionPropertyInPrincipal.Count; i++)
+                    // This loop retrieves the entity descriptor that has the collection property
+                    TypeDescriptor collectionPropertyEntity = principalQuery.ResultDescriptor;
+                    int i = 0;
+                    for (; i < pathToCollectionPropertyInPrincipal.Count - 1; i++)
                     {
                         var step = pathToCollectionPropertyInPrincipal[i];
-                        collectionProperty = collectionProperty.PropertyType.GetProperty(step);
+                        collectionPropertyEntity = collectionPropertyEntity.NavigationProperty(step).TypeDescriptor;
                     }
 
-                    if (collectionProperty.IsParent())
+                    // Get the collection/Parent property
+                    string propertyName = pathToCollectionPropertyInPrincipal[i];
+                    var property = collectionPropertyEntity.Property(propertyName);
+
+                    if (property is NavigationPropertyDescriptor navProperty && navProperty.IsParent)
                     {
                         foreignKeyToPrincipalQuery = "ParentId";
                         isAncestorExpand = true;
                     }
-                    else
+                    else if (property is CollectionPropertyDescriptor collProperty)
                     {
                         // Must be a collection then
-                        foreignKeyToPrincipalQuery = collectionProperty.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
-                        if (string.IsNullOrWhiteSpace(foreignKeyToPrincipalQuery))
-                        {
-                            // Programmer mistake
-                            throw new InvalidOperationException($"Navigation collection {collectionProperty.Name} on type {collectionProperty.DeclaringType} is not adorned with the associated foreign key");
-                        }
+                        foreignKeyToPrincipalQuery = collProperty.ForeignKeyName;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Bug: Segment along a property {property.Name} on type {collectionPropertyEntity.Name} That is neither a collection nor a parent");
                     }
                 }
 
@@ -462,8 +477,8 @@ namespace Tellma.Data.Queries
 
                 // This is the orderby of related queries, and the default orderby of the root query
                 var defaultOrderBy = OrderByExpression.Parse(
-                    type.HasProperty("Index") ? "Index" :
-                    type.HasProperty("SortKey") ? "SortKey" : "Id");
+                    desc.HasProperty("Index") ? "Index" :
+                    desc.HasProperty("SortKey") ? "SortKey" : "Id");
 
                 // Prepare the flat query and return it
                 var flatQuery = new QueryInternal
@@ -472,8 +487,7 @@ namespace Tellma.Data.Queries
                     IsAncestorExpand = isAncestorExpand,
                     PathToCollectionPropertyInPrincipal = pathToCollectionPropertyInPrincipal,
                     ForeignKeyToPrincipalQuery = foreignKeyToPrincipalQuery,
-                    ResultType = type,
-                    KeyType = keyType,
+                    ResultDescriptor = desc,
                     OrderBy = defaultOrderBy
                 };
 
@@ -482,7 +496,7 @@ namespace Tellma.Data.Queries
 
             if (selectExp != null)
             {
-                var selectTree = PathTree.Build(typeof(T), selectExp.Select(e => e.Path));
+                var selectTree = PathTrie.Build(resultDesc, selectExp.Select(e => e.Path));
                 foreach (var selectAtom in selectExp)
                 {
                     // This breaks up the path into multiple segments along the one-to-many and child-parent relationship boundaries
@@ -525,7 +539,7 @@ namespace Tellma.Data.Queries
 
             expandExp ??= ExpandExpression.RootSingleton;
             {
-                var expandTree = PathTree.Build(typeof(T), expandExp.Select(e => e.Path));
+                var expandTree = PathTrie.Build(resultDesc, expandExp.Select(e => e.Path));
                 foreach (var expandAtom in expandExp)
                 {
                     var pathSegments = expandTree.GetSegments(expandAtom.Path);
@@ -621,22 +635,8 @@ namespace Tellma.Data.Queries
         /// </summary>
         public async Task<T> FirstOrDefaultAsync(CancellationToken cancellation)
         {
-            var query = this;
-            if (_orderby == null)
-            {
-                if (!IsEntityWithKey())
-                {
-                    // Programmer mistake
-                    throw new InvalidOperationException($"{nameof(FirstOrDefaultAsync)} was invoked without an orderby parameter to retrieve a type {typeof(T).Name} which doesn't inherit from {typeof(EntityWithKey)}");
-                }
-                else
-                {
-                    query = query.OrderBy(OrderByExpression.Parse("Id"));
-                }
-            }
-
             // We reuse ToList for first or default
-            var entities = await query.Top(1).ToListAsync(cancellation);
+            var entities = await Top(1).ToListAsync(cancellation);
             return entities.FirstOrDefault();
         }
 
@@ -673,6 +673,8 @@ namespace Tellma.Data.Queries
             var userTimeZone = args.UserToday;
             var localizer = args.Localizer;
 
+            var resultDesc = TypeDescriptor.Get<T>();
+
             if (_select != null || _expand != null)
             {
                 // Programmer mistake
@@ -684,13 +686,12 @@ namespace Tellma.Data.Queries
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(null, null, filterExp, orderByExp, localizer);
+            ValidatePathsAndProperties(null, null, filterExp, orderByExp, resultDesc, localizer);
 
             // Prepare the internal query
             var flatQuery = new QueryInternal
             {
-                ResultType = typeof(T),
-                KeyType = typeof(TKey),
+                ResultDescriptor = resultDesc,
                 Filter = filterExp,
                 Ids = _ids,
                 ParentIds = _parentIds,
@@ -731,16 +732,15 @@ namespace Tellma.Data.Queries
                 string criteria = criteriaIndex.Criteria;
 
                 var criteriaExp = FilterExpression.Parse(criteria);
-                ValidatePathsAndProperties(null, null, criteriaExp, null, localizer);
+                ValidatePathsAndProperties(null, null, criteriaExp, null, resultDesc, localizer);
 
                 var criteriaQuery = new QueryInternal
                 {
-                    ResultType = typeof(T),
-                    KeyType = typeof(TKey),
+                    ResultDescriptor = resultDesc,
                     Filter = criteriaExp
                 };
 
-                JoinTree joinTree = criteriaQuery.JoinSql();
+                JoinTrie joinTree = criteriaQuery.JoinSql();
                 string joinSql = joinTree.GetSql(sources, fromSql: $@"({sourceSql})");
                 string whereSql = criteriaQuery.WhereSql(sources, joinTree, ps, userId, userTimeZone);
 
@@ -820,7 +820,7 @@ UNION
         /// <summary>
         /// To prevent SQL injection attacks
         /// </summary>
-        private void ValidatePathsAndProperties(SelectExpression selectExp, ExpandExpression expandExp, FilterExpression filterExp, OrderByExpression orderbyExp, IStringLocalizer localizer)
+        private void ValidatePathsAndProperties(SelectExpression selectExp, ExpandExpression expandExp, FilterExpression filterExp, OrderByExpression orderbyExp, TypeDescriptor rootDesc, IStringLocalizer localizer)
         {
             // This is important to avoid SQL injection attacks
 
@@ -835,7 +835,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(typeof(T), localizer, "select",
+                selectPathValidator.Validate(rootDesc, localizer, "select",
                     allowLists: true,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -851,7 +851,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                expandPathTree.Validate(typeof(T), localizer, "expand",
+                expandPathTree.Validate(rootDesc, localizer, "expand",
                     allowLists: true,
                     allowSimpleTerminals: false,
                     allowNavigationTerminals: true);
@@ -868,7 +868,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(typeof(T), localizer, "filter",
+                filterPathTree.Validate(rootDesc, localizer, "filter",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -884,7 +884,7 @@ UNION
                     orderbyPathTree.AddPath(atom.Path, atom.Property);
                 }
 
-                orderbyPathTree.Validate(typeof(T), localizer, "orderby",
+                orderbyPathTree.Validate(rootDesc, localizer, "orderby",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -902,12 +902,12 @@ UNION
         /// <summary>
         /// Data structure to help efficiently segment the SELECT and EXPAND arguments along the one-to-many relationships
         /// </summary>
-        private class PathTree : Dictionary<string, PathTree>
+        private class PathTrie : Dictionary<string, PathTrie>
         {
             /// <summary>
             /// The type of the current step
             /// </summary>
-            public Type Type { get; set; }
+            public TypeDescriptor Desc { get; set; }
 
             /// <summary>
             /// Indicates that the current step represents a list navigation property
@@ -922,9 +922,9 @@ UNION
             /// <summary>
             /// Create a path tree using the provided rood type and collection of paths
             /// </summary>
-            public static PathTree Build(Type type, IEnumerable<string[]> paths)
+            public static PathTrie Build(TypeDescriptor desc, IEnumerable<string[]> paths)
             {
-                var root = new PathTree { Type = type, IsList = true, IsParent = false };
+                var root = new PathTrie { Desc = desc, IsList = true, IsParent = false };
 
                 foreach (var path in paths)
                 {
@@ -933,19 +933,28 @@ UNION
                     {
                         if (!currentTree.ContainsKey(step))
                         {
-                            var prop = currentTree.Type.GetProperty(step);
+                            var prop = currentTree.Desc.Property(step);
                             if (prop == null)
                             {
-                                throw new InvalidOperationException($"Property {prop.Name} does not exist on type {currentTree.Type}");
+                                throw new InvalidOperationException($"Property {prop.Name} does not exist on type {currentTree.Desc.Name}");
                             }
 
-                            var isParent = prop.Name == "Parent" && currentTree.Type.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
-                            var isList = prop.PropertyType.IsList();
-                            var propType = isList ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
+                            TypeDescriptor propEntityDesc = prop.GetEntityDescriptor();
+                            bool isParent = false;
+                            bool isList = false;
 
-                            currentTree[step] = new PathTree
+                            if (prop is NavigationPropertyDescriptor navProp)
                             {
-                                Type = propType,
+                                isParent = navProp.IsParent;
+                            }
+                            else if (prop is CollectionPropertyDescriptor collProp)
+                            {
+                                isList = true;
+                            }
+
+                            currentTree[step] = new PathTrie
+                            {
+                                Desc = propEntityDesc,
                                 IsList = isList,
                                 IsParent = isParent
                             };
@@ -958,7 +967,7 @@ UNION
                 return root;
             }
 
-            public IEnumerable<(ArraySegment<string> FullPath, ArraySegment<string> SubPath, Type Type)> GetSegments(string[] path)
+            public IEnumerable<(ArraySegment<string> FullPath, ArraySegment<string> SubPath, TypeDescriptor Desc)> GetSegments(string[] path)
             {
                 int offset = 0;
                 int count = 0;
@@ -967,7 +976,7 @@ UNION
                 {
                     var fullPath = new ArraySegment<string>(path, 0, offset + count);
                     var subPath = new ArraySegment<string>(path, offset, count);
-                    yield return (fullPath, subPath, Type);
+                    yield return (fullPath, subPath, Desc);
                 }
 
                 // Return the segments if any
@@ -983,7 +992,7 @@ UNION
                         var fullPath = new ArraySegment<string>(path, 0, offset + count);
                         var subPath = new ArraySegment<string>(path, offset, count);
 
-                        yield return (fullPath, subPath, currentTree.Type);
+                        yield return (fullPath, subPath, currentTree.Desc);
 
                         // Add the count to the offset and then zero the count
                         offset += count;

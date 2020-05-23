@@ -1,9 +1,9 @@
-﻿using Tellma.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -35,12 +35,12 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// The expected type of the result of this <see cref="QueryInternal"/>
         /// </summary>
-        public Type ResultType { get; set; }
+        public TypeDescriptor ResultDescriptor { get; set; }
 
         /// <summary>
         /// The type of the key of the entities of the result
         /// </summary>
-        public Type KeyType { get; set; }
+        public KeyType KeyType => ResultDescriptor.KeyType;
 
         // Dealing with expanding tree ancestors
 
@@ -126,7 +126,7 @@ namespace Tellma.Data.Queries
             return new SqlStatement
             {
                 Sql = sql,
-                ResultType = ResultType,
+                ResultDescriptor = ResultDescriptor,
                 ColumnMap = selectClause.GetColumnMap(),
                 Query = this,
             };
@@ -137,7 +137,7 @@ namespace Tellma.Data.Queries
         /// </summary>
         public string WhereSql(
             Func<Type, string> sources,
-            JoinTree joins,
+            JoinTrie joins,
             SqlStatementParameters ps,
             int userId,
             DateTime? userToday)
@@ -146,9 +146,9 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Creates the <see cref="JoinTree"/> of the current query
+        /// Creates the <see cref="JoinTrie"/> of the current query
         /// </summary>
-        public JoinTree JoinSql()
+        public JoinTrie JoinSql()
         {
             return PrepareJoin();
         }
@@ -169,7 +169,7 @@ namespace Tellma.Data.Queries
             DateTime? userToday)
         {
             // (1) Prepare the JOIN's clause
-            JoinTree joinTree = PrepareJoin(pathToCollectionProperty);
+            JoinTrie joinTree = PrepareJoin(pathToCollectionProperty);
             var joinSql = joinTree.GetSql(sources, FromSql);
 
             // (2) Prepare the SELECT clause
@@ -212,7 +212,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the SELECT statement and the column map, using the <see cref="Select"/> argument
         /// </summary>
-        private SqlSelectClause PrepareSelect(JoinTree joinTree)
+        private SqlSelectClause PrepareSelect(JoinTrie joinTree)
         {
             var selects = new HashSet<(string Symbol, string PropName)>();
             var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName)>();
@@ -234,10 +234,10 @@ namespace Tellma.Data.Queries
 
             // Any path step that is touched by a select (which has a property) ignores the expand, the joinTree below
             // allows us to efficiently check if any particular step is touched by a select
-            JoinTree overridingSelectTree = Select == null ? null : JoinTree.Make(ResultType, Select.Select(e => e.Path)); // Overriding select paths
+            JoinTrie overridingSelectTree = Select == null ? null : JoinTrie.Make(ResultDescriptor, Select.Select(e => e.Path)); // Overriding select paths
 
             // Optimization: remember the joins that have been selected and don't select them again
-            HashSet<JoinTree> selectedJoins = new HashSet<JoinTree>();
+            HashSet<JoinTrie> selectedJoins = new HashSet<JoinTrie>();
 
             // For every expanded entity that has not been tainted by a select argument, we add all its properties to the list of selects
             Expand ??= ExpandExpression.Empty;
@@ -265,7 +265,7 @@ namespace Tellma.Data.Queries
                             selectedJoins.Add(join);
                         }
 
-                        foreach (var prop in join.Type.GetMappedProperties())
+                        foreach (var prop in join.EntityDescriptor.SimpleProperties)
                         {
                             AddSelect(join.Symbol, subpath, prop.Name);
                         }
@@ -307,7 +307,7 @@ namespace Tellma.Data.Queries
                         }
 
                         // The Id is ALWAYS required in every EntityWithKey
-                        if (join.Type.IsSubclassOf(typeof(EntityWithKey)))
+                        if (join.EntityDescriptor.HasId)
                         {
                             AddSelect(join.Symbol, subpath, "Id");
                         }
@@ -349,7 +349,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the SELECT statement and the column map, as it would appear in the INNER JOIN of another query that relies on this as its principal
         /// </summary>
-        private SqlSelectClause PrepareSelectAsPrincipal(JoinTree joinTree, ArraySegment<string> pathToCollection, bool isAncestorExpand)
+        private SqlSelectClause PrepareSelectAsPrincipal(JoinTrie joinTree, ArraySegment<string> pathToCollection, bool isAncestorExpand)
         {
             // Take the segment without the last item
             var pathToCollectionEntity = new ArraySegment<string>(
@@ -373,9 +373,9 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
-        /// Create the <see cref="JoinTree"/> from the paths in all the arguments
+        /// Create the <see cref="JoinTrie"/> from the paths in all the arguments
         /// </summary>
-        private JoinTree PrepareJoin(ArraySegment<string>? pathToCollection = null)
+        private JoinTrie PrepareJoin(ArraySegment<string>? pathToCollection = null)
         {
             // construct the join tree
             var allPaths = new List<string[]>();
@@ -410,7 +410,7 @@ namespace Tellma.Data.Queries
             }
 
             // This will represent the mapping from paths to symbols
-            return JoinTree.Make(ResultType, allPaths);
+            return JoinTrie.Make(ResultDescriptor, allPaths);
         }
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the WHERE clause of the SQL query from the <see cref="Filter"/> argument: WHERE ABC
         /// </summary>
-        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
+        private string PrepareWhere(Func<Type, string> sources, JoinTrie joinTree, SqlStatementParameters ps, int userId, DateTime? userToday)
         {
             // WHERE is cached 
             if (_cachedWhere == null)
@@ -469,12 +469,12 @@ namespace Tellma.Data.Queries
                     }
                     else
                     {
-                        var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
-                        var isStringKey = KeyType == typeof(string);
+                        var isIntKey = KeyType == KeyType.Int; // (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
+                        var isStringKey = KeyType == KeyType.String;
 
                         // Prepare the ids table
-                        DataTable idsTable = isIntKey ? RepositoryUtilities.DataTable(Ids.Select(id => new { Id = (int)id }))
-                            : isStringKey ? RepositoryUtilities.DataTable(Ids.Select(id => new { Id = id.ToString() }))
+                        DataTable idsTable = isIntKey ? RepositoryUtilities.DataTable(Ids.Select(id => new IdListItem { Id = (int)id }))
+                            : isStringKey ? RepositoryUtilities.DataTable(Ids.Select(id => new StringListItem { Id = id.ToString() }))
                             : throw new InvalidOperationException("Only string and Integer Ids are supported");
 
                         // 
@@ -509,13 +509,20 @@ namespace Tellma.Data.Queries
                     }
                     else
                     {
-                        var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
-                        var isStringKey = KeyType == typeof(string);
+                        var isIntKey = KeyType == KeyType.Int; // (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
+                        var isStringKey = KeyType == KeyType.String;
 
                         // Prepare the data table
                         DataTable parentIdsTable = new DataTable();
-                        string propName = "Id";
-                        var column = new DataColumn(propName, KeyType);
+                        string idName = "Id";
+                        var idType = KeyType switch
+                        {
+                            KeyType.String => typeof(string),
+                            KeyType.Int => typeof(int),
+                            _ => throw new InvalidOperationException("Bug: Only string and Integer ParentIds are supported"),
+                        };
+
+                        var column = new DataColumn(idName, idType);
                         if (isStringKey)
                         {
                             column.MaxLength = 450; // Just for performance
@@ -524,14 +531,14 @@ namespace Tellma.Data.Queries
                         foreach (var id in ParentIds.Where(e => e != null))
                         {
                             DataRow row = parentIdsTable.NewRow();
-                            row[propName] = id;
+                            row[idName] = id;
                             parentIdsTable.Rows.Add(row);
                         }
 
                         // Prepare the TVP
                         var parentIdsTvp = new SqlParameter("@ParentIds", parentIdsTable)
                         {
-                            TypeName = isIntKey ? "[dbo].[IdList]" : isStringKey ? "[dbo].[StringList]" : throw new InvalidOperationException("Only string and Integer ParentIds are supported"),
+                            TypeName = KeyType == KeyType.Int ? "[dbo].[IdList]" : KeyType == KeyType.String ? "[dbo].[StringList]" : throw new InvalidOperationException("Bug: Only string and Integer ParentIds are supported"),
                             SqlDbType = SqlDbType.Structured
                         };
 
@@ -563,7 +570,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Prepares the ORDER BY clause of the SQL query using the <see cref="OrderBy"/> argument: ORDER BY ABC
         /// </summary>
-        private string PrepareOrderBy(JoinTree joinTree)
+        private string PrepareOrderBy(JoinTrie joinTree)
         {
             List<string> orderbys = new List<string>(OrderBy?.Count() ?? 0);
             if (OrderBy != null)
@@ -609,5 +616,10 @@ namespace Tellma.Data.Queries
 
             return offsetFetchSql;
         }
+    }
+
+    public enum KeyType
+    {
+        Int, String, None
     }
 }

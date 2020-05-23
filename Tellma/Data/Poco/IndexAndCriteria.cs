@@ -1,9 +1,11 @@
-﻿namespace Tellma.Data
+﻿using Tellma.Entities;
+
+namespace Tellma.Data
 {
     /// <summary>
     /// Maps a criteria string to an Index
     /// </summary>
-    public class IndexAndCriteria
+    public class IndexAndCriteria : Entity
     {
         public string Criteria { get; set; }
 

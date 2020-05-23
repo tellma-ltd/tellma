@@ -50,8 +50,7 @@
                 <div class="form-group" [class.is-invalid]="invalid(name, model.serverErrors?.Name)">
                     <label class="small" for="name">{{ ('Name' | translate) + ws.primaryPostfix }}</label>
                     <input class="form-control t-studio-input" id="name" type="text" [(ngModel)]="model.Name"
-                         [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #name="ngModel" />
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name="ngModel" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: name, serverErrors: model.serverErrors?.Name }">
                     </ng-container>
@@ -62,8 +61,7 @@
                     *ngIf="ws.settings?.SecondaryLanguageId">
                     <label class="small" for="name2">{{ ('Name' | translate) + ws.secondaryPostfix }}</label>
                     <input class="form-control t-studio-input" id="name2" type="text" [(ngModel)]="model.Name2"
-                        [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #name2="ngModel" />
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name2="ngModel" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: name2, serverErrors: model.serverErrors?.Name2 }">
                     </ng-container>
@@ -74,8 +72,7 @@
                     *ngIf="ws.settings?.TernaryLanguageId">
                     <label class="small" for="name3">{{ ('Name' | translate) + ws.ternaryPostfix }}</label>
                     <input class="form-control t-studio-input" id="name3" type="text" [(ngModel)]="model.Name3"
-                        [ngModelOptions]="{ updateOn: 'blur' }"
-                        autocomplete="off" #name3="ngModel" />
+                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #name3="ngModel" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: name3, serverErrors: model.serverErrors?.Name3 }">
                     </ng-container>
@@ -85,8 +82,7 @@
                 <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
                     <label class="small" for="code">{{ 'Code' }}</label>
                     <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
-                        #code="ngModel"
-                        [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                        #code="ngModel" [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
                     </ng-container>
@@ -96,8 +92,8 @@
                 <div class="form-group" [class.is-invalid]="invalid(description, model.serverErrors?.Description)">
                     <label class="small" for="desc">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
                     <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc" type="text"
-                        [(ngModel)]="model.Description"
-                        [ngModelOptions]="{ updateOn: 'blur' }" #description="ngModel"></textarea>
+                        [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
+                        #description="ngModel"></textarea>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: description, serverErrors: model.serverErrors?.Description }">
                     </ng-container>
@@ -108,8 +104,8 @@
                     *ngIf="ws.settings?.SecondaryLanguageId">
                     <label class="small" for="desc2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
                     <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc2" type="text"
-                        [(ngModel)]="model.Description2"
-                        [ngModelOptions]="{ updateOn: 'blur' }" #description2="ngModel"></textarea>
+                        [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }"
+                        #description2="ngModel"></textarea>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: description2, serverErrors: model.serverErrors?.Description2 }">
                     </ng-container>
@@ -120,8 +116,8 @@
                     *ngIf="ws.settings?.TernaryLanguageId">
                     <label class="small" for="desc3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
                     <textarea class="form-control t-studio-input t-no-resize" rows="3" id="desc3" type="text"
-                        [(ngModel)]="model.Description3"
-                        [ngModelOptions]="{ updateOn: 'blur' }" #description3="ngModel"></textarea>
+                        [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }"
+                        #description3="ngModel"></textarea>
                     <ng-container
                         *ngTemplateOutlet="errorsTemplate;context: { control: description3, serverErrors: model.serverErrors?.Description3 }">
                     </ng-container>
@@ -378,8 +374,8 @@
                             <t-error-message *ngIf="error">{{ error }}</t-error-message>
                         </div>
                         <!-- Paper -->
-                        <object *ngIf="!!url" class="p-0 w-100 h-100 d-block" [type]="contenType"
-                            [data]="safeUrl"></object>
+                        <!-- <object *ngIf="!!url" class="p-0 w-100 h-100 d-block" [type]="contenType" [data]="safeUrl"></object> -->
+                        <iframe *ngIf="!!url" class="p-0 border-0 w-100 h-100 d-block" [src]="safeUrl" sandbox></iframe>
                     </div>
                     <ng-template #messageTemplate>
                         <div class="w-100 p-3 px-4">

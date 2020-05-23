@@ -152,20 +152,6 @@ namespace Tellma.Controllers
                 }
             }
 
-            var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
-            if (duplicateCodes.Any())
-            {
-                foreach (var groupWithDuplicateCodes in duplicateCodes)
-                {
-                    foreach (var entity in groupWithDuplicateCodes)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
-                    }
-                }
-            }
-
             // TODO Validate Criteria
 
             // No need to invoke SQL if the model state is full of errors

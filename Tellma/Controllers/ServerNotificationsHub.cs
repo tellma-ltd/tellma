@@ -16,12 +16,10 @@ namespace Tellma.Controllers
     public class ServerNotificationsHub : Hub<INotifiedClient>
     {
         private readonly ApplicationRepository _repo;
-        private readonly IShardResolver _shardResolver;
 
-        public ServerNotificationsHub(ApplicationRepository repo, IShardResolver shardResolver)
+        public ServerNotificationsHub(ApplicationRepository repo)
         {
             _repo = repo;
-            _shardResolver = shardResolver;
         }
 
         /// <summary>
@@ -38,8 +36,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException("TenantId is required");
             }
 
-            string connString = await _shardResolver.GetConnectionString(tenantId, cancellation: default);
-            await _repo.InitConnectionAsync(connString, setLastActive: false, cancellation: default);
+            await _repo.InitConnectionAsync(tenantId, setLastActive: false, cancellation: default);
 
             var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
             var userId = userInfo?.UserId;

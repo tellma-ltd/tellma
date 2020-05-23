@@ -166,7 +166,7 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Turns a filter expression into an SQL WHERE clause (without the WHERE keyword), adds all required parameters into the <see cref="SqlStatementParameters"/>
         /// </summary>
-        public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTree joinTree, int userId, DateTime? userToday)
+        public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTrie joinTree, int userId, DateTime? userToday)
         {
             if (e == null)
             {
@@ -204,15 +204,15 @@ namespace Tellma.Data.Queries
 
                     // (B) Determine the type of the property and its value
                     var propName = atom.Property;
-                    var prop = join.Type.GetProperty(propName);
+                    var prop = join.EntityDescriptor.Property(propName);
                     if (prop == null)
                     {
                         // Developer mistake
-                        throw new InvalidOperationException($"Could not find property {propName} on type {join.Type}");
+                        throw new InvalidOperationException($"Could not find property {propName} on type {join.EntityDescriptor}");
                     }
 
                     // The type of the first operand
-                    var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                    var propType = Nullable.GetUnderlyingType(prop.Type) ?? prop.Type;
                     if (!string.IsNullOrWhiteSpace(atom.Modifier))
                     {
                         // So far all modifiers are only applicable for date properties
@@ -230,11 +230,11 @@ namespace Tellma.Data.Queries
                     var expectedValueType = propType;
                     if (expectedValueType == typeof(HierarchyId))
                     {
-                        var idType = join.Type.GetProperty("Id")?.PropertyType;
+                        var idType = join.EntityDescriptor.Property("Id")?.Type;
                         if (idType == null)
                         {
                             // Programmer mistake
-                            throw new InvalidOperationException($"Type {join.Type} is a tree structure but has no Id property");
+                            throw new InvalidOperationException($"Type {join.EntityDescriptor} is a tree structure but has no Id property");
                         }
 
                         expectedValueType = Nullable.GetUnderlyingType(idType) ?? idType;
@@ -408,7 +408,7 @@ namespace Tellma.Data.Queries
                         case Ops.childof: // Must be hierarchy Id
                             {
                                 EnsureTypeHierarchyId(atom, propName, propType);
-                                string treeSource = sources(join.Type);
+                                string treeSource = sources(join.EntityDescriptor.Type);
                                 string parentNode = isNull ? "HierarchyId::GetRoot()" :
                                     $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 
@@ -418,7 +418,7 @@ namespace Tellma.Data.Queries
                         case Ops.descof: // Must be hierarchy Id
                             {
                                 EnsureTypeHierarchyId(atom, propName, propType);
-                                string treeSource = sources(join.Type);
+                                string treeSource = sources(join.EntityDescriptor.Type);
                                 string parentNode = isNull ? "HierarchyId::GetRoot()" :
                                     $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 

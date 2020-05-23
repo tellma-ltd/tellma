@@ -1,8 +1,8 @@
 ﻿using Tellma.Controllers;
-using Tellma.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data.Queries
 {
@@ -38,40 +38,43 @@ namespace Tellma.Data.Queries
         /// <summary>
         /// Validate the tree of paths against a root type, throwing localized exceptions if a path contains a non-existent property
         /// </summary>
-        /// <param name="type">The root type of the <see cref="PathValidator"/> tree</param>
+        /// <param name="desc">The <see cref="TypeDescriptor"/> of the root type of the <see cref="PathValidator"/> tree</param>
         /// <param name="localizer">Used to localize the error messages</param>
         /// <param name="argName">The name of the <see cref="Query"/> argument whose paths we are currently validated, used in the error messages</param>
         /// <param name="allowLists">Pass true to allow list navigation properties</param>
         /// <param name="allowSimpleTerminals">Pass true to allow paths that terminate with simple properties (non navigation)</param>
         /// <param name="allowNavigationTerminals">Pass true to allow paths that terminate with navigation properties</param>
-        public void Validate(Type type, IStringLocalizer localizer, string argName, bool allowLists, bool allowSimpleTerminals, bool allowNavigationTerminals)
+        public void Validate(TypeDescriptor desc, IStringLocalizer localizer, string argName, bool allowLists, bool allowSimpleTerminals, bool allowNavigationTerminals)
         {
             foreach (var key in Keys)
             {
-                var prop = type.GetProperty(key);
+                var prop = desc.Property(key);
                 if (prop == null)
                 {
                     // Validation taking place
-                    string message = localizer["Error_Property0DoesNotExistOnType1", key, type.Name];
+                    string message = localizer["Error_Property0DoesNotExistOnType1", key, desc.Name];
                     throw new BadRequestException(message);
                 }
 
-                var isList = prop.PropertyType.IsList();
+                // Gather some information
+                bool isNavigation = prop is NavigationPropertyDescriptor;
+                bool isList = prop is CollectionPropertyDescriptor collProp;
+                bool isSimple = !isNavigation && !isList;
+
+                // Validate list property
                 if (!allowLists && isList)
                 {
                     // Validation taking place
-                    string message = localizer["Error_Property0OnType1IsACollection2", key, type.Name, argName];
+                    string message = localizer["Error_Property0OnType1IsACollection2", key, desc.Name, argName];
                     throw new BadRequestException(message);
                 }
 
-                var propType = isList ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
-                var propTree = this[key];
-
-                if(propTree.Keys.Count == 0)
+                var next = this[key];
+                bool nextIsLeaf = next.Keys.Count == 0;
+                if (nextIsLeaf)
                 {
                     // terminal
-                    bool isComplex = propType.GetProperty("Id") != null;
-                    if (isComplex)
+                    if (isNavigation)
                     {
                         if (!allowNavigationTerminals)
                         {
@@ -80,7 +83,8 @@ namespace Tellma.Data.Queries
                             throw new BadRequestException(message);
                         }
                     }
-                    else
+
+                    if (isSimple)
                     {
                         if (!allowSimpleTerminals)
                         {
@@ -90,10 +94,23 @@ namespace Tellma.Data.Queries
                         }
                     }
                 }
+                else // Not leav
+                {
+                    if (isSimple)
+                    {
+                        // Validation taking place
+                        string message = localizer["Error_A0PathContainsSimpleField1UsedLikeNavigation", argName, key];
+                        throw new BadRequestException(message);
+                    }
+                    else
+                    {
+                        // Validate recursively
+                        TypeDescriptor nextDescriptor = prop.GetEntityDescriptor();
 
-                // Validate recursively
-                this[key].Validate(propType, localizer, argName,
-                    allowLists, allowSimpleTerminals, allowNavigationTerminals);
+                        next.Validate(nextDescriptor, localizer, argName,
+                            allowLists, allowSimpleTerminals, allowNavigationTerminals);
+                    }
+                }
             }
         }
     }

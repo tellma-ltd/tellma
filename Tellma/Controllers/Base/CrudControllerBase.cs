@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Controllers.Dto;
+using Tellma.Controllers.ImportExport;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
@@ -54,7 +56,7 @@ namespace Tellma.Controllers
                 var (data, extras) = await service.Save(entities, args);
 
                 await OnSuccessfulSave(data, extras);
-                
+
                 // Transform it and return the result
                 var returnEntities = args?.ReturnEntities ?? false;
                 if (returnEntities)
@@ -64,7 +66,7 @@ namespace Tellma.Controllers
 
                     // Return the response
                     return Ok(response);
-                } 
+                }
                 else
                 {
                     // Return 200
@@ -115,7 +117,7 @@ namespace Tellma.Controllers
         /// Gives an opportunity for implementations to add headers to the response if a save was successful,
         /// useful to set x-version headers for controllers that cause changes that invalidate the cache
         /// </summary>
-        protected virtual Task OnSuccessfulSave(List<TEntity> data, Extras extras) 
+        protected virtual Task OnSuccessfulSave(List<TEntity> data, Extras extras)
         {
             return Task.CompletedTask;
         }
@@ -129,7 +131,28 @@ namespace Tellma.Controllers
             return Task.CompletedTask;
         }
 
-        #region Import Stuff
+
+        //[HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
+        //public virtual async Task<ActionResult<ImportResult>> Import2([FromQuery] ImportArguments args)
+        //{
+        //    return await ControllerUtilities.InvokeActionImpl(async () =>
+        //    {
+        //        IFormFile formFile = Request.Form.Files.FirstOrDefault();
+        //        var contentType = formFile?.ContentType;
+        //        var fileName = formFile?.FileName;
+        //        using var fileStream = formFile?.OpenReadStream();
+
+        //        var service = GetCrudService();
+        //        var result = await service.Import(fileStream, fileName, contentType, args);
+
+        //        return Ok(result);
+        //    }, _logger);
+        //}
+
+
+        //#region Import Stuff
+
+        //private readonly IStringLocalizer<Strings> _localizer;
 
         //[HttpGet("template")]
         //public virtual ActionResult Template([FromQuery] TemplateArguments args)
@@ -149,26 +172,13 @@ namespace Tellma.Controllers
         //[HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
         //public virtual async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
         //{
-        //    Stopwatch watch = new Stopwatch();
-        //    watch.Start();
-
-        //    Stopwatch watch2 = new Stopwatch();
-        //    watch2.Start();
-        //    decimal parsingToEntitiesForSave = 0;
-        //    decimal attributeValidationInCSharp = 0;
-        //    decimal validatingAndSaving = 0;
-
         //    return await ControllerUtilities.InvokeActionImpl(async () =>
         //    {
         //        // Parse the file into Entities + map back to row numbers (The way source code is compiled into machine code + symbols file)
         //        var (entities, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
-        //        parsingToEntitiesForSave = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
-        //        watch2.Restart();
 
         //        // Validation
         //        ObjectValidator.Validate(ControllerContext, null, null, entities);
-        //        attributeValidationInCSharp = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
-        //        watch2.Restart();
 
         //        if (!ModelState.IsValid)
         //        {
@@ -180,8 +190,6 @@ namespace Tellma.Controllers
         //        try
         //        {
         //            await SaveImplAsync(entities, new SaveArguments { ReturnEntities = false });
-        //            validatingAndSaving = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
-        //            watch2.Stop();
         //        }
         //        catch (UnprocessableEntityException ex)
         //        {
@@ -196,8 +204,6 @@ namespace Tellma.Controllers
         //        };
 
         //        // Record the time
-        //        watch.Stop();
-        //        var elapsed = Math.Round(((decimal)watch.ElapsedMilliseconds) / 1000, 1);
         //        result.Seconds = elapsed;
         //        result.ParsingToDtosForSave = parsingToEntitiesForSave;
         //        result.AttributeValidationInCSharp = attributeValidationInCSharp;
@@ -231,7 +237,7 @@ namespace Tellma.Controllers
         //    }
         //}
 
-        // Abstract and virtual members
+        //// Abstract and virtual members
 
 
         //protected virtual async Task<(List<TEntityForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
@@ -263,11 +269,11 @@ namespace Tellma.Controllers
         //{
         //    // Determine an appropriate file handler based on the file metadata
         //    FileHandlerBase handler;
-        //    if (file.ContentType == "text/csv" || file.FileName.EndsWith(".csv"))
+        //    if (file.ContentType == "text/csv" || (file.FileName?.ToLower()?.EndsWith(".csv") ?? false))
         //    {
-        //        handler = new CsvHandler(_localizer);
+        //        handler = new Services.ImportExport.CsvHandler(_localizer);
         //    }
-        //    else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.FileName.EndsWith(".xlsx"))
+        //    else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || (file.FileName?.ToLower()?.EndsWith(".xlsx") ?? false))
         //    {
         //        handler = new ExcelHandler(_localizer);
         //    }
@@ -340,11 +346,11 @@ namespace Tellma.Controllers
         //    if (format == FileFormats.Xlsx)
         //    {
         //        handler = new ExcelHandler(_localizer);
-        //        contentType = MimeTypes.Xlsx;
+        //        contentType = MimeTypes.Excel;
         //    }
         //    else if (format == FileFormats.Csv)
         //    {
-        //        handler = new CsvHandler(_localizer);
+        //        handler = new Services.ImportExport.CsvHandler(_localizer);
         //        contentType = MimeTypes.Csv;
         //    }
         //    else
@@ -356,7 +362,12 @@ namespace Tellma.Controllers
         //    return File(((MemoryStream)fileStream).ToArray(), contentType);
         //}
 
-        #endregion
+        //#endregion
+
+
+
+
+
     }
 
     public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
@@ -364,10 +375,12 @@ namespace Tellma.Controllers
         where TEntity : EntityWithKey<TKey>, new()
     {
         private readonly IStringLocalizer _localizer;
+        // private readonly MetadataProvider _metadata;
 
         public CrudServiceBase(IStringLocalizer localizer) : base(localizer)
         {
             _localizer = localizer;
+            // _metadata = metadata;
         }
 
         #region Save
@@ -735,5 +748,108 @@ return the entities
         protected abstract Task DeleteValidateAsync(List<TKey> ids);
 
         #endregion
+
+        //public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
+        //{
+        //    if (fileStream == null)
+        //    {
+        //        throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+        //    }
+
+        //    // Determine an appropriate file handler based on the file metadata
+        //    IDataExtracter extractor = GetSuitableExtracter(fileName, contentType);
+
+        //    // Extract the data
+        //    IEnumerable<string[]> data = extractor.Extract(fileStream);
+        //    if (!data.Any())
+        //    {
+        //        throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
+        //    }
+
+        //    // Map the columns
+        //    var headers = data.First();
+        //    var mappingInfo = MapColumns(headers);
+
+
+        //    // Load related entities (including principal entities if update or merge)
+
+
+        //    // Parse the data 
+
+        //    try
+        //    {
+        //        // Save the data
+
+        //        // Return import result
+        //    }
+        //    catch (UnprocessableEntityException ex)
+        //    {
+        //        // Map errors to row numbers
+        //    }
+
+        //    throw new NotImplementedException();
+        //}
+
+        protected MappingInfo MapColumns(string[] headers)
+        {
+            throw new NotImplementedException();
+            //var result = new MappingInfo();
+            //foreach (var header in headers)
+            //{
+            //    var steps = SplitHeader(header);
+            //    var currentType = typeof(TEntityForSave);
+
+            //    foreach (var step in steps)
+            //    {
+            //        var match = _metadata.GetMetadataForProperties(currentType).FirstOrDefault(p => p.DisplayName == step);
+            //        match.
+            //    }
+            //}
+        }
+
+        private IEnumerable<string> SplitHeader(string header)
+        {
+            var builder = new StringBuilder();
+            for (int i = 0; i < header.Length; i++)
+            {
+                char c = header[i];
+                if (c == '/')
+                {
+                    if (i + 1 < header.Length && header[i + 1] == '/') // Escaped
+                    {
+                        builder.Append(c);
+                        i++; // Ignore the second forward slash
+                    }
+                    else
+                    {
+                        yield return builder.ToString();
+                        builder = new StringBuilder();
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
+        }
+
+        private IDataExtracter GetSuitableExtracter(string fileName, string contentType)
+        {
+            IDataExtracter handler;
+            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
+            {
+                handler = new CsvHandler();
+            }
+            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
+            {
+                handler = new ExcelHandler();
+            }
+            else
+            {
+                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+            }
+
+            return handler;
+        }
     }
 }

@@ -88,10 +88,11 @@ export class ApiService {
         return obs$;
       },
       saveForClient: (key: string, value: string) => {
-        const keyParam = `key=${encodeURIComponent(key)}`;
-        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appsettings.apiAddress + `api/admin-users/client?` + keyParam + valueParam;
-        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, null).pipe(
+        const body = { key, value };
+        const url = appsettings.apiAddress + `api/admin-users/client`;
+        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, body, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -590,10 +591,11 @@ export class ApiService {
         return obs$;
       },
       saveForClient: (key: string, value: string) => {
-        const keyParam = `key=${encodeURIComponent(key)}`;
-        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appsettings.apiAddress + `api/users/client?` + keyParam + valueParam;
-        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
+        const body = { key, value };
+        const url = appsettings.apiAddress + `api/users/client`;
+        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, body, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -1046,7 +1048,7 @@ export class ApiService {
         return obs$;
       },
 
-      import: (args: ImportArguments, files: any) => {
+      import: (args: ImportArguments, files: FileList) => {
         args = args || {};
 
         const paramsArray: string[] = [];
@@ -1057,8 +1059,10 @@ export class ApiService {
 
         const formData = new FormData();
 
-        for (const file of files) {
-          formData.append(file.name, file);
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          formData.append(file.name, file, file.name);
         }
 
         this.showRotator = true;

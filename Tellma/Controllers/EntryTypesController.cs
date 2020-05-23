@@ -115,30 +115,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<EntryTypeForSave> entities)
         {
-            // Check that codes are not duplicated within the arriving collection
-            var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
-            if (duplicateCodes.Any())
-            {
-                // Hash the entities' indices for performance
-                Dictionary<EntryTypeForSave, int> indices = entities.ToIndexDictionary();
-
-                foreach (var groupWithDuplicateCodes in duplicateCodes)
-                {
-                    foreach (var entity in groupWithDuplicateCodes)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
-                    }
-                }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
-            {
-                return;
-            }
-
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.EntryTypes_Validate__Save(entities, top: remainingErrorCount);

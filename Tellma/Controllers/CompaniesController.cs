@@ -9,6 +9,7 @@ using Tellma.Data;
 using Tellma.Services.ApiAuthentication;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.Identity;
+using Tellma.Services.MultiTenancy;
 using Tellma.Services.Sharding;
 
 namespace Tellma.Controllers
@@ -59,15 +60,18 @@ namespace Tellma.Controllers
         private readonly IShardResolver _shardResolver;
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
 
-        public CompaniesService(AdminRepository db, ILogger<CompaniesController> logger,
-            IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
+        public CompaniesService(AdminRepository db, ILogger<CompaniesController> logger, IShardResolver shardResolver,
+            IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor,
+            ITenantIdAccessor tenantIdAccessor)
         {
             _repo = db;
             _logger = logger;
             _shardResolver = shardResolver;
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
+            _tenantIdAccessor = tenantIdAccessor;
         }
 
         public async Task<CompaniesForClient> GetForClient(CancellationToken cancellation)
@@ -83,10 +87,9 @@ namespace Tellma.Controllers
             {
                 try
                 {
-                    var connString = await _shardResolver.GetConnectionString(databaseId, cancellation);
-                    using var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null);
+                    using var appRepo = new ApplicationRepository(_shardResolver, _externalUserAccessor, _clientInfoAccessor, null, _tenantIdAccessor);
 
-                    await appRepo.InitConnectionAsync(connString, setLastActive: false, cancellation);
+                    await appRepo.InitConnectionAsync(databaseId, setLastActive: false, cancellation);
                     var userInfo = await appRepo.GetUserInfoAsync(cancellation);
                     if (userInfo.UserId != null)
                     {
