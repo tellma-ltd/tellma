@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Contracts_Validate__Save]
 	@DefinitionId INT,
 	@Entities [ContractList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -40,5 +41,12 @@ SET NOCOUNT ON;
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

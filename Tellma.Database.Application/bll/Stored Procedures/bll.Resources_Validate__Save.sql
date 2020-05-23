@@ -2,7 +2,8 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits dbo.ResourceUnitList READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 -- TODO: Add Top(@Top)
@@ -139,5 +140,12 @@ SET NOCOUNT ON;
 	-- TODO: make sure ExpenseTypeId is descendants of ExpenseByNatureAbstract
 	-- TODO: make sure RevenueTypeId is descendants of Revenue
 
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Cancel]
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -26,6 +27,13 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON L.[DocumentId] = D.[Id]
 	JOIN map.LineDefinitions() LD ON L.[DefinitionId] = LD.[Id]
 	WHERE (L.[State] >= 0 AND LD.[HasWorkflow] = 1)
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
 	

@@ -545,11 +545,8 @@
     <Build Include="dal\Stored Procedures\dal.Segments__Save.sql" />
     <Build Include="dbo\Tables\dbo.Segments.sql" />
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
-    <Build Include="bll\Stored Procedures\bll.AccountMappings_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountMappingList.sql" />
-    <Build Include="bll\Stored Procedures\bll.AccountMappings__Preprocess.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountMappings__Save.sql" />
-    <Build Include="api\Stored Procedures\api.AccountMappings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
@@ -596,7 +593,6 @@
     <None Include="101.AzureBananSDTraining.publish.xml" />
     <None Include="Provisioning\02_Definitions\e_AccountDesignations.sql" />
     <None Include="Provisioning\03_Basic\d_Segments.sql" />
-    <None Include="Provisioning\06_Accounts\101_AccountsMappings.sql" />
     <None Include="Provisioning\05_Contracts\01_Agents.sql" />
     <None Include="Provisioning\07_Entries\101\101e_revenue-templates.sql" />
     <None Include="106.Soreti.publish.xml" />

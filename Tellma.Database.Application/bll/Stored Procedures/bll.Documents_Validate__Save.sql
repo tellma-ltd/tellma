@@ -118,6 +118,7 @@ SET NOCOUNT ON;
 			AND [Id] IN (SELECT [Id] FROM @Lines)
 		)
 	END
+
 	SELECT @ValidationErrorsJson = 
 	(
 		SELECT *

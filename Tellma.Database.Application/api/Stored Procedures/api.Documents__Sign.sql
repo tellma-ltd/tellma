@@ -11,7 +11,7 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @Ids [dbo].[IdList];
 
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
@@ -27,20 +27,13 @@ SET NOCOUNT ON;
 	FROM dbo.Lines
 	WHERE [DocumentId] IN (SELECT [Id] FROM @IndexedIds)
 	
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @Lines,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
-		@ToState = @ToState;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@ToState = @ToState,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

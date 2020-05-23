@@ -4,18 +4,11 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	-- Add here Code that is handled by C#
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[AccountTypes_Validate__DeleteWithDescendants]
-		@Ids = @IndexedIds;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Ids = @IndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

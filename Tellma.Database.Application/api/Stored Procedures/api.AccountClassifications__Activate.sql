@@ -5,19 +5,13 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
-	
-	INSERT INTO @ValidationErrors
+	DECLARE @Ids dbo.IdList;
+	-- Add here Code that is handled by C#
+
 	EXEC [bll].[AccountClassifications_Validate__Activate]
 		@Ids = @IndexedIds,
-		@IsActive = @IsActive;
-	
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@IsActive = @IsActive,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

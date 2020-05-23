@@ -4,19 +4,12 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	-- Add here Code that is handled by C#
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[Document_Validate__Comment_Save]
-		@DocumentId = @DocumentId;
+		@DocumentId = @DocumentId,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 		

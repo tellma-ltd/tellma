@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Unsign]
 -- TODO: Will pass signature ids instead of Line Ids
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -21,5 +22,11 @@ SET NOCOUNT ON;
 
 	-- TODO: cannot unsign unless it was part of the last transition
 
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

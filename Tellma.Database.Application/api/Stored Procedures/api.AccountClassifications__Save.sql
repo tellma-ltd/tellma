@@ -5,18 +5,10 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	-- Add here Code that is handled by C#
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[AccountClassifications_Validate__Save]
 		@Entities = @Entities;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

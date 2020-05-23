@@ -4,7 +4,6 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	EXEC [bll].[Documents_Validate__Close]
 		@DefinitionId = @DefinitionId,

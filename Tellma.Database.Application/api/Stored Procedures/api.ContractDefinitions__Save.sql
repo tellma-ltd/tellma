@@ -1,27 +1,20 @@
 ﻿CREATE PROCEDURE [api].[ContractDefinitions__Save]
 	@Entities [ContractDefinitionList] READONLY,
-	--@ReturnIds BIT = 0,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	-- Add here Code that is handled by C#
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[ContractDefinitions_Validate__Save]
-		@Entities = @Entities;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Entities = @Entities,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
 	EXEC [dal].[ContractDefinitions__Save]
-		@Entities = @Entities;
-		--@ReturnIds = @ReturnIds;
+		@Entities = @Entities,
+		@ReturnIds = @ReturnIds;
 END

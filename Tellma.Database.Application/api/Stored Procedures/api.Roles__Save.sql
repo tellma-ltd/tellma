@@ -6,20 +6,13 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[Roles_Validate__Save]
 		@Entities = @Roles,
 		@Members = @Members,
-		@Permissions = @Permissions;
+		@Permissions = @Permissions,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

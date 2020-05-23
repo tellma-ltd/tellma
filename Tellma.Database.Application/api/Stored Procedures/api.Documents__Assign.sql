@@ -6,24 +6,15 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-
+	-- Add here Code that is handled by C#
 	IF @AssigneeId IS NULL
 		RAISERROR(N'Assignee is required', 16, 1)
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Assign]
 		@Ids = @IndexedIds,
 		@AssigneeId = @AssigneeId,
 		@Comment = @Comment;
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 		

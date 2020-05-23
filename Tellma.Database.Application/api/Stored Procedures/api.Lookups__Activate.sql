@@ -4,7 +4,7 @@
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @Ids [dbo].[IdList];
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds
 	EXEC [dal].[Lookups__Activate] @Ids = @Ids, @IsActive = @IsActive;

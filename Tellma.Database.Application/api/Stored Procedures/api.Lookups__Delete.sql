@@ -3,7 +3,7 @@
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @Ids [dbo].[IdList];
 
 	--INSERT INTO @ValidationErrors
 

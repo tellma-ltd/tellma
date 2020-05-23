@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -14,5 +15,12 @@ SET NOCOUNT ON;
     FROM [dbo].[AccountClassifications] LC
 	JOIN [dbo].[Accounts] A ON A.[ClassificationId] = LC.Id
 	JOIN @Ids FE ON FE.[Id] = LC.[Id];
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

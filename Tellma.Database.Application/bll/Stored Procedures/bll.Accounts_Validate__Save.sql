@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
 	@Entities [dbo].[AccountList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
-
 	--=-=-=-=-=-=- [C# Validation]
 	/* 
 	
@@ -260,5 +260,12 @@ SET NOCOUNT ON;
 	JOIN dbo.[EntryTypes] EEC ON EEC.[Id] = E.[EntryTypeId]
 	WHERE L.[State] >= 0
 	AND EEC.[Node].IsDescendantOf(AEC.[Node]) = 0;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
