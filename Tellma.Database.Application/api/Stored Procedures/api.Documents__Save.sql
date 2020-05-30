@@ -6,7 +6,6 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @PreprocessedEntriesJson NVARCHAR (MAX), @PreprocessedEntries dbo.EntryList;
 

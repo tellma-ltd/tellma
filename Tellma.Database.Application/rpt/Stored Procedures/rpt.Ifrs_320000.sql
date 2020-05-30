@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[Ifrs_320000]
+﻿CREATE PROCEDURE [rpt].[Ifrs_320000]-- EXEC [rpt].[Ifrs_320000] @fromDate='2019.01.1', @toDate = '2019.03.31'
 --[320000] Statement of comprehensive income, profit or loss, by nature of expense
 	@fromDate DATE, 
 	@toDate DATE
@@ -20,7 +20,7 @@ BEGIN
 	SELECT [AT].[Code] AS [Concept], SUM(E.[AlgebraicValue]) AS [Value]
 	FROM [map].[DetailsEntries] () E
 	JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
-	JOIN dbo.[AccountTypes] [AT] ON A.[IfrsTypeId] = [AT].[Id]
+	JOIN dbo.[AccountTypes] [AT] ON A.[AccountTypeId] = [AT].[Id]
 	JOIN dbo.Lines L ON L.[Id] = E.[LineId]
 	WHERE @fromDate <= L.[PostingDate] AND L.[PostingDate] < DATEADD(DAY, 1, @toDate)
 	-- TODO: replace with IsDescendantOf, to cater for possible customer extensions

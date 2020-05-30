@@ -3,6 +3,7 @@
 	[Id]						INT	NOT NULL DEFAULT 0,
 	[Code]						NVARCHAR (50) NOT NULL UNIQUE,
 	[IsOriginalDocument]		BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired = 0
+	[DocumentType]				TINYINT			NOT NULL DEFAULT 2,
 	[TitleSingular]				NVARCHAR (255),
 	[TitleSingular2]			NVARCHAR (255),
 	[TitleSingular3]			NVARCHAR (255),

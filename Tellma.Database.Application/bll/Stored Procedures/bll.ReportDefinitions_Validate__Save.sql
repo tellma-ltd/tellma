@@ -5,10 +5,18 @@
 	@Rows [ReportDimensionDefinitionList] READONLY,
 	@Columns [ReportDimensionDefinitionList] READONLY,
 	@Measures [ReportMeasureDefinitionList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	-- TODO
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

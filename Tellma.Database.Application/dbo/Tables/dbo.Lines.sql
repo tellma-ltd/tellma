@@ -6,13 +6,17 @@
 	[State]						SMALLINT			NOT NULL DEFAULT 0 CONSTRAINT [CK_Lines__State] CHECK ([State] BETWEEN -4 AND +4),
 	[PostingDate]				DATE				CONSTRAINT [CK_Lines__PostingDate] CHECK ([PostingDate] < DATEADD(DAY, 1, GETDATE())),
 	CONSTRAINT [CK_Lines__State_PostingDate] CHECK([State] < 4 OR [PostingDate] IS NOT NULL),
-	--[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
+	--[ContractId]				INT					CONSTRAINT [FK_Lines__ContractId] REFERENCES dbo.Contracts([Id]),
 	--[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
+	[TemplateLineId]			INT					CONSTRAINT [FK_Lines__TemplateId] REFERENCES dbo.Lines([Id]),
+	[Multiplier]				DECIMAL (19,4),
+	CONSTRAINT [CK_Lines__TemplateLineId_Multiplier] CHECK (
+		[TemplateLineId] IS NULL AND [Multiplier] IS NULL OR
+		[TemplateLineId] IS NOT NULL AND [Multiplier] IS NOT NULL
+	),
 	--[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	--[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
-	--[Quantity]					DECIMAL (19,4),
-	--[UnitId]					INT CONSTRAINT [FK_Lines__UnitId] REFERENCES [dbo].[Units] ([Id]),
-	--[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
+	--[MonetaryValue]			DECIMAL (19,4),--			NOT NULL DEFAULT 0,
+	--[Value]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[Index]						INT				NOT NULL,
 -- for auditing

@@ -19,17 +19,17 @@ BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 		[Name],					[Name2],				[Code],[CenterType],	[ExpenseEntryTypeId]) VALUES
 	(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Investment',	NULL),
-	(2,0,N'Departments',		N'الإدارات',				N'1',	N'Cost',		NULL),
+	(2,0,N'Departments',		N'الإدارات',				N'10',	N'Cost',		NULL),
 	(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
 	(4,2,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),
 	(5,2,N'System Admin',		N'إدارة النظم',			N'13',	N'Cost',		@ServiceExtension),
 	(6,2,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		@ServiceExtension),
-	--(7,2,N'Cafeteria',			N'الوجبات',				N'15',	N'Cost',		@ServiceExtension),
-	(8,0,N'Products',			N'المنتجات',			N'2',	N'Profit',		NULL),
-	(9,7,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
-	(10,7,N'BSmart',			N'بيسمارت',				N'22',	N'Profit',		@CostOfSales),
-	(11,7,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
-	(12,7,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
+	--(7,2,N'Cafeteria',		N'الوجبات',				N'15',	N'Cost',		@ServiceExtension),
+	(8,0,N'Products',			N'المنتجات',			N'20',	N'Profit',		NULL),
+	(9,8,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
+	(10,8,N'BSmart',			N'بيسمارت',				N'22',	N'Profit',		@CostOfSales),
+	(11,8,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
+	(12,8,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
 	(13,0,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		@CostOfSales);
 
 	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'1', N'2');
@@ -162,18 +162,18 @@ BEGIN
 	INSERT INTO @Centers([Index],
 		[Name],						[Name2],[Code], [CenterType], [ParentIndex]) VALUES -- HasBS, HasRevenues, HasExpenses 
 	(1,N'Soreti Trading - AA',		N'',	N'0',	N'Investment',			0), -- ADM
-	(1,N'Edna Mall',				N'',	N'1',	N'Investment',			0), -- ADM
-	(1,N'Vehicles Trading',			N'',	N'2',	N'Investment',			0), -- ADM
-	(1,N'Oil Refining',				N'',	N'3',	N'Investment',			0), -- ADM
-	(1,N'Bajaj',					N'',	N'4',	N'Investment',			0),
-	(1,N'Bajaj - Unallocated',		N'',	N'40',	N'Investment',			0),
-	(1,N'Bajaj - Products',			N'',	N'41',	N'Investment',			0),
-	(1,N'Bajaj - Diesel',			N'',	N'411',	N'Investment',			0),
-	(1,N'Bajaj - Gas',				N'',	N'412',	N'Investment',			0),
-	(1,N'Bajaj - Administration',	N'',	N'42',	N'Investment',			0),
-	(1,N'Bajaj - Sales',			N'',	N'43',	N'Investment',			0),
-	(1,N'Bajaj - Materials',		N'',	N'44',	N'Investment',			0),
-	(1,N'Bajaj - Production',		N'',	N'45',	N'Investment',			0);
+	(2,N'Edna Mall',				N'',	N'1',	N'Investment',			0), -- ADM
+	(3,N'Vehicles Trading',			N'',	N'2',	N'Investment',			0), -- ADM
+	(4,N'Oil Refining',				N'',	N'3',	N'Investment',			0), -- ADM
+	(5,N'Bajaj',					N'',	N'4',	N'Investment',			0),
+	(6,N'Bajaj - Unallocated',		N'',	N'40',	N'Investment',			0),
+	(7,N'Bajaj - Products',			N'',	N'41',	N'Investment',			0),
+	(8,N'Bajaj - Diesel',			N'',	N'411',	N'Investment',			0),
+	(9,N'Bajaj - Gas',				N'',	N'412',	N'Investment',			0),
+	(10,N'Bajaj - Administration',	N'',	N'42',	N'Investment',			0),
+	(11,N'Bajaj - Sales',			N'',	N'43',	N'Investment',			0),
+	(12,N'Bajaj - Materials',		N'',	N'44',	N'Investment',			0),
+	(13,N'Bajaj - Production',		N'',	N'45',	N'Investment',			0);
 END
 UPDATE @Centers SET [SegmentId] = @MAIN_OS;
 EXEC [api].[Centers__Save]

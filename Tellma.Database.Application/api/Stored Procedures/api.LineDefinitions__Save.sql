@@ -10,23 +10,15 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
-		@WorkflowSignatures = @WorkflowSignatures;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@WorkflowSignatures = @WorkflowSignatures,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

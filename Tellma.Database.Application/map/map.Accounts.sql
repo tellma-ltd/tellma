@@ -11,5 +11,5 @@ RETURN (
 	--IIF(AC.NotedDateLabel IS NULL, 0, 1) AS [HasNotedDate],	
 	~A.[IsDeprecated] AS [IsActive]
 	FROM [dbo].[Accounts] A
-	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[IfrsTypeId]
+	JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
 );

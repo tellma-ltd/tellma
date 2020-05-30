@@ -4,7 +4,8 @@
 	@RuleType NVARCHAR (50),
 	@RoleId INT = NULL,
 	@ToState SMALLINT,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 	--'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
    -- 'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     --'ReasonId', 'ReasonDetails'

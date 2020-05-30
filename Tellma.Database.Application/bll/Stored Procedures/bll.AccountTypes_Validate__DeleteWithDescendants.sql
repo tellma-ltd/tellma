@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[AccountTypes_Validate__DeleteWithDescendants]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -38,6 +39,13 @@ SET NOCOUNT ON;
 		N'Error_TheTypeIsUsedInAccount0',
 		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS Account
 	FROM @IndexesToDelete FE
-	JOIN dbo.Accounts A ON FE.[Id] = A.[IfrsTypeId]
+	JOIN dbo.Accounts A ON FE.[Id] = A.[AccountTypeId]
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

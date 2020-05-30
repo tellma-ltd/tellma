@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Centers_Validate__Save]
 	@Entities [CenterList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -130,4 +131,10 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Centers] BE ON FE.ParentId = BE.Id
 	WHERE (BE.IsActive = 0);
 
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -22,7 +22,7 @@ BEGIN
 	(7,			N'Golden Earth', N'غولدن إيرث')
 	;
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @customersDef,
+		@DefinitionId = @customersCD,
 		@Entities = @Customers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 END
@@ -70,3 +70,4 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 
 	DECLARE @It3am INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'It3aam');
 	DECLARE @Washm INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'al-Washm');
+	DECLARE @Taji INT = (SELECT [Id] FROM [dbo].[fi_Contracts](N'customers', NULL) WHERE [Name] = N'TAGI restaurants');

@@ -4,7 +4,8 @@
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @Ids [dbo].[IdList];
+	-- Add here Code that is handled by C#
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[Contracts__Activate] @Ids = @Ids, @IsActive = @IsActive;

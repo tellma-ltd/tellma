@@ -34,13 +34,7 @@ END
 :r .\01_Security\a_Users.sql
 :r .\01_Security\b_RolesMemberships.sql
 
---:r .\01_Definitions\f_LineDefinitions\100_LineDefinitions.sql
-:r .\02_Definitions\f_LineDefinitions\101_LineDefinitions.sql
---:r .\01_Definitions\f_LineDefinitions\102_LineDefinitions.sql
---:r .\01_Definitions\f_LineDefinitions\103_LineDefinitions.sql
---:r .\01_Definitions\f_LineDefinitions\104_LineDefinitions.sql
---:r .\01_Definitions\f_LineDefinitions\105_LineDefinitions.sql
-:r .\02_Definitions\f_LineDefinitions\999_LineDefinitions.sql
+:r .\02_Definitions\f_LineDefinitions.sql
 :r .\02_Definitions\g_DocumentDefinitions.sql
 
 :r .\03_Basic\b_Units.sql
@@ -74,11 +68,12 @@ END
 
 :r .\06_Accounts\b_AccountClassifications.sql
 :r .\06_Accounts\101_Accounts.sql
-:r .\06_Accounts\101_AccountsMappings.sql
+--:r .\06_Accounts\101_AccountsMappings.sql
 --:r .\06_Accounts\105_Accounts.sql
 :r .\07_Entries\101\101a_manual-journal-vouchers.sql
 :r .\07_Entries\101\101b_cash-payment-vouchers.sql
---:r .\07_Entries\101\101d_revenue-recognition-vouchers.sql
+:r .\07_Entries\101\101e_revenue-templates.sql
+:r .\07_Entries\101\101f_revenue-recognition-vouchers.sql
 
 DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (
 	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',

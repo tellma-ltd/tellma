@@ -49,7 +49,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 
 
 EXEC [api].[Contracts__Save]
-	@DefinitionId = @suppliersDef,
+	@DefinitionId = @suppliersCD,
 	@Entities = @Suppliers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

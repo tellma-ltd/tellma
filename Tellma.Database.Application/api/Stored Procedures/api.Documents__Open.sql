@@ -4,18 +4,11 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	INSERT INTO @ValidationErrors
+
 	EXEC [bll].[Documents_Validate__Open]
 		@DefinitionId = @DefinitionId,
-		@Ids = @IndexedIds;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Ids = @IndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
@@ -27,5 +20,4 @@ AS
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = @UserId
-		;
+		@AssigneeId = @UserId;

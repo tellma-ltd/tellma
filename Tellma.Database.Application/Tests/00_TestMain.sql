@@ -6,7 +6,6 @@
 	IfrsDisclosures
 	Units
 	IfrsEntryClassifications
-	IfrsAccountClassifications -- screen shows list of accounts
 	JobTitles
 	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
 -- Critical screens for making a journal entry

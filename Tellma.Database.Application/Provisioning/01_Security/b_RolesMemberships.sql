@@ -25,7 +25,6 @@ BEGIN
 	(0,5,@amtaam),
 	(1,5,@aasalam),
 	(0,6,@omer);
-
 	INSERT INTO @Permissions([Index], [HeaderIndex],
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
 		[Action],	[Criteria],			[View]) VALUES
@@ -106,8 +105,6 @@ BEGIN
 	(3,			N'Sales Manager',		'SM'),
 	(4,			N'Accountant',			'AE'),
 	(5,			N'Cashier',				'CS')
-	;
-
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
 	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'tizitanigussie@gmail.com'		UNION
@@ -117,8 +114,6 @@ BEGIN
 	SELECT	4,		0,			[Id] FROM dbo.[Users] WHERE Email = N'sarabirhanuk@gmail.com'		UNION	
 	SELECT	4,		1,			[Id] FROM dbo.[Users] WHERE Email = N'zewdnesh.hora@gmail.com'		UNION
 	SELECT	5,		0,			[Id] FROM dbo.[Users] WHERE Email = N'tigistnegash74@gmail.com'
-	;
-
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
@@ -127,8 +122,6 @@ BEGIN
 	(1,				0,		N'all',									N'Read'),
 	(4,				0,		N'all',									N'Read'),
 	(5,				0,		N'all',									N'Read')
-	;
-
 	--INSERT INTO @Users
 	--([Index],	[Name],						[Email]) VALUES
 	--(0,			N'Badege Kebede',			N'badege.kebede@gmail.com'),
@@ -155,7 +148,6 @@ BEGIN
 	(2,			N'Internal Auditor',	N'المراجع الداخلي','IA'),
 	(3,			N'Account Comptroller',	N'مراقب الحسايات',	'AC'),
 	(4,			N'Material Control',	N'إدارة المواد',	'MC');
-
 	INSERT INTO @Members
 	([HeaderIndex],	[Index],	[UserId])
 	SELECT	0,		0,			[Id] FROM dbo.[Users] WHERE Email = N'hisham@simpex.co.sa'		UNION
@@ -163,7 +155,6 @@ BEGIN
 	SELECT	2,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mahdi.mrad@simpex.co.sa'		UNION
 	SELECT	3,		0,			[Id] FROM dbo.[Users] WHERE Email = N'tareq@simpex.co.sa'		UNION
 	SELECT	4,		0,			[Id] FROM dbo.[Users] WHERE Email = N'mazen.mrad@simpex.co.sa'	;
-
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
@@ -172,6 +163,55 @@ BEGIN
 	(1,				0,		N'all',									N'Read'),
 	(4,				0,		N'all',									N'Read'),
 	(5,				0,		N'all',									N'Read');
+END
+
+IF @DB = N'106' -- Soreti, ETB, en/am
+BEGIN
+	INSERT INTO @Roles
+	([Index],	[Name],				[Name2],		[Code], [IsPublic]) VALUES
+	(0,			N'Finance Manager',	N'مدير مالي',	'FM',	0),
+	(1,			N'General Manager', N'مدير عام',	'GM',	0),
+	(2,			N'Reader',			N'قارئ',		'RDR',	0),
+	(3,			N'Account Manager',	N'مدير علاقة',	'AM',	0),
+	(4,			N'Comptroller',		N'مشرف حسابات','CMPT',	0),
+	(5,			N'Cash Custodian',	N'مسؤول عهدة',	'CC',	0),
+	(6,			N'Admin. Affairs',	N'الشؤون الإدارية', N'AA',0),
+	(9,			N'Public',			N'عام',			'PBLC',	1)
+	INSERT INTO @Permissions([Index], [HeaderIndex],
+	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
+		[Action],	[Criteria],			[View]) VALUES
+	(0,0,N'All',	NULL,				N'all'),
+	(0,1,N'All',	NULL,				N'all'),
+	(0,2,N'Read',	NULL,				N'all'),
+	(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
+	(1,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-payment-vouchers'),
+	(2,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-receipt-vouchers'),
+	(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
+	(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
+	(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers'),
+	(3,4,N'Read',	NULL,				N'accounts'),
+	(0,5,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
+										N'documents/cash-payment-vouchers'),
+	(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
+										N'documents/cash-receipt-vouchers'),
+	(2,5,N'Update', NULL,				N'contracts/suppliers'),
+
+	(0,9,N'Read',	NULL,				N'contracts/cash-custodians'),
+	(1,9,N'Read',	NULL,				N'centers'),
+	(2,9,N'Read',	NULL,				N'currencies'),
+	(3,9,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
+	(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
+	(5,9,N'Read',	NULL,				N'entry-types'),
+	(6,9,N'Read',	NULL,				N'lookups/it-equipment-manufacturers'),
+	(7,9,N'Read',	NULL,				N'units'),
+	(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
+	(9,9,N'Read',	NULL,				N'centers'),
+	(10,9,N'Read',	NULL,				N'resources/services-expenses'),
+	(11,9,N'Read',	NULL,				N'roles'),
+	(12,9,N'Read',	NULL,				N'contracts/suppliers'),
+	(13,9,N'Read',	NULL,				N'users');
 END
 
 DELETE FROM @Roles WHERE [Name] IN (SELECT [Name] FROM dbo.Roles);

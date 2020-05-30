@@ -38,7 +38,12 @@ BEGIN
 		([Name],			[Name2],	[Email]) VALUES
 		(N'Administrator',	N'المشرف',	@DeployEmail);
 	END
-
+	ELSE IF @DB = N'106' -- Soreti, ETB, en/am manyfacturing and sales
+	BEGIN
+		INSERT INTO @Users
+		([Name],			[Name2], [Email]) VALUES
+		(N'Administrator',	N'አስተዳዳሪ', @DeployEmail);
+	END
 	DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 	EXEC [dal].[Users__Save]
 		@Entities = @Users

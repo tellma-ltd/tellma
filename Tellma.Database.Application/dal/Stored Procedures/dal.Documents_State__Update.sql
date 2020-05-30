@@ -10,11 +10,13 @@ WHERE Id IN (SELECT [Id] FROM @Ids)
 AND [State] <> @State;
 
 -- Make sure Non-workflow lines are updated
-UPDATE dbo.Lines
-SET [State] = 4 * @State
-WHERE [DocumentId] IN (SELECT [Id] FROM @Ids)
-AND [State] <> 4 * @State
-AND [DefinitionId] IN (
+UPDATE L
+SET L.[State] = D.[LastLineState] * @State
+FROM dbo.Lines L
+JOIN map.Documents() D ON L.[DocumentId] = D.[Id]
+WHERE L.[DocumentId] IN (SELECT [Id] FROM @Ids)
+AND L.[State] <> D.[LastLineState] * @State
+AND L.[DefinitionId] IN (
 	SELECT [Id]
 	FROM map.[LineDefinitions]()
 	WHERE [HasWorkflow] = 0

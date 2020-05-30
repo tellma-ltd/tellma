@@ -17,9 +17,7 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
--- Validate
-	INSERT INTO @ValidationErrors
+
 	EXEC [bll].[Settings_Validate__Save]
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
@@ -35,15 +33,7 @@ SET NOCOUNT ON;
 		@DefinitionsVersion = @DefinitionsVersion,
 		@SettingsVersion = @SettingsVersion,
 		@ArchiveDate = @ArchiveDate,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
-;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

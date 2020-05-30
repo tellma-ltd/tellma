@@ -24,13 +24,13 @@ BEGIN -- Inserting
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			2,				@ManualLineDef),
-	(0,			3,				@ManualLineDef),
-	(0,			7,				@ManualLineDef),
-	(0,			8,				@ManualLineDef),
-	(0,			9,				@ManualLineDef),
-	(0,			10,				@ManualLineDef),
-	(0,			11,				@ManualLineDef);
+	(0,			2,				@ManualLineLD),
+	(0,			3,				@ManualLineLD),
+	(0,			7,				@ManualLineLD),
+	(0,			8,				@ManualLineLD),
+	(0,			9,				@ManualLineLD),
+	(0,			10,				@ManualLineLD),
+	(0,			11,				@ManualLineLD);
 
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [Direction],
 				[AccountId],	[EntryTypeId],										[CenterId],	[CurrencyId],	[MonetaryValue],	[Value], [ContractId]) VALUES
@@ -65,7 +65,7 @@ BEGIN -- Inserting
 
 	EXEC sys.sp_set_session_context 'UserId', @Jiad_akra;
 	EXEC [api].[Documents__Save]
-		@DefinitionId = @manual_journal_vouchersDef,
+		@DefinitionId = @manual_journal_vouchersDD,
 		@Documents = @D,
 		@Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -80,11 +80,11 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id]
 	FROM dbo.Documents 
-	WHERE DefinitionId = @manual_journal_vouchersDef
+	WHERE DefinitionId = @manual_journal_vouchersDD
 	AND [State] = 0;
 		
 	EXEC [api].[Documents__Close]
-		@DefinitionId = @manual_journal_vouchersDef,
+		@DefinitionId = @manual_journal_vouchersDD,
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

@@ -4,21 +4,21 @@ IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(0, @ManualLineDef,	+4); -- Reviewed
+	(0, @ManualLineLD,	+4); -- Reviewed
 
 END
 IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(0, @ManualLineDef,	+4);
+	(0, @ManualLineLD,	+4);
 
 END
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(0, @ManualLineDef,		+4);
+	(0, @ManualLineLD,		+4);
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
 	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'AE';
@@ -27,8 +27,8 @@ IF @DB = N'105' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @Workflows([Index],
 	[LineDefinitionId], ToState) Values
-	(0, @ManualLineDef,		+3),
-	(1, @ManualLineDef,		+4);
+	(0, @ManualLineLD,		+3),
+	(1, @ManualLineLD,		+4);
 
 	INSERT INTO @WorkflowSignatures([Index], [HeaderIndex], [RoleId])
 	SELECT 0, 0, [Id] FROM dbo.Roles WHERE [Code] = N'AC' UNION

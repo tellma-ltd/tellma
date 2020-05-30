@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [rpt].[Ifrs_110000] 
+--EXEC [rpt].rpt.[Ifrs_110000] @fromDate = N'2019.01.01', @ToDate =  N'2019.01.31', @PresentationCurrencyId = N'USD'
 --[110000] General information about financial statements
 	@fromDate DATE, 
 	@toDate DATE,

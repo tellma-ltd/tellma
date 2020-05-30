@@ -15,15 +15,16 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 
 				[Index], [Id],
-				[DesignationId],
+				[AccountTypeId],
 				[CenterId],
 				[Name], 
 				[Name2], 
 				[Name3], 
 				[Code],
-				[IfrsTypeId],
 				[ClassificationId],
+				[ContractDefinitionId],
 				[ContractId],
+				[ResourceDefinitionId],
 				[ResourceId],
 				[CurrencyId],
 				[EntryTypeId]
@@ -32,15 +33,17 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[DesignationId]		= s.[DesignationId],
+				t.[AccountTypeId]		= s.[AccountTypeId],
 				t.[CenterId]			= s.[CenterId],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
 				t.[Code]				= s.[Code],
-				t.[IfrsTypeId]			= s.[IfrsTypeId],
-				t.[ClassificationId]	= s.[ClassificationId], 
+
+				t.[ClassificationId]	= s.[ClassificationId],
+				t.[ContractDefinitionId]= s.[ContractDefinitionId],
 				t.[ContractId]			= s.[ContractId],
+				t.[ResourceDefinitionId]= s.[ResourceDefinitionId],
 				t.[ResourceId]			= s.[ResourceId],
 				t.[CurrencyId]			= s.[CurrencyId],
 				t.[EntryTypeId]			= s.[EntryTypeId],
@@ -48,28 +51,32 @@ SET NOCOUNT ON;
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DesignationId],
+				[AccountTypeId],
 				[CenterId],
 				[Name], 
 				[Name2], 
 				[Name3], 
 				[Code],
-				[IfrsTypeId],
+
 				[ClassificationId],
+				[ContractDefinitionId],
 				[ContractId],
+				[ResourceDefinitionId],
 				[ResourceId],
 				[CurrencyId],
 				[EntryTypeId])
 			VALUES (
-				s.[DesignationId],
+				s.[AccountTypeId],
 				s.[CenterId],
 				s.[Name], 
 				s.[Name2], 
 				s.[Name3], 
 				s.[Code],
-				s.[IfrsTypeId],
+
 				s.[ClassificationId],
+				s.[ContractDefinitionId],
 				s.[ContractId],
+				s.[ResourceDefinitionId],
 				s.[ResourceId],
 				s.[CurrencyId],
 				s.[EntryTypeId])

@@ -29,7 +29,7 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @cash_custodiansDef,
+		@DefinitionId = @cash_accountsCD,
 		@Entities = @Custodians,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -39,8 +39,8 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 		GOTO Err_Label;
 	END;
 
-	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe' AND [DefinitionId] = @cash_custodiansDef);
---	DECLARE @GMSafeUSD INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe - USD' AND [DefinitionId] = @cash_custodiansDef);
-	DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @cash_custodiansDef);
-	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @cash_custodiansDef);
-	DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @cash_custodiansDef);
+	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe' AND [DefinitionId] = @cash_accountsCD);
+--	DECLARE @GMSafeUSD INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe - USD' AND [DefinitionId] = @cash_accountsCD);
+	DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @cash_accountsCD);
+	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @cash_accountsCD);
+	DECLARE @KRTBank INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Bank of Khartoum' AND [DefinitionId] =  @cash_accountsCD);

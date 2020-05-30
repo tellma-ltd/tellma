@@ -3,7 +3,7 @@
 	[Id]						INT				CONSTRAINT [PK_Contracts] PRIMARY KEY IDENTITY,
 	[DefinitionId]				INT				NOT NULL	CONSTRAINT [FK_Contracts__DefinitionId] REFERENCES dbo.[ContractDefinitions]([Id]),
 								CONSTRAINT [IX_Contracts__Id_DefinitionId] UNIQUE ([Id], [DefinitionId]),
-	[IsActive]					BIT				NOT NULL DEFAULT 1, -- 0 means the person is dead or the organization is close
+	[IsActive]					BIT				NOT NULL DEFAULT 1,
 	[Name]						NVARCHAR (255)	NOT NULL, -- CONSTRAINT [IX_Contracts__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),

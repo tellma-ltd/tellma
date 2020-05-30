@@ -2,6 +2,10 @@
 @Entries EntryList READONLY
 AS
 BEGIN
+-- Pseudocode for Payroll Wizard
+-- For each line, we enter: Employee: Noted Contract 0, Factor 1 (1 month), which generates a FE wide line
+-- Script must add Income tax, Social contribution, 
+
 -- This is Payroll Tab for ET companies
 -- Overtime Tab
 --0 Dr. Overtime (Normal): 
@@ -52,7 +56,7 @@ BEGIN
 	--		-SUM([Direction] * [Time])
 	--	FROM dbo.Entries DLE
 	--	JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
-	--	WHERE A.[AccountDesignationId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
+	--	WHERE A.[AccountDesignationId] IN (@SalariesAccrualsTaxableAccountDsg, @SalariesAccrualsNonTaxableAccountDef)
 	--	GROUP BY DLE.[AccountId], A.[AgentId], A.[ResourceId]
 	--	HAVING SUM([Direction] * [Value]) <> 0
 	--),

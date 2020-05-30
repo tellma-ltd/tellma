@@ -16,30 +16,30 @@ BEGIN -- Inserting
 
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			0,				@ManualLineDef),
-	(1,			0,				@ManualLineDef),
-	(2,			0,				@ManualLineDef),
-	(3,			0,				@ManualLineDef);
+	(0,			0,				@ManualLineLD),
+	(1,			0,				@ManualLineLD),
+	(2,			0,				@ManualLineLD),
+	(3,			0,				@ManualLineLD);
 
-	--(0,			1,				@ManualLineDef),
-	--(1,			1,				@ManualLineDef),
-	--(2,			1,				@ManualLineDef)
+	--(0,			1,				@ManualLineLD),
+	--(1,			1,				@ManualLineLD),
+	--(2,			1,				@ManualLineLD)
 	;
 	/*
 	INSERT INTO @L
 	([Index], [DocumentIndex], [DefinitionId]) VALUES
-	(0,			2,				@ManualLineDef),--
-	(1,			2,				@ManualLineDef),--
-	(2,			2,				@ManualLineDef),
-	(3,			2,				@ManualLineDef),
-	(4,			2,				@ManualLineDef),
+	(0,			2,				@ManualLineLD),--
+	(1,			2,				@ManualLineLD),--
+	(2,			2,				@ManualLineLD),
+	(3,			2,				@ManualLineLD),
+	(4,			2,				@ManualLineLD),
 	
-	(0,			3,				@ManualLineDef),
-	(1,			3,				@ManualLineDef),
+	(0,			3,				@ManualLineLD),
+	(1,			3,				@ManualLineLD),
 
-	(0,			4,				@ManualLineDef),
-	(1,			4,				@ManualLineDef),
-	(2,			4,				@ManualLineDef);
+	(0,			4,				@ManualLineLD),
+	(1,			4,				@ManualLineLD),
+	(2,			4,				@ManualLineLD);
 		;
 		*/
 	DECLARE @500Pkt INT = (SELECT [Id] FROM dbo.Units WHERE [Name] = N'500pkt');

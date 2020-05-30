@@ -1,15 +1,16 @@
 ﻿CREATE TABLE [dbo].[Accounts] (
 	[Id]					INT				CONSTRAINT [PK_Accounts] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[DesignationId]			INT				NOT NULL CONSTRAINT [FK_Accounts__DesignationId] REFERENCES [dbo].[AccountDesignations] ([Id]),
+	[AccountTypeId]			INT				NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[CenterId]				INT				CONSTRAINT [FK_Accounts__CenterId] REFERENCES [dbo].[Centers] ([Id]),
 	[Name]					NVARCHAR (255)	NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[Code]					NVARCHAR (50),--	CONSTRAINT [IX_Accounts__Code]  ,
-	[IfrsTypeId]			INT				NOT NULL CONSTRAINT [FK_Accounts__IfrsTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[ClassificationId]		INT				CONSTRAINT [FK_Accounts__ClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]),
 	-- Any non null values gets replicated to Entries
+	[ContractDefinitionId]	INT,
 	[ContractId]			INT				CONSTRAINT [FK_Accounts__ContractId] REFERENCES [dbo].[Contracts] ([Id]),
+	[ResourceDefinitionId]	INT,
 	[ResourceId]			INT				CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[CurrencyId]			NCHAR (3)		CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[EntryTypeId]			INT				CONSTRAINT [FK_Accounts__EntryTypeId] REFERENCES [dbo].[EntryTypes],

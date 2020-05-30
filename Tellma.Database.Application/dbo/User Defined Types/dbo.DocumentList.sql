@@ -11,7 +11,7 @@
 	[DocumentText1]					NVARCHAR (255),
 	[DocumentText2]					NVARCHAR (255),
 	[Memo]							NVARCHAR (255),	
-	[MemoIsCommon]					BIT				DEFAULT 1,
+	[MemoIsCommon]					BIT				DEFAULT 0,
 	[DebitContractId]				INT,
 	[DebitContractIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[CreditContractId]				INT,

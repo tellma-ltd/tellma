@@ -21,6 +21,7 @@ BEGIN
 	(4,N'inventories',						N'Inventory Items',						N'Inventory Item',				NULL,NULL,							N'home',			N'Purchasing',		300),--@Inventories
 	(5,N'revenue-services',					N'Revenue Services',					N'Revenue Service',				NULL,NULL,							N'hand-holding-usd', N'Purchasing',		400),--@ServicesExpense
 	(6,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense',	NULL,NULL,							N'hand-holding-usd', N'HumanCapital',	500);--@EmployeeBenefitsExpense
+
 	
 	UPDATE @ResourceDefinitions
 	SET 
@@ -129,6 +130,18 @@ BEGIN
 	WHERE [Code] = N'paper-products'
 END
 
+ELSE IF @DB = N'106' -- Soreti, ETB, en/am
+BEGIN
+	INSERT INTO @ResourceDefinitions([Index],
+	[Code],									[TitlePlural],							[TitleSingular]) VALUES--,				[ParentAccountTypeId]) VALUES
+	(0,N'properties-plants-and-equipment',	N'Properties, Plants and Equipment',	N'Property, Plant and Equipment'),--,dbo.fn_ATCode__Id(N'PropertyPlantAndEquipment')),
+	(1,N'investment-properties',			N'Investment Properties',				N'Investment Property'),--,			dbo.fn_ATCode__Id(N'InvestmentProperty')),
+	(8,N'raw-materials',					N'Raw Materials',						N'Raw Material'),
+	(9,N'finished-goods',					N'Finished Goods',						N'Finished Good'),
+	(10,N'merchandise',						N'Merchandise',							N'Merchandise'),
+	(11,N'work-in-progress',				N'Work In Progress',					N'Work In Progress'),
+	(12,N'employee-benefits-expenses',		N'Employee Benefits Expenses',			N'Employee Benefits Expense');
+END
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -136,9 +149,12 @@ EXEC [api].[ResourceDefinitions__Save]
 DECLARE @properties_plants_and_equipmentDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'properties-plants-and-equipment');
 DECLARE @computer_equipmentDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'computer-equipment');
 DECLARE @intangible_assetsDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'intangible-assets');
-DECLARE @inventoriesDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'inventories');
 DECLARE @revenue_servicesDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'revenue-services');
-DECLARE @employee_benefits_expensesDef INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'employee-benefits-expenses');
+DECLARE @employee_benefits_expensesRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'employee-benefits-expenses');
+DECLARE @raw_materialsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'raw-materials');
+DECLARE @finished_goodsRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'finished-goods');
+DECLARE @merchandiseRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'merchandise');
+DECLARE @work_in_progressRD INT = (SELECT [Id] FROM dbo.[ResourceDefinitions] WHERE [Code] = N'work-in-progress');
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

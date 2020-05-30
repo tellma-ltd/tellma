@@ -25,7 +25,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	(0,		N'Sisay Tesfaye');
 
 EXEC [api].[Contracts__Save]
-	@DefinitionId = @partnersDef,
+	@DefinitionId = @partnersCD,
 	@Entities = @Partners,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -35,7 +35,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DECLARE @PartnerMA INT = (SELECT [Id] FROM dbo.[Contracts] WHERE DefinitionId = @partnersDef AND [Name] = N'Mohamad Akra');
+DECLARE @PartnerMA INT = (SELECT [Id] FROM dbo.[Contracts] WHERE DefinitionId = @partnersCD AND [Name] = N'Mohamad Akra');
 /*
 BEGIN -- Users
 	IF NOT EXISTS(SELECT * FROM [dbo].[Users])

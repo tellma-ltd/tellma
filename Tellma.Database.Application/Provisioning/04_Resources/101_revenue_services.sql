@@ -22,6 +22,7 @@ BEGIN
 	(0, 2,	@ea,		1),
 	(0, 3,	@Month,		1);
 
+	EXEC sys.sp_set_session_context 'UserId', @Jiad_akra;
 	EXEC [api].[Resources__Save] -- N'services-expenses'
 		@DefinitionId = @revenue_servicesDef,
 		@Entities = @Resources,

@@ -23,6 +23,7 @@
 
 	DECLARE @PId INT ;
 
+	DECLARE @Agents dbo.AgentList, @AgentUsers dbo.AgentUserList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
@@ -33,7 +34,7 @@
 
 	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList, @WL dbo.WideLineList;
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];
-	DECLARE @Accounts dbo.AccountList;
+	DECLARE @Accounts dbo.AccountList, @AccountMappings dbo.AccountMappingList;
 	DECLARE @LineDefinitions dbo.LineDefinitionList;
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;

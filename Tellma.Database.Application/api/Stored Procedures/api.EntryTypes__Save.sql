@@ -5,18 +5,10 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[EntryTypes_Validate__Save]
-		@Entities = @Entities;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@Entities = @Entities,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

@@ -34,23 +34,17 @@ that has not been signed
 -- Accounts are affected by lines in state (REVIEWED) where the document is (Posted)
 */
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+	DECLARE @Ids [dbo].[IdList];
 
 	-- Validate that the user is not violating any business logic attempting to move the relevant lines to State @ToState
-	INSERT INTO @ValidationErrors
+
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @IndexedIds,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
-		@ToState = @ToState;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@ToState = @ToState,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

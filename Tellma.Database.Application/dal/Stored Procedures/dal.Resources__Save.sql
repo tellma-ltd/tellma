@@ -219,9 +219,9 @@ SET NOCOUNT ON;
 		FROM @ResourceUnits RU
 		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED THEN
+	WHEN MATCHED AND (t.[UnitId] <> s.[UnitId] OR t.[Multiplier] <> s.[Multiplier])
+	THEN
 		UPDATE SET
-			t.[ResourceId]				= s.[ResourceId],
 			t.[UnitId]					= s.[UnitId],
 			t.[Multiplier]				= s.[Multiplier],
 			t.[ModifiedAt]				= @Now,

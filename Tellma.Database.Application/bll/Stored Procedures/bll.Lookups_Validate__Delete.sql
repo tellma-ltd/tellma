@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[Lookups_Validate__Delete]
 	@DefinitionId INT,
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10
+	@Top INT = 10,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -27,5 +28,12 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.Resources R ON (FE.[Id] = R.[Lookup1Id] OR FE.[Id] = R.[Lookup2Id])
 	JOIN dbo.ResourceDefinitions RD ON RD.[Id] = R.[DefinitionId]
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

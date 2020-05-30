@@ -7,7 +7,6 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @FilledResources [dbo].[ResourceList];
 
 	INSERT INTO @FilledResources
@@ -15,18 +14,11 @@ SET NOCOUNT ON;
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities;
 
-	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @FilledResources,
-		@ResourceUnits = @ResourceUnits;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+		@ResourceUnits = @ResourceUnits,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

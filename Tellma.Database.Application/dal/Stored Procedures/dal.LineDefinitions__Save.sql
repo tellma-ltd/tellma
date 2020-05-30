@@ -110,7 +110,7 @@ SET NOCOUNT ON;
 			II.[Id] AS [LineDefinitionId],
 			LDE.[Index],
 			LDE.[Direction],
-			LDE.[AccountDesignationId],
+			LDE.[AccountTypeParentId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -121,7 +121,7 @@ SET NOCOUNT ON;
 		UPDATE SET
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
-			t.[AccountDesignationId]		= s.[AccountDesignationId],
+			t.[AccountTypeParentId]		= s.[AccountTypeParentId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -131,14 +131,14 @@ SET NOCOUNT ON;
 			[LineDefinitionId],
 			[Index],
 			[Direction],
-			[AccountDesignationId],
+			[AccountTypeParentId],
 			[EntryTypeId]
 		)
 		VALUES (
 			s.[LineDefinitionId],
 			s.[Index],
 			s.[Direction],
-			s.[AccountDesignationId],
+			s.[AccountTypeParentId],
 			s.[EntryTypeId]
 		);
 
@@ -155,7 +155,8 @@ SET NOCOUNT ON;
 			LDC.[Label3],
 			LDC.[RequiredState],
 			LDC.[ReadOnlyState],
-			LDC.[InheritsFromHeader]
+			LDC.[InheritsFromHeader],
+			LDC.[IsVisibleInTemplate]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
@@ -172,12 +173,13 @@ SET NOCOUNT ON;
 			t.[RequiredState]	= s.[RequiredState],
 			t.[ReadOnlyState]	= s.[ReadOnlyState],
 			t.[InheritsFromHeader]=s.[InheritsFromHeader],
+			t.[IsVisibleInTemplate]=s.[IsVisibleInTemplate],
 			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
+		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader], [IsVisibleInTemplate])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader],s.[IsVisibleInTemplate]);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (

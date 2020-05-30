@@ -91,7 +91,7 @@ BEGIN
 	END
 	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @employeesDef,
+		@DefinitionId = @employeesCD,
 		@Entities = @employees,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -102,7 +102,7 @@ BEGIN
 	END;
 
 	DECLARE @Abu_Ammar INT, @M_Ali INT, @el_Amin INT;
-	DECLARE @MohamadAkra int, @AhmadAkra int, @MKamil INT;
+	DECLARE @MohamadAkra int, @AhmadAkra int, @MKamil INT, @AASalamEmp INT;
 	
 	DECLARE @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 		@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
@@ -113,6 +113,7 @@ BEGIN
 		@M_Ali = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Ali'), 
 		@el_Amin = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'elAmin elTayeb'), 
 		@MKamil = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'M. Kamil'),
+		@AASalamEmp = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ahmad Abdussalam'),
 		@MohamadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Mohamad Akra'), 
 		@AhmadAkra = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Ahmad Akra'), 
 		@BadegeKebede = (SELECT [Id] FROM [dbo].[fi_Contracts](N'employees', NULL) WHERE [Name] = N'Badege Kebede'), 
