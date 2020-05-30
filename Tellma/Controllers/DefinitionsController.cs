@@ -29,7 +29,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public ActionResult<DataWithVersion<DefinitionsForClient>> DefinitionsForClient()
+        public ActionResult<Versioned<DefinitionsForClient>> DefinitionsForClient()
         {
             try
             {
@@ -756,7 +756,7 @@ namespace Tellma.Controllers
             return result;
         }
 
-        public static async Task<DataWithVersion<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
+        public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
             var (version, lookupDefs, agentDefs, resourceDefs, reportDefs, docDefs, lineDefs, accountTypes) = await repo.Definitions__Load(cancellation);
@@ -776,7 +776,7 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Return result
-            return new DataWithVersion<DefinitionsForClient>
+            return new Versioned<DefinitionsForClient>
             {
                 Data = result,
                 Version = version.ToString()

@@ -3,7 +3,6 @@ using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.Utilities;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading;
+using Tellma.Controllers.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tellma.Controllers
 {
@@ -22,9 +23,40 @@ namespace Tellma.Controllers
     public abstract class FactWithIdControllerBase<TEntity, TKey> : FactControllerBase<TEntity>
         where TEntity : EntityWithKey<TKey>
     {
+        private readonly ILogger _logger;
+
         // Constructor
         public FactWithIdControllerBase(ILogger logger) : base(logger)
         {
+            _logger = logger;
+        }
+
+        [HttpGet("by-ids")]
+        public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetByIds([FromQuery] GetByIdsArguments<TKey> args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Calculate server time at the very beginning for consistency
+                var serverTime = DateTimeOffset.UtcNow;
+
+                // Load the data
+                var service = GetFactWithIdService();
+                var (entities, extras) = await service.GetByIds(args.I, args, cancellation);
+
+                // Flatten and Trim
+                var relatedEntities = FlattenAndTrim(entities, cancellation);
+
+                // Prepare the result in a response object
+                var result = new EntitiesResponse<TEntity>
+                {
+                    Result = entities,
+                    RelatedEntities = relatedEntities,
+                    CollectionName = GetCollectionName(typeof(TEntity)),
+                    Extras = extras,
+                    ServerTime = serverTime,
+                };
+                return Ok(result);
+            }, _logger);
         }
 
         protected override FactServiceBase<TEntity> GetFactService()
@@ -35,11 +67,130 @@ namespace Tellma.Controllers
         protected abstract FactWithIdServiceBase<TEntity, TKey> GetFactWithIdService();
     }
 
-    public abstract class FactWithIdServiceBase<TEntity, TKey> : FactServiceBase<TEntity>
+    public abstract class FactWithIdServiceBase<TEntity, TKey> : FactServiceBase<TEntity>, IFactWithIdService
         where TEntity : EntityWithKey<TKey>
     {
-        public FactWithIdServiceBase(IStringLocalizer localizer) : base(localizer)
+        public FactWithIdServiceBase(IServiceProvider sp) : base(sp)
         {
+        }
+
+        /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="SelectExpandArguments"/>, after verifying the user's permissions
+        /// </summary>
+        public virtual async Task<(List<TEntity>, Extras)> GetByIds(List<TKey> ids, SelectExpandArguments args, CancellationToken cancellation)
+        {
+            // Parse the parameters
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = ParseSelect(args?.Select);
+
+            // Load the data
+            var data = await GetEntitiesByIds(ids, expand, select, cancellation);
+            var extras = await GetExtras(data, cancellation);
+
+            return (data, extras);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="List{TEntity}"/> as per the Ids and the specifications in the <see cref="ExpandExpression"/> and <see cref="SelectExpression"/>,
+        /// after verifying the user's permissions, returns the entities in the same order as the supplied Ids
+        /// </summary>
+        protected virtual async Task<List<TEntity>> GetEntitiesByIds(List<TKey> ids, ExpandExpression expand, SelectExpression select, CancellationToken cancellation)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return new List<TEntity>();
+            }
+            else
+            {
+                // Load data
+                var data = await GetEntitiesByCustomQuery(q => q.FilterByIds(ids), expand, select, null, cancellation);
+
+                // If the data is only 
+                if (ids.Count == 1 && data.Count == 1)
+                {
+                    // No need to sort
+                    return data;
+                }
+                else
+                {
+                    // Sort the entities according to the original Ids, as a good practice
+                    TEntity[] dataSorted = new TEntity[ids.Count];
+                    Dictionary<TKey, TEntity> dataDic = data.ToDictionary(e => e.Id);
+                    for (int i = 0; i < ids.Count; i++)
+                    {
+                        var id = ids[i];
+                        if (dataDic.TryGetValue(id, out TEntity entity))
+                        {
+                            dataSorted[i] = entity;
+                        }
+                    }
+
+                    return dataSorted.ToList();
+                }
+            }
+        }
+
+        public virtual async Task<(List<TEntity>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
+        {
+            if (propName is null)
+            {
+                throw new ArgumentNullException(nameof(propName));
+            }
+
+            // Load the data
+            List<TEntity> data;
+            if (values == null || !values.Any())
+            {
+                data = new List<TEntity>();
+            }
+            else
+            {
+                // Parse the parameters
+                var expand = ExpandExpression.Parse(args?.Expand);
+                var select = ParseSelect(args?.Select);
+
+                data = await GetEntitiesByCustomQuery(q => q.FilterByPropertyValues(propName, values), expand, select, null, cancellation);
+            }
+
+            // Load the extras
+            var extras = await GetExtras(data, cancellation);
+
+            // Return 
+            return (data, extras);
+        }
+
+        /// <summary>
+        /// Returns an <see cref="List{TEntity}"/> based on a custom filtering function applied to the query, as well as
+        /// optional select and expand arguments, checking the user permissions along the way
+        /// </summary>
+        /// <param name="filterFunc">Allows any kind of filtering on the query</param>
+        /// <param name="expand">Optional expand argument</param>
+        /// <param name="select">Optional select argument</param>
+        protected async Task<List<TEntity>> GetEntitiesByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby, CancellationToken cancellation)
+        {
+            // Prepare a query of the result, and clone it
+            var repo = GetRepository();
+            var query = repo.Query<TEntity>();
+
+            // Apply custom filter function
+            query = filterFunc(query);
+
+            // Apply read permissions
+            var permissions = await UserPermissions(Constants.Read, cancellation);
+            var permissionsFilter = GetReadPermissionsCriteria(permissions);
+            query = query.Filter(permissionsFilter);
+
+            // Expand, Select and Order the result as specified in the OData agruments
+            var expandedQuery = query.Expand(expand).Select(select).OrderBy(orderby ?? OrderByExpression.Parse("Id")); // Required
+
+            // Load the result into memory
+            var data = await expandedQuery.ToListAsync(cancellation); // this is potentially unordered, should that be a concern?
+
+            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+            await ApplyReadPermissionsMask(data, query, permissions, GetDefaultMask(), cancellation);
+
+            // Return
+            return data;
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -357,5 +508,28 @@ namespace Tellma.Controllers
                 }
             }
         }
+
+        async Task<(List<EntityWithKey>, Extras)> IFactWithIdService.GetByIds(List<object> ids, SelectExpandArguments args, CancellationToken cancellation)
+        {
+            var (data, extras) = await GetByIds(ids.Cast<TKey>().ToList(), args, cancellation);
+            var genericData = data.Cast<EntityWithKey>().ToList();
+
+            return (genericData, extras);
+        }
+
+        async Task<(List<EntityWithKey>, Extras)> IFactWithIdService.GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation)
+        {
+            var (data, extras) = await GetByPropertyValues(propName, values, args, cancellation);
+            var genericData = data.Cast<EntityWithKey>().ToList();
+
+            return (genericData, extras);
+        }
+    }
+
+    public interface IFactWithIdService : IFactServiceBase
+    {
+        Task<(List<EntityWithKey>, Extras)> GetByIds(List<object> ids, SelectExpandArguments args, CancellationToken cancellation);
+
+        Task<(List<EntityWithKey>, Extras)> GetByPropertyValues(string propName, IEnumerable<object> values, SelectExpandArguments args, CancellationToken cancellation);
     }
 }

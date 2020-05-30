@@ -78,7 +78,7 @@ namespace Tellma.Controllers
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
-        public CrudTreeServiceBase(IStringLocalizer localizer) : base(localizer)
+        public CrudTreeServiceBase(IServiceProvider sp) : base(sp)
         {
         }
 

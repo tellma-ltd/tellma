@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Tellma.Entities.Descriptors
 {
@@ -24,12 +25,12 @@ namespace Tellma.Entities.Descriptors
         /// Constructor
         /// </summary>
         public CollectionPropertyDescriptor(
-            Type propType,
+            PropertyInfo propInfo,
             string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             string foreignKeyName,
-            Func<TypeDescriptor> getCollectionTypeDescriptor) : base(propType, name, setter, getter)
+            Func<TypeDescriptor> getCollectionTypeDescriptor) : base(propInfo, name, setter, getter)
         {
             ForeignKeyName = foreignKeyName;
             _getCollectionTypeDescriptor = getCollectionTypeDescriptor;

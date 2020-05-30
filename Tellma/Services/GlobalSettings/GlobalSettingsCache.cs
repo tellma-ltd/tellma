@@ -24,7 +24,7 @@ namespace Tellma.Services.GlobalSettings
             _config = options.Value;
         }
 
-        public DataWithVersion<GlobalSettingsForClient> GetGlobalSettings()
+        public Versioned<GlobalSettingsForClient> GetGlobalSettings()
         {
             GlobalSettingsForClient result = null;
             _lock.EnterReadLock();
@@ -65,7 +65,7 @@ namespace Tellma.Services.GlobalSettings
                 }
             }
 
-            return new DataWithVersion<GlobalSettingsForClient>
+            return new Versioned<GlobalSettingsForClient>
             {
                 Data = result,
                 Version = _version

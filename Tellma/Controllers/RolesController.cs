@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Tellma.Controllers.ImportExport;
 
 namespace Tellma.Controllers
 {
@@ -69,7 +70,7 @@ namespace Tellma.Controllers
 
         private string View => RolesController.BASE_ADDRESS;
 
-        public RolesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public RolesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -226,6 +227,23 @@ namespace Tellma.Controllers
                 trx.Complete();
                 return (null, null);
             }
+        }
+
+        protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        {
+            // Remove the RoleId property from the template, it's supposed to be hidden
+            var roleMemberships = mapping.CollectionProperty(nameof(RoleMembership));
+            var roleProp = roleMemberships.SimpleProperty(nameof(RoleMembership.RoleId));
+
+            roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != roleProp);
+
+            // Shift the index of all columns after the role property to prevent a gap
+            foreach(var propMapping in mapping.AllPropertyMappings().Where(p => p.Index > roleProp.Index))
+            {
+                propMapping.Index--;
+            }
+
+            return base.ProcessDefaultMapping(mapping);
         }
     }
 }

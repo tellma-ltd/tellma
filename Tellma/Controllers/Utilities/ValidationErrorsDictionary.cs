@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Tellma.Controllers.Utilities
@@ -29,15 +26,24 @@ namespace Tellma.Controllers.Utilities
                 }
 
                 list.Add(errorMessage);
+                ErrorCount++;
             }
         }
 
         public int MaxAllowedErrors => ModelStateDictionary.DefaultMaxAllowedErrors;
 
-        public int ErrorCount => _dic.Keys.Count;
+        public int ErrorCount { get; private set; } = 0;
 
         public bool IsValid => ErrorCount == 0;
 
         public bool HasReachedMaxErrors => ErrorCount >= MaxAllowedErrors;
+
+        public void ThrowIfInvalid()
+        {
+            if (!IsValid)
+            {
+                throw new UnprocessableEntityException(this);
+            }
+        }
     }
 }

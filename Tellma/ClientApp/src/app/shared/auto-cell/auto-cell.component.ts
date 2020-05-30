@@ -209,7 +209,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
  * @param value The value to represent as a string
  * @param prop The property descriptor used to format the value as a string
  */
-export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService) {
+export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService): string {
   switch (prop.control) {
     case 'text': {
       return value;

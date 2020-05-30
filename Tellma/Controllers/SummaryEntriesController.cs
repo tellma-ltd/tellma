@@ -62,7 +62,8 @@ namespace Tellma.Controllers
             IHttpContextAccessor contextAccessor,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            ISettingsCache settingsCache) : base(localizer)
+            ISettingsCache settingsCache,
+            IServiceProvider sp) : base(sp)
         {
             _contextAccessor = contextAccessor;
             _localizer = localizer;

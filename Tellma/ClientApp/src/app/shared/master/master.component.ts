@@ -3,15 +3,14 @@ import {
   ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 import { ActivatedRoute, Params, Router, ParamMap } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize, skip, map } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { EntitiesResponse } from '~/app/data/dto/entities-response';
-import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
-import { addToWorkspace, downloadBlob, isSpecified } from '~/app/data/util';
+import { addToWorkspace, downloadBlob, isSpecified, csvPackage } from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
@@ -23,17 +22,30 @@ import {
   MAXIMUM_COUNT
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/entities/base/metadata';
+import {
+  metadata,
+  EntityDescriptor,
+  entityDescriptorImpl,
+  NavigationPropDescriptor,
+  PropDescriptor
+} from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { StorageService } from '~/app/data/storage.service';
-import { SelectorChoice } from '../selector/selector.component';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { formatNumber } from '@angular/common';
+import { ImportResult } from '~/app/data/dto/import-result';
+import { ImportMode, ImportArguments_Mode } from '~/app/data/dto/import-arguments';
+import { Entity } from '~/app/data/entities/base/entity';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
+import { displayValue, displayEntity } from '../auto-cell/auto-cell.component';
+import { SelectorChoice } from '../selector/selector.component';
 
 enum SearchView {
   tiles = 'tiles',
   table = 'table'
 }
+
+type ExportMode = 'WhatISee' | 'ForImport';
 
 export interface MultiselectAction {
   template: TemplateRef<any>;
@@ -152,11 +164,14 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
+  @ViewChild('importModal', { static: true })
+  public importModal: TemplateRef<any>;
+
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
+  private notifyDownloadTemplate$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
-  private _formatChoices: SelectorChoice[];
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
@@ -170,10 +185,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   public searchView: SearchView;
   public checked = {};
-  public exportFormat: 'csv' | 'xlsx';
   public exportSkip = 0;
   public showExportSpinner = false;
-  public exportErrorMessage: string;
   public actionErrorMessage: string;
   public actionValidationErrors: { [id: string]: string[] } = {};
   public treeControl = new FlatTreeControl<NodeInfo>(node => node.level - 1, node => node.hasChildren);
@@ -207,15 +220,16 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       next: () => this.cdr.markForCheck()
     }));
 
+    this._subscriptions.add(this.notifyDownloadTemplate$.pipe(
+      switchMap(() => this.doDownloadTemplate())
+    ).subscribe());
+
     // Reset the state of the master component state
     this.localState = new MasterDetailsStore();
-    this._formatChoices = null;
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this.checked = {};
-    this.exportFormat = 'xlsx';
     this.exportSkip = 0;
     this.showExportSpinner = false;
-    this.exportErrorMessage = null;
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
     this._selectOld = 'null';
@@ -233,7 +247,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // default display mode
     let displayMode: MasterDisplayMode = this.enableTreeView ?
       MasterDisplayMode.tree : MasterDisplayMode.flat; // Default search view
-
 
     // const params = this.route.snapshot.paramMap;
     const handleFreshStateFromUrl = (params: ParamMap) => {
@@ -686,6 +699,32 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return Object.keys(resultPaths).join(',');
   }
 
+  private computeSelectForExport(): string {
+    const select = this.state.select || '';
+    const resultPaths: { [path: string]: true } = {};
+    const baseEntityDescriptor = this.entityDescriptor;
+
+    baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
+
+    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    select.split(',').forEach(path => {
+
+      const steps = path.split('/').map(e => e.trim());
+      path = steps.join('/'); // to trim extra spaces
+
+      try {
+        const currentDesc = entityDescriptorImpl(steps, this.collection,
+          this.definitionId, this.workspace, this.translate);
+
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+      } catch {
+        resultPaths[path] = true;
+      }
+    });
+
+    return Object.keys(resultPaths).join(',');
+  }
+
   private get selectKey(): string {
     return `${this.collection + (!!this.definitionId ? '/' + this.definitionId : '')}/select`;
   }
@@ -1001,13 +1040,147 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  onImport() {
-    alert('To be implemented');
+  // tslint:disable:member-ordering
+  public importErrorMessage: string;
+  public importResult: ImportResult;
+  public downloadingTemplate = false;
 
-    // if (!this.canImport) {
-    //   return;
-    // }
-    // this.router.navigate(['.', 'import'], { relativeTo: this.route });
+  private importKeyChoicesCollection: string;
+  private importKeyChoicesDefinitionId: string;
+  private importKeyChoicesResult: SelectorChoice[];
+
+  public get importKeyChoices(): SelectorChoice[] {
+    if (this.collection !== this.importKeyChoicesCollection ||
+      this.definitionId !== this.importKeyChoicesDefinitionId) {
+      this.importKeyChoicesCollection = this.collection;
+      this.importKeyChoicesDefinitionId = this.definitionId;
+      this.importKeyChoicesResult = [];
+
+      const props = this.entityDescriptor.properties;
+
+      // Collect the names of all foreign keys
+      const fks: { [fkName: string]: true} = {};
+      for (const propName of Object.keys(props)) {
+        const prop = props[propName];
+        if (prop.control === 'navigation') {
+          fks[prop.foreignKeyName] = true;
+        }
+      }
+
+      for (const propName of Object.keys(props)) {
+        if (fks[propName]) {
+          // FKs are not good candidates for user keys
+          continue;
+        }
+
+        const prop = props[propName];
+        if (prop.control === 'text' || (prop.control === 'number' && prop.maxDecimalPlaces === 0)) {
+          this.importKeyChoicesResult.push({ value: propName, name: prop.label });
+        }
+      }
+    }
+
+    return this.importKeyChoicesResult;
+  }
+
+  private _importModeChoices: SelectorChoice[];
+  get importModeChoices(): SelectorChoice[] {
+
+    if (!this._importModeChoices) {
+      this._importModeChoices = Object.keys(ImportArguments_Mode)
+        .map(key => ({ name: () => this.translate.instant(ImportArguments_Mode[key]), value: key }));
+    }
+
+    return this._importModeChoices;
+  }
+
+  public importMode: ImportMode = 'Insert';
+  public importKey: string;
+
+  public get showImportKey(): boolean {
+    return this.importMode === 'Update' || this.importMode === 'Merge';
+  }
+
+  onImport() {
+    // Try to suggestion a user key
+    if (!this.importKey) {
+      const choices = this.importKeyChoices;
+      if (choices.find(e => e.value === 'Code')) {
+        this.importKey = 'Code';
+      } else if (choices.find (e => e.value === 'Name')) {
+        this.importKey = 'Name';
+      } else if (choices.find(e => e.value === 'Label')) {
+        this.importKey = 'Label';
+      }
+    }
+
+    this.modalService.open(this.importModal, { windowClass: 't-import-modal' })
+      .result.then(
+        // Cleanup
+        () => delete this.importErrorMessage,
+        () => delete this.importErrorMessage,
+      );
+  }
+
+  public get enableImportButton(): boolean {
+    return !!this.importMode && (this.importMode === 'Insert' || !!this.importKey);
+  }
+
+  onSelectFileToImport(input: HTMLInputElement, modal: NgbModalRef) {
+    if (!this.canImport) {
+      return;
+    }
+
+    const files = input.files;
+    if (files.length === 0) {
+      return;
+    }
+
+    const file = files[0];
+    input.value = '';
+
+    // Clear any displayed errors
+    this.importErrorMessage = null;
+    this.importResult = null;
+
+    this.crud.import({ mode: this.importMode, key: this.importKey }, file).subscribe(
+      (importResult: ImportResult) => {
+
+        // Close the modal if the import is successful
+        modal.close();
+
+        // refresh the data
+        this.fetch();
+
+        // // Show the result to the user
+        // this.importResult = importResult;
+      },
+      (friendlyError: any) => {
+        this.importErrorMessage = friendlyError.error;
+      }
+    );
+  }
+
+  public onDownloadTemplate() {
+    this.notifyDownloadTemplate$.next();
+  }
+
+  public doDownloadTemplate() {
+    this.downloadingTemplate = true;
+    return this.crud.template({}).pipe(
+      tap((template: Blob) => {
+        this.downloadingTemplate = false;
+        downloadBlob(template, this.masterCrumb + '.csv');
+      }),
+      catchError((friendlyError: any) => {
+        this.downloadingTemplate = false;
+        this.displayErrorModal(friendlyError.error);
+        return of(null);
+      }),
+      finalize(() => {
+        this.downloadingTemplate = false;
+      })
+    );
   }
 
   /**
@@ -1119,16 +1292,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  public get formatChoices(): SelectorChoice[] {
-
-    if (!this._formatChoices) {
-      this._formatChoices = Object.keys(TemplateArguments_format)
-        .map(key => ({ name: () => this.translate.instant(TemplateArguments_format[key]), value: key }));
-    }
-
-    return this._formatChoices;
-  }
-
   public get search(): string {
     return this.state.search;
   }
@@ -1208,40 +1371,83 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return this.exportPageSize;
   }
 
-  public onExport(): void {
-    alert('To be implemented');
+  public onExport(exportPagingModal: TemplateRef<any>, mode: ExportMode): void {
+    this.exportMode = mode;
+    if (this.showExportPaging) {
+      // If the number of records is large, paging is required, open the paging modal
+      this.modalService.open(exportPagingModal);
+    } else {
+      // If the number of records is small, and paging isn't required, export straight away
+      this.onDoExport();
+    }
   }
 
-  public onExport2(): void {
+  /**
+   * Exports all search results, if there are too many it will prompt the user to choose a page to export
+   */
+  public onExportForImport(exportPagingModal: TemplateRef<any>): void {
+
+    if (this.showExportPaging) {
+      // If the number of records is large, paging is required, open the paging modal
+      this.modalService.open(exportPagingModal);
+    } else {
+      // If the number of records is small, and paging isn't required, export straight away
+      this.onDoExport();
+    }
+  }
+
+  private exportMode: ExportMode;
+  public onDoExport(): void {
     if (!this.canExport) {
       return;
     }
 
     const from = this.fromExport;
     const to = this.toExport;
-    const format = this.exportFormat;
-    this.exportErrorMessage = null;
-    this.showExportSpinner = true;
-
     const s = this.state;
 
-    this.crud.export({
-      top: this.exportPageSize,
-      skip: this.exportSkip,
-      orderby: s.orderby,
-      search: s.search,
-      filter: this.filter(),
-      expand: null,
-      format
-    }).pipe(tap(
+    let obs$: Observable<Blob>;
+    if (this.exportMode === 'ForImport') {
+      obs$ = this.crud.export({
+        top: this.exportPageSize,
+        skip: this.exportSkip,
+        orderby: s.orderby,
+        search: s.search,
+        filter: this.filter()
+      });
+    } else if (this.exportMode === 'WhatISee') {
+      const colPaths = this.tableColumnPaths;
+      obs$ = this.crud.get({
+        top: this.exportPageSize,
+        skip: this.exportSkip,
+        orderby: s.orderby,
+        search: s.search,
+        filter: this.filter(),
+        select: this.computeSelectForExport(),
+        countEntities: false
+      }).pipe(
+        map(response => {
+          const paths = colPaths.slice();
+          paths.unshift(''); // For the description
+          const data = composeEntities(response, paths, this.collection, this.definitionId, this.workspace, this.translate);
+          return csvPackage(data);
+        })
+      );
+    } else {
+      // Future proofing
+      console.error(`Unknown export mode ${this.exportMode}`);
+    }
+
+    this.showExportSpinner = true;
+    obs$.pipe(tap(
       (blob: Blob) => {
         this.showExportSpinner = false;
-        const fileName = `${this.exportFileName || this.translate.instant('Export')} ${from}-${to} ${new Date().toDateString()}.${format}`;
+        const fileName = `${this.exportFileName || this.masterCrumb} ${from}-${to}.csv`;
         downloadBlob(blob, fileName);
       },
       (friendlyError: any) => {
         this.showExportSpinner = false;
-        this.exportErrorMessage = friendlyError.error;
+        this.displayErrorModal(friendlyError.error);
       },
       () => {
         this.showExportSpinner = false;
@@ -1251,8 +1457,58 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     ).subscribe();
   }
 
-  public get showExportErrorMessage(): boolean {
-    return !!this.exportErrorMessage;
+  /**
+   * Exports records that are multi-selected by the user
+   */
+  public onExportByIds(mode: ExportMode) {
+    if (!this.canExport) {
+      return;
+    }
+
+    // Grab the selected Ids
+    const ids = this.checkedIds;
+    if (!ids || ids.length === 0) {
+      return;
+    }
+
+    let obs$: Observable<Blob>;
+    if (mode === 'ForImport') {
+      obs$ = this.crud.exportByIds(ids);
+    } else if (mode === 'WhatISee') {
+      const colPaths = this.tableColumnPaths;
+      obs$ = this.crud.getByIds(ids, {
+        select: this.computeSelectForExport(),
+        i: ids
+      }).pipe(
+        map(response => {
+          const paths = colPaths.slice();
+          paths.unshift(''); // For the description
+          const data = composeEntities(response, paths, this.collection, this.definitionId, this.workspace, this.translate);
+          return csvPackage(data);
+        })
+      );
+    } else {
+      // Future proofing
+      console.error(`Unknown export mode ${mode}`);
+    }
+
+    this.showExportSpinner = true;
+    obs$.pipe(tap(
+      (blob: Blob) => {
+        this.showExportSpinner = false;
+        const fileName = `${this.exportFileName || this.masterCrumb}.csv`;
+        downloadBlob(blob, fileName);
+      },
+      (friendlyError: any) => {
+        this.showExportSpinner = false;
+        this.displayErrorModal(friendlyError.error);
+      },
+      () => {
+        this.showExportSpinner = false;
+      }
+    ),
+      finalize(() => this.cdr.markForCheck())
+    ).subscribe();
   }
 
   // Multiselect-related stuff
@@ -1711,4 +1967,157 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     this.saveParentIdsToUserSettings([]);
   }
+}
+
+function metadataFactory(collection: string) {
+  const factory = metadata[collection]; // metadata factory for User
+  if (!factory) {
+    throw new Error(`The collection ${collection} does not exist`);
+  }
+
+  return factory;
+}
+
+function composeEntities(
+  response: EntitiesResponse,
+  colPaths: string[],
+  collection: string,
+  defId: string,
+  ws: WorkspaceService,
+  trx: TranslateService): string[][] {
+
+  // This array will contain the final result
+  const result: string[][] = [];
+
+  // This is the base descriptor
+  const baseDesc: EntityDescriptor = metadataFactory(collection)(ws, trx, defId);
+
+  // Step 1: Prepare the headers and extractors
+  const headers: string[] = []; // Simple array of header displays
+  const extracts: ((e: Entity) => string)[] = []; // Array of functions, one for each column to get the string value
+
+  for (const path of colPaths) {
+    const pathArray = (path || '').split('/').map(e => e.trim()).filter(e => !!e);
+
+    // This will contain the display steps of a single header. E.g. Item / Created By / Name
+    const headerArray: string[] = [];
+    const navProps: NavigationPropDescriptor[] = [];
+    let finalPropDesc: PropDescriptor = null;
+
+    // Loop over all steps except last one
+    let isError = false;
+    let currentDesc = baseDesc;
+
+    for (let i = 0; i < pathArray.length; i++) {
+      const step = pathArray[i];
+      const prop = currentDesc.properties[step];
+      if (!prop) {
+        isError = true;
+        break;
+      } else {
+        headerArray.push(prop.label());
+        if (prop.control === 'navigation') {
+          currentDesc = metadataFactory(prop.collection || prop.type)(ws, trx, prop.definition);
+          navProps.push(prop);
+        } else if (i !== pathArray.length - 1) {
+          // Only navigation properties are allowed unless this is the last one
+          isError = true;
+        } else {
+          finalPropDesc = prop;
+        }
+      }
+    }
+
+    // Prepare the entities in a dictionary for fast lookup by Id
+    const relatedEntities: { [key: string]: { [id: string]: EntityWithKey } } = {};
+    for (const coll of Object.keys(response.RelatedEntities)) {
+      const entitiesOfTypeArray = response.RelatedEntities[coll];
+      const entitiesOfType = (relatedEntities[coll] = {});
+      for (const entity of entitiesOfTypeArray) {
+        entitiesOfType[entity.Id] = entity;
+      }
+    }
+    {
+      // Don't forget the main collection (important for self referencing trees)
+      const coll = response.CollectionName;
+      const entitiesOfType = (relatedEntities[coll] = {});
+      for (const entity of response.Result) {
+        entitiesOfType[entity.Id] = entity;
+      }
+    }
+
+    if (isError) {
+      headers.push(`(${trx.instant('Error')})`);
+      extracts.push(_ => `(${trx.instant('Error')})`);
+    } else {
+      headers.push(headerArray.join(' / ') || baseDesc.titleSingular() || trx.instant('DisplayName'));
+      extracts.push(entity => {
+        let i = 0;
+        for (; i < navProps.length; i++) {
+          const navProp = navProps[i];
+          const propName = pathArray[i];
+
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+
+            const entitiesOfType = relatedEntities[navProp.collection || navProp.type];
+
+            // Get the foreign key
+            const fkValue = entity[navProp.foreignKeyName];
+            if (!fkValue) {
+              return ''; // The nav entity is null
+            }
+
+            // Get the nav entity
+            entity = entitiesOfType[fkValue];
+            if (!entity) {
+              // Anomaly from Server
+              console.error(`Property ${propName} loaded but null, even though FK ${navProp.foreignKeyName} is loaded`);
+              return `(${trx.instant('Error')})`;
+            }
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        }
+
+        // Final step
+        if (!!finalPropDesc) {
+          const propName = pathArray[i];
+          if (entity.EntityMetadata[propName] === 2 || propName === 'Id') {
+            const val = entity[propName];
+            return displayValue(val, finalPropDesc, trx);
+          } else if (entity.EntityMetadata[propName] === 1) {
+            // Masked because of user permissions
+            return `*******`;
+          } else {
+            // Bug
+            return `(${trx.instant('NotLoaded')})`;
+          }
+        } else {
+          // It terminates with a nav prop
+          return displayEntity(entity, currentDesc);
+        }
+      });
+    }
+  }
+
+  // Step 2 Push headers in the result
+  result.push(headers);
+
+  // Step 3 Use extractors to convert the entities to strings and push them in the result
+  for (const entity of response.Result) {
+    const row: string[] = [];
+    let index = 0;
+    for (const extract of extracts) {
+      row[index++] = extract(entity);
+    }
+
+    result.push(row);
+  }
+
+  // Finally: Return the result
+  return result;
 }

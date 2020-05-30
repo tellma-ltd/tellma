@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Center", Plural = "Centers")]
     public class CenterForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
@@ -15,7 +16,7 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
             new string[] {
                 "Center_CenterType_Investment",
@@ -25,18 +26,18 @@ namespace Tellma.Entities
         public string CenterType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
@@ -44,12 +45,12 @@ namespace Tellma.Entities
         public int? ManagerId { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "IsLeaf")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public bool? IsLeaf { get; set; } = true;
     }

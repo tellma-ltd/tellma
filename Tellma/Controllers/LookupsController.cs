@@ -74,7 +74,7 @@ namespace Tellma.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private string _definitionIdOverride;
 
-        private string DefinitionId => _definitionIdOverride ??
+        protected override string DefinitionId => _definitionIdOverride ??
             _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
             throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(LookupsService)}");
 
@@ -88,7 +88,8 @@ namespace Tellma.Controllers
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
-            IHttpContextAccessor contextAccessor) : base(localizer)
+            IHttpContextAccessor contextAccessor,
+            IServiceProvider sp) : base(sp)
         {
             _logger = logger;
             _localizer = localizer;
@@ -229,7 +230,7 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
 
-        public LookupsGenericService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public LookupsGenericService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
         }

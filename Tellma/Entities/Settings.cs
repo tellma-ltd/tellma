@@ -5,58 +5,59 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Settings", Plural = "Settings")]
     public class SettingsForSave : Entity
     {
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         public string ShortCompanyName { get; set; }
 
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string ShortCompanyName2 { get; set; }
 
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string ShortCompanyName3 { get; set; }
 
         [Display(Name = "Settings_FunctionalCurrency")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(3)]
         public string FunctionalCurrencyId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguage")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(2)]
         [Culture]
         public string PrimaryLanguageId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguageSymbol")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string PrimaryLanguageSymbol { get; set; }
 
         [Display(Name = "Settings_SecondaryLanguage")]
-        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2)]
         [Culture]
         public string SecondaryLanguageId { get; set; }
 
         [Display(Name = "Settings_SecondaryLanguageSymbol")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string SecondaryLanguageSymbol { get; set; }
 
         [Display(Name = "Settings_TernaryLanguage")]
-        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2)]
         [Culture]
         public string TernaryLanguageId { get; set; }
 
         [Display(Name = "Settings_TernaryLanguageSymbol")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string TernaryLanguageSymbol { get; set; }
 
         // Branding
 
         [Display(Name = "Settings_BrandColor")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string BrandColor { get; set; } // e.g. #0284AB
 
         // Financial

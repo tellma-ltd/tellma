@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
 
-        public OutboxService(ApplicationRepository repo, IStringLocalizer<Strings> localizer) : base(localizer)
+        public OutboxService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
         }

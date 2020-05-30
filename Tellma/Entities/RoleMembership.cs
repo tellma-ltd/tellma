@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    // Note: The RoleMembership is a semi-weak entity, meaning it does not have its own screen or API
+    // RoleMemberships are always retrieved and saved as a child collection of some other strong entity
+    // We call it "semi"- weak because it comes associated with more than one strong entity
+
+    [EntityDisplay(Singular = "RoleMembership", Plural = "RoleMemberships")]
     public class RoleMembershipForSave : EntityWithKey<int>
     {
         [Display(Name = "RoleMembership_User")]
@@ -13,7 +18,7 @@ namespace Tellma.Entities
         public int? RoleId { get; set; }
 
         [Display(Name = "Memo")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Memo { get; set; }
     }
 

@@ -59,7 +59,7 @@ namespace Tellma.Controllers
             ITenantIdAccessor tenantIdAccessor,
             IHubContext<ServerNotificationsHub,
             INotifiedClient> hubContext,
-            IStringLocalizer<Strings> localizer) : base(localizer)
+            IServiceProvider sp) : base(sp)
         {
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;

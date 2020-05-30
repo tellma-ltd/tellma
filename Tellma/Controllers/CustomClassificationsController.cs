@@ -66,7 +66,7 @@ namespace Tellma.Controllers
 
         private string View => CustomClassificationsController.BASE_ADDRESS;
 
-        public CustomClassificationsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public CustomClassificationsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;

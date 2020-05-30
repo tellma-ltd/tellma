@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "AgentRate", Plural = "AgentRates")]
     public class AgentRateForSave : EntityWithKey<int>
     {
         [Display(Name = "AgentRate_Resource")]
@@ -15,7 +16,7 @@ namespace Tellma.Entities
         public decimal? Rate { get; set; }
 
         [Display(Name = "AgentRate_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(3)]
         public string CurrencyId { get; set; }
     }
 

@@ -77,7 +77,7 @@ namespace Tellma
 
                 // More custom services
                 services.AddBlobService(_config);
-                services.AddDefinitionsModelMetadata();
+                // services.AddDefinitionsModelMetadata();
                 services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
@@ -93,6 +93,12 @@ namespace Tellma
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
                     opt.Filters.Add(typeof(GlobalFilter));
                 })
+                    .ConfigureApiBehaviorOptions(opt =>
+                    {
+                        // Validation is performed at the business service layer, not at the Controller layer
+                        // Controllers are very thin, their only purpose is to translate from web world to C# world
+                        opt.SuppressModelStateInvalidFilter = true;
+                    })
                     .AddDataAnnotationsLocalization(opt =>
                     {
                         // This allows us to have a single RESX file for all classes and namespaces
@@ -175,6 +181,7 @@ namespace Tellma
 
                 // Add the business logic services (DocumentsService, AgentsService, etc...)
                 services.AddBusinessServices();
+
             }
             catch (Exception ex)
             {

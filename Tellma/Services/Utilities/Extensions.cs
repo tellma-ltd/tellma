@@ -144,26 +144,6 @@ namespace Tellma.Services.Utilities
         }
 
         /// <summary>
-        /// Determines whether this type is <see cref="DateTime"/> or a 
-        /// <see cref="DateTimeOffset"/> or a nullable version thereof
-        /// </summary>
-        public static bool IsDateOrTime(this Type @this)
-        {
-            var t = Nullable.GetUnderlyingType(@this) ?? @this;
-            return t == typeof(DateTime) || t == typeof(DateTimeOffset);
-        }
-
-        /// <summary>
-        /// Determines whether this type is a
-        /// <see cref="DateTimeOffset"/> or a nullable version thereof
-        /// </summary>
-        public static bool IsDateTimeOffset(this Type @this)
-        {
-            var t = Nullable.GetUnderlyingType(@this) ?? @this;
-            return t == typeof(DateTimeOffset);
-        }
-
-        /// <summary>
         /// Removes any trailing slashes from the specified string
         /// </summary>
         public static string WithoutTrailingSlash(this string str)
@@ -209,101 +189,6 @@ namespace Tellma.Services.Utilities
                 typeArguments: null,
                 arguments: new[] { constant }
                 );
-        }
-
-        /// <summary>
-        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
-        /// </summary>
-        public static DateTime? ParseToDateTime(this object @this)
-        {
-            if (@this == null)
-            {
-                return null;
-            }
-
-            DateTime dateTime;
-
-            if (@this.GetType() == typeof(double))
-            {
-                // Double indicates the OLE Automation date typically represented in excel
-                dateTime = DateTime.FromOADate((double)@this);
-            }
-            else
-            {
-                // Parse the import value into a DateTime
-                var valueString = @this.ToString();
-                // dateTime = DateTime.ParseExact(valueString, "yyyy-MM-ddT", CultureInfo.InvariantCulture);
-                dateTime = DateTime.Parse(valueString);
-
-            }
-
-            return dateTime;
-        }
-
-        public static DateTimeOffset? AddTimeZone(this DateTime? dateTime, TimeZoneInfo timeZone)
-        {
-            if (dateTime == null)
-            {
-                return null;
-            }
-
-            // The date time supplied in the import does not contain time zone offset
-            // The code below adds the current user time zone to the date time supplied
-            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
-            var dtOffset = new DateTimeOffset(dateTime.Value, offset);
-
-            return dtOffset;
-        }
-
-        /// <summary>
-        /// The default Convert.ChangeType cannot handle converting types to
-        /// nullable types also it cannot handle DateTimeOffset
-        /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
-        /// </summary>
-        public static object ChangeType(this object obj, Type targetType, TimeZoneInfo sourceTimeZone = null)
-        {
-            if (obj is null)
-            {
-                return null;
-            }
-
-            var t = targetType;
-            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-            {
-                t = Nullable.GetUnderlyingType(t);
-            }
-
-            if (t.IsDateOrTime())
-            {
-                var date = obj.ParseToDateTime();
-                if (t.IsDateTimeOffset())
-                {
-                    if (sourceTimeZone != null)
-                    {
-                        return date.AddTimeZone(sourceTimeZone);
-                    }
-                    else
-                    {
-                        return date.AddTimeZone(TimeZoneInfo.Utc);
-                    }
-                }
-
-                return date;
-            }
-
-            if (t == typeof(HierarchyId))
-            {
-                return obj.ToString();
-            }
-
-            try
-            {
-                return Convert.ChangeType(obj, t);
-            }
-            catch (Exception)
-            {
-                throw new InvalidOperationException($"Failed to convert value: '{obj?.ToString()}' to type: {t.Name}");
-            }
         }
 
         /// <summary>

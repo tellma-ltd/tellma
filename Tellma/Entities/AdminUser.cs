@@ -6,18 +6,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "AdminUser", Plural = "AdminUsers")]
     public class AdminUserForSave<TPermission> : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Email { get; set; }
 
         [Display(Name = "User_Permissions")]

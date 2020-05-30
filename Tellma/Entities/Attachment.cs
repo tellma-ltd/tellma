@@ -4,16 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "Attachment", Plural = "Attachments")]
     public class AttachmentForSave : EntityWithKey<int>
     {
         [Display(Name = "Name")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [StringLength(255)]
+        [Required]
         [AlwaysAccessible]
         public string FileName { get; set; }
 
         [Display(Name = "Attachment_FileExtension")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string FileExtension { get; set; }
 

@@ -214,6 +214,15 @@
   <data name="Agent_User" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="AgentDefinition" xml:space="preserve">
+    <value>Agent Definition</value>
+  </data>
+  <data name="AgentDefinitions" xml:space="preserve">
+    <value>Agent Definitions</value>
+  </data>
+  <data name="AgentRate" xml:space="preserve">
+    <value>Agent Rate</value>
+  </data>
   <data name="AgentRate_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
@@ -225,6 +234,9 @@
   </data>
   <data name="AgentRate_Unit" xml:space="preserve">
     <value>Unit</value>
+  </data>
+  <data name="AgentRates" xml:space="preserve">
+    <value>Agent Rates</value>
   </data>
   <data name="Agents" xml:space="preserve">
     <value>Agents</value>
@@ -247,11 +259,17 @@
   <data name="Assignment_N" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Attachment</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>File Extension</value>
   </data>
   <data name="Attachment_Size" xml:space="preserve">
     <value>Size</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>Attachments</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>Authenticator App</value>
@@ -264,6 +282,9 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="Cell0" xml:space="preserve">
+    <value>Cell {0}</value>
   </data>
   <data name="Center" xml:space="preserve">
     <value>Center</value>
@@ -366,6 +387,15 @@
   </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="DateTimeOffset" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Decimal" xml:space="preserve">
+    <value>Decimal</value>
   </data>
   <data name="DefaultAggregationMeasure" xml:space="preserve">
     <value>{0} of {1}</value>
@@ -565,8 +595,38 @@
   <data name="Document_UnitIsCommon" xml:space="preserve">
     <value>Unit Is Common</value>
   </data>
+  <data name="DocumentAssignment" xml:space="preserve">
+    <value>Document Assignment</value>
+  </data>
+  <data name="DocumentAssignments" xml:space="preserve">
+    <value>Document Assignments</value>
+  </data>
+  <data name="DocumentDefinition" xml:space="preserve">
+    <value>Document Definition</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
+    <value>Document Definition Line Definition</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
+    <value>Document Definition Line Definitions</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
+    <value>Document Definition Markup Template</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
+    <value>Document Definition Markup Templates</value>
+  </data>
+  <data name="DocumentDefinitions" xml:space="preserve">
+    <value>Document Definitions</value>
+  </data>
   <data name="Documents" xml:space="preserve">
     <value>Documents</value>
+  </data>
+  <data name="DocumentStateChange" xml:space="preserve">
+    <value>Document State Change</value>
+  </data>
+  <data name="DocumentStateChanges" xml:space="preserve">
+    <value>Document State Changes</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>Email '{0}' is already taken.</value>
@@ -580,14 +640,14 @@
   <data name="Email" xml:space="preserve">
     <value>Email</value>
   </data>
-  <data name="EmailAddressAttribute" xml:space="preserve">
-    <value>The {0} field is not a valid e-mail address</value>
-  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>Thank you for confirming your email</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
+  </data>
+  <data name="Entry" xml:space="preserve">
+    <value>Entry</value>
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
@@ -683,7 +743,7 @@
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
   </data>
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Agent DefinitionId '{0}' could not be found</value>
+    <value>Agent DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
@@ -704,16 +764,16 @@
     <value>You cannot delete your own user.</value>
   </data>
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
-    <value>Canceled documents cannot be modified</value>
+    <value>Canceled documents cannot be modified.</value>
   </data>
   <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>Posted documents cannot be modified</value>
+    <value>Posted documents cannot be modified.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
   </data>
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
-    <value>A system record cannot be edited</value>
+    <value>A system record cannot be edited.</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>The code is required for the update import mode.</value>
@@ -725,16 +785,22 @@
     <value>An error occurred while confirming your email.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
-    <value>The date cannot be before the archive date {0}</value>
+    <value>The date cannot be before the archive date {0}.</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
-    <value>The date cannot be in the future</value>
+    <value>The date cannot be in the future.</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>Deleting {0} is not supported from this API.</value>
   </data>
+  <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Document DefinitionId '{0}' could not be found.</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>The email was not provided by the external sign-in.</value>
+  </data>
+  <data name="Error_EmptyHeadersNotAllowed" xml:space="preserve">
+    <value>Empty header.</value>
   </data>
   <data name="Error_EmptyImportFile" xml:space="preserve">
     <value>The imported file is empty.</value>
@@ -745,14 +811,35 @@
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
     <value>The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'.</value>
   </data>
+  <data name="Error_FailedToConvertValue0ToType1" xml:space="preserve">
+    <value>Failed to convert value: '{0}' to type: {1}.</value>
+  </data>
+  <data name="Error_FailedToParseFileError0" xml:space="preserve">
+    <value>Failed to parse uploaded file, Error: {0}.</value>
+  </data>
+  <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
+    <value>The {0} field is not a valid e-mail address</value>
+  </data>
+  <data name="Error_Field0IsRequired" xml:space="preserve">
+    <value>The {0} field is required.</value>
+  </data>
+  <data name="Error_Field0LengthMaximumOf1" xml:space="preserve">
+    <value>The field {0} must be a string with a maximum length of {1}</value>
+  </data>
+  <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
+    <value>The field {0} must be at least {2} and at max {1} characters long.</value>
+  </data>
   <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
     <value>Field '{0}' on type '{1}' is not a navigation field, therefore it cannot be followed by another field in the select path.</value>
   </data>
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>Foreign keys like '{0}' cannot be specified in the select argument.</value>
   </data>
+  <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
+    <value>Import failed because of the following:</value>
+  </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>Incompatible Account Type '{0}' and Purpose '{1}'</value>
+    <value>Incompatible Account Type '{0}' and Purpose '{1}'.</value>
   </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>Invalid Language Id '{0}'.</value>
@@ -760,17 +847,56 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
   </data>
+  <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
+    <value>Property {0} must be in the imported file</value>
+  </data>
+  <data name="Error_KeyProperty0NotValidItMustIntOrString" xml:space="preserve">
+    <value>Property {0} is not valid as key property, key properties must be of type int or string</value>
+  </data>
+  <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
+    <value>A key property is required to set the '{0}' field, key properties are added to the field label after a minus sign, example: 'Employee - Name'.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
+    <value>Label '{0}' does not match any collection on type {1}.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
+    <value>Label '{0}' does not match any collection on type {1}, did you mean '{2}'?</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
+    <value>Label '{0}' does not match any field on type {1}.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
+    <value>Label '{0}' does not match any field on type {1}. Did you mean '{2}'?</value>
+  </data>
+  <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
+    <value>Label '{0}' matches multiples collections on type {1}, use a numeric postfix to disambiguate, like this '{0}.1'.</value>
+  </data>
+  <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
+    <value>Label '{0}' matches multiples fields on type {1}, use a numeric postfix to disambiguate, like this '{0}.1'.</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
-    <value>Some signatures are missing</value>
+    <value>Some signatures are missing.</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>Error loading external login information.</value>
+  </data>
+  <data name="Error_LookupDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Lookup DefinitionId '{0}' could not be found.</value>
+  </data>
+  <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
+    <value>More than one {0} records found where {1} = '{2}'.</value>
   </data>
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
     <value>Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too.</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
-    <value>New attachments must include file bytes</value>
+    <value>New attachments must include file bytes.</value>
+  </data>
+  <data name="Error_No0WasFoundWhere1Equals2" xml:space="preserve">
+    <value>No {0} record was found where {1} = '{2}'.</value>
+  </data>
+  <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
+    <value>No {0} record was found where {1} = '{2}', ensure that letter cases match exactly.</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>No file was uploaded.</value>
@@ -778,8 +904,11 @@
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>Number of data points exceeds the maximum of {0}.</value>
   </data>
+  <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
+    <value>Only CSV and Excel files are supported.</value>
+  </data>
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
-    <value>Only new attachments can include file bytes</value>
+    <value>Only new attachments can include file bytes.</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>Delete mode is not supported in the parsing API.</value>
@@ -787,11 +916,14 @@
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
     <value>Property {0} does not exist on type {1}.</value>
   </data>
+  <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
+    <value>Property {0} is used as key property and is therefore required for update mode</value>
+  </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Resource DefinitionId '{0}' could not be found</value>
+    <value>Resource DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
@@ -809,13 +941,13 @@
     <value>The account classification '{0}' is used in account '{1}'</value>
   </data>
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
-    <value>The amount {0} does not match the value {1} even though both are in {2}</value>
+    <value>The amount {0} does not match the value {1} even though both are in {2}.</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
-    <value>The amount must be greater than 0</value>
+    <value>The amount must be greater than 0.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
-    <value>The equivalent must be greater than 1</value>
+    <value>The equivalent must be greater than 1.</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>The code '{0}' does not exist.</value>
@@ -827,13 +959,13 @@
     <value>The code '{0}' is already used.</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
-    <value>The exchange rate for currency '{0}' on date {1} is duplicated</value>
+    <value>The exchange rate for currency '{0}' on date {1} is duplicated.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>The Currency '{0}' is used in '{1}'</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
-    <value>The currency should be different than the functional currency</value>
+    <value>The currency should be different than the functional currency.</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>The email '{0}' is duplicated.</value>
@@ -850,17 +982,14 @@
   <data name="Error_TheField0IsReadOnly" xml:space="preserve">
     <value>The {0} field is read-only.</value>
   </data>
-  <data name="Error_TheField0IsRequired" xml:space="preserve">
-    <value>The {0} field is required.</value>
-  </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5.</value>
   </data>
   <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>{0} value '{1}' is incompatible here</value>
+    <value>{0} value '{1}' is incompatible here.</value>
   </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>The following IDs are reserved by the system: {0}</value>
+    <value>The following IDs are reserved by the system: {0}.</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
@@ -875,10 +1004,10 @@
     <value>The password and confirmation password do not match.</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>The Purpose field is required because the account type is '{0}'</value>
+    <value>The Purpose field is required because the account type is '{0}'.</value>
   </data>
   <data name="Error_TheResourceIsRequired" xml:space="preserve">
-    <value>The Resource field is required</value>
+    <value>The Resource field is required.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>The role '{0}' is not active.</value>
@@ -887,16 +1016,19 @@
     <value>The role with Id '{0}' does not exist or no longer exists.</value>
   </data>
   <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
-    <value>The serial number '{0}' is duplicated</value>
+    <value>The serial number '{0}' is duplicated.</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
-    <value>The serial number '{0}' is already used</value>
+    <value>The serial number '{0}' is already used.</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>The user '{0}' is not active.</value>
   </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
-    <value>The Valid As Of date cannot be in the future</value>
+    <value>The Valid As Of date cannot be in the future.</value>
+  </data>
+  <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
+    <value>The value '{0}' is not a valid integer.</value>
   </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>The value '{0}' is not valid for the {1} field.</value>
@@ -905,25 +1037,40 @@
     <value>The view with code '{0}' is not activated.</value>
   </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
-    <value>Title is required to show the report in the main menu</value>
+    <value>Title is required to show the report in the main menu.</value>
   </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
-    <value>Debit and credit are different by {0}</value>
+    <value>Debit and credit are different by {0}.</value>
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>An unknown error occurred while trying to sign you in using the external provider.</value>
   </data>
-  <data name="Error_UnknownFileFormat" xml:space="preserve">
-    <value>Unknown file format.</value>
+  <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
+    <value>Unknown import mode '{0}', allowed values are: {1}</value>
   </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
-    <value>Uploaded file was empty</value>
+    <value>Uploaded file was empty.</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>The user '{0}' has already accepted the invitation.</value>
   </data>
+  <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
+    <value>Value '{0}' for field {1} should not exceed one character</value>
+  </data>
+  <data name="Error_Value0IsDuplicatedEvenThoughItIsKey1" xml:space="preserve">
+    <value>Value '{0}' is duplicated, even though it is the value of key property {1}</value>
+  </data>
+  <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
+    <value>Value '{0}' is not a valid {1}. Example of a valid value: {2}.</value>
+  </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>The value '{0}' is not valid for the {1} field, acceptable values are: {2}.</value>
+  </data>
+  <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
+    <value>Value '{0}' is not valid for the {1} field, did you mean '{2}'?</value>
+  </data>
+  <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
+    <value>Value '{0}' is not valid for the {1} field, supported values are: {2}.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>Exchange Rate</value>
@@ -994,6 +1141,9 @@
   <data name="Icon_Clipboard" xml:space="preserve">
     <value>Clipboard</value>
   </data>
+  <data name="Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>Email '{0}' is invalid.</value>
   </data>
@@ -1032,6 +1182,12 @@
   </data>
   <data name="InboxRecord" xml:space="preserve">
     <value>Inbox Record</value>
+  </data>
+  <data name="InboxRecords" xml:space="preserve">
+    <value>Inbox Records</value>
+  </data>
+  <data name="Integer" xml:space="preserve">
+    <value>Integer</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>Invalid authenticator code.</value>
@@ -1081,6 +1237,9 @@
   <data name="IsSystem" xml:space="preserve">
     <value>Is System</value>
   </data>
+  <data name="KeyProperty" xml:space="preserve">
+    <value>Key Property</value>
+  </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
   </data>
@@ -1120,6 +1279,30 @@
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
   </data>
+  <data name="LineDefinition" xml:space="preserve">
+    <value>Line Definition</value>
+  </data>
+  <data name="LineDefinitionColumn" xml:space="preserve">
+    <value>Line Definition Column</value>
+  </data>
+  <data name="LineDefinitionColumns" xml:space="preserve">
+    <value>Line Definition Columns</value>
+  </data>
+  <data name="LineDefinitionEntries" xml:space="preserve">
+    <value>Line Definition Entries</value>
+  </data>
+  <data name="LineDefinitionEntry" xml:space="preserve">
+    <value>Line Definition Entry</value>
+  </data>
+  <data name="LineDefinitions" xml:space="preserve">
+    <value>Line Definitions</value>
+  </data>
+  <data name="LineDefinitionStateReason" xml:space="preserve">
+    <value>Line Definition State Reason</value>
+  </data>
+  <data name="LineDefinitionStateReasons" xml:space="preserve">
+    <value>Line Definition State Reasons</value>
+  </data>
   <data name="Lines" xml:space="preserve">
     <value>Lines</value>
   </data>
@@ -1134,6 +1317,12 @@
   </data>
   <data name="Lookup" xml:space="preserve">
     <value>Lookup</value>
+  </data>
+  <data name="LookupDefinition" xml:space="preserve">
+    <value>Lookup Definition</value>
+  </data>
+  <data name="LookupDefinitions" xml:space="preserve">
+    <value>Lookup Definitions</value>
   </data>
   <data name="Lookups" xml:space="preserve">
     <value>Lookups</value>
@@ -1296,6 +1485,9 @@
   </data>
   <data name="OutboxRecord" xml:space="preserve">
     <value>Outbox Record</value>
+  </data>
+  <data name="OutboxRecords" xml:space="preserve">
+    <value>Outbox Records</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
@@ -1603,6 +1795,12 @@
   <data name="ReportDefinitions" xml:space="preserve">
     <value>Report Definitions</value>
   </data>
+  <data name="RequiredSignature" xml:space="preserve">
+    <value>Required Signature</value>
+  </data>
+  <data name="RequiredSignatures" xml:space="preserve">
+    <value>Required Signatures</value>
+  </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>Reset Authenticator Key</value>
   </data>
@@ -1714,8 +1912,17 @@
   <data name="Resource_Units" xml:space="preserve">
     <value>Measurement Units</value>
   </data>
+  <data name="ResourceDefinition" xml:space="preserve">
+    <value>Resource Definition</value>
+  </data>
+  <data name="ResourceDefinitions" xml:space="preserve">
+    <value>Resource Definitions</value>
+  </data>
   <data name="Resources" xml:space="preserve">
     <value>Resources</value>
+  </data>
+  <data name="ResourceUnit" xml:space="preserve">
+    <value>Resource Unit</value>
   </data>
   <data name="ResourceUnit_Multiplier" xml:space="preserve">
     <value>Multiplier</value>
@@ -1723,11 +1930,17 @@
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>Unit</value>
   </data>
+  <data name="ResourceUnits" xml:space="preserve">
+    <value>Resource Units</value>
+  </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>
   </data>
   <data name="Role_IsPublic" xml:space="preserve">
     <value>Is Public</value>
+  </data>
+  <data name="RoleMembership" xml:space="preserve">
+    <value>Role Membership</value>
   </data>
   <data name="RoleMembership_Role" xml:space="preserve">
     <value>Role</value>
@@ -1735,10 +1948,16 @@
   <data name="RoleMembership_User" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="RoleMemberships" xml:space="preserve">
+    <value>Role Memberships</value>
+  </data>
   <data name="Roles" xml:space="preserve">
     <value>Roles</value>
   </data>
   <data name="Row{0}" xml:space="preserve">
+    <value>Row {0}</value>
+  </data>
+  <data name="Row0" xml:space="preserve">
     <value>Row {0}</value>
   </data>
   <data name="Save" xml:space="preserve">
@@ -1903,11 +2122,20 @@
   <data name="SortKey" xml:space="preserve">
     <value>Sort Key</value>
   </data>
+  <data name="SqlDatabase" xml:space="preserve">
+    <value>SQL Database</value>
+  </data>
   <data name="SqlDatabase_DatabaseName" xml:space="preserve">
     <value>Database Name</value>
   </data>
   <data name="SqlDatabase_Server" xml:space="preserve">
     <value>Server</value>
+  </data>
+  <data name="SqlDatabases" xml:space="preserve">
+    <value>SQL Databases</value>
+  </data>
+  <data name="SqlServer" xml:space="preserve">
+    <value>SQL Server</value>
   </data>
   <data name="SqlServer_PasswordKey" xml:space="preserve">
     <value>Password Key</value>
@@ -1918,6 +2146,9 @@
   <data name="SqlServer_UserName" xml:space="preserve">
     <value>User Name</value>
   </data>
+  <data name="SqlServers" xml:space="preserve">
+    <value>SQL Servers</value>
+  </data>
   <data name="State" xml:space="preserve">
     <value>State</value>
   </data>
@@ -1926,12 +2157,6 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>To State</value>
-  </data>
-  <data name="StringLengthAttribute" xml:space="preserve">
-    <value>The field {0} must be a string with a maximum length of {1}</value>
-  </data>
-  <data name="StringLengthAttribute2" xml:space="preserve">
-    <value>The field {0} must be at least {2} and at max {1} characters long.</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>Summary Entries</value>
@@ -1989,6 +2214,9 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>Path</value>
+  </data>
+  <data name="TruncatedList" xml:space="preserve">
+    <value>(List Truncated)</value>
   </data>
   <data name="Twitter" xml:space="preserve">
     <value>Twitter</value>

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "DocumentStateChange", Plural = "DocumentStateChanges")]
     public class DocumentStateChange : EntityWithKey<int>
     {
         public int? DocumentId { get; set; }

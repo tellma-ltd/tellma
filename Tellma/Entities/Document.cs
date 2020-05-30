@@ -7,10 +7,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Document", Plural = "Documents")]
     public class DocumentForSave<TDocumentLine, TAttachment> : EntityWithKey<int>
     {
         [Display(Name = "Document_SerialNumber")]
         [AlwaysAccessible]
+        [UserKey]
         public int? SerialNumber { get; set; }
 
         [Display(Name = "Document_PostingDate")]
@@ -33,17 +35,17 @@ namespace Tellma.Entities
         public int? DocumentLookup3Id { get; set; }
 
         [Display(Name = "Document_DocumentText1")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string DocumentText1 { get; set; }
 
         [Display(Name = "Document_DocumentText2")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string DocumentText2 { get; set; }
 
         // END HIDDEN
 
         [Display(Name = "Memo")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Memo { get; set; }
 
         [Display(Name = "Document_MemoIsCommon")]
@@ -99,7 +101,7 @@ namespace Tellma.Entities
         public bool? UnitIsCommon { get; set; }
 
         [Display(Name = "Document_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "Document_CurrencyIsCommon")]

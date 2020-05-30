@@ -5,7 +5,7 @@ import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
 import { SettingsForClient } from './dto/settings-for-client';
 import { ApiService } from './api.service';
-import { DataWithVersion } from './dto/data-with-version';
+import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
@@ -30,7 +30,7 @@ export function versionStorageKey(prefix: string, tenantId: number) { return `${
 export function metaVersionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_metaversion`; }
 
 export function handleFreshSettings(
-  result: DataWithVersion<SettingsForClient>,
+  result: Versioned<SettingsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const settings = result.Data;
@@ -47,7 +47,7 @@ export function handleFreshSettings(
 }
 
 export function handleFreshDefinitions(
-  result: DataWithVersion<DefinitionsForClient>,
+  result: Versioned<DefinitionsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const definitions = result.Data;
@@ -64,7 +64,7 @@ export function handleFreshDefinitions(
 }
 
 export function handleFreshPermissions(
-  result: DataWithVersion<PermissionsForClient>,
+  result: Versioned<PermissionsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const permissions = result.Data;
@@ -81,7 +81,7 @@ export function handleFreshPermissions(
 }
 
 export function handleFreshUserSettings(
-  result: DataWithVersion<UserSettingsForClient>,
+  result: Versioned<UserSettingsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const userSettings = result.Data;
@@ -106,10 +106,10 @@ export class TenantResolverGuard implements CanActivate {
   // navigate to the application until the global values of that tenant are resolved first
 
   private cancellationToken$: Subject<void>;
-  private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
-  private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
-  private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
-  private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
+  private settingsApi: () => Observable<Versioned<SettingsForClient>>;
+  private definitionsApi: () => Observable<Versioned<DefinitionsForClient>>;
+  private permissionsApi: () => Observable<Versioned<PermissionsForClient>>;
+  private userSettingsApi: () => Observable<Versioned<UserSettingsForClient>>;
   private ping: () => Observable<any>;
 
   constructor(

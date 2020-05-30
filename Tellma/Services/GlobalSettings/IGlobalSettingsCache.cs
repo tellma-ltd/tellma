@@ -8,7 +8,7 @@ namespace Tellma.Services.GlobalSettings
 {
     public interface IGlobalSettingsCache
     {
-        DataWithVersion<GlobalSettingsForClient> GetGlobalSettings();
+        Versioned<GlobalSettingsForClient> GetGlobalSettings();
 
         bool IsFresh(string version);
 

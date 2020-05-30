@@ -13,7 +13,7 @@ import { Unit } from './entities/unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
 import { ImportResult } from './dto/import-result';
-import { ExportArguments } from './dto/export-arguments';
+import { ExportForImportArguments } from './dto/export-for-import-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
@@ -21,7 +21,7 @@ import { Agent } from './entities/agent';
 import { Role } from './entities/role';
 import { Settings } from './entities/settings';
 import { SettingsForClient } from './dto/settings-for-client';
-import { DataWithVersion } from './dto/data-with-version';
+import { Versioned } from './dto/versioned';
 import { PermissionsForClient } from './dto/permissions-for-client';
 import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
@@ -57,6 +57,9 @@ import { ActionArguments } from './dto/action-arguments';
 import { GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments } from './dto/generate-markup-arguments';
 import { MarkupPreviewResponse } from './dto/markup-preview-response';
 import { MarkupPreviewTemplate } from './dto/markup-preview-template';
+import { ExportSelectedArguments } from './dto/export-selected-arguments';
+import { SelectExpandArguments } from './dto/select-expand-arguments';
+import { GetByIdsArguments } from './dto/get-by-ids-arguments';
 
 
 @Injectable({
@@ -77,7 +80,7 @@ export class ApiService {
       deactivate: this.deactivateFactory<AdminUser>('admin-users', cancellationToken$),
       getForClient: () => {
         const url = appsettings.apiAddress + `api/admin-users/client`;
-        const obs$ = this.http.get<DataWithVersion<AdminUserSettingsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<AdminUserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -90,7 +93,7 @@ export class ApiService {
       saveForClient: (key: string, value: string) => {
         const body = { key, value };
         const url = appsettings.apiAddress + `api/admin-users/client`;
-        const obs$ = this.http.post<DataWithVersion<AdminUserSettingsForClient>>(url, body, {
+        const obs$ = this.http.post<Versioned<AdminUserSettingsForClient>>(url, body, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           catchError(error => {
@@ -203,7 +206,7 @@ export class ApiService {
 
       getForClient: () => {
         const url = appsettings.apiAddress + `api/admin-settings/client`;
-        const obs$ = this.http.get<DataWithVersion<AdminSettingsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<AdminSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -257,7 +260,7 @@ export class ApiService {
     return {
       getForClient: () => {
         const url = appsettings.apiAddress + `api/admin-permissions/client`;
-        const obs$ = this.http.get<DataWithVersion<AdminPermissionsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<AdminPermissionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -580,7 +583,7 @@ export class ApiService {
       deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
         const url = appsettings.apiAddress + `api/users/client?unobtrusive=true`;
-        const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<UserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -593,7 +596,7 @@ export class ApiService {
       saveForClient: (key: string, value: string) => {
         const body = { key, value };
         const url = appsettings.apiAddress + `api/users/client`;
-        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, body, {
+        const obs$ = this.http.post<Versioned<UserSettingsForClient>>(url, body, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           catchError(error => {
@@ -676,7 +679,7 @@ export class ApiService {
     return {
       getForClient: () => {
         const url = appsettings.apiAddress + `api/global-settings/client`;
-        const obs$ = this.http.get<DataWithVersion<GlobalSettingsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<GlobalSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -737,7 +740,7 @@ export class ApiService {
 
       getForClient: () => {
         const url = appsettings.apiAddress + `api/settings/client?unobtrusive=true`;
-        const obs$ = this.http.get<DataWithVersion<SettingsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<SettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -791,7 +794,7 @@ export class ApiService {
     return {
       getForClient: () => {
         const url = appsettings.apiAddress + `api/permissions/client?unobtrusive=true`;
-        const obs$ = this.http.get<DataWithVersion<PermissionsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<PermissionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -808,7 +811,7 @@ export class ApiService {
     return {
       getForClient: () => {
         const url = appsettings.apiAddress + `api/definitions/client?unobtrusive=true`;
-        const obs$ = this.http.get<DataWithVersion<DefinitionsForClient>>(url).pipe(
+        const obs$ = this.http.get<Versioned<DefinitionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -832,6 +835,30 @@ export class ApiService {
         const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
 
         const obs$ = this.http.get<GetResponse<TEntity>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      getByIds: (ids: (number | string)[], args: GetByIdsArguments, extras?: { [key: string]: any }) => {
+        const paramsArray = this.stringifyGetArguments(args);
+        this.addExtras(paramsArray, extras);
+
+        if (!!args.i) {
+          args.i.forEach(id => {
+            paramsArray.push(`i=${encodeURIComponent(id)}`);
+          });
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/${endpoint}/by-ids?${params}`;
+
+        const obs$ = this.http.get<EntitiesResponse<TEntity>>(url).pipe(
           catchError(error => {
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
@@ -1048,7 +1075,7 @@ export class ApiService {
         return obs$;
       },
 
-      import: (args: ImportArguments, files: FileList) => {
+      import: (args: ImportArguments, file: File) => {
         args = args || {};
 
         const paramsArray: string[] = [];
@@ -1057,13 +1084,12 @@ export class ApiService {
           paramsArray.push(`mode=${args.mode}`);
         }
 
-        const formData = new FormData();
-
-        // tslint:disable-next-line:prefer-for-of
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          formData.append(file.name, file, file.name);
+        if (!!args.key) {
+          paramsArray.push(`key=${args.key}`);
         }
+
+        const formData = new FormData();
+        formData.append(file.name, file, file.name);
 
         this.showRotator = true;
         const params: string = paramsArray.join('&');
@@ -1082,12 +1108,8 @@ export class ApiService {
         return obs$;
       },
 
-      export: (args: ExportArguments) => {
+      export: (args: ExportForImportArguments) => {
         const paramsArray = this.stringifyGetArguments(args);
-
-        if (!!args.format) {
-          paramsArray.push(`format=${args.format}`);
-        }
 
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/${endpoint}/export?${params}`;
@@ -1099,7 +1121,35 @@ export class ApiService {
           takeUntil(cancellationToken$),
         );
         return obs$;
-      }
+      },
+
+      exportByIds: (ids: (string | number)[]) => {
+
+        const url = appsettings.apiAddress + `api/${endpoint}/export-by-ids?` + ids.map(id => `i=${encodeURIComponent(id)}`).join('&');
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+
+      // exportSelected: (args: ExportSelectedArguments) => {
+      //   const paramsArray = this.stringifyGetArguments(args);
+
+      //   const params: string = paramsArray.join('&');
+      //   const url = appsettings.apiAddress + `api/${endpoint}/export-selected?${params}`;
+      //   const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+      //     catchError((error) => {
+      //       const friendlyError = friendlify(error, this.trx);
+      //       return throwError(friendlyError);
+      //     }),
+      //     takeUntil(cancellationToken$),
+      //   );
+      //   return obs$;
+      // }
     };
   }
 

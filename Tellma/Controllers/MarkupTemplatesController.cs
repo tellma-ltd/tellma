@@ -14,6 +14,7 @@ using Tellma.Controllers.Templating;
 using System.Globalization;
 using System.Text;
 using Tellma.Services.Utilities;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -106,7 +107,8 @@ namespace Tellma.Controllers
         public MarkupTemplatesService(
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            TemplateService templateService) : base(localizer)
+            TemplateService templateService,
+            IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -181,7 +183,7 @@ namespace Tellma.Controllers
                 downloadName = _localizer["File"];
             }
 
-            var expectedExtension = "." + entity.MarkupLanguage switch { "text/html" => "html", _ => null };
+            var expectedExtension = "." + entity.MarkupLanguage switch { MimeTypes.Html => "html", _ => null };
             if (expectedExtension != null && !downloadName.EndsWith(expectedExtension))
             {
                 downloadName += expectedExtension;
@@ -272,7 +274,7 @@ namespace Tellma.Controllers
                 {
                     if (entity.Collection == null)
                     {
-                        ModelState.AddModelError($"[{index}].Collection", _localizer[Constants.Error_TheField0IsRequired, _localizer["MarkupTemplate_Collection"]]);
+                        ModelState.AddModelError($"[{index}].Collection", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_Collection"]]);
                     }
 
                     if (entity.Usage == MarkupTemplateConst.QueryById)
@@ -280,7 +282,7 @@ namespace Tellma.Controllers
                         // DefinitionId is required when querying by Id
                         if (entity.DefinitionId == null)
                         {
-                            ModelState.AddModelError($"[{index}].DefinitionId", _localizer[Constants.Error_TheField0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
+                            ModelState.AddModelError($"[{index}].DefinitionId", _localizer[Constants.Error_Field0IsRequired, _localizer["MarkupTemplate_DefinitionId"]]);
                         }
                     }
                 }

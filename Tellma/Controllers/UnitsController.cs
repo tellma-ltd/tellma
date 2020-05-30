@@ -67,7 +67,7 @@ namespace Tellma.Controllers
 
         private string View => UnitsController.BASE_ADDRESS;
 
-        public UnitsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public UnitsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;

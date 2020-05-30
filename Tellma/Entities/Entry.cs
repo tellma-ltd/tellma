@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "Entry", Plural = "Entries")]
     public class EntryForSave : EntityWithKey<int>
     {
         [Display(Name = "Entry_Direction")]
@@ -15,7 +16,7 @@ namespace Tellma.Entities
         public int? AccountId { get; set; }
 
         [Display(Name = "Entry_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "Entry_Agent")]
@@ -28,7 +29,7 @@ namespace Tellma.Entities
         public int? CenterId { get; set; }
 
         [Display(Name = "Entry_AccountIdentifier")]
-        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(10)]
         public string AccountIdentifier { get; set; }
 
         [Display(Name = "Entry_EntryType")]
@@ -56,18 +57,18 @@ namespace Tellma.Entities
         public DateTime? Time2 { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string ExternalReference { get; set; }
 
         [Display(Name = "Entry_AdditionalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string AdditionalReference { get; set; }
 
         [Display(Name = "Entry_NotedAgent")]
         public int? NotedAgentId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentName { get; set; }
 
         [Display(Name = "Entry_NotedAmount")]

@@ -67,7 +67,7 @@ namespace Tellma.Controllers
 
         private string View => AccountTypesController.BASE_ADDRESS;
 
-        public AccountTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public AccountTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -146,7 +146,7 @@ namespace Tellma.Controllers
                 // If EntryTypeAssignment is either Account of Entry, then EntryTypeParentId must be specified
                 if (entity.EntryTypeAssignment != 'N' && entity.EntryTypeParentId == null)
                 {
-                    var errorMsg = _localizer[Constants.Error_TheField0IsRequired, _localizer["AccountType_EntryTypeParent"]];
+                    var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["AccountType_EntryTypeParent"]];
                     ModelState.AddModelError($"[{index}].{nameof(AccountTypeForSave.EntryTypeParentId)}", errorMsg);
                 }
             }

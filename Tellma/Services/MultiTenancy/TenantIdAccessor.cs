@@ -17,6 +17,12 @@ namespace Tellma.Services.MultiTenancy
 
         public int GetTenantId()
         {
+            return GetTenantIdIfAny() ?? 
+                throw new MultitenancyException($"The required header '{REQUEST_HEADER_TENANT_ID}' was not supplied");
+        }
+
+        public int? GetTenantIdIfAny()
+        {
             string tenantIdString;
 
             var headers = _contextAccessor?.HttpContext?.Request?.Headers;
@@ -34,7 +40,7 @@ namespace Tellma.Services.MultiTenancy
             }
             else
             {
-                throw new MultitenancyException($"The required header '{REQUEST_HEADER_TENANT_ID}' was not supplied");
+                return null;
             }
         }
     }

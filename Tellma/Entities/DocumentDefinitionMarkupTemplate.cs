@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "DocumentDefinitionMarkupTemplate", Plural = "DocumentDefinitionMarkupTemplates")]
     public class DocumentDefinitionMarkupTemplateForSave : EntityWithKey<int>
     {
         public int? MarkupTemplateId { get; set; }

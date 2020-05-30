@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "ResourceUnit", Plural = "ResourceUnits")]
     public class ResourceUnitForSave : EntityWithKey<int>
     {
         [Display(Name = "ResourceUnit_Unit")]

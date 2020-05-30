@@ -5,34 +5,35 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Account", Plural = "Accounts")]
     public class AccountForSave : EntityWithKey<int>
     {
         [Display(Name = "Account_Center")]
         public int? CenterId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "Account_Type")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public int? AccountTypeId { get; set; }
 
@@ -52,11 +53,11 @@ namespace Tellma.Entities
         public int? ResourceId { get; set; }
 
         [Display(Name = "Account_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "Account_Identifier")]
-        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(10)]
         public string Identifier { get; set; }
 
         [Display(Name = "Account_EntryType")]

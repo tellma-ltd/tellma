@@ -11,13 +11,11 @@ using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +23,7 @@ using System.Transactions;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Tellma.Controllers.ImportExport;
 
 namespace Tellma.Controllers
 {
@@ -45,7 +44,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -56,7 +55,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("client")]
-        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
+        public async Task<ActionResult<Versioned<UserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -168,7 +167,7 @@ namespace Tellma.Controllers
         private readonly AdminRepository _adminRepo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
-        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly MetadataProvider _metadataProvider;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
         private readonly GlobalOptions _options;
@@ -186,14 +185,14 @@ namespace Tellma.Controllers
             LinkGenerator linkGenerator,
             ApplicationRepository appRepo,
             AdminRepository adminRepo,
-            IModelMetadataProvider metadataProvider,
             IOptions<GlobalOptions> options,
             IServiceProvider serviceProvider,
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<Strings> localizer,
             ITenantIdAccessor tenantIdAccessor,
-            IBlobService blobService) : base(localizer)
+            IBlobService blobService,
+            MetadataProvider metadataProvider) : base(serviceProvider)
         {
             _contextAccessor = contextAccessor;
             _linkGenerator = linkGenerator;
@@ -212,16 +211,38 @@ namespace Tellma.Controllers
             _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
-        public async Task<DataWithVersion<UserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
+        public async Task<Versioned<UserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
         {
+            // Retrieve the arguments
             var key = args.Key;
             var value = args.Value;
 
+            // Validation
+            int maxKey = 255;
+            int maxValue = 2048;
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                // Key is required
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.Key)]);
+            }
+            else if (key.Length > maxKey)
+            {
+                // 
+                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
+            }
+
+            if (value != null && value.Length > maxValue)
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
+            }
+
+            // Save and return
             await _appRepo.Users__SaveSettings(key, value);
             return await UserSettingsForClient(cancellation: default);
         }
 
-        public async Task<DataWithVersion<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
+        public async Task<Versioned<UserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
         {
             var (version, user, customSettings) = await _appRepo.UserSettings__Load(cancellation);
 
@@ -237,7 +258,7 @@ namespace Tellma.Controllers
                 CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
             };
 
-            var result = new DataWithVersion<UserSettingsForClient>
+            var result = new Versioned<UserSettingsForClient>
             {
                 Version = version.ToString(),
                 Data = userSettingsForClient
@@ -305,6 +326,11 @@ namespace Tellma.Controllers
 
         public async Task<User> SaveMyUser([FromBody] MyUserForSave me)
         {
+            // Basic validation
+            var meta = _metadataProvider.GetMetadata(_tenantIdAccessor.GetTenantId(), typeof(MyUserForSave));
+            ValidateEntity(me, meta);
+            ModelState.ThrowIfInvalid();
+
             int myId = _appRepo.GetUserInfo().UserId.Value;
             var myIdSingleton = new List<int> { myId };
             var user = await _appRepo.Users.Expand("Roles").FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation: default);
@@ -493,6 +519,8 @@ namespace Tellma.Controllers
                 .SelectMany(g => g)
                 .ToDictionary(e => e, e => e.Id); // to dictionary
 
+            TypeMetadata meta = null;
+
             foreach (var entity in entities)
             {
                 var lineIndices = entity.Roles.ToIndexDictionary();
@@ -512,10 +540,13 @@ namespace Tellma.Controllers
                     {
                         var index = indices[entity];
                         var lineIndex = lineIndices[line];
-                        var propName = nameof(RoleMembershipForSave.RoleId);
-                        var propDisplayName = _metadataProvider.GetMetadataForProperty(typeof(RoleMembershipForSave), propName)?.DisplayName ?? propName;
+
+                        meta ??= GetMetadataForSave();
+                        var roleProp = meta.CollectionProperty(nameof(UserForSave.Roles)).CollectionTargetTypeMetadata.Property(nameof(RoleMembershipForSave.RoleId)) ??
+                            throw new InvalidOperationException($"Bug: Could not retrieve metadata for role Id property");
+
                         ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
-                            _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName]);
+                            _localizer[Constants.Error_Field0IsRequired, roleProp.Display()]);
                     }
                 }
             }
@@ -790,6 +821,23 @@ namespace Tellma.Controllers
                  culture: culture);
 
             return (emailSubject, emailBody);
+        }
+
+        protected override MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        {
+            // Remove the RoleId property from the template, it's supposed to be hidden
+            var roleMemberships = mapping.CollectionProperty(nameof(RoleMembership));
+            var userProp = roleMemberships.SimpleProperty(nameof(RoleMembership.UserId));
+
+            roleMemberships.SimpleProperties = roleMemberships.SimpleProperties.Where(p => p != userProp);
+
+            // Shift the index of all columns after the role property to prevent a gap
+            foreach (var propMapping in mapping.AllPropertyMappings().Where(p => p.Index > userProp.Index))
+            {
+                propMapping.Index--;
+            }
+
+            return base.ProcessDefaultMapping(mapping);
         }
     }
 }

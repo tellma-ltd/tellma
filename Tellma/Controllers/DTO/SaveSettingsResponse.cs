@@ -4,6 +4,6 @@ namespace Tellma.Controllers.Dto
 {
     public class SaveSettingsResponse : GetEntityResponse<Settings>
     {
-        public DataWithVersion<SettingsForClient> SettingsForClient { get; set; }
+        public Versioned<SettingsForClient> SettingsForClient { get; set; }
     }
 }

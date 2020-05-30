@@ -5,25 +5,20 @@ import { ApplicationShellComponent } from './application-shell/application-shell
 import { UnitsMasterComponent } from './units/units-master.component';
 import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
-import { UnitsImportComponent } from './units/units-import.component';
 import { UnitsDetailsComponent } from './units/units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
 import { AgentsMasterComponent } from './agents/agents-master.component';
-import { AgentsImportComponent } from './agents/agents-import.component';
 import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
-import { RolesImportComponent } from './roles/roles-import.component';
 import { RolesDetailsComponent } from './roles/roles-details.component';
 import { UsersDetailsComponent } from './users/users-details.component';
 import { UsersMasterComponent } from './users/users-master.component';
-import { UsersImportComponent } from './users/users-import.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
 import { LookupsMasterComponent } from './lookups/lookups-master.component';
 import { LookupsDetailsComponent } from './lookups/lookups-details.component';
-import { LookupsImportComponent } from './lookups/lookups-import.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
@@ -58,22 +53,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
-import { CurrenciesImportComponent } from './currencies/currencies-import.component';
 import { ResourcesMasterComponent } from './resources/resources-master.component';
-import { ResourcesImportComponent } from './resources/resources-import.component';
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
 import { UnitsPickerComponent } from './units/units-picker.component';
 import { LookupsPickerComponent } from './lookups/lookups-picker.component';
 import { CustomClassificationsMasterComponent } from './custom-classifications/custom-classifications-master.component';
 import { CustomClassificationsDetailsComponent } from './custom-classifications/custom-classifications-details.component';
-import { CustomClassificationsImportComponent } from './custom-classifications/custom-classifications-import.component';
 import { CustomClassificationsPickerComponent } from './custom-classifications/custom-classifications-picker.component';
 import { AccountTypesMasterComponent } from './account-types/account-types-master.component';
 import { AccountTypesDetailsComponent } from './account-types/account-types-details.component';
 import { AccountTypesPickerComponent } from './account-types/account-types-picker.component';
 import { AccountsMasterComponent } from './accounts/accounts-master.component';
 import { AccountsDetailsComponent } from './accounts/accounts-details.component';
-import { AccountsImportComponent } from './accounts/accounts-import.component';
 import { AccountsPickerComponent } from './accounts/accounts-picker.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
@@ -81,7 +72,6 @@ import { ReportComponent } from './report/report.component';
 import { ReportResultsComponent } from './report-results/report-results.component';
 import { ReportDefinitionsMasterComponent } from './report-definitions/report-definitions-master.component';
 import { ReportDefinitionsDetailsComponent } from './report-definitions/report-definitions-details.component';
-import { ReportDefinitionsImportComponent } from './report-definitions/report-definitions-import.component';
 import { CentersMasterComponent } from './centers/centers-master.component';
 import { CentersDetailsComponent } from './centers/centers-details.component';
 import { CentersPickerComponent } from './centers/centers-picker.component';
@@ -89,7 +79,6 @@ import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
 import { CurrenciesPickerComponent } from './currencies/currencies-picker.component';
 import { EntryTypesMasterComponent } from './entry-types/entry-types-master.component';
-import { EntryTypesImportComponent } from './entry-types/entry-types-import.component';
 import { EntryTypesDetailsComponent } from './entry-types/entry-types-details.component';
 import { EntryTypesPickerComponent } from './entry-types/entry-types-picker.component';
 import { DocumentsMasterComponent } from './documents/documents-master.component';
@@ -123,11 +112,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'units/import',
-        component: UnitsImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'units/:id',
         component: UnitsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -140,11 +124,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'roles/import',
-        component: RolesImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'roles/:id',
         component: RolesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -154,11 +133,6 @@ const routes: Routes = [
       {
         path: 'users',
         component: UsersMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'users/import',
-        component: UsersImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
@@ -179,11 +153,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'agents/:definitionId/import',
-        component: AgentsImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'agents/:definitionId/:id',
         component: AgentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -201,11 +170,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'lookups/:definitionId/import',
-        component: LookupsImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'lookups/:definitionId/:id',
         component: LookupsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -215,11 +179,6 @@ const routes: Routes = [
       {
         path: 'currencies',
         component: CurrenciesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'currencies/import',
-        component: CurrenciesImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
@@ -240,11 +199,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resources/:definitionId/import',
-        component: ResourcesImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'resources/:definitionId/:id',
         component: ResourcesDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -254,11 +208,6 @@ const routes: Routes = [
       {
         path: 'custom-classifications',
         component: CustomClassificationsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'custom-classifications/import',
-        component: CustomClassificationsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
@@ -298,11 +247,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'accounts/import',
-        component: AccountsImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
         path: 'accounts/:id',
         component: AccountsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
@@ -312,11 +256,6 @@ const routes: Routes = [
       {
         path: 'entry-types',
         component: EntryTypesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'entry-types/import',
-        component: EntryTypesImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
@@ -356,11 +295,6 @@ const routes: Routes = [
       {
         path: 'report-definitions',
         component: ReportDefinitionsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'report-definitions/import',
-        component: ReportDefinitionsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
@@ -456,40 +390,31 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     ApplicationShellComponent,
     UnitsMasterComponent,
     UnitsDetailsComponent,
-    UnitsImportComponent,
     ApplicationPageNotFoundComponent,
     MainMenuComponent,
     AgentsMasterComponent,
-    AgentsImportComponent,
     AgentsDetailsComponent,
     RolesMasterComponent,
-    RolesImportComponent,
     RolesDetailsComponent,
     UsersDetailsComponent,
     UsersMasterComponent,
-    UsersImportComponent,
     SettingsComponent,
     LookupsMasterComponent,
     LookupsDetailsComponent,
-    LookupsImportComponent,
     CurrenciesMasterComponent,
     CurrenciesDetailsComponent,
-    CurrenciesImportComponent,
     ResourcesMasterComponent,
     ResourcesDetailsComponent,
-    ResourcesImportComponent,
     UnitsPickerComponent,
     LookupsPickerComponent,
     CustomClassificationsMasterComponent,
     CustomClassificationsDetailsComponent,
-    CustomClassificationsImportComponent,
     CustomClassificationsPickerComponent,
     AccountTypesMasterComponent,
     AccountTypesDetailsComponent,
     AccountTypesPickerComponent,
     AccountsMasterComponent,
     AccountsDetailsComponent,
-    AccountsImportComponent,
     AccountsPickerComponent,
     AgentsPickerComponent,
     ResourcesPickerComponent,
@@ -497,7 +422,6 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     ReportResultsComponent,
     ReportDefinitionsMasterComponent,
     ReportDefinitionsDetailsComponent,
-    ReportDefinitionsImportComponent,
     CentersMasterComponent,
     CentersDetailsComponent,
     CentersPickerComponent,
@@ -505,7 +429,6 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     RolesPickerComponent,
     CurrenciesPickerComponent,
     EntryTypesMasterComponent,
-    EntryTypesImportComponent,
     EntryTypesDetailsComponent,
     EntryTypesPickerComponent,
     DocumentsMasterComponent,

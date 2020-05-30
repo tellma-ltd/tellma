@@ -56,7 +56,7 @@ namespace Tellma.Controllers
 
         private string View => ReportDefinitionsController.BASE_ADDRESS;
 
-        public ReportDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public ReportDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -171,7 +171,7 @@ namespace Tellma.Controllers
                 if (entity.Id.Length > 50)
                 {
                     string path = $"[{index}].{nameof(entity.Id)}";
-                    string msg = _localizer[nameof(StringLengthAttribute), _localizer["Id"], 3];
+                    string msg = _localizer[Services.Utilities.Constants.Error_Field0LengthMaximumOf1, _localizer["Id"], 3];
 
                     ModelState.AddModelError(path, msg);
                 }

@@ -1,9 +1,9 @@
 // tslint:disable:variable-name
 import { Settings } from '../entities/settings';
-import { DataWithVersion } from './data-with-version';
+import { Versioned } from './versioned';
 import { GetEntityResponse } from './get-entity-response';
 import { SettingsForClient } from './settings-for-client';
 
 export interface SaveSettingsResponse extends GetEntityResponse<Settings> {
-    SettingsForClient: DataWithVersion<SettingsForClient>;
+    SettingsForClient: Versioned<SettingsForClient>;
 }

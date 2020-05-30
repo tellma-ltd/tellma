@@ -1241,6 +1241,10 @@ tr.t-highlight {
   max-width: 850px;
 }
 
+.t-import-modal .modal-dialog {
+  max-width: 650px;
+}
+
 @media (min-width: 576px) {
   .t-master-modal, .t-inbox-modal {
     .modal-content {

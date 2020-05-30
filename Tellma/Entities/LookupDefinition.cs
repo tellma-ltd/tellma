@@ -5,46 +5,47 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "LookupDefinition", Plural = "LookupDefinitions")]
     public class LookupDefinitionForSave : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular2 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural2 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
 
         [Display(Name = "MainMenuIcon")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string MainMenuIcon { get; set; }
 
         [Display(Name = "MainMenuSection")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string MainMenuSection { get; set; }
 

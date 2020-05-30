@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
 using System.Reflection;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -135,7 +136,7 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ModelStateDictionary"/>
+        /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ValidationErrorsDictionary"/>
         /// </summary>
         public static void ValidateUniqueIds<TEntity>(List<TEntity> entities, ValidationErrorsDictionary modelState, IStringLocalizer localizer) where TEntity : EntityWithKey
         {
@@ -214,7 +215,7 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// The method localizes every error in the collection and adds it to the <see cref="ModelStateDictionary"/>
+        /// The method localizes every error in the collection and adds it to the <see cref="ValidationErrorsDictionary"/>
         /// </summary>
         public static void AddLocalizedErrors(this ValidationErrorsDictionary modelState, IEnumerable<ValidationError> errors, IStringLocalizer localizer)
         {
@@ -367,5 +368,18 @@ namespace Tellma.Controllers.Utilities
                 .GroupBy(e => e.GetType().GetRootType().Name)
                 .ToDictionary(g => g.Key, g => g.AsEnumerable()); ;
         }
+
+        //public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, TypeDescriptor typeDesc, CancellationToken cancellation)
+        //{
+        //    static FlattenAndTrimInner(Entity entity, TypeDescriptor typeDesc)
+        //    {
+        //        if (entity == null || entity.EntityMetadata.FlattenedAndTrimmed)
+        //        {
+        //            return;
+        //        }
+
+        //        foreach 
+        //    }
+        //}
     }
 }

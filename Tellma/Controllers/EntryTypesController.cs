@@ -69,7 +69,7 @@ namespace Tellma.Controllers
 
         private string View => EntryTypesController.BASE_ADDRESS;
 
-        public EntryTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public EntryTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;

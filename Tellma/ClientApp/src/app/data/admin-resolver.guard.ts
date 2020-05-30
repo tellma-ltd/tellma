@@ -4,7 +4,7 @@ import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { WorkspaceService, AdminWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
 import { ApiService } from './api.service';
-import { DataWithVersion } from './dto/data-with-version';
+import { Versioned } from './dto/versioned';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
 import { ProgressOverlayService } from './progress-overlay.service';
@@ -26,7 +26,7 @@ export function versionStorageKey(prefix: string) { return `${prefix}_version`; 
 export function metaVersionStorageKey(prefix: string) { return `${prefix}_metaversion`; }
 
 export function handleFreshSettings(
-  result: DataWithVersion<AdminSettingsForClient>, aws: AdminWorkspace, storage: StorageService) {
+  result: Versioned<AdminSettingsForClient>, aws: AdminWorkspace, storage: StorageService) {
 
   const settings = result.Data;
   const version = result.Version;
@@ -42,7 +42,7 @@ export function handleFreshSettings(
 }
 
 export function handleFreshPermissions(
-  result: DataWithVersion<AdminPermissionsForClient>, aws: AdminWorkspace, storage: StorageService) {
+  result: Versioned<AdminPermissionsForClient>, aws: AdminWorkspace, storage: StorageService) {
 
   const permissions = result.Data;
   const version = result.Version;
@@ -58,7 +58,7 @@ export function handleFreshPermissions(
 }
 
 export function handleFreshUserSettings(
-  result: DataWithVersion<AdminUserSettingsForClient>, aws: AdminWorkspace, storage: StorageService) {
+  result: Versioned<AdminUserSettingsForClient>, aws: AdminWorkspace, storage: StorageService) {
 
   const userSettings = result.Data;
   const version = result.Version;
@@ -82,9 +82,9 @@ export class AdminResolverGuard implements CanActivate {
   // navigate to the admin portal until the global values are retrieved first
 
   private cancellationToken$: Subject<void>;
-  private settingsApi: () => Observable<DataWithVersion<AdminSettingsForClient>>;
-  private permissionsApi: () => Observable<DataWithVersion<AdminPermissionsForClient>>;
-  private userSettingsApi: () => Observable<DataWithVersion<AdminUserSettingsForClient>>;
+  private settingsApi: () => Observable<Versioned<AdminSettingsForClient>>;
+  private permissionsApi: () => Observable<Versioned<AdminPermissionsForClient>>;
+  private userSettingsApi: () => Observable<Versioned<AdminUserSettingsForClient>>;
   private ping: () => Observable<any>;
 
   constructor(

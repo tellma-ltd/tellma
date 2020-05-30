@@ -149,7 +149,6 @@ namespace Tellma.Entities.Descriptors
             }
         }
 
-
         /// <summary>
         /// Forever cache of every descriptor ever requested through <see cref="Get(Type)"/>
         /// </summary>
@@ -163,7 +162,8 @@ namespace Tellma.Entities.Descriptors
         {
             return _cache.GetOrAdd(type, (entityType) =>
             {
-                ///////////////////// Create ////////////////////
+                #region Create
+
                 Func<Entity> create;
                 {
                     var ctorExp = entityType.GetConstructor(new Type[0]); // Document()
@@ -172,7 +172,10 @@ namespace Tellma.Entities.Descriptors
                     create = lambda.Compile();
                 }
 
-                ///////////////////// Create List ////////////////////
+                #endregion
+
+                #region Create List
+
                 Func<IList> createList;
                 {
                     var listType = typeof(List<>).MakeGenericType(entityType);
@@ -182,20 +185,28 @@ namespace Tellma.Entities.Descriptors
                     createList = lambda.Compile();
                 }
 
-                ///////////////////// Properties ////////////////////
-                var properties = new Dictionary<string, PropertyDescriptor>();
-                var propertyList = new List<PropertyDescriptor>();
+                #endregion
+
+                #region Properties
+
+                var propertiesDic = new Dictionary<string, PropertyDescriptor>();
+                var properties = new List<PropertyDescriptor>();
 
                 var propInfos = entityType.GetPropertiesBaseFirst(BindingFlags.Public | BindingFlags.Instance)
                     .Where(e => e.GetCustomAttribute<NotMappedAttribute>() == null);
 
-                foreach (var propInfo in propInfos)
+                // The purpose of the OrderBy is to ensure that navigation properties come after their foreign key properties
+                foreach (var propInfo in propInfos.OrderBy(p => (p.PropertyType.IsSubclassOf(typeof(Entity)) || p.PropertyType.IsList()) ? 1 : 0))
                 {
-                    ///////////////////// Type && Name ////////////////////
+                    #region Type && Name
+
                     var propType = propInfo.PropertyType;
                     var name = propInfo.Name;
 
-                    ///////////////////// Setter ////////////////////
+                    #endregion
+
+                    #region Setter
+
                     // (e, v) => e.Name = (string)v
                     Action<Entity, object> setter;
                     {
@@ -210,7 +221,10 @@ namespace Tellma.Entities.Descriptors
                         setter = lambdaExp.Compile();
                     }
 
-                    ///////////////////// Getter ////////////////////
+                    #endregion
+
+                    #region Getter
+
                     // (e) => e.Name;
                     Func<Entity, object> getter;
                     {
@@ -223,11 +237,14 @@ namespace Tellma.Entities.Descriptors
                         getter = lambdaExp.Compile();
                     }
 
+                    #endregion
+
                     // Add property descriptor
                     PropertyDescriptor propDesc;
                     if (propInfo.PropertyType.IsList())
                     {
-                        ///////////////////// ForeignKeyDesc ////////////////////
+                        #region ForeignKeyDesc
+
                         var foreignKeyName = propInfo.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                         if (string.IsNullOrWhiteSpace(foreignKeyName))
                         {
@@ -235,19 +252,28 @@ namespace Tellma.Entities.Descriptors
                             throw new InvalidOperationException($"Collection property {propInfo.Name} on type {entityType.Name} is not adorned with the associated foreign key");
                         }
 
-                        ///////////////////// getEntityDesc ////////////////////
+                        #endregion
+
+                        #region getEntityDesc
+
                         Type collectionType = propInfo.PropertyType.GetGenericArguments().SingleOrDefault();
                         Func<TypeDescriptor> getCollectionEntityDescriptor = () => Get(collectionType);
 
+                        #endregion
+
                         // Collection
-                        propDesc = new CollectionPropertyDescriptor(propType, name, setter, getter, foreignKeyName, getCollectionEntityDescriptor);
+                        propDesc = new CollectionPropertyDescriptor(propInfo, name, setter, getter, foreignKeyName, getCollectionEntityDescriptor);
                     }
                     else if (propInfo.PropertyType.IsSubclassOf(typeof(Entity)))
                     {
-                        ///////////////////// IsParent ////////////////////
+                        #region IsParent
+
                         bool isParent = propInfo.Name == "Parent" && entityType.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
 
-                        ///////////////////// ForeignKeyDesc ////////////////////
+                        #endregion
+
+                        #region ForeignKeyDesc
+
                         var fkName = propInfo.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                         if (string.IsNullOrWhiteSpace(fkName))
                         {
@@ -255,20 +281,27 @@ namespace Tellma.Entities.Descriptors
                             throw new InvalidOperationException($"Navigation property {propInfo.Name} on type {entityType.Name} is not adorned with the associated foreign key");
                         }
 
-                        if (!properties.TryGetValue(fkName, out PropertyDescriptor foreignKeyDesc))
+                        if (!propertiesDic.TryGetValue(fkName, out PropertyDescriptor foreignKeyDesc))
                         {
                             // Developer mistake
-                            throw new InvalidOperationException($"Navigation property {propInfo.Name} on type {entityType.Name} is adorned with a foreign key that doesn't exist");
+                            throw new InvalidOperationException($"Navigation property {propInfo.Name} on type {entityType.Name} is adorned with a foreign key '{fkName}' that doesn't exist");
                         }
 
-                        ///////////////////// getEntityDesc ////////////////////
+                        #endregion
+
+                        #region getEntityDesc
+
                         Func<TypeDescriptor> getEntityDesc = () => Get(propInfo.PropertyType);
 
+                        #endregion
+
                         // Navigation
-                        propDesc = new NavigationPropertyDescriptor(propType, name, setter, getter, isParent, foreignKeyDesc, getEntityDesc);
+                        propDesc = new NavigationPropertyDescriptor(propInfo, name, setter, getter, isParent, foreignKeyDesc, getEntityDesc);
                     }
                     else
                     {
+                        #region MaxLength
+
                         int maxLength = -1;
                         var stringLengthAttribute = propInfo.GetCustomAttribute<StringLengthAttribute>(inherit: true);
                         if (stringLengthAttribute != null)
@@ -276,16 +309,20 @@ namespace Tellma.Entities.Descriptors
                             maxLength = stringLengthAttribute.MaximumLength;
                         }
 
+                        #endregion
+
                         // Simple
-                        propDesc = new PropertyDescriptor(propType, name, setter, getter, maxLength);
+                        propDesc = new PropertyDescriptor(propInfo, name, setter, getter, maxLength);
                     }
 
-                    properties.Add(propInfo.Name, propDesc);
-                    propertyList.Add(propDesc);
+                    propertiesDic.Add(propInfo.Name, propDesc);
+                    properties.Add(propDesc);
                 }
 
+                #endregion
+
                 // Prepare and return the entity descriptor
-                var entityDesc = new TypeDescriptor(entityType, create, createList, propertyList);
+                var entityDesc = new TypeDescriptor(entityType, create, createList, properties);
                 return entityDesc;
             });
         }

@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient,
-  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DocumentDefinitionMarkupTemplateForClient, DefinitionForClient, DefinitionsForClient
+  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DefinitionsForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -1418,7 +1418,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entry_NotedDate');
   }
 
-  public onFileSelected(input: any, model: DocumentForSave) {
+  public onFileSelected(input: HTMLInputElement, model: DocumentForSave) {
     const files = input.files as FileList;
     if (!files) {
       return;

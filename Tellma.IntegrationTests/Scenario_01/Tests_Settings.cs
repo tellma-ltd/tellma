@@ -97,7 +97,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<DataWithVersion<SettingsForClient>>();
+            var responseData = await response.Content.ReadAsAsync<Versioned<SettingsForClient>>();
 
             // Assert the result makes sense
             Assert.NotNull(responseData.Version);

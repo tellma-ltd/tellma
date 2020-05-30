@@ -58,7 +58,7 @@ namespace Tellma.Controllers
     public abstract class FactTreeServiceBase<TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
         where TEntity : EntityWithKey<TKey>
     {
-        public FactTreeServiceBase(IStringLocalizer localizer) : base(localizer)
+        public FactTreeServiceBase(IServiceProvider sp) : base(sp)
         {
         }
 

@@ -7,40 +7,41 @@ using System;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "ReportDefinition", Plural = "ReportDefinitions")]
     public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "Title", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Title { get; set; }
 
         [MultilingualDisplay(Name = "Title", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Title2 { get; set; }
 
         [MultilingualDisplay(Name = "Title", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Title3 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description2 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
         [Display(Name = "ReportDefinition_Type")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "Summary", "Details" },
             new string[] { "ReportDefinition_Type_Summary", "ReportDefinition_Type_Details" })]
@@ -77,23 +78,23 @@ namespace Tellma.Entities
         public bool? DefaultsToChart { get; set; }
 
         [Display(Name = "ReportDefinition_Collection")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Collection { get; set; }
 
         [Display(Name = "ReportDefinition_DefinitionId")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string DefinitionId { get; set; }
 
         [Display(Name = "ReportDefinition_Filter")]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Filter { get; set; } // On drill down for summary
 
         [Display(Name = "ReportDefinition_OrderBy")]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string OrderBy { get; set; } // On drill down for summary
 
@@ -187,23 +188,23 @@ namespace Tellma.Entities
     public class ReportParameterDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Key")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Key { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label2 { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
@@ -230,7 +231,7 @@ namespace Tellma.Entities
         //public int MaxDecimalPlaces { get; set; }
 
         [Display(Name = "ReportDefinition_Value")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Value { get; set; }
     }
@@ -244,25 +245,24 @@ namespace Tellma.Entities
 
     public class ReportSelectDefinitionForSave : EntityWithKey<int>
     {
-
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Path { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label2 { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
     }
@@ -277,13 +277,13 @@ namespace Tellma.Entities
     public abstract class ReportDimensionDefinition : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Path { get; set; }
 
-        [Display(Name = "ReportDefinition_Function")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Display(Name = "ReportDefinition_Modifier")]
+        [StringLength(255)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { 
             Modifiers.year, 
@@ -305,22 +305,22 @@ namespace Tellma.Entities
         public string Modifier { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label2 { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
         [Display(Name = "ReportDefinition_OrderDirection")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "asc", "desc" },
             new string[] { "ReportDefinition_OrderDirection_Asc", "ReportDefinition_OrderDirection_Desc" })]
@@ -358,35 +358,35 @@ namespace Tellma.Entities
     public class ReportMeasureDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "ReportDefinition_Path")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Path { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label2 { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Label3 { get; set; }
 
         [Display(Name = "ReportDefinition_OrderDirection")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "asc", "desc" },
             new string[] { "ReportDefinition_OrderDirection_asc", "ReportDefinition_OrderDirection_desc" })]
         public string OrderDirection { get; set; }
 
         [Display(Name = "ReportDefinition_Aggregation")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         [ChoiceList(new object[] { "count", "sum", "avg", "max", "min" },
             new string[] {

@@ -2,5 +2,5 @@
 export interface ImportResult {
   Inserted: number;
   Updated: number;
-  Seconds: number;
+  Milliseconds: number;
 }

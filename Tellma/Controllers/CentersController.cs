@@ -69,7 +69,7 @@ namespace Tellma.Controllers
 
         private string View => CentersController.BASE_ADDRESS;
 
-        public CentersService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public CentersService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
