@@ -22,7 +22,7 @@ namespace Tellma.Entities.Descriptors
         public PropertyDescriptor ForeignKey { get; }
 
         /// <summary>
-        /// The <see cref="TypeDescriptor"/> of the type of the value of this property
+        /// The <see cref="Descriptors.TypeDescriptor"/> of the type of the value of this property
         /// </summary>
         public TypeDescriptor TypeDescriptor => _typeDescriptor ??= _getTypeDescriptor();
 
