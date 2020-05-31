@@ -1,57 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "LineDefinition", Plural = "LineDefinitions")]
     public class LineDefinitionForSave<TEntry, TColumn, TStateReason> : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Description { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Description2 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular2 { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular3 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural2 { get; set; }
 
         [MultilingualDisplay(Name = "TitlePlural", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string TitlePlural3 { get; set; }
         public bool? AllowSelectiveSigning { get; set; }

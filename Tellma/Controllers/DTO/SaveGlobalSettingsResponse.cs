@@ -2,6 +2,6 @@
 {
     public class SaveGlobalSettingsResponse : GetByIdResponse<GlobalSettings>
     {
-        public DataWithVersion<GlobalSettingsForClient> SettingsForClient { get; set; }
+        public Versioned<GlobalSettingsForClient> SettingsForClient { get; set; }
     }
 }

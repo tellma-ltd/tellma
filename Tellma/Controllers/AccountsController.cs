@@ -69,7 +69,7 @@ namespace Tellma.Controllers
 
         private string View => AccountsController.BASE_ADDRESS;
 
-        public AccountsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, ISettingsCache settingsCache) : base(localizer)
+        public AccountsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, ISettingsCache settingsCache, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -144,7 +144,7 @@ namespace Tellma.Controllers
                     {
                         string path = $"[{index}].{nameof(AccountForSave.CurrencyId)}";
                         string propDisplayName = _localizer["Account_Currency"];
-                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
+                        string errorMsg = _localizer[Services.Utilities.Constants.Error_Field0IsRequired, propDisplayName];
 
                         ModelState.AddModelError(path, errorMsg);
                     }

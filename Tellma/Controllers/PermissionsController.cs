@@ -28,7 +28,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient(CancellationToken cancellation)
+        public virtual async Task<ActionResult<Versioned<PermissionsForClient>>> PermissionsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -48,7 +48,7 @@ namespace Tellma.Controllers
             _repo = repo;
         }
 
-        public async Task<DataWithVersion<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
+        public async Task<Versioned<PermissionsForClient>> PermissionsForClient(CancellationToken cancellation)
         {                
             // Retrieve the user permissions and their current version
             var (version, permissions) = await _repo.Permissions__Load(cancellation);
@@ -66,7 +66,7 @@ namespace Tellma.Controllers
             }
 
             // Tag the permissions for client with their current version
-            var result = new DataWithVersion<PermissionsForClient>
+            var result = new Versioned<PermissionsForClient>
             {
                 Version = version.ToString(),
                 Data = permissionsForClient

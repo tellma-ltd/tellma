@@ -5,11 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "SqlDatabase", Plural = "SqlDatabases")]
     public class SqlDatabaseForSave : EntityWithKey<int>
     {
         [Display(Name = "SqlDatabase_DatabaseName")]
         [Required]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string DatabaseName { get; set; }
 
@@ -18,7 +19,7 @@ namespace Tellma.Entities
         public int? ServerId { get; set; }
 
         [Display(Name = "Description")]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         public string Description { get; set; }
     }
 

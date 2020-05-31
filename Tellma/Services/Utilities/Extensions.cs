@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
+using System.Collections;
 
 namespace Tellma.Services.Utilities
 {
@@ -87,17 +88,25 @@ namespace Tellma.Services.Utilities
 
         /// <summary>
         /// Traverses the <see cref="Entity"/> tree trimming all string properties
-        /// or setting them to null if they are just empty spaces
+        /// or setting them to null if they are just empty spaces.
+        /// This function cannot handle cyclic entity graphs
         /// </summary>
         public static void TrimStringProperties(this Entity entity)
         {
-            var dtoType = entity.GetType();
-            foreach (var prop in dtoType.GetProperties())
+            if (entity == null)
             {
-                if (prop.PropertyType == typeof(string))
+                // Nothing to do
+                return;
+            }
+
+            // Inner recursive method that does the trimming on the entire tree
+            static void TrimStringPropertiesInner(Entity entity, Entities.Descriptors.TypeDescriptor typeDesc)
+            {
+                // Trim all string properties
+                foreach (var prop in typeDesc.SimpleProperties.Where(p => p.Type == typeof(string)))
                 {
                     var originalValue = prop.GetValue(entity)?.ToString();
-                    if(string.IsNullOrWhiteSpace(originalValue))
+                    if (string.IsNullOrWhiteSpace(originalValue))
                     {
                         // No empty strings or white spaces allowed
                         prop.SetValue(entity, null);
@@ -105,62 +114,45 @@ namespace Tellma.Services.Utilities
                     else
                     {
                         // Trim
-                        var trimmed = originalValue.Trim();
-                        prop.SetValue(entity, trimmed);
+                        var trimmedValue = originalValue.Trim();
+                        prop.SetValue(entity, trimmedValue);
                     }
                 }
-                else if (prop.PropertyType.IsEntity())
-                {
-                    var dtoForSave = prop.GetValue(entity);
-                    if (dtoForSave != null)
-                    {
-                        (dtoForSave as Entity).TrimStringProperties();
-                    }
-                }
-                else
-                {
-                    var propType = prop.PropertyType;
-                    var isDtoList = propType.IsList() &&
-                        propType.GenericTypeArguments[0].IsEntity();
 
-                    if (isDtoList)
+                // Recursively do nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
+                {
+                    if (prop.GetValue(entity) is Entity relatedEntity)
                     {
-                        var dtoList = prop.GetValue(entity);
-                        if (dtoList != null)
+                        TrimStringPropertiesInner(relatedEntity, prop.TypeDescriptor);
+                    }
+                }
+
+                // Recursively do the collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionTypeDesc = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
                         {
-                            foreach (var row in dtoList.Enumerate<Entity>())
+                            if (obj is Entity relatedEntity)
                             {
-                                row.TrimStringProperties();
+                                TrimStringPropertiesInner(relatedEntity, collectionTypeDesc);
                             }
                         }
                     }
                 }
             }
+
+            // Trim and return
+            var typeDesc = Entities.Descriptors.TypeDescriptor.Get(entity.GetType());
+            TrimStringPropertiesInner(entity, typeDesc);
         }
 
         public static bool IsList(this Type @this)
         {
             return @this.IsGenericType && @this.GetGenericTypeDefinition() == typeof(List<>);
-        }
-
-        /// <summary>
-        /// Determines whether this type is <see cref="DateTime"/> or a 
-        /// <see cref="DateTimeOffset"/> or a nullable version thereof
-        /// </summary>
-        public static bool IsDateOrTime(this Type @this)
-        {
-            var t = Nullable.GetUnderlyingType(@this) ?? @this;
-            return t == typeof(DateTime) || t == typeof(DateTimeOffset);
-        }
-
-        /// <summary>
-        /// Determines whether this type is a
-        /// <see cref="DateTimeOffset"/> or a nullable version thereof
-        /// </summary>
-        public static bool IsDateTimeOffset(this Type @this)
-        {
-            var t = Nullable.GetUnderlyingType(@this) ?? @this;
-            return t == typeof(DateTimeOffset);
         }
 
         /// <summary>
@@ -209,101 +201,6 @@ namespace Tellma.Services.Utilities
                 typeArguments: null,
                 arguments: new[] { constant }
                 );
-        }
-
-        /// <summary>
-        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
-        /// </summary>
-        public static DateTime? ParseToDateTime(this object @this)
-        {
-            if (@this == null)
-            {
-                return null;
-            }
-
-            DateTime dateTime;
-
-            if (@this.GetType() == typeof(double))
-            {
-                // Double indicates the OLE Automation date typically represented in excel
-                dateTime = DateTime.FromOADate((double)@this);
-            }
-            else
-            {
-                // Parse the import value into a DateTime
-                var valueString = @this.ToString();
-                // dateTime = DateTime.ParseExact(valueString, "yyyy-MM-ddT", CultureInfo.InvariantCulture);
-                dateTime = DateTime.Parse(valueString);
-
-            }
-
-            return dateTime;
-        }
-
-        public static DateTimeOffset? AddTimeZone(this DateTime? dateTime, TimeZoneInfo timeZone)
-        {
-            if (dateTime == null)
-            {
-                return null;
-            }
-
-            // The date time supplied in the import does not contain time zone offset
-            // The code below adds the current user time zone to the date time supplied
-            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
-            var dtOffset = new DateTimeOffset(dateTime.Value, offset);
-
-            return dtOffset;
-        }
-
-        /// <summary>
-        /// The default Convert.ChangeType cannot handle converting types to
-        /// nullable types also it cannot handle DateTimeOffset
-        /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
-        /// </summary>
-        public static object ChangeType(this object obj, Type targetType, TimeZoneInfo sourceTimeZone = null)
-        {
-            if (obj is null)
-            {
-                return null;
-            }
-
-            var t = targetType;
-            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-            {
-                t = Nullable.GetUnderlyingType(t);
-            }
-
-            if (t.IsDateOrTime())
-            {
-                var date = obj.ParseToDateTime();
-                if (t.IsDateTimeOffset())
-                {
-                    if (sourceTimeZone != null)
-                    {
-                        return date.AddTimeZone(sourceTimeZone);
-                    }
-                    else
-                    {
-                        return date.AddTimeZone(TimeZoneInfo.Utc);
-                    }
-                }
-
-                return date;
-            }
-
-            if (t == typeof(HierarchyId))
-            {
-                return obj.ToString();
-            }
-
-            try
-            {
-                return Convert.ChangeType(obj, t);
-            }
-            catch (Exception)
-            {
-                throw new InvalidOperationException($"Failed to convert value: '{obj?.ToString()}' to type: {t.Name}");
-            }
         }
 
         /// <summary>

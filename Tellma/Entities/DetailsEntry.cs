@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [StrongEntity]
+    [EntityDisplay(Singular = "DetailsEntry", Plural = "DetailsEntries")]
     public class DetailsEntry : EntityWithKey<int>
     {
         [Display(Name = "Entry_Line")]
@@ -38,7 +40,7 @@ namespace Tellma.Entities
         public decimal? AlgebraicMonetaryValue { get; set; }
 
         [Display(Name = "Entry_Currency")]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(3)]
         public string CurrencyId { get; set; }
 
         [Display(Name = "DetailsEntry_Count")]
@@ -72,18 +74,18 @@ namespace Tellma.Entities
         public decimal? AlgebraicValue { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string ExternalReference { get; set; }
 
         [Display(Name = "Entry_AdditionalReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string AdditionalReference { get; set; }
 
         [Display(Name = "Entry_NotedAgent")]
         public int? NotedAgentId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentName { get; set; }
 
         [Display(Name = "Entry_NotedAmount")]

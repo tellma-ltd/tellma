@@ -59,7 +59,8 @@ namespace Tellma.Controllers
         public ExchangeRatesService(
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            ISettingsCache settingsCache) : base(localizer)
+            ISettingsCache settingsCache,
+            IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;

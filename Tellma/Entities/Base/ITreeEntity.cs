@@ -1,9 +1,12 @@
 ﻿namespace Tellma.Entities
 {
-    public interface ITreeEntityForSave<TKey> where TKey: struct
+    public interface IParentIndex
     {
         int? ParentIndex { get; set; }
+    }
 
+    public interface ITreeEntityForSave<TKey> : IParentIndex where TKey: struct
+    {
         TKey? ParentId { get; set; }
     }
 

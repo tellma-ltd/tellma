@@ -30,6 +30,8 @@ namespace Tellma.Data.Queries
         private OrderByExpression _orderby;
         private IEnumerable<object> _ids;
         private IEnumerable<object> _parentIds;
+        private string _propName;
+        private IEnumerable<object> _values;
         private bool _includeRoots;
         private string _fromSql;
         private string _preSql;
@@ -58,8 +60,10 @@ namespace Tellma.Data.Queries
                 _select = _select,
                 _expand = _expand,
                 _orderby = _orderby,
-                _ids = _ids == null ? null : new List<object>(_ids),
-                _parentIds = _parentIds == null ? null : new List<object>(_parentIds),
+                _ids = _ids?.ToList(),
+                _parentIds = _parentIds?.ToList(),
+                _propName = _propName,
+                _values = _values?.ToList(),
                 _includeRoots = _includeRoots,
                 _fromSql = _fromSql,
                 _preSql = _preSql,
@@ -196,6 +200,30 @@ namespace Tellma.Data.Queries
         }
 
         /// <summary>
+        /// Restricts the <see cref="Query{T}"/> to loading entities that have a certain property evaluating to one of the supplied values.
+        /// For example: all entities where Code IN values
+        /// </summary>
+        public Query<T> FilterByPropertyValues(string propName, IEnumerable<object> values)
+        {
+            if (string.IsNullOrWhiteSpace(propName))
+            {
+                throw new ArgumentNullException(nameof(propName));
+            }
+
+            var desc = TypeDescriptor.Get<T>();
+            if (desc.Property(propName) == null)
+            {
+                throw new InvalidOperationException($"Property {propName} does not exist on type {desc.Name}");
+            }
+
+            var clone = Clone();
+            clone._propName = propName;
+            clone._values = values?.ToList() ?? throw new ArgumentNullException(nameof(values)); // for immutability
+
+            return clone;
+        }
+
+        /// <summary>
         /// Applies a <see cref="OrderByExpression"/> to set the order of the result, it is used in
         /// conjunction with <see cref="Top(int)"/> and <see cref="Skip(int)"/> to implement paging
         /// </summary>
@@ -298,6 +326,8 @@ namespace Tellma.Data.Queries
                 Filter = filterExp,
                 Ids = _ids,
                 ParentIds = _parentIds,
+                PropName = _propName,
+                Values = _values,
                 IncludeRoots = _includeRoots,
                 Skip = _skip,
                 Top = _top,
@@ -586,6 +616,8 @@ namespace Tellma.Data.Queries
             root.OrderBy = orderbyExp;
             root.Ids = _ids;
             root.ParentIds = _parentIds;
+            root.PropName = _propName;
+            root.Values = _values;
             root.IncludeRoots = _includeRoots;
             root.Skip = _skip;
             root.Top = _top;
@@ -695,6 +727,8 @@ namespace Tellma.Data.Queries
                 Filter = filterExp,
                 Ids = _ids,
                 ParentIds = _parentIds,
+                PropName = _propName,
+                Values = _values,
                 IncludeRoots = _includeRoots,
                 OrderBy = orderByExp,
                 Skip = _skip,

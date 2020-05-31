@@ -136,7 +136,7 @@
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
               *ngIf="showExport">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                [class.t-text-whitish]="isDark" (click)="exportErrorMessage = null; modalService.open(exportModal);"
+                [class.t-text-whitish]="isDark" (click)="onExport(exportPagingModal, 'WhatISee')"
                 [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
@@ -145,6 +145,14 @@
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
                 [class.t-text-whitish]="isDark" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
                 {{ 'Import' | translate }}
+              </button>
+            </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
+              *ngIf="showExport">
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="onExport(exportPagingModal, 'ForImport')"
+                [disabled]="!canExport">
+                {{ 'ExportForImport' | translate }}
               </button>
             </div>
             <!-- <button type="button" class="dropdown-item btn-light" (click)="onExpandNextLevel()"
@@ -158,6 +166,9 @@
             </button>
           </div>
         </div>
+
+        <t-spinner class="t-vertical-align-middle" *ngIf="showExportSpinner">
+        </t-spinner>
       </div>
 
       <!-- Right Buttons -->
@@ -235,15 +246,20 @@
             {{ 'Actions' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.t-less-dark]="isDark">
-            <ng-container *ngFor="let action of multiselectActions">
-              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
-                [ngbTooltip]="actionTooltip(action)" container="body">
-                <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
-                  [class.t-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
-                  <ng-container *ngTemplateOutlet="action.template"></ng-container>
-                </button>
-              </div>
-            </ng-container>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
+              *ngIf="showExport">
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="onExportByIds('WhatISee')" [disabled]="!canExport">
+                {{ 'Export' | translate }}
+              </button>
+            </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
+              *ngIf="showExport">
+              <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                [class.t-text-whitish]="isDark" (click)="onExportByIds('ForImport')" [disabled]="!canExport">
+                {{ 'ExportForImport' | translate }}
+              </button>
+            </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDelete">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
@@ -259,6 +275,15 @@
                 {{ 'DeleteWithDescendants' | translate }}
               </button>
             </div>
+            <ng-container *ngFor="let action of multiselectActions">
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
+                [ngbTooltip]="actionTooltip(action)" container="body">
+                <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
+                  [class.t-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
+                  <ng-container *ngTemplateOutlet="action.template"></ng-container>
+                </button>
+              </div>
+            </ng-container>
           </div>
         </div>
 
@@ -269,6 +294,9 @@
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
+
+        <t-spinner class="t-vertical-align-middle" *ngIf="showExportSpinner">
+        </t-spinner>
       </div>
     </div>
   </div>
@@ -496,8 +524,6 @@
           </ng-template>
         </ng-template>
 
-
-
         <!-- Template reused in both tree and flat tables -->
         <ng-template #selectColumns let-id="id">
           <td class="t-pointer text-truncate" *ngFor="let colPath of tableColumnPaths" (click)="onChoose(id)">
@@ -527,7 +553,7 @@
 </div>
 
 <!-- Export Modal -->
-<ng-template #exportModal let-modal>
+<ng-template #exportPagingModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">{{ 'Export' | translate }}</h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
@@ -537,15 +563,15 @@
   <div class="modal-body">
 
     <!-- Format -->
-    <div class="mt-1">
+    <!-- <div class="mt-1">
       <div class="font-weight-bold small">
         <span class="t-vertical-align-middle">{{ 'Format' | translate }}</span>
       </div>
       <t-selector [choices]="formatChoices" [(ngModel)]="exportFormat"></t-selector>
-    </div>
+    </div> -->
 
     <!-- Page -->
-    <div class="mt-3 mb-2">
+    <div class="mt-1 mb-2">
       <div class="font-weight-bold small">
         <span class="t-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
       </div>
@@ -572,14 +598,9 @@
       {{ 'MaxExportSizeWarning' | translate: { max: (maxTotalExport | number) } }}
     </t-warning-message>
 
-    <!-- Error message -->
-    <t-error-message *ngIf="showExportErrorMessage">
-      {{ exportErrorMessage }}
-    </t-error-message>
-
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" (click)="onExport();" ngbAutofocus>
+    <button class="btn btn-primary" (click)="onDoExport();" ngbAutofocus>
       <fa-icon icon="download"></fa-icon>
       &nbsp;{{ 'Export' | translate }}
       <t-spinner class="ml-1" *ngIf="showExportSpinner" [scale]="1"></t-spinner>
@@ -676,6 +697,49 @@
   </div>
 </ng-template>
 
+<!-- Import Modal -->
+<ng-template #importModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ 'ImportAFile' | translate }}
+    </h5>
+    <button type="button" (click)="onDownloadTemplate()"
+      class="btn btn-light btn-sm t-white-button text-primary mx-2 align-self-center">
+      {{ 'DownloadTemplate' | translate }}
+    </button>
+    <t-spinner class="align-self-center" *ngIf="downloadingTemplate"></t-spinner>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+    <div class="row">
+      <t-form-group class="t-form-group" style="margin-top:0!important" [label]="'ImportMode' | translate">
+        <t-selector [(ngModel)]="importMode" [choices]="importModeChoices" ngbAutofocus></t-selector>
+      </t-form-group>
+      <t-form-group class="t-form-group" style="margin-top:0!important" [label]="'KeyProperty' | translate"
+        *ngIf="showImportKey">
+        <t-selector [(ngModel)]="importKey" [choices]="importKeyChoices"></t-selector>
+      </t-form-group>
+    </div>
+    <div class="mt-4">
+      <button type="button" (click)="fileInput.click()" class="btn btn-primary" [disabled]="!enableImportButton">
+        <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Import' | translate }}
+      </button>
+    </div>
+    <div class="text-danger mt-3" style="white-space: pre-wrap;" *ngIf="importErrorMessage">{{ importErrorMessage }}
+    </div>
+  </div>
+
+  <!-- for the file dialog -->
+  <input type="file" class="d-none" #fileInput (change)="onSelectFileToImport(fileInput, modal)"
+    accept=".csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+
+</ng-template>
 
 <!-- Select Modal (Temporary) -->
 <ng-template #editColumns let-modal>

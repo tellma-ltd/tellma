@@ -15,7 +15,7 @@ namespace Tellma.Entities
         /// <summary>
         /// Those strings cannot be used as Ids in Entities with string Ids because they will mess up the routing logic
         /// </summary>
-        public static readonly string[] RESERVED_IDS = { "new", "import", "export", "aggregate", "children-of" };
+        public static readonly string[] RESERVED_IDS = { "new", "import", "template", "export", "export-by-ids", "aggregate", "children-of", "by-ids" };
 
         /// <summary>
         /// All inheriting classes will have a strongly typed Id property that is usually an int or a string,
@@ -42,6 +42,7 @@ namespace Tellma.Entities
         /// it is important to have a single Id property for tracking HTTP resources as it simplifies
         /// so much shared logic for tracking resources and caching them
         /// </summary>
+        [Display(Name = "Id")]
         public TKey Id { get; set; }
 
         // The below method is used by implementations that benefit from a generic object Id, such as Object Loader

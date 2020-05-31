@@ -7,7 +7,10 @@ namespace Tellma.Services.Utilities
 {
     public static class Constants
     {
-        public const string Error_TheField0IsRequired = nameof(Error_TheField0IsRequired);
+        public const string Error_Field0IsRequired = nameof(Error_Field0IsRequired);
+        public const string Error_Field0LengthMaximumOf1 = nameof(Error_Field0LengthMaximumOf1);
+        public const string Error_Field0LengthMaximumOf1MinimumOf2 = nameof(Error_Field0LengthMaximumOf1MinimumOf2);
+        public const string Error_Field0IsNotValidEmail = nameof(Error_Field0IsNotValidEmail);
 
         public const string AdminConnection = nameof(AdminConnection);
         public const string IdentityConnection = nameof(IdentityConnection);

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "LineDefinitionStateReason", Plural = "LineDefinitionStateReasons")]
     public class LineDefinitionStateReasonForSave : EntityWithKey<int>
     {
         [Display(Name = "State")]
@@ -10,18 +11,18 @@ namespace Tellma.Entities
         public short? State { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 

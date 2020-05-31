@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
-import { isSpecified, mergeEntitiesInWorkspace } from '~/app/data/util';
+import { isSpecified, mergeEntitiesInWorkspace, csvPackage, downloadBlob } from '~/app/data/util';
 import {
   ReportDefinitionForClient, ReportDimensionDefinitionForClient,
   ReportMeasureDefinitionForClient, ReportSelectDefinitionForClient
@@ -60,6 +60,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input()
   refresh: Observable<void>; // Must be set only once
+
+  @Input()
+  export: Observable<string>; // Must be set only once
 
   @Input()
   mode: 'screen' | 'preview' | 'dashboard' = 'screen';
@@ -136,6 +139,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       this._subscriptions.add(this.refresh.pipe(
         tap(_ => this.state.reportStatus === ReportStatus.loaded))
         .subscribe(() => this.fetch()));
+    }
+
+    if (!!this.export) {
+      this._subscriptions.add(this.export.pipe(
+        tap(fileName => this.onExport(fileName)))
+        .subscribe());
     }
 
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
@@ -768,6 +777,165 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return additionalParams;
   }
 
+  public onExport(fileName?: string): void {
+    // This function exports the pivot table to a CSV file, the way it would look fully expanded
+    try {
+      if (this.state.reportStatus === ReportStatus.loaded) {
+        const pivot = this.state.pivot;
+        const headers = pivot.columnHeaders;
+        const rows = pivot.rows;
+        const realMeasures = this.state.measures;
+        const rowDimensionsColumnCount = !rows || !rows[0] ? 0 : rows[0].filter(c => c.type === 'dimension').length;
+        const data: string[][] = [];
+
+        // Helper function
+        const getDisplay = (cell: DimensionCell) => {
+          let display: string;
+          if (cell.propDesc.control === 'navigation') {
+            display = displayEntity(cell.value, cell.entityDesc);
+          } else {
+            display = displayValue(cell.value, cell.propDesc, this.translate);
+          }
+
+          return display;
+        };
+
+        // Top Headers section
+        let maxCols = 0;
+        for (const row of headers) {
+          const dataRow: string[] = [];
+
+          // Blank cell in upper left corner
+          for (let i = 0; i < rowDimensionsColumnCount; i++) {
+            dataRow.push(null);
+          }
+
+          let shouldBeLastOne = false;
+          for (const cell of row) {
+            if (shouldBeLastOne) {
+              console.error('Label showed up in the middle of the headers, the export algorithm will produce incorrect result');
+              return;
+            }
+            switch (cell.type) {
+              case 'dimension':
+                {
+                  let display: string;
+                  if (this.isDefined(cell)) {
+                    display = getDisplay(cell);
+                  } else {
+                    display = this.translate.instant('Undefined');
+                  }
+
+                  dataRow.push(display);
+                }
+                break;
+              case 'label':
+                {
+                  const display = cell.label();
+                  dataRow.push(display);
+                  // Right now we only support one label at the very end
+                  // Labels are the only kind that have a rowspan
+                  // And if they appear in the middle, the algorithm will
+                  // produce a wrong CSV => disaster, so just to be safe
+                  shouldBeLastOne = true;
+                }
+                break;
+              default:
+
+                break;
+            }
+
+            for (let i = 1; i < cell.expandedColSpan; i++) {
+              dataRow.push(null); // Add padding according to colspan
+            }
+          }
+
+          if (maxCols < dataRow.length) {
+            maxCols = dataRow.length;
+          }
+
+          data.push(dataRow);
+        }
+
+        // Measure labels
+        if (this.showMeasureLabels) {
+          const dataRow: string[] = [];
+
+          // Blank cell in upper left corner
+          for (let i = 0; i < rowDimensionsColumnCount; i++) {
+            dataRow.push(null);
+          }
+
+          for (const cell of rows[0].filter(e => e.type === 'measure')) {
+            if (!cell.parent || !cell.parent.hasChildren) {
+              for (const measure of realMeasures) {
+                dataRow.push(measure.label());
+              }
+            }
+          }
+
+          data.push(dataRow);
+        }
+
+        // Lower section
+        for (const row of rows) {
+          const dataRow: string[] = [];
+          for (const cell of row) {
+            switch (cell.type) {
+              case 'dimension':
+                {
+                  let display = '';
+                  for (let i = 0; i < cell.level; i++) {
+                    display += '            ';
+                  }
+                  if (this.isDefined(cell)) {
+                    display += getDisplay(cell);
+                  } else {
+                    display += this.translate.instant('Undefined');
+                  }
+
+                  dataRow.push(display);
+                }
+                break;
+              case 'measure':
+                if (!cell.parent || !cell.parent.hasChildren) {
+                  for (let i = 0; i < realMeasures.length; i++) {
+                    const display = displayValue(cell.values[i], realMeasures[i].desc, this.translate);
+
+                    dataRow.push(display);
+                  }
+                }
+                break;
+              case 'label':
+                {
+                  const display = cell.label();
+                  dataRow.push(display);
+                }
+                break;
+              default:
+
+                break;
+            }
+          }
+
+          data.push(dataRow);
+        }
+
+        // If there are labels at the end, this pads all the rows underneath it
+        for (const dataRow of data) {
+          while (dataRow.length < maxCols) {
+            dataRow.push(null);
+          }
+        }
+
+        const csvBlob = csvPackage(data);
+        downloadBlob(csvBlob, fileName || this.translate.instant('Report') + '.csv');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   // UI Bindings
 
   public get showDetails(): boolean {
@@ -981,14 +1149,28 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
+      // Calculate the exportColSpan of every cell's parent
+      columnHeaders.forEach(row => row.forEach(cell => {
+        cell.expandedColSpan = 0;
+      }));
+      for (let i = columnHeaders.length - 1; i >= 0; i--) {
+        for (let j = columnHeaders[i].length - 1; j >= 0; j--) {
+          const cell = columnHeaders[i][j];
+          cell.expandedColSpan = cell.expandedColSpan || s.measures.length || 1; // measureCount might be 0
+          if (!!cell.parent) {
+            cell.parent.expandedColSpan += cell.expandedColSpan;
+          }
+        }
+      }
+
       /////////// Calculate the bottom half of the report (the "rows")
       const rows: (DimensionCell | MeasureCell | LabelCell)[][] = [];
-      const rowProps = realRows.length === 0 ? -1 : 0; // TODO: number of property columns for the rows that will be displayed
+      const rowDimensionsColumnCount = realRows.length === 0 ? 0 : 1; // TODO
       for (let r = 0; r < rowCells.length; r++) {
         const rowCell = rowCells[r];
         const row: (DimensionCell | LabelCell | MeasureCell)[] = [rowCell];
         for (let c = 0; c < columnCells.length; c++) {
-          row[c + rowProps + 1] = {
+          row[c + rowDimensionsColumnCount] = {
             type: 'measure',
             parent: columnCells[c],
             values: [],
@@ -998,7 +1180,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
         // Add the column grand total if required
         if (showColumnTotals) {
-          row[columnGrandTotalIndex + rowProps + 1] = {
+          row[columnGrandTotalIndex + rowDimensionsColumnCount] = {
             type: 'measure',
             parent: null,
             values: [],
@@ -1022,7 +1204,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         const totalRow: (DimensionCell | LabelCell | MeasureCell)[] = realRows.length > 0 ? [rowsGrandTotalLabel] : [];
 
         for (let c = 0; c < columnCells.length; c++) {
-          totalRow[c + rowProps + 1] = {
+          totalRow[c + rowDimensionsColumnCount] = {
             type: 'measure',
             parent: columnCells[c] || null,
             values: [],
@@ -1033,7 +1215,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
         // Add the grand-grand total if required
         if (showColumnTotals) {
-          totalRow[columnGrandTotalIndex + rowProps + 1] = {
+          totalRow[columnGrandTotalIndex + rowDimensionsColumnCount] = {
             type: 'measure',
             parent: null,
             values: [],
@@ -1098,7 +1280,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             s.measures.forEach((m, index) => {
-              const measureCell = rows[rowIndex][colIndex + rowProps + 1] as MeasureCell;
+              const measureCell = rows[rowIndex][colIndex + rowDimensionsColumnCount] as MeasureCell;
               const value = normalize(g[m.key]);
               const total = normalize(measureCell.values[index]);
 
@@ -1218,7 +1400,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public isMeasureVisible(cell: MeasureCell) {
-    return !cell.parent || cell.parent.isVisible && !cell.parent.isExpanded;
+    return !cell.parent || (cell.parent.isVisible && !cell.parent.isExpanded);
   }
 
   public trackByRow(_: number, row: any[]) {
@@ -1505,7 +1687,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return d.display; // The chart labels
   }
 
-  public formatAlternativeChartDimension(d: { data: { name: ChartDimensionCell }}) {
+  public formatAlternativeChartDimension(d: { data: { name: ChartDimensionCell } }) {
     // For some reason, some chart types pass this data structure instead
     return d.data.name.display;
   }

@@ -14,7 +14,6 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// The new assignee
         /// </summary>
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
         public int AssigneeId { get; set; }
 
         /// <summary>

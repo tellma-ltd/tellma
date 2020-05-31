@@ -1,10 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using Tellma.Controllers.Dto;
@@ -13,6 +22,8 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Entities.Descriptors;
+using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
@@ -131,256 +142,76 @@ namespace Tellma.Controllers
             return Task.CompletedTask;
         }
 
+        [HttpPost("import"), RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
+        public async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                IFormFile formFile = Request.Form.Files.FirstOrDefault();
+                var contentType = formFile?.ContentType;
+                var fileName = formFile?.FileName;
+                using var fileStream = formFile?.OpenReadStream();
 
-        //[HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
-        //public virtual async Task<ActionResult<ImportResult>> Import2([FromQuery] ImportArguments args)
-        //{
-        //    return await ControllerUtilities.InvokeActionImpl(async () =>
-        //    {
-        //        IFormFile formFile = Request.Form.Files.FirstOrDefault();
-        //        var contentType = formFile?.ContentType;
-        //        var fileName = formFile?.FileName;
-        //        using var fileStream = formFile?.OpenReadStream();
+                var service = GetCrudService();
+                var result = await service.Import(fileStream, fileName, contentType, args);
 
-        //        var service = GetCrudService();
-        //        var result = await service.Import(fileStream, fileName, contentType, args);
+                return Ok(result);
+            }, _logger);
+        }
 
-        //        return Ok(result);
-        //    }, _logger);
-        //}
+        [HttpGet("template")]
+        public async Task<ActionResult> CsvTemplate()
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var service = GetCrudService();
+                Stream template = service.CsvTemplate();
 
+                return await Task.FromResult(File(template, MimeTypes.Csv));
+            }, _logger);
+        }
 
-        //#region Import Stuff
+        [HttpGet("export")]
+        public async Task<ActionResult> Export([FromQuery] ExportArguments args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var service = GetCrudService();
+                Stream fileStream = await service.Export(args, cancellation);
 
-        //private readonly IStringLocalizer<Strings> _localizer;
+                return File(fileStream, MimeTypes.Csv);
+            }, _logger);
+        }
 
-        //[HttpGet("template")]
-        //public virtual ActionResult Template([FromQuery] TemplateArguments args)
-        //{
-        //    try
-        //    {
-        //        var abstractFile = GetImportTemplate();
-        //        return ToFileResult(abstractFile, args.Format);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        // TODO: Move to FactControllerBase
+        [HttpGet("export-by-ids")]
+        public async Task<ActionResult> ExportByIds([FromQuery] ExportByIdsArguments<TKey> args, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var service = GetCrudService();
+                Stream fileStream = await service.ExportByIds(args, cancellation);
 
-        //[HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
-        //public virtual async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
-        //{
-        //    return await ControllerUtilities.InvokeActionImpl(async () =>
-        //    {
-        //        // Parse the file into Entities + map back to row numbers (The way source code is compiled into machine code + symbols file)
-        //        var (entities, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
-
-        //        // Validation
-        //        ObjectValidator.Validate(ControllerContext, null, null, entities);
-
-        //        if (!ModelState.IsValid)
-        //        {
-        //            var mappedModelState = MapModelState(ModelState, rowNumberFromErrorKeyMap);
-        //            throw new UnprocessableEntityException(mappedModelState);
-        //        }
-
-        //        // Saving
-        //        try
-        //        {
-        //            await SaveImplAsync(entities, new SaveArguments { ReturnEntities = false });
-        //        }
-        //        catch (UnprocessableEntityException ex)
-        //        {
-        //            var mappedModelState = MapModelState(ex.ModelState, rowNumberFromErrorKeyMap);
-        //            throw new UnprocessableEntityException(mappedModelState);
-        //        }
-
-        //        var result = new ImportResult
-        //        {
-        //            Inserted = entities.Count(e => e.Id?.Equals(default(TKey)) ?? false),
-        //            Updated = entities.Count(e => !(e.Id?.Equals(default(TKey)) ?? false)),
-        //        };
-
-        //        // Record the time
-        //        result.Seconds = elapsed;
-        //        result.ParsingToDtosForSave = parsingToEntitiesForSave;
-        //        result.AttributeValidationInCSharp = attributeValidationInCSharp;
-        //        result.ValidatingAndSaving = validatingAndSaving;
-
-        //        return Ok(result);
-        //    }, _logger);
-        //}
-
-        //[HttpPost("parse"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
-        //public virtual async Task<ActionResult<List<TEntityForSave>>> Parse([FromQuery] ParseArguments args)
-        //{
-        //    // This method doesn't import the file in the DB, it simply parses it to 
-        //    // Entities that are ripe for saving, and returns those Entities to the requester
-        //    // This supports scenarios where only part of the required fields are present
-        //    // in the imported file, or to support previewing the import before committing it
-        //    try
-        //    {
-        //        var file = Request.Form.Files.FirstOrDefault();
-        //        var entities = await ParseImplAsync(args);
-        //        return Ok(entities);
-        //    }
-        //    catch (UnprocessableEntityException ex)
-        //    {
-        //        return UnprocessableEntity(ex.ModelState);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
-        //// Abstract and virtual members
-
-
-        //protected virtual async Task<(List<TEntityForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
-        //{
-        //    var file = Request.Form.Files.FirstOrDefault();
-        //    if (file == null)
-        //    {
-        //        throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
-        //    }
-
-        //    var abstractGrid = FileToAbstractGrid(file, args);
-        //    if (abstractGrid.Count < 2)
-        //    {
-        //        ModelState.AddModelError("", _localizer["Error_EmptyImportFile"]);
-        //        throw new UnprocessableEntityException(ModelState);
-        //    }
-
-        //    // Change the abstract grid to entities for save, and make sure no errors resulted that weren't thrown
-        //    var (entitiesForSave, keyMap) = await ToEntitiesForSave(abstractGrid, args);
-        //    if (!ModelState.IsValid)
-        //    {
-        //        throw new UnprocessableEntityException(ModelState);
-        //    }
-
-        //    return (entitiesForSave, keyMap);
-        //}
-
-        //protected virtual AbstractDataGrid FileToAbstractGrid(IFormFile file, ParseArguments args)
-        //{
-        //    // Determine an appropriate file handler based on the file metadata
-        //    FileHandlerBase handler;
-        //    if (file.ContentType == "text/csv" || (file.FileName?.ToLower()?.EndsWith(".csv") ?? false))
-        //    {
-        //        handler = new Services.ImportExport.CsvHandler(_localizer);
-        //    }
-        //    else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || (file.FileName?.ToLower()?.EndsWith(".xlsx") ?? false))
-        //    {
-        //        handler = new ExcelHandler(_localizer);
-        //    }
-        //    else
-        //    {
-        //        throw new FormatException(_localizer["Error_UnknownFileFormat"]);
-        //    }
-
-        //    using var fileStream = file.OpenReadStream();
-        //    // Use the handler to unpack the file into an abstract grid and return it
-        //    AbstractDataGrid abstractGrid = handler.ToAbstractGrid(fileStream);
-        //    return abstractGrid;
-        //}
-
-        //protected Task<(List<TEntityForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid _1, ParseArguments _2)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //protected AbstractDataGrid GetImportTemplate()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        ///// <summary>
-        ///// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
-        ///// </summary>
-        ///// <returns>False if the maximum errors was reached</returns>
-        //protected bool AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null)
-        //{
-        //    var ms = modelState ?? ModelState;
-        //    ms.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
-        //    return !ms.HasReachedMaxErrors;
-        //}
-
-        //private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)
-        //{
-        //    // Inline function for mapping a model state on entities to a model state on Excel rows
-        //    // Copy the errors to another collection
-        //    var mappedModelState = new ModelStateDictionary();
-
-        //    // Transform the errors to the current collection
-        //    foreach (var error in modelState)
-        //    {
-        //        int? rowNumber = rowNumberFromErrorKeyMap(error.Key);
-        //        foreach (var errorMessage in error.Value.Errors)
-        //        {
-        //            if (rowNumber != null)
-        //            {
-        //                // Error is specific to a row
-        //                AddRowError(rowNumber.Value, errorMessage.ErrorMessage, mappedModelState);
-        //            }
-        //            else
-        //            {
-        //                // Error is general to the imported file
-        //                mappedModelState.AddModelError(error.Key, errorMessage.ErrorMessage);
-        //            }
-        //        }
-        //    }
-
-        //    return mappedModelState;
-        //}
-
-        //private FileResult ToFileResult(AbstractDataGrid abstractFile, string format)
-        //{
-        //    // Get abstract grid
-
-        //    FileHandlerBase handler;
-        //    string contentType;
-        //    if (format == FileFormats.Xlsx)
-        //    {
-        //        handler = new ExcelHandler(_localizer);
-        //        contentType = MimeTypes.Excel;
-        //    }
-        //    else if (format == FileFormats.Csv)
-        //    {
-        //        handler = new Services.ImportExport.CsvHandler(_localizer);
-        //        contentType = MimeTypes.Csv;
-        //    }
-        //    else
-        //    {
-        //        throw new FormatException(_localizer["Error_UnknownFileFormat"]);
-        //    }
-
-        //    var fileStream = handler.ToFileStream(abstractFile);
-        //    return File(((MemoryStream)fileStream).ToArray(), contentType);
-        //}
-
-        //#endregion
-
-
-
-
-
+                return File(fileStream, MimeTypes.Csv);
+            }, _logger);
+        }
     }
 
     public abstract class CrudServiceBase<TEntityForSave, TEntity, TKey> : FactGetByIdServiceBase<TEntity, TKey>
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {
+        private readonly MetadataProvider _metadata;
         private readonly IStringLocalizer _localizer;
-        // private readonly MetadataProvider _metadata;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IServiceProvider _sp;
 
-        public CrudServiceBase(IStringLocalizer localizer) : base(localizer)
+        public CrudServiceBase(IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
-            // _metadata = metadata;
+            _localizer = sp.GetRequiredService<IStringLocalizer<Strings>>();
+            _metadata = sp.GetRequiredService<MetadataProvider>();
+            _tenantIdAccessor = sp.GetRequiredService<ITenantIdAccessor>();
+            _sp = sp;
         }
 
         #region Save
@@ -409,15 +240,17 @@ namespace Tellma.Controllers
                 await SavePreprocessAsync(entities);
 
                 // Validate
-                // Basic validation that applies to all entities
+                // Check that non-null non-0 Ids are unique
                 ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
 
-                // Actual Validation
+                // Validation
+                var meta = GetMetadataForSave();
+                ValidateList(entities, meta);
+                ModelState.ThrowIfInvalid();
+
+                // Custom Validation
                 await SaveValidateAsync(entities);
-                if (!ModelState.IsValid)
-                {
-                    throw new UnprocessableEntityException(ModelState);
-                }
+                ModelState.ThrowIfInvalid();
 
                 // Save and retrieve Ids
                 var ids = await SaveExecuteAsync(entities, returnEntities);
@@ -432,6 +265,7 @@ namespace Tellma.Controllers
                 // Commit and return
                 await OnSaveCompleted();
                 trx.Complete();
+
 
                 return (data, extras);
             }
@@ -749,80 +583,877 @@ return the entities
 
         #endregion
 
-        //public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
-        //{
-        //    if (fileStream == null)
-        //    {
-        //        throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
-        //    }
-
-        //    // Determine an appropriate file handler based on the file metadata
-        //    IDataExtracter extractor = GetSuitableExtracter(fileName, contentType);
-
-        //    // Extract the data
-        //    IEnumerable<string[]> data = extractor.Extract(fileStream);
-        //    if (!data.Any())
-        //    {
-        //        throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
-        //    }
-
-        //    // Map the columns
-        //    var headers = data.First();
-        //    var mappingInfo = MapColumns(headers);
-
-
-        //    // Load related entities (including principal entities if update or merge)
-
-
-        //    // Parse the data 
-
-        //    try
-        //    {
-        //        // Save the data
-
-        //        // Return import result
-        //    }
-        //    catch (UnprocessableEntityException ex)
-        //    {
-        //        // Map errors to row numbers
-        //    }
-
-        //    throw new NotImplementedException();
-        //}
-
-        protected MappingInfo MapColumns(string[] headers)
+        public async Task<Stream> ExportByIds(ExportByIdsArguments<TKey> args, CancellationToken cancellation)
         {
-            throw new NotImplementedException();
-            //var result = new MappingInfo();
-            //foreach (var header in headers)
-            //{
-            //    var steps = SplitHeader(header);
-            //    var currentType = typeof(TEntityForSave);
+            var metaForSave = GetMetadataForSave();
+            var meta = GetMetadata();
 
-            //    foreach (var step in steps)
-            //    {
-            //        var match = _metadata.GetMetadataForProperties(currentType).FirstOrDefault(p => p.DisplayName == step);
-            //        match.
-            //    }
-            //}
+            // Get the default mapping, auto calculated from the entity for save metadata
+            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Create headers
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Load entities
+            string select = SelectFromMapping(mapping);
+            var (entities, _) = await GetByIds(args.I, new SelectExpandArguments
+            {
+                Select = select
+            },
+            cancellation);
+
+            // Create content
+            var composer = new DataComposer();
+            var dataWithoutHeaders = composer.Compose(entities, mapping);
+
+            // Final result
+            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
+            var csvHandler = new CsvPackager();
+            return csvHandler.Package(data);
         }
 
-        private IEnumerable<string> SplitHeader(string header)
+        //private (string[] headers, Func<TEntity, string>[] dataGetters) SoftMappingFromSelect(string select)
+        //{
+        //    var selectExp = SelectExpression.Parse(select);
+        //    var dataGetters = new Func<TEntity, string>[selectExp.Count];
+        //    var headers = new string[selectExp.Count];
+
+        //    var meta = GetMetadata();
+
+        //    foreach (var (atom, index) in selectExp.Select((a, i) => (a, i)))
+        //    {
+        //        List<Func<Entity, object>> entityGetters = new List<Func<Entity, object>>(atom.Path.Length);
+        //        List<string> headersTrail = new List<string>(atom.Path.Length + 1);
+
+        //        // Do the path
+        //        var currentMeta = meta;
+        //        foreach (var step in atom.Path)
+        //        {
+        //            var navPropMeta = currentMeta.NavigationProperty(step) ?? throw new BadRequestException($"Navigation property {step} does not exist on type {currentMeta.Descriptor.Name}");
+        //            entityGetters.Add(navPropMeta.Descriptor.GetValue);
+        //            headersTrail.Add(navPropMeta.Display());
+
+        //            currentMeta = navPropMeta.EntityMetadata;
+        //        }
+
+        //        // Do the property
+        //        var propMeta = currentMeta.Property(atom.Property) ?? throw new BadRequestException($"Property {atom.Property} does not exist on type {currentMeta.Descriptor.Name}");
+        //        Func<Entity, object> getPropertyValue = propMeta.Descriptor.GetValue;
+        //        Func<object, string> formatValue = propMeta.Format;
+
+        //        headersTrail.Add(propMeta.Display());
+
+        //        // Get the header
+        //        headers[index] = string.Join(" / ", headersTrail);
+
+        //        // Build the data getter
+        //        dataGetters[index] = (entity) =>
+        //        {
+        //            Entity current = entity;
+        //            foreach (var getEntity in entityGetters)
+        //            {
+        //                current = getEntity(current) as Entity;
+        //                if (current == null)
+        //                {
+        //                    return null;
+        //                }
+        //            }
+
+        //            object value = getPropertyValue(current);
+        //            return formatValue(value);
+        //        };
+        //    }
+
+        //    return (headers, dataGetters);
+        //}
+
+        public async Task<Stream> Export(ExportArguments args, CancellationToken cancellation)
         {
-            var builder = new StringBuilder();
-            for (int i = 0; i < header.Length; i++)
+            var metaForSave = GetMetadataForSave();
+            var meta = GetMetadata();
+
+            // Get the default mapping, auto calculated from the entity for save metadata
+            MappingInfo mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Create headers
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Load entities
+            string select = SelectFromMapping(mapping);
+            var (entities, _, _, _) = await GetFact(new GetArguments
             {
-                char c = header[i];
+                Top = args.Top,
+                Skip = args.Skip,
+                Filter = args.Filter,
+                Search = args.Search,
+                OrderBy = args.OrderBy,
+                Select = select,
+                CountEntities = false
+            },
+            cancellation);
+
+            // Create content
+            var composer = new DataComposer();
+            var dataWithoutHeaders = composer.Compose(entities, mapping);
+
+            // Final result
+            var data = new List<string[]> { headers }.Concat(dataWithoutHeaders);
+            var csvHandler = new CsvPackager();
+            return csvHandler.Package(data);
+        }
+
+        public Stream CsvTemplate()
+        {
+            var metaForSave = GetMetadataForSave();
+            var meta = GetMetadata();
+
+            // Get the default mapping, auto calculated from the entity for save metadata
+            var mapping = GetDefaultMapping(metaForSave, meta);
+
+            // Get the headers from the mapping
+            string[] headers = HeadersFromMapping(mapping);
+
+            // Create a CSV file containing only those headers
+            var csvHandler = new CsvPackager();
+            return csvHandler.Package(new List<string[]> { headers });
+        }
+
+        public async Task<ImportResult> Import(Stream fileStream, string fileName, string contentType, ImportArguments args)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            // Validation
+
+            args.Mode ??= ImportModes.Insert; // Default
+            if (!ImportModes.All.Contains(args.Mode))
+            {
+                var allowedValues = string.Join(", ", ImportModes.All);
+                throw new BadRequestException(_localizer["Error_UnknownImportMode0AllowedValuesAre1", args.Mode, allowedValues]);
+            }
+
+            if (args.Mode != ImportModes.Insert && string.IsNullOrWhiteSpace(args.Key))
+            {
+                // Key parameter is required for import modes update and merge
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, _localizer["KeyProperty"]]);
+            }
+
+            if (fileStream == null)
+            {
+                throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+            }
+
+            // Extract the raw data from the file stream
+            IEnumerable<string[]> data = ExtractStringsFromFile(fileStream, fileName, contentType);
+            if (!data.Any())
+            {
+                throw new BadRequestException(_localizer["Error_UploadedFileWasEmpty"]);
+            }
+
+            // Map the columns
+            var importErrors = new ImportErrors();
+            var headers = data.First();
+            var mapping = MappingFromHeaders(headers, importErrors);
+
+            // Abort if there are validation errors
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Parse the data to entities
+            var parser = _sp.GetRequiredService<DataParser>();
+            var entitiesEnum = await parser.ParseAsync<TEntityForSave>(data.Skip(1), mapping, importErrors);
+            importErrors.ThrowIfInvalid(_localizer);
+
+            // Handle Update and Merge modes
+            if (args.Mode == ImportModes.Update || args.Mode == ImportModes.Merge)
+            {
+                await HydrateIds(entitiesEnum, args, mapping, importErrors);
+                importErrors.ThrowIfInvalid(_localizer);
+            }
+
+            // Save the entities
+            var entities = entitiesEnum.ToList();
+            try
+            {
+                // Save the data
+                var saveArgs = new SaveArguments { ReturnEntities = false };
+                await Save(entities, saveArgs);
+
+                // Report success result
+                int inserted = entitiesEnum.Count(e => e.Id == null || e.Id.Equals(0));
+                int updated = entitiesEnum.Count(e => e.Id != null && !e.Id.Equals(0));
+                sw.Stop();
+
+                return new ImportResult
+                {
+                    Inserted = inserted,
+                    Updated = updated,
+                    Milliseconds = sw.ElapsedMilliseconds,
+                };
+            }
+            catch (UnprocessableEntityException ex)
+            {
+                // Map errors to row numbers
+                var validationErrors = ex.ModelState;
+                if (validationErrors.IsValid)
+                {
+                    throw new InvalidOperationException("Bug: UnprocessableEntityException without validation errors");
+                }
+
+                MapErrors(validationErrors, importErrors, entities, mapping);
+                if (importErrors.IsValid)
+                {
+                    throw new InvalidOperationException("Bug: UnprocessableEntityException validation errors were incorrectly mapped to an empty collection");
+                }
+
+                string errorMsg = importErrors.ToString(_localizer);
+                throw new BadRequestException(errorMsg);
+            }
+        }
+
+        private async Task HydrateIds(IEnumerable<TEntityForSave> entities, ImportArguments args, MappingInfo mapping, ImportErrors errors)
+        {
+            // If key property is ID, there is nothing to do
+            if (args.Key == "Id")
+            {
+                return;
+            }
+
+            var propMapping = mapping.SimpleProperty(args.Key);
+            if (propMapping == null)
+            {
+                throw new BadRequestException(_localizer["Error_KeyProperty0MustBeInTheImportedFile", args.Key]);
+            }
+
+            var propMeta = propMapping.Metadata;
+            var propDesc = propMeta.Descriptor;
+            if (propDesc.Type != typeof(string) && propDesc.Type != typeof(int) && propDesc.Type != typeof(int?))
+            {
+                throw new BadRequestException(_localizer["Error_KeyProperty0NotValidItMustIntOrString", propMeta.Display()]);
+            }
+
+            Func<Entity, object> forSaveKeyGet = propDesc.GetValue;
+
+            // For update mode, check that all keys are present
+            if (args.Mode == ImportModes.Update)
+            {
+                foreach (var entity in entities.Where(e => forSaveKeyGet(e) == null))
+                {
+                    // In update mode, the 
+                    string errorMsg = _localizer["Error_Property0IsKeyPropertyThereforeRequiredForUpdate", propMeta.Display()];
+                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // Check that non-null user keys are unique
+            foreach (var g in entities.GroupBy(e => forSaveKeyGet(e)).Where(g => g.Key != null && g.Count() > 1))
+            {
+                foreach (var entity in g)
+                {
+                    // In update mode, the 
+                    var duplicateKeyValue = forSaveKeyGet(entity).ToString();
+                    string errorMsg = _localizer["Error_Value0IsDuplicatedEvenThoughItIsKey1", duplicateKeyValue, propMeta.Display()];
+                    if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, errorMsg))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (!errors.IsValid)
+            {
+                // Later code may fail if there are key uniqueness errors
+                return;
+            }
+
+            // Load entities from the DB
+            var userKeys = entities.Select(e => forSaveKeyGet(e)).Where(e => e != null);
+            var getArgs = new SelectExpandArguments { Select = propDesc.Name };
+            var (dbEntities, _) = await GetByPropertyValues(propDesc.Name, userKeys, getArgs, cancellation: default);
+            if (dbEntities.Any())
+            {
+                // Prepare the key property description of TEntity
+                var typeDesc = TypeDescriptor.Get<TEntity>();
+                var prop = typeDesc.Property(args.Key);
+                if (prop == null)
+                {
+                    throw new InvalidOperationException($"Bug: Type {nameof(TEntityForSave)} has property {args.Key} but not type {nameof(TEntity)}");
+                }
+
+                Func<Entity, object> keyGet = prop.GetValue;
+
+                // group the DB entities by key property
+                var dbEntitiesDic = dbEntities.GroupBy(e => keyGet(e))
+                    .ToDictionary(g => g.Key, g => (IEnumerable<TEntity>)g);
+
+                foreach (var entity in entities)
+                {
+                    var key = forSaveKeyGet(entity);
+                    if (key == null)
+                    {
+                        // IF Update mode add an error, but this was handled earlier before the database call
+                    }
+                    else
+                    {
+                        if (dbEntitiesDic.TryGetValue(key, out IEnumerable<TEntity> matches))
+                        {
+                            if (matches.Skip(1).Any())
+                            {
+                                var typeDisplay = mapping.Metadata.SingularDisplay();
+                                var keyPropDisplay = propMeta.Display();
+                                var stringField = key.ToString();
+                                if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_MoreThanOne0FoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                                {
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                // Copy the Id from the entity to the entity for save
+                                var dbEntity = matches.Single();
+                                entity.SetId(dbEntity.GetId());
+                            }
+                        }
+                        else if (args.Mode == ImportModes.Update)
+                        {
+                            var typeDisplay = mapping.Metadata.SingularDisplay();
+                            var keyPropDisplay = propMeta.Display();
+                            var stringField = key.ToString();
+                            if (!errors.AddImportError(entity.EntityMetadata.RowNumber, propMapping.ColumnNumber, _localizer["Error_No0WasFoundWhere1Equals2", typeDisplay, keyPropDisplay, stringField]))
+                            {
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the default mapping based on the properties in meta (not meta for save)
+        /// </summary>
+        protected virtual MappingInfo GetDefaultMapping(TypeMetadata metaForSave, TypeMetadata meta)
+        {
+            // Inner recursive function, returns the mapping and the next available column index
+            static (MappingInfo mapping, int nextAvailableIndex) GetDefaultMappingInner(TypeMetadata metaForSave, TypeMetadata meta, int nextAvailableIndex, CollectionPropertyMetadata collPropMeta = null)
+            {
+                Dictionary<string, NavigationPropertyMetadata> fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+
+                // Prepare simple props
+                List<PropertyMappingInfo> simpleProps = new List<PropertyMappingInfo>();
+                foreach (var propMetaForSave in metaForSave.SimpleProperties)
+                {
+                    string propName = propMetaForSave.Descriptor.Name;
+                    var propMeta = meta.Property(propName) ??
+                        throw new InvalidOperationException($"Bug: Property '{propName}' exists on type for save {metaForSave.Descriptor.Name} but not on {meta.Descriptor.Name}");
+
+                    if (propMeta.Descriptor.Name == "Id")
+                    {
+                        continue;
+                    }
+
+                    if (fkNames.TryGetValue(propMeta.Descriptor.Name, out NavigationPropertyMetadata navPropMetadata))
+                    {
+                        // Foreign Key
+                        simpleProps.Add(new ForeignKeyMappingInfo
+                        {
+                            Index = nextAvailableIndex++,
+                            Metadata = propMeta,
+
+                            // FK stuff
+                            NavPropertyMetadata = navPropMetadata,
+                            KeyPropertyMetadata = navPropMetadata.TargetTypeMetadata.SuggestedUserKeyProperty
+                        });
+                    }
+                    else
+                    {
+                        // Simple property
+                        simpleProps.Add(new PropertyMappingInfo
+                        {
+                            Index = nextAvailableIndex++,
+                            Metadata = propMeta
+                        });
+                    }
+                }
+
+                // Prepare collection props
+                List<MappingInfo> collectionProps = new List<MappingInfo>();
+                foreach (var nextCollPropMetaForSave in metaForSave.CollectionProperties)
+                {
+                    string propName = nextCollPropMetaForSave.Descriptor.Name;
+                    var nextCollPropMeta = meta.CollectionProperty(propName) ??
+                        throw new InvalidOperationException($"Bug: Collection property '{propName}' exists on type for save {metaForSave.Descriptor.Name} but not on {meta.Descriptor.Name}");
+
+                    TypeMetadata nextMetaForSave = nextCollPropMetaForSave.CollectionTargetTypeMetadata;
+                    TypeMetadata nextMeta = nextCollPropMeta.CollectionTargetTypeMetadata;
+
+                    // Recursive call
+                    var (nextMapping, nextIndex) = GetDefaultMappingInner(nextMetaForSave, nextMeta, nextAvailableIndex, nextCollPropMeta);
+                    collectionProps.Add(nextMapping);
+                    nextAvailableIndex = nextIndex;
+                }
+
+                // Return the mapping and the next available index
+                var mapping = new MappingInfo(meta, simpleProps, collectionProps, collPropMeta);
+                return (mapping, nextAvailableIndex);
+            }
+
+            // Call the inner recursive function and return the result;
+            var (mapping, _) = GetDefaultMappingInner(metaForSave, meta, 0);
+            return ProcessDefaultMapping(mapping);
+        }
+
+        /// <summary>
+        /// Provides a chance for services to alter the default mapping info used for
+        /// generating the import template and exporting for import
+        /// </summary>
+        protected virtual MappingInfo ProcessDefaultMapping(MappingInfo mapping)
+        {
+            return mapping;
+        }
+
+        private string SelectFromMapping(MappingInfo mapping)
+        {
+            static void SelectFromMappingInner(MappingInfo mapping, StringBuilder bldr, string prefix, bool notFirstAtom)
+            {
+                foreach (var simpleProp in mapping.SimpleProperties)
+                {
+                    // Append a comma if this is the second atom onward
+                    if (notFirstAtom)
+                    {
+                        bldr.Append(",");
+                    }
+
+                    notFirstAtom = true;
+
+                    // Append the prefix if any
+                    if (prefix != null)
+                    {
+                        bldr.Append(prefix);
+                        bldr.Append("/");
+                    }
+
+                    // Append the property name
+                    if (simpleProp is ForeignKeyMappingInfo fkProp && fkProp.NotUsingIdAsKey)
+                    {
+                        // Append navigation property name followed by key. E.g. Resource/Code
+                        bldr.Append(fkProp.NavPropertyMetadata.Descriptor.Name);
+                        bldr.Append("/");
+                        bldr.Append(fkProp.KeyPropertyMetadata.Descriptor.Name);
+                    }
+                    else
+                    {
+                        // Append simple property name. E.g. DateOfBirth
+                        bldr.Append(simpleProp.Metadata.Descriptor.Name);
+                    }
+                }
+
+                foreach (var collProp in mapping.CollectionProperties)
+                {
+                    string nextPrefix;
+                    if (prefix == null)
+                    {
+                        nextPrefix = collProp.ParentCollectionPropertyMetadata.Descriptor.Name;
+                    }
+                    else
+                    {
+                        nextPrefix = $"{prefix}/{collProp.ParentCollectionPropertyMetadata.Descriptor.Name}";
+                    }
+
+                    SelectFromMappingInner(collProp, bldr, nextPrefix, notFirstAtom);
+                }
+            }
+
+            StringBuilder bldr = new StringBuilder();
+            SelectFromMappingInner(mapping, bldr, prefix: null, notFirstAtom: false);
+            return bldr.ToString();
+        }
+
+        private string[] HeadersFromMapping(MappingInfo mapping)
+        {
+            static string Escape(string propDisplay)
+            {
+                return propDisplay.Replace("/", "//").Replace("-", "--");
+            }
+
+            static void PopulateHeadersArray(string[] headers, MappingInfo mapping, string path = null)
+            {
+                foreach (var g in mapping.SimpleProperties.GroupBy(e => e.Metadata.Display()))
+                {
+                    string escapedDisplay = Escape(g.Key);
+                    int counter = 1;
+                    bool counterIsNeeded = g.Count() > 1;
+                    foreach (var propMapping in g)
+                    {
+                        var propDisplay = escapedDisplay;
+
+                        // Append disambiguation counter for the rare case when two simple properties have the exact same label (may happen with definitioned entities)
+                        if (counterIsNeeded)
+                        {
+                            propDisplay = $"{propDisplay}.{counter++}";
+                        }
+
+                        // If foreign key, add the suggested key property on the target type
+                        if (propMapping is ForeignKeyMappingInfo fkMapping)
+                        {
+                            PropertyMetadata keyPropMeta = fkMapping.KeyPropertyMetadata;
+                            string keyDisplay = Escape(keyPropMeta.Display());
+                            propDisplay = $"{propDisplay} - {keyDisplay}";
+                        }
+
+                        // add the result to the headers array
+                        if (path == null)
+                        {
+                            headers[propMapping.Index] = propDisplay;
+                        }
+                        else
+                        {
+                            headers[propMapping.Index] = $"{path} / {propDisplay}";
+                        }
+                    }
+                }
+
+                foreach (var g in mapping.CollectionProperties.GroupBy(e => e.ParentCollectionPropertyMetadata.Display()))
+                {
+                    string escapedDisplay = Escape(g.Key);
+                    int counter = 1;
+                    bool counterIsNeeded = g.Count() > 1;
+                    foreach (var collProp in g)
+                    {
+                        var propDisplay = escapedDisplay;
+
+                        // Append disambiguation counter for the rare case when two collection properties have the exact same label (may happen with definitioned entities)
+                        if (counterIsNeeded)
+                        {
+                            propDisplay = $"{propDisplay}.{counter++}";
+                        }
+
+                        // Prepare the next path
+                        string nextPath;
+                        if (path == null)
+                        {
+                            nextPath = propDisplay;
+                        }
+                        else
+                        {
+                            nextPath = $"{path} / {propDisplay}";
+                        }
+
+                        // Call the function recursively
+                        PopulateHeadersArray(headers, collProp, nextPath);
+                    }
+                }
+            }
+
+            int columnCount = mapping.ColumnCount();
+            var headers = new string[columnCount];
+
+            PopulateHeadersArray(headers, mapping);
+
+            return headers;
+        }
+
+        protected virtual MappingInfo MappingFromHeaders(string[] headers, ImportErrors errors)
+        {
+            // Create the trie of 
+            var trie = new LabelPathTrie();
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var header = headers[i];
+                if (string.IsNullOrWhiteSpace(header))
+                {
+                    if (!errors.AddImportError(1, i + 1, _localizer["Error_EmptyHeadersNotAllowed"]))
+                    {
+                        return null;
+                    }
+                }
+
+                var (steps, key) = SplitHeader(header);
+                trie.AddPath(steps, key, index: i);
+            }
+
+            // Get the metadatas
+            var rootMetadata = GetMetadata();
+            var rootMetadataForSave = GetMetadataForSave();
+
+            // Create the mapping recurisvely using the trie
+            var result = trie.CreateMapping(rootMetadata, rootMetadataForSave, errors, _localizer);
+            return result;
+        }
+
+        protected TypeMetadata GetMetadata()
+        {
+            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+            string definitionId = DefinitionId;
+            Type type = typeof(TEntity);
+
+            return _metadata.GetMetadata(tenantId, type, definitionId);
+        }
+
+        protected TypeMetadata GetMetadataForSave()
+        {
+            int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
+            string definitionId = DefinitionId;
+            Type typeForSave = typeof(TEntityForSave);
+
+            return _metadata.GetMetadata(tenantId, typeForSave, definitionId);
+        }
+
+        private class LabelPathTrie : Dictionary<string, LabelPathTrie>
+        {
+            private HashSet<LabelPathProperty> _props = new HashSet<LabelPathProperty>();
+
+            public void AddPath(IEnumerable<string> steps, string key, int index)
+            {
+                if (steps == null || !steps.Any())
+                {
+                    throw new BadRequestException($"Bug: Attempt to add an empty header to the trie");
+                }
+
+                var current = this;
+                foreach (var step in steps.SkipLast(1))
+                {
+                    if (!current.TryGetValue(step, out LabelPathTrie match))
+                    {
+                        match = current[step] = new LabelPathTrie();
+                    }
+
+                    // Go one step below
+                    current = match;
+                }
+
+                var lastStep = steps.Last();
+                current._props.Add(new LabelPathProperty
+                {
+                    PropLabel = lastStep,
+                    KeyLabel = key,
+                    Index = index
+                });
+            }
+
+            public MappingInfo CreateMapping(TypeMetadata meta, TypeMetadata metaForSave, ImportErrors errors, IStringLocalizer localizer, CollectionPropertyMetadata collPropMeta = null)
+            {
+                // Collect the names of all foreign keys in a dictionary
+                var fkNames = meta.NavigationProperties.ToDictionary(e => e.ForeignKey.Descriptor.Name);
+
+                // Collect the display names of all the simple properties in a dictionary
+                Dictionary<string, PropertyMetadata> simpleProps = new Dictionary<string, PropertyMetadata>();
+                foreach (var g in metaForSave.SimpleProperties.GroupBy(p => p.Display()))
+                {
+                    string display = g.Key;
+                    if (g.Count() > 1)
+                    {
+                        // If multiple properties have the same name, disambiguate them with a postfix number
+                        int counter = 1;
+                        foreach (var propMetadata in g)
+                        {
+                            simpleProps.Add($"{display}.{counter++}", propMetadata);
+                        }
+                    }
+                    else
+                    {
+                        simpleProps.Add(display, g.Single());
+                    }
+                }
+
+                // Collect the mappings of this level in a list
+                List<PropertyMappingInfo> simplePropMappings = new List<PropertyMappingInfo>();
+
+                HashSet<string> simplePropsLabels = null;
+                HashSet<string> simplePropsLabelsIgnoreCase = null;
+                foreach (var prop in _props)
+                {
+
+                    // Try to match the property, if no match is found add a suitable error
+                    if (prop.PropLabel == "###" && false) // Maybe this isn't needed
+                    {
+                        // This here is a simple placeholder to trigger creation of entity but not set any property on it
+                        simplePropMappings.Add(new PropertyMappingInfo
+                        {
+                            Ignore = true,
+                            Index = prop.Index
+                        });
+                    }
+                    else if (!simpleProps.TryGetValue(prop.PropLabel, out PropertyMetadata propMetadata))
+                    {
+                        simplePropsLabels ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet();
+                        simplePropsLabelsIgnoreCase ??= metaForSave.SimpleProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                        if (simplePropsLabels.Contains(prop.PropLabel))
+                        {
+                            // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0MatchesMultipleFieldsOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+                        }
+                        else if (simplePropsLabelsIgnoreCase.TryGetValue(prop.PropLabel, out string actualLabel))
+                        {
+                            // Common mistake: using the wrong case
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", prop.PropLabel, metaForSave.SingularDisplay(), actualLabel]);
+                        }
+                        else
+                        {
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", prop.PropLabel, metaForSave.SingularDisplay()]);
+                        }
+
+                        continue;
+                    }
+                    else if (fkNames.TryGetValue(propMetadata.Descriptor.Name, out NavigationPropertyMetadata navPropMeta))
+                    {
+                        // This is a foreign key
+                        string keyLabel = prop.KeyLabel;
+                        if (string.IsNullOrWhiteSpace(keyLabel))
+                        {
+                            // FK without a key property
+                            errors.AddImportError(1, prop.ColumnNumber, localizer["Error_KeyPropertyIsRequiredToSet0Field", propMetadata.Display()]);
+                            continue;
+                        }
+
+                        TypeMetadata targetTypeMeta = navPropMeta.TargetTypeMetadata;
+                        PropertyMetadata keyPropMetadata = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display() == keyLabel);
+                        if (keyPropMetadata == null)
+                        {
+                            // FK with a key property that doesn't exist
+                            PropertyMetadata caseInsensitiveMatch = targetTypeMeta.SimpleProperties.FirstOrDefault(p => p.Display().ToLower() == keyLabel.ToLower());
+                            if (caseInsensitiveMatch != null)
+                            {
+                                // There is a case insensitive match: suggest
+                                string suggestion = caseInsensitiveMatch.Display();
+                                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2", keyLabel, targetTypeMeta.SingularDisplay(), suggestion]);
+                            }
+                            else
+                            {
+                                // Error without suggestion
+                                errors.AddImportError(1, prop.ColumnNumber, localizer["Error_Label0DoesNotMatchAnyFieldOnType1", keyLabel, targetTypeMeta.SingularDisplay()]);
+                            }
+                            continue;
+                        }
+
+                        simplePropMappings.Add(new ForeignKeyMappingInfo
+                        {
+                            Metadata = propMetadata,
+                            Index = prop.Index,
+
+                            // FK stuff
+                            NavPropertyMetadata = navPropMeta,
+                            KeyPropertyMetadata = keyPropMetadata
+                        });
+                    }
+                    else
+                    {
+                        // This is a simpe prop
+                        simplePropMappings.Add(new PropertyMappingInfo
+                        {
+                            Metadata = propMetadata,
+                            Index = prop.Index,
+                        });
+                    }
+                }
+
+                // Collect the display names of all the collection properties in a dictionary
+                Dictionary<string, CollectionPropertyMetadata> collectionProps = new Dictionary<string, CollectionPropertyMetadata>();
+                foreach (var g in metaForSave.CollectionProperties.GroupBy(p => p.Display()))
+                {
+                    string display = g.Key;
+                    if (g.Count() > 1)
+                    {
+                        // If multiple properties have the same name, disambiguate them with a postfix number
+                        int counter = 1;
+                        foreach (var propMetadata in g)
+                        {
+                            collectionProps.Add($"{display}.{counter++}", propMetadata);
+                        }
+                    }
+                    else
+                    {
+                        collectionProps.Add(display, g.Single());
+                    }
+                }
+
+                // Collect the mappings of the next levels in a list
+                List<MappingInfo> collectionPropMappings = new List<MappingInfo>();
+                HashSet<string> collectionPropsLabels = null;
+                HashSet<string> collectionPropsLabelsIgnoreCase = null;
+                foreach (var (collectionPropName, trie) in this)
+                {
+                    if (!collectionProps.TryGetValue(collectionPropName, out CollectionPropertyMetadata propMetadataForSave))
+                    {
+                        collectionPropsLabels ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet();
+                        collectionPropsLabelsIgnoreCase ??= metaForSave.CollectionProperties.Select(e => e.Display()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                        if (collectionPropsLabels.Contains(collectionPropName))
+                        {
+                            // Common mistake: label isn't unique and must be postfixed with a number to disambiguate it
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0MatchesMultipleCollectionsOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+                        }
+                        else if (collectionPropsLabelsIgnoreCase.TryGetValue(collectionPropName, out string actualLabel))
+                        {
+                            // Common mistake: using the wrong case
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2", collectionPropName, metaForSave.SingularDisplay(), actualLabel]);
+                        }
+                        else
+                        {
+                            errors.AddImportError(1, trie.FirstColumnNumber(), localizer["Error_Label0DoesNotMatchAnyCollectionOnType1", collectionPropName, metaForSave.SingularDisplay()]);
+                        }
+
+                        continue;
+                    }
+
+                    var propTypeMetadataForSave = propMetadataForSave.CollectionTargetTypeMetadata;
+                    var propTypeMetadata = meta.CollectionProperty(propMetadataForSave.Descriptor.Name)?.CollectionTargetTypeMetadata ??
+                        throw new InvalidOperationException($"Property {propMetadataForSave.Descriptor.Name} is present on {metaForSave.Descriptor.Name} but not {meta.Descriptor.Name}");
+
+                    collectionPropMappings.Add(trie.CreateMapping(propTypeMetadata, propTypeMetadataForSave, errors, localizer, propMetadataForSave));
+                }
+
+                return new MappingInfo(metaForSave, simplePropMappings, collectionPropMappings, collPropMeta);
+            }
+
+            private int FirstColumnNumber()
+            {
+                if (_props.Count > 0)
+                {
+                    return _props.Min(e => e.ColumnNumber);
+                }
+                else
+                {
+                    return Values.Min(e => e.FirstColumnNumber());
+                }
+            }
+
+            private struct LabelPathProperty
+            {
+                public string PropLabel { get; set; }
+                public string KeyLabel { get; set; }
+                public int Index { get; set; }
+                public int ColumnNumber => Index + 1;
+            }
+        }
+
+        protected virtual string DefinitionId => null;
+
+        /// <summary>
+        /// Splits header label into a collection of steps
+        /// </summary>
+        /// <param name="headerLabel"></param>
+        /// <returns></returns>
+        private (IEnumerable<string>, string) SplitHeader(string headerLabel)
+        {
+            List<string> result = new List<string>();
+            var builder = new StringBuilder();
+            for (int i = 0; i < headerLabel.Length; i++)
+            {
+                char c = headerLabel[i];
                 if (c == '/')
                 {
-                    if (i + 1 < header.Length && header[i + 1] == '/') // Escaped
+                    if (i + 1 < headerLabel.Length && headerLabel[i + 1] == '/') // Escaped
                     {
                         builder.Append(c);
                         i++; // Ignore the second forward slash
                     }
                     else
                     {
-                        yield return builder.ToString();
+                        result.Add(builder.ToString().Trim());
                         builder = new StringBuilder();
                     }
                 }
@@ -831,25 +1462,191 @@ return the entities
                     builder.Append(c);
                 }
             }
+
+            var (prop, key) = SplitStep(builder.ToString());
+            result.Add(prop);
+
+            return (result, key);
         }
 
-        private IDataExtracter GetSuitableExtracter(string fileName, string contentType)
+        private (string prop, string key) SplitStep(string stepLabel)
         {
-            IDataExtracter handler;
-            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
+            string prop = null;
+            string key = null;
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < stepLabel.Length; i++)
             {
-                handler = new CsvHandler();
+                char c = stepLabel[i];
+                if (c == '-' && prop == null)
+                {
+                    if (i + 1 < stepLabel.Length && stepLabel[i + 1] == '-') // Escaped
+                    {
+                        builder.Append(c);
+                        i++; // Ignore the second opening square bracket
+                    }
+                    else
+                    {
+                        prop = builder.ToString();
+                        builder = new StringBuilder();
+                    }
+                }
+                else
+                {
+                    builder.Append(c);
+                }
             }
-            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
+
+            if (prop == null)
             {
-                handler = new ExcelHandler();
+                prop = builder.ToString();
             }
             else
             {
-                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+                key = builder.ToString();
             }
 
-            return handler;
+            return (prop?.Trim(), key?.Trim());
+        }
+
+        protected IEnumerable<string[]> ExtractStringsFromFile(Stream stream, string fileName, string contentType)
+        {
+            IDataExtractor extracter;
+            if (contentType == MimeTypes.Csv || (fileName?.ToLower()?.EndsWith(".csv") ?? false))
+            {
+                extracter = new CsvExtractor();
+            }
+            else if (contentType == MimeTypes.Excel || (fileName?.ToLower()?.EndsWith(".xlsx") ?? false))
+            {
+                extracter = new ExcelExtractor();
+            }
+            else
+            {
+                throw new FormatException(_localizer["Error_OnlyCsvOrExcelAreSupported"]);
+            }
+
+            return extracter.Extract(stream).ToList();
+        }
+
+        private void MapErrors(ValidationErrorsDictionary errorsDic, ImportErrors errors, List<TEntityForSave> entities, MappingInfo mapping)
+        {
+            foreach (var (key, errorMessages) in errorsDic.AllErrors)
+            {
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    throw new InvalidOperationException($"Bug: Empty validation error key");
+                }
+
+                var steps = key.Split('.').Select(e => e.Trim());
+
+                // Get the root index
+                string firstStep = steps.First().Trim();
+                if (!firstStep.StartsWith('[') || !firstStep.EndsWith(']'))
+                {
+                    throw new InvalidOperationException($"Bug: validation error key '{key}' should start with the root index in square brackets []");
+                }
+
+                var rootIndexString = firstStep.Remove(firstStep.Length - 1).Substring(1);
+                if (!int.TryParse(rootIndexString, out int rootIndex))
+                {
+                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' could not be parsed into an integer");
+                }
+
+                if (rootIndex >= entities.Count)
+                {
+                    throw new InvalidOperationException($"Bug: root index '{rootIndexString}' is larger than the size of the indexed list {entities.Count}");
+                }
+
+                MappingInfo currentMapping = mapping;
+                Entity currentEntity = entities[rootIndex];
+                TypeDescriptor currentTypeDesc = TypeDescriptor.Get<TEntityForSave>();
+                PropertyMappingInfo propertyMapping = null; // They property that the error key may optionally terminate with
+                bool lastPropWasCollectionWithoutIndexer = false;
+                bool lastPropWasSimple = false;
+
+                foreach (var step in steps.Skip(1))
+                {
+                    if (currentEntity == null)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a null entity");
+                    }
+                    if (lastPropWasCollectionWithoutIndexer)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a list");
+                    }
+                    if (lastPropWasSimple)
+                    {
+                        throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' is applied to a simple property");
+                    }
+
+                    var trimmedStep = step.Trim();
+                    if (trimmedStep.EndsWith(']')) // Collection Property + Index
+                    {
+                        // Remove the ']' at the end;
+                        trimmedStep = trimmedStep.Remove(trimmedStep.Length - 1);
+                        var split = trimmedStep.Split('[');
+
+                        var indexString = split.Last();
+                        if (!int.TryParse(indexString, out int index))
+                        {
+                            throw new InvalidOperationException($"Bug: validation error key '{key}' contains index '{rootIndexString}' that could not be parsed into an integer");
+                        }
+
+                        var propName = string.Join('[', split.SkipLast(1));
+                        if (string.IsNullOrWhiteSpace(propName))
+                        {
+                            throw new InvalidOperationException($"Bug: validation error key '{key}' cannot contain a lone indexer in the middle of it");
+                        }
+
+                        // Retrieve the next entity using descriptors
+                        var propDesc = currentTypeDesc.CollectionProperty(propName) ??
+                            throw new InvalidOperationException($"Bug: collection property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
+
+                        currentEntity = ((propDesc.GetValue(currentEntity) as IList)[index] as Entity) ??
+                            throw new InvalidOperationException($"Bug: step '{step}' on validation error key '{key}' refers to a null entity");
+
+                        currentTypeDesc = propDesc.CollectionTypeDescriptor;
+
+                        // Retrieve the next mapping if possible
+                        var nextMapping = currentMapping?.CollectionProperty(propName);
+                    }
+                    else // Property: either collection, navigation, or simple
+                    {
+                        var propName = step;
+                        var propDesc = currentTypeDesc.Property(propName);
+
+                        if (propDesc is null)
+                        {
+                            throw new InvalidOperationException($"Bug: property '{propName}' on validation error key '{key}' could not be found on type {currentTypeDesc.Name}");
+                        }
+                        else if (propDesc is CollectionPropertyDescriptor collPropDesc)
+                        {
+                            // A collection property without indexer cannot by succeeded by more steps
+                            lastPropWasCollectionWithoutIndexer = true; // To prevent further steps
+                        }
+                        else if (propDesc is NavigationPropertyDescriptor)
+                        {
+                            // Won't implement for now, there aren't any cases in our model
+                            throw new NotImplementedException("Navigation property errors not implemented");
+                        }
+                        else // Simple prop
+                        {
+                            // Retrieve the property mapping if possible
+                            propertyMapping = currentMapping?.SimpleProperty(propName);
+                            lastPropWasSimple = true; // To prevent further steps
+                        }
+                    }
+                }
+
+                // Now to use the goods
+                int row = currentEntity.EntityMetadata.RowNumber;
+                int? column = propertyMapping?.ColumnNumber;
+
+                foreach (var errorMessage in errorMessages)
+                {
+                    errors.AddImportError(row, column, errorMessage);
+                }
+            }
         }
     }
 }

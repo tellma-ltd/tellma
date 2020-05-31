@@ -133,7 +133,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public ActionResult<DataWithVersion<SettingsForClient>> SettingsForClient()
+        public ActionResult<Versioned<SettingsForClient>> SettingsForClient()
         {
             try
             {
@@ -177,16 +177,19 @@ namespace Tellma.Controllers
         private readonly IStringLocalizer _localizer;
         private readonly ISettingsCache _settingsCache;
         private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly MetadataProvider _metadataPrvider;
 
         public SettingsService(ApplicationRepository repo,
             IStringLocalizer<Strings> localizer,
             ISettingsCache settingsCache,
-            ITenantIdAccessor tenantIdAccessor)
+            ITenantIdAccessor tenantIdAccessor,
+            MetadataProvider metadataPrvider)
         {
             _repo = repo;
             _localizer = localizer;
             _settingsCache = settingsCache;
             _tenantIdAccessor = tenantIdAccessor;
+            _metadataPrvider = metadataPrvider;
         }
 
         public async Task<Settings> Get(SelectExpandArguments args, CancellationToken cancellation)
@@ -213,7 +216,7 @@ namespace Tellma.Controllers
             return settings;
         }
 
-        public async Task<(Settings, DataWithVersion<SettingsForClient>)> Save(SettingsForSave settingsForSave, SaveArguments args)
+        public async Task<(Settings, Versioned<SettingsForClient>)> Save(SettingsForSave settingsForSave, SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
             var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings", cancellation: default);
@@ -226,11 +229,7 @@ namespace Tellma.Controllers
 
             // Validate
             ValidateAndPreprocessSettings(settingsForSave);
-
-            if (!ModelState.IsValid)
-            {
-                throw new UnprocessableEntityException(ModelState);
-            }
+            ModelState.ThrowIfInvalid();
 
             // Persist
             await _repo.Settings__Save(settingsForSave);
@@ -255,12 +254,17 @@ namespace Tellma.Controllers
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)
         {
+            // Basic Validation
+            var meta = _metadataPrvider.GetMetadata(_tenantIdAccessor.GetTenantId(), typeof(SettingsForSave));
+            ValidateEntity(entity, meta);
+
+            // Sophisticated validation
             if (!string.IsNullOrWhiteSpace(entity.SecondaryLanguageId) || !string.IsNullOrWhiteSpace(entity.TernaryLanguageId))
             {
                 if (string.IsNullOrWhiteSpace(entity.PrimaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.PrimaryLanguageSymbol),
-                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_PrimaryLanguageSymbol"]]);
+                        _localizer[Constants.Error_Field0IsRequired, _localizer["Settings_PrimaryLanguageSymbol"]]);
                 }
             }
 
@@ -273,7 +277,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.SecondaryLanguageSymbol),
-                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_SecondaryLanguageSymbol"]]);
+                        _localizer[Constants.Error_Field0IsRequired, _localizer["Settings_SecondaryLanguageSymbol"]]);
                 }
 
                 if (entity.SecondaryLanguageId == entity.PrimaryLanguageId)
@@ -292,7 +296,7 @@ namespace Tellma.Controllers
                 if (string.IsNullOrWhiteSpace(entity.TernaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.TernaryLanguageSymbol),
-                        _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Settings_TernaryLanguageSymbol"]]);
+                        _localizer[Constants.Error_Field0IsRequired, _localizer["Settings_TernaryLanguageSymbol"]]);
                 }
 
                 if (entity.TernaryLanguageId == entity.PrimaryLanguageId)
@@ -317,7 +321,7 @@ namespace Tellma.Controllers
             }
         }
 
-        public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo, CancellationToken cancellation)
+        public static async Task<Versioned<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             var (isMultiCenter, settings) = await repo.Settings__Load(cancellation);
             if (settings == null)
@@ -356,7 +360,7 @@ namespace Tellma.Controllers
             settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);
 
             // Tag the settings for client with their current version
-            var result = new DataWithVersion<SettingsForClient>
+            var result = new Versioned<SettingsForClient>
             {
                 Version = settings.SettingsVersion.ToString(),
                 Data = settingsForClient

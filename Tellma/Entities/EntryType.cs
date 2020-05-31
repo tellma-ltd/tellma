@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "EntryType", Plural = "EntryTypes")]
     public class EntryTypeForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
@@ -15,29 +16,29 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
         [Display(Name = "IsAssignable")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
     }

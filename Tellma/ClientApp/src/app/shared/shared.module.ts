@@ -68,7 +68,6 @@ import { DetailsComponent } from './details/details.component';
 import { DetailsBaseComponent } from './details-base/details-base.component';
 import { ErrorMessageComponent } from './error-message/error-message.component';
 import { FormGroupComponent } from './form-group/form-group.component';
-import { ImportComponent } from './import/import.component';
 import { MasterComponent } from './master/master.component';
 import { SelectorComponent } from './selector/selector.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -104,7 +103,6 @@ import { SerialEditorComponent } from './serial-editor/serial-editor.component';
     MasterBaseComponent,
     ErrorMessageComponent,
     FormGroupComponent,
-    ImportComponent,
     MasterComponent,
     SelectorComponent,
     SpinnerComponent,
@@ -169,7 +167,6 @@ import { SerialEditorComponent } from './serial-editor/serial-editor.component';
     SuccessMessageComponent,
     WarningMessageComponent,
     TextEditorComponent,
-    ImportComponent,
     FormGroupComponent,
     FormGroupSettingsComponent,
     FormGroupDynamicComponent,

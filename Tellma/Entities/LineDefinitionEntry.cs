@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "LineDefinitionEntry", Plural = "LineDefinitionEntries")]
     public class LineDefinitionEntryForSave : EntityWithKey<int>
     {
         public short? Direction { get; set; }

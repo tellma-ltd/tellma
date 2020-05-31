@@ -5,26 +5,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "ExchangeRate", Plural = "ExchangeRates")]
     public class ExchangeRateForSave : EntityWithKey<int>
     {
         [Display(Name = "ExchangeRate_Currency")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(3)]
         [AlwaysAccessible]
         public string CurrencyId { get; set; }
 
         [Display(Name = "ExchangeRate_ValidAsOf")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public DateTime? ValidAsOf { get; set; }
 
         [Display(Name = "ExchangeRate_AmountInCurrency")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public decimal? AmountInCurrency { get; set; }
 
         [Display(Name = "ExchangeRate_AmountInFunctional")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [AlwaysAccessible]
         public decimal? AmountInFunctional { get; set; }
     }

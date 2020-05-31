@@ -149,7 +149,7 @@ export interface EntityDescriptor {
     /**
      * The properties of the class.
      */
-    properties: { [prop: string]: PropDescriptor };
+    properties: { [propName: string]: PropDescriptor };
 
     /**
      * Used for caching the list of definitions

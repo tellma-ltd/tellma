@@ -214,6 +214,15 @@
   <data name="Agent_User" xml:space="preserve">
     <value>المستخدم</value>
   </data>
+  <data name="AgentDefinition" xml:space="preserve">
+    <value>تعريف ذمة</value>
+  </data>
+  <data name="AgentDefinitions" xml:space="preserve">
+    <value>تعريفات ذمم</value>
+  </data>
+  <data name="AgentRate" xml:space="preserve">
+    <value>مبلغ ذمة</value>
+  </data>
   <data name="AgentRate_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
@@ -225,6 +234,9 @@
   </data>
   <data name="AgentRate_Unit" xml:space="preserve">
     <value>الوحدة</value>
+  </data>
+  <data name="AgentRates" xml:space="preserve">
+    <value>مبالغ ذمم</value>
   </data>
   <data name="Agents" xml:space="preserve">
     <value>ذمم</value>
@@ -247,11 +259,17 @@
   <data name="Assignment_N" xml:space="preserve">
     <value>غير محدد</value>
   </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>مرفق</value>
+  </data>
   <data name="Attachment_FileExtension" xml:space="preserve">
     <value>امتداد الملف</value>
   </data>
   <data name="Attachment_Size" xml:space="preserve">
     <value>الحجم</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>مرفقات</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>تطبيق (Authenticator)</value>
@@ -264,6 +282,9 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
+  </data>
+  <data name="Cell0" xml:space="preserve">
+    <value>الخانة {0}</value>
   </data>
   <data name="Center" xml:space="preserve">
     <value>مركز</value>
@@ -366,6 +387,15 @@
   </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>تاريخ</value>
+  </data>
+  <data name="DateTimeOffset" xml:space="preserve">
+    <value>زمن</value>
+  </data>
+  <data name="Decimal" xml:space="preserve">
+    <value>عدد عشري</value>
   </data>
   <data name="DefaultAggregationMeasure" xml:space="preserve">
     <value>{0} {1}</value>
@@ -565,8 +595,38 @@
   <data name="Document_UnitIsCommon" xml:space="preserve">
     <value>وحدة القياس مشتركة</value>
   </data>
+  <data name="DocumentAssignment" xml:space="preserve">
+    <value>تعهيد مستند</value>
+  </data>
+  <data name="DocumentAssignments" xml:space="preserve">
+    <value>تعهيدات مستندات</value>
+  </data>
+  <data name="DocumentDefinition" xml:space="preserve">
+    <value>تعريف مستند</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
+    <value>تعريف سطر مستند</value>
+  </data>
+  <data name="DocumentDefinitionLineDefinitions" xml:space="preserve">
+    <value>تعريفات أسطر مستندات</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplate" xml:space="preserve">
+    <value>قالب تعريف مستند</value>
+  </data>
+  <data name="DocumentDefinitionMarkupTemplates" xml:space="preserve">
+    <value>قوالب تعريفات مستندات</value>
+  </data>
+  <data name="DocumentDefinitions" xml:space="preserve">
+    <value>تعريفات مستندات</value>
+  </data>
   <data name="Documents" xml:space="preserve">
     <value>مستندات</value>
+  </data>
+  <data name="DocumentStateChange" xml:space="preserve">
+    <value>تغير حالة مستند</value>
+  </data>
+  <data name="DocumentStateChanges" xml:space="preserve">
+    <value>تغييرات أحوال مستندات</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>عنوان البريد الإلكتروني ({0}) محجوز.</value>
@@ -580,14 +640,14 @@
   <data name="Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
-  <data name="EmailAddressAttribute" xml:space="preserve">
-    <value>حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم</value>
-  </data>
   <data name="EmailConfirmationMessage" xml:space="preserve">
     <value>شكرا على تأكيد عنوان بريدك الإلكتروني</value>
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Entry" xml:space="preserve">
+    <value>حركة</value>
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
@@ -683,7 +743,7 @@
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
   </data>
   <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>تعذر العثور على مفتاح تعريف الذمة ({0})</value>
+    <value>تعذر العثور على مفتاح تعريف الذمة ({0}).</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
@@ -704,16 +764,16 @@
     <value>لا يمكنك حذف المستخدم خاصتك</value>
   </data>
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
-    <value>لا يمكن تعديل المستندات الملغاة</value>
+    <value>لا يمكن تعديل المستندات الملغاة.</value>
   </data>
   <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>لا يمكن تعديل المستندات المرحلة</value>
+    <value>لا يمكن تعديل المستندات المرحلة.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
   </data>
   <data name="Error_CannotModifySystemItem" xml:space="preserve">
-    <value>لا يمكن تعديل بيان من النظام</value>
+    <value>لا يمكن تعديل بيان من النظام.</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>الكود مطلوب لوضع التعديل</value>
@@ -725,16 +785,22 @@
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
-    <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة</value>
+    <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة.</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
-    <value>التاريخ لا يمكن أن يكون في المستقبل</value>
+    <value>التاريخ لا يمكن أن يكون في المستقبل.</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>حذف {0} ليس مدعوما من هذه الواجهة</value>
   </data>
+  <data name="Error_DocumentDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف المستند ({0}).</value>
+  </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
     <value>مسجل الدخول الخارجي لم يفصح عن عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Error_EmptyHeadersNotAllowed" xml:space="preserve">
+    <value>عنوان العمود فارغ.</value>
   </data>
   <data name="Error_EmptyImportFile" xml:space="preserve">
     <value>الملف المحمل ليس فيه بيانات</value>
@@ -745,14 +811,35 @@
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
     <value>ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ({0})</value>
   </data>
+  <data name="Error_FailedToConvertValue0ToType1" xml:space="preserve">
+    <value>تعذر تحويل القيمة ({0}) إلى نوع {1}.</value>
+  </data>
+  <data name="Error_FailedToParseFileError0" xml:space="preserve">
+    <value>تعذر قراءة الملف المرفوع، رسالة الخطأ: {0}.</value>
+  </data>
+  <data name="Error_Field0IsNotValidEmail" xml:space="preserve">
+    <value>حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم</value>
+  </data>
+  <data name="Error_Field0IsRequired" xml:space="preserve">
+    <value>حقل {0} مطلوب.</value>
+  </data>
+  <data name="Error_Field0LengthMaximumOf1" xml:space="preserve">
+    <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا</value>
+  </data>
+  <data name="Error_Field0LengthMaximumOf1MinimumOf2" xml:space="preserve">
+    <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
+  </data>
   <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
     <value>الحقل ({1}) على النوع ({0}) هو حقل بسيط، وبالتالي لا يمكن أن يتبعه حقل آخر في مسارات select</value>
   </data>
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
     <value>المفاتيح الأجنبية مثل ({0}) لا يمكن استخدامها في مسارات select</value>
   </data>
+  <data name="Error_ImportFailedBecauseOf" xml:space="preserve">
+    <value>عملية الاستيراد فشلت بسبب الآتي:</value>
+  </data>
   <data name="Error_IncompatibleAccountType0AndEntryType1" xml:space="preserve">
-    <value>نوع الحساب ({0}) والسبب ({1}) غير متناسبان</value>
+    <value>نوع الحساب ({0}) والسبب ({1}) غير متناسبان.</value>
   </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
     <value>مفتاح اللغة ({0}) غير معروف</value>
@@ -760,17 +847,56 @@
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد</value>
   </data>
+  <data name="Error_KeyProperty0MustBeInTheImportedFile" xml:space="preserve">
+    <value>الحقل {0} ينبغي أن يكون في الملف المرفوع</value>
+  </data>
+  <data name="Error_KeyProperty0NotValidItMustIntOrString" xml:space="preserve">
+    <value>الحقل {0} لا يصلح كحقل مفتاحي، الحقول المفتاحية ينبغي أن تكون طبيعتها نص أو عدد صحيح</value>
+  </data>
+  <data name="Error_KeyPropertyIsRequiredToSet0Field" xml:space="preserve">
+    <value>الحقل المفتاحي مطلوب من أجل تحديد الحقل ({0})، أضف عنوان الحقل المفتاحي بعد علامة الناقص، مثال: الموظف - الاسم.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyCollectionOnType1" xml:space="preserve">
+    <value>عنوان العمود ({0}) لا يتطابق مع أي من القوائم الموجودة على نوع {1}.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyCollectionOnType1DidYouMean2" xml:space="preserve">
+    <value>عنوان العمود ({0}) لا يتطابق مع أي من القوائم الموجودة على نوع {1}، هل كان المقصود ({2})؟</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyFieldOnType1" xml:space="preserve">
+    <value>عنوان العمود ({0}) لا يتطابق مع أي من الحقول الموجودة على نوع {1}.</value>
+  </data>
+  <data name="Error_Label0DoesNotMatchAnyFieldOnType1DidYouMean2" xml:space="preserve">
+    <value>عنوان العمود ({0}) لا يتطابق مع أي من الحقول الموجودة على نوع {1}، هل كان المقصود ({2})؟</value>
+  </data>
+  <data name="Error_Label0MatchesMultipleCollectionsOnType1" xml:space="preserve">
+    <value>عنوان العمود ({0}) يتطابق مع أكثر من قائمة واحدة على نوع {1}، قم بإلحاق عدد لإزالة اللبس، مثال: {0}.1.</value>
+  </data>
+  <data name="Error_Label0MatchesMultipleFieldsOnType1" xml:space="preserve">
+    <value>عنوان العمود ({0}) يتطابق مع أكثر من حقل واحد على نوع {1}، قم بإلحاق عدد لإزالة اللبس، مثال: {0}.1.</value>
+  </data>
   <data name="Error_LineIsMissingSignatures" xml:space="preserve">
-    <value>بعض التوقيعات ناقصة</value>
+    <value>بعض التوقيعات ناقصة.</value>
   </data>
   <data name="Error_LoadingExternalLoginInformation" xml:space="preserve">
     <value>حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي</value>
+  </data>
+  <data name="Error_LookupDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف القائمة ({0}).</value>
+  </data>
+  <data name="Error_MoreThanOne0FoundWhere1Equals2" xml:space="preserve">
+    <value>تم العثور على أكثر من بيان {0} واحد مستوف لـ: {1} = ({2}).</value>
   </data>
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
     <value>لا يمكن استخدام الحقل ({0}) في مسار معامل select دون استخدامه أيضا في مسار معامل expand</value>
   </data>
   <data name="Error_NewAttachmentsMustIncludeFileBytes" xml:space="preserve">
-    <value>المرفقات الجديدة ينبغي أن تحتوي على ملف</value>
+    <value>المرفقات الجديدة ينبغي أن تحتوي على ملف.</value>
+  </data>
+  <data name="Error_No0WasFoundWhere1Equals2" xml:space="preserve">
+    <value>لم يتم العثور على بيان {0} مستوف لـ: {1} = ({2}).</value>
+  </data>
+  <data name="Error_No0WasFoundWhere1Equals2EnsureCaseMatch" xml:space="preserve">
+    <value>لم يتم العثور على بيان {0} مستوف لـ: {1} = ({2}).</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>لم يتم رفع أي ملف</value>
@@ -778,8 +904,11 @@
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
     <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
   </data>
+  <data name="Error_OnlyCsvOrExcelAreSupported" xml:space="preserve">
+    <value>صيغ الملفات المدعومة هي إكسل وCSV فقط.</value>
+  </data>
   <data name="Error_OnlyNewAttachmentsCanIncludeFileBytes" xml:space="preserve">
-    <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف</value>
+    <value>المرفقات الجديدة فقط يمكن أن تحتوي على ملف.</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>وضع الحذف ليس مدعوما من هذه الواجهة</value>
@@ -787,35 +916,38 @@
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
     <value>الحقل {0} غير موجود على النوع {1}</value>
   </data>
+  <data name="Error_Property0IsKeyPropertyThereforeRequiredForUpdate" xml:space="preserve">
+    <value>ألحقل {0} مستخدم كحقل مفتاحي وبالتالي مطلوب من أجل الاستيراد للتعديل</value>
+  </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
     <value>الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}</value>
   </data>
   <data name="Error_ResourceDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>تعذر العثور على مفتاح تعريف المورد ({0})</value>
+    <value>تعذر العثور على مفتاح تعريف المورد ({0}).</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة هي نفسها اللغة الرئيسية</value>
+    <value>اللغة الثالثة هي نفسها اللغة الرئيسية.</value>
   </data>
   <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة هي نفسها اللغة الثانية</value>
+    <value>اللغة الثالثة هي نفسها اللغة الثانية.</value>
   </data>
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
-    <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
+    <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1}).</value>
   </data>
   <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
-    <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما</value>
+    <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما.</value>
   </data>
   <data name="Error_TheAmountInCurrencyMustBeGreaterThanZero" xml:space="preserve">
-    <value>المبلغ ينبغي أن يكون أكبر من 0</value>
+    <value>المبلغ ينبغي أن يكون أكبر من 0.</value>
   </data>
   <data name="Error_TheAmountInFunctionalMustBeGreaterThanZero" xml:space="preserve">
-    <value>المقابل ينبغي أن يكون أكبر من 0</value>
+    <value>المقابل ينبغي أن يكون أكبر من 0.</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>
@@ -827,13 +959,13 @@
     <value>الكود ({0}) مستخدم حاليا</value>
   </data>
   <data name="Error_TheCurrency0Date1AreDuplicated" xml:space="preserve">
-    <value>سعر صرف العملة ({0}) في التاريخ {1} مكرر أكثر من مرة</value>
+    <value>سعر صرف العملة ({0}) في التاريخ {1} مكرر أكثر من مرة.</value>
   </data>
   <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
     <value>العملة ({0}) مستخدمة في ({1})</value>
   </data>
   <data name="Error_TheCurrencyMustBeDifferentThanFunctional" xml:space="preserve">
-    <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية</value>
+    <value>العملة ينبغي أن تكون مختلفة عن العملة الوظيفية.</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>
@@ -848,19 +980,16 @@
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
   </data>
   <data name="Error_TheField0IsReadOnly" xml:space="preserve">
-    <value>حقل {0} غير قابل للتعديل</value>
-  </data>
-  <data name="Error_TheField0IsRequired" xml:space="preserve">
-    <value>حقل {0} مطلوب</value>
+    <value>حقل {0} غير قابل للتعديل.</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
   </data>
   <data name="Error_TheField0Value1IsIncompatible" xml:space="preserve">
-    <value>قيمة {0} ({1}) غير مناسبة هنا</value>
+    <value>قيمة {0} ({1}) غير مناسبة هنا.</value>
   </data>
   <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
-    <value>المفاتيح التالية يحتكرها النظام: {0}</value>
+    <value>المفاتيح التالية يحتكرها النظام: {0}.</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
@@ -875,10 +1004,10 @@
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
   </data>
   <data name="Error_ThePurposeIsRequiredBecauseAccountTypeIs0" xml:space="preserve">
-    <value>حقل السبب مطلوب لأن نوع الحساب هو ({0})</value>
+    <value>حقل السبب مطلوب لأن نوع الحساب هو ({0}).</value>
   </data>
   <data name="Error_TheResourceIsRequired" xml:space="preserve">
-    <value>حقل المورد مطلوب</value>
+    <value>حقل المورد مطلوب.</value>
   </data>
   <data name="Error_TheRole0IsInactive" xml:space="preserve">
     <value>الدور ({0}) غير منشط</value>
@@ -887,16 +1016,19 @@
     <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
   </data>
   <data name="Error_TheSerialNumber0IsDuplicated" xml:space="preserve">
-    <value>الرقم المتسلسل ({0}) مكرر</value>
+    <value>الرقم المتسلسل ({0}) مكرر.</value>
   </data>
   <data name="Error_TheSerialNumber0IsUsed" xml:space="preserve">
-    <value>الرقم المتسلسل ({0}) مستخدم حاليا</value>
+    <value>الرقم المتسلسل ({0}) مستخدم حاليا.</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>المستخدم ({0}) غير منشط</value>
   </data>
   <data name="Error_TheValidAsOfDateCannotBeInTheFuture" xml:space="preserve">
-    <value>تاريخ صالح ابتداء من لا يمكن أن يكون في المستقبل</value>
+    <value>تاريخ صالح ابتداء من لا يمكن أن يكون في المستقبل.</value>
+  </data>
+  <data name="Error_TheValue0IsNotAValidInteger" xml:space="preserve">
+    <value>القيمة ({0}) لا تمثل عددا صحيحا.</value>
   </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
     <value>القيمة ({0}) ليست صالحة لحقل {1}</value>
@@ -905,25 +1037,40 @@
     <value>الواجهة ذات الكود ({0}) غير منشطة</value>
   </data>
   <data name="Error_TitleIsRequiredWhenShowInMainMenu" xml:space="preserve">
-    <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية</value>
+    <value>حقل العنوان مطلوب لإظهار التقرير في القائمة الرئيسية.</value>
   </data>
   <data name="Error_TransactionHasDebitCreditDifference0" xml:space="preserve">
-    <value>بين المدين والدائن فرق {{0}}</value>
+    <value>بين المدين والدائن فرق {{0}}.</value>
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
     <value>حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي</value>
   </data>
-  <data name="Error_UnknownFileFormat" xml:space="preserve">
-    <value>صيغة الملف غير معروفة</value>
+  <data name="Error_UnknownImportMode0AllowedValuesAre1" xml:space="preserve">
+    <value>طريقة الاستيراد ({0}) غير معروفة، القيم المعروفة هي: {1}</value>
   </data>
   <data name="Error_UploadedFileWasEmpty" xml:space="preserve">
-    <value>الملف المرفوع ليس فيه بيانات</value>
+    <value>الملف المرفوع ليس فيه بيانات.</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>المستخدم ({0}) قد قبل الدعوة</value>
+    <value>المستخدم ({0}) قد قبل الدعوة.</value>
+  </data>
+  <data name="Error_Value0ForField1ShouldNotExceedOneChar" xml:space="preserve">
+    <value>القيمة ({0}) للحقل {1} ينبغي ألا يتجاوز طولها حرفا واحدا</value>
+  </data>
+  <data name="Error_Value0IsDuplicatedEvenThoughItIsKey1" xml:space="preserve">
+    <value>القيمة ({0}) مكررة، مع أنها قيمة للحقل المفتاحي {1}</value>
+  </data>
+  <data name="Error_Value0IsNotAValid1Example2" xml:space="preserve">
+    <value>القيمة ({0}) لا يمكن ترجمتها إلى {1}، مثال على قيمة سليمة: {2}.</value>
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
-    <value>القيمة ({0}) ليست صالحة لحقل {1}، القيم الصالحة هي: {2}</value>
+    <value>القيمة ({0}) ليست صالحة لحقل {1}، القيم الصالحة هي: {2}.</value>
+  </data>
+  <data name="Error_Value0NotSupportedForField1DidYouMean2" xml:space="preserve">
+    <value>القيمة ({0}) لا تتناسب مع الحقل {1}، هل كان المقصود ({2})؟</value>
+  </data>
+  <data name="Error_Value0NotSupportedForField1SupportedValuesAre2" xml:space="preserve">
+    <value>القيمة ({0}) لا تتناسب مع الحقل {1}، القيم المدعومة هي: {2}.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
     <value>سعر صرف</value>
@@ -994,6 +1141,9 @@
   <data name="Icon_Clipboard" xml:space="preserve">
     <value>حافظة</value>
   </data>
+  <data name="Id" xml:space="preserve">
+    <value>المفتاح</value>
+  </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>عنوان البريد الإلكتروني ({0}) غير سليم.</value>
   </data>
@@ -1032,6 +1182,12 @@
   </data>
   <data name="InboxRecord" xml:space="preserve">
     <value>بيان من صندوق الوارد</value>
+  </data>
+  <data name="InboxRecords" xml:space="preserve">
+    <value>بيانات صندوق الوارد</value>
+  </data>
+  <data name="Integer" xml:space="preserve">
+    <value>عدد صحيح</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>الكود غير سليم.</value>
@@ -1081,6 +1237,9 @@
   <data name="IsSystem" xml:space="preserve">
     <value>من النظام</value>
   </data>
+  <data name="KeyProperty" xml:space="preserve">
+    <value>الحقل المفتاحي</value>
+  </data>
   <data name="Label" xml:space="preserve">
     <value>الاسم</value>
   </data>
@@ -1120,6 +1279,30 @@
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>خطأ</value>
   </data>
+  <data name="LineDefinition" xml:space="preserve">
+    <value>تعريف سطر</value>
+  </data>
+  <data name="LineDefinitionColumn" xml:space="preserve">
+    <value>تعريف عمود سطر</value>
+  </data>
+  <data name="LineDefinitionColumns" xml:space="preserve">
+    <value>تعريفات أعمدة أسطر</value>
+  </data>
+  <data name="LineDefinitionEntries" xml:space="preserve">
+    <value>تعريفات حركات أسطر</value>
+  </data>
+  <data name="LineDefinitionEntry" xml:space="preserve">
+    <value>تعريف حركة سطر</value>
+  </data>
+  <data name="LineDefinitions" xml:space="preserve">
+    <value>تعريفات أسطر</value>
+  </data>
+  <data name="LineDefinitionStateReason" xml:space="preserve">
+    <value>تعريف سبب حالة سطر</value>
+  </data>
+  <data name="LineDefinitionStateReasons" xml:space="preserve">
+    <value>تعريفات أسباب حالات أسطر</value>
+  </data>
   <data name="Lines" xml:space="preserve">
     <value>أسطر</value>
   </data>
@@ -1134,6 +1317,12 @@
   </data>
   <data name="Lookup" xml:space="preserve">
     <value>جدول اطلاع</value>
+  </data>
+  <data name="LookupDefinition" xml:space="preserve">
+    <value>تعريف قائمة</value>
+  </data>
+  <data name="LookupDefinitions" xml:space="preserve">
+    <value>تعريفات قوائم</value>
   </data>
   <data name="Lookups" xml:space="preserve">
     <value>جداول اطلاع</value>
@@ -1296,6 +1485,9 @@
   </data>
   <data name="OutboxRecord" xml:space="preserve">
     <value>بيان من صندوق الصادر</value>
+  </data>
+  <data name="OutboxRecords" xml:space="preserve">
+    <value>بيانات صندوق الصادر</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
@@ -1603,6 +1795,12 @@
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>
   </data>
+  <data name="RequiredSignature" xml:space="preserve">
+    <value>توقيع مطلوب</value>
+  </data>
+  <data name="RequiredSignatures" xml:space="preserve">
+    <value>توقيعات مطلوبة</value>
+  </data>
   <data name="ResetAuthenticatorKey" xml:space="preserve">
     <value>إعادة تعيين مفتاح الـ(Authenticator)</value>
   </data>
@@ -1714,8 +1912,17 @@
   <data name="Resource_Units" xml:space="preserve">
     <value>وحدات القياس</value>
   </data>
+  <data name="ResourceDefinition" xml:space="preserve">
+    <value>تعريف مورد</value>
+  </data>
+  <data name="ResourceDefinitions" xml:space="preserve">
+    <value>تعريفات موارد</value>
+  </data>
   <data name="Resources" xml:space="preserve">
     <value>موارد</value>
+  </data>
+  <data name="ResourceUnit" xml:space="preserve">
+    <value>وحدة قياس مورد</value>
   </data>
   <data name="ResourceUnit_Multiplier" xml:space="preserve">
     <value>المعامل</value>
@@ -1723,11 +1930,17 @@
   <data name="ResourceUnit_Unit" xml:space="preserve">
     <value>الوحدة</value>
   </data>
+  <data name="ResourceUnits" xml:space="preserve">
+    <value>وحدات قياس موارد</value>
+  </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>
   </data>
   <data name="Role_IsPublic" xml:space="preserve">
     <value>عام للجميع</value>
+  </data>
+  <data name="RoleMembership" xml:space="preserve">
+    <value>عضوية دور</value>
   </data>
   <data name="RoleMembership_Role" xml:space="preserve">
     <value>الدور</value>
@@ -1735,10 +1948,16 @@
   <data name="RoleMembership_User" xml:space="preserve">
     <value>المستخدم</value>
   </data>
+  <data name="RoleMemberships" xml:space="preserve">
+    <value>عضويات أدوار</value>
+  </data>
   <data name="Roles" xml:space="preserve">
     <value>أدوار</value>
   </data>
   <data name="Row{0}" xml:space="preserve">
+    <value>السطر {0}</value>
+  </data>
+  <data name="Row0" xml:space="preserve">
     <value>السطر {0}</value>
   </data>
   <data name="Save" xml:space="preserve">
@@ -1903,11 +2122,20 @@
   <data name="SortKey" xml:space="preserve">
     <value>مفتاح الترتيب</value>
   </data>
+  <data name="SqlDatabase" xml:space="preserve">
+    <value>قاعدة بيانات</value>
+  </data>
   <data name="SqlDatabase_DatabaseName" xml:space="preserve">
     <value>اسم قاعدة البيانات</value>
   </data>
   <data name="SqlDatabase_Server" xml:space="preserve">
     <value>المخدم</value>
+  </data>
+  <data name="SqlDatabases" xml:space="preserve">
+    <value>قواعد بيانات</value>
+  </data>
+  <data name="SqlServer" xml:space="preserve">
+    <value>مخدم SQL</value>
   </data>
   <data name="SqlServer_PasswordKey" xml:space="preserve">
     <value>مفتاح كلمة المرور</value>
@@ -1918,6 +2146,9 @@
   <data name="SqlServer_UserName" xml:space="preserve">
     <value>اسم الحساب</value>
   </data>
+  <data name="SqlServers" xml:space="preserve">
+    <value>مخدمات SQL</value>
+  </data>
   <data name="State" xml:space="preserve">
     <value>الحالة</value>
   </data>
@@ -1926,12 +2157,6 @@
   </data>
   <data name="StateHistory_ToState" xml:space="preserve">
     <value>إلى حالة</value>
-  </data>
-  <data name="StringLengthAttribute" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا</value>
-  </data>
-  <data name="StringLengthAttribute2" xml:space="preserve">
-    <value>حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف</value>
   </data>
   <data name="SummaryEntries" xml:space="preserve">
     <value>أسطر مجملة</value>
@@ -1989,6 +2214,9 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>المسار</value>
+  </data>
+  <data name="TruncatedList" xml:space="preserve">
+    <value>(القائمة مقتطعة)</value>
   </data>
   <data name="Twitter" xml:space="preserve">
     <value>تويتر</value>

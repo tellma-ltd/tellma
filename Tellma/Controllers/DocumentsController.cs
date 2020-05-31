@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Tellma.Controllers.Templating;
 using System.Text;
+using Microsoft.VisualBasic;
 
 namespace Tellma.Controllers
 {
@@ -247,7 +248,6 @@ namespace Tellma.Controllers
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ISettingsCache _settingsCache;
         private readonly IClientInfoAccessor _clientInfo;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
         private readonly ITenantInfoAccessor _tenantInfoAccessor;
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -260,8 +260,8 @@ namespace Tellma.Controllers
         public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
-            IModelMetadataProvider modelMetadataProvider, ITenantInfoAccessor tenantInfoAccessor,
-            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(localizer)
+            ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp,
+            IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(sp)
         {
             _localizer = localizer;
             _templateService = templateService;
@@ -272,7 +272,6 @@ namespace Tellma.Controllers
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
             _clientInfo = clientInfo;
-            _modelMetadataProvider = modelMetadataProvider;
             _tenantInfoAccessor = tenantInfoAccessor;
             _hubContext = hubContext;
             _contextAccessor = contextAccessor;
@@ -285,7 +284,7 @@ namespace Tellma.Controllers
         private string _definitionIdOverride;
         private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
 
-        private string DefinitionId => _definitionIdOverride ??
+        protected override string DefinitionId => _definitionIdOverride ??
             _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
             throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(DocumentsService)}");
         private bool IncludeRequiredSignatures =>
@@ -318,7 +317,10 @@ namespace Tellma.Controllers
             await CheckActionPermissions("Read", ids);
 
             // C# Validation 
-            // Goes here
+            if (args.AssigneeId == 0)
+            {
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, nameof(args.AssigneeId)]);
+            }
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
@@ -357,7 +359,6 @@ namespace Tellma.Controllers
                 trx.Complete();
                 return default;
             }
-
         }
 
         public async Task<(List<Document>, Extras)> SignLines(List<int> lineIds, SignArguments args)
@@ -365,7 +366,10 @@ namespace Tellma.Controllers
             var returnEntities = args.ReturnEntities ?? false;
 
             // C# Validation 
-            // Goes here
+            if (string.IsNullOrWhiteSpace(args.RuleType))
+            {
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, nameof(args.RuleType)]);
+            }
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
@@ -577,7 +581,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException($"The template with Id {templateId} does not have the proper usage");
             }
 
-            if (template.MarkupLanguage != "text/html")
+            if (template.MarkupLanguage != MimeTypes.Html)
             {
                 throw new BadRequestException($"The template with Id {templateId} is not an HTML template");
             }
@@ -1016,8 +1020,6 @@ namespace Tellma.Controllers
             var docDef = Definition();
             var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
-            // TODO: Add definition-specific validation here
-
             // SQL may return keys representing line and entry properties that inherit from a common document property
             // This dictionary maps the keys of the former properties to the keys of the later properties, and is used
             // At the end to map the keys that return from SQL before serving them to the client
@@ -1034,7 +1036,7 @@ namespace Tellma.Controllers
                     if (doc.SerialNumber == null || doc.SerialNumber == 0)
                     {
                         ModelState.AddModelError($"[{docIndex}].{nameof(doc.SerialNumber)}",
-                            _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Document_SerialNumber"]]);
+                            _localizer[Services.Utilities.Constants.Error_Field0IsRequired, _localizer["Document_SerialNumber"]]);
                     }
                     else if (duplicateSerialNumbers.ContainsKey(doc))
                     {
@@ -1094,7 +1096,7 @@ namespace Tellma.Controllers
                         // If the currency is functional, value must equal monetary value
                         if (entry.CurrencyId == settings.FunctionalCurrencyId && entry.Value != entry.MonetaryValue)
                         {
-                            var currencyName = _tenantInfoAccessor.GetCurrentInfo()
+                            var currencyName = _settingsCache.GetCurrentSettingsIfCached().Data
                                 .Localize(settings.FunctionalCurrencyName,
                                             settings.FunctionalCurrencyName2,
                                             settings.FunctionalCurrencyName3);
@@ -1338,7 +1340,8 @@ namespace Tellma.Controllers
             var key = $"[{docIndex}].{propName}";
             if (!ModelState.ContainsKey(key))
             {
-                var propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(DocumentForSave), propName)?.DisplayName ?? _localizer["Document_NotedAgent"];
+                var meta = GetMetadataForSave();
+                var propDisplayName = meta.Property(propName)?.Display();
                 ModelState.AddModelError(key, _localizer["Error_TheField0IsReadOnly", propDisplayName]);
             }
         }
@@ -1689,9 +1692,9 @@ namespace Tellma.Controllers
         private readonly IDefinitionsCache _definitionsCache;
 
         public DocumentsGenericService(
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            IDefinitionsCache definitionsCache) : base(localizer)
+            IDefinitionsCache definitionsCache,
+            IServiceProvider sp) : base(sp)
         {
             _repo = repo;
             _definitionsCache = definitionsCache;

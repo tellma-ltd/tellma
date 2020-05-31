@@ -63,7 +63,7 @@ namespace Tellma.Controllers
             IStringLocalizer<Strings> localizer,
             AdminRepository adminRepo,
             IdentityRepository idRepo,
-            IServiceProvider serviceProvider) : base(localizer)
+            IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _localizer = localizer;
             _adminRepo = adminRepo;
@@ -82,14 +82,14 @@ namespace Tellma.Controllers
             // Some basic validation
             if (string.IsNullOrWhiteSpace(args.Password))
             {
-                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Password"]]);
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, _localizer["Password"]]);
             }
 
             // Some basic validation
             if (string.IsNullOrWhiteSpace(args.UserId))
             {
                 // Developer mistake
-                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_TheField0IsRequired, "UserId"]);
+                throw new BadRequestException(_localizer[Services.Utilities.Constants.Error_Field0IsRequired, nameof(args.UserId)]);
             }
 
             if (_userManager == null)

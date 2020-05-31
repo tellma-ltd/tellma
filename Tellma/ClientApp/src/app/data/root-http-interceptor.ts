@@ -3,7 +3,7 @@ import { Observable, Subject, throwError, timer, of } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { tap, exhaustMap, retry, catchError, concatMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { DataWithVersion } from './dto/data-with-version';
+import { Versioned } from './dto/versioned';
 import { SettingsForClient } from './dto/settings-for-client';
 import { PermissionsForClient } from './dto/permissions-for-client';
 import { StorageService } from './storage.service';
@@ -53,18 +53,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
   private cancellationToken$: Subject<void>;
 
   // Global
-  private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
+  private globalSettingsApi: () => Observable<Versioned<GlobalSettingsForClient>>;
 
   // Admin Console
-  private adminSettingsApi: () => Observable<DataWithVersion<AdminSettingsForClient>>;
-  private adminPermissionsApi: () => Observable<DataWithVersion<AdminPermissionsForClient>>;
-  private adminUserSettingsApi: () => Observable<DataWithVersion<AdminUserSettingsForClient>>;
+  private adminSettingsApi: () => Observable<Versioned<AdminSettingsForClient>>;
+  private adminPermissionsApi: () => Observable<Versioned<AdminPermissionsForClient>>;
+  private adminUserSettingsApi: () => Observable<Versioned<AdminUserSettingsForClient>>;
 
   // Application
-  private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
-  private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
-  private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
-  private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
+  private settingsApi: () => Observable<Versioned<SettingsForClient>>;
+  private definitionsApi: () => Observable<Versioned<DefinitionsForClient>>;
+  private permissionsApi: () => Observable<Versioned<PermissionsForClient>>;
+  private userSettingsApi: () => Observable<Versioned<UserSettingsForClient>>;
 
   // Misc.
   private pingApi: () => Observable<void>;

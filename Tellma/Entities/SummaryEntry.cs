@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "SummaryEntry", Plural = "SummaryEntries")]
     public class SummaryEntry : Entity
     {
         [Display(Name = "Entry_Account")]

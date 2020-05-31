@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -45,7 +46,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
+        public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> UserSettingsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -56,7 +57,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPost("client")]
-        public async Task<ActionResult<DataWithVersion<AdminUserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
+        public async Task<ActionResult<Versioned<AdminUserSettingsForClient>>> SaveUserSetting(SaveUserSettingsArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -138,6 +139,8 @@ namespace Tellma.Controllers
 
         protected override async Task OnSuccessfulSave(List<AdminUser> data, Extras extras)
         {
+            _repo.EnlistTransaction(null); // The last transaction was disposed, so we clear it
+
             var meInfo = await _repo.GetAdminUserInfoAsync(cancellation: default);
             var meId = meInfo.UserId;
 
@@ -154,7 +157,7 @@ namespace Tellma.Controllers
     public class AdminUsersService : CrudServiceBase<AdminUserForSave, AdminUser, int>
     {
         private readonly AdminRepository _repo;
-        private readonly IBlobService _blobService;
+        private readonly MetadataProvider _metadataProvider;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
         private readonly GlobalOptions _options;
@@ -176,12 +179,12 @@ namespace Tellma.Controllers
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<Strings> localizer,
-            IBlobService blobService) : base(localizer)
+            MetadataProvider metadataProvider) : base(serviceProvider)
         {
             _contextAccessor = contextAccessor;
             _linkGenerator = linkGenerator;
             _repo = repo;
-            _blobService = blobService;
+            _metadataProvider = metadataProvider;
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
             _options = options.Value;
@@ -192,16 +195,38 @@ namespace Tellma.Controllers
             _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
-        public async Task<DataWithVersion<AdminUserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
+        public async Task<Versioned<AdminUserSettingsForClient>> SaveUserSetting(SaveUserSettingsArguments args)
         {
+            // Retrieve the arguments
             var key = args.Key;
             var value = args.Value;
 
+            // Validation
+            int maxKey = 255;
+            int maxValue = 2048;
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                // Key is required
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, nameof(args.Key)]);
+            }
+            else if (key.Length > maxKey)
+            {
+                // 
+                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Key), maxKey]);
+            }
+
+            if (value != null && value.Length > maxValue)
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0LengthMaximumOf1, nameof(args.Value), maxValue]);
+            }
+
+            // Save and return
             await _repo.AdminUsers__SaveSettings(key, value);
             return await UserSettingsForClient(cancellation: default);
         }
 
-        public async Task<DataWithVersion<AdminUserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
+        public async Task<Versioned<AdminUserSettingsForClient>> UserSettingsForClient(CancellationToken cancellation)
         {
             var (version, user, customSettings) = await _repo.UserSettings__Load(cancellation);
 
@@ -213,7 +238,7 @@ namespace Tellma.Controllers
                 CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
             };
 
-            var result = new DataWithVersion<AdminUserSettingsForClient>
+            var result = new Versioned<AdminUserSettingsForClient>
             {
                 Version = version.ToString(),
                 Data = userSettingsForClient
@@ -235,6 +260,11 @@ namespace Tellma.Controllers
 
         public async Task<AdminUser> SaveMyUser([FromBody] MyAdminUserForSave me)
         {
+            // Basic validation
+            var meta = _metadataProvider.GetMetadata(null, typeof(MyAdminUserForSave));
+            ValidateEntity(me, meta);
+            ModelState.ThrowIfInvalid();
+
             int myId = (await _repo.GetAdminUserInfoAsync(cancellation: default)).UserId.Value;
             var myIdSingleton = new List<int> { myId };
             var user = await _repo.AdminUsers.Expand("Permissions").FilterByIds(myIdSingleton).FirstOrDefaultAsync(cancellation: default);

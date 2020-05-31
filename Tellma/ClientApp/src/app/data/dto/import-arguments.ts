@@ -1,7 +1,10 @@
 // tslint:disable:variable-name
 export interface ImportArguments {
-  mode?: 'Insert' | 'Update' | 'Merge';
+  mode?: ImportMode;
+  key?: string;
 }
+
+export type ImportMode = 'Insert' | 'Update' | 'Merge';
 
 export const ImportArguments_Mode = {
   Insert: 'Mode_Insert',

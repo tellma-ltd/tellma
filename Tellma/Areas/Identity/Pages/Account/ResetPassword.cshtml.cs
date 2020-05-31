@@ -31,8 +31,8 @@ namespace Tellma.Areas.Identity.Pages.Account
             //[Display(Name = "Email")]
             //public string Email { get; set; }
 
-            [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-            [StringLength(100, ErrorMessage = nameof(StringLengthAttribute) + "2", MinimumLength = 6)]
+            [Required(ErrorMessage = Services.Utilities.Constants.Error_Field0IsRequired)]
+            [StringLength(100, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1 + "2", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }

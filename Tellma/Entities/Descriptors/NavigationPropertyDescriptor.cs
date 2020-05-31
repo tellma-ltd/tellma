@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Tellma.Entities.Descriptors
 {
@@ -21,7 +22,7 @@ namespace Tellma.Entities.Descriptors
         public PropertyDescriptor ForeignKey { get; }
 
         /// <summary>
-        /// The <see cref="TypeDescriptor"/> of the type of the value of this property
+        /// The <see cref="Descriptors.TypeDescriptor"/> of the type of the value of this property
         /// </summary>
         public TypeDescriptor TypeDescriptor => _typeDescriptor ??= _getTypeDescriptor();
 
@@ -29,13 +30,13 @@ namespace Tellma.Entities.Descriptors
         /// Constructor
         /// </summary>
         public NavigationPropertyDescriptor(
-            Type propType,
+            PropertyInfo propInfo,
             string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             bool isParent,
             PropertyDescriptor foreignKey,
-            Func<TypeDescriptor> getTypeDescriptor) : base(propType, name, setter, getter)
+            Func<TypeDescriptor> getTypeDescriptor) : base(propInfo, name, setter, getter)
         {
             _getTypeDescriptor = getTypeDescriptor;
             IsParent = isParent;

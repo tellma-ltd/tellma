@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class AccountTypeForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
+    public class AccountTypeForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -19,39 +20,39 @@ namespace Tellma.Entities
         public int? IfrsConceptId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description2 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
         [Display(Name = "Code")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
@@ -60,35 +61,35 @@ namespace Tellma.Entities
         public bool? IsAssignable { get; set; }
 
         [Display(Name = "AccountType_CurrencyAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment(AssignmentType.Required)]
         public char? CurrencyAssignment { get; set; }
 
         [Display(Name = "AccountType_AgentAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment]
         public char? AgentAssignment { get; set; }
 
         [Display(Name = "AccountType_AgentDefinition")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string AgentDefinitionId { get; set; }
 
         [Display(Name = "AccountType_ResourceAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment]
         public char? ResourceAssignment { get; set; }
 
         [Display(Name = "AccountType_ResourceDefinition")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string ResourceDefinitionId { get; set; }
 
         [Display(Name = "AccountType_CenterAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment(AssignmentType.Required)]
         public char? CenterAssignment { get; set; }
 
         [Display(Name = "AccountType_EntryTypeAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment]
         public char? EntryTypeAssignment { get; set; }
 
@@ -97,129 +98,129 @@ namespace Tellma.Entities
         public int? EntryTypeParentId { get; set; } // Only if EntryTypeAssignment <> 'N'
 
         [Display(Name = "AccountType_IdentifierAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment]
         public char? IdentifierAssignment { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string IdentifierLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string IdentifierLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string IdentifierLabel3 { get; set; }
 
         [Display(Name = "AccountType_NotedAgentAssignment")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [Assignment(AssignmentType.EntryOnly)]
         public char? NotedAgentAssignment { get; set; }
 
         [Display(Name = "AccountType_NotedAgentDefinition")]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentDefinitionId { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string DueDateLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string DueDateLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string DueDateLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time1Label { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time1Label2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time1Label", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time1Label3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time2Label", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time2Label { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time2Label", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time2Label2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_Time2Label", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string Time2Label3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_ExternalReferenceLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string ExternalReferenceLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_ExternalReferenceLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string ExternalReferenceLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_ExternalReferenceLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string ExternalReferenceLabel3 { get; set; }
                
         [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string AdditionalReferenceLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string AdditionalReferenceLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_AdditionalReferenceLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string AdditionalReferenceLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAgentNameLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentNameLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAgentNameLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentNameLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAgentNameLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAgentNameLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAmountLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAmountLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAmountLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAmountLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedAmountLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedAmountLabel3 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedDateLabel", Language = Language.Primary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedDateLabel { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedDateLabel", Language = Language.Secondary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedDateLabel2 { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_NotedDateLabel", Language = Language.Ternary)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
     }
 
-    public class AccountType : AccountTypeForSave
+    public class AccountType : AccountTypeForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }

@@ -3,7 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
 import { Observable, of, throwError } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { StorageService } from './storage.service';
-import { DataWithVersion } from './dto/data-with-version';
+import { Versioned } from './dto/versioned';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { retry, tap, map, catchError, finalize, concatMap } from 'rxjs/operators';
 import { ProgressOverlayService } from './progress-overlay.service';
@@ -18,7 +18,7 @@ export const GLOBAL_SETTINGS_METAVERSION_KEY = 'global_settings_metaversion';
 export const GLOBAL_SETTINGS_METAVERSION = '1.0';
 
 export function handleFreshGlobalSettings(
-  result: DataWithVersion<GlobalSettingsForClient>,
+  result: Versioned<GlobalSettingsForClient>,
   workspace: WorkspaceService, storage: StorageService) {
 
   const globalSettings = result.Data;
@@ -173,10 +173,10 @@ export class GlobalResolverGuard implements CanActivate {
       );
   }
 
-  private getGlobalSettingsForClient(apiAddress: string): Observable<DataWithVersion<GlobalSettingsForClient>> {
+  private getGlobalSettingsForClient(apiAddress: string): Observable<Versioned<GlobalSettingsForClient>> {
 
     const url = apiAddress + `api/global-settings/client`;
-    const obs$ = this.http.get<DataWithVersion<GlobalSettingsForClient>>(url).pipe(
+    const obs$ = this.http.get<Versioned<GlobalSettingsForClient>>(url).pipe(
       catchError(error => {
         console.error(error);
         const friendlyError = friendlify(error, this.trx);

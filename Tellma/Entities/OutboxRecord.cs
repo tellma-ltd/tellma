@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "OutboxRecord", Plural = "OutboxRecords")]
     public class OutboxRecord : EntityWithKey<int>
     {
         [Display(Name = "Assignment_Document")]

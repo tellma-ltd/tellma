@@ -86,11 +86,10 @@ namespace Tellma.Controllers
         private readonly IBlobService _blobService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IDefinitionsCache _definitionsCache;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
 
         private string _definitionIdOverride;
 
-        private string DefinitionId => _definitionIdOverride ?? 
+        protected override string DefinitionId => _definitionIdOverride ?? 
             _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
             throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(AgentsService)}");
 
@@ -107,7 +106,7 @@ namespace Tellma.Controllers
 
         public AgentsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo,
             ITenantIdAccessor tenantIdAccessor, IBlobService blobService, IHttpContextAccessor contextAccessor,
-            IDefinitionsCache definitionsCache, IModelMetadataProvider modelMetadataProvider) : base(localizer)
+            IDefinitionsCache definitionsCache, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -115,7 +114,6 @@ namespace Tellma.Controllers
             _blobService = blobService;
             _contextAccessor = contextAccessor;
             _definitionsCache = definitionsCache;
-            _modelMetadataProvider = modelMetadataProvider;
         }
 
         public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
@@ -307,7 +305,7 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
 
-        public AgentsGenericService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public AgentsGenericService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
         }

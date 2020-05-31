@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Tellma.Entities.Descriptors
 {
@@ -14,6 +15,11 @@ namespace Tellma.Entities.Descriptors
         /// The type of proprety value
         /// </summary>
         public Type Type { get; }
+
+        /// <summary>
+        /// The <see cref="PropertyInfo"/> of the described property
+        /// </summary>
+        public PropertyInfo PropertyInfo { get; }
 
         /// <summary>
         /// The name of the property
@@ -68,18 +74,19 @@ namespace Tellma.Entities.Descriptors
         /// Constructor
         /// </summary>
         public PropertyDescriptor(
-            Type type,
+            PropertyInfo propInfo,
             string name,
             Action<Entity, object> setter,
             Func<Entity, object> getter,
             int maxLength = -1)
         {
-            Type = type ?? throw new ArgumentNullException(nameof(type));
+            PropertyInfo = propInfo ?? throw new ArgumentNullException(nameof(propInfo));
+            Type = PropertyInfo.PropertyType;
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _setter = setter ?? throw new ArgumentNullException(nameof(setter));
             _getter = getter ?? throw new ArgumentNullException(nameof(getter));
 
-            IsHierarchyId = type == typeof(HierarchyId);
+            IsHierarchyId = Type == typeof(HierarchyId);
             MaxLength = maxLength;
         }
     }

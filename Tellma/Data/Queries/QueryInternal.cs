@@ -66,6 +66,10 @@ namespace Tellma.Data.Queries
 
         public IEnumerable<object> ParentIds { get; set; }
 
+        public string PropName { get; set; }
+
+        public IEnumerable<object> Values { get; set; }
+
         public bool IncludeRoots { get; set; }
 
         public int? Skip { get; set; }
@@ -454,13 +458,14 @@ namespace Tellma.Data.Queries
                 string whereFilter = null;
                 string whereInIds = null;
                 string whereInParentIds = null;
+                string whereInPropValues = null;
 
                 if (Filter != null)
                 {
                     whereFilter = QueryTools.FilterToSql(Filter, sources, ps, joinTree, userId, userToday);
                 }
 
-                if (Ids != null && Ids.Count() >= 1)
+                if (Ids != null && Ids.Any())
                 {
                     if (Ids.Count() == 1)
                     {
@@ -551,10 +556,34 @@ namespace Tellma.Data.Queries
                     }
                 }
 
+                if (!string.IsNullOrWhiteSpace(PropName) && Values != null && Values.Any())
+                {
+                    var propDesc = ResultDescriptor.Property(PropName);
+                    var propType = propDesc.Type;
+
+                    var isIntKey = propType == typeof(int?) || propType == typeof(int);
+                    var isStringKey = propType == typeof(string);
+
+                    // Prepare the ids table
+                    DataTable valuesTable =
+                        isStringKey ? RepositoryUtilities.DataTable(Values.Select(id => new StringListItem { Id = id.ToString() })) :
+                        isIntKey ? RepositoryUtilities.DataTable(Values.Select(id => new IdListItem { Id = (int)id })) :
+                        throw new InvalidOperationException("Only string and Integer Ids are supported");
+
+                    var valuesTvp = new SqlParameter("@Values", valuesTable)
+                    {
+                        TypeName = isIntKey ? "[dbo].[IdList]" : isStringKey ? "[dbo].[StringList]" : throw new InvalidOperationException("Only string and Integer values are supported"),
+                        SqlDbType = SqlDbType.Structured
+                    };
+
+                    ps.AddParameter(valuesTvp);
+                    whereInPropValues = $"[P].[{propDesc.Name}] IN (SELECT Id FROM @Values)";
+                }
+
                 // The final WHERE clause (if any)
                 string whereSql = "";
 
-                var clauses = new List<string> { whereFilter, whereInIds, whereInParentIds }.Where(e => e != null);
+                var clauses = new List<string> { whereFilter, whereInIds, whereInParentIds, whereInPropValues }.Where(e => e != null);
                 if (clauses.Any())
                 {
                     whereSql = clauses.Aggregate((c1, c2) => $"{c1}) AND ({c2}");

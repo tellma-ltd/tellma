@@ -5,26 +5,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "SqlServer", Plural = "SqlServers")]
     public class SqlServerForSave : EntityWithKey<int>
     {
         [Display(Name = "SqlServer_ServerName")]
         [Required]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string ServerName { get; set; }
 
         [Display(Name = "SqlServer_UserName")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string UserName { get; set; }
 
         [Display(Name = "SqlServer_PasswordKey")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string PasswordKey { get; set; }
 
         [Display(Name = "Description")]
-        [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(1024)]
         public string Description { get; set; }
     }
 

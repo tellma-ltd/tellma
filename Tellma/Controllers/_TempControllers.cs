@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using System;
 
 namespace Tellma.Controllers
 {
@@ -43,7 +44,8 @@ namespace Tellma.Controllers
 
         public VoucherBookletsService(
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(localizer)
+            ApplicationRepository repo,
+            IServiceProvider sp) : base(sp)
         {
             _repo = repo;
         }

@@ -575,6 +575,9 @@ export class DimensionCell {
   parent: DimensionCell;
   isTotal?: boolean;
 
+  // The column span if all parents were expanded
+  expandedColSpan?: number;
+
   // These change dynamically
   rowSpan?: number;
   colSpan?: number;
@@ -606,6 +609,9 @@ export interface LabelCell {
   level: number;
   parent: DimensionCell;
   isTotal?: boolean;
+
+  // The column span if all parents were expanded
+  expandedColSpan?: number;
 
   // Change dynamically
   rowSpan?: number;

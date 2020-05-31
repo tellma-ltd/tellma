@@ -36,7 +36,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   mergeEntitiesInWorkspace(entities, workspace);
 
   const result = {};
-  result[response.CollectionName] = [ response.Result ];
+  result[response.CollectionName] = [response.Result];
   mergeEntitiesInWorkspace(result, workspace);
 
   // Notify everyone
@@ -265,8 +265,8 @@ export function fileSizeDisplay(fileSize: number): string {
   let unitIndex = 0;
   const stepSize = 1024;
   while (fileSize >= stepSize || -fileSize >= stepSize) {
-      fileSize /= stepSize;
-      unitIndex++;
+    fileSize /= stepSize;
+    unitIndex++;
   }
   return (unitIndex ? fileSize.toFixed(1) + ' ' : fileSize) + ' KMGTPEZY'[unitIndex] + 'B';
 }
@@ -297,25 +297,25 @@ export function computeSelectForDetailsPicker(desc: EntityDescriptor, additional
  */
 export function toLocalDateISOString(date: Date): string {
 
-        // Year
-        let year = date.getFullYear().toString();
-        if (year.length < 4) {
-            year = '000'.substring(0, 4 - year.length) + year;
-        }
+  // Year
+  let year = date.getFullYear().toString();
+  if (year.length < 4) {
+    year = '000'.substring(0, 4 - year.length) + year;
+  }
 
-        // Month
-        let month = (date.getMonth() + 1).toString();
-        if (month.length < 2) {
-            month = '0' + month;
-        }
+  // Month
+  let month = (date.getMonth() + 1).toString();
+  if (month.length < 2) {
+    month = '0' + month;
+  }
 
-        // Day
-        let day = date.getDate().toString();
-        if (day.length < 2) {
-            day = '0' + day;
-        }
+  // Day
+  let day = date.getDate().toString();
+  if (day.length < 2) {
+    day = '0' + day;
+  }
 
-        return `${year}-${month}-${day}`;
+  return `${year}-${month}-${day}`;
 }
 
 function closePrint() {
@@ -355,4 +355,52 @@ export function printBlob(blob: Blob): void {
   iframe.sandbox.add('allow-modals');
   iframe.src = url;
   document.body.appendChild(iframe);
+}
+
+// IMPORTANT: Keep in sync with function in CsvPackager.cs
+export function csvPackage(data: string[][]): Blob {
+
+  if (!data) {
+    throw new Error(`The data is null`);
+  }
+
+  if (data.length === 0) {
+    throw new Error(`Must supply the CSV header at least`);
+  }
+
+  const columnCount = data[0].length;
+  const resultArray: string[] = [];
+  const newLine = `
+`;
+
+  for (const row of data) {
+    if (row.length !== columnCount) {
+      throw new Error(`Number of columns is inconsistent across rows`);
+    }
+
+    const rowString: string = row.map(field => processFieldForCsv(field)).join(',');
+    resultArray.push(rowString);
+  }
+
+  const result = resultArray.join(newLine);
+  return new Blob(['\ufeff' + result], { type: 'text/csv' });
+}
+
+// IMPORTANT: Keep in sync with function in CsvPackager.cs
+function processFieldForCsv(field: string) {
+  if (field == null) {
+    // Null in - Null out
+    return null;
+  }
+
+  // Escape every double quote with another double quote
+  field = field.replace('"', '""');
+
+  // Surround any field that contains double quotes, new lines, or commas with double quotes
+  if (field.indexOf('"') > -1 || field.indexOf(',') > -1 || field.indexOf('\n') > -1 || field.indexOf('\r') > -1) {
+    field = `"${field}"`;
+  }
+
+  // Return the processed field
+  return field;
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace Tellma.Controllers
 
         private string View => DetailsEntriesController.BASE_ADDRESS;
 
-        public DetailsEntriesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public DetailsEntriesService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
         }

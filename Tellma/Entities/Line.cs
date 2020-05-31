@@ -6,16 +6,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Line", Plural = "Lines")]
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
         [Display(Name = "Definition")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string DefinitionId { get; set; }
 
         [Display(Name = "Memo")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Memo { get; set; }        
 
         [ForeignKey(nameof(Entry.LineId))]

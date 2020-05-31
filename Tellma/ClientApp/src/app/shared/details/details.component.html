@@ -59,8 +59,8 @@
         <div *ngIf="showActions" class="btn-group" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-sm t-toolbar-button dropdown-toggle" ngbDropdownToggle
             [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 't-white-button': isLight, 't-text-whitish': isDark, 'font-weight-normal': isDark }">
-            <fa-icon class="d-inline d-md-none2" icon="bars"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Actions' | translate }}</span>
+            <!-- <fa-icon class="d-inline d-md-none2" icon="bars"></fa-icon> -->
+            <span class="d-none d-md-inline">{{ 'Actions' | translate }}</span>
           </button>
           <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action" [class.t-less-dark]="isDark">
             <ng-container *ngFor="let action of actions">

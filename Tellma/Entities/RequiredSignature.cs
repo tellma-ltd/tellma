@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "RequiredSignature", Plural = "RequiredSignatures")]
     public class RequiredSignature : Entity
     {
         public int LineId { get; set; }

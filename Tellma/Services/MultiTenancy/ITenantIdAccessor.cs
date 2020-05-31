@@ -12,5 +12,11 @@
         /// <returns>An int32 representing the tenantId</returns>
         /// <exception cref="MultitenancyException"></exception>
         int GetTenantId();
+
+        /// <summary>
+        /// Retrieves the tenant Id specified by the client in the request if one is available, returns null otherwise
+        /// </summary>
+        /// <returns>An int32 representing the tenantId or null if one isn't available</returns>
+        int? GetTenantIdIfAny();
     }
 }

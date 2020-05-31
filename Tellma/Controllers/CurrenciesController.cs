@@ -70,7 +70,7 @@ namespace Tellma.Controllers
 
         private string View => CurrenciesController.BASE_ADDRESS;
 
-        public CurrenciesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public CurrenciesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -115,14 +115,14 @@ namespace Tellma.Controllers
                 if (string.IsNullOrEmpty(entity.Id))
                 {
                     string path = $"[{index}].{nameof(entity.Id)}";
-                    string msg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, _localizer["Code"]];
+                    string msg = _localizer[Services.Utilities.Constants.Error_Field0IsRequired, _localizer["Code"]];
 
                     ModelState.AddModelError(path, msg);
                 }
                 else if (entity.Id.Length > 3)
                 {
                     string path = $"[{index}].{nameof(entity.Id)}";
-                    string msg = _localizer[nameof(StringLengthAttribute), _localizer["Code"], 3];
+                    string msg = _localizer[Services.Utilities.Constants.Error_Field0LengthMaximumOf1, _localizer["Code"], 3];
 
                     ModelState.AddModelError(path, msg);
                 }

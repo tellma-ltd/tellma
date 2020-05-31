@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
 using System.Reflection;
+using Tellma.Entities.Descriptors;
+using System.Runtime.InteropServices.ComTypes;
+using System.Collections;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -135,7 +138,7 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ModelStateDictionary"/>
+        /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ValidationErrorsDictionary"/>
         /// </summary>
         public static void ValidateUniqueIds<TEntity>(List<TEntity> entities, ValidationErrorsDictionary modelState, IStringLocalizer localizer) where TEntity : EntityWithKey
         {
@@ -214,7 +217,7 @@ namespace Tellma.Controllers.Utilities
         }
 
         /// <summary>
-        /// The method localizes every error in the collection and adds it to the <see cref="ModelStateDictionary"/>
+        /// The method localizes every error in the collection and adds it to the <see cref="ValidationErrorsDictionary"/>
         /// </summary>
         public static void AddLocalizedErrors(this ValidationErrorsDictionary modelState, IEnumerable<ValidationError> errors, IStringLocalizer localizer)
         {
@@ -279,8 +282,9 @@ namespace Tellma.Controllers.Utilities
         /// 2 - Every strong entity is mentioned once in the JSON response (smaller response size)
         /// 3 - It makes it easier for clients to store and track entities in a central workspace
         /// </summary>
-        /// <returns>A hash set of strong related entity in the original result entities (excluding the result entities)</returns>
-        public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim(IEnumerable<Entity> resultEntities, CancellationToken cancellation)
+        /// <returns>A dictionary mapping every type name to an <see cref="IEnumerable"/> of related entities of that type (excluding the result entities)</returns>
+        public static Dictionary<string, IEnumerable<Entity>> FlattenAndTrim<TEntity>(IEnumerable<TEntity> resultEntities, CancellationToken cancellation)
+            where TEntity : Entity
         {
             // If the result is empty, nothing to do
             if (resultEntities == null || !resultEntities.Any())
@@ -291,81 +295,63 @@ namespace Tellma.Controllers.Utilities
             var relatedEntities = new HashSet<Entity>();
             var resultHash = resultEntities.ToHashSet();
 
-            // Method for efficiently retrieving the nav and nav collection properties of any entity
-            var cacheNavigationProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
-            IEnumerable<PropertyInfo> NavProps(Entity entity)
+            void FlattenAndTrimInner(Entity entity, TypeDescriptor typeDesc)
             {
-                if (!cacheNavigationProperties.TryGetValue(entity.GetType(), out IEnumerable<PropertyInfo> properties))
+                if (entity.EntityMetadata.FlattenedAndTrimmed)
                 {
-                    // Return all navigation properties that Entity or list types
-                    properties = cacheNavigationProperties[entity.GetType()] =
-                        entity.GetType().GetProperties().Where(e =>
-                            e.PropertyType.IsEntity() ||  /* nav property */
-                            e.PropertyType.IsList()); /* nav collection property */
-                }
-
-                return properties;
-            }
-
-            // Recursively trims and flattens the entity and all entities reachable from it
-            var alreadyFlattenedAndTrimmed = new HashSet<Entity>();
-            void FlattenAndTrimInner(Entity entity)
-            {
-                if (entity == null || alreadyFlattenedAndTrimmed.Contains(entity))
-                {
+                    // This has already been flattened and trimed before
                     return;
                 }
 
-                // This ensures Flatten is executed on every entity only once
-                alreadyFlattenedAndTrimmed.Add(entity);
+                // Mark the entity as flattened and trimmed
+                entity.EntityMetadata.FlattenedAndTrimmed = true;
 
-                foreach (var navProp in NavProps(entity))
+                // Recursively go over the nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
                 {
-                    if (navProp.PropertyType.IsList())
+                    if (prop.GetValue(entity) is Entity relatedEntity)
                     {
-                        var collection = navProp.GetValue(entity);
-                        if (collection != null)
+                        prop.SetValue(entity, null);
+
+                        if (!resultHash.Contains(relatedEntity))
                         {
-                            foreach (var item in collection.Enumerate<Entity>())
-                            {
-                                FlattenAndTrimInner(item);
-                            }
+                            // Unless it is part of the main result, add it to relatedEntities
+                            relatedEntities.Add(relatedEntity);
                         }
+
+                        FlattenAndTrimInner(relatedEntity, prop.TypeDescriptor);
                     }
-                    else if (navProp.GetValue(entity) is Entity relatedEntity) // Checks for null
-                    {
-                        // If the type is a strong one trim the property and add the entity to relatedEntities
-                        if (navProp.PropertyType.IsStrongEntity())
-                        {
-                            // This property has a strong type, so we set it to null and put its value in the
-                            // related entities collection (unless it is part of the main result)
+                }
 
-                            // Set the property to null
-                            navProp.SetValue(entity, null);
-                            if (!resultHash.Contains(relatedEntity))
+                // Recursively go over every entity in the nav collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionType = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
+                        {
+                            if (obj is Entity relatedEntity)
                             {
-                                // Unless it is part of the main result, add it to relatedEntities
-                                relatedEntities.Add(relatedEntity);
+                                FlattenAndTrimInner(relatedEntity, collectionType);
                             }
                         }
-
-                        // Recursively call flatten on the related entity whether it's strong or weak
-                        FlattenAndTrimInner(relatedEntity);
                     }
                 }
             }
 
-            // Flatten every entity
+            // Flatten every entity in the main list
+            var typeDesc = TypeDescriptor.Get<TEntity>();
             foreach (var entity in resultEntities)
             {
-                FlattenAndTrimInner(entity);
+                FlattenAndTrimInner(entity, typeDesc);
                 cancellation.ThrowIfCancellationRequested();
             }
 
             // Return the result
             return relatedEntities
                 .GroupBy(e => e.GetType().GetRootType().Name)
-                .ToDictionary(g => g.Key, g => g.AsEnumerable()); ;
+                .ToDictionary(g => g.Key, g => g.AsEnumerable());
         }
     }
 }

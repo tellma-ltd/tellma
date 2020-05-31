@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "User", Plural = "Users")]
     public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImageForSave
     {
         [NotMapped]
@@ -15,30 +14,31 @@ namespace Tellma.Entities
         public byte[] Image { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "User_Email")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
+        [UserKey]
         public string Email { get; set; }
 
         [Display(Name = "User_PreferredLanguage")]
-        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2)]
         [Culture]
         public string PreferredLanguage { get; set; }
 

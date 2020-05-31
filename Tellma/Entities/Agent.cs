@@ -6,26 +6,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Agent", Plural = "Agents")]
     public class AgentForSave<TAgentRate> : EntityWithKey<int>, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(30)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
@@ -35,7 +36,7 @@ namespace Tellma.Entities
         public bool? IsRelated { get; set; }
 
         [Display(Name = "Agent_TaxIdentificationNumber")]
-        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(30)]
         public string TaxIdentificationNumber { get; set; }
 
         [Display(Name = "Agent_StartDate")]
@@ -45,7 +46,7 @@ namespace Tellma.Entities
         public int? JobId { get; set; }
 
         [Display(Name = "Agent_BankAccountNumber")]
-        [StringLength(34, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(34)]
         public string BankAccountNumber { get; set; }
 
         public string CostObjectType { get; set; } // TODO: Deal with this

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
+    [EntityDisplay(Singular = "Resource", Plural = "Resources")]
     public class ResourceForSave<TResourceUnit> : EntityWithKey<int>
     {
         [Display(Name = "Resource_AssetType")]
@@ -18,28 +19,28 @@ namespace Tellma.Entities
         public int? ExpenseTypeId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "Resource_Identifier")]
-        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(10)]
         [AlwaysAccessible]
         public string Identifier { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
 
@@ -50,17 +51,17 @@ namespace Tellma.Entities
         public decimal? MonetaryValue { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
-        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2048)]
         [AlwaysAccessible]
         public string Description { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
-        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2048)]
         [AlwaysAccessible]
         public string Description2 { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
-        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(2048)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
@@ -116,11 +117,11 @@ namespace Tellma.Entities
         //public int? Lookup5Id { get; set; }
         
         [Display(Name = "Resource_Text1")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Text1 { get; set; }
 
         [Display(Name = "Resource_Text2")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         public string Text2 { get; set; }
 
         [Display(Name = "Resource_Units")]

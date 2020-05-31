@@ -129,7 +129,7 @@ namespace Tellma.Controllers
         }
 
         [HttpGet("client")]
-        public ActionResult<DataWithVersion<GlobalSettingsForClient>> GlobalSettingsForClient()
+        public ActionResult<Versioned<GlobalSettingsForClient>> GlobalSettingsForClient()
         {
             try
             {
@@ -193,7 +193,7 @@ namespace Tellma.Controllers
             });
         }
 
-        private DataWithVersion<GlobalSettingsForClient> GetForClientImpl()
+        private Versioned<GlobalSettingsForClient> GetForClientImpl()
         {
             return _globalSettingsCache.GetGlobalSettings();
         }

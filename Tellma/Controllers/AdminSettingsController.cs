@@ -132,7 +132,7 @@ namespace Tellma.Controllers
         #endregion
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<AdminSettingsForClient>>> SettingsForClient(CancellationToken cancellation)
+        public async Task<ActionResult<Versioned<AdminSettingsForClient>>> SettingsForClient(CancellationToken cancellation)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -240,7 +240,7 @@ namespace Tellma.Controllers
         //    }
         //}
 
-        public static async Task<DataWithVersion<AdminSettingsForClient>> LoadSettingsForClient(AdminRepository repo, CancellationToken cancellation)
+        public static async Task<Versioned<AdminSettingsForClient>> LoadSettingsForClient(AdminRepository repo, CancellationToken cancellation)
         {
             var settings = await repo.Settings__Load(cancellation);
             if (settings == null)
@@ -262,7 +262,7 @@ namespace Tellma.Controllers
             }
 
             // Tag the settings for client with their current version
-            var result = new DataWithVersion<AdminSettingsForClient>
+            var result = new Versioned<AdminSettingsForClient>
             {
                 Version = settings.SettingsVersion.ToString(),
                 Data = settingsForClient
@@ -286,7 +286,7 @@ namespace Tellma.Controllers
             _localizer = localizer;
         }
 
-        public async Task<DataWithVersion<AdminSettingsForClient>> SettingsForClient(CancellationToken cancellation)
+        public async Task<Versioned<AdminSettingsForClient>> SettingsForClient(CancellationToken cancellation)
         {
             // Simply retrieves the cached settings, which were refreshed by AdminApiAttribute
             var adminSettings = await _repo.Settings__Load(cancellation);
@@ -300,7 +300,7 @@ namespace Tellma.Controllers
                 CreatedAt = adminSettings.CreatedAt
             };
 
-            var result = new DataWithVersion<AdminSettingsForClient>
+            var result = new Versioned<AdminSettingsForClient>
             {
                 Data = adminSettingsForClient,
                 Version = adminSettings.SettingsVersion.ToString()

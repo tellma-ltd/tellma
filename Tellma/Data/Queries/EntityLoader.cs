@@ -373,8 +373,7 @@ namespace Tellma.Data.Queries
             // Here we populate the navigation properties, after the simple properties have been populated
             foreach (var descriptor in descriptors)
             {
-                var navProps = descriptor.NavigationProperties
-                    .Where(p => allIdEntities.TryGetValue(p.Type, out IndexedEntitiesOfType ofType) && ofType.Any());
+                var navProps = descriptor.NavigationProperties.Where(p => allIdEntities.ContainsKey(p.Type));
 
                 var entitiesOfType = allEntities[descriptor.Type];
                 foreach (var entity in entitiesOfType)

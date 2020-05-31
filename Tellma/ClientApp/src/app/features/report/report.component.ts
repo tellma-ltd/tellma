@@ -45,6 +45,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   private _showChart: boolean;
   private _subscriptions: Subscription;
   private refresh$ = new Subject<void>();
+  private export$ = new Subject<string>();
   private _currentFilter: string;
   private _currentDefinition: ReportDefinitionForClient;
   private _currentEntityDescriptor: EntityDescriptor;
@@ -370,7 +371,12 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public onExport() {
-    alert('Not implemented yet, but stay tuned!');
+    let title = this.title;
+    if (!!title) {
+      title = title + '.csv';
+    }
+
+    this.export$.next(title);
   }
 
   public onRefresh() {
@@ -428,6 +434,10 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get refresh(): Observable<void> {
     return this.refresh$;
+  }
+
+  public get export(): Observable<string> {
+    return this.export$;
   }
 
   public onSkipChange(skip: number) {

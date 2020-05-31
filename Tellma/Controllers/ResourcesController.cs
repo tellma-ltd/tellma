@@ -72,11 +72,10 @@ namespace Tellma.Controllers
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ISettingsCache _settingsCache;
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
 
         private string _definitionIdOverride;
 
-        private string DefinitionId => _definitionIdOverride ??
+        protected override string DefinitionId => _definitionIdOverride ??
             _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
             throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ResourcesService)}");
 
@@ -100,14 +99,13 @@ namespace Tellma.Controllers
             IDefinitionsCache definitionsCache,
             ISettingsCache settingsCache,
             IHttpContextAccessor contextAccessor,
-            IModelMetadataProvider modelMetadataProvider) : base(localizer)
+            IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
             _definitionsCache = definitionsCache;
             _settingsCache = settingsCache;
             _contextAccessor = contextAccessor;
-            _modelMetadataProvider = modelMetadataProvider;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -189,46 +187,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
-            var definition = Definition();
-
-            // Validate required stuff
-            ValidateIfRequired(entities, e => e.Identifier, definition.IdentifierVisibility);
-            ValidateIfRequired(entities, e => e.CurrencyId, definition.CurrencyVisibility);
-            ValidateIfRequired(entities, e => e.MonetaryValue, definition.MonetaryValueVisibility);
-            ValidateIfRequired(entities, e => e.Description, definition.DescriptionVisibility);
-            ValidateIfRequired(entities, e => e.Description2, definition.DescriptionVisibility);
-            ValidateIfRequired(entities, e => e.Description3, definition.DescriptionVisibility);
-            ValidateIfRequired(entities, e => e.AssetTypeId, definition.AssetTypeVisibility);
-            ValidateIfRequired(entities, e => e.RevenueTypeId, definition.RevenueTypeVisibility);
-            ValidateIfRequired(entities, e => e.ExpenseTypeId, definition.ExpenseTypeVisibility);
-            ValidateIfRequired(entities, e => e.ExpenseEntryTypeId, definition.ExpenseEntryTypeVisibility);
-            ValidateIfRequired(entities, e => e.CenterId, definition.CenterVisibility);
-
-            ValidateIfRequired(entities, e => e.ResidualMonetaryValue, definition.ResidualMonetaryValueVisibility);
-            ValidateIfRequired(entities, e => e.ResidualValue, definition.ResidualValueVisibility);
-            ValidateIfRequired(entities, e => e.ReorderLevel, definition.ReorderLevelVisibility);
-            ValidateIfRequired(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityVisibility);
-            ValidateIfRequired(entities, e => e.AvailableSince, definition.AvailableSinceVisibility);
-            ValidateIfRequired(entities, e => e.AvailableTill, definition.AvailableTillVisibility);
-            ValidateIfRequired(entities, e => e.Decimal1, definition.Decimal1Visibility);
-            ValidateIfRequired(entities, e => e.Decimal2, definition.Decimal2Visibility);
-            ValidateIfRequired(entities, e => e.Int1, definition.Decimal1Visibility);
-            ValidateIfRequired(entities, e => e.Int2, definition.Decimal2Visibility);
-            ValidateIfRequired(entities, e => e.Lookup1Id, definition.Lookup1Visibility);
-            ValidateIfRequired(entities, e => e.Lookup2Id, definition.Lookup2Visibility);
-            ValidateIfRequired(entities, e => e.Lookup3Id, definition.Lookup3Visibility);
-            ValidateIfRequired(entities, e => e.Lookup4Id, definition.Lookup4Visibility);
-            //ValidateIfRequired(entities, e => e.Lookup5Id, definition.Lookup5Visibility);
-            ValidateIfRequired(entities, e => e.Text1, definition.Text1Visibility);
-            ValidateIfRequired(entities, e => e.Text2, definition.Text2Visibility);
-
-            // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
-            {
-                // null Ids will cause an error when calling the SQL validation
-                return;
-            }
-
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Resources_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
@@ -251,33 +209,6 @@ namespace Tellma.Controllers
                         setPropValue(entity, defaultValue);
                     }
                 });
-            }
-        }
-
-        private void ValidateIfRequired<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, string visibility)
-        {
-            if (visibility == Visibility.Required && !ModelState.HasReachedMaxErrors)
-            {
-                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
-
-                foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
-                {
-                    if (getPropValue(entity) == null)
-                    {
-                        string propName = (selector.Body as MemberExpression).Member.Name; // The name of the property we're validating
-                        string path = $"[{index}].{propName}";
-                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)?.DisplayName;
-                        string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
-
-                        ModelState.AddModelError(path, errorMsg);
-
-                        if (ModelState.HasReachedMaxErrors)
-                        {
-                            // No need to keep going forever
-                            break;
-                        }
-                    }
-                }
             }
         }
 
@@ -372,7 +303,7 @@ namespace Tellma.Controllers
     {
         private readonly ApplicationRepository _repo;
 
-        public ResourcesGenericService(IStringLocalizer<Strings> localizer, ApplicationRepository repo) : base(localizer)
+        public ResourcesGenericService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
         }

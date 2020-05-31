@@ -213,7 +213,7 @@
     </div>
     <div class="row t-rest-of-screen" [style.overflow]="overflow">
         <t-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified" [definition]="definition"
-            [arguments]="immutableArguments" [view]="view" [refresh]="refresh" [state]="state" [mode]="mode">
+            [arguments]="immutableArguments" [view]="view" [refresh]="refresh" [export]="export" [state]="state" [mode]="mode">
         </t-report-results>
         <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
             <fa-icon icon="info-circle"></fa-icon>

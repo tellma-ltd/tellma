@@ -3,12 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tellma.Entities
 {
+    [EntityDisplay(Singular = "IdentityServerUser", Plural = "IdentityServerUsers")]
     public class IdentityServerUser : EntityWithKey<string>
     {
         [Display(Name = "User_Email")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
+        [Required]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
-        [StringLength(256, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(256)]
         [AlwaysAccessible]
         public string Email { get; set; }
 

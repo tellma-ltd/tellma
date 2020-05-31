@@ -5,7 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    public class CustomClassificationForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "CustomClassification", Plural = "CustomClassifications")]
+    public class CustomClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -15,29 +16,29 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name2 { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [Required(ErrorMessage = Services.Utilities.Constants.Error_TheField0IsRequired)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Required]
+        [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; } // The basis of the tree structure
     }
 
-    public class CustomClassification : CustomClassificationForSave
+    public class CustomClassification : CustomClassificationForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
@@ -71,6 +72,9 @@ namespace Tellma.Entities
 
         [AlwaysAccessible]
         public HierarchyId Node { get; set; }
+
+        [AlwaysAccessible]
+        public HierarchyId ParentNode { get; set; }
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
