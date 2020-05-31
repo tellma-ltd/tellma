@@ -87,9 +87,9 @@ BEGIN
 	SELECT
 		[Index],
 		0 AS [LineIndex],
-		SIGN([NetgainLoss]) AS [Direction],
+		SIGN([NetGainLoss]) AS [Direction],
 		[AccountId], [ContractId], [ResourceId], 0,
-		ABS([NetgainLoss]) AS [Value],
+		ABS([NetGainLoss]) AS [Value],
 		IIF([AccountId] IN (SELECT [Id] FROM CashAndCashEquivalentsAccounts),
 			@EffectOfExchangeRateChangesOnCashAndCashEquivalents, NULL) AS [EntryTypeId]
 	FROM ExchangeVarianceEntries

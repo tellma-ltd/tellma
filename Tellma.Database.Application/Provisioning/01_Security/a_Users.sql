@@ -51,16 +51,26 @@ IF @DB = N'105' -- Simpex, SAR, en/ar
 	(3,		N'Tareq Fakhrani',	N'طارق فخراني',N'tareq.Fakhrani@simpex.co.sa'),
 	(4,		N'Mazen',			N'مازن مراد',	N'mazen.mrad@simpex.co.sa')	
 	;
-IF @DB = N'106' -- Simpex, SAR, en/ar
-	INSERT INTO @Users
-	([Index],[Name],			[Name2],		[Email]) VALUES
-	(0,		N'Mulat Derege',	NULL,			N'mulatderege@soreti.com.et'),
-	(1,		N'Birhanu',			NULL,			N'birhanu@soreti.com.et'),
-	(2,		N'Abu Bakr elHadi',	NULL,			N'abubakr.elhadi@banan-it.com'),
-	(3,		N'Abraham Tenker',	NULL,			N'Abrham.Tenker@banan-it.com'),
-	(4,		N'Mosab elHafiz',	NULL,			N'mosab.elhafiz@banan-it.com'),	
-	(5,		N'Yisak Fikadu',	NULL,			N'yisak.fikadu@banan-it.com')
-	;
+IF @DB = N'106' -- Soreti, ETB, en/am
+	INSERT INTO @Users([Index],[Name], [Name2], [Email]) VALUES
+	(0, N'Dereje Mulat', N'ደረጀ ሙላት', N'dereje1@soreti.net'),
+	(1, N'Bulbula Tulle', N'ቡልቡላ ቱሌ', N'bulbula1@soreti.net'),
+	(2, N'Damma Sheko', N'ደማ ሸኮ', N'demma1@soreti.net'),
+	(3, N'Tujar Kassim', N'ቱጃር ቃሲም', N'tujar1@soreti.net'),
+	(4, N'Birhanu Takele', N'ብርሃኑ ተክሌ', N'birhanu1@soreti.net'),
+	(5, N'Wake Gizaw', N'ዋቄ ግዛዉ', N'wakeyeyab@gmail.com'),
+	(6, N'Amanuel Bayissa', N'አማንኤል ባይሳ', N'amanuelbayisa64@gmail.com'),
+	(7, N'Gaddisa Demise', N'ጋዲሳ ደምሴ', N'gadisademissie51@gmail.com'),
+	(8, N'Getaneh Aseb', N'ጌታነህ አሰበ', N'asabegetaneh@gmail.com'),
+	(9, N'Laliso Gemechu', N'ሌሊሶ ገመቹ', N'lelisogem2017@gmail.com'),
+	(10, N'Kelili Koreso', N'ከሊል ቀርሶ', N'kelilkorso2004@gmail.com'),
+	(11, N'Abu Bakr elHadi', N'Abu Bakr elHadi', N'abubakr.elhadi@banan-it.com'),
+	(12, N'Abraham Tenker', N'Abraham Tenker', N'abrham.Tenker@banan-it.com'),
+	(13, N'Mosab elHafiz', N'Mosab elHafiz', N'mosab.elhafiz@banan-it.com'),
+	(14, N'Yisak Fikadu', N'Yisak Fikadu', N'yisak.fikadu@banan-it.com'),
+	(15, N'Mohamad Akra', N'Mohamad Akra', N'mohamad.akra@banan-it.com'),
+	(16, N'Ahmad Akra', N'Ahmad Akra', N'ahmad.akra@tellma.com');
+
 
 DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
 EXEC [dal].[Users__Save]

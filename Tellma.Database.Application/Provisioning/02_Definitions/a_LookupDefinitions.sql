@@ -1,11 +1,9 @@
-﻿DECLARE @LookupDefinitions dbo.LookupDefinitionList;
-
-IF @DB = N'101' -- Banan SD, USD, en
+﻿IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @LookupDefinitions([Index],
-	[Code],									[TitleSingular],			[TitlePlural],				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
-	(0,N'it-equipment-manufacturers',		N'IT Manufacturer',			N'IT Manufacturers',		N'microchip',		N'Administration',		100),
-	(1,N'operating-systems',				N'Operating System',		N'Operating Systems',		N'laptop-code',		N'Administration',		200);
+	[Code],								[TitleSingular],		[TitlePlural],			[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey]) VALUES
+	(0,N'it-equipment-manufacturers',	N'IT Manufacturer',		N'IT Manufacturers',	N'microchip',		N'Administration',		100),
+	(1,N'operating-systems',			N'Operating System',	N'Operating Systems',	N'laptop-code',		N'Administration',		200);
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
@@ -40,5 +38,5 @@ END
 EXEC dal.LookupDefinitions__Save
 	@Entities = @LookupDefinitions;
 
-DECLARE @it_equipment_manufacturersDef INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'it-equipment-manufacturers');
-DECLARE @operating_systemsDef INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'operating-systems');
+DECLARE @it_equipment_manufacturersLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'it-equipment-manufacturers');
+DECLARE @operating_systemsLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'operating-systems');

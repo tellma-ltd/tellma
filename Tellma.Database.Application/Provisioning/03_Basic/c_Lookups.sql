@@ -20,7 +20,7 @@ END
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	SET @DefinitionId = @it_equipment_manufacturersDef
+	SET @DefinitionId = @it_equipment_manufacturersLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Dell'),
@@ -42,7 +42,7 @@ BEGIN
 	END;						
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = @operating_systemsDef
+	SET @DefinitionId = @operating_systemsLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(1,	N'Windows 10'),
@@ -52,7 +52,7 @@ END
 
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
-	SET @DefinitionId = @it_equipment_manufacturersDef
+	SET @DefinitionId = @it_equipment_manufacturersLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Dell'),
@@ -72,7 +72,7 @@ BEGIN
 	END;						
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = @operating_systemsDef
+	SET @DefinitionId = @operating_systemsLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Windows XP'),
@@ -182,7 +182,4 @@ IF @ValidationErrorsJson IS NOT NULL
 BEGIN
 	Print 'Lookups: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
-END;						
-
-IF @DebugLookups = 1
-	SELECT * FROM map.Lookups();
+END;

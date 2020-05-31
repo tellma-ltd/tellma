@@ -6,6 +6,13 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+    SELECT DISTINCT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotDeleteSystemTypes'
+	FROM @Ids FE
+    JOIN [dbo].[EntryTypes] BE ON FE.[Id] = BE.[Id]
+	WHERE BE.[IsSystem] = 1;
 
 	SELECT @ValidationErrorsJson = 
 	(

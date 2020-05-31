@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionVariants [LineDefinitionVariantList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,
@@ -13,8 +14,9 @@ SET NOCOUNT ON;
 
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
-		@LineDefinitionColumns = @LineDefinitionColumns,
+		@LineDefinitionVariants = @LineDefinitionVariants,
 		@LineDefinitionEntries = @LineDefinitionEntries,
+		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
 		@WorkflowSignatures = @WorkflowSignatures,
@@ -25,6 +27,7 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
+		@LineDefinitionVariants = @LineDefinitionVariants,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,

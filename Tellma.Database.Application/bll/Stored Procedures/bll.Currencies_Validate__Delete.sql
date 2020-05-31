@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Currencies_Validate__Delete]
 	@Ids [dbo].[IndexedStringList] READONLY,
-	@TOP INT = 10,
+	@Top INT = 10,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 
 	-- The currency should not be used in Accounts
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-    SELECT TOP (@TOP)
+    SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedInAccount1', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
@@ -18,7 +18,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON A.CurrencyId = FE.[Id];
 	-- Currency must not be used in Resources
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-    SELECT TOP (@TOP)
+    SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedInResource1', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
@@ -28,7 +28,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Resources R ON R.CurrencyId = FE.[Id];
 	-- Currency must not be used in Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-    SELECT TOP (@TOP)
+    SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedInDocument1', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,

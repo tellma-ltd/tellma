@@ -4,6 +4,7 @@
 	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				INT				NOT NULL,
+	[VariantIndex]					TINYINT			NOT NULL DEFAULT 0,
 	[PostingDate]				DATE,
 	[TemplateLineId]			INT,
 	[Multiplier]				DECIMAL (19,4),

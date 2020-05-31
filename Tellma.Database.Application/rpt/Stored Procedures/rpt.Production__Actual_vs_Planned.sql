@@ -41,7 +41,7 @@ BEGIN
 		) As [Count]
 		FROM dbo.[BudgetEntries] BE
 		JOIN dbo.[Budgets] B ON B.[Id] = BE.[BudgetId]
-		WHERE (ToDate >= @fromDate AND FromDate <= @ToDate)
+		WHERE (ToDate >= @fromDate AND FromDate <= @toDate)
 		AND [EntryTypeId] = @InventoryProductionExtension
 		GROUP BY [ResourceId], [FromDate], [ToDate]
 	)

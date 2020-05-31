@@ -6,7 +6,13 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- CANNOT delete IsSystem
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+    SELECT DISTINCT TOP(@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_CannotDeleteSystemTypes'
+	FROM @Ids FE
+    JOIN [dbo].[AccountTypes] BE ON FE.[Id] = BE.[Id]
+	WHERE BE.[IsSystem] = 1;
 
 	SELECT @ValidationErrorsJson = 
 	(

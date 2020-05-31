@@ -48,37 +48,37 @@ BEGIN
 
 	--WITH EmployeesAccruals([Index], [LineIndex], [Index], [AccountId], [AccruedValue], [Time]) AS (
 	--	SELECT
-	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId], A.[ResourceId]),
-	--		A.[AgentId],
-	--		ROW_NUMBER() OVER (PARTITION BY A.[AgentId] ORDER BY A.[ResourceId]),
+	--		ROW_NUMBER() OVER (ORDER BY A.[ContractId], A.[ResourceId]),
+	--		A.[ContractId],
+	--		ROW_NUMBER() OVER (PARTITION BY A.[ContractId] ORDER BY A.[ResourceId]),
 	--		DLE.[AccountId],
 	--		-SUM([Direction] * [Value]),
 	--		-SUM([Direction] * [Time])
 	--	FROM dbo.Entries DLE
 	--	JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
-	--	WHERE A.[AccountDesignationId] IN (@SalariesAccrualsTaxableAccountDsg, @SalariesAccrualsNonTaxableAccountDef)
-	--	GROUP BY DLE.[AccountId], A.[AgentId], A.[ResourceId]
+	--	WHERE A.[AccountTypeId] IN (@SalariesAccrualsTaxableAccountDsg, @SalariesAccrualsNonTaxableAccountDef)
+	--	GROUP BY DLE.[AccountId], A.[ContractId], A.[ResourceId]
 	--	HAVING SUM([Direction] * [Value]) <> 0
 	--),
 	--EmployeeTotalIncome([EmployeeId], [TotalIncome]) AS (
-	--	SELECT A.[AgentId], SUM([AccruedValue])
+	--	SELECT A.[ContractId], SUM([AccruedValue])
 	--	FROM EmployeesAccruals EA
 	--	JOIN dbo.Accounts A ON EA.AccountId = A.Id
-	--	GROUP BY A.[AgentId]
+	--	GROUP BY A.[ContractId]
 	--),
 	--EmployeeIncomeTaxes([Index], [LineIndex], [Index], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
 	--	SELECT
-	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
-	--		A.[AgentId],
+	--		ROW_NUMBER() OVER (ORDER BY A.[ContractId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
+	--		A.[ContractId],
 	--		1,
 	--		@EmployeesIncomeTaxPayable,
-	--		[bll].[fn_EmployeeIncomeTax](A.[AgentId], -SUM([AccruedValue])),
-	--		A.[AgentId],
+	--		[bll].[fn_EmployeeIncomeTax](A.[ContractId], -SUM([AccruedValue])),
+	--		A.[ContractId],
 	--		-SUM([AccruedValue])
 	--	FROM EmployeesAccruals EA
 	--	JOIN dbo.Accounts A ON EA.AccountId = A.[Id]
-	--	WHERE A.[AccountDesignationId]  = @SalariesAccrualsTaxableAccountDef
-	--	GROUP BY A.[AgentId]
+	--	WHERE A.[AccountTypeId]  = @SalariesAccrualsTaxableAccountDef
+	--	GROUP BY A.[ContractId]
 	--	HAVING -SUM([AccruedValue])<> 0
 	--),
 	---- TODO: Deduct any ther taxes/deductions
@@ -91,10 +91,10 @@ BEGIN
 	--		A.[Id],
 	--		E.TotalIncome - ISNULL(EIT.IncomeTax,0)
 	--	FROM EmployeeTotalIncome E
-	--	JOIN dbo.Accounts A ON E.EmployeeId = A.[AgentId]
+	--	JOIN dbo.Accounts A ON E.EmployeeId = A.[ContractId]
 	--	LEFT JOIN EmployeeIncomeTaxes EIT ON E.EmployeeId = EIT.EmployeeId
 	--	WHERE
-	--		A.AccountDesignationId = @EmployeesPayableAccountDef
+	--		A.[AccountTypeId] = @EmployeesPayableAccountDef
 	--		AND E.TotalIncome <> ISNULL(EIT.IncomeTax,0)
 	--)
 	---- We reverse the accrual effect

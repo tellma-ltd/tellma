@@ -8,7 +8,8 @@ SET NOCOUNT ON;
 	-- Add here Code that is handled by C#
 
 	EXEC [bll].[AccountClassifications_Validate__Save]
-		@Entities = @Entities;
+		@Entities = @Entities,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

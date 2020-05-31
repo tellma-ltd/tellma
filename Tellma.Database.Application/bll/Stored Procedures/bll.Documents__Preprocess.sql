@@ -357,44 +357,34 @@ END
 	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
 	AND L.[DefinitionId] <> @ManualLineLD;
 
-	--WITH ConformantAccounts AS (
-	--	SELECT AM.AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
-	--	FROM @PreprocessedEntries E
-	--	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	--	JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-	--	JOIN dbo.[AccountDesignations] AD ON AD.Id = LDE.[AccountDesignationId]
-	--	JOIN dbo.AccountMappings AM ON (AD.[Id] = AM.[DesignationId])
-	--	WHERE L.DefinitionId <> @ManualLineLD
-	--	AND	(AM.[ContractId] IS NULL OR E.[ContractId] = AM.[ContractId])
-	--	AND	(AM.[ResourceId] IS NULL OR E.[ResourceId] = AM.[ResourceId])
-	--	AND	(AM.[CenterId] IS NULL OR E.[CenterId] = AM.[CenterId])
-	--	AND (AM.[CurrencyId] IS NULL OR AM.[CurrencyId] = E.[CurrencyId])
-	--	-- TODO: in Account mappings, copy Account properties to mapping
-	--)
-	--UPDATE E
-	--SET E.AccountId = CA.AccountId
-	--FROM @PreprocessedEntries E
-	--JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex];
-
-	-- TODO: LDE has Account Type Parent Is now, so fix it
-	WITH ConformantAccounts AS (
-		SELECT A.Id AS AccountId, E.[Index], E.[LineIndex], E.[DocumentIndex]
+	With LineEntries AS (
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], LDE.[AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
-		JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.[Index] = LDE.[Index]
-		JOIN dbo.[AccountTypes] AD ON AD.Id = LDE.[AccountTypeParentId]
-		JOIN dbo.Accounts A ON (AD.[Id] = A.[AccountTypeId])
-		WHERE L.DefinitionId <> @ManualLineLD
-		AND	(A.[ContractId] IS NULL OR E.[ContractId] = A.[ContractId])
-		AND	(A.[ResourceId] IS NULL OR E.[ResourceId] = A.[ResourceId])
-		AND	(A.[CenterId] IS NULL OR E.[CenterId] = A.[CenterId])
-		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = E.[CurrencyId])
+		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index] AND L.[VariantIndex] = LDE.[VariantIndex]
+		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+		WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] = LDE.[ResourceDefinitionId])
+		AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] = LDE.[ContractDefinitionId])
+	),
+	ConformantAccounts AS (
+		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], MIN(A.Id) AS MINAccountId, MAX(A.[Id]) AS MAXAccountId
+		FROM dbo.Accounts A
+		JOIN LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
+		WHERE (A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
+		AND (A.[ContractId] IS NULL OR A.[ContractId] = LE.[ContractId])
+		GROUP BY LE.[Index], LE.[LineIndex], LE.[DocumentIndex]
 	)
-	UPDATE E
-	SET E.AccountId = CA.AccountId
+	UPDATE E -- Override the Account when there is exactly one solution. Otherwise, leave it.
+	SET E.AccountId = CA.MINAccountId
 	FROM @PreprocessedEntries E
-	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.LineIndex AND E.[DocumentIndex] = CA.[DocumentIndex]
-
+	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
+	WHERE CA.MINAccountId = CA.MAXAccountId
 
 	-- Return the populated entries.
 	-- (Later we may need to return the populated lines and documents as well)

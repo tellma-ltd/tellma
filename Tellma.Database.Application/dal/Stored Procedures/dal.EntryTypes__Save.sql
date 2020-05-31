@@ -23,12 +23,12 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[ParentId]			= s.[ParentId],
+				t.[ParentId]			= IIF(t.[IsSystem]=0,s.[ParentId],t.[ParentId]),
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
-				t.[Code]				= s.[Code],
-				t.[IsAssignable]		= s.[IsAssignable],
+				t.[Code]				= IIF(t.[IsSystem]=0,s.[Code],t.[Code]),
+				t.[IsAssignable]		= IIF(t.[IsSystem]=0,s.[IsAssignable],t.[IsAssignable]),
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN

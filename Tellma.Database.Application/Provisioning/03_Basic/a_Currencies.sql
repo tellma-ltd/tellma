@@ -14,35 +14,35 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 --(7, N'EUR', N'EUR',			N'يورو',			N'Euro',				N'يورو',			2);
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
-INSERT INTO @Currencies([Index],
-	[Id],	[Name],	[Name2],[Description],	[Description2], [E]) VALUES
-(1, N'SAR', N'SAR',	N'ريال',	N'SA Riyal',	N'ريال سعودي',		2),
-(2, N'SDG', N'SDG',	N'جنيه',N'SD Pound',	N'جنيه سوداني',	2),
-(3, N'AED', N'AED',	N'درهم',N'AE Dirham',	N'درهم إماراتي',2);
+	INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], E) VALUES
+	(784, N'AED', N'UAE Dirham', N'درهم إماراتي', N'UAE Dirham', N'United Arab Emirates Dirham', N'درهم إماراتي', N'United Arab Emirates Dirham', 2),
+	(682, N'SAR', N'KSA Riyal', N'ريال سعودي', N'KSA Riyal', N'Saudi Riyal', N'ريال سعودي', N'Saudi Riyal', 2),
+	(938, N'SDG', N'SD Pound', N'جنيه سوداني', N'SD Pound', N'Sudanese Pound', N'جنيه سوداني', N'Sudanese Pound', 2);
 
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-INSERT INTO @Currencies([Index],
-	[Id],	[Name],			[Description],				[E]) VALUES
-(1, N'USD', N'USD',			N'United States Dollar',	2);
+	INSERT INTO @Currencies([Index], [Id],	[Name],			[Description],				[E]) VALUES
+	(1, N'USD', N'USD',			N'United States Dollar',	2);
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-INSERT INTO @Currencies([Index],
-	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
-(1, N'USD', N'USD',			N'美元',				N'United States Dollar',N'美国美元',			2),
-(2, N'CNY', N'Yuan',		N'يوان',			N'Chinese Yuan',		N'يوان صيني',		2);
+	INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], E) VALUES
+	(156, N'CNY', N'yuan', N'يوان', N'yuan', N'Renminbi (Chinese) yuan', N'الرنمينبي (صيني) يوان', N'Renminbi (Chinese) yuan', 2),
+	(840, N'USD', N'US Dollar', N'دولار أمريكي', N'US Dollar', N'United States dollar', N'دولار الولايات المتحدة', N'United States dollar', 2);
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
-INSERT INTO @Currencies([Index],
-	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
-(1, N'USD', N'Dollar',		N'ዶላር',				N'United States Dollar',N'የአሜሪካ ዶላር',		2),
-(2, N'EUR', N'Euro',		N'ዩሮ',				N'Euro',				N'ዩሮ',				2);
+	INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], E) VALUES
+	(978, N'EUR', N'Euro', N'ዩሮ', N'Euro', N'Euro', N'ዩሮ', N'Euro', 2),
+	(840, N'USD', N'US Dollar', N'የአሜሪካ ዶላር', N'US Dollar', N'United States dollar', N'የአሜሪካ ዶላር', N'United States dollar', 2);
 
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
-INSERT INTO @Currencies([Index],
-	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
-(1, N'USD', N'USD',			N'دولار',			N'United States Dollar',N'دولار أمريكي',		2),
-(2, N'AED', N'Dirham',		N'درهم',			N'Emirates Dirham',		N'درهم إماراتي',	2),
-(3, N'EUR', N'EUR',			N'يورو',			N'Euro',				N'يورو',			2);
+INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], E) VALUES
+	(784, N'AED', N'UAE Dirham', N'درهم إماراتي', N'UAE Dirham', N'United Arab Emirates Dirham', N'درهم إماراتي', N'United Arab Emirates Dirham', 2),
+	(978, N'EUR', N'Euro', N'يورو', N'Euro', N'Euro', N'اليورو', N'Euro', 2),
+	(840, N'USD', N'US Dollar', N'دولار أمريكي', N'US Dollar', N'United States dollar', N'دولار الولايات المتحدة', N'United States dollar', 2);
+
+ELSE IF @DB = N'106' -- Soreti, ETB, en/am
+	INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], E) VALUES
+	(978, N'EUR', N'Euro', N'ዩሮ', N'Euro', N'Euro', N'ዩሮ', N'Euro', 2),
+	(840, N'USD', N'US Dollar', N'የአሜሪካ ዶላር', N'US Dollar', N'United States dollar', N'የአሜሪካ ዶላር', N'United States dollar', 2);
 
 EXEC [api].Currencies__Save
 	@Entities = @Currencies,

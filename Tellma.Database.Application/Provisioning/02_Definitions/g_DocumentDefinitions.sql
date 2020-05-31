@@ -1,5 +1,4 @@
-﻿DECLARE @DocumentDefinitions [DocumentDefinitionList];
-DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
+﻿
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
 	-- lease-in agreement, lease-in receipt, lease-in invoice
 	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
@@ -157,7 +156,10 @@ BEGIN
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(0,0,	@ManualLineLD,							1),
 	-- cash-purchase-vouchers
-	(0,1,	@PaymentToSupplierCashPurchaseLD,		1),
+	(0,1,	@PaymentToSupplierCashPurchaseLD,		1);
+GOTO ENOUGH_DD
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(1,1,	@StockReceiptCashPurchaseLD,			1),
 	(2,1,	@ConsumableServiceReceiptCashPurchaseLD,1),
 	(8,1,	@CashTransferExchangeLD,				0),
@@ -226,7 +228,7 @@ BEGIN
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
-
+ENOUGH_DD:
 UPDATE DD
 SET DD.[TitleSingular2] = T.[Translated]
 FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2

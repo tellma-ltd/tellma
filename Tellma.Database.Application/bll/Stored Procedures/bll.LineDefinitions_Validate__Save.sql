@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [bll].[LineDefinitions_Validate__Save]
 	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionVariants [LineDefinitionVariantList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,

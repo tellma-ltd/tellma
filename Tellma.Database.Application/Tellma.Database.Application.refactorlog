@@ -1647,4 +1647,67 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[BudgetEntries]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3c07fccd-d71a-4fa5-80a8-dc4f2f4e9d46" ChangeDateTime="05/27/2020 23:29:07">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeParentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d4f02ca7-f107-417d-a509-7adc36a79352" ChangeDateTime="05/27/2020 23:38:18">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntriesAccountTypes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryOptions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="91cdd6a3-4e41-44e4-9146-169195bd6fd6" ChangeDateTime="05/27/2020 23:47:45">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedContractDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5d529910-1ed0-460c-91d2-9463e0d99668" ChangeDateTime="05/28/2020 01:21:52">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryOptions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionOptions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="506c8c53-f7f8-4e4e-a0b8-5a652c324785" ChangeDateTime="05/28/2020 03:26:32">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionOptions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionVariants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8c39887e-19a7-4df4-bd2c-a716b20e310e" ChangeDateTime="05/28/2020 03:26:49">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionVariants].[Option]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionVariants]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Index]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2dd8f228-9c04-40c7-9482-85fb64c3c664" ChangeDateTime="05/28/2020 03:29:11">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionOptionList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionVariantList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9fdd4f7b-ef83-4073-aad5-f22bb6b524d2" ChangeDateTime="05/28/2020 04:05:52">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitions].[DefaultOption]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultVariantIndex]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="18c159d6-5991-42c5-9053-8f2f6d98bcd8" ChangeDateTime="05/28/2020 04:24:13">
+    <Property Name="ElementName" Value="[dbo].[Lines].[Option]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Lines]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[VariantIndex]" />
+  </Operation>
 </Operations>

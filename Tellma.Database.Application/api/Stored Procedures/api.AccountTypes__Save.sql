@@ -6,10 +6,11 @@ AS
 BEGIN
 SET NOCOUNT ON;
 
-	EXEC [bll].[AccountTypes_Validate__Save]
-		@Entities = @Entities;
-
 	-- Add here Code that is handled by C#
+
+	EXEC [bll].[AccountTypes_Validate__Save]
+		@Entities = @Entities,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

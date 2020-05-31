@@ -7,5 +7,5 @@ SELECT
 IsActive As [Active ?], TaxIdentificationNumber As TIN
 --, Gender
 FROM [dbo].[Contracts]
-WHERE [DefinitionId] = N'employees'
+WHERE [DefinitionId] IN (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'employees')
 AND [IsActive] = 1;

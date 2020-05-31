@@ -30,9 +30,11 @@
 INSERT @LineDefinitions([Index],
 [Code],			[TitleSingular], [TitlePlural]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId]) VALUES
-(0,0,+1,	@StatementOfFinancialPositionAbstract);
+INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
+(0,0,N'Default');
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[VariantIndex],
+[Direction], [AccountTypeId]) VALUES
+(0,0,0,+1, @StatementOfFinancialPositionAbstract);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 													[ReadOnlyState],
@@ -50,6 +52,9 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm], [Code],			[TitleSingular],				[TitlePlural]) VALUES
 (1,1,N'PaymentToSupplierCreditPurchase',N'Payment (Credit Purchase)',	N'Payments (Credit Purchases)');
+INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
+(0,1,N'Cash'),
+(1,1,N'Cheque')
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -59,10 +64,13 @@ SET [Script] = N'
 		[CenterId0]			= [CenterId1]
 '
 WHERE [Index] = 1;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],							[EntryTypeId]) VALUES
-(0,1,+1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL),
-(1,1,-1,	@CashAndCashEquivalents,						@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], [VariantIndex],
+[Direction],[AccountTypeId],							[EntryTypeId]) VALUES
+(0,1,0,+1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL),
+(1,1,0,-1,	@CashOnHand,						@PaymentsToSuppliersForGoodsAndServices),
+
+(0,1,1,+1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL),
+(1,1,1,-1,	@BalancesWithBanks,						@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -91,6 +99,9 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],		[TitlePlural]) VALUES
 (2,1,N'PaymentToSupplierCashPurchase',	N'Payment (Cash Purchase)',	N'Payments (Cash Purchases)');
+INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
+(0,2,N'Cash'),
+(1,2,N'Cheque')
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -98,20 +109,24 @@ SET [Script] = N'
 		[CurrencyId0]	= [CurrencyId2],
 		[CurrencyId1]	= [CurrencyId2],
 
-		[NotedContractId1] = [ContractId0],
-		[NotedAgentName2] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
-		[MonetaryValue0]= ISNULL([NotedAmount1],0),
-		[MonetaryValue2]= ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
+		[NotedContractId1]	= [ContractId0],
+		[NotedAgentName2]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
+		[NotedAmount1]		= [MonetaryValue0],
+		[MonetaryValue2]	= ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
 		
 		[CenterId0]		= [CenterId2],
 		[CenterId1]		= [CenterId2]
 '
 WHERE [Index] = 2;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
-(0,2,+1,	@CashPurchaseDocumentControlExtension,	NULL),
-(1,2,+1,	@CurrentValueAddedTaxReceivables,		NULL),
-(2,2,-1,	@CashAndCashEquivalents,				@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], [VariantIndex],
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
+(0,2,0,+1,	@CashPurchaseDocumentControlExtension,	NULL),
+(1,2,0,+1,	@CurrentValueAddedTaxReceivables,		NULL),
+(2,2,0,-1,	@CashOnHand,							@PaymentsToSuppliersForGoodsAndServices),
+
+(0,2,1,+1,	@CashPurchaseDocumentControlExtension,	NULL),
+(1,2,1,+1,	@CurrentValueAddedTaxReceivables,		NULL),
+(2,2,1,-1,	@BalancesWithBanks,						@PaymentsToSuppliersForGoodsAndServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -121,7 +136,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,2,	N'ExternalReference',	1,	N'Invoice #',		3,4,0), 
 (3,2,	N'ContractId',			0,	N'Supplier',		3,4,1),
 (4,2,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(5,2,	N'NotedAmount',			1,	N'Price Excl. VAT',	1,2,0),
+(5,2,	N'MonetaryValue',		0,	N'Price Excl. VAT',	1,2,0),
 (6,2,	N'MonetaryValue',		1,	N'VAT',				3,4,0),
 (7,2,	N'MonetaryValue',		2,	N'Total',			3,0,0),
 (8,2,	N'ContractId',			2,	N'Bank/Cashier',	3,4,0),
@@ -140,6 +155,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
+GOTO ENOUGH_LD
 --3:PrepaymentToSupplier (inv-cash,gs)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],	[TitleSingular],			[TitlePlural]) VALUES
@@ -153,15 +169,15 @@ SET [Script] = N'
 
 		[NotedContractId1] = [ContractId0],
 		[NotedAgentName2] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
-		[MonetaryValue0]= ISNULL([NotedAmount1],0),
-		[MonetaryValue2]= ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
+		[NotedAmount1]		= [MonetaryValue0],
+		[MonetaryValue2]	= ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
 		
 		[CenterId0]		= [CenterId2],
 		[CenterId1]		= [CenterId2]
 '
 WHERE [Index] = 3;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,3,+1,	@CurrentPrepayments,				NULL),
 (1,3,+1,	@CurrentValueAddedTaxReceivables,	NULL),
 (2,3,-1,	@CashAndCashEquivalents,			@PaymentsToSuppliersForGoodsAndServices);
@@ -174,7 +190,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (2,3,	N'ExternalReference',	1,	N'Invoice #',		3,4,0), 
 (3,3,	N'ContractId',			0,	N'Supplier',		3,4,1),
 (4,3,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(5,3,	N'NotedAmount',			1,	N'Price Excl. VAT',	1,2,0),
+(5,3,	N'MonetaryValue',		0,	N'Price Excl. VAT',	1,2,0),
 (6,3,	N'MonetaryValue',		1,	N'VAT',				3,4,0),
 (7,3,	N'MonetaryValue',		2,	N'Total',			3,0,0),
 (8,3,	N'ContractId',			2,	N'Bank/Cashier',	3,4,0),
@@ -214,7 +230,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 4;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,4,+1,	@AccrualsClassifiedAsCurrent,		NULL),
 (1,4,+1,	@CurrentValueAddedTaxReceivables,	NULL),
 (2,4,-1,	@CashAndCashEquivalents,			@PaymentsToSuppliersForGoodsAndServices);
@@ -262,7 +278,7 @@ SET [Script] = N'
 WHERE [Index] = 8;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 -- We might better add ContractDefinitionId and limit it to employees for this case
-[Direction],[AccountTypeParentId],		[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],		[EntryTypeId]) VALUES
 (0,8,+1,	@OtherCurrentPayables,		NULL),
 (1,8,-1,	@CashAndCashEquivalents,	@PaymentsToAndOnBehalfOfEmployees);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -303,7 +319,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 9;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId]) VALUES
+[Direction],[AccountTypeId]) VALUES
 (0,9,	+1,	@OtherDocumentControlExtension),
 (1,9,	-1,	@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -354,7 +370,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 10;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,10,+1,	@CashAndCashEquivalents,			@InternalCashTransferExtension),
 (1,10,-1,	@CashAndCashEquivalents,			@InternalCashTransferExtension),
 (2,10,+1,	@GainLossOnForeignExchangeExtension,NULL); -- Make it an automatic system entry
@@ -396,7 +412,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 11;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],							[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],							[EntryTypeId]) VALUES
 (0,11,+1,	@Inventories,									@InventoryPurchaseExtension),
 (1,11,-1,	@CurrentValueAddedTaxReceivables,				NULL),
 (2,11,-1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL);
@@ -428,7 +444,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 12;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,12,+1,	@Inventories,							@InventoryPurchaseExtension),
 (1,12,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -457,7 +473,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 13;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],	[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],	[EntryTypeId]) VALUES
 (0,13,+1,	@Inventories,			@InventoryPurchaseExtension),
 (1,13,-1,	@CurrentPrepayments,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -486,7 +502,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 14;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],			[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],			[EntryTypeId]) VALUES
 (0,14,+1,	@Inventories,					@InventoryPurchaseExtension),
 (1,14,-1,	@AccrualsClassifiedAsCurrent,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -515,7 +531,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 15;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,15,+1,	@ExpenseByNature,						NULL),
 (1,15,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -542,7 +558,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 16;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,16,+1,	@ExpenseByNature,						NULL),
 (1,16,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -569,7 +585,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 17;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,17,+1,	@ExpenseByNature,						NULL),
 (1,17,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -596,7 +612,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 18;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,18,+1,	@ExpenseByNature,						NULL),
 (1,18,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -624,7 +640,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 19;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,19,+1,	@ExpenseByNature,						NULL),
 (1,19,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -655,7 +671,7 @@ SET [Script] = N'
 '
 WHERE [Index] = 20;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],					[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
 (0,20,+1,	@ExpenseByNature,						NULL),
 (1,20,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -698,7 +714,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 41;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],			[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],			[EntryTypeId]) VALUES
 (0,41,+1,	@CashAndCashEquivalents,		@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,41,-1,	@CurrentTradeReceivables,		NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -735,7 +751,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 42;
 INSERT INTO @LineDefinitionEntries([Index],[HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,42,+1,	@CashAndCashEquivalents,			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,42,-1,	@CurrentValueAddedTaxPayables,		NULL),
 (2,42,-1,	@CashSaleDocumentControlExtension,	NULL);
@@ -780,7 +796,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 43;
 INSERT INTO @LineDefinitionEntries([Index],[HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,43,+1,	@CashAndCashEquivalents,			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,43,-1,	@CurrentValueAddedTaxPayables,		NULL),
 (2,43,-1,	@DeferredIncomeClassifiedAsCurrent,	NULL);
@@ -825,7 +841,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 44;
 INSERT INTO @LineDefinitionEntries([Index],[HeaderIndex],
-[Direction],[AccountTypeParentId],				[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
 (0,44,+1,	@CashAndCashEquivalents,			@ReceiptsFromSalesOfGoodsAndRenderingOfServices),
 (1,44,-1,	@CurrentValueAddedTaxPayables,		NULL),
 (2,44,-1,	@DeferredIncomeClassifiedAsCurrent,	NULL);
@@ -866,7 +882,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 49;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId]) VALUES
+[Direction],[AccountTypeId]) VALUES
 (0,49,+1,	@CashAndCashEquivalents),
 (1,49,-1,	@OtherDocumentControlExtension);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -921,7 +937,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 51;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId]) VALUES
+[Direction],[AccountTypeId]) VALUES
 (0,51,+1,	@CurrentTradeReceivables), -- @CurrentAccruedIncome
 (1,51,-1,	@RevenueFromRenderingOfServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -960,7 +976,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 52;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId]) VALUES
+[Direction],[AccountTypeId]) VALUES
 (0,52,+1,	@CurrentTradeReceivables), -- @CurrentAccruedIncome
 (1,52,-1,	@RevenueFromRenderingOfServices);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -1001,7 +1017,7 @@ SET [Script] = N'
 	--SELECT * FROM @ProcessedWideLines;'
 WHERE [Index] = 91;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeParentId],		[EntryTypeId]) VALUES
+[Direction],[AccountTypeId],		[EntryTypeId]) VALUES
 (0,91,+1,	@DepreciationExpense,	NULL),
 (1,91,-1,	@PropertyPlantAndEquipment,	@DepreciationPropertyPlantAndEquipment);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -1077,11 +1093,12 @@ FROM @LineDefinitionStateReasons LDSR JOIN @Translations T ON LDSR.[Name] = T.[W
 UPDATE LDC
 SET	LDC.[Label2] = T.[Translated]
 FROM @LineDefinitionColumns LDC JOIN @Translations T ON LDC.[Label] = T.[Word] WHERE T.[Lang] = @Lang2
-
+ENOUGH_LD:
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
-	@LineDefinitionColumns = @LineDefinitionColumns,
+	@LineDefinitionVariants = @LineDefinitionVariants,
 	@LineDefinitionEntries = @LineDefinitionEntries,
+	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 	@Workflows = @Workflows,
 	@WorkflowSignatures = @WorkflowSignatures,

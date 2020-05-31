@@ -38,10 +38,10 @@ BEGIN
 END
 ELSE IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
-	INSERT INTO @Segments([Index],
-				[Name],				[Name2],			[Code])
-	SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N''
-	FROM dbo.Settings
+	INSERT INTO @Segments([Index],[Name], [Name2], [Code]) VALUES
+	(0, N'Head Office', N'ዋና መስሪያ ቤት', N'1'),
+	(1, N'Trading', N'ትሬዲንግ', N'2'),
+	(2, N'Rental', N'ኪራይ', N'3');
 
 END
 EXEC [dal].[Segments__Save]
@@ -54,3 +54,6 @@ EXEC [dal].[Segments__Save]
 --END;
 
 DECLARE @MAIN_OS INT = (SELECT TOP 1 [Id] FROM dbo.Segments);
+DECLARE @HeadOffice INT = (SELECT [Id] FROM dbo.Segments WHERE [Code] = N'1');
+DECLARE @Trading INT = (SELECT [Id] FROM dbo.Segments WHERE [Code] = N'2');
+DECLARE @Rental INT = (SELECT [Id] FROM dbo.Segments WHERE [Code] = N'3');

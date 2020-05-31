@@ -17,7 +17,7 @@ AS
 	INSERT INTO @Entities (
 	[Name],						[Node],			[Code]) VALUES
 	(N'Hollow Section Product',		'/1/',			N'1'),
-	(N'Circular Hollow Section',		'/1/1/',		N'11'),
+	(N'Circular Hollow Section',	'/1/1/',		N'11'),
 	(N'Rectangular Hollow Section',	'/1/2/',		N'12'),
 	(N'Square Hollow Section',		'/1/3/',		N'13'),
 	(N'LTZ Products',				'/3/',			N'2'),

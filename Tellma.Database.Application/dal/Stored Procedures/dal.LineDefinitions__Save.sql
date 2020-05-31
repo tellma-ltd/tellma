@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
+	@LineDefinitionVariants [LineDefinitionVariantList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,
@@ -32,19 +33,19 @@ SET NOCOUNT ON;
 				[TitlePlural],
 				[TitlePlural2],
 				[TitlePlural3],
+				[DefaultVariantIndex],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
 				[Script]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED
-		-- TODO: reduce history table by excluding saves when the data did not change
-		-- Completed for main table. Sill needed for weak entities.
 			AND (
 			t.[Code]						<> s.[Code] OR
 			t.[TitleSingular]				<> s.[TitleSingular] OR	
 			t.[TitlePlural]					<> s.[TitlePlural] OR
 			t.[AllowSelectiveSigning]		<> s.[AllowSelectiveSigning] OR
+			t.[DefaultVariantIndex]			<> s.[DefaultVariantIndex] OR
 			ISNULL(t.[Description], N'')	<> ISNULL(s.[Description], N'') OR	
 			ISNULL(t.[Description2], N'')	<> ISNULL(s.[Description2], N'') OR
 			ISNULL(t.[Description3], N'')	<> ISNULL(s.[Description3], N'') OR	
@@ -66,6 +67,7 @@ SET NOCOUNT ON;
 				t.[TitlePlural]					= s.[TitlePlural],
 				t.[TitlePlural2]				= s.[TitlePlural2],
 				t.[TitlePlural3]				= s.[TitlePlural3],
+				t.[DefaultVariantIndex]			= s.[DefaultVariantIndex],
 				t.[AllowSelectiveSigning]		= s.[AllowSelectiveSigning],
 				t.[ViewDefaultsToForm]			= s.[ViewDefaultsToForm],
 				t.[Script]						= s.[Script],
@@ -82,6 +84,7 @@ SET NOCOUNT ON;
 				[TitlePlural],
 				[TitlePlural2],
 				[TitlePlural3],
+				[DefaultVariantIndex],
 				[AllowSelectiveSigning],
 				[ViewDefaultsToForm],
 				[Script]
@@ -97,31 +100,91 @@ SET NOCOUNT ON;
 				s.[TitlePlural],
 				s.[TitlePlural2],
 				s.[TitlePlural3],
+				s.[DefaultVariantIndex],
 				s.[AllowSelectiveSigning],
 				s.[ViewDefaultsToForm],
 				s.[Script])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	MERGE [dbo].[LineDefinitionVariants] AS t
+	USING (
+		SELECT
+			LDV.[Id],
+			II.[Id] AS [LineDefinitionId],
+			LDV.[Index],
+			LDV.[Name],
+			LDV.[Name2],
+			LDV.[Name3]
+		FROM @LineDefinitionVariants LDV
+		JOIN @Entities LD ON LDV.HeaderIndex = LD.[Index]
+		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
+	) AS s
+	ON s.[Id] = t.[Id]
+	WHEN MATCHED
+	AND (
+		t.[Name]				<> s.[Name] OR
+		ISNULL(t.[Name2], N'')	<> ISNULL(s.[Name2], N'') OR	
+		ISNULL(t.[Name3], N'')	<> ISNULL(s.[Name3], N'')
+	)
+	THEN
+		UPDATE SET
+			t.[Index]		= s.[Index],
+			t.[Name]		= s.[Name],
+			t.[Name2]		= s.[Name2],
+			t.[Name3]		= s.[Name3],
+			t.[SavedAt]		= @Now,
+			t.[SavedById]	= @UserId
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE
+	WHEN NOT MATCHED BY TARGET THEN
+		INSERT (
+			[LineDefinitionId],
+			[Index],
+			[Name],
+			[Name2],
+			[Name3]
+		)
+		VALUES (
+			s.[LineDefinitionId],
+			s.[Index],
+			s.[Name],
+			s.[Name2],
+			s.[Name3]
+		);
+
 	MERGE [dbo].[LineDefinitionEntries] AS t
 	USING (
 		SELECT
 			LDE.[Id],
 			II.[Id] AS [LineDefinitionId],
+			LDE.[VariantIndex],
 			LDE.[Index],
 			LDE.[Direction],
-			LDE.[AccountTypeParentId],
+			LDE.[AccountTypeId],
+			LDE.[ResourceDefinitionId],
+			LDE.[ContractDefinitionId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
 		JOIN @IndexedIds II ON LD.[Index] = II.[Index]
 	) AS s
 	ON s.[Id] = t.[Id]
-	WHEN MATCHED THEN
+	WHEN MATCHED 
+	AND (
+			t.[Direction]						<> s.[Direction] OR
+			t.[AccountTypeId]					<> s.[AccountTypeId] OR
+			ISNULL(t.[ResourceDefinitionId],0)	<> ISNULL(s.[ResourceDefinitionId],0) OR
+			ISNULL(t.[ContractDefinitionId],0)	<> ISNULL(s.[ContractDefinitionId],0) OR
+			ISNULL(t.[EntryTypeId],0)			<> ISNULL(s.[EntryTypeId],0)
+	)
+	THEN
 		UPDATE SET
 			t.[Index]					= s.[Index],
 			t.[Direction]				= s.[Direction],
-			t.[AccountTypeParentId]		= s.[AccountTypeParentId],
+			t.[AccountTypeId]			= s.[AccountTypeId],
+			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
+			t.[ContractDefinitionId]	= s.[ContractDefinitionId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -129,19 +192,25 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT (
 			[LineDefinitionId],
+			[VariantIndex],
 			[Index],
 			[Direction],
-			[AccountTypeParentId],
+			[AccountTypeId],
+			[ResourceDefinitionId],
+			[ContractDefinitionId],
 			[EntryTypeId]
 		)
 		VALUES (
 			s.[LineDefinitionId],
+			s.[VariantIndex],
 			s.[Index],
 			s.[Direction],
-			s.[AccountTypeParentId],
+			s.[AccountTypeId],
+			s.[ResourceDefinitionId],
+			s.[ContractDefinitionId],
 			s.[EntryTypeId]
 		);
-
+-- TODO: Reduce updates by verifying that information has indeed been changed (like we did for LD, LDV, and LDE)
 	MERGE [dbo].[LineDefinitionColumns] AS t
 	USING (
 		SELECT

@@ -36,7 +36,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Currencies] BE ON FE.[Name3] = BE.[Name3]
 	WHERE FE.Id <> BE.Id;
 
-		-- Name must be unique in the uploaded list
+	-- Id must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',

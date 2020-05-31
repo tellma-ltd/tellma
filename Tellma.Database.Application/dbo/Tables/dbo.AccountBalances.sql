@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[AccountBalances]
 -- Note: It allows all mixes and matches. For example, we may want to put a limit on the total paper weight
 -- in a shipment, regardless of paper type etc. We set the following
--- Account Designation: In Transit, Contract: Specific shipment, Resource: Null, Currency: Null, Account Id: Null
+-- Account: GIT, Contract: Specific shipment, Resource: Null, Currency: Null, 
 -- Unit Id: Ton.
 (
 	[Id]					INT CONSTRAINT [PK_AccountBalances] PRIMARY KEY IDENTITY,

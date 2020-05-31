@@ -8,23 +8,24 @@ Missing
 */
 
 DECLARE @AccountClassifications dbo.AccountClassificationList;
+IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	INSERT INTO @AccountClassifications([Index],
+	[Name],							[Code], [ParentIndex]) VALUES
+	(0,	N'Assets',					N'100',	NULL),
+	(1, N'Current Assets',			N'110',	0),
+	(2, N'Bank and Cash',			N'111',	1),
+	(3, N'Debtors',					N'112',	1),
+	(4, N'Inventory',				N'113', 1),
+	(5, N'Non-current Assets',		N'120',	0),
+	(6, N'Liabilities',				N'200',	NULL),
+	(7, N'Current Liabilities',		N'210',	6),
+	(8, N'Non Current Liabilities',	N'220',	6),
+	(9, N'Equity',					N'300',	NULL),
+	(10, N'Revenue',				N'400',	NULL),
+	(11, N'Expenses',				N'500',	NULL);
+END
 
-	   
-INSERT INTO @AccountClassifications([Index],
-[Name],							[Code], [ParentIndex]) VALUES
-(0,	N'Assets',					N'100',	NULL),
-(1, N'Current Assets',			N'110',	0),
-(2, N'Bank and Cash',			N'111',	1),
-(3, N'Debtors',					N'112',	1),
-(4, N'Inventory',				N'113', 1),
-(5, N'Non-current Assets',		N'120',	0),
-(6, N'Liabilities',				N'200',	NULL),
-(7, N'Current Liabilities',		N'210',	6),
-(8, N'Non Current Liabilities',	N'220',	6),
-(9, N'Equity',					N'300',	NULL),
-(10, N'Revenue',				N'400',	NULL),
-(11, N'Expenses',				N'500',	NULL);
-;
 EXEC [api].[AccountClassifications__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @AccountClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -51,12 +52,3 @@ SELECT @NCurrentLiabilities_AC = [Id] FROM dbo.[AccountClassifications] WHERE Co
 SELECT @Equity_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'300';
 SELECT @Revenue_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'400';
 SELECT @Expenses_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'500';
-
-IF @DebugAccountClassifications = 1
-	SELECT
-		AC.Id,
-		SPACE(5 * (AC.[Node].GetLevel() - 1)) +  AC.[Name] As [Name],
-		[Code],
-		AC.[Node].ToString() As [Node],
-		(SELECT COUNT(*) FROM [AccountClassifications] WHERE [ParentNode] = AC.[Node]) AS [ChildCount]
-	FROM dbo.[AccountClassifications] AC

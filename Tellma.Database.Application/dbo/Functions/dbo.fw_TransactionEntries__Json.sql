@@ -5,7 +5,7 @@ RETURNS TABLE
 AS
 RETURN
 	SELECT c.*
-	FROM OPENJSON (@json) p
+	FROM OPENJSON (@Json) p
 		CROSS APPLY OpenJson(p.value, N'$.Entries') 
 		WITH (
 			[Index]					INT,

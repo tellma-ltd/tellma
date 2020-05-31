@@ -10,7 +10,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheContractDefinitionIsUsedInAccountDesignation0',
+		N'Error_TheContractDefinitionIsUsedInAccountType0',
 		dbo.fn_Localize(AD.[Name], AD.[Name2], AD.[Name3]) AS [Account]
 	FROM @Ids FE
 	JOIN dbo.[AccountTypeContractDefinitions] ADRD ON ADRD.[ContractDefinitionId] = FE.[Id]

@@ -6,7 +6,8 @@
 	CONSTRAINT [IX_LineDefinitionColumns] UNIQUE ([LineDefinitionId], [Index]),
 	[ColumnName]			NVARCHAR (50)	NOT NULL,
 	[EntryIndex]			INT				NOT NULL DEFAULT 0,
-	CONSTRAINT [FK_LineDefinitionColumns__LineDefinitionId_EntryIndex] FOREIGN KEY ([LineDefinitionId], [EntryIndex]) REFERENCES dbo.LineDefinitionEntries([LineDefinitionId], [Index]),
+	-- TODO: replace the following constraint with logic validation in Save
+--	CONSTRAINT [FK_LineDefinitionColumns__LineDefinitionId_EntryIndex] FOREIGN KEY ([LineDefinitionId], [EntryIndex]) REFERENCES dbo.LineDefinitionEntries([LineDefinitionId], [Index]),
 	[Label]					NVARCHAR (50)	NOT NULL,
 	[Label2]				NVARCHAR (50),
 	[Label3]				NVARCHAR (50),

@@ -14,66 +14,72 @@
 	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
---IF @ProvisionData = 0 RETURN;
+
 :r .\00_Common\__Declarations.sql
-:r .\00_Common\a_AdminUser.sql
-:r .\00_Common\b_FunctionalCurrency.sql
-:r .\00_Common\w_IfrsConcepts.sql
-:r .\00_Common\c_Settings.sql
-:r .\00_Common\d_EntryTypes.sql
-:r .\03_Basic\a_Currencies.sql
 
-:r .\02_Definitions\a_LookupDefinitions.sql
-:r .\02_Definitions\b_ResourceDefinitions.sql
-:r .\02_Definitions\c_ContractDefinitions.sql
-:r .\02_Definitions\e_AccountDesignations.sql
+IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
+BEGIN
+	:r .\00_Common\a_AdminUser.sql
+	:r .\00_Common\b_FunctionalCurrency.sql
+	:r .\00_Common\w_IfrsConcepts.sql
+	:r .\00_Common\c_Settings.sql
+	:r .\00_Common\d_EntryTypes.sql
+	:r .\03_Basic\a_Currencies.sql
 
-:r .\00_Common\e_AccountTypes.sql
-:r .\00_Common\f_RuleTypes.sql
+	:r .\02_Definitions\a_LookupDefinitions.sql
+	:r .\02_Definitions\b_ResourceDefinitions.sql
+	:r .\02_Definitions\c_ContractDefinitions.sql
 
-:r .\01_Security\a_Users.sql
-:r .\01_Security\b_RolesMemberships.sql
+	:r .\00_Common\e_AccountTypes.sql
+	:r .\00_Common\f_RuleTypes.sql
 
-:r .\02_Definitions\f_LineDefinitions.sql
-:r .\02_Definitions\g_DocumentDefinitions.sql
+	:r .\01_Security\a_Users.sql
+	:r .\01_Security\b_RolesMemberships.sql
 
-:r .\03_Basic\b_Units.sql
-:r .\03_Basic\c_Lookups.sql
-:r .\03_Basic\d_Segments.sql
-:r .\03_Basic\e_Centers.sql
+	:r .\02_Definitions\f_LineDefinitions.sql
+	:r .\02_Definitions\g_DocumentDefinitions.sql
 
-:r .\04_Resources\101_property-plant-and-equipment.sql
-:r .\04_Resources\101_employee-benefits.sql
-:r .\04_Resources\101_revenue_services.sql
---:r .\04_Resources\102_employee-benefits.sql
---:r .\04_Resources\102_property-plant-and-equipment.sql
---:r .\04_Resources\104_finished_goods.sql
---:r .\04_Resources\104_raw-materials.sql
---:r .\04_Resources\105_merchandise.sql
+	:r .\03_Basic\b_Units.sql
+	:r .\03_Basic\c_Lookups.sql
+	:r .\03_Basic\d_Segments.sql
+	:r .\03_Basic\e_Centers.sql
 
---:r .\04_Resources\a1_PPE_motor-vehicles.sql
---:r .\04_Resources\a3_PPE_machineries.sql
+	:r .\04_Resources\101_property-plant-and-equipment.sql
+	:r .\04_Resources\101_employee-benefits.sql
+	:r .\04_Resources\101_revenue_services.sql
+	--:r .\04_Resources\102_employee-benefits.sql
+	--:r .\04_Resources\102_property-plant-and-equipment.sql
+	--:r .\04_Resources\104_finished_goods.sql
+	--:r .\04_Resources\104_raw-materials.sql
+	--:r .\04_Resources\105_merchandise.sql
 
---:r .\04_Resources\d1_FG_vehicles.sql
-----:r .\04_Resources\e1_CCE_received-checks.sql
-:r .\05_Contracts\01_Agents.sql
-:r .\05_Contracts\02_Creditors.sql
-:r .\05_Contracts\03_Customers.sql
-:r .\05_Contracts\04_Debtors.sql
-:r .\05_Contracts\05_Partners.sql
-:r .\05_Contracts\06_Suppliers.sql
-:r .\05_Contracts\08_CashCustodians.sql
-:r .\05_Contracts\09_Warehouses.sql
-:r .\05_Contracts\10_Employees.sql
+	--:r .\04_Resources\a1_PPE_motor-vehicles.sql
+	--:r .\04_Resources\a3_PPE_machineries.sql
 
-:r .\06_Accounts\b_AccountClassifications.sql
-:r .\06_Accounts\101_Accounts.sql
---:r .\06_Accounts\101_AccountsMappings.sql
---:r .\06_Accounts\105_Accounts.sql
-:r .\07_Entries\101\101a_manual-journal-vouchers.sql
-:r .\07_Entries\101\101b_cash-payment-vouchers.sql
-:r .\07_Entries\101\101e_revenue-templates.sql
-:r .\07_Entries\101\101f_revenue-recognition-vouchers.sql
+	--:r .\04_Resources\d1_FG_vehicles.sql
+	----:r .\04_Resources\e1_CCE_received-checks.sql
+	:r .\05_Contracts\01_Agents.sql
+	:r .\05_Contracts\02_Creditors.sql
+	:r .\05_Contracts\03_Customers.sql
+	:r .\05_Contracts\04_Debtors.sql
+	:r .\05_Contracts\05_Partners.sql
+	:r .\05_Contracts\06_Suppliers.sql
+	:r .\05_Contracts\08_CashCustodians.sql
+	:r .\05_Contracts\09_Warehouses.sql
+	:r .\05_Contracts\10_Employees.sql
+
+	:r .\06_Accounts\101_AccountClassifications.sql
+--	:r .\06_Accounts\101_Accounts.sql
+	--:r .\07_Entries\101\101a_manual-journal-vouchers.sql
+	--:r .\07_Entries\101\101b_cash-payment-vouchers.sql
+	--:r .\07_Entries\101\101e_revenue-templates.sql
+	--:r .\07_Entries\101\101f_revenue-recognition-vouchers.sql
+END
+IF @DB = N'106' -- Soreti, ETB, en/am
+BEGIN
+	:r .\106\06_Accounts\a_AccountTypeContractDefinitions.sql
+	:r .\106\06_Accounts\c_Accounts.sql
+END
 
 DELETE FROM dbo.ReportDefinitions WHERE [Id] IN (
 	N'0c46cb52-739f-4308-82dd-7cd578bb04ff',
@@ -164,28 +170,3 @@ ERR_LABEL:
 		[Argument4] NVARCHAR (255) '$.Argument4'
 	);
 RETURN;
-
-IF @DB = N'100' -- ACME, USD, en/ar/zh playground
-BEGIN
-	Print N'Tellma'
-END
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-BEGIN
-	Print N'Tellma'
-END
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-BEGIN
-	Print N'Tellma'
-END
-ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh car service
-BEGIN
-	Print N'Tellma'
-END
-ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am manyfacturing and sales
-BEGIN
-	Print N'Tellma'
-END
-ELSE IF @DB = N'105' -- Simpex, SAR, en/ar trading
-BEGIN
-	Print N'Tellma'
-END

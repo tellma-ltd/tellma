@@ -155,6 +155,7 @@ BEGIN
 				DI.Id AS DocumentId,
 				L.[DefinitionId],
 				L.[Index],
+				L.[VariantIndex],
 				L.[PostingDate],
 				L.[TemplateLineId],
 				L.[Multiplier],
@@ -166,6 +167,7 @@ BEGIN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
 				t.[Index]				= s.[Index],
+				t.[VariantIndex]		= s.[VariantIndex],
 				t.[PostingDate]			= s.[PostingDate],
 				t.[TemplateLineId]		= s.[TemplateLineId],
 				t.[Multiplier]			= s.[Multiplier],
@@ -173,8 +175,8 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [DefinitionId], [Index], [PostingDate], [TemplateLineId], [Multiplier], [Memo])
-			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
+			INSERT ([DocumentId],	[DefinitionId], [Index],	[VariantIndex],	[PostingDate],	[TemplateLineId],	[Multiplier], [Memo])
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index], s.[VariantIndex], s.[PostingDate], s.[TemplateLineId], s.[Multiplier], s.[Memo])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id], inserted.[DocumentId]

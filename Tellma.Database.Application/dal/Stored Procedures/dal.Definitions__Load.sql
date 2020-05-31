@@ -37,7 +37,7 @@ SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 -- Get the Account Types that are used by LineDefinitionEntries
 SELECT DISTINCT T.[Id],
 	--T.[IsResourceClassification],
-	T.[EntryTypeParentId]
+	COALESCE(LDE.[EntryTypeId], T.[EntryTypeParentId]) AS [EntryTypeParentId]
 	--T.[ResourceDefinitionId],
 	--T.[AgentDefinitionId],
 	--T.[NotedAgentDefinitionId],
@@ -66,4 +66,4 @@ SELECT DISTINCT T.[Id],
 	--T.[NotedDateLabel2],
 	--T.[NotedDateLabel3]
 	FROM [dbo].[AccountTypes] T
-	JOIN [map].[LineDefinitionEntries]() LDE ON T.[Id] = LDE.[AccountTypeParentId]
+	JOIN [map].[LineDefinitionEntries]() LDE ON T.[Id] = LDE.[AccountTypeId]

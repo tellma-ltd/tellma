@@ -4,16 +4,17 @@ DELETE FROM @Permissions;
 
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	INSERT INTO @Roles
-	([Index],	[Name],				[Name2],		[Code], [IsPublic]) VALUES
-	(0,			N'Finance Manager',	N'مدير مالي',	'FM',	0),
-	(1,			N'General Manager', N'مدير عام',	'GM',	0),
-	(2,			N'Reader',			N'قارئ',		'RDR',	0),
-	(3,			N'Account Manager',	N'مدير علاقة',	'AM',	0),
-	(4,			N'Comptroller',		N'مشرف حسابات','CMPT',	0),
-	(5,			N'Cash Custodian',	N'مسؤول عهدة',	'CC',	0),
-	(6,			N'Admin. Affairs',	N'الشؤون الإدارية', N'AA',0),
-	(9,			N'Public',			N'عام',			'PBLC',	1)
+	INSERT INTO @Roles([Index],[Code],[Name],[Name2],[Name3],[IsPublic]) VALUES
+	(0, N'FM', N'Finance Manager', N'المدير المالي', N'Finance Manager', 0),
+	(1, N'GM', N'General Manager', N'المدير العام', N'General Manager', 0),
+	(2, N'RDR', N'Reader', N'صلاحية قراءة', N'Reader', 0),
+	(3, N'AM', N'Account Manager', N'مدير حساب العملاء', N'Account Manager', 0),
+	(4, N'CMP', N'Comptroller', N'مراقب الحسابات', N'Comptroller', 0),
+	(5, N'CSH', N'Cashier', N'أمين الصندوق', N'Cashier', 0),
+	(6, N'AA', N'Admin. Affairs', N'الشؤون الإدارية', N'Admin. Affairs', 0),
+	(9, N'PBLC', N'Public', N'صلاحيات عامة', N'Public', 0);
+
+
 	INSERT INTO @Members([Index],[HeaderIndex],
 	[UserId]) VALUES
 	(0,0,@Jiad_akra),
@@ -167,16 +168,17 @@ END
 
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
-	INSERT INTO @Roles
-	([Index],	[Name],				[Name2],		[Code], [IsPublic]) VALUES
-	(0,			N'Finance Manager',	N'مدير مالي',	'FM',	0),
-	(1,			N'General Manager', N'مدير عام',	'GM',	0),
-	(2,			N'Reader',			N'قارئ',		'RDR',	0),
-	(3,			N'Account Manager',	N'مدير علاقة',	'AM',	0),
-	(4,			N'Comptroller',		N'مشرف حسابات','CMPT',	0),
-	(5,			N'Cash Custodian',	N'مسؤول عهدة',	'CC',	0),
-	(6,			N'Admin. Affairs',	N'الشؤون الإدارية', N'AA',0),
-	(9,			N'Public',			N'عام',			'PBLC',	1)
+	INSERT INTO @Roles([Index],[Code],[Name],[Name2],[Name3],[IsPublic]) VALUES
+	(0, N'FM', N'Finance Manager', N'የፋይናንስ አስተዳዳሪ', N'Finance Manager', 0),
+	(1, N'GM', N'General Manager', N'ሰላም ነው', N'General Manager', 0),
+	(2, N'RDR', N'Reader', N'አንባቢ', N'Reader', 0),
+	(3, N'AM', N'Account Manager', N'የደንበኛ መለያ አቀናባሪ', N'Account Manager', 0),
+	(4, N'CMP', N'Comptroller', N'የመለያ ኮምፒተር', N'Comptroller', 0),
+	(5, N'CSH', N'Cashier', N'ገንዘብ ተቀባይ', N'Cashier', 0),
+	(6, N'AA', N'Admin. Affairs', N'አስተዳደራዊ ጉዳዮች', N'Admin. Affairs', 0),
+	(9, N'PBLC', N'Public', N'ሕዝባዊ', N'Public', 0);
+
+
 	INSERT INTO @Permissions([Index], [HeaderIndex],
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
 		[Action],	[Criteria],			[View]) VALUES
@@ -223,7 +225,7 @@ EXEC dal.Roles__Save
 	@Permissions = @Permissions
 
 DECLARE @1GeneralManager INT, @1Comptroller INT, @1Reader INT, @1AccountManager INT;
-SELECT @1Comptroller = [Id] FROM dbo.Roles WHERE [Name] = N'Comptroller';
-SELECT @1GeneralManager = [Id] FROM dbo.Roles WHERE [Name] = N'General Manager';
-SELECT @1Reader = [Id] FROM dbo.Roles WHERE [Name] = N'Reader';
-SELECT @1AccountManager = [Id] FROM dbo.Roles WHERE [Name] = N'Account Manager';
+SELECT @1Comptroller = [Id] FROM dbo.Roles WHERE [Code] = N'CMP';
+SELECT @1GeneralManager = [Id] FROM dbo.Roles WHERE [Code] = N'GN';
+SELECT @1Reader = [Id] FROM dbo.Roles WHERE [Code] = N'RDR';
+SELECT @1AccountManager = [Id] FROM dbo.Roles WHERE [Code] = N'AM';
