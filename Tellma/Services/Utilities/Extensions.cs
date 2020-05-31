@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
+using System.Collections;
 
 namespace Tellma.Services.Utilities
 {
@@ -87,17 +88,25 @@ namespace Tellma.Services.Utilities
 
         /// <summary>
         /// Traverses the <see cref="Entity"/> tree trimming all string properties
-        /// or setting them to null if they are just empty spaces
+        /// or setting them to null if they are just empty spaces.
+        /// This function cannot handle cyclic entity graphs
         /// </summary>
         public static void TrimStringProperties(this Entity entity)
         {
-            var dtoType = entity.GetType();
-            foreach (var prop in dtoType.GetProperties())
+            if (entity == null)
             {
-                if (prop.PropertyType == typeof(string))
+                // Nothing to do
+                return;
+            }
+
+            // Inner recursive method that does the trimming on the entire tree
+            static void TrimStringPropertiesInner(Entity entity, Entities.Descriptors.TypeDescriptor typeDesc)
+            {
+                // Trim all string properties
+                foreach (var prop in typeDesc.SimpleProperties.Where(p => p.Type == typeof(string)))
                 {
                     var originalValue = prop.GetValue(entity)?.ToString();
-                    if(string.IsNullOrWhiteSpace(originalValue))
+                    if (string.IsNullOrWhiteSpace(originalValue))
                     {
                         // No empty strings or white spaces allowed
                         prop.SetValue(entity, null);
@@ -105,37 +114,40 @@ namespace Tellma.Services.Utilities
                     else
                     {
                         // Trim
-                        var trimmed = originalValue.Trim();
-                        prop.SetValue(entity, trimmed);
+                        var trimmedValue = originalValue.Trim();
+                        prop.SetValue(entity, trimmedValue);
                     }
                 }
-                else if (prop.PropertyType.IsEntity())
-                {
-                    var dtoForSave = prop.GetValue(entity);
-                    if (dtoForSave != null)
-                    {
-                        (dtoForSave as Entity).TrimStringProperties();
-                    }
-                }
-                else
-                {
-                    var propType = prop.PropertyType;
-                    var isDtoList = propType.IsList() &&
-                        propType.GenericTypeArguments[0].IsEntity();
 
-                    if (isDtoList)
+                // Recursively do nav properties
+                foreach (var prop in typeDesc.NavigationProperties)
+                {
+                    if (prop.GetValue(entity) is Entity relatedEntity)
                     {
-                        var dtoList = prop.GetValue(entity);
-                        if (dtoList != null)
+                        TrimStringPropertiesInner(relatedEntity, prop.TypeDescriptor);
+                    }
+                }
+
+                // Recursively do the collection properties
+                foreach (var prop in typeDesc.CollectionProperties)
+                {
+                    var collectionTypeDesc = prop.CollectionTypeDescriptor;
+                    if (prop.GetValue(entity) is IList collection)
+                    {
+                        foreach (var obj in collection)
                         {
-                            foreach (var row in dtoList.Enumerate<Entity>())
+                            if (obj is Entity relatedEntity)
                             {
-                                row.TrimStringProperties();
+                                TrimStringPropertiesInner(relatedEntity, collectionTypeDesc);
                             }
                         }
                     }
                 }
             }
+
+            // Trim and return
+            var typeDesc = Entities.Descriptors.TypeDescriptor.Get(entity.GetType());
+            TrimStringPropertiesInner(entity, typeDesc);
         }
 
         public static bool IsList(this Type @this)
