@@ -607,7 +607,6 @@
     <None Include="Provisioning\106\05_Contracts\08_Employees.sql" />
     <None Include="Provisioning\000\i_Settings.sql" />
     <None Include="Provisioning\000\j_ReportDefinitions.sql" />
-    <None Include="bll\Stored Procedures\bll_1.LookupDefinitions_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

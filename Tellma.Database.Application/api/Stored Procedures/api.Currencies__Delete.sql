@@ -5,10 +5,17 @@ AS
 SET NOCOUNT ON;
 	DECLARE @Ids [dbo].[StringList];
 	-- Add here Code that is handled by C#
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Currencies_Validate__Delete]
-		@Ids = @IndexedIds,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Ids = @IndexedIds;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

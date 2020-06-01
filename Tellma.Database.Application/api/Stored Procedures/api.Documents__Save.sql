@@ -57,12 +57,21 @@ BEGIN
 	WHERE E.[CurrencyId] = dbo.fn_FunctionalCurrencyId()
 	AND L.DefinitionId <> (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @Lines, -- <== TODO: make it @PreprocessedLines
-		@Entries = @PreprocessedEntries,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entries = @PreprocessedEntries;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

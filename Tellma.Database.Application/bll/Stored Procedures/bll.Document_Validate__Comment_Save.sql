@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Document_Validate__Comment_Save]
 	@DocumentId		INT,
-	@Top	INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top	INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -27,11 +26,4 @@ SET NOCOUNT ON;
 	);
 	*/
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-			
 	SELECT TOP (@Top) * FROM @ValidationErrors;

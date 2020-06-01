@@ -38,13 +38,21 @@ SET NOCOUNT ON;
 
 	-- Validate that the user is not violating any business logic attempting to move the relevant lines to State @ToState
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @IndexedIds,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
-		@ToState = @ToState,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@ToState = @ToState;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

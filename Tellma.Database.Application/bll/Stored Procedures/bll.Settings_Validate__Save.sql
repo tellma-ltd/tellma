@@ -13,8 +13,7 @@
 	@DefinitionsVersion UNIQUEIDENTIFIER,
 	@SettingsVersion UNIQUEIDENTIFIER,
 	@ArchiveDate DATE = '1900.01.01',
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -32,12 +31,5 @@ SET NOCOUNT ON;
 	WHERE L.[State] = 4
 	AND E.[CurrencyId] <> dbo.fn_FunctionalCurrencyId()
 	AND E.[Value] <> 0
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 	
  	SELECT TOP (@Top) * FROM @ValidationErrors;

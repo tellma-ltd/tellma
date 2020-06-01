@@ -14,11 +14,19 @@ SET NOCOUNT ON;
 		@DefinitionId = @DefinitionId,
 		@Entities = @Entities;
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @FilledResources,
-		@ResourceUnits = @ResourceUnits,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@ResourceUnits = @ResourceUnits;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Currencies_Validate__Delete]
 	@Ids [dbo].[IndexedStringList] READONLY,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -40,12 +39,5 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	JOIN dbo.DocumentDefinitions DD ON D.DefinitionId = DD.[Id]
 	WHERE L.[State] > 0;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

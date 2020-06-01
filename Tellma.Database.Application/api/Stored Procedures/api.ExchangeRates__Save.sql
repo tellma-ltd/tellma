@@ -5,10 +5,18 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[ExchangeRates_Validate__Save]
-		@Entities = @Entities,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entities = @Entities;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

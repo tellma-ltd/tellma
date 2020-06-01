@@ -3,8 +3,7 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -118,12 +117,5 @@ SET NOCOUNT ON;
 			AND [Id] IN (SELECT [Id] FROM @Lines)
 		)
 	END
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

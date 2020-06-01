@@ -26,14 +26,23 @@ SET NOCOUNT ON;
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id] ASC), [Id]
 	FROM dbo.Lines
 	WHERE [DocumentId] IN (SELECT [Id] FROM @IndexedIds)
-	
+
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors	
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @Lines,
 		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RuleType = @RuleType,
 		@RoleId = @RoleId,
-		@ToState = @ToState,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@ToState = @ToState;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

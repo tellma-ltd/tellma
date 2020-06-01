@@ -4,10 +4,18 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @Ids [dbo].[IdList];
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[ExchangeRates_Validate__Delete]
-		@Ids = @IndexedIds,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Ids = @IndexedIds;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

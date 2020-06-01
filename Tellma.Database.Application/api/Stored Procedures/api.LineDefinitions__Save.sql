@@ -11,7 +11,8 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionVariants = @LineDefinitionVariants,
@@ -19,8 +20,15 @@ SET NOCOUNT ON;
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
-		@WorkflowSignatures = @WorkflowSignatures,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@WorkflowSignatures = @WorkflowSignatures;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

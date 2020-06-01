@@ -10,10 +10,21 @@ SET NOCOUNT ON;
 	IF @AssigneeId IS NULL
 		RAISERROR(N'Assignee is required', 16, 1)
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Assign]
 		@Ids = @IndexedIds,
 		@AssigneeId = @AssigneeId,
 		@Comment = @Comment;
+
+		;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

@@ -5,10 +5,18 @@
 AS
 	SET NOCOUNT ON;
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Cancel]
 		@DefinitionId = @DefinitionId,
-		@Ids = @IndexedIds,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Ids = @IndexedIds;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

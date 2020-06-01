@@ -17,7 +17,8 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Settings_Validate__Save]
 		@ShortCompanyName = @ShortCompanyName,
 		@ShortCompanyName2 = @ShortCompanyName2,
@@ -32,8 +33,14 @@ SET NOCOUNT ON;
 		@BrandColor = @BrandColor,
 		@DefinitionsVersion = @DefinitionsVersion,
 		@SettingsVersion = @SettingsVersion,
-		@ArchiveDate = @ArchiveDate,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@ArchiveDate = @ArchiveDate;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

@@ -7,11 +7,19 @@
 AS
 BEGIN
 
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Roles_Validate__Save]
 		@Entities = @Roles,
 		@Members = @Members,
-		@Permissions = @Permissions,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Permissions = @Permissions;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 
 	IF @ValidationErrorsJson IS NOT NULL

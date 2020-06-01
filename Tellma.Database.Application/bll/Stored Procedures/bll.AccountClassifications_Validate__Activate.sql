@@ -1,8 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -34,12 +33,5 @@ BEGIN
 	FROM ActiveAccounts AA
 	JOIN dbo.Accounts A ON AA.AccountId = A.[Id]
 END
-	
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 SELECT TOP(@Top) * FROM @ValidationErrors;

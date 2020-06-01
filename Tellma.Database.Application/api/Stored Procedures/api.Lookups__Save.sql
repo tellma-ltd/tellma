@@ -6,11 +6,18 @@
 AS
 BEGIN
 SET NOCOUNT ON;
-
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lookups_Validate__Save]
 		@DefinitionId = @DefinitionId,
-		@Entities = @Entities,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entities = @Entities;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

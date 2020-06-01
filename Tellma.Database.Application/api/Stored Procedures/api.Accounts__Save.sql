@@ -12,11 +12,18 @@ SET NOCOUNT ON;
 		@Entities = @Entities;
 
 	-- Add here Code that is handled by C#
-	
+	DECLARE @ValidationErrors ValidationErrorList;
+	INSERT INTO @ValidationErrors	
 	EXEC [bll].[Accounts_Validate__Save]
-		@Entities = @ProcessedAccounts,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entities = @ProcessedAccounts;
 
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
+	
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 

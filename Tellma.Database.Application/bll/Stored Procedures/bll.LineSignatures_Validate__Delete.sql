@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[LineSignatures_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -29,12 +28,5 @@ SET NOCOUNT ON;
 	JOIN dbo.[LineSignatures] LS1 ON FE.[Id] = LS1.[Id]
 	JOIN dbo.[LineSignatures] LS2 ON LS1.[LineId] = LS2.[LineId] AND LS2.[SignedAt] > LS1.[SignedAt]
 	WHERE LS2.RevokedById IS NULL
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

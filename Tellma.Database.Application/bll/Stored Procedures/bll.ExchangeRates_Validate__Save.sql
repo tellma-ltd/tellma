@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[ExchangeRates_Validate__Save]
 	@Entities [ExchangeRateList] READONLY, -- @ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -26,12 +25,5 @@ SET NOCOUNT ON;
 	JOIN [dbo].[ExchangeRates] BE ON FE.[CurrencyId] = BE.CurrencyId AND FE.[ValidAsOf] = BE.[ValidAsOf]
 	JOIN [dbo].[Currencies] C ON FE.CurrencyId = C.Id
 	WHERE FE.Id = 0 OR FE.Id <> BE.Id;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

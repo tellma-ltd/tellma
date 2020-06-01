@@ -2,8 +2,7 @@
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024),
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -30,12 +29,5 @@ SET NOCOUNT ON;
 	JOIN [dbo].[DocumentAssignments] DA ON FE.[Id] = DA.[DocumentId]
 	JOIN dbo.Users U ON DA.AssigneeId = U.[Id]
 	WHERE DA.AssigneeId = @AssigneeId
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 			
 	SELECT TOP (@Top) * FROM @ValidationErrors;

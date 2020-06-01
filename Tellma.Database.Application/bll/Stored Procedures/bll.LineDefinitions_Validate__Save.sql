@@ -6,8 +6,7 @@
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
 	@WorkflowSignatures [WorkflowSignatureList] READONLY,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -24,12 +23,5 @@ AS
 	--JOIN dbo.AccountTypes AC ON LDE.[AccountTypeParentId] = AC.[Id]
 	--WHERE AC.IsCurrent IS NOT NULL AND LDE.IsCurrent IS NOT NULL
 	--AND AC.IsCurrent <> LDE.IsCurrent;
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;
