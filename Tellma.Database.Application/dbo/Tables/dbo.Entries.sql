@@ -3,6 +3,7 @@
 	[Id]						INT				CONSTRAINT [PK_Entries] PRIMARY KEY IDENTITY,
 	[LineId]					INT				NOT NULL CONSTRAINT [FK_Entries__LineId] REFERENCES [dbo].[Lines] ([Id]) ON DELETE CASCADE,
 	[Index]						INT				NOT NULL DEFAULT 0,
+	CONSTRAINT [UX_Entries__LineId_Index] UNIQUE([LineId], [Index]),
 	[IsSystem]					BIT				NOT NULL DEFAULT 0,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),

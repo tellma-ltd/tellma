@@ -1,8 +1,9 @@
 ﻿CREATE TABLE [dbo].[ReportDimensionDefinitions]
 (
-	[Id]						INT						 CONSTRAINT [PK_ReportDimensionDefinitions] PRIMARY KEY IDENTITY,
+	[Id]						INT				CONSTRAINT [PK_ReportDimensionDefinitions] PRIMARY KEY IDENTITY,
+	[ReportDefinitionId]		INT				NOT NULL CONSTRAINT [FK_ReportDimensionDefinitions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Index]						INT,
-	[ReportDefinitionId]		NVARCHAR (50)	NOT NULL CONSTRAINT [FK_ReportDimensionDefinitions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
+	CONSTRAINT [UX_ReportDimensionDefinitions__ReportDefinitionId_Index] UNIQUE([ReportDefinitionId], [Index]),
 	[Discriminator]				NVARCHAR (50)   NOT NULL, -- N'Row', N'Column'
 	[Path]						NVARCHAR (255)	NOT NULL,
 	[Modifier]					NVARCHAR (50), -- N'year', N'quarter', N'month' etc...
@@ -11,4 +12,4 @@
 	[Label3]					NVARCHAR (255),
 	[OrderDirection]			NVARCHAR (10), -- N'asc', N'desc'
 	[AutoExpand]				BIT -- N'asc', N'desc'
-)
+);

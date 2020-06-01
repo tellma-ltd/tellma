@@ -35,8 +35,15 @@ BEGIN
 	(2,N'paper-types',		N'Paper Type',		N'نوع الورق',		N'Paper Types',		N'أنواع الورق');
 END
 
-EXEC dal.LookupDefinitions__Save
-	@Entities = @LookupDefinitions;
+EXEC api.LookupDefinitions__Save
+	@Entities = @LookupDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Lookup Definitions: Inserting: ' + @ValidationErrorsJson
+	GOTO Err_Label;
+END;
 
 DECLARE @it_equipment_manufacturersLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'it-equipment-manufacturers');
 DECLARE @operating_systemsLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'operating-systems');

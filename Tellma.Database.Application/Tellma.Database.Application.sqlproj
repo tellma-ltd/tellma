@@ -553,6 +553,7 @@
     <None Include="Provisioning\000\e_AccountTypes.sql" />
     <None Include="Provisioning\000\f_IfrsConcepts.sql" />
     <None Include="Provisioning\000\g_IfrsDisclosures.sql" />
+    <Build Include="api\Stored Procedures\api.LookupDefinitions__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -605,6 +606,8 @@
     <None Include="Provisioning\106\05_Contracts\02_InventoryCustodians.sql" />
     <None Include="Provisioning\106\05_Contracts\08_Employees.sql" />
     <None Include="Provisioning\000\i_Settings.sql" />
+    <None Include="Provisioning\000\j_ReportDefinitions.sql" />
+    <None Include="bll\Stored Procedures\bll_1.LookupDefinitions_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

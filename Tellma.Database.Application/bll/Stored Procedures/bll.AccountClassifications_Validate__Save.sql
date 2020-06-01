@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Save]
 	@Entities [AccountClassificationList] READONLY,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
@@ -29,13 +28,5 @@ AS
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
-
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
-
 	SELECT TOP(@Top) * FROM @ValidationErrors;
 ;

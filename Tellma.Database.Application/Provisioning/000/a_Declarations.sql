@@ -29,6 +29,12 @@
 	DECLARE @EntryTypes dbo.EntryTypeList;
 	DECLARE @AccountTypes dbo.AccountTypeList;
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
+	DECLARE @ReportDefinitions ReportDefinitionList;
+	DECLARE @Columns ReportDimensionDefinitionList;
+	DECLARE @Rows ReportDimensionDefinitionList;
+	DECLARE @Measures ReportMeasureDefinitionList;
+	DECLARE @Parameters ReportParameterDefinitionList;
+	DECLARE @Select ReportSelectDefinitionList;
 
 	DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 	DECLARE @ContractDefinitions dbo.ContractDefinitionList;

@@ -2,7 +2,7 @@
 (
 	[Id]						INT						 CONSTRAINT [PK_ReportParametersDefinitions] PRIMARY KEY IDENTITY,
 	[Index]						INT,
-	[ReportDefinitionId]		NVARCHAR (50)	NOT NULL CONSTRAINT [FK_ReportParameterDefinitions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
+	[ReportDefinitionId]		INT				NOT NULL CONSTRAINT [FK_ReportParameterDefinitions__ReportDefinitionId] REFERENCES [dbo].[ReportDefinitions] ([Id]) ON DELETE CASCADE,
 	[Key]						NVARCHAR (255)	NOT NULL,
 	[Label]						NVARCHAR (255),
 	[Label2]					NVARCHAR (255),
