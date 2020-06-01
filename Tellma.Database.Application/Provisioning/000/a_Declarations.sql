@@ -1,13 +1,13 @@
 ﻿-- Setup
 	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'admin@tellma.com';
-	DECLARE @ShortCompanyName NVARCHAR(255)			= '$(ShortCompanyName)';
-	DECLARE @ShortCompanyName2 NVARCHAR(255) 		= '$(ShortCompanyName2)';
-	DECLARE @ShortCompanyName3 NVARCHAR(255)		= '$(ShortCompanyName3)';
-	DECLARE @PrimaryLanguageId NVARCHAR(255)		= '$(PrimaryLanguageId)'; --N'en';
-	DECLARE @SecondaryLanguageId NVARCHAR(255)		= '$(SecondaryLanguageId)'; --N'en';
-	DECLARE @TernaryLanguageId NVARCHAR(255)		= '$(TernaryLanguageId)'; --N'en';
+	DECLARE @ShortCompanyName NVARCHAR(255)			= N'$(ShortCompanyName)';
+	DECLARE @ShortCompanyName2 NVARCHAR(255) 		= N'$(ShortCompanyName2)';
+	DECLARE @ShortCompanyName3 NVARCHAR(255)		= N'$(ShortCompanyName3)';
+	DECLARE @PrimaryLanguageId NVARCHAR(5)			= N'$(PrimaryLanguageId)'; --N'en';
+	DECLARE @SecondaryLanguageId NVARCHAR(5)		= N'$(SecondaryLanguageId)'; --N'en';
+	DECLARE @TernaryLanguageId NVARCHAR(5)			= N'$(TernaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
-	DECLARE @ProvisionData NVARCHAR(255)			= '$(ProvisionData)'; -- 1 or 0
+	DECLARE @ProvisionData BIT						= CAST('$(ProvisionData)' AS BIT); -- 1 or 0
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 -- Because there is no way to pass the NULL value to 
