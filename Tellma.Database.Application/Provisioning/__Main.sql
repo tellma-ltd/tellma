@@ -1,49 +1,33 @@
-﻿BEGIN -- Setup Configuration
-	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'admin@tellma.com';
-	DECLARE @ShortCompanyName NVARCHAR(255)			= '$(ShortCompanyName)'; --N'ACME International';
-	DECLARE @ShortCompanyName2 NVARCHAR(255);
-	DECLARE @ShortCompanyName3 NVARCHAR(255);
-	DECLARE @PrimaryLanguageId NVARCHAR(255)		= '$(PrimaryLanguageId)'; --N'en';
-	DECLARE @SecondaryLanguageId NVARCHAR(255)		= '$(SecondaryLanguageId)'; --N'en';
-	DECLARE @TernaryLanguageId NVARCHAR(255)		= '$(TernaryLanguageId)'; --N'en';
-	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
-	DECLARE @ProvisionData NVARCHAR(255)			= '$(ProvisionData)'; -- 1 or 0
-	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
-	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
-	-- Because there is no way to pass the NULL value to 
-	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
-	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
-END
-
-:r .\00_Common\__Declarations.sql
+﻿:r .\000\a_Declarations.sql
+:r .\000\b_AdminUserRole.sql
+:r .\000\c_RuleTypes.sql
+:r .\000\d_EntryTypes.sql
+:r .\000\e_AccountTypes.sql
+:r .\000\f_IfrsConcepts.sql
+--:r .\000\g_IfrsDisclosures.sql
+:r .\000\h_FunctionalCurrency.sql
+:r .\000\i_Settings.sql
+RETURN
 
 IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
-	:r .\00_Common\a_AdminUser.sql
-	:r .\00_Common\b_FunctionalCurrency.sql
-	:r .\00_Common\w_IfrsConcepts.sql
-	:r .\00_Common\c_Settings.sql
-	:r .\00_Common\d_EntryTypes.sql
-	:r .\03_Basic\a_Currencies.sql
+	:r .\01_Security\a_Users.sql
+	:r .\01_Security\b_RolesMemberships.sql
 
 	:r .\02_Definitions\a_LookupDefinitions.sql
 	:r .\02_Definitions\b_ResourceDefinitions.sql
 	:r .\02_Definitions\c_ContractDefinitions.sql
-
-	:r .\00_Common\e_AccountTypes.sql
-	:r .\00_Common\f_RuleTypes.sql
-
-	:r .\01_Security\a_Users.sql
-	:r .\01_Security\b_RolesMemberships.sql
-
 	:r .\02_Definitions\f_LineDefinitions.sql
 	:r .\02_Definitions\g_DocumentDefinitions.sql
 
+	:r .\03_Basic\a_Currencies.sql
 	:r .\03_Basic\b_Units.sql
 	:r .\03_Basic\c_Lookups.sql
 	:r .\03_Basic\d_Segments.sql
 	:r .\03_Basic\e_Centers.sql
-
+END
+IF @DB <> N'106'
+BEGIN
 	:r .\04_Resources\101_property-plant-and-equipment.sql
 	:r .\04_Resources\101_employee-benefits.sql
 	:r .\04_Resources\101_revenue_services.sql
@@ -58,15 +42,15 @@ BEGIN
 
 	--:r .\04_Resources\d1_FG_vehicles.sql
 	----:r .\04_Resources\e1_CCE_received-checks.sql
-	:r .\05_Contracts\01_Agents.sql
-	:r .\05_Contracts\02_Creditors.sql
+	:r .\05_Contracts\00_Agents.sql
+	:r .\05_Contracts\01_CashCustodians.sql
+	:r .\05_Contracts\02_InventoryCustodians.sql
 	:r .\05_Contracts\03_Customers.sql
 	:r .\05_Contracts\04_Debtors.sql
 	:r .\05_Contracts\05_Partners.sql
 	:r .\05_Contracts\06_Suppliers.sql
-	:r .\05_Contracts\08_CashCustodians.sql
-	:r .\05_Contracts\09_Warehouses.sql
-	:r .\05_Contracts\10_Employees.sql
+	:r .\05_Contracts\07_Creditors.sql
+	:r .\05_Contracts\08_Employees.sql
 
 	:r .\06_Accounts\101_AccountClassifications.sql
 --	:r .\06_Accounts\101_Accounts.sql
@@ -75,9 +59,21 @@ BEGIN
 	--:r .\07_Entries\101\101e_revenue-templates.sql
 	--:r .\07_Entries\101\101f_revenue-recognition-vouchers.sql
 END
+
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
+	:r .\106\05_Contracts\00_Agents.sql
+	:r .\106\05_Contracts\01_CashCustodians.sql
+	:r .\106\05_Contracts\02_InventoryCustodians.sql
+	:r .\106\05_Contracts\03_Customers.sql
+	:r .\106\05_Contracts\04_Debtors.sql
+	:r .\106\05_Contracts\05_Partners.sql
+	:r .\106\05_Contracts\06_Suppliers.sql
+	:r .\106\05_Contracts\07_Creditors.sql
+	:r .\106\05_Contracts\08_Employees.sql
+
 	:r .\106\06_Accounts\a_AccountTypeContractDefinitions.sql
+	:r .\106\06_Accounts\b_AccountClassifications.sql
 	:r .\106\06_Accounts\c_Accounts.sql
 END
 

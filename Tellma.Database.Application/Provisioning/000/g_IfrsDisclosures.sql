@@ -4,6 +4,41 @@
 	PRIMARY KEY ([IfrsDisclosureId], [Concept])
 );
 
+DECLARE @IfrsStatements AS TABLE (
+	[Index]			INT			PRIMARY KEY,
+	[Id]			INT			NOT NULL DEFAULT 0,
+	[Code] 			NVARCHAR (255)	UNIQUE,
+	[Name]			NVARCHAR (255)	UNIQUE,
+	[Description]	NVARCHAR (1024)
+);
+DECLARE @IfrsConcepts AS TABLE (
+	[Index]			INT PRIMARY KEY,
+	[Id]			INT			NOT NULL DEFAULT 0,
+	[Code] 			NVARCHAR (255)	UNIQUE,
+	[Name]			NVARCHAR (255)	UNIQUE,
+	[Description]	NVARCHAR (1024)
+);
+DECLARE @IfrsDisclosures AS TABLE (
+	[Index]				INT			PRIMARY KEY,
+	[Id]				INT			NOT NULL DEFAULT 0,
+	[IfrsStatementId]	INT,
+	[IfrsConceptId]		INT,
+	--[DisclosureForm]	Normal, Negated, Total
+	[ValidFrom]			DATE,				
+	[ValidTo]			DATE
+);
+DECLARE @IfrsConceptValues AS TABLE (
+	[Index]				INT,
+	[HeaderIndex]		INT,
+	PRIMARY KEY ([IfrsDisclosureId], [Concept]),
+	[Id]				INT			NOT NULL DEFAULT 0,
+	[IfrsConceptId]		INT,
+	[Value]				NVARCHAR(255),
+	[ValidFrom]			DATE,				
+	[ValidTo]			DATE
+);
+
+
 INSERT INTO @IfrsDisclosures VALUES
 (N'DisclosureOfGeneralInformationAboutFinancialStatementsExplanatory', N'DisclosureOfGeneralInformationAboutFinancialStatementsExplanatory'),
 (N'DisclosureOfGeneralInformationAboutFinancialStatementsExplanatory', N'NameOfReportingEntityOrOtherMeansOfIdentification'),

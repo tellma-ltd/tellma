@@ -7,7 +7,7 @@ Missing
 	- Deactivating
 */
 
-DECLARE @AccountClassifications dbo.AccountClassificationList;
+
 IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 	INSERT INTO @AccountClassifications([Index],

@@ -4,7 +4,7 @@ DECLARE @AT TABLE (
 	[Index] INT,
 	[Node] HIERARCHYID, [EntryTypeParentCode] NVARCHAR (255), [Code] NVARCHAR (255), [Name] NVARCHAR (512), [Description] NVARCHAR (MAX)
 )
-DECLARE @AccountTypes dbo.AccountTypeList;
+
 	INSERT INTO @AT VALUES(0,'/1/', NULL,N'StatementOfFinancialPositionAbstract', N'Statement of financial position [abstract]',N'')
 	INSERT INTO @AT VALUES(1,'/1/1/', NULL,N'Assets', N'Assets',N'The amount of resources: (a) controlled by the entity as a result of past events; and (b) from which future economic benefits are expected to flow to the entity.')
 	INSERT INTO @AT VALUES(2,'/1/1/1/', NULL,N'NoncurrentAssets', N'Non-current assets',N'The amount of assets that do not meet the definition of current assets. [Refer: Current assets]')

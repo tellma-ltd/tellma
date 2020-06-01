@@ -412,8 +412,8 @@ SET [Script] = N'
 '
 WHERE [Index] = 11;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],							[EntryTypeId]) VALUES
-(0,11,+1,	@Inventories,									@InventoryPurchaseExtension),
+[Direction],[AccountTypeId],								[EntryTypeId]) VALUES
+(0,11,+1,	@Inventories,									@ReceiptsReturnsThroughPurchaseExtension),
 (1,11,-1,	@CurrentValueAddedTaxReceivables,				NULL),
 (2,11,-1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -444,8 +444,8 @@ SET [Script] = N'
 '
 WHERE [Index] = 12;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
-(0,12,+1,	@Inventories,							@InventoryPurchaseExtension),
+[Direction],[AccountTypeId],						[EntryTypeId]) VALUES
+(0,12,+1,	@Inventories,							@ReceiptsReturnsThroughPurchaseExtension),
 (1,12,-1,	@CashPurchaseDocumentControlExtension,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -473,8 +473,8 @@ SET [Script] = N'
 '
 WHERE [Index] = 13;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],	[EntryTypeId]) VALUES
-(0,13,+1,	@Inventories,			@InventoryPurchaseExtension),
+[Direction],[AccountTypeId],		[EntryTypeId]) VALUES
+(0,13,+1,	@Inventories,			@ReceiptsReturnsThroughPurchaseExtension),
 (1,13,-1,	@CurrentPrepayments,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
@@ -502,8 +502,8 @@ SET [Script] = N'
 '
 WHERE [Index] = 14;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],			[EntryTypeId]) VALUES
-(0,14,+1,	@Inventories,					@InventoryPurchaseExtension),
+[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
+(0,14,+1,	@Inventories,					@ReceiptsReturnsThroughPurchaseExtension),
 (1,14,-1,	@AccrualsClassifiedAsCurrent,	NULL);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],

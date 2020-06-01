@@ -84,7 +84,6 @@
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
     <Folder Include="map" />
-    <Folder Include="Provisioning\00_Common" />
     <Folder Include="Provisioning\01_Security" />
     <Folder Include="Provisioning\02_Definitions" />
     <Folder Include="Provisioning\03_Basic" />
@@ -101,6 +100,8 @@
     <Folder Include="Provisioning\106" />
     <Folder Include="Provisioning\104" />
     <Folder Include="Provisioning\106\06_Accounts" />
+    <Folder Include="Provisioning\106\05_Contracts" />
+    <Folder Include="Provisioning\000" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -364,11 +365,6 @@
     <Build Include="bll\Stored Procedures\bll.Document_Validate__Comment_Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Document_Comment__Save.sql" />
     <Build Include="map\map.DocumentAssignmentsHistory.sql" />
-    <None Include="Provisioning\00_Common\a_AdminUser.sql" />
-    <None Include="Provisioning\00_Common\b_FunctionalCurrency.sql" />
-    <None Include="Provisioning\00_Common\c_Settings.sql" />
-    <None Include="Provisioning\00_Common\w_IfrsConcepts.sql" />
-    <None Include="Provisioning\00_Common\x_IfrsDisclosures.sql" />
     <Build Include="dbo\Functions\dbo.fn_LanguageId__Symbol.sql" />
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
@@ -380,8 +376,8 @@
     <None Include="Provisioning\03_Basic\c_Lookups.sql" />
     <None Include="Provisioning\05_Contracts\06_Suppliers.sql" />
     <None Include="Provisioning\05_Contracts\03_Customers.sql" />
-    <None Include="Provisioning\05_Contracts\10_Employees.sql" />
-    <None Include="Provisioning\05_Contracts\08_CashCustodians.sql" />
+    <None Include="Provisioning\05_Contracts\08_Employees.sql" />
+    <None Include="Provisioning\05_Contracts\01_CashCustodians.sql" />
     <None Include="Provisioning\05_Contracts\05_Partners.sql" />
     <None Include="Provisioning\04_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Provisioning\04_Resources\101_property-plant-and-equipment.sql" />
@@ -436,8 +432,6 @@
     <Build Include="dal\Stored Procedures\dal.AccountTypes__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountTypes__Activate.sql" />
     <Build Include="map\map.AccountTypes.sql" />
-    <None Include="Provisioning\00_Common\d_EntryTypes.sql" />
-    <None Include="Provisioning\00_Common\e_AccountTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionEntryList.sql" />
     <Build Include="api\Stored Procedures\api.LineDefinitions__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitions_Validate__Save.sql" />
@@ -471,7 +465,7 @@
     <Build Include="map\map.ReportMeasureDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceUnitList.sql" />
-    <None Include="Provisioning\05_Contracts\09_Warehouses.sql" />
+    <None Include="Provisioning\05_Contracts\02_InventoryCustodians.sql" />
     <None Include="Provisioning\04_Resources\102_employee-benefits.sql" />
     <Build Include="map\map.ResourceUnits.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexIdWithHeaderList.sql" />
@@ -551,6 +545,14 @@
     <Build Include="dbo\Tables\dbo.LineDefinitionVariants.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionVariantList.sql" />
     <None Include="Provisioning\106\06_Accounts\c_Accounts.sql" />
+    <None Include="Provisioning\000\a_Declarations.sql" />
+    <None Include="Provisioning\000\b_AdminUserRole.sql" />
+    <None Include="Provisioning\000\h_FunctionalCurrency.sql" />
+    <None Include="Provisioning\000\c_RuleTypes.sql" />
+    <None Include="Provisioning\000\d_EntryTypes.sql" />
+    <None Include="Provisioning\000\e_AccountTypes.sql" />
+    <None Include="Provisioning\000\f_IfrsConcepts.sql" />
+    <None Include="Provisioning\000\g_IfrsDisclosures.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -567,12 +569,11 @@
     <None Include="103.LifanCars.publish.xml" />
     <None Include="104.WaliaSteel.publish.xml" />
     <None Include="102.BananET.publish.xml" />
-    <None Include="Provisioning\00_Common\__Declarations.sql" />
     <None Include="Provisioning\01_Security\b_RolesMemberships.sql" />
     <None Include="Provisioning\01_Security\a_Users.sql" />
     <None Include="Provisioning\02_Definitions\b_ResourceDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\c_ContractDefinitions.sql" />
-    <None Include="Provisioning\05_Contracts\02_Creditors.sql" />
+    <None Include="Provisioning\05_Contracts\07_Creditors.sql" />
     <None Include="Provisioning\05_Contracts\04_Debtors.sql" />
     <None Include="105.Simpex.publish.xml" />
     <None Include="Provisioning\04_Resources\105_merchandise.sql" />
@@ -582,18 +583,28 @@
     <None Include="Provisioning\06_Accounts\101_Accounts.sql" />
     <None Include="Provisioning\07_Entries\101\101a_manual-journal-vouchers.sql" />
     <None Include="Provisioning\07_Entries\101\101b_cash-payment-vouchers.sql" />
-    <None Include="Provisioning\00_Common\f_RuleTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Provisioning\07_Entries\101\101f_revenue-recognition-vouchers.sql" />
     <None Include="Provisioning\04_Resources\101_revenue_services.sql" />
     <None Include="101.AzureBananSDTraining.publish.xml" />
     <None Include="Provisioning\03_Basic\d_Segments.sql" />
-    <None Include="Provisioning\05_Contracts\01_Agents.sql" />
+    <None Include="Provisioning\05_Contracts\00_Agents.sql" />
     <None Include="Provisioning\07_Entries\101\101e_revenue-templates.sql" />
     <None Include="106.Soreti.publish.xml" />
     <None Include="Provisioning\02_Definitions\f_LineDefinitions.sql" />
     <None Include="Provisioning\07_Entries\106\106a_manual-journal-vouchers.sql" />
     <None Include="Provisioning\106\06_Accounts\a_AccountTypeContractDefinitions.sql" />
+    <None Include="Provisioning\106\06_Accounts\b_AccountClassifications.sql" />
+    <None Include="Provisioning\106\05_Contracts\00_Agents.sql" />
+    <None Include="Provisioning\106\05_Contracts\07_Creditors.sql" />
+    <None Include="Provisioning\106\05_Contracts\03_Customers.sql" />
+    <None Include="Provisioning\106\05_Contracts\04_Debtors.sql" />
+    <None Include="Provisioning\106\05_Contracts\05_Partners.sql" />
+    <None Include="Provisioning\106\05_Contracts\06_Suppliers.sql" />
+    <None Include="Provisioning\106\05_Contracts\01_CashCustodians.sql" />
+    <None Include="Provisioning\106\05_Contracts\02_InventoryCustodians.sql" />
+    <None Include="Provisioning\106\05_Contracts\08_Employees.sql" />
+    <None Include="Provisioning\000\i_Settings.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
@@ -619,6 +630,14 @@
     <SqlCmdVariable Include="ShortCompanyName">
       <DefaultValue>ACME International</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ShortCompanyName2">
+      <DefaultValue>ACME</DefaultValue>
+      <Value>$(SqlCmdVar__8)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="ShortCompanyName3">
+      <DefaultValue>ACME</DefaultValue>
+      <Value>$(SqlCmdVar__9)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="TernaryLanguageId">
       <DefaultValue>zh</DefaultValue>

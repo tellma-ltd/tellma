@@ -5,7 +5,8 @@
 -- Unit Id: Ton.
 (
 	[Id]					INT CONSTRAINT [PK_AccountBalances] PRIMARY KEY IDENTITY,
-	[AccountId]				INT	NOT NULL CONSTRAINT [FK_AccountBalances__AccountId] REFERENCES dbo.Accounts([Id]) ON DELETE CASCADE,	[CenterId]				INT CONSTRAINT [FK_AccountBalances__CenterId] REFERENCES dbo.Centers([Id]),
+	[AccountId]				INT	NOT NULL CONSTRAINT [FK_AccountBalances__AccountId] REFERENCES dbo.Accounts([Id]) ON DELETE CASCADE,
+	[CenterId]				INT CONSTRAINT [FK_AccountBalances__CenterId] REFERENCES dbo.Centers([Id]),
 	[ContractId]			INT CONSTRAINT [FK_AccountBalances__ContractId] REFERENCES dbo.Contracts([Id]),
 	[ResourceId]			INT CONSTRAINT [FK_AccountBalances__ResourceId] REFERENCES dbo.Resources([Id]),
 	[CurrencyId]			NCHAR (3) CONSTRAINT [FK_AccountBalances__CurrencyId] REFERENCES dbo.Currencies([Id]),

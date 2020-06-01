@@ -6,6 +6,9 @@
 	[Name]				NVARCHAR (255)	NOT NULL,
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),
+	[Description]		NVARCHAR (1024),
+	[Description2]		NVARCHAR (1024),
+	[Description3]		NVARCHAR (1024),
 	[Code]				NVARCHAR (255)	NOT NULL UNIQUE,
 	[IsAssignable]		BIT
 );
