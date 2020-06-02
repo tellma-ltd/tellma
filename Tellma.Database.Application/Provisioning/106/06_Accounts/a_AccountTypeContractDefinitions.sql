@@ -7,8 +7,8 @@
 (@ProductionSupplies,							@106warehousesCD),
 (@WorkInProgress,								@106warehousesCD),
 (@FinishedGoods,								@106warehousesCD),
-(@CurrentInventoriesInTransit,					@foreign_importsCD),
-(@CurrentInventoriesInTransit,					@foreign_exportsCD),
+(@CurrentInventoriesInTransit,					@106foreign_importsCD),
+(@CurrentInventoriesInTransit,					@106foreign_exportsCD),
 (@CurrentPrepayments,							@106suppliersCD),
 (@OtherCurrentFinancialAssets,					@106debtorsCD), -- sundry debtor
 (@OtherCurrentFinancialAssets,					@106employeesCD), -- staff debtor

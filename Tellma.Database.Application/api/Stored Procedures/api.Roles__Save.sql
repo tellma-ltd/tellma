@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Roles__Save]
-	@Roles [dbo].[RoleList] READONLY,
+	@Entities [dbo].[RoleList] READONLY,
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@ReturnIds BIT = 0,
@@ -10,7 +10,7 @@ BEGIN
 	DECLARE @ValidationErrors ValidationErrorList;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Roles_Validate__Save]
-		@Entities = @Roles,
+		@Entities = @Entities,
 		@Members = @Members,
 		@Permissions = @Permissions;
 
@@ -28,7 +28,7 @@ BEGIN
 	-- Validate business rules (read from the table)
 
 	EXEC [dal].[Roles__Save]
-		@Entities = @Roles,
+		@Entities = @Entities,
 		@Members = @Members,
 		@Permissions = @Permissions,
 		@ReturnIds = @ReturnIds

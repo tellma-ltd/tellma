@@ -1,5 +1,5 @@
 ﻿:r .\000\a_Declarations.sql
-:r .\000\b_AdminUserRole.sql
+:r .\000\b_AdminUser.sql
 :r .\000\c_RuleTypes.sql
 :r .\000\d_EntryTypes.sql
 :r .\000\e_AccountTypes.sql
@@ -7,27 +7,29 @@
 --:r .\000\g_IfrsDisclosures.sql
 :r .\000\h_FunctionalCurrency.sql
 :r .\000\i_Settings.sql
-RETURN
+:r .\000\j_ReportDefinitions.sql
+:r .\000\k_Roles.sql
+:r .\000\l_LineDefinitions.sql
 
 IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
-	:r .\01_Security\a_Users.sql
-	:r .\01_Security\b_RolesMemberships.sql
-
-	:r .\02_Definitions\a_LookupDefinitions.sql
-	:r .\02_Definitions\b_ResourceDefinitions.sql
-	:r .\02_Definitions\c_ContractDefinitions.sql
-	:r .\02_Definitions\f_LineDefinitions.sql
 	:r .\02_Definitions\g_DocumentDefinitions.sql
 
 	:r .\03_Basic\a_Currencies.sql
 	:r .\03_Basic\b_Units.sql
-	:r .\03_Basic\c_Lookups.sql
+	--:r .\03_Basic\c_Lookups.sql
 	:r .\03_Basic\d_Segments.sql
 	:r .\03_Basic\e_Centers.sql
 END
 IF @DB <> N'106'
 BEGIN
+	:r .\01_Security\a_Users.sql
+	:r .\01_Security\b_Permissions.sql
+
+	:r .\02_Definitions\a_LookupDefinitions.sql
+	:r .\02_Definitions\b_ResourceDefinitions.sql
+	:r .\02_Definitions\c_ContractDefinitions.sql
+
 	:r .\04_Resources\101_property-plant-and-equipment.sql
 	:r .\04_Resources\101_employee-benefits.sql
 	:r .\04_Resources\101_revenue_services.sql
@@ -62,6 +64,12 @@ END
 
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
+	:r .\106\01_Security\a_Users.sql
+	:r .\106\01_Security\b_Permissions.sql
+
+	:r .\106\02_Definitions\b_ResourceDefinitions.sql
+	:r .\106\02_Definitions\c_ContractDefinitions.sql
+
 	:r .\106\05_Contracts\00_Agents.sql
 	:r .\106\05_Contracts\01_CashCustodians.sql
 	:r .\106\05_Contracts\02_InventoryCustodians.sql

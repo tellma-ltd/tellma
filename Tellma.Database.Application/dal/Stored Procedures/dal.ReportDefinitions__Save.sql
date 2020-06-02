@@ -6,54 +6,62 @@
 	@Columns [ReportDimensionDefinitionList] READONLY,
 	@Measures [ReportMeasureDefinitionList] READONLY
 AS
+SET NOCOUNT ON;
+	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- Report Definitions
-	MERGE INTO [dbo].[ReportDefinitions] AS t
-	USING (
-		SELECT 
-			[Id], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
-			[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
-			[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
-		FROM @Entities 
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED 
-	THEN
-		UPDATE SET
-			t.[Title]				= s.[Title],
-			t.[Title2]				= s.[Title2],
-			t.[Title3]				= s.[Title3],
-			t.[Description]			= s.[Description],
-			t.[Description2]		= s.[Description2],
-			t.[Description3]		= s.[Description3],
-			t.[Type]				= s.[Type],
-			t.[Chart]				= s.[Chart],
-			t.[DefaultsToChart]		= s.[DefaultsToChart],
-			t.[Collection]			= s.[Collection],
-			t.[DefinitionId]		= s.[DefinitionId],
-			t.[Filter]				= s.[Filter],
-			t.[OrderBy]				= s.[OrderBy],
-			t.[Top]					= s.[Top],
-			t.[ShowColumnsTotal]	= s.[ShowColumnsTotal],
-			t.[ShowRowsTotal]		= s.[ShowRowsTotal],
-			t.[ShowInMainMenu]		= s.[ShowInMainMenu],
-			t.[MainMenuSection]		= s.[MainMenuSection],
-			t.[MainMenuIcon]		= s.[MainMenuIcon],
-			t.[MainMenuSortKey]		= s.[MainMenuSortKey],			
-			t.[ModifiedAt]			= @Now,
-			t.[ModifiedById]		= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT (
-			[Id], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
-			[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
-			[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
-		)
-		VALUES (
-			s.[Id], s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
-			s.[Type], s.[Chart], s.[DefaultsToChart], s.[Collection], s.[DefinitionId], s.[Filter], s.[OrderBy], s.[Top],
-			s.[ShowColumnsTotal], s.[ShowRowsTotal], s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
-		);
+	INSERT INTO @IndexedIds([Index], [Id])
+	SELECT x.[Index], x.[Id]
+	FROM
+	(
+		MERGE INTO [dbo].[ReportDefinitions] AS t
+		USING (
+			SELECT 
+				[Index], [Id], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
+				[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
+				[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+			FROM @Entities 
+		) AS s ON (t.Id = s.Id)
+		WHEN MATCHED 
+		THEN
+			UPDATE SET
+				t.[Title]				= s.[Title],
+				t.[Title2]				= s.[Title2],
+				t.[Title3]				= s.[Title3],
+				t.[Description]			= s.[Description],
+				t.[Description2]		= s.[Description2],
+				t.[Description3]		= s.[Description3],
+				t.[Type]				= s.[Type],
+				t.[Chart]				= s.[Chart],
+				t.[DefaultsToChart]		= s.[DefaultsToChart],
+				t.[Collection]			= s.[Collection],
+				t.[DefinitionId]		= s.[DefinitionId],
+				t.[Filter]				= s.[Filter],
+				t.[OrderBy]				= s.[OrderBy],
+				t.[Top]					= s.[Top],
+				t.[ShowColumnsTotal]	= s.[ShowColumnsTotal],
+				t.[ShowRowsTotal]		= s.[ShowRowsTotal],
+				t.[ShowInMainMenu]		= s.[ShowInMainMenu],
+				t.[MainMenuSection]		= s.[MainMenuSection],
+				t.[MainMenuIcon]		= s.[MainMenuIcon],
+				t.[MainMenuSortKey]		= s.[MainMenuSortKey],			
+				t.[ModifiedAt]			= @Now,
+				t.[ModifiedById]		= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT (
+				[Title], [Title2], [Title3], [Description], [Description2], [Description3],
+				[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
+				[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
+			)
+			VALUES (
+				s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
+				s.[Type], s.[Chart], s.[DefaultsToChart], s.[Collection], s.[DefinitionId], s.[Filter], s.[OrderBy], s.[Top],
+				s.[ShowColumnsTotal], s.[ShowRowsTotal], s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
+			)
+		OUTPUT s.[Index], inserted.[Id]
+	) AS x;
 
 	-- Parameters Definitions
 	WITH BP AS (
@@ -62,8 +70,10 @@ AS
 	)
 	MERGE INTO BP AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] As [ReportDefinitionId], L.[Key], L.[Label], L.[Label2], L.[Label3], L.[Visibility], L.[Value]
-		FROM @Parameters L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Key], L.[Label], L.[Label2], L.[Label3], L.[Visibility], L.[Value]
+		FROM @Parameters L
+		JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN
@@ -92,8 +102,9 @@ AS
 	)
 	MERGE INTO BS AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] As [ReportDefinitionId], L.[Path], L.[Label], L.[Label2], L.[Label3]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Path], L.[Label], L.[Label2], L.[Label3]
 		FROM @Select L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN
@@ -120,8 +131,9 @@ AS
 	)
 	MERGE INTO BR AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] As [ReportDefinitionId], L.[Path], L.[Modifier], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpand]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Path], L.[Modifier], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpand]
 		FROM @Rows L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN
@@ -151,8 +163,9 @@ AS
 	)
 	MERGE INTO BC AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] As [ReportDefinitionId], L.[Path], L.[Modifier], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpand]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Path], L.[Modifier], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[AutoExpand]
 		FROM @Columns L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN
@@ -182,8 +195,9 @@ AS
 	)
 	MERGE INTO BM AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] As [ReportDefinitionId], L.[Path], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[Aggregation]
+		SELECT L.[Index], L.[Id], II.[Id] As [ReportDefinitionId], L.[Path], L.[Label], L.[Label2], L.[Label3], L.[OrderDirection], L.[Aggregation]
 		FROM @Measures L JOIN @Entities H ON L.[HeaderIndex] = H.[Index]
+		JOIN @IndexedIds II ON H.[Index] = II.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN

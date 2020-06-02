@@ -92,9 +92,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,1,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,1,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,1,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,1,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,1,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,1,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
 --2:PaymentToSupplierCashPurchase (inv-cash-gs)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],		[TitlePlural]) VALUES
@@ -152,9 +152,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,2,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,2,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,2,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,2,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 GOTO ENOUGH_LD
 --3:PrepaymentToSupplier (inv-cash,gs)
 INSERT @LineDefinitions([Index],
@@ -206,9 +206,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,3,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,3,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,3,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,3,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,3,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,3,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 --4:PaymentToSupplierAccrual (gs,inv-cash) [for utilities, rarely used, mostly treated as cash purchase]
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],		[TitleSingular],			[TitlePlural]) VALUES
@@ -259,9 +259,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,4,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,4,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,4,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,4,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,4,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,4,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
 --8:PaymentToEmployee (used in a payroll voucher)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],			[TitlePlural]) VALUES
@@ -302,9 +302,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,8,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,8,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,8,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,8,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,8,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,8,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 --9:PaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],	[TitlePlural]) VALUES (
@@ -348,9 +348,9 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,9,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,9,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,1,9,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,9,N'ByAgent',	NULL,				1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,9,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,3,9,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
 --10:CashTransferExchange
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],	[TitleSingular],		[TitlePlural]) VALUES (
@@ -395,10 +395,10 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,10,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,10,N'ByRole',	@1GeneralManager,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,10,N'ByAgent',	NULL,				0,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(1,2,10,N'ByAgent',	NULL,				1,				@1Comptroller), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,10,N'ByRole',	@1Comptroller,		NULL,			NULL);
+(0,1,10,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,10,N'ByAgent',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,10,N'ByAgent',	NULL,				1,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,10,N'ByRole',	@ComptrollerRL,		NULL,		NULL);
 --11:StockReceiptCreditPurchase (inv-gs,cash) [rarely used in ET]
 INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
 	[Code],							[TitleSingular],					[TitlePlural]) VALUES

@@ -1,6 +1,4 @@
-﻿DELETE FROM @Users;
-
-IF @DB = N'101' -- Banan SD, USD, en
+﻿IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Users
 	([Index],	[Name],				[Name2],				[Email]) VALUES
 	(0,			N'Jiad Akra',		N'جياد عكره',			N'jiad.akra@banan-it.com'),
@@ -72,7 +70,7 @@ IF @DB = N'106' -- Soreti, ETB, en/am
 	(16, N'Ahmad Akra', N'Ahmad Akra', N'ahmad.akra@tellma.com');
 
 
-DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users);
+DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users); -- in case admin was in the list
 EXEC [dal].[Users__Save]
 	@Entities = @Users
 

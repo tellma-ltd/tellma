@@ -102,6 +102,8 @@
     <Folder Include="Provisioning\106\06_Accounts" />
     <Folder Include="Provisioning\106\05_Contracts" />
     <Folder Include="Provisioning\000" />
+    <Folder Include="Provisioning\106\01_Security" />
+    <Folder Include="Provisioning\106\02_Definitions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -369,7 +371,6 @@
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
-    <None Include="Provisioning\02_Definitions\a_LookupDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\g_DocumentDefinitions.sql" />
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
     <None Include="Provisioning\03_Basic\b_Units.sql" />
@@ -546,7 +547,7 @@
     <Build Include="dbo\User Defined Types\dbo.LineDefinitionVariantList.sql" />
     <None Include="Provisioning\106\06_Accounts\c_Accounts.sql" />
     <None Include="Provisioning\000\a_Declarations.sql" />
-    <None Include="Provisioning\000\b_AdminUserRole.sql" />
+    <None Include="Provisioning\000\b_AdminUser.sql" />
     <None Include="Provisioning\000\h_FunctionalCurrency.sql" />
     <None Include="Provisioning\000\c_RuleTypes.sql" />
     <None Include="Provisioning\000\d_EntryTypes.sql" />
@@ -554,6 +555,8 @@
     <None Include="Provisioning\000\f_IfrsConcepts.sql" />
     <None Include="Provisioning\000\g_IfrsDisclosures.sql" />
     <Build Include="api\Stored Procedures\api.LookupDefinitions__Save.sql" />
+    <None Include="Provisioning\02_Definitions\a_LookupDefinitions.sql" />
+    <None Include="Provisioning\000\l_LineDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -570,7 +573,7 @@
     <None Include="103.LifanCars.publish.xml" />
     <None Include="104.WaliaSteel.publish.xml" />
     <None Include="102.BananET.publish.xml" />
-    <None Include="Provisioning\01_Security\b_RolesMemberships.sql" />
+    <None Include="Provisioning\01_Security\b_Permissions.sql" />
     <None Include="Provisioning\01_Security\a_Users.sql" />
     <None Include="Provisioning\02_Definitions\b_ResourceDefinitions.sql" />
     <None Include="Provisioning\02_Definitions\c_ContractDefinitions.sql" />
@@ -592,7 +595,6 @@
     <None Include="Provisioning\05_Contracts\00_Agents.sql" />
     <None Include="Provisioning\07_Entries\101\101e_revenue-templates.sql" />
     <None Include="106.Soreti.publish.xml" />
-    <None Include="Provisioning\02_Definitions\f_LineDefinitions.sql" />
     <None Include="Provisioning\07_Entries\106\106a_manual-journal-vouchers.sql" />
     <None Include="Provisioning\106\06_Accounts\a_AccountTypeContractDefinitions.sql" />
     <None Include="Provisioning\106\06_Accounts\b_AccountClassifications.sql" />
@@ -607,6 +609,13 @@
     <None Include="Provisioning\106\05_Contracts\08_Employees.sql" />
     <None Include="Provisioning\000\i_Settings.sql" />
     <None Include="Provisioning\000\j_ReportDefinitions.sql" />
+    <Build Include="api\Stored Procedures\api.ReportDefinitions__Save.sql" />
+    <None Include="Provisioning\106\01_Security\a_Users.sql" />
+    <None Include="Provisioning\106\01_Security\b_Permissions.sql" />
+    <None Include="Provisioning\106\02_Definitions\a_LookupDefinitions.sql" />
+    <None Include="Provisioning\106\02_Definitions\b_ResourceDefinitions.sql" />
+    <None Include="Provisioning\106\02_Definitions\c_ContractDefinitions.sql" />
+    <None Include="Provisioning\000\k_Roles.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
