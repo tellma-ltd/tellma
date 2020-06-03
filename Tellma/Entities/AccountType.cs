@@ -15,10 +15,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ParentId { get; set; }
 
-        [Display(Name = "AccountType_IfrsConcept")]
-        [AlwaysAccessible]
-        public int? IfrsConceptId { get; set; }
-
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
         [StringLength(255)]
@@ -60,68 +56,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 
-        [Display(Name = "AccountType_CurrencyAssignment")]
-        [Required]
-        [Assignment(AssignmentType.Required)]
-        public char? CurrencyAssignment { get; set; }
-
-        [Display(Name = "AccountType_AgentAssignment")]
-        [Required]
-        [Assignment]
-        public char? AgentAssignment { get; set; }
-
-        [Display(Name = "AccountType_AgentDefinition")]
-        [StringLength(50)]
-        public string AgentDefinitionId { get; set; }
-
-        [Display(Name = "AccountType_ResourceAssignment")]
-        [Required]
-        [Assignment]
-        public char? ResourceAssignment { get; set; }
-
-        [Display(Name = "AccountType_ResourceDefinition")]
-        [StringLength(50)]
-        public string ResourceDefinitionId { get; set; }
-
-        [Display(Name = "AccountType_CenterAssignment")]
-        [Required]
-        [Assignment(AssignmentType.Required)]
-        public char? CenterAssignment { get; set; }
-
-        [Display(Name = "AccountType_EntryTypeAssignment")]
-        [Required]
-        [Assignment]
-        public char? EntryTypeAssignment { get; set; }
-
         [Display(Name = "AccountType_EntryTypeParent")]
         [AlwaysAccessible]
-        public int? EntryTypeParentId { get; set; } // Only if EntryTypeAssignment <> 'N'
-
-        [Display(Name = "AccountType_IdentifierAssignment")]
-        [Required]
-        [Assignment]
-        public char? IdentifierAssignment { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Primary)]
-        [StringLength(50)]
-        public string IdentifierLabel { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Secondary)]
-        [StringLength(50)]
-        public string IdentifierLabel2 { get; set; }
-
-        [MultilingualDisplay(Name = "AccountType_IdentifierLabel", Language = Language.Ternary)]
-        [StringLength(50)]
-        public string IdentifierLabel3 { get; set; }
-
-        [Display(Name = "AccountType_NotedAgentAssignment")]
-        [Required]
-        [Assignment(AssignmentType.EntryOnly)]
-        public char? NotedAgentAssignment { get; set; }
-
-        [Display(Name = "AccountType_NotedAgentDefinition")]
-        [StringLength(50)]
-        public string NotedAgentDefinitionId { get; set; }
+        public int? EntryTypeParentId { get; set; }
 
         [MultilingualDisplay(Name = "AccountType_DueDateLabel", Language = Language.Primary)]
         [StringLength(50)]
@@ -234,10 +171,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ChildCount { get; set; }
 
-        [Display(Name = "AccountType_IsResourceClassification")]
-        [AlwaysAccessible]
-        public bool? IsResourceClassification { get; set; }
-
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
@@ -265,18 +198,6 @@ namespace Tellma.Entities
 
         [AlwaysAccessible]
         public HierarchyId ParentNode { get; set; }
-
-        [Display(Name = "AccountType_IfrsConcept")]
-        [ForeignKey(nameof(IfrsConceptId))]
-        public IfrsConcept IfrsConcept { get; set; }
-
-        [Display(Name = "AccountType_AgentDefinition")]
-        [ForeignKey(nameof(AgentDefinitionId))]
-        public AgentDefinition AgentDefinition { get; set; }
-
-        [Display(Name = "AccountType_ResourceDefinition")]
-        [ForeignKey(nameof(ResourceDefinitionId))]
-        public ResourceDefinition ResourceDefinition { get; set; }
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]

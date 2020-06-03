@@ -6,7 +6,7 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export interface CustomClassificationForSave extends EntityForSave {
+export interface AccountClassificationForSave extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -14,11 +14,10 @@ export interface CustomClassificationForSave extends EntityForSave {
   Code?: string;
 }
 
-export interface CustomClassification extends CustomClassificationForSave {
+export interface AccountClassification extends AccountClassificationForSave {
   Level?: number;
   ChildCount?: number;
   ActiveChildCount?: number;
-  IsDeprecated?: boolean;
   IsActive?: boolean;
   CreatedAt?: string;
   CreatedById?: number | string;
@@ -30,7 +29,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor = null;
 
-export function metadata_CustomClassification(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_AccountClassification(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
@@ -43,12 +42,12 @@ export function metadata_CustomClassification(wss: WorkspaceService, trx: Transl
   if (!_cache) {
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
-      collection: 'CustomClassification',
-      titleSingular: () => trx.instant('CustomClassification'),
-      titlePlural: () => trx.instant('CustomClassifications'),
+      collection: 'AccountClassification',
+      titleSingular: () => trx.instant('AccountClassification'),
+      titlePlural: () => trx.instant('AccountClassifications'),
       select: _select,
-      apiEndpoint: 'custom-classifications',
-      screenUrl: 'custom-classifications',
+      apiEndpoint: 'account-classifications',
+      screenUrl: 'account-classifications',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -60,7 +59,7 @@ export function metadata_CustomClassification(wss: WorkspaceService, trx: Transl
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'CustomClassification',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'AccountClassification',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
@@ -76,7 +75,7 @@ export function metadata_CustomClassification(wss: WorkspaceService, trx: Transl
           alignment: 'right'
         },
 
-        IsDeprecated: { control: 'boolean', label: () => trx.instant('CustomClassification_IsDeprecated') },
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
         ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },

@@ -74,7 +74,7 @@ export interface ReportParameterDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportParameterDefinition extends ReportParameterDefinitionForSave {
-    ReportDefinitionId?: string;
+    ReportDefinitionId?: number;
 }
 
 export interface ReportSelectDefinitionForSave extends EntityForSave {
@@ -86,7 +86,7 @@ export interface ReportSelectDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
-    ReportDefinitionId?: string;
+    ReportDefinitionId?: number;
 }
 
 export interface ReportDimensionDefinition extends EntityForSave {
@@ -105,7 +105,7 @@ export interface ReportColumnDefinitionForSave extends ReportDimensionDefinition
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportColumnDefinition extends ReportColumnDefinitionForSave {
-    ReportDefinitionId?: string;
+    ReportDefinitionId?: number;
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -115,7 +115,7 @@ export interface ReportRowDefinitionForSave extends ReportDimensionDefinition {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportRowDefinition extends ReportRowDefinitionForSave {
-    ReportDefinitionId?: string;
+    ReportDefinitionId?: number;
 }
 
 export interface ReportMeasureDefinitionForSave extends EntityForSave {
@@ -129,7 +129,7 @@ export interface ReportMeasureDefinitionForSave extends EntityForSave {
 
 // tslint:disable-next-line:no-empty-interface
 export interface ReportMeasureDefinition extends ReportMeasureDefinitionForSave {
-    ReportDefinitionId?: string;
+    ReportDefinitionId?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Title' + pf);
@@ -151,7 +151,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => (ws.getMultilingualValueImmediate(item, _select[0]) || trx.instant('Untitled')),
             properties: {
-                Id: { control: 'text', label: () => trx.instant('Id') },
+                Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Title: { control: 'text', label: () => trx.instant('Title') + ws.primaryPostfix },
                 Title2: { control: 'text', label: () => trx.instant('Title') + ws.secondaryPostfix },
                 Title3: { control: 'text', label: () => trx.instant('Title') + ws.ternaryPostfix },

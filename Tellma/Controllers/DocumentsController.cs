@@ -1630,21 +1630,21 @@ namespace Tellma.Controllers
 
             // Misc
             nameof(AccountType.EntryTypeParentId),
-            nameof(AccountType.IsResourceClassification),
+            //nameof(AccountType.IsResourceClassification),
 
-            // Definitions
-            nameof(AccountType.AgentDefinitionId),
-            nameof(AccountType.NotedAgentDefinitionId),
-            nameof(AccountType.ResourceDefinitionId),
+            //// Definitions
+            //nameof(AccountType.AgentDefinitionId),
+            //nameof(AccountType.NotedAgentDefinitionId),
+            //nameof(AccountType.ResourceDefinitionId),
 
-            // Assignments
-            nameof(AccountType.CurrencyAssignment),
-            nameof(AccountType.AgentAssignment),
-            nameof(AccountType.ResourceAssignment),
-            nameof(AccountType.CenterAssignment),
-            nameof(AccountType.EntryTypeAssignment),
-            nameof(AccountType.IdentifierAssignment),
-            nameof(AccountType.NotedAgentAssignment),
+            //// Assignments
+            //nameof(AccountType.CurrencyAssignment),
+            //nameof(AccountType.AgentAssignment),
+            //nameof(AccountType.ResourceAssignment),
+            //nameof(AccountType.CenterAssignment),
+            //nameof(AccountType.EntryTypeAssignment),
+            //nameof(AccountType.IdentifierAssignment),
+            //nameof(AccountType.NotedAgentAssignment),
 
             // Labels
             nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),

@@ -2,6 +2,7 @@
 (
 	[Index]								INT PRIMARY KEY,
 	[Id]								INT NOT NULL DEFAULT 0,
+	[Code]								NVARCHAR (50),
 	[Title]								NVARCHAR (255),
 	[Title2]							NVARCHAR (255),
 	[Title3]							NVARCHAR (255),

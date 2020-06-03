@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<CentersService>()
                 .AddScoped<CompaniesService>()
                 .AddScoped<CurrenciesService>()
-                .AddScoped<CustomClassificationsService>()
+                .AddScoped<AccountClassificationsService>()
                 .AddScoped<DefinitionsService>()
                 .AddScoped<DetailsEntriesService>()
                 .AddScoped<DocumentsService>()
@@ -89,7 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Agent) => definitionId == null ? sp.GetRequiredService<AgentsGenericService>() : (IFactServiceBase)sp.GetRequiredService<AgentsService>().SetDefinitionId(definitionId),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
-                nameof(CustomClassification) => sp.GetRequiredService<CustomClassificationsService>(),
+                nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),
                 nameof(DetailsEntry) => sp.GetRequiredService<DetailsEntriesService>(),
                 nameof(Document) => definitionId == null ? sp.GetRequiredService<DocumentsGenericService>() : (IFactServiceBase)sp.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId),
                 nameof(EntryType) => sp.GetRequiredService<EntryTypesService>(),
@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Agent) => definitionId == null ? sp.GetRequiredService<AgentsGenericService>() : (IFactWithIdService)sp.GetRequiredService<AgentsService>().SetDefinitionId(definitionId),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
-                nameof(CustomClassification) => sp.GetRequiredService<CustomClassificationsService>(),
+                nameof(AccountClassification) => sp.GetRequiredService<AccountClassificationsService>(),
                 nameof(DetailsEntry) => sp.GetRequiredService<DetailsEntriesService>(),
                 nameof(Document) => definitionId == null ? sp.GetRequiredService<DocumentsGenericService>() : (IFactWithIdService)sp.GetRequiredService<DocumentsService>().SetDefinitionId(definitionId),
                 nameof(EntryType) => sp.GetRequiredService<EntryTypesService>(),

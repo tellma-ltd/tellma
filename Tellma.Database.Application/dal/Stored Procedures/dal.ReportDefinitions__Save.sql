@@ -19,7 +19,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[ReportDefinitions] AS t
 		USING (
 			SELECT 
-				[Index], [Id], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
+				[Index], [Id], [Code], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
 				[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
 				[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			FROM @Entities 
@@ -27,6 +27,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
+				t.[Code]				= s.[Code],
 				t.[Title]				= s.[Title],
 				t.[Title2]				= s.[Title2],
 				t.[Title3]				= s.[Title3],
@@ -51,12 +52,12 @@ SET NOCOUNT ON;
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[Title], [Title2], [Title3], [Description], [Description2], [Description3],
+				[Code], [Title], [Title2], [Title3], [Description], [Description2], [Description3],
 				[Type], [Chart], [DefaultsToChart], [Collection], [DefinitionId], [Filter], [OrderBy], [Top],
 				[ShowColumnsTotal], [ShowRowsTotal], [ShowInMainMenu], [MainMenuSection], [MainMenuIcon], [MainMenuSortKey]
 			)
 			VALUES (
-				s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
+				s.[Code], s.[Title], s.[Title2], s.[Title3], s.[Description], s.[Description2], s.[Description3],
 				s.[Type], s.[Chart], s.[DefaultsToChart], s.[Collection], s.[DefinitionId], s.[Filter], s.[OrderBy], s.[Top],
 				s.[ShowColumnsTotal], s.[ShowRowsTotal], s.[ShowInMainMenu], s.[MainMenuSection], s.[MainMenuIcon], s.[MainMenuSortKey]
 			)

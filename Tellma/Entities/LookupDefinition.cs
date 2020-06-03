@@ -6,8 +6,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "LookupDefinition", Plural = "LookupDefinitions")]
-    public class LookupDefinitionForSave : EntityWithKey<string>
+    public class LookupDefinitionForSave : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]

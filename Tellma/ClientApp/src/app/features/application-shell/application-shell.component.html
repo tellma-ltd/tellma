@@ -100,7 +100,7 @@
 
             <!-- The inbox items -->
             <button class="p-2 border-bottom t-inbox-item" [class.bg-light]="c[id].OpenedAt"
-              [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id, { state_key: 'navinbox' }]"
+              [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id?.toString(), { state_key: 'navinbox' }]"
               *ngFor="let id of ids" ngbDropdownItem (click)="inboxDrop.close()">
               <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
             </button>
@@ -251,7 +251,7 @@
 
     <!-- The inbox items -->
     <button class="p-2 border-bottom t-inbox-item" [class.bg-light]="c[id].OpenedAt"
-      [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id, { state_key: 'navinbox' }]"
+      [routerLink]="['/app/' + tenantId + '/documents/' + docs[id]?.DefinitionId + '/' + id?.toString(), { state_key: 'navinbox' }]"
       *ngFor="let id of ids" ngbDropdownItem (click)="modal.close()">
       <ng-container *ngTemplateOutlet="inboxEntryContent; context { id: id }"></ng-container>
     </button>

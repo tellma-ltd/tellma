@@ -166,10 +166,6 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  public get isNew(): boolean {
-    return (this.isScreenMode && this.route.snapshot.paramMap.get('id') === 'new') || (this.isPopupMode && this.idString === 'new');
-  }
-
   public isInactive: (model: ReportDefinition) => string = (_: ReportDefinition) => null;
 
   public onDefinitionChange(model: ReportDefinition, prop?: string) {

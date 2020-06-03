@@ -1,23 +1,23 @@
-<t-details-picker collection="CustomClassification" [masterTemplate]="master" [filter]="filter"
+<t-details-picker collection="AccountClassification" [masterTemplate]="master" [filter]="filter"
     [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
-        <t-custom-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
+        <t-account-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);"
             [additionalSelect]="additionalSelect">
-        </t-custom-classifications-details>
+        </t-account-classifications-details>
     </div>
 </ng-template>
 
 <!-- The Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
-        <t-custom-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
+        <t-account-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
             [showCreate]="showCreate" (choose)="modal.close(true); update.call(null, $event);"
             (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
-        </t-custom-classifications-master>
+        </t-account-classifications-master>
     </div>
 </ng-template>

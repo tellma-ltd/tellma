@@ -11,6 +11,9 @@ export interface EntryTypeForSave extends EntityForSave {
   Name?: string;
   Name2?: string;
   Name3?: string;
+  Description?: string;
+  Description2?: string;
+  Description3?: string;
   Code?: string;
   EntryDefinitionId?: string;
   IsAssignable?: boolean;
@@ -59,6 +62,9 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService,
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
 
@@ -95,10 +101,12 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService,
 
     if (!ws.settings.SecondaryLanguageId) {
       delete entityDesc.properties.Name2;
+      delete entityDesc.properties.Description2;
     }
 
     if (!ws.settings.TernaryLanguageId) {
       delete entityDesc.properties.Name3;
+      delete entityDesc.properties.Description3;
     }
 
     _cache = entityDesc;

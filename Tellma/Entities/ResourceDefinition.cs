@@ -6,8 +6,14 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "ResourceDefinition", Plural = "ResourceDefinitions")]
-    public class ResourceDefinitionForSave : EntityWithKey<string>
+    public class ResourceDefinitionForSave : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]
@@ -54,10 +60,6 @@ namespace Tellma.Entities
         public decimal? MainMenuSortKey { get; set; }
 
         // TODO: Add Metadata
-
-        public string AssetTypeVisibility { get; set; }
-        public string RevenueTypeVisibility { get; set; }
-        public string ExpenseTypeVisibility { get; set; }
         public string IdentifierLabel { get; set; }
         public string IdentifierLabel2 { get; set; }
         public string IdentifierLabel3 { get; set; }

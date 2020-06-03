@@ -103,6 +103,12 @@
   <data name="Account_Type" xml:space="preserve">
     <value>ዓይነት</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>ምደባ</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>ምደባዎች</value>
+  </data>
   <data name="Accounts" xml:space="preserve">
     <value>መለያዎች</value>
   </data>
@@ -112,47 +118,14 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
   </data>
-  <data name="AccountType_AgentAssignment" xml:space="preserve">
-    <value>ወኪል ምደባ</value>
-  </data>
-  <data name="AccountType_AgentDefinition" xml:space="preserve">
-    <value>ወኪል ፍቺ</value>
-  </data>
-  <data name="AccountType_CenterAssignment" xml:space="preserve">
-    <value>ማዕከል ምደባ</value>
-  </data>
-  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
-    <value>የምንዛሬ ምደባ</value>
-  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>መጠናቀቅ ያለበት ቀን መሰየሚያ</value>
-  </data>
-  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
-    <value>ዓላማ ምደባ</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>ምዝግብ አይነት ወላጅ</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>የውጭ ማጣቀሻ መሰየሚያ</value>
-  </data>
-  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
-    <value>መለያ ምደባ</value>
-  </data>
-  <data name="AccountType_IdentifierLabel" xml:space="preserve">
-    <value>መለያ መሰየሚያ</value>
-  </data>
-  <data name="AccountType_IfrsConcept" xml:space="preserve">
-    <value>IFRS ጽንሰ</value>
-  </data>
-  <data name="AccountType_IsResourceClassification" xml:space="preserve">
-    <value>ሪሶርስ ምደባ ነው</value>
-  </data>
-  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
-    <value>እንደተጠቀሰው ወኪል ምደባ</value>
-  </data>
-  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
-    <value>እንደተጠቀሰው ወኪል ፍቺ</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ወኪል ስም መሰየሚያ</value>
@@ -162,12 +135,6 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
-  </data>
-  <data name="AccountType_ResourceAssignment" xml:space="preserve">
-    <value>የመገልገያ ምደባ</value>
-  </data>
-  <data name="AccountType_ResourceDefinition" xml:space="preserve">
-    <value>የመገልገያ ፍቺ</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>ጊዜ 1 መሰየሚያ</value>
@@ -375,15 +342,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ</value>
-  </data>
-  <data name="CustomClassification" xml:space="preserve">
-    <value>ምደባ</value>
-  </data>
-  <data name="CustomClassification_IsDeprecated" xml:space="preserve">
-    <value>ቀንሷል</value>
-  </data>
-  <data name="CustomClassifications" xml:space="preserve">
-    <value>ምደባዎች</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>ወሂብ</value>

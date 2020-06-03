@@ -32,7 +32,7 @@ import { Currency } from './entities/currency';
 import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 import { User } from './entities/user';
-import { CustomClassification } from './entities/custom-classification';
+import { AccountClassification } from './entities/account-classification';
 import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
@@ -324,10 +324,10 @@ export class ApiService {
     };
   }
 
-  public customClassificationsApi(cancellationToken$: Observable<void>) {
+  public accountClassificationsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<CustomClassification>('custom-classifications', cancellationToken$),
-      deactivate: this.deactivateFactory<CustomClassification>('custom-classifications', cancellationToken$)
+      activate: this.activateFactory<AccountClassification>('account-classifications', cancellationToken$),
+      deactivate: this.deactivateFactory<AccountClassification>('account-classifications', cancellationToken$)
     };
   }
 

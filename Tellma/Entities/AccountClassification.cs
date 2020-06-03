@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    [EntityDisplay(Singular = "CustomClassification", Plural = "CustomClassifications")]
-    public class CustomClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    [EntityDisplay(Singular = "AccountClassification", Plural = "AccountClassifications")]
+    public class AccountClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -38,7 +38,7 @@ namespace Tellma.Entities
         public string Code { get; set; } // The basis of the tree structure
     }
 
-    public class CustomClassification : CustomClassificationForSave, ITreeEntity<int>
+    public class AccountClassification : AccountClassificationForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }
@@ -49,10 +49,7 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ChildCount { get; set; }
 
-        [Display(Name = "CustomClassification_IsDeprecated")]
-        [AlwaysAccessible]
-        public bool? IsDeprecated { get; set; }
-
+        [Display(Name = "IsActive")]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
@@ -78,7 +75,7 @@ namespace Tellma.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public CustomClassification Parent { get; set; }
+        public AccountClassification Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

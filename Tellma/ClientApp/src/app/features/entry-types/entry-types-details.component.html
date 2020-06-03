@@ -67,6 +67,30 @@
     <t-entry-types-picker *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.ParentId">
     </t-entry-types-picker>
   </t-form-group>
+  
+  <!-- Description -->
+  <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Description">
+    <div *ngIf="!isEdit">{{ model?.Description }}</div>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Description2 -->
+  <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+    [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
+    <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Description3 -->
+  <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
+    [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
+    <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+    </t-text-editor>
+  </t-form-group>
 
   <!-- Is Assignable -->
   <t-form-group class="t-form-group" [label]="'IsAssignable' | translate">

@@ -14,7 +14,6 @@ export type EntryAssignment = 'N' | 'E';
 
 export interface AccountTypeForSave extends EntityForSave {
   ParentId?: number;
-  IfrsConceptId?: number;
   Name?: string;
   Name2?: string;
   Name3?: string;
@@ -23,20 +22,7 @@ export interface AccountTypeForSave extends EntityForSave {
   Description3?: string;
   Code?: string;
   IsAssignable?: boolean;
-  CurrencyAssignment?: RequiredAssignment;
-  AgentAssignment?: OptionalAssignment;
-  AgentDefinitionId?: string;
-  ResourceAssignment?: OptionalAssignment;
-  ResourceDefinitionId?: string;
-  CenterAssignment?: RequiredAssignment;
-  EntryTypeAssignment?: OptionalAssignment;
   EntryTypeParentId?: number;
-  IdentifierAssignment?: OptionalAssignment;
-  IdentifierLabel?: string;
-  IdentifierLabel2?: string;
-  IdentifierLabel3?: string;
-  NotedAgentAssignment?: EntryAssignment;
-  NotedAgentDefinitionId?: string;
   DueDateLabel?: string;
   DueDateLabel2?: string;
   DueDateLabel3?: string;
@@ -68,7 +54,6 @@ export interface AccountType extends AccountTypeForSave {
   Level?: number;
   ActiveChildCount?: number;
   ChildCount?: number;
-  IsResourceClassification?: boolean;
   IsActive?: boolean;
   IsSystem?: boolean;
   CreatedAt?: string;
@@ -105,8 +90,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        IfrsConceptId: { control: 'number', label: () => `${trx.instant('AccountType_IfrsConcept')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        IfrsConcept: { control: 'navigation', label: () => trx.instant('AccountType_IfrsConcept'), type: 'IfrsConcept', foreignKeyName: 'IfrsConceptId' },
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -115,44 +98,8 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
-        CurrencyAssignment: requiredChoice('CurrencyAssignment', trx),
-        AgentAssignment: optionalChoice('AgentAssignment', trx),
-        // AgentDefinitionId: { control: 'text', label: () => `${trx.instant('AccountType_AgentDefinition')} (${trx.instant('Id')})` },
-        // AgentDefinition: { control: 'navigation', label: () => trx.instant('AccountType_AgentDefinition'), type: 'AgentDefinition', foreignKeyName: 'AgentDefinitionId' },
-        AgentDefinitionId: {
-          control: 'choice',
-          label: () => trx.instant('AccountType_AgentDefinition'),
-          choices: Object.keys(ws.definitions.Agents),
-          format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
-        },
-        ResourceAssignment: optionalChoice('ResourceAssignment', trx),
-        // ResourceDefinitionId: { control: 'text', label: () => `${trx.instant('AccountType_ResourceDefinition')} (${trx.instant('Id')})` },
-        // ResourceDefinition: { control: 'navigation', label: () => trx.instant('AccountType_ResourceDefinition'), type: 'ResourceDefinition', foreignKeyName: 'ResourceDefinitionId' },
-        ResourceDefinitionId: {
-          control: 'choice',
-          label: () => trx.instant('AccountType_ResourceDefinition'),
-          choices: Object.keys(ws.definitions.Resources),
-          format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Resources[defId], 'TitlePlural')
-        },
-
-        CenterAssignment: requiredChoice('CenterAssignment', trx),
-        EntryTypeAssignment: optionalChoice('EntryTypeAssignment', trx),
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
-        IdentifierAssignment: optionalChoice('IdentifierAssignment', trx),
-        NotedAgentAssignment: entryChoice('NotedAgentAssignment', trx),
-        // NotedAgentDefinitionId: { control: 'text', label: () => `${trx.instant('AccountType_NotedAgentDefinition')} (${trx.instant('Id')})` },
-        // NotedAgentDefinition: { control: 'navigation', label: () => trx.instant('AccountType_NotedAgentDefinition'), type: 'AgentDefinition', foreignKeyName: 'NotedAgentDefinitionId' },
-        NotedAgentDefinitionId: {
-          control: 'choice',
-          label: () => trx.instant('AccountType_NotedAgentDefinition'),
-          choices: Object.keys(ws.definitions.Agents),
-          format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Agents[defId], 'TitlePlural')
-        },
-
-        IdentifierLabel: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.primaryPostfix },
-        IdentifierLabel2: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.secondaryPostfix },
-        IdentifierLabel3: { control: 'text', label: () => trx.instant('AccountType_IdentifierLabel') + ws.ternaryPostfix },
         DueDateLabel: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.primaryPostfix },
         DueDateLabel2: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.secondaryPostfix },
         DueDateLabel3: { control: 'text', label: () => trx.instant('AccountType_DueDateLabel') + ws.ternaryPostfix },
@@ -186,7 +133,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         ActiveChildCount: { control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         Level: { control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
 
-        IsResourceClassification: { control: 'boolean', label: () => trx.instant('AccountType_IsResourceClassification') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
@@ -199,7 +145,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.SecondaryLanguageId) {
       delete entityDesc.properties.Name2;
       delete entityDesc.properties.Description2;
-      delete entityDesc.properties.IdentifierLabel2;
       delete entityDesc.properties.DueDateLabel2;
       delete entityDesc.properties.Time1Label2;
       delete entityDesc.properties.Time2Label2;
@@ -213,7 +158,6 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
     if (!ws.settings.TernaryLanguageId) {
       delete entityDesc.properties.Name3;
       delete entityDesc.properties.Description3;
-      delete entityDesc.properties.IdentifierLabel3;
       delete entityDesc.properties.DueDateLabel3;
       delete entityDesc.properties.Time1Label3;
       delete entityDesc.properties.Time2Label3;
@@ -230,30 +174,30 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
   return _cache;
 }
 
-// Helper functions
-function optionalChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-  return {
-    control: 'choice',
-    label: () => trx.instant('AccountType_' + propName),
-    choices: ['N', 'A', 'E'],
-    format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-  };
-}
+// // Helper functions
+// function optionalChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
+//   return {
+//     control: 'choice',
+//     label: () => trx.instant('AccountType_' + propName),
+//     choices: ['N', 'A', 'E'],
+//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
+//   };
+// }
 
-function requiredChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-  return {
-    control: 'choice',
-    label: () => trx.instant('AccountType_' + propName),
-    choices: ['A', 'E'],
-    format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-  };
-}
+// function requiredChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
+//   return {
+//     control: 'choice',
+//     label: () => trx.instant('AccountType_' + propName),
+//     choices: ['A', 'E'],
+//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
+//   };
+// }
 
-function entryChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
-  return {
-    control: 'choice',
-    label: () => trx.instant('AccountType_' + propName),
-    choices: ['N', 'E'],
-    format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
-  };
-}
+// function entryChoice(propName: string, trx: TranslateService): ChoicePropDescriptor {
+//   return {
+//     control: 'choice',
+//     label: () => trx.instant('AccountType_' + propName),
+//     choices: ['N', 'E'],
+//     format: (c: string) => !!c ? trx.instant('Assignment_' + c) : ''
+//   };
+// }

@@ -50,7 +50,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<CustomClassification>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<AccountClassification>>();
 
             // Assert the result makes sense
             Assert.Equal("CustomClassification", responseData.CollectionName);
@@ -73,7 +73,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test04()
         {
             // Prepare a well formed entity
-            var dtoForSaveParent = new CustomClassificationForSave
+            var dtoForSaveParent = new AccountClassificationForSave
             {
                 Name = "Parent Account",
                 Name2 = "الحساب الأصل",
@@ -81,7 +81,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Prepare a well formed entity
-            var dtoForSaveChild = new CustomClassificationForSave
+            var dtoForSaveChild = new AccountClassificationForSave
             {
                 Name = "Child Account",
                 Name2 = "حساب فرعي",
@@ -89,7 +89,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Save it
-            var dtosForSave = new List<CustomClassificationForSave> { dtoForSaveParent, dtoForSaveChild };
+            var dtosForSave = new List<AccountClassificationForSave> { dtoForSaveParent, dtoForSaveChild };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
@@ -97,7 +97,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert that the response is well-formed singleton of CustomClassification
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<CustomClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountClassification>>();
             Assert.Equal(2, responseData.Result.Count());
 
             // Assert that the result matches the saved entity
@@ -128,7 +128,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
@@ -136,7 +136,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of custom classification
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<CustomClassification>>();
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<AccountClassification>>();
             Assert.Equal("CustomClassification", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
@@ -151,8 +151,8 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test06()
         {
             // Prepare a record with the same code 'kg' as one that has been saved already
-            var list = new List<CustomClassificationForSave> {
-                new CustomClassificationForSave
+            var list = new List<AccountClassificationForSave> {
+                new AccountClassificationForSave
                 {
                     Name = "Another Name",
                     Name2 = "Another Name",
@@ -184,7 +184,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new CustomClassificationForSave
+            var dtoForSave = new AccountClassificationForSave
             {
                 Name = "  Child Account 2", // Leading space
                 Name2 = "حساب فرعي 2",
@@ -192,11 +192,11 @@ namespace Tellma.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<CustomClassificationForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<AccountClassificationForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<CustomClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountClassification>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -216,7 +216,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child2");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child2");
             var id = entity.Id;
 
             // Query the delete API
@@ -230,7 +230,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test09()
         {
             // Get the Id
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child2");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child2");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -247,7 +247,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator(View, "IsDeprecated", null);
 
             // Get the Id
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child");
             var id = entity.Id;
 
             // Call the API
@@ -258,7 +258,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<CustomClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountClassification>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
@@ -270,7 +270,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child");
             var id = entity.Id;
 
             // Call the API
@@ -281,7 +281,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<CustomClassification>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountClassification>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
@@ -293,7 +293,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<CustomClassification>("CustomClassification_Child");
+            var entity = Shared.Get<AccountClassification>("CustomClassification_Child");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -302,7 +302,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of custom classification
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<CustomClassification>>();
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<AccountClassification>>();
             Assert.Equal("CustomClassification", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;

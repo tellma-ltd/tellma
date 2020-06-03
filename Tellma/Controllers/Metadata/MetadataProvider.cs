@@ -818,30 +818,6 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.CenterVisibility, display);
                     isRequired = def.CenterVisibility == Visibility.Required;
                     break;
-                case nameof(Resource.AssetType):
-                    display = PropertyDisplay(def.AssetTypeVisibility, display);
-                    isRequired = def.AssetTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.AssetTypeId):
-                    display = PropertyDisplay(def.AssetTypeVisibility, display);
-                    isRequired = def.AssetTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.RevenueType):
-                    display = PropertyDisplay(def.RevenueTypeVisibility, display);
-                    isRequired = def.RevenueTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.RevenueTypeId):
-                    display = PropertyDisplay(def.RevenueTypeVisibility, display);
-                    isRequired = def.RevenueTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ExpenseType):
-                    display = PropertyDisplay(def.ExpenseTypeVisibility, display);
-                    isRequired = def.ExpenseTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ExpenseTypeId):
-                    display = PropertyDisplay(def.ExpenseTypeVisibility, display);
-                    isRequired = def.ExpenseTypeVisibility == Visibility.Required;
-                    break;
                 case nameof(Resource.Lookup1):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
                     isRequired = def.Lookup1Visibility == Visibility.Required;
@@ -929,10 +905,6 @@ namespace Tellma.Controllers
                 case nameof(Agent.JobId):
                     display = PropertyDisplay(def.JobVisibility, display);
                     isRequired = def.JobVisibility == Visibility.Required;
-                    break;
-                case nameof(Agent.Rates):
-                    display = PropertyDisplay(def.RatesVisibility, display);
-                    isRequired = def.RatesVisibility == Visibility.Required;
                     break;
                 case nameof(Agent.BankAccountNumber):
                     display = PropertyDisplay(def.BankAccountNumberVisibility, display);

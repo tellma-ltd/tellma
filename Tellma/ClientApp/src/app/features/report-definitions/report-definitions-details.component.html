@@ -455,14 +455,14 @@
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
-                    <!-- Id -->
-                    <div class="form-group" [class.is-invalid]="invalid(id, model.serverErrors?.Id)">
-                        <label class="small" for="id">{{ 'Id' }}</label>
-                        <input class="form-control t-studio-input" id="id" type="text" [(ngModel)]="model.Id"
-                            #id="ngModel" (ngModelChange)="onDefinitionChange(model, 'Id')"
-                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" [disabled]="!isNew" />
+                    <!-- Code -->
+                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
+                        <label class="small" for="code">{{ 'Code' }}</label>
+                        <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
+                            #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: id, serverErrors: model.serverErrors?.Id }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
                         </ng-container>
                     </div>
 

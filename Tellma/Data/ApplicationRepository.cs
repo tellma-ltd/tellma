@@ -228,7 +228,7 @@ namespace Tellma.Data
                 nameof(Currency) => "[map].[Currencies]()",
                 nameof(Resource) => "[map].[Resources]()",
                 nameof(ResourceUnit) => "[map].[ResourceUnits]()",
-                nameof(CustomClassification) => "[map].[CustomClassifications]()",
+                nameof(AccountClassification) => "[map].[AccountClassifications]()",
                 nameof(IfrsConcept) => "[map].[IfrsConcepts]()",
                 nameof(AccountType) => "[map].[AccountTypes]()",
                 nameof(Account) => "[map].[Accounts]()",
@@ -700,7 +700,7 @@ namespace Tellma.Data
                 // Next load report definitions
                 await reader.NextResultAsync(cancellation);
 
-                var reportDefinitionsDic = new Dictionary<string, ReportDefinition>();
+                var reportDefinitionsDic = new Dictionary<int, ReportDefinition>();
                 var reportDefinitionProps = typeof(ReportDefinition).GetMappedProperties();
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -732,7 +732,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
                     reportDefinition.Parameters ??= new List<ReportParameterDefinition>();
                     reportDefinition.Parameters.Add(entity);
                 }
@@ -752,7 +752,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
                     reportDefinition.Select ??= new List<ReportSelectDefinition>();
                     reportDefinition.Select.Add(entity);
                 }
@@ -772,7 +772,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
                     reportDefinition.Rows ??= new List<ReportRowDefinition>();
                     reportDefinition.Rows.Add(entity);
                 }
@@ -792,7 +792,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
                     reportDefinition.Columns ??= new List<ReportColumnDefinition>();
                     reportDefinition.Columns.Add(entity);
                 }
@@ -812,7 +812,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId];
+                    var reportDefinition = reportDefinitionsDic[entity.ReportDefinitionId.Value];
                     reportDefinition.Measures ??= new List<ReportMeasureDefinition>();
                     reportDefinition.Measures.Add(entity);
                 }
@@ -822,7 +822,7 @@ namespace Tellma.Data
                 // Next load document definitions
                 await reader.NextResultAsync(cancellation);
 
-                var documentDefinitionsDic = new Dictionary<string, DocumentDefinition>();
+                var documentDefinitionsDic = new Dictionary<int, DocumentDefinition>();
                 var documentDefinitionProps = typeof(DocumentDefinition).GetMappedProperties();
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -854,7 +854,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId];
+                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId.Value];
                     documentDefinition.LineDefinitions ??= new List<DocumentDefinitionLineDefinition>();
                     documentDefinition.LineDefinitions.Add(entity);
                 }
@@ -896,7 +896,7 @@ namespace Tellma.Data
                     // Link with the markup template
                     entity.MarkupTemplate = markupTemplates[entity.MarkupTemplateId.Value];
 
-                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId];
+                    var documentDefinition = documentDefinitionsDic[entity.DocumentDefinitionId.Value];
                     documentDefinition.MarkupTemplates ??= new List<DocumentDefinitionMarkupTemplate>();
                     documentDefinition.MarkupTemplates.Add(entity);
                 }
@@ -907,7 +907,7 @@ namespace Tellma.Data
                 // Next load line definitions
                 await reader.NextResultAsync(cancellation);
 
-                var lineDefinitionsDic = new Dictionary<string, LineDefinition>();
+                var lineDefinitionsDic = new Dictionary<int, LineDefinition>();
                 var lineDefinitionProps = typeof(LineDefinition).GetMappedProperties();
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -939,7 +939,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.Entries ??= new List<LineDefinitionEntry>();
                     lineDefinition.Entries.Add(entity);
                 }
@@ -959,7 +959,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.Columns ??= new List<LineDefinitionColumn>();
                     lineDefinition.Columns.Add(entity);
                 }
@@ -979,7 +979,7 @@ namespace Tellma.Data
                         prop.SetValue(entity, propValue);
                     }
 
-                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId];
+                    var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.StateReasons ??= new List<LineDefinitionStateReason>();
                     lineDefinition.StateReasons.Add(entity);
                 }
@@ -994,14 +994,7 @@ namespace Tellma.Data
                     var entity = new AccountType
                     {
                         Id = reader.GetInt32(i++),
-                        IsResourceClassification = reader.GetBoolean(i++),
                         EntryTypeParentId = reader.Int32(i++),
-                        ResourceDefinitionId = reader.String(i++),
-                        AgentDefinitionId = reader.String(i++),
-                        NotedAgentDefinitionId = reader.String(i++),
-                        IdentifierLabel = reader.String(i++),
-                        IdentifierLabel2 = reader.String(i++),
-                        IdentifierLabel3 = reader.String(i++),
                         DueDateLabel = reader.String(i++),
                         DueDateLabel2 = reader.String(i++),
                         DueDateLabel3 = reader.String(i++),
@@ -2415,9 +2408,9 @@ namespace Tellma.Data
 
         #endregion
 
-        #region CustomClassifications
+        #region AccountClassifications
 
-        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__Save(List<CustomClassificationForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Save(List<AccountClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2425,7 +2418,7 @@ namespace Tellma.Data
             DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
+                TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -2434,13 +2427,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__Save)}]";
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Save)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> CustomClassifications__Save(List<CustomClassificationForSave> entities, bool returnIds)
+        public async Task<List<int>> AccountClassifications__Save(List<AccountClassificationForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2450,7 +2443,7 @@ namespace Tellma.Data
                 DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(CustomClassification)}List]",
+                    TypeName = $"[dbo].[{nameof(AccountClassification)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -2458,7 +2451,7 @@ namespace Tellma.Data
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Save)}]";
 
                 if (returnIds)
                 {
@@ -2489,7 +2482,7 @@ namespace Tellma.Data
             return sortedResult.ToList();
         }
 
-        public async Task CustomClassifications__Deprecate(List<int> ids, bool isDeprecated)
+        public async Task AccountClassifications__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2502,17 +2495,17 @@ namespace Tellma.Data
             };
 
             cmd.Parameters.Add(idsTvp);
-            cmd.Parameters.Add("@IsDeprecated", isDeprecated);
+            cmd.Parameters.Add("@IsActive", isActive);
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Deprecate)}]";
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Activate)}]";
 
             // Execute
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2529,13 +2522,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__Delete)}]";
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__Delete)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task CustomClassifications__Delete(IEnumerable<int> ids)
+        public async Task AccountClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2551,7 +2544,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__Delete)}]";
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__Delete)}]";
 
             // Execute
             try
@@ -2564,7 +2557,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> CustomClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> AccountClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2581,13 +2574,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(CustomClassifications_Validate__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[bll].[{nameof(AccountClassifications_Validate__DeleteWithDescendants)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task CustomClassifications__DeleteWithDescendants(IEnumerable<int> ids)
+        public async Task AccountClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2603,7 +2596,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(CustomClassifications__DeleteWithDescendants)}]";
+            cmd.CommandText = $"[dal].[{nameof(AccountClassifications__DeleteWithDescendants)}]";
 
             // Execute
             try
@@ -4249,15 +4242,15 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<string> ids, int top)
+        public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }), addIndex: true);
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                TypeName = $"[dbo].[IndexedStringList]",
+                TypeName = $"[dbo].[IndexedIdList]",
                 SqlDbType = SqlDbType.Structured
             };
 
@@ -4272,15 +4265,15 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ReportDefinitions__Delete(IEnumerable<string> ids)
+        public async Task ReportDefinitions__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Parameters
-            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new StringListItem { Id = id }));
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                TypeName = $"[dbo].[StringList]",
+                TypeName = $"[dbo].[IdList]",
                 SqlDbType = SqlDbType.Structured
             };
 

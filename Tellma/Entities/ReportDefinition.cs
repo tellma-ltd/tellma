@@ -8,8 +8,13 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "ReportDefinition", Plural = "ReportDefinitions")]
-    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<string>
+    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [MultilingualDisplay(Name = "Title", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]
@@ -238,7 +243,7 @@ namespace Tellma.Entities
 
     public class ReportParameterDefinition : ReportParameterDefinitionForSave
     {
-        public string ReportDefinitionId { get; set; }
+        public int? ReportDefinitionId { get; set; }
 
         public int? Index { get; set; }
     }
@@ -269,7 +274,7 @@ namespace Tellma.Entities
 
     public class ReportSelectDefinition : ReportSelectDefinitionForSave
     {
-        public string ReportDefinitionId { get; set; }
+        public int? ReportDefinitionId { get; set; }
 
         public int? Index { get; set; }
     }
@@ -338,7 +343,7 @@ namespace Tellma.Entities
 
     public class ReportColumnDefinition : ReportColumnDefinitionForSave
     {
-        public string ReportDefinitionId { get; set; }
+        public int? ReportDefinitionId { get; set; }
 
         public int? Index { get; set; }
     }
@@ -350,7 +355,7 @@ namespace Tellma.Entities
 
     public class ReportRowDefinition : ReportRowDefinitionForSave
     {
-        public string ReportDefinitionId { get; set; }
+        public int? ReportDefinitionId { get; set; }
 
         public int? Index { get; set; }
     }
@@ -401,7 +406,7 @@ namespace Tellma.Entities
 
     public class ReportMeasureDefinition : ReportMeasureDefinitionForSave
     {
-        public string ReportDefinitionId { get; set; }
+        public int? ReportDefinitionId { get; set; }
 
         public int? Index { get; set; }
     }
