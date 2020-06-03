@@ -1,11 +1,11 @@
 ﻿INSERT INTO @ReportDefinitions([Index], [Title], [Type], [Collection], [Filter], [OrderBy], ShowColumnsTotal, ShowRowsTotal,ShowInMainMenu) VALUES
 (0,N'Statement of comprehensive income',N'Summary',N'DetailsEntry',N'Line/Document/PostingDate >= @fromDate and Line/Document/PostingDate <= @toDate and Account/AccountType/Node DescOf 121',NULL,0,1,0),
 (1,N'Trial Balance - Currency',N'Summary',N'DetailsEntry',N'CurrencyId = @Currency',NULL,0,1,0),
-(2,N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/Document/PostingDate <= @Date and Account/AccountType/Node DescOf 1',NULL,0,1,0),
+(2,N'Statement of financial position',N'Summary',N'DetailsEntry',N'Line/PostingDate <= @Date and Account/AccountType/Node DescOf 1',NULL,0,1,0),
 (3,N'Statement of cash flow - Direct Method',N'Summary',N'DetailsEntry',N'Account/AccountType/Code = ''CashAndCashEquivalents'' and EntryType/Code <> ''InternalCashTransferExtension''',NULL,0,1,0),
 (4,N'Trial Balance', N'Summary',N'DetailsEntry',NULL, NULL,0,	1,	0),
 (5,N'Trial Balance By State', N'Summary',N'DetailsEntry',NULL, NULL,0,	1,	0),
-(6,N'Journal', N'Details',N'DetailsEntry',N'Line/Document/PostingDate >= @FromDate and Line/Document/PostingDate <= @ToDate  And Line/Document/State = @DocumentState And Line/State = @LineState And  AccountId = @AccountId And CurrencyId = @Currency', N'Line/Document/PostingDate,Line/Document/Id,Direction desc', NULL,	NULL,	0);
+(6,N'Journal', N'Details',N'DetailsEntry',N'Line/PostingDate >= @FromDate and Line/PostingDate <= @ToDate And Line/Document/State = @DocumentState And Line/State = @LineState And AccountId = @AccountId And CurrencyId = @Currency', N'Line/Document/PostingDate,Line/Document/Id,Direction desc', NULL,	NULL,	0);
 INSERT INTO @Parameters([Index], [HeaderIndex], [Key], [Label], Visibility) VALUES
 (0, 0, N'fromDate' ,N'From Date',N'Optional'),
 (1, 0, N'toDate' ,N'To Date',N'Optional'),

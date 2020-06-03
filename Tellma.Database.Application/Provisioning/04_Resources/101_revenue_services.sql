@@ -24,7 +24,7 @@ BEGIN
 
 	EXEC sys.sp_set_session_context 'UserId', @Jiad_akra;
 	EXEC [api].[Resources__Save] -- N'services-expenses'
-		@DefinitionId = @revenue_servicesDef,
+		@DefinitionId = @finished_servicesRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

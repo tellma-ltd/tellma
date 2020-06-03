@@ -1,9 +1,10 @@
 ﻿CREATE TABLE [dbo].[Translations]
 (
-	[CultureId]		nvarchar (255),
-	[Name]			nvarchar (255),
-	CONSTRAINT [PK_Translations] PRIMARY KEY NONCLUSTERED ([CultureId], [Name]),
-	[Value]			nvarchar(2048) NOT NULL,
-	[Tier]			nvarchar (255) CONSTRAINT [CK_Translations_Tier] CHECK([Tier] IN (N'Client', N'Server', N'Shared'))
+	[TableName]				NVARCHAR(50),
+	[SourceEnglishWord]		NVARCHAR (100),
+	[DestinationCultureId]	NVARCHAR (5),
+	[Form]					NCHAR (1)			CONSTRAINT [CK_Translations__Mode] CHECK([Form] IN (N's', N'p', N'n'))
+	CONSTRAINT [PK_Translations] PRIMARY KEY NONCLUSTERED ([TableName], [SourceEnglishWord], [DestinationCultureId], [Form]),
+	[DestinationWord]		NVARCHAR (100)		NOT NULL
 );
 GO

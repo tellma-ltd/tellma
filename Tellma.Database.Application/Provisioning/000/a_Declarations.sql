@@ -17,7 +17,6 @@
 	IF @ShortCompanyName3 = N'NULL' SET @ShortCompanyName3 = NULL;
 	EXEC sp_set_session_context 'Debug', 1;
 
-	DECLARE @AdminUserId INT;
 	DECLARE @fromDate Date, @toDate Date;
 	DECLARE @RowCount INT;
 	DECLARE @DB NVARCHAR (50) = RIGHT(DB_NAME(), 3);
