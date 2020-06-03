@@ -1033,13 +1033,13 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,91,	N'Time2',				1,	N'Till',		N'حتى',			1,0,1),
 (7,91,	N'MonetaryValue',		1,	N'Depreciation',N'الإهلاك',		1,0,0);
 
-DECLARE @Translations TABLE (
+DECLARE @TranslationsLD TABLE (
 	[Word] NVARCHAR (50),
 	[Lang] NVARCHAR (5),
 	PRIMARY KEY ([Word], [Lang]),
 	[Translated] NVARCHAR (50)
 )
-INSERT INTO @Translations 
+INSERT INTO @TranslationsLD 
 ([Word],				[Lang], [Translated]) VALUES
 (N'Adjustment',			N'ar',	N'تسوية'),
 (N'Adjustments',		N'ar',	N'تسويات'),
@@ -1080,20 +1080,22 @@ SELECT @Lang2 = SecondaryLanguageId, @Lang3 = TernaryLanguageId FROM dbo.Setting
 
 UPDATE LD
 SET LD.[TitleSingular2] = T.[Translated]
-FROM @LineDefinitions LD JOIN @Translations T ON LD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
+FROM @LineDefinitions LD JOIN @TranslationsLD T ON LD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
 
 UPDATE LD
 SET	LD.[TitlePlural2] = T.[Translated]
-FROM @LineDefinitions LD JOIN @Translations T ON LD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
+FROM @LineDefinitions LD JOIN @TranslationsLD T ON LD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
 
 UPDATE LDSR
 SET LDSR.[Name2] = T.[Translated]
-FROM @LineDefinitionStateReasons LDSR JOIN @Translations T ON LDSR.[Name] = T.[Word] WHERE T.[Lang] = @Lang2
+FROM @LineDefinitionStateReasons LDSR JOIN @TranslationsLD T ON LDSR.[Name] = T.[Word] WHERE T.[Lang] = @Lang2
 
 UPDATE LDC
 SET	LDC.[Label2] = T.[Translated]
-FROM @LineDefinitionColumns LDC JOIN @Translations T ON LDC.[Label] = T.[Word] WHERE T.[Lang] = @Lang2
+FROM @LineDefinitionColumns LDC JOIN @TranslationsLD T ON LDC.[Label] = T.[Word] WHERE T.[Lang] = @Lang2
+
 ENOUGH_LD:
+
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
 	@LineDefinitionVariants = @LineDefinitionVariants,

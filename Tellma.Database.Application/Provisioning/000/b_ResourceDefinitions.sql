@@ -101,7 +101,7 @@ EXEC [api].[ResourceDefinitions__Save]
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Resource Definitions Standard: Inserting: ' + @ValidationErrorsJson
+	Print 'Resource Definitions: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

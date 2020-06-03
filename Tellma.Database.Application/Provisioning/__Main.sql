@@ -11,7 +11,7 @@
 -- Account Type 
 :r .\000\f_IfrsConcepts.sql
 --:r .\000\g_IfrsDisclosures.sql
-:r .\000\h_FunctionalCurrency.sql
+:r .\000\h_Currencies.sql
 :r .\000\i_Settings.sql
 :r .\000\l_LineDefinitions.sql
 --:r .\02_Definitions\g_DocumentDefinitions.sql
@@ -20,7 +20,6 @@
 
 IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
-	:r .\03_Basic\a_Currencies.sql
 	:r .\03_Basic\b_Units.sql
 	--:r .\03_Basic\c_Lookups.sql
 	:r .\03_Basic\d_Segments.sql
