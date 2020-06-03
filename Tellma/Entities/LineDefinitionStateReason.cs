@@ -33,7 +33,7 @@ namespace Tellma.Entities
 
     public class LineDefinitionStateReason : LineDefinitionStateReasonForSave
     {
-        public string LineDefinitionId { get; set; }
+        public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

@@ -8,23 +8,23 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 't-custom-classifications-master',
-  templateUrl: './custom-classifications-master.component.html',
+  selector: 't-account-classifications-master',
+  templateUrl: './account-classifications-master.component.html',
   styles: []
 })
-export class CustomClassificationsMasterComponent extends MasterBaseComponent {
+export class AccountClassificationsMasterComponent extends MasterBaseComponent {
 
-  private customClassificationApi = this.api.customClassificationsApi(this.notifyDestruct$); // for intellisense
+  private accountClassificationApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    this.customClassificationApi = this.api.customClassificationsApi(this.notifyDestruct$);
+    this.accountClassificationApi = this.api.accountClassificationsApi(this.notifyDestruct$);
   }
 
   public get c() {
-    return this.ws.CustomClassification;
+    return this.ws.AccountClassification;
   }
 
   public get ws() {
@@ -32,7 +32,7 @@ export class CustomClassificationsMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.customClassificationApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.accountClassificationApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -40,8 +40,8 @@ export class CustomClassificationsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public onDeprecate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.customClassificationApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+  public onDeactivate = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.accountClassificationApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -49,8 +49,8 @@ export class CustomClassificationsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo('custom-classifications', 'IsDeprecated', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('account-classifications', 'IsActive', null);
 
-  public activateDeprecateTooltip = (ids: (number | string)[]) => this.canActivateDeprecateItem(ids) ? '' :
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

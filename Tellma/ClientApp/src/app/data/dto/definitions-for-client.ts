@@ -219,11 +219,10 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 
 export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
-    AccountTypeParentId?: number;
+    AccountTypeId?: number;
     EntryTypeId: number;
 
     // Copied from AccountTypeParent
-    IsResourceClassification: boolean;
     EntryTypeParentId?: number;
     AgentDefinitionId?: string;
     NotedAgentDefinitionId?: string;
@@ -304,9 +303,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 
     DescriptionVisibility: Visibility;
 
-    AssetTypeVisibility: Visibility;
-    RevenueTypeVisibility: Visibility;
-    ExpenseTypeVisibility: Visibility;
     ExpenseEntryTypeVisibility: Visibility;
     CenterVisibility: Visibility;
     ResidualMonetaryValueVisibility: Visibility;
@@ -413,8 +409,8 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Text2DefaultValue: string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
-    Bla: string;
 }
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -426,9 +422,5 @@ export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClie
     StartDateLabel2?: string;
     StartDateLabel3?: string;
     JobVisibility?: Visibility;
-    RatesVisibility?: Visibility;
-    RatesLabel?: string;
-    RatesLabel2?: string;
-    RatesLabel3?: string;
     BankAccountNumberVisibility?: Visibility;
 }

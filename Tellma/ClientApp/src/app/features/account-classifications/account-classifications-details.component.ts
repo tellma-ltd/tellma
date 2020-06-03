@@ -5,21 +5,21 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { CustomClassificationForSave, CustomClassification } from '~/app/data/entities/custom-classification';
+import { AccountClassificationForSave, AccountClassification } from '~/app/data/entities/account-classification';
 
 @Component({
-  selector: 't-custom-classifications-details',
-  templateUrl: './custom-classifications-details.component.html',
+  selector: 't-account-classifications-details',
+  templateUrl: './account-classifications-details.component.html',
   styles: []
 })
-export class CustomClassificationsDetailsComponent extends DetailsBaseComponent {
+export class AccountClassificationsDetailsComponent extends DetailsBaseComponent {
 
-  private customClassificationsApi = this.api.customClassificationsApi(this.notifyDestruct$); // for intellisense
+  private accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
 
   create = () => {
-    const result: CustomClassificationForSave = {};
+    const result: AccountClassificationForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -35,34 +35,34 @@ export class CustomClassificationsDetailsComponent extends DetailsBaseComponent 
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    this.customClassificationsApi = this.api.customClassificationsApi(this.notifyDestruct$);
+    this.accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$);
   }
 
   public get ws() {
     return this.workspace.currentTenant;
   }
 
-  public onActivate = (model: CustomClassification): void => {
+  public onActivate = (model: AccountClassification): void => {
     if (!!model && !!model.Id) {
-      this.customClassificationsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.accountClassificationsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeprecate = (model: CustomClassification): void => {
+  public onDeactivate = (model: AccountClassification): void => {
     if (!!model && !!model.Id) {
-      this.customClassificationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.accountClassificationsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: CustomClassification) => !!model && model.IsDeprecated;
-  public showDeprecate = (model: CustomClassification) => !!model && !model.IsDeprecated;
+  public showActivate = (model: AccountClassification) => !!model && !model.IsActive;
+  public showDeactivate = (model: AccountClassification) => !!model && model.IsActive;
 
-  public canActivateDeprecateItem = (model: CustomClassification) => this.ws.canDo('custom-classifications', 'IsDeprecated', model.Id);
+  public canActivateDeactivateItem = (model: AccountClassification) => this.ws.canDo('account-classifications', 'IsActive', model.Id);
 
-  public activateDeprecateTooltip = (model: CustomClassification) => this.canActivateDeprecateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: AccountClassification) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

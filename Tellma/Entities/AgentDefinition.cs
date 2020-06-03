@@ -4,8 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "AgentDefinition", Plural = "AgentDefinitions")] // TODO: Add to translations file
-    public class AgentDefinitionForSave : EntityWithKey<string>
+    public class AgentDefinitionForSave : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]
@@ -46,10 +52,6 @@ namespace Tellma.Entities
         public string StartDateLabel2 { get; set; }
         public string StartDateLabel3 { get; set; }
         public string JobVisibility { get; set; }
-        public string RatesVisibility { get; set; }
-        public string RatesLabel { get; set; }
-        public string RatesLabel2 { get; set; }
-        public string RatesLabel3 { get; set; }
         public string BankAccountNumberVisibility { get; set; }
 
         // ---------------

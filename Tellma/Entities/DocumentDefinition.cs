@@ -6,8 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "DocumentDefinition", Plural = "DocumentDefinitions")]
-    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition, TDocumentDefinitionMarkupTemplate> : EntityWithKey<string>
+    public class DocumentDefinitionForSave<TDocumentDefinitionLineDefinition, TDocumentDefinitionMarkupTemplate> : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         public bool? IsOriginalDocument { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]

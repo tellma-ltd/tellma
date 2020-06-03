@@ -67,10 +67,10 @@
                         <!-- Navigation -->
                         <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['type'] || p.desc['collection']">
 
-                            <t-custom-classifications-picker *ngSwitchCase="'CustomClassification'"
+                            <t-account-classifications-picker *ngSwitchCase="'AccountClassification'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                                 (ngModelChange)="onArgumentChange()" [showCreate]="false">
-                            </t-custom-classifications-picker>
+                            </t-account-classifications-picker>
 
                             <t-ifrs-concepts-picker *ngSwitchCase="'IfrsConcept'"
                                 [(ngModel)]="arguments[p.key]" [required]="p.isRequired"

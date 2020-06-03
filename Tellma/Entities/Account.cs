@@ -115,7 +115,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Account_CustomClassification")]
         [ForeignKey(nameof(CustomClassificationId))]
-        public CustomClassification CustomClassification { get; set; }
+        public AccountClassification CustomClassification { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]

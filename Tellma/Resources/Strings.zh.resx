@@ -103,6 +103,12 @@
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>帐户分类</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>帐户分类</value>
+  </data>
   <data name="Accounts" xml:space="preserve">
     <value>帐号</value>
   </data>
@@ -112,47 +118,14 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>其他参考标签</value>
   </data>
-  <data name="AccountType_AgentAssignment" xml:space="preserve">
-    <value>代理分配</value>
-  </data>
-  <data name="AccountType_AgentDefinition" xml:space="preserve">
-    <value>代理定义</value>
-  </data>
-  <data name="AccountType_CenterAssignment" xml:space="preserve">
-    <value>中心分配</value>
-  </data>
-  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
-    <value>货币分配</value>
-  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>截止日期标签</value>
-  </data>
-  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
-    <value>目的分配</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>输入型亲</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
-  </data>
-  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
-    <value>标识符指定</value>
-  </data>
-  <data name="AccountType_IdentifierLabel" xml:space="preserve">
-    <value>标识标签</value>
-  </data>
-  <data name="AccountType_IfrsConcept" xml:space="preserve">
-    <value>IFRS概念</value>
-  </data>
-  <data name="AccountType_IsResourceClassification" xml:space="preserve">
-    <value>是资源分类</value>
-  </data>
-  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
-    <value>注意代理分配</value>
-  </data>
-  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
-    <value>注意代理定义</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>注意代理名称标签</value>
@@ -162,12 +135,6 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
-  </data>
-  <data name="AccountType_ResourceAssignment" xml:space="preserve">
-    <value>资源分配</value>
-  </data>
-  <data name="AccountType_ResourceDefinition" xml:space="preserve">
-    <value>资源定义</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>时间1个标签</value>
@@ -375,15 +342,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>当前密码</value>
-  </data>
-  <data name="CustomClassification" xml:space="preserve">
-    <value>帐户分类</value>
-  </data>
-  <data name="CustomClassification_IsDeprecated" xml:space="preserve">
-    <value>已弃用</value>
-  </data>
-  <data name="CustomClassifications" xml:space="preserve">
-    <value>帐户分类</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>数据</value>

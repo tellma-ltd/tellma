@@ -22,7 +22,7 @@ namespace Tellma.Controllers
         private readonly IDefinitionsCache _definitionsCache;
         private readonly ILogger<SettingsController> _logger;
 
-        public DefinitionsController(IDefinitionsCache definitionsCache,  ILogger<SettingsController> logger)
+        public DefinitionsController(IDefinitionsCache definitionsCache, ILogger<SettingsController> logger)
         {
             _definitionsCache = definitionsCache;
             _logger = logger;
@@ -99,10 +99,6 @@ namespace Tellma.Controllers
                 StartDateLabel2 = def.StartDateLabel2,
                 StartDateLabel3 = def.StartDateLabel3,
                 JobVisibility = MapVisibility(def.JobVisibility),
-                RatesVisibility = MapVisibility(def.RatesVisibility),
-                RatesLabel = def.RatesLabel,
-                RatesLabel2 = def.RatesLabel2,
-                RatesLabel3 = def.RatesLabel3,
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
 
             };
@@ -121,10 +117,6 @@ namespace Tellma.Controllers
                 TitleSingular = def.TitleSingular,
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
-
-                AssetTypeVisibility = MapVisibility(def.AssetTypeVisibility),
-                RevenueTypeVisibility = MapVisibility(def.RevenueTypeVisibility),
-                ExpenseTypeVisibility = MapVisibility(def.ExpenseTypeVisibility),
 
                 IdentifierLabel = def.IdentifierLabel,
                 IdentifierLabel2 = def.IdentifierLabel2,
@@ -290,7 +282,7 @@ namespace Tellma.Controllers
             };
         }
 
-        private static LineDefinitionForClient MapLineDefinition(LineDefinition def, Dictionary<int, AccountType> accountTypesDic, Dictionary<string, AgentDefinitionForClient> agentDefs, Dictionary<string, ResourceDefinitionForClient> resourceDefs)
+        private static LineDefinitionForClient MapLineDefinition(LineDefinition def, Dictionary<int, AccountType> accountTypesDic)
         {
             var result = new LineDefinitionForClient
             {
@@ -303,41 +295,11 @@ namespace Tellma.Controllers
 
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
                 ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
-                Entries = def.Entries?.Select(e =>
+                Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
-                    return new LineDefinitionEntryForClient
-                    {
-                        Direction = e.Direction.Value,
-                        AccountTypeParentId = e.AccountTypeParentId,
-                        EntryTypeId = e.EntryTypeId,
-
-                        // Copied from the account type
-
-                        //DueDateLabel = at.DueDateLabel,
-                        //DueDateLabel2 = at.DueDateLabel2,
-                        //DueDateLabel3 = at.DueDateLabel3,
-                        //Time1Label = at.Time1Label,
-                        //Time1Label2 = at.Time1Label2,
-                        //Time1Label3 = at.Time1Label3,
-                        //Time2Label = at.Time2Label,
-                        //Time2Label2 = at.Time2Label2,
-                        //Time2Label3 = at.Time2Label3,
-                        //ExternalReferenceLabel = at.ExternalReferenceLabel,
-                        //ExternalReferenceLabel2 = at.ExternalReferenceLabel2,
-                        //ExternalReferenceLabel3 = at.ExternalReferenceLabel3,
-                        //AdditionalReferenceLabel = at.AdditionalReferenceLabel,
-                        //AdditionalReferenceLabel2 = at.AdditionalReferenceLabel2,
-                        //AdditionalReferenceLabel3 = at.AdditionalReferenceLabel3,
-                        //NotedAgentNameLabel = at.NotedAgentNameLabel,
-                        //NotedAgentNameLabel2 = at.NotedAgentNameLabel2,
-                        //NotedAgentNameLabel3 = at.NotedAgentNameLabel3,
-                        //NotedAmountLabel = at.NotedAmountLabel,
-                        //NotedAmountLabel2 = at.NotedAmountLabel2,
-                        //NotedAmountLabel3 = at.NotedAmountLabel3,
-                        //NotedDateLabel = at.NotedDateLabel,
-                        //NotedDateLabel2 = at.NotedDateLabel2,
-                        //NotedDateLabel3 = at.NotedDateLabel3,
-                    };
+                    Direction = e.Direction.Value,
+                    AccountTypeId = e.AccountTypeId,
+                    EntryTypeId = e.EntryTypeId,
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -366,17 +328,16 @@ namespace Tellma.Controllers
             // Copy across some values from Account Type
             foreach (var entry in result.Entries)
             {
-                var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeParentId ?? 0);
+                var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeId ?? 0);
                 if (accountType == null)
                 {
-                    throw new BadRequestException($"Account type with Id {entry.AccountTypeParentId} was not loaded"); // Just in case
+                    throw new BadRequestException($"Account type with Id {entry.AccountTypeId} was not loaded"); // Just in case
                 }
 
-                entry.IsResourceClassification = accountType.IsResourceClassification ?? false;
                 entry.EntryTypeParentId = accountType.EntryTypeParentId;
-                entry.AgentDefinitionId = accountType.AgentDefinitionId;
-                entry.NotedAgentDefinitionId = accountType.NotedAgentDefinitionId;
-                entry.ResourceDefinitionId = accountType.ResourceDefinitionId;
+                //entry.AgentDefinitionId = accountType.AgentDefinitionId;
+                //entry.NotedAgentDefinitionId = accountType.NotedAgentDefinitionId;
+                //entry.ResourceDefinitionId = accountType.ResourceDefinitionId;
             }
 
             foreach (var col in result.Columns)
@@ -384,38 +345,38 @@ namespace Tellma.Controllers
                 if (col.EntryIndex < result.Entries.Count)
                 {
                     var entry = result.Entries[col.EntryIndex];
-                    var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeParentId.Value);
+                    var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeId.Value);
                     switch (col.ColumnName)
                     {
-                        case nameof(Entry.AgentId):
-                            if (accountType.AgentDefinitionId != null && agentDefs.TryGetValue(accountType.AgentDefinitionId, out var agentDef))
-                            {
-                                col.Label ??= agentDef.TitleSingular;
-                                col.Label2 ??= agentDef.TitleSingular2;
-                                col.Label3 ??= agentDef.TitleSingular3;
-                            }
-                            break;
-                        case nameof(Entry.NotedAgentId):
-                            if (accountType.NotedAgentDefinitionId != null && agentDefs.TryGetValue(accountType.NotedAgentDefinitionId, out var notedAgentDef))
-                            {
-                                col.Label ??= notedAgentDef.TitleSingular;
-                                col.Label2 ??= notedAgentDef.TitleSingular2;
-                                col.Label3 ??= notedAgentDef.TitleSingular3;
-                            }
-                            break;
-                        case nameof(Entry.ResourceId):
-                            if (accountType.ResourceDefinitionId != null && resourceDefs.TryGetValue(accountType.ResourceDefinitionId, out var resourceDef))
-                            {
-                                col.Label ??= resourceDef.TitleSingular;
-                                col.Label2 ??= resourceDef.TitleSingular2;
-                                col.Label3 ??= resourceDef.TitleSingular3;
-                            }
-                            break;
-                        case nameof(Entry.AccountIdentifier):
-                            col.Label ??= accountType?.IdentifierLabel;
-                            col.Label2 ??= accountType?.IdentifierLabel2;
-                            col.Label3 ??= accountType?.IdentifierLabel3;
-                            break;
+                        //case nameof(Entry.AgentId):
+                        //    if (accountType.AgentDefinitionId != null && agentDefs.TryGetValue(accountType.AgentDefinitionId, out var agentDef))
+                        //    {
+                        //        col.Label ??= agentDef.TitleSingular;
+                        //        col.Label2 ??= agentDef.TitleSingular2;
+                        //        col.Label3 ??= agentDef.TitleSingular3;
+                        //    }
+                        //    break;
+                        //case nameof(Entry.NotedAgentId):
+                        //    if (accountType.NotedAgentDefinitionId != null && agentDefs.TryGetValue(accountType.NotedAgentDefinitionId, out var notedAgentDef))
+                        //    {
+                        //        col.Label ??= notedAgentDef.TitleSingular;
+                        //        col.Label2 ??= notedAgentDef.TitleSingular2;
+                        //        col.Label3 ??= notedAgentDef.TitleSingular3;
+                        //    }
+                        //    break;
+                        //case nameof(Entry.ResourceId):
+                        //    if (accountType.ResourceDefinitionId != null && resourceDefs.TryGetValue(accountType.ResourceDefinitionId, out var resourceDef))
+                        //    {
+                        //        col.Label ??= resourceDef.TitleSingular;
+                        //        col.Label2 ??= resourceDef.TitleSingular2;
+                        //        col.Label3 ??= resourceDef.TitleSingular3;
+                        //    }
+                        //    break;
+                        //case nameof(Entry.AccountIdentifier):
+                        //    col.Label ??= accountType?.IdentifierLabel;
+                        //    col.Label2 ??= accountType?.IdentifierLabel2;
+                        //    col.Label3 ??= accountType?.IdentifierLabel3;
+                        //    break;
                         case nameof(Entry.DueDate):
                             col.Label ??= accountType?.DueDateLabel;
                             col.Label2 ??= accountType?.DueDateLabel2;
@@ -487,7 +448,7 @@ namespace Tellma.Controllers
 
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
-                    LineDefinitionId = d.LineDefinitionId,
+                    LineDefinitionId = d.LineDefinitionId.ToString(),
                     IsVisibleByDefault = d.IsVisibleByDefault ?? false
                 })?.ToList() ?? new List<DocumentDefinitionLineDefinitionForClient>(),
 
@@ -764,16 +725,16 @@ namespace Tellma.Controllers
             // Map Lookups, Agents, Resources, Reports (Straight orward)
             var result = new DefinitionsForClient
             {
-                Lookups = lookupDefs.ToDictionary(def => def.Id, def => MapLookupDefinition(def)),
-                Agents = agentDefs.ToDictionary(def => def.Id, def => MapAgentDefinition(def)),
-                Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
-                Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
+                Lookups = lookupDefs.ToDictionary(def => def.Id.ToString(), def => MapLookupDefinition(def)),
+                Agents = agentDefs.ToDictionary(def => def.Id.ToString(), def => MapAgentDefinition(def)),
+                Resources = resourceDefs.ToDictionary(def => def.Id.ToString(), def => MapResourceDefinition(def)),
+                Reports = reportDefs.ToDictionary(def => def.Id.ToString(), def => MapReportDefinition(def)),
             };
 
             // Map Lines and Documents (Special handling)
             var accountTypesDic = accountTypes.ToDictionary(e => e.Id, e => e);
-            result.Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, accountTypesDic, result.Agents, result.Resources));
-            result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
+            result.Lines = lineDefs.ToDictionary(def => def.Id.ToString(), def => MapLineDefinition(def, accountTypesDic));
+            result.Documents = docDefs.ToDictionary(def => def.Id.ToString(), def => MapDocumentDefinition(def, result.Lines));
 
             // Return result
             return new Versioned<DefinitionsForClient>

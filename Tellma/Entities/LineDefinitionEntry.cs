@@ -9,7 +9,7 @@ namespace Tellma.Entities
         public short? Direction { get; set; }
 
         [AlwaysAccessible]
-        public int? AccountTypeParentId { get; set; }
+        public int? AccountTypeId { get; set; }
 
         public int? EntryTypeId { get; set; }
     }
@@ -18,7 +18,8 @@ namespace Tellma.Entities
     {
         [AlwaysAccessible]
         public int? Index { get; set; }
-        public string LineDefinitionId { get; set; }
+
+        public int? LineDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

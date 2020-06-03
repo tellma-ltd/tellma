@@ -103,6 +103,12 @@
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>تصنيف حساب</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>تصنيفات حسابات</value>
+  </data>
   <data name="Accounts" xml:space="preserve">
     <value>حسابات</value>
   </data>
@@ -112,47 +118,14 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الإضافي</value>
   </data>
-  <data name="AccountType_AgentAssignment" xml:space="preserve">
-    <value>تحديد الذمة</value>
-  </data>
-  <data name="AccountType_AgentDefinition" xml:space="preserve">
-    <value>تعريف الذمة</value>
-  </data>
-  <data name="AccountType_CenterAssignment" xml:space="preserve">
-    <value>تعريف المركز</value>
-  </data>
-  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
-    <value>تحديد العملة</value>
-  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>اسم تاريخ الاستحقاق</value>
-  </data>
-  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
-    <value>تعريف الغرض</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>جذر الغرض</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
-  </data>
-  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
-    <value>تحديد رقم التعريف</value>
-  </data>
-  <data name="AccountType_IdentifierLabel" xml:space="preserve">
-    <value>اسم رقم التعريف</value>
-  </data>
-  <data name="AccountType_IfrsConcept" xml:space="preserve">
-    <value>مفهوم IFRS</value>
-  </data>
-  <data name="AccountType_IsResourceClassification" xml:space="preserve">
-    <value>تصنيف أصول</value>
-  </data>
-  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
-    <value>تحديد الذمة المعنية</value>
-  </data>
-  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
-    <value>تعريف الذمة المعنية</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>اسم اسم الذمة المعنية</value>
@@ -162,12 +135,6 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>اسم التاريخ المعني</value>
-  </data>
-  <data name="AccountType_ResourceAssignment" xml:space="preserve">
-    <value>تحديد المورد</value>
-  </data>
-  <data name="AccountType_ResourceDefinition" xml:space="preserve">
-    <value>تعريف المورد</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>اسم الزمن 1</value>
@@ -375,15 +342,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>كلمة المرور الحالية</value>
-  </data>
-  <data name="CustomClassification" xml:space="preserve">
-    <value>تصنيف مخصص</value>
-  </data>
-  <data name="CustomClassification_IsDeprecated" xml:space="preserve">
-    <value>مؤرشف</value>
-  </data>
-  <data name="CustomClassifications" xml:space="preserve">
-    <value>تصنيفات مخصصة</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>

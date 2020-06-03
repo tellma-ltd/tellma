@@ -112,28 +112,6 @@ namespace Tellma.Controllers
             entities.ForEach(entity =>
             {
                 entity.IsAssignable ??= true;
-                entity.AgentAssignment ??= 'N';
-                entity.CenterAssignment ??= 'N';
-                entity.CurrencyAssignment ??= 'N';
-                entity.EntryTypeAssignment ??= 'N';
-                entity.IdentifierAssignment ??= 'N';
-                entity.NotedAgentAssignment ??= 'N';
-                entity.ResourceAssignment ??= 'N';
-
-                if (entity.EntryTypeAssignment == 'N')
-                {
-                    entity.EntryTypeParentId = null;
-                }
-
-                if (entity.AgentAssignment == 'N')
-                {
-                    entity.AgentDefinitionId = null;
-                }
-
-                if (entity.ResourceAssignment == 'N')
-                {
-                    entity.ResourceDefinitionId = null;
-                }
             });
 
             return Task.FromResult(entities);
@@ -141,22 +119,6 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<AccountTypeForSave> entities)
         {
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
-            {
-                // If EntryTypeAssignment is either Account of Entry, then EntryTypeParentId must be specified
-                if (entity.EntryTypeAssignment != 'N' && entity.EntryTypeParentId == null)
-                {
-                    var errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["AccountType_EntryTypeParent"]];
-                    ModelState.AddModelError($"[{index}].{nameof(AccountTypeForSave.EntryTypeParentId)}", errorMsg);
-                }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
-            {
-                return;
-            }
-
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.AccountTypes_Validate__Save(entities, top: remainingErrorCount);

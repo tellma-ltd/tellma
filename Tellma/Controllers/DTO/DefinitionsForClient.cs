@@ -265,11 +265,10 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public int? AccountTypeParentId { get; set; }
+        public int? AccountTypeId { get; set; }
         public int? EntryTypeId { get; set; }
 
         // Computed from AccountTypeParent
-        public bool IsResourceClassification { get; set; }
         public int? EntryTypeParentId { get; set; }
         public string ResourceDefinitionId { get; set; }
         public string AgentDefinitionId { get; set; }
@@ -344,9 +343,6 @@ namespace Tellma.Controllers.Dto
         public string MonetaryValueVisibility { get; set; }
         public int? MonetaryValueDefaultValue { get; set; }
 
-        public string AssetTypeVisibility { get; set; }
-        public string RevenueTypeVisibility { get; set; }
-        public string ExpenseTypeVisibility { get; set; }
         public string DescriptionVisibility { get; set; } // Yes
         public string ExpenseEntryTypeVisibility { get; set; } // Yes
         public string CenterVisibility { get; set; } // Yes
@@ -465,10 +461,6 @@ namespace Tellma.Controllers.Dto
         public string StartDateLabel2 { get; set; }
         public string StartDateLabel3 { get; set; }
         public string JobVisibility { get; set; }
-        public string RatesVisibility { get; set; }
-        public string RatesLabel { get; set; }
-        public string RatesLabel2 { get; set; }
-        public string RatesLabel3 { get; set; }
         public string BankAccountNumberVisibility { get; set; }
     }
 

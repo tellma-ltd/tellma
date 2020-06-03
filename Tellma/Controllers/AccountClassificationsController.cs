@@ -16,21 +16,21 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationController]
-    public class CustomClassificationsController : CrudTreeControllerBase<CustomClassificationForSave, CustomClassification, int>
+    public class AccountClassificationsController : CrudTreeControllerBase<AccountClassificationForSave, AccountClassification, int>
     {
-        public const string BASE_ADDRESS = "custom-classifications";
+        public const string BASE_ADDRESS = "account-classifications";
 
-        private readonly CustomClassificationsService _service;
+        private readonly AccountClassificationsService _service;
         private readonly ILogger _logger;
 
-        public CustomClassificationsController(CustomClassificationsService service, ILogger<CustomClassificationsController> logger) : base(logger)
+        public AccountClassificationsController(AccountClassificationsService service, ILogger<AccountClassificationsController> logger) : base(logger)
         {
             _service = service;
             _logger = logger;
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<CustomClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -42,31 +42,31 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<CustomClassification>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<AccountClassification>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Deprecate(ids: ids, args);
+                var (data, extras) = await _service.Deactivate(ids: ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
                 return Ok(response);
             }, _logger);
         }
 
-        protected override CrudTreeServiceBase<CustomClassificationForSave, CustomClassification, int> GetCrudTreeService()
+        protected override CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int> GetCrudTreeService()
         {
             return _service;
         }
     }
 
-    public class CustomClassificationsService : CrudTreeServiceBase<CustomClassificationForSave, CustomClassification, int>
+    public class AccountClassificationsService : CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int>
     {
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string View => CustomClassificationsController.BASE_ADDRESS;
+        private string View => AccountClassificationsController.BASE_ADDRESS;
 
-        public CustomClassificationsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public AccountClassificationsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -82,17 +82,17 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<CustomClassification> Search(Query<CustomClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<AccountClassification> Search(Query<AccountClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(CustomClassification.Name);
-                var name2 = nameof(CustomClassification.Name2);
-                var name3 = nameof(CustomClassification.Name3);
-                var code = nameof(CustomClassification.Code);
+                var name = nameof(AccountClassification.Name);
+                var name2 = nameof(AccountClassification.Name2);
+                var name3 = nameof(AccountClassification.Name3);
+                var code = nameof(AccountClassification.Code);
 
                 var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
@@ -101,26 +101,26 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<CustomClassificationForSave> entities)
+        protected override async Task SaveValidateAsync(List<AccountClassificationForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.CustomClassifications_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.AccountClassifications_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<CustomClassificationForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountClassificationForSave> entities, bool returnIds)
         {
-            return await _repo.CustomClassifications__Save(entities, returnIds);
+            return await _repo.AccountClassifications__Save(entities, returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.CustomClassifications_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.AccountClassifications_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -130,11 +130,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.CustomClassifications__Delete(ids);
+                await _repo.AccountClassifications__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["CustomClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountClassification"]]);
             }
         }
 
@@ -142,7 +142,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.CustomClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.AccountClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -152,32 +152,32 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.CustomClassifications__DeleteWithDescendants(ids);
+                await _repo.AccountClassifications__DeleteWithDescendants(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["CustomClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["AccountClassification"]]);
             }
         }
 
-        public Task<(List<CustomClassification>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<(List<AccountClassification>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
-            return SetIsDeprecated(ids, args, isDeprecated: false);
+            return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<CustomClassification>, Extras)> Deprecate(List<int> ids, ActionArguments args)
+        public Task<(List<AccountClassification>, Extras)> Deactivate(List<int> ids, ActionArguments args)
         {
-            return SetIsDeprecated(ids, args, isDeprecated: true);
+            return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<CustomClassification>, Extras)> SetIsDeprecated(List<int> ids, ActionArguments args, bool isDeprecated)
+        private async Task<(List<AccountClassification>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
-            await CheckActionPermissions("IsDeprecated", ids);
+            await CheckActionPermissions("IsActive", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.CustomClassifications__Deprecate(ids, isDeprecated);
+            await _repo.AccountClassifications__Activate(ids, isActive);
 
             if (args.ReturnEntities ?? false)
             {
@@ -192,6 +192,5 @@ namespace Tellma.Controllers
                 return (null, null);
             }
         }
-
     }
 }

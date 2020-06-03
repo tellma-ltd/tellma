@@ -43,11 +43,7 @@ import {
   faShare,
   faPrint,
   faCode,
-  faCaretRight,
-  faCaretLeft,
   faFont,
-  faArrowsAltV,
-  faArrowsAltH,
   faImage,
   faPortrait
 } from '@fortawesome/free-solid-svg-icons';
@@ -57,9 +53,9 @@ import { ResourcesMasterComponent } from './resources/resources-master.component
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
 import { UnitsPickerComponent } from './units/units-picker.component';
 import { LookupsPickerComponent } from './lookups/lookups-picker.component';
-import { CustomClassificationsMasterComponent } from './custom-classifications/custom-classifications-master.component';
-import { CustomClassificationsDetailsComponent } from './custom-classifications/custom-classifications-details.component';
-import { CustomClassificationsPickerComponent } from './custom-classifications/custom-classifications-picker.component';
+import { AccountClassificationsMasterComponent } from './account-classifications/account-classifications-master.component';
+import { AccountClassificationsDetailsComponent } from './account-classifications/account-classifications-details.component';
+import { AccountClassificationsPickerComponent } from './account-classifications/account-classifications-picker.component';
 import { AccountTypesMasterComponent } from './account-types/account-types-master.component';
 import { AccountTypesDetailsComponent } from './account-types/account-types-details.component';
 import { AccountTypesPickerComponent } from './account-types/account-types-picker.component';
@@ -204,15 +200,15 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Custom Classifications
+      // Account Classifications
       {
-        path: 'custom-classifications',
-        component: CustomClassificationsMasterComponent,
+        path: 'account-classifications',
+        component: AccountClassificationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'custom-classifications/:id',
-        component: CustomClassificationsDetailsComponent,
+        path: 'account-classifications/:id',
+        component: AccountClassificationsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -407,9 +403,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     ResourcesDetailsComponent,
     UnitsPickerComponent,
     LookupsPickerComponent,
-    CustomClassificationsMasterComponent,
-    CustomClassificationsDetailsComponent,
-    CustomClassificationsPickerComponent,
+    AccountClassificationsMasterComponent,
+    AccountClassificationsDetailsComponent,
+    AccountClassificationsPickerComponent,
     AccountTypesMasterComponent,
     AccountTypesDetailsComponent,
     AccountTypesPickerComponent,

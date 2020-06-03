@@ -19,7 +19,7 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationController]
-    public class ReportDefinitionsController : CrudControllerBase<ReportDefinitionForSave, ReportDefinition, string>
+    public class ReportDefinitionsController : CrudControllerBase<ReportDefinitionForSave, ReportDefinition, int>
     {
         public const string BASE_ADDRESS = "report-definitions";
 
@@ -30,7 +30,7 @@ namespace Tellma.Controllers
             _service = service;
         }
 
-        protected override CrudServiceBase<ReportDefinitionForSave, ReportDefinition, string> GetCrudService()
+        protected override CrudServiceBase<ReportDefinitionForSave, ReportDefinition, int> GetCrudService()
         {
             return _service;
         }
@@ -41,14 +41,14 @@ namespace Tellma.Controllers
             return base.OnSuccessfulSave(data, extras);
         }
 
-        protected override Task OnSuccessfulDelete(List<string> ids)
+        protected override Task OnSuccessfulDelete(List<int> ids)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             return base.OnSuccessfulDelete(ids);
         }
     }
 
-    public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, string>
+    public class ReportDefinitionsService : CrudServiceBase<ReportDefinitionForSave, ReportDefinition, int>
     {
 
         private readonly IStringLocalizer _localizer;
@@ -103,9 +103,9 @@ namespace Tellma.Controllers
             entities.ForEach(entity =>
             {
                 // Default Id
-                if (string.IsNullOrWhiteSpace(entity.Id))
+                if (string.IsNullOrWhiteSpace(entity.Code))
                 {
-                    entity.Id = Guid.NewGuid().ToString("D");
+                    entity.Code = Guid.NewGuid().ToString("D");
                 }
 
                 // Summary reports
@@ -167,15 +167,6 @@ namespace Tellma.Controllers
         {
             foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
             {
-                // Ensure that Id adhers to maximum size
-                if (entity.Id.Length > 50)
-                {
-                    string path = $"[{index}].{nameof(entity.Id)}";
-                    string msg = _localizer[Services.Utilities.Constants.Error_Field0LengthMaximumOf1, _localizer["Id"], 3];
-
-                    ModelState.AddModelError(path, msg);
-                }
-
                 if (entity.ShowInMainMenu ?? false)
                 {
                     if (string.IsNullOrWhiteSpace(entity.Title))
@@ -203,13 +194,13 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<string>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
         {
             await _repo.ReportDefinitions__Save(entities);
             return entities.Select(e => e.Id).ToList();
         }
 
-        protected override async Task DeleteValidateAsync(List<string> ids)
+        protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
@@ -219,7 +210,7 @@ namespace Tellma.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task DeleteExecuteAsync(List<string> ids)
+        protected override async Task DeleteExecuteAsync(List<int> ids)
         {
             try
             {

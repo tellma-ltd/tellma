@@ -95,17 +95,6 @@
     </t-text-editor>
   </t-form-group>
 
-  <!-- IfrsConcept -->
-  <t-form-group class="t-form-group" [label]="'AccountType_IfrsConcept' | translate"
-    [serverErrors]="model?.serverErrors?.IfrsConceptId">
-    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IfrsConcept">
-      <t-view-link link="../../ifrs-concepts" [itemId]="model?.IfrsConceptId">{{
-        ws.getMultilingualValue('IfrsConcept', model?.IfrsConceptId, 'Label') }}</t-view-link>
-    </t-restricted>
-    <t-ifrs-concepts-picker *ngIf="isEdit" [(ngModel)]="model.IfrsConceptId">
-    </t-ifrs-concepts-picker>
-  </t-form-group>
-
   <!-- Is Assignable -->
   <t-form-group class="t-form-group" [label]="'IsAssignable' | translate"
     [serverErrors]="model?.serverErrors?.IsAssignable">
@@ -118,7 +107,7 @@
 
   <!-- Is Active -->
   <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+    <t-auto-cell collection="AccountType" [entity]="model" path="IsActive"></t-auto-cell>
   </t-form-group>
 
   <!-- IsSystem -->
@@ -127,131 +116,7 @@
   </t-form-group>
 
   <ul ngbNav #tabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs" [destroyOnHide]="true">
-    <!-- Labels -->
-    <!-- <li ngbNavItem="labels">
-          <a ngbNavLink>
-            <span class="small t-slightly-bold">{{ 'Labels' | translate }}</span>
-          </a>
-          <ng-template ngbNavContent>
-            <div class="row m-0 pt-2 pt-sm-3">
-    
-            </div>
-          </ng-template>
-        </li> -->
-
-    <!-- Assignments -->
-    <li ngbNavItem="assignments">
-      <a ngbNavLink>
-        <span class="small t-slightly-bold">{{ 'Assignments' | translate }}</span>
-      </a>
-      <ng-template ngbNavContent>
-        <div class="row m-0 pt-2 pt-sm-3">
-          <!-- Currency Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_CurrencyAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.CurrencyAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.CurrencyAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.CurrencyAssignment" [choices]="choicesRequiredAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Agent Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_AgentAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.AgentAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.AgentAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.AgentAssignment" [choices]="choicesOptionalAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Agent Definition -->
-          <t-form-group class="t-form-group" *ngIf="showAgentDefinitionId(model)"
-            [label]="'AccountType_AgentDefinition' | translate" [serverErrors]="model?.serverErrors?.AgentDefinitionId">
-            <div *ngIf="!isEdit">{{ formatAgentDefinitionId(model.AgentDefinitionId) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.AgentDefinitionId" [choices]="choicesAgentDefinitionId"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Noted Agent Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_NotedAgentAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.NotedAgentAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.NotedAgentAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedAgentAssignment" [choices]="choicesEntryAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Noted Agent Definition -->
-          <t-form-group class="t-form-group" *ngIf="showNotedAgentDefinitionId(model)"
-            [label]="'AccountType_NotedAgentDefinition' | translate"
-            [serverErrors]="model?.serverErrors?.NotedAgentDefinitionId">
-            <div *ngIf="!isEdit">{{ formatNotedAgentDefinitionId(model.NotedAgentDefinitionId) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedAgentDefinitionId"
-              [choices]="choicesNotedAgentDefinitionId" required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Resource Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_ResourceAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.ResourceAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.ResourceAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceAssignment" [choices]="choicesOptionalAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Resource Definition -->
-          <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
-            [label]="'AccountType_ResourceDefinition' | translate"
-            [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
-            <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Center Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_CenterAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.CenterAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.CenterAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterAssignment" [choices]="choicesRequiredAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Entry Type Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_EntryTypeAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.EntryTypeAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.EntryTypeAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.EntryTypeAssignment" [choices]="choicesOptionalAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-
-          <!-- Entry Type Parent -->
-          <t-form-group class="t-form-group" *ngIf="showEntryTypeParent(model)"
-            [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EntryTypeParent">
-              <t-view-link link="../../entry-types" [itemId]="model?.EntryTypeParentId">{{
-        ws.getMultilingualValue('EntryType', model?.EntryTypeParentId, 'Name') }}</t-view-link>
-            </t-restricted>
-            <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeParentId" required>
-            </t-entry-types-picker>
-          </t-form-group>
-
-          <!-- Identifier Assignment -->
-          <t-form-group class="t-form-group" [label]="'AccountType_IdentifierAssignment' | translate"
-            [serverErrors]="model?.serverErrors?.IdentifierAssignment">
-            <div *ngIf="!isEdit">{{ formatAssignment(model.IdentifierAssignment) }}</div>
-            <t-selector *ngIf="isEdit" [(ngModel)]="model.IdentifierAssignment" [choices]="choicesOptionalAssignment"
-              required>
-            </t-selector>
-          </t-form-group>
-        </div>
-      </ng-template>
-    </li>
-
+   
     <!-- Labels -->
     <li ngbNavItem="labels">
       <a ngbNavLink>
@@ -259,32 +124,6 @@
       </a>
       <ng-template ngbNavContent>
         <div class="row m-0 pt-2 pt-sm-3">
-
-          <!-- IdentifierLabel -->
-          <t-form-group class="t-form-group" [label]="('AccountType_IdentifierLabel' | translate) + ws.primaryPostfix"
-            [serverErrors]="model?.serverErrors?.IdentifierLabel">
-            <div *ngIf="!isEdit">{{ model?.IdentifierLabel }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.IdentifierLabel" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
-
-          <!-- IdentifierLabel2 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.SecondaryLanguageId"
-            [label]="('AccountType_IdentifierLabel' | translate) + ws.secondaryPostfix"
-            [serverErrors]="model?.serverErrors?.IdentifierLabel2">
-            <div *ngIf="!isEdit">{{ model?.IdentifierLabel2 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.IdentifierLabel2" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
-
-          <!-- IdentifierLabel3 -->
-          <t-form-group class="t-form-group" *ngIf="ws.settings.TernaryLanguageId"
-            [label]="('AccountType_IdentifierLabel' | translate) + ws.ternaryPostfix"
-            [serverErrors]="model?.serverErrors?.IdentifierLabel3">
-            <div *ngIf="!isEdit">{{ model?.IdentifierLabel3 }}</div>
-            <t-text-editor *ngIf="isEdit" [(ngModel)]="model.IdentifierLabel3" [ngModelOptions]="{ updateOn: 'blur' }">
-            </t-text-editor>
-          </t-form-group>
 
           <!-- DueDateLabel -->
           <t-form-group class="t-form-group" [label]="('AccountType_DueDateLabel' | translate) + ws.primaryPostfix"

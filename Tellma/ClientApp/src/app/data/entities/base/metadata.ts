@@ -8,7 +8,7 @@ import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
 import { metadata_VoucherBooklet } from '../_temp';
-import { metadata_CustomClassification } from '../custom-classification';
+import { metadata_AccountClassification } from '../account-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
@@ -42,7 +42,7 @@ export const metadata: {
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
     Resource: metadata_Resource,
-    CustomClassification: metadata_CustomClassification,
+    AccountClassification: metadata_AccountClassification,
     IfrsConcept: metadata_IfrsConcept,
     AccountType: metadata_AccountType,
     Account: metadata_Account,

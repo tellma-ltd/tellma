@@ -11,7 +11,7 @@ namespace Tellma.Entities
 
     public class DocumentDefinitionMarkupTemplate : DocumentDefinitionMarkupTemplateForSave
     {
-        public string DocumentDefinitionId { get; set; }
+        public int? DocumentDefinitionId { get; set; }
 
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }

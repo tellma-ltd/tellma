@@ -31,6 +31,21 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
+        [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description2 { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
+        [StringLength(1024)]
+        [AlwaysAccessible]
+        public string Description3 { get; set; }
+
         [Display(Name = "Code")]
         [Required]
         [StringLength(255)]

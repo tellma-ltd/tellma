@@ -103,6 +103,12 @@
   <data name="Account_Type" xml:space="preserve">
     <value>Type</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>Account Classification</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>Account Classifications</value>
+  </data>
   <data name="Accounts" xml:space="preserve">
     <value>Accounts</value>
   </data>
@@ -112,47 +118,14 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>Additional Reference Label</value>
   </data>
-  <data name="AccountType_AgentAssignment" xml:space="preserve">
-    <value>Agent Assignment</value>
-  </data>
-  <data name="AccountType_AgentDefinition" xml:space="preserve">
-    <value>Agent Definition</value>
-  </data>
-  <data name="AccountType_CenterAssignment" xml:space="preserve">
-    <value>Center Assignment</value>
-  </data>
-  <data name="AccountType_CurrencyAssignment" xml:space="preserve">
-    <value>Currency Assignment</value>
-  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>Due Date Label</value>
-  </data>
-  <data name="AccountType_EntryTypeAssignment" xml:space="preserve">
-    <value>Purpose Assignment</value>
   </data>
   <data name="AccountType_EntryTypeParent" xml:space="preserve">
     <value>Purpose Parent</value>
   </data>
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
-  </data>
-  <data name="AccountType_IdentifierAssignment" xml:space="preserve">
-    <value>Identifier Assignment</value>
-  </data>
-  <data name="AccountType_IdentifierLabel" xml:space="preserve">
-    <value>Identifier Label</value>
-  </data>
-  <data name="AccountType_IfrsConcept" xml:space="preserve">
-    <value>IFRS Concept</value>
-  </data>
-  <data name="AccountType_IsResourceClassification" xml:space="preserve">
-    <value>Is Resource Classification</value>
-  </data>
-  <data name="AccountType_NotedAgentAssignment" xml:space="preserve">
-    <value>Noted Agent Assignment</value>
-  </data>
-  <data name="AccountType_NotedAgentDefinition" xml:space="preserve">
-    <value>Noted Agent Definition</value>
   </data>
   <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>Noted Agent Name Label</value>
@@ -162,12 +135,6 @@
   </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
-  </data>
-  <data name="AccountType_ResourceAssignment" xml:space="preserve">
-    <value>Resource Assignment</value>
-  </data>
-  <data name="AccountType_ResourceDefinition" xml:space="preserve">
-    <value>Resource Definition</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>Time 1 Label</value>
@@ -375,15 +342,6 @@
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current Password</value>
-  </data>
-  <data name="CustomClassification" xml:space="preserve">
-    <value>Custom Classification</value>
-  </data>
-  <data name="CustomClassification_IsDeprecated" xml:space="preserve">
-    <value>Is Deprecated</value>
-  </data>
-  <data name="CustomClassifications" xml:space="preserve">
-    <value>Custom Classifications</value>
   </data>
   <data name="Data" xml:space="preserve">
     <value>Data</value>

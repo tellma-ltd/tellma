@@ -103,13 +103,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
             li('IsActive')
         ]
     },
-    'custom-classifications': {
-        name: 'CustomClassifications',
+    'account-classifications': {
+        name: 'AccountClassifications',
         read: true,
         update: true,
         delete: true,
         actions: [
-            li('IsDeprecated')
+            li('IsActive')
         ]
     },
     'accounts': {

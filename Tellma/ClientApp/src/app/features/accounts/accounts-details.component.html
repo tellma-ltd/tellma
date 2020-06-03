@@ -77,15 +77,15 @@
         </t-account-types-picker>
     </t-form-group>
 
-    <!-- Custom Classification -->
-    <t-form-group class="t-form-group" [label]="'Account_CustomClassification' | translate"
-        [serverErrors]="model?.serverErrors?.CustomClassificationId">
-        <t-view-link *ngIf="!isEdit" link="../../custom-classifications" [itemId]="model?.CustomClassificationId">
-            <t-auto-cell collection="Account" path="CustomClassification" [entity]="model">
+    <!-- Account Classification -->
+    <t-form-group class="t-form-group" [label]="'Account_AccountClassification' | translate"
+        [serverErrors]="model?.serverErrors?.AccountClassificationId">
+        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.AccountClassificationId">
+            <t-auto-cell collection="Account" path="AccountClassification" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-custom-classifications-picker *ngIf="isEdit" [(ngModel)]="model.CustomClassificationId">
-        </t-custom-classifications-picker>
+        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
+        </t-account-classifications-picker>
     </t-form-group>
 
     <!-- Is Smart -->

@@ -5,8 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinition", Plural = "LineDefinitions")]
-    public class LineDefinitionForSave<TEntry, TColumn, TStateReason> : EntityWithKey<string>
+    public class LineDefinitionForSave<TEntry, TColumn, TStateReason> : EntityWithKey<int>
     {
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]

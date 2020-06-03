@@ -70,8 +70,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'ifrs-concepts', sortKey: 400
         },
         {
-          label: 'CustomClassifications', icon: 'sitemap', link: '../custom-classifications',
-          view: 'custom-classifications', sortKey: 500
+          label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
+          view: 'account-classifications', sortKey: 500
         },
       ]
     },
@@ -666,7 +666,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get showNoItemsFound(): boolean {
-    return this.mainMenu.every(section => !this.showSection(section.items));
+    return this.mainMenu.every(section => !this.showSection(section.items)) && !this.showSection(this.quickAccess);
   }
 
   public canView(view: string) {

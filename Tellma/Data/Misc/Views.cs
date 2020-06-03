@@ -69,14 +69,14 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "custom-classifications",
-                        Name = "CustomClassifications",
+                        Id = "account-classifications",
+                        Name = "AccountClassifications",
                         Read = true,
                         Update = true,
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
-                            Li("IsDeprecated")
+                            Li("IsActive")
                         }
                     },
                     new ViewInfo {
