@@ -18,9 +18,6 @@
 :r .\000\j_ReportDefinitions.sql
 :r .\000\z_Translations.sql
 
-RETURN
-
-
 IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
 	:r .\03_Basic\a_Currencies.sql
