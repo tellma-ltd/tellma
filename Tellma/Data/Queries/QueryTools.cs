@@ -51,21 +51,6 @@ namespace Tellma.Data.Queries
             return (path, property, modifier);
         }
 
-        private static readonly ConcurrentDictionary<Type, IEnumerable<PropertyInfo>> _cacheGetMappedProperties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
-
-        /// <summary>
-        /// Retrieves all properties that are not navigation, and that do not have the <see cref="NotMappedAttribute"/>
-        /// adorning them, the implementation uses a memory cache internally for maximum performance
-        /// </summary>
-        public static IEnumerable<PropertyInfo> GetMappedProperties(this Type type)
-        {
-            return _cacheGetMappedProperties.GetOrAdd(type, (t) =>
-            {
-                return t.GetPropertiesBaseFirst(BindingFlags.Public | BindingFlags.Instance)
-                .Where(e => e.GetCustomAttribute<NotMappedAttribute>() == null && !e.PropertyType.IsList() && !e.PropertyType.IsEntity());
-            });
-        }
-
         /// <summary>
         /// This is alternative for <see cref="Type.GetProperties"/>
         /// that returns base class properties before inherited class properties

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Tellma.Controllers.Templating;
 using System.Text;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Controllers
 {
@@ -1646,12 +1647,12 @@ namespace Tellma.Controllers
         // Simple properties to include on the level of each entity type
         // -------------------------------------------------------------
 
-        private static IEnumerable<string> DocumentProps => typeof(Document).GetMappedProperties().Select(p => p.Name);
-        private static IEnumerable<string> LineProps => typeof(Line).GetMappedProperties().Select(p => p.Name);
-        private static IEnumerable<string> EntryProps => typeof(Entry).GetMappedProperties().Select(p => p.Name);
-        private static IEnumerable<string> AttachmentProps => typeof(Attachment).GetMappedProperties().Select(p => p.Name);
-        private static IEnumerable<string> DocumentAssignmentProps => typeof(DocumentAssignment).GetMappedProperties().Select(p => p.Name);
-        private static IEnumerable<string> DocumentStateChangeProps => typeof(DocumentStateChange).GetMappedProperties().Select(p => p.Name);
+        private static IEnumerable<string> DocumentProps => TypeDescriptor.Get<Document>().SimpleProperties.Select(p => p.Name);
+        private static IEnumerable<string> LineProps => TypeDescriptor.Get<Line>().SimpleProperties.Select(p => p.Name);
+        private static IEnumerable<string> EntryProps => TypeDescriptor.Get<Entry>().SimpleProperties.Select(p => p.Name);
+        private static IEnumerable<string> AttachmentProps => TypeDescriptor.Get<Attachment>().SimpleProperties.Select(p => p.Name);
+        private static IEnumerable<string> DocumentAssignmentProps => TypeDescriptor.Get<DocumentAssignment>().SimpleProperties.Select(p => p.Name);
+        private static IEnumerable<string> DocumentStateChangeProps => TypeDescriptor.Get<DocumentStateChange>().SimpleProperties.Select(p => p.Name);
         private static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
         private static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
         private static IEnumerable<string> UserProps => Enum(nameof(Entities.User.Name), nameof(Entities.User.Name2), nameof(Entities.User.Name3), nameof(Entities.User.ImageId));

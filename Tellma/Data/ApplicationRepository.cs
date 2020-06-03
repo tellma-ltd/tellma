@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
 using Tellma.Services.MultiTenancy;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data
 {
@@ -517,7 +518,7 @@ namespace Tellma.Data
 
                 if (await reader.ReadAsync(cancellation))
                 {
-                    var props = typeof(Settings).GetMappedProperties();
+                    var props = TypeDescriptor.Get<Settings>().SimpleProperties;
                     foreach (var prop in props)
                     {
                         // get property value
@@ -539,7 +540,7 @@ namespace Tellma.Data
                 if (await reader.ReadAsync(cancellation))
                 {
                     settings.FunctionalCurrency = new Currency();
-                    var props = typeof(Currency).GetMappedProperties();
+                    var props = TypeDescriptor.Get<Currency>().SimpleProperties;
                     foreach (var prop in props)
                     {
                         // get property value
@@ -641,7 +642,7 @@ namespace Tellma.Data
                 }
 
                 // Next load lookup definitions
-                var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+                var lookupDefinitionProps = TypeDescriptor.Get<LookupDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -660,7 +661,7 @@ namespace Tellma.Data
                 }
 
                 // Next load agent definitions
-                var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                var agentDefinitionProps = TypeDescriptor.Get<AgentDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -679,7 +680,7 @@ namespace Tellma.Data
                 }
 
                 // Next load resource definitions
-                var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+                var resourceDefinitionProps = TypeDescriptor.Get<ResourceDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -701,7 +702,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var reportDefinitionsDic = new Dictionary<int, ReportDefinition>();
-                var reportDefinitionProps = typeof(ReportDefinition).GetMappedProperties();
+                var reportDefinitionProps = TypeDescriptor.Get<ReportDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportDefinition();
@@ -718,7 +719,7 @@ namespace Tellma.Data
                 }
 
                 // Parameters
-                var reportParameterDefinitionProps = typeof(ReportParameterDefinition).GetMappedProperties();
+                var reportParameterDefinitionProps = TypeDescriptor.Get<ReportParameterDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -738,7 +739,7 @@ namespace Tellma.Data
                 }
 
                 // Select
-                var reportSelectDefinitionProps = typeof(ReportSelectDefinition).GetMappedProperties();
+                var reportSelectDefinitionProps = TypeDescriptor.Get<ReportSelectDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -758,7 +759,7 @@ namespace Tellma.Data
                 }
 
                 // Rows
-                var reportRowDefinitionProps = typeof(ReportRowDefinition).GetMappedProperties();
+                var reportRowDefinitionProps = TypeDescriptor.Get<ReportRowDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -778,7 +779,7 @@ namespace Tellma.Data
                 }
 
                 // Columns
-                var reportColumnDefinitionProps = typeof(ReportColumnDefinition).GetMappedProperties();
+                var reportColumnDefinitionProps = TypeDescriptor.Get<ReportColumnDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -798,7 +799,7 @@ namespace Tellma.Data
                 }
 
                 // Measures
-                var reportMeasureDefinitionProps = typeof(ReportMeasureDefinition).GetMappedProperties();
+                var reportMeasureDefinitionProps = TypeDescriptor.Get<ReportMeasureDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -823,7 +824,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var documentDefinitionsDic = new Dictionary<int, DocumentDefinition>();
-                var documentDefinitionProps = typeof(DocumentDefinition).GetMappedProperties();
+                var documentDefinitionProps = TypeDescriptor.Get<DocumentDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new DocumentDefinition();
@@ -840,7 +841,7 @@ namespace Tellma.Data
                 }
 
                 // Document Definitions Line Definitions
-                var documentDefinitionLineDefinitionProps = typeof(DocumentDefinitionLineDefinition).GetMappedProperties();
+                var documentDefinitionLineDefinitionProps = TypeDescriptor.Get<DocumentDefinitionLineDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -861,7 +862,7 @@ namespace Tellma.Data
 
                 // Load the markup templates
                 var markupTemplates = new Dictionary<int, MarkupTemplate>();
-                var markupTemplateProps = typeof(MarkupTemplate).GetMappedProperties();
+                var markupTemplateProps = TypeDescriptor.Get<MarkupTemplate>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -879,7 +880,7 @@ namespace Tellma.Data
                 }
 
                 // Document Definitions Markup Templates
-                var documentDefinitionMarkupTemplateProps = typeof(DocumentDefinitionMarkupTemplate).GetMappedProperties();
+                var documentDefinitionMarkupTemplateProps = TypeDescriptor.Get<DocumentDefinitionMarkupTemplate>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -908,7 +909,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var lineDefinitionsDic = new Dictionary<int, LineDefinition>();
-                var lineDefinitionProps = typeof(LineDefinition).GetMappedProperties();
+                var lineDefinitionProps = TypeDescriptor.Get<LineDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinition();
@@ -925,7 +926,7 @@ namespace Tellma.Data
                 }
 
                 // line definition entries
-                var lineDefinitionEntryProps = typeof(LineDefinitionEntry).GetMappedProperties();
+                var lineDefinitionEntryProps = TypeDescriptor.Get<LineDefinitionEntry>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -945,7 +946,7 @@ namespace Tellma.Data
                 }
 
                 // line definition columns
-                var lineDefinitionColumnProps = typeof(LineDefinitionColumn).GetMappedProperties();
+                var lineDefinitionColumnProps = TypeDescriptor.Get<LineDefinitionColumn>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -965,7 +966,7 @@ namespace Tellma.Data
                 }
 
                 // line definition state reason
-                var lineDefinitionStateReasonProps = typeof(LineDefinitionStateReason).GetMappedProperties();
+                var lineDefinitionStateReasonProps = TypeDescriptor.Get<LineDefinitionStateReason>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -1946,7 +1947,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Arguments
-            var mappedProps = typeof(SettingsForSave).GetMappedProperties();
+            var mappedProps = TypeDescriptor.Get<SettingsForSave>().SimpleProperties;
 
             var sqlBuilder = new System.Text.StringBuilder();
             sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
@@ -2275,7 +2276,7 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
-            var props = typeof(ResourceForSave).GetMappedProperties();
+            var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -2889,7 +2890,7 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
-            var props = typeof(AccountForSave).GetMappedProperties();
+            var props = TypeDescriptor.Get<AccountForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3503,7 +3504,7 @@ namespace Tellma.Data
             using var reader = await cmd.ExecuteReaderAsync();
 
             // Documents
-            var docProps = typeof(DocumentForSave).GetMappedProperties();
+            var docProps = TypeDescriptor.Get<DocumentForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3522,7 +3523,7 @@ namespace Tellma.Data
 
             // Lines
             await reader.NextResultAsync();
-            var lineProps = typeof(LineForSave).GetMappedProperties();
+            var lineProps = TypeDescriptor.Get<LineForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3542,7 +3543,7 @@ namespace Tellma.Data
 
             // Entries         
             await reader.NextResultAsync();
-            var entryProps = typeof(EntryForSave).GetMappedProperties();
+            var entryProps = TypeDescriptor.Get<EntryForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
