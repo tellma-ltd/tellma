@@ -1,11 +1,11 @@
 ﻿INSERT INTO @ResourceDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'property-plant-equipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'Assets',60),
-(1, N'office-equipment', N'Office Equipment', N'Office Equipment', N'fax', N'Assets',60),
-(2, N'computer-equipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'Assets',60),
-(3, N'machinery', N'Machinery', N'Machineries', N'cogs', N'Assets',70),
-(4, N'vehicles', N'Vehicles', N'Vehicles', N'car', N'Assets',40),
-(5, N'buildings', N'Building', N'Buildings', N'building', N'Assets',50),
-(6, N'investment-properties', N'Investment Property', N'Investment Properties', N'city', N'Assets',80),
+(0, N'property-plant-equipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'FixedAssets',60),
+(1, N'office-equipment', N'Office Equipment', N'Office Equipment', N'fax', N'FixedAssets',60),
+(2, N'computer-equipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',60),
+(3, N'machinery', N'Machinery', N'Machineries', N'cogs', N'FixedAssets',70),
+(4, N'vehicles', N'Vehicles', N'Vehicles', N'car', N'FixedAssets',40),
+(5, N'buildings', N'Building', N'Buildings', N'building', N'FixedAssets',50),
+(6, N'investment-properties', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',80),
 (7, N'raw-grains', N'Raw Grain', N'Raw Grains', N'tractor', N'Purchasing',90),
 (8, N'finished-grains', N'Cleaned Grain', N'Cleaned Grains', N'boxes', N'Production',100),
 (9, N'byproducts-grains', N'Reject Grain', N'Reject Grains', N'recycle', N'Production',60),
@@ -19,7 +19,6 @@
 (17, N'construction-materials', N'Construction Material', N'Construction Materials', N'building', N'Purchasing',126),
 (18, N'employee-benefits', N'Employee Benefit', N'Employee Benefits', N'user-check', N'HumanCapital',127),
 (19, N'finished-services', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',128);
-
 
 
 	UPDATE @ResourceDefinitions

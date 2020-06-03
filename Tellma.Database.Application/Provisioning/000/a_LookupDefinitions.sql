@@ -2,7 +2,7 @@
 (0, N'it-equipment-manufacturers', N'IT Manufacturer', N'IT Manufacturers', N'microchip', N'Administration',60),
 (1, N'operating-systems', N'Operating System', N'Operating Systems', N'laptop-code', N'Administration',60),
 (2, N'body-colors', N'Body Color', N'Body Colors', N'palette', N'Administration',60),
-(3, N'vehicle-makes', N'Vehicle Make', N'Vehicle Makes', N'cars', N'Administration',70),
+(3, N'vehicle-makes', N'Vehicle Make', N'Vehicle Makes', N'car', N'Administration',70),
 (4, N'steel-thicknesses', N'Thickness', N'Thicknesses', N'ruler', N'Administration',40),
 (5, N'paper-origins', N'Paper Origin', N'Paper Origins', N'map', N'Administration',50),
 (6, N'paper-groups', N'Paper Group', N'Paper Groups', N'copy', N'Administration',80),
