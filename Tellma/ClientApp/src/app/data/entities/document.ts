@@ -44,7 +44,7 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
 }
 
 export interface Document extends DocumentForSave<Line, Attachment> {
-    DefinitionId?: string;
+    DefinitionId?: number;
     State?: DocumentState;
     StateAt?: string;
     Comment?: string;
@@ -97,7 +97,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             format: (doc: Document) => !!doc.SerialNumber ? formatSerial(doc.SerialNumber, getPrefix(ws, doc.DefinitionId || definitionId), getCodeWidth(ws, doc.DefinitionId || definitionId)) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
+                DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
                 PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
                 Clearance: {

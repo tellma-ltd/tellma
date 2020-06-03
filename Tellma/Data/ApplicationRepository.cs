@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
 using Tellma.Services.MultiTenancy;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data
 {
@@ -517,7 +518,7 @@ namespace Tellma.Data
 
                 if (await reader.ReadAsync(cancellation))
                 {
-                    var props = typeof(Settings).GetMappedProperties();
+                    var props = TypeDescriptor.Get<Settings>().SimpleProperties;
                     foreach (var prop in props)
                     {
                         // get property value
@@ -539,7 +540,7 @@ namespace Tellma.Data
                 if (await reader.ReadAsync(cancellation))
                 {
                     settings.FunctionalCurrency = new Currency();
-                    var props = typeof(Currency).GetMappedProperties();
+                    var props = TypeDescriptor.Get<Currency>().SimpleProperties;
                     foreach (var prop in props)
                     {
                         // get property value
@@ -641,7 +642,7 @@ namespace Tellma.Data
                 }
 
                 // Next load lookup definitions
-                var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+                var lookupDefinitionProps = TypeDescriptor.Get<LookupDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -660,7 +661,7 @@ namespace Tellma.Data
                 }
 
                 // Next load agent definitions
-                var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                var agentDefinitionProps = TypeDescriptor.Get<AgentDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -679,7 +680,7 @@ namespace Tellma.Data
                 }
 
                 // Next load resource definitions
-                var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+                var resourceDefinitionProps = TypeDescriptor.Get<ResourceDefinition>().SimpleProperties;
 
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -701,7 +702,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var reportDefinitionsDic = new Dictionary<int, ReportDefinition>();
-                var reportDefinitionProps = typeof(ReportDefinition).GetMappedProperties();
+                var reportDefinitionProps = TypeDescriptor.Get<ReportDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new ReportDefinition();
@@ -718,7 +719,7 @@ namespace Tellma.Data
                 }
 
                 // Parameters
-                var reportParameterDefinitionProps = typeof(ReportParameterDefinition).GetMappedProperties();
+                var reportParameterDefinitionProps = TypeDescriptor.Get<ReportParameterDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -738,7 +739,7 @@ namespace Tellma.Data
                 }
 
                 // Select
-                var reportSelectDefinitionProps = typeof(ReportSelectDefinition).GetMappedProperties();
+                var reportSelectDefinitionProps = TypeDescriptor.Get<ReportSelectDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -758,7 +759,7 @@ namespace Tellma.Data
                 }
 
                 // Rows
-                var reportRowDefinitionProps = typeof(ReportRowDefinition).GetMappedProperties();
+                var reportRowDefinitionProps = TypeDescriptor.Get<ReportRowDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -778,7 +779,7 @@ namespace Tellma.Data
                 }
 
                 // Columns
-                var reportColumnDefinitionProps = typeof(ReportColumnDefinition).GetMappedProperties();
+                var reportColumnDefinitionProps = TypeDescriptor.Get<ReportColumnDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -798,7 +799,7 @@ namespace Tellma.Data
                 }
 
                 // Measures
-                var reportMeasureDefinitionProps = typeof(ReportMeasureDefinition).GetMappedProperties();
+                var reportMeasureDefinitionProps = TypeDescriptor.Get<ReportMeasureDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -823,7 +824,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var documentDefinitionsDic = new Dictionary<int, DocumentDefinition>();
-                var documentDefinitionProps = typeof(DocumentDefinition).GetMappedProperties();
+                var documentDefinitionProps = TypeDescriptor.Get<DocumentDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new DocumentDefinition();
@@ -840,7 +841,7 @@ namespace Tellma.Data
                 }
 
                 // Document Definitions Line Definitions
-                var documentDefinitionLineDefinitionProps = typeof(DocumentDefinitionLineDefinition).GetMappedProperties();
+                var documentDefinitionLineDefinitionProps = TypeDescriptor.Get<DocumentDefinitionLineDefinition>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -861,7 +862,7 @@ namespace Tellma.Data
 
                 // Load the markup templates
                 var markupTemplates = new Dictionary<int, MarkupTemplate>();
-                var markupTemplateProps = typeof(MarkupTemplate).GetMappedProperties();
+                var markupTemplateProps = TypeDescriptor.Get<MarkupTemplate>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -879,7 +880,7 @@ namespace Tellma.Data
                 }
 
                 // Document Definitions Markup Templates
-                var documentDefinitionMarkupTemplateProps = typeof(DocumentDefinitionMarkupTemplate).GetMappedProperties();
+                var documentDefinitionMarkupTemplateProps = TypeDescriptor.Get<DocumentDefinitionMarkupTemplate>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -908,7 +909,7 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
 
                 var lineDefinitionsDic = new Dictionary<int, LineDefinition>();
-                var lineDefinitionProps = typeof(LineDefinition).GetMappedProperties();
+                var lineDefinitionProps = TypeDescriptor.Get<LineDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
                     var entity = new LineDefinition();
@@ -925,7 +926,7 @@ namespace Tellma.Data
                 }
 
                 // line definition entries
-                var lineDefinitionEntryProps = typeof(LineDefinitionEntry).GetMappedProperties();
+                var lineDefinitionEntryProps = TypeDescriptor.Get<LineDefinitionEntry>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -945,7 +946,7 @@ namespace Tellma.Data
                 }
 
                 // line definition columns
-                var lineDefinitionColumnProps = typeof(LineDefinitionColumn).GetMappedProperties();
+                var lineDefinitionColumnProps = TypeDescriptor.Get<LineDefinitionColumn>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -965,7 +966,7 @@ namespace Tellma.Data
                 }
 
                 // line definition state reason
-                var lineDefinitionStateReasonProps = typeof(LineDefinitionStateReason).GetMappedProperties();
+                var lineDefinitionStateReasonProps = TypeDescriptor.Get<LineDefinitionStateReason>().SimpleProperties;
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -987,6 +988,7 @@ namespace Tellma.Data
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
                 // Next load account types
+                var accountTypesDic = new Dictionary<int, AccountType>();
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -1022,6 +1024,58 @@ namespace Tellma.Data
                     };
 
                     accountTypes.Add(entity);
+                    accountTypesDic.Add(entity.Id, entity);
+                }
+
+                // Account Type Contract Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeContractDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        ContractDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.ContractDefinitions ??= new List<AccountTypeContractDefinition>();
+                    accountType.ContractDefinitions.Add(entity);
+                }
+
+                // Account Type Noted Contract Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeNotedContractDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        NotedContractDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.NotedContractDefinitions ??= new List<AccountTypeNotedContractDefinition>();
+                    accountType.NotedContractDefinitions.Add(entity);
+                }
+
+                // Account Type Resource Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeResourceDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        ResourceDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.ResourceDefinitions ??= new List<AccountTypeResourceDefinition>();
+                    accountType.ResourceDefinitions.Add(entity);
                 }
             }
 
@@ -1183,7 +1237,7 @@ namespace Tellma.Data
 
         #region Agents
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(string definitionId, List<AgentForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(int definitionId, List<AgentForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1216,7 +1270,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Agents__Save(string definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<List<int>> Agents__Save(int definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1314,7 +1368,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1893,7 +1947,7 @@ namespace Tellma.Data
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
             // Arguments
-            var mappedProps = typeof(SettingsForSave).GetMappedProperties();
+            var mappedProps = TypeDescriptor.Get<SettingsForSave>().SimpleProperties;
 
             var sqlBuilder = new System.Text.StringBuilder();
             sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
@@ -1923,7 +1977,7 @@ namespace Tellma.Data
 
         #region Lookups
 
-        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(string definitionId, List<LookupForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(int definitionId, List<LookupForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1947,7 +2001,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Lookups__Save(string definitionId, List<LookupForSave> entities, bool returnIds)
+        public async Task<List<int>> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2020,7 +2074,7 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2200,7 +2254,7 @@ namespace Tellma.Data
 
         #region Resources
 
-        public async Task Resources__Preprocess(string definitionId, List<ResourceForSave> entities)
+        public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2222,7 +2276,7 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
-            var props = typeof(ResourceForSave).GetMappedProperties();
+            var props = TypeDescriptor.Get<ResourceForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -2239,7 +2293,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(int definitionId, List<ResourceForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2272,7 +2326,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Resources__Save(string definitionId, List<ResourceForSave> entities, bool returnIds)
+        public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2353,7 +2407,7 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2836,7 +2890,7 @@ namespace Tellma.Data
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
-            var props = typeof(AccountForSave).GetMappedProperties();
+            var props = TypeDescriptor.Get<AccountForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3411,7 +3465,7 @@ namespace Tellma.Data
 
         #region Documents
 
-        public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> docs)
+        public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> docs)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3450,7 +3504,7 @@ namespace Tellma.Data
             using var reader = await cmd.ExecuteReaderAsync();
 
             // Documents
-            var docProps = typeof(DocumentForSave).GetMappedProperties();
+            var docProps = TypeDescriptor.Get<DocumentForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3469,7 +3523,7 @@ namespace Tellma.Data
 
             // Lines
             await reader.NextResultAsync();
-            var lineProps = typeof(LineForSave).GetMappedProperties();
+            var lineProps = TypeDescriptor.Get<LineForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3489,7 +3543,7 @@ namespace Tellma.Data
 
             // Entries         
             await reader.NextResultAsync();
-            var entryProps = typeof(EntryForSave).GetMappedProperties();
+            var entryProps = TypeDescriptor.Get<EntryForSave>().SimpleProperties;
             while (await reader.ReadAsync())
             {
                 var index = reader.GetInt32(0);
@@ -3509,7 +3563,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> documents, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(int definitionId, List<DocumentForSave> documents, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3549,7 +3603,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
+        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(int definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
             var deletedFileIds = new List<string>();
             var notificationInfos = new List<InboxNotificationInfo>();
@@ -3869,7 +3923,7 @@ namespace Tellma.Data
             return (notificationInfos, deletedFileIds);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3896,7 +3950,7 @@ namespace Tellma.Data
 
         // Posting State Management
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3946,7 +4000,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3994,7 +4048,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4044,7 +4098,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();

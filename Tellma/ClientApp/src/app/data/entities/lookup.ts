@@ -15,7 +15,7 @@ export interface LookupForSave extends EntityForSave {
 }
 
 export interface Lookup extends LookupForSave {
-    DefinitionId?: string;
+    DefinitionId?: number;
     SortKey?: number;
     IsActive?: boolean;
     CreatedAt?: string;

@@ -1186,7 +1186,7 @@ return the entities
         protected TypeMetadata GetMetadata()
         {
             int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
-            string definitionId = DefinitionId;
+            int? definitionId = DefinitionId;
             Type type = typeof(TEntity);
 
             return _metadata.GetMetadata(tenantId, type, definitionId);
@@ -1195,7 +1195,7 @@ return the entities
         protected TypeMetadata GetMetadataForSave()
         {
             int? tenantId = _tenantIdAccessor.GetTenantIdIfAny();
-            string definitionId = DefinitionId;
+            int? definitionId = DefinitionId;
             Type typeForSave = typeof(TEntityForSave);
 
             return _metadata.GetMetadata(tenantId, typeForSave, definitionId);
@@ -1430,7 +1430,7 @@ return the entities
             }
         }
 
-        protected virtual string DefinitionId => null;
+        protected virtual int? DefinitionId => null;
 
         /// <summary>
         /// Splits header label into a collection of steps

@@ -135,7 +135,7 @@ namespace Tellma.Controllers
             // Everything to input in the template service
             var inputVariables = new Dictionary<string, object>
             {
-                ["$Source"] = !string.IsNullOrWhiteSpace(entity.DefinitionId) ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}",
+                ["$Source"] = entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}",
                 ["$Filter"] = args.Filter,
                 ["$OrderBy"] = args.OrderBy,
                 ["$Top"] = args.Top,
@@ -159,7 +159,7 @@ namespace Tellma.Controllers
             // Everything to input in the template service
             var inputVariables = new Dictionary<string, object>
             {
-                ["$Source"] = !string.IsNullOrWhiteSpace(entity.DefinitionId) ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}",
+                ["$Source"] = entity.DefinitionId == null ? entity.Collection : $"{entity.Collection}/{entity.DefinitionId}",
                 ["$Id"] = id ?? throw new BadRequestException("The id argument is required")
             };
             var preloadedQuery = new QueryByIdInfo(entity.Collection, entity.DefinitionId, id);

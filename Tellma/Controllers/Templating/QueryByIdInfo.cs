@@ -7,7 +7,7 @@ namespace Tellma.Controllers.Templating
     /// </summary>
     public class QueryByIdInfo : QueryInfo
     {
-        public QueryByIdInfo(string collection, string definitionId, string id) : base(collection, definitionId)
+        public QueryByIdInfo(string collection, int? definitionId, string id) : base(collection, definitionId)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
         }

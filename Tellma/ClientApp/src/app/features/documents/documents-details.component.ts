@@ -2469,6 +2469,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public entryTypeFilter(lineDefId: string, columnIndex: number): string {
     // Filter for smart line
+    // TODO: What about EntryTypeId ??
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
     return !!entryDef && !!entryDef.EntryTypeParentId ? `Node descof ${entryDef.EntryTypeParentId}` : null;
   }

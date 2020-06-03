@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Threading;
+using Tellma.Entities.Descriptors;
 
 namespace Tellma.Data
 {
@@ -300,7 +301,7 @@ namespace Tellma.Data
 
                 if (await reader.ReadAsync(cancellation))
                 {
-                    var props = typeof(AdminSettings).GetMappedProperties();
+                    var props = TypeDescriptor.Get<AdminSettings>().SimpleProperties;
                     foreach (var prop in props)
                     {
                         // get property value

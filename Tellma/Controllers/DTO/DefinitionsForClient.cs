@@ -11,38 +11,39 @@ namespace Tellma.Controllers.Dto
         /// <summary>
         /// Mapping from document definition Id to document definition
         /// </summary>
-        public Dictionary<string, DocumentDefinitionForClient> Documents { get; set; }
+        public Dictionary<int, DocumentDefinitionForClient> Documents { get; set; }
 
         /// <summary>
         /// Mapping from line type Id to line type
         /// </summary>
-        public Dictionary<string, LineDefinitionForClient> Lines { get; set; }
+        public Dictionary<int, LineDefinitionForClient> Lines { get; set; }
 
         /// <summary>
         /// Mapping from resource definition Id to resource definition
         /// </summary>
-        public Dictionary<string, ResourceDefinitionForClient> Resources { get; set; }
+        public Dictionary<int, ResourceDefinitionForClient> Resources { get; set; }
 
         /// <summary>
         /// Mapping from agent definition Id to agent definition
         /// </summary>
-        public Dictionary<string, AgentDefinitionForClient> Agents { get; set; }
+        public Dictionary<int, AgentDefinitionForClient> Agents { get; set; }
 
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
         /// </summary>
-        public Dictionary<string, LookupDefinitionForClient> Lookups { get; set; }
+        public Dictionary<int, LookupDefinitionForClient> Lookups { get; set; }
 
         /// <summary>
         /// Mapping from report definition Id to report definition
         /// </summary>
-        public Dictionary<string, ReportDefinitionForClient> Reports { get; set; }
+        public Dictionary<int, ReportDefinitionForClient> Reports { get; set; }
     }
 
     ///////////////////// Base Classes
     
     public abstract class DefinitionForClient
     {
+        public string Code { get; set; }
         public string MainMenuSection { get; set; }
         public string MainMenuIcon { get; set; }
         public decimal MainMenuSortKey { get; set; }
@@ -146,7 +147,7 @@ namespace Tellma.Controllers.Dto
         public bool DebitAgentVisibility { get; set; }
         public short? DebitAgentRequiredState { get; set; }
         public short? DebitAgentReadOnlyState { get; set; }
-        public string DebitAgentDefinitionId { get; set; }
+        public List<int> DebitAgentDefinitionIds { get; set; }
         public string DebitAgentLabel { get; set; }
         public string DebitAgentLabel2 { get; set; }
         public string DebitAgentLabel3 { get; set; }
@@ -155,7 +156,7 @@ namespace Tellma.Controllers.Dto
         public bool CreditAgentVisibility { get; set; }
         public short? CreditAgentRequiredState { get; set; }
         public short? CreditAgentReadOnlyState { get; set; }
-        public string CreditAgentDefinitionId { get; set; }
+        public List<int> CreditAgentDefinitionIds { get; set; }
         public string CreditAgentLabel { get; set; }
         public string CreditAgentLabel2 { get; set; }
         public string CreditAgentLabel3 { get; set; }
@@ -164,7 +165,7 @@ namespace Tellma.Controllers.Dto
         public bool NotedAgentVisibility { get; set; }
         public short? NotedAgentRequiredState { get; set; }
         public short? NotedAgentReadOnlyState { get; set; }
-        public string NotedAgentDefinitionId { get; set; }
+        public List<int> NotedAgentDefinitionIds { get; set; }
         public string NotedAgentLabel { get; set; }
         public string NotedAgentLabel2 { get; set; }
         public string NotedAgentLabel3 { get; set; }
@@ -231,7 +232,7 @@ namespace Tellma.Controllers.Dto
 
     public class DocumentDefinitionLineDefinitionForClient
     {
-        public string LineDefinitionId { get; set; }
+        public int LineDefinitionId { get; set; }
         public bool IsVisibleByDefault { get; set; }
     }
 
@@ -249,6 +250,7 @@ namespace Tellma.Controllers.Dto
 
     public class LineDefinitionForClient // related entity for document definition
     {
+        public string Code { get; set; }
         public string TitleSingular { get; set; }
         public string TitleSingular2 { get; set; }
         public string TitleSingular3 { get; set; }
@@ -270,9 +272,10 @@ namespace Tellma.Controllers.Dto
 
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
-        public string ResourceDefinitionId { get; set; }
-        public string AgentDefinitionId { get; set; }
-        public string NotedAgentDefinitionId { get; set; }
+        public List<int> ResourceDefinitionIds { get; set; }
+        public List<int> AgentDefinitionIds { get; set; }
+        public List<int> NotedAgentDefinitionIds { get; set; }
+
         //public string DueDateLabel { get; set; }
         //public string DueDateLabel2 { get; set; }
         //public string DueDateLabel3 { get; set; }
@@ -403,7 +406,7 @@ namespace Tellma.Controllers.Dto
         public string Lookup1Label3 { get; set; } // Yes
         public string Lookup1Visibility { get; set; } // Yes
         public int? Lookup1DefaultValue { get; set; }
-        public string Lookup1DefinitionId { get; set; } // Yes
+        public int? Lookup1DefinitionId { get; set; } // Yes
 
         // Lookup 2
         public string Lookup2Label { get; set; } // Yes
@@ -411,7 +414,7 @@ namespace Tellma.Controllers.Dto
         public string Lookup2Label3 { get; set; } // Yes
         public string Lookup2Visibility { get; set; } // Yes
         public int? Lookup2DefaultValue { get; set; }
-        public string Lookup2DefinitionId { get; set; } // Yes
+        public int? Lookup2DefinitionId { get; set; } // Yes
 
         // Lookup 3
         public string Lookup3Label { get; set; } // Yes
@@ -419,7 +422,7 @@ namespace Tellma.Controllers.Dto
         public string Lookup3Label3 { get; set; } // Yes
         public string Lookup3Visibility { get; set; } // Yes
         public int? Lookup3DefaultValue { get; set; }
-        public string Lookup3DefinitionId { get; set; } // Yes
+        public int? Lookup3DefinitionId { get; set; } // Yes
 
         // Lookup 4
         public string Lookup4Label { get; set; } // Yes
@@ -427,7 +430,7 @@ namespace Tellma.Controllers.Dto
         public string Lookup4Label3 { get; set; } // Yes
         public string Lookup4Visibility { get; set; } // Yes
         public int? Lookup4DefaultValue { get; set; }
-        public string Lookup4DefinitionId { get; set; } // Yes
+        public int? Lookup4DefinitionId { get; set; } // Yes
 
         //// Lookup 5
         //public string Lookup5Label { get; set; }
@@ -435,8 +438,8 @@ namespace Tellma.Controllers.Dto
         //public string Lookup5Label3 { get; set; }
         //public string Lookup5Visibility { get; set; }
         //public int? Lookup5DefaultValue { get; set; }
-        //public string Lookup5DefinitionId { get; set; }
-        
+        //public int? Lookup5DefinitionId { get; set; }
+
         // Text 1
         public string Text1Label { get; set; } // Yes
         public string Text1Label2 { get; set; } // Yes

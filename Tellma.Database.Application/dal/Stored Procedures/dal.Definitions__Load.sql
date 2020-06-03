@@ -35,12 +35,8 @@ SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
 
 -- Get the Account Types that are used by LineDefinitionEntries
-SELECT DISTINCT T.[Id],
-	--T.[IsResourceClassification],
+SELECT T.[Id],
 	T.[EntryTypeParentId],
-	--T.[ResourceDefinitionId],
-	--T.[AgentDefinitionId],
-	--T.[NotedAgentDefinitionId],
 	T.[DueDateLabel],
 	T.[DueDateLabel2],
 	T.[DueDateLabel3],
@@ -66,4 +62,16 @@ SELECT DISTINCT T.[Id],
 	T.[NotedDateLabel2],
 	T.[NotedDateLabel3]
 	FROM [dbo].[AccountTypes] T
-	JOIN [map].[LineDefinitionEntries]() LDE ON T.[Id] = LDE.[AccountTypeId]
+	WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	
+-- Get the contract definitions of the used account types
+SELECT [Id], [AccountTypeId], [ContractDefinitionId] FROM [dbo].[AccountTypeContractDefinitions]
+	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	
+-- Get the noted contract definitions of the used account types
+SELECT [Id], [AccountTypeId], [NotedContractDefinitionId] FROM [dbo].[AccountTypeNotedContractDefinitions]
+	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	
+-- Get the resource definitions of the used account types
+SELECT [Id], [AccountTypeId], [ResourceDefinitionId] FROM [dbo].[AccountTypeResourceDefinitions]
+	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())

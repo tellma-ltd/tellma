@@ -66,6 +66,7 @@ namespace Tellma.Controllers
         {
             return new LookupDefinitionForClient
             {
+                Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
@@ -82,6 +83,7 @@ namespace Tellma.Controllers
         {
             return new AgentDefinitionForClient
             {
+                Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
@@ -108,6 +110,7 @@ namespace Tellma.Controllers
         {
             return new ResourceDefinitionForClient
             {
+                Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
@@ -200,6 +203,7 @@ namespace Tellma.Controllers
             return new ReportDefinitionForClient
             {
                 // Basics
+                Code = def.Code,
                 Collection = def.Collection,
                 DefinitionId = def.DefinitionId,
                 Type = def.Type,
@@ -282,10 +286,22 @@ namespace Tellma.Controllers
             };
         }
 
+        private static List<int> ToList(int? defId)
+        {
+            List<int> result = null;
+            if (defId != null)
+            {
+                result = new List<int>(defId.Value);
+            }
+
+            return result;
+        }
+
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def, Dictionary<int, AccountType> accountTypesDic)
         {
             var result = new LineDefinitionForClient
             {
+                Code = def.Code,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,
@@ -300,6 +316,9 @@ namespace Tellma.Controllers
                     Direction = e.Direction.Value,
                     AccountTypeId = e.AccountTypeId,
                     EntryTypeId = e.EntryTypeId,
+                    AgentDefinitionIds = e.AgentDefinitionId == null ? null : new List<int> { e.AgentDefinitionId.Value },
+                    NotedAgentDefinitionIds = e.NotedAgentDefinitionId == null ? null : new List<int> { e.NotedAgentDefinitionId.Value },
+                    ResourceDefinitionIds = e.ResourceDefinitionId == null ? null : new List<int> { e.ResourceDefinitionId.Value },
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -335,9 +354,23 @@ namespace Tellma.Controllers
                 }
 
                 entry.EntryTypeParentId = accountType.EntryTypeParentId;
-                //entry.AgentDefinitionId = accountType.AgentDefinitionId;
-                //entry.NotedAgentDefinitionId = accountType.NotedAgentDefinitionId;
-                //entry.ResourceDefinitionId = accountType.ResourceDefinitionId;
+
+                // If the LineDefinitionEntry itself does not specify a single definitionId
+                // get the list of permitted definitions from the account type
+                if (entry.AgentDefinitionIds == null)
+                {
+                    entry.AgentDefinitionIds = accountType.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList();
+                }
+
+                if (entry.NotedAgentDefinitionIds == null)
+                {
+                    entry.NotedAgentDefinitionIds = accountType.NotedContractDefinitions.Select(e => e.NotedContractDefinitionId.Value).ToList();
+                }
+
+                if (entry.ResourceDefinitionIds == null)
+                {
+                    entry.ResourceDefinitionIds = accountType.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList();
+                }
             }
 
             foreach (var col in result.Columns)
@@ -424,10 +457,11 @@ namespace Tellma.Controllers
             return result;
         }
 
-        private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<string, LineDefinitionForClient> lineDefsDic)
+        private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {
             var result = new DocumentDefinitionForClient
             {
+                Code = def.Code,
                 IsOriginalDocument = def.IsOriginalDocument ?? false,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
@@ -448,7 +482,7 @@ namespace Tellma.Controllers
 
                 LineDefinitions = def.LineDefinitions?.Select(d => new DocumentDefinitionLineDefinitionForClient
                 {
-                    LineDefinitionId = d.LineDefinitionId.ToString(),
+                    LineDefinitionId = d.LineDefinitionId.Value,
                     IsVisibleByDefault = d.IsVisibleByDefault ?? false
                 })?.ToList() ?? new List<DocumentDefinitionLineDefinitionForClient>(),
 
@@ -467,6 +501,11 @@ namespace Tellma.Controllers
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
                 MainMenuSection = def.MainMenuSection,
+
+                // These should not be null
+                CreditAgentDefinitionIds = new List<int>(),
+                DebitAgentDefinitionIds = new List<int>(),
+                NotedAgentDefinitionIds = new List<int>(),
             };
 
             // Here we compute some values based on the associated line definitions
@@ -479,6 +518,7 @@ namespace Tellma.Controllers
             {
                 foreach (var colDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
                 {
+                    // Memo
                     if (colDef.ColumnName == nameof(Line.Memo))
                     {
                         result.MemoIsCommonVisibility = true;
@@ -515,10 +555,7 @@ namespace Tellma.Controllers
                                 result.DebitAgentLabel3 ??= colDef.Label3;
                             }
 
-                            if (string.IsNullOrWhiteSpace(result.DebitAgentDefinitionId))
-                            {
-                                result.DebitAgentDefinitionId = entryDef.AgentDefinitionId;
-                            }
+                            result.DebitAgentDefinitionIds ??= entryDef.AgentDefinitionIds;
 
                             if (colDef.RequiredState < (result.DebitAgentRequiredState ?? 5))
                             {
@@ -542,10 +579,7 @@ namespace Tellma.Controllers
                                 result.CreditAgentLabel3 = colDef.Label3;
                             }
 
-                            if (string.IsNullOrWhiteSpace(result.CreditAgentDefinitionId))
-                            {
-                                result.CreditAgentDefinitionId = entryDef.AgentDefinitionId;
-                            }
+                            result.CreditAgentDefinitionIds ??= entryDef.AgentDefinitionIds;
 
                             if (colDef.RequiredState < (result.CreditAgentRequiredState ?? 5))
                             {
@@ -569,10 +603,7 @@ namespace Tellma.Controllers
                                 result.NotedAgentLabel3 = colDef.Label3;
                             }
 
-                            if (string.IsNullOrWhiteSpace(result.NotedAgentDefinitionId))
-                            {
-                                result.NotedAgentDefinitionId = entryDef.NotedAgentDefinitionId;
-                            }
+                            result.NotedAgentDefinitionIds ??= entryDef.NotedAgentDefinitionIds;
 
                             if (colDef.RequiredState < (result.NotedAgentRequiredState ?? 5))
                             {
@@ -722,19 +753,19 @@ namespace Tellma.Controllers
             // Load definitions
             var (version, lookupDefs, agentDefs, resourceDefs, reportDefs, docDefs, lineDefs, accountTypes) = await repo.Definitions__Load(cancellation);
 
-            // Map Lookups, Agents, Resources, Reports (Straight orward)
+            // Map Lookups, Agents, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
             {
-                Lookups = lookupDefs.ToDictionary(def => def.Id.ToString(), def => MapLookupDefinition(def)),
-                Agents = agentDefs.ToDictionary(def => def.Id.ToString(), def => MapAgentDefinition(def)),
-                Resources = resourceDefs.ToDictionary(def => def.Id.ToString(), def => MapResourceDefinition(def)),
-                Reports = reportDefs.ToDictionary(def => def.Id.ToString(), def => MapReportDefinition(def)),
+                Lookups = lookupDefs.ToDictionary(def => def.Id, def => MapLookupDefinition(def)),
+                Agents = agentDefs.ToDictionary(def => def.Id, def => MapAgentDefinition(def)),
+                Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
+                Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
             };
 
             // Map Lines and Documents (Special handling)
             var accountTypesDic = accountTypes.ToDictionary(e => e.Id, e => e);
-            result.Lines = lineDefs.ToDictionary(def => def.Id.ToString(), def => MapLineDefinition(def, accountTypesDic));
-            result.Documents = docDefs.ToDictionary(def => def.Id.ToString(), def => MapDocumentDefinition(def, result.Lines));
+            result.Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, accountTypesDic));
+            result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Return result
             return new Versioned<DefinitionsForClient>

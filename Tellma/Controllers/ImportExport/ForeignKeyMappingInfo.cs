@@ -51,7 +51,7 @@ namespace Tellma.Controllers.ImportExport
         /// <summary>
         /// Syntactic sugar for: NavPropertyMetadata.EntityMetadata.DefinitionId
         /// </summary>
-        public string TargetDefId => NavPropertyMetadata.TargetTypeMetadata.DefinitionId;
+        public int? TargetDefId => NavPropertyMetadata.TargetTypeMetadata.DefinitionId;
 
         /// <summary>
         /// Syntactic sugar for: KeyPropertyMetadata.Descriptor.Name != "Id"

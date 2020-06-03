@@ -1,6 +1,9 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tellma.Controllers.Dto;
 
 namespace Tellma.Entities
 {
@@ -214,5 +217,54 @@ namespace Tellma.Entities
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]
         public EntryType EntryTypeParent { get; set; }
+
+        public List<AccountTypeContractDefinition> ContractDefinitions { get; set; }
+        
+        public List<AccountTypeNotedContractDefinition> NotedContractDefinitions { get; set; }
+
+        public List<AccountTypeResourceDefinition> ResourceDefinitions { get; set; }
+    }
+
+    // TODO......
+    
+    public class AccountTypeContractDefinitionForSave : EntityWithKey<int>
+    {
+        public int? ContractDefinitionId { get; set; }
+    }
+
+    public class AccountTypeContractDefinition : AccountTypeContractDefinitionForSave
+    {
+        public int? AccountTypeId { get; set; }
+
+        [ForeignKey(nameof(ContractDefinitionId))]
+        public AgentDefinition ContractDefinition { get; set; }
+    }
+
+    public class AccountTypeNotedContractDefinitionForSave : EntityWithKey<int>
+    {
+        public int? NotedContractDefinitionId { get; set; }
+    }
+
+    public class AccountTypeNotedContractDefinition : AccountTypeNotedContractDefinitionForSave
+    {
+        public int? AccountTypeId { get; set; }
+
+        [ForeignKey(nameof(NotedContractDefinitionId))]
+        public AgentDefinition NotedContractDefinition { get; set; }
+    }
+
+
+    public class AccountTypeResourceDefinitionForSave : EntityWithKey<int>
+    {
+        public int? ResourceDefinitionId { get; set; }
+    }
+
+    public class AccountTypeResourceDefinition : AccountTypeResourceDefinitionForSave
+    {
+        public int? AccountTypeId { get; set; }
+
+        [ForeignKey(nameof(ResourceDefinitionId))]
+        public ResourceDefinition ResourceDefinition { get; set; }
+
     }
 }

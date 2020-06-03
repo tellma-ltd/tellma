@@ -100,22 +100,22 @@ namespace Tellma.Entities
         public string Lookup1Label2 { get; set; }
         public string Lookup1Label3 { get; set; }
         public string Lookup1Visibility { get; set; }
-        public string Lookup1DefinitionId { get; set; }
+        public int? Lookup1DefinitionId { get; set; }
         public string Lookup2Label { get; set; }
         public string Lookup2Label2 { get; set; }
         public string Lookup2Label3 { get; set; }
         public string Lookup2Visibility { get; set; }
-        public string Lookup2DefinitionId { get; set; }
+        public int? Lookup2DefinitionId { get; set; }
         public string Lookup3Label { get; set; }
         public string Lookup3Label2 { get; set; }
         public string Lookup3Label3 { get; set; }
         public string Lookup3Visibility { get; set; }
-        public string Lookup3DefinitionId { get; set; }
+        public int? Lookup3DefinitionId { get; set; }
         public string Lookup4Label { get; set; }
         public string Lookup4Label2 { get; set; }
         public string Lookup4Label3 { get; set; }
         public string Lookup4Visibility { get; set; }
-        public string Lookup4DefinitionId { get; set; }
+        public int? Lookup4DefinitionId { get; set; }
         public string Text1Label { get; set; }
         public string Text1Label2 { get; set; }
         public string Text1Label3 { get; set; }

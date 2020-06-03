@@ -19,7 +19,7 @@ namespace Tellma.Controllers.Templating
         /// <param name="top">The OData-like top argument</param>
         /// <param name="skip">The OData-like skip argument</param>
         /// <param name="ids">The list of Ids of the entities to retrieve. IF this argument is supplied then all the OData-like arguments are ignored</param>
-        public QueryByFilterInfo(string collection, string definitionId, string filter, string orderby, int? top, int? skip, IList ids) : base(collection, definitionId)
+        public QueryByFilterInfo(string collection, int? definitionId, string filter, string orderby, int? top, int? skip, IList ids) : base(collection, definitionId)
         {
             Filter = filter;
             OrderBy = orderby;

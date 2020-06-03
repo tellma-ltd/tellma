@@ -54,7 +54,7 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: s
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
-                DefinitionId: { control: 'text', label: () => trx.instant('Line_Definition') },
+                DefinitionId: { control: 'number', label: () => trx.instant('Line_Definition'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 State: {
                     control: 'state',
