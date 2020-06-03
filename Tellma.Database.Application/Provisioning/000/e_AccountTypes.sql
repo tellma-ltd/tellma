@@ -449,3 +449,11 @@ INSERT INTO dbo.[AccountTypeContractDefinitions]
 (@CashSaleDocumentControlExtension,				@customersCD),
 (@OtherCurrentFinancialLiabilities,				@creditorsCD),
 (@OtherCurrentFinancialLiabilities,				@partnersCD);
+
+INSERT INTO dbo.[AccountTypeNotedContractDefinitions]
+([AccountTypeId],								[NotedContractDefinitionId]) VALUES
+(@CurrentValueAddedTaxReceivables,				@suppliersCD),
+(@CurrentValueAddedTaxPayables,					@customersCD),
+(@CurrentEmployeeIncomeTaxPayablesExtension,	@employeesCD),
+(@CurrentSocialSecurityPayablesExtension,		@employeesCD),
+(@CurrentEmployeeStampTaxPayablesExtension,		@employeesCD);
