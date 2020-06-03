@@ -1,20 +1,25 @@
 ﻿:r .\000\a_Declarations.sql
 :r .\000\b_AdminUser.sql
+:r .\000\c_Roles.sql
 :r .\000\c_RuleTypes.sql
 :r .\000\d_EntryTypes.sql
+
+:r .\000\a_LookupDefinitions.sql
+:r .\000\b_ResourceDefinitions.sql
+:r .\000\c_ContractDefinitions.sql
 :r .\000\e_AccountTypes.sql
+-- Account Type 
 :r .\000\f_IfrsConcepts.sql
 --:r .\000\g_IfrsDisclosures.sql
 :r .\000\h_FunctionalCurrency.sql
 :r .\000\i_Settings.sql
-:r .\000\j_ReportDefinitions.sql
-:r .\000\k_Roles.sql
 :r .\000\l_LineDefinitions.sql
+--:r .\02_Definitions\g_DocumentDefinitions.sql
+:r .\000\j_ReportDefinitions.sql
+:r .\000\z_Translations.sql
 
 IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
-	:r .\02_Definitions\g_DocumentDefinitions.sql
-
 	:r .\03_Basic\a_Currencies.sql
 	:r .\03_Basic\b_Units.sql
 	--:r .\03_Basic\c_Lookups.sql
@@ -25,10 +30,6 @@ IF @DB <> N'106'
 BEGIN
 	:r .\01_Security\a_Users.sql
 	:r .\01_Security\b_Permissions.sql
-
-	:r .\02_Definitions\a_LookupDefinitions.sql
-	:r .\02_Definitions\b_ResourceDefinitions.sql
-	:r .\02_Definitions\c_ContractDefinitions.sql
 
 	:r .\04_Resources\101_property-plant-and-equipment.sql
 	:r .\04_Resources\101_employee-benefits.sql
@@ -67,9 +68,6 @@ BEGIN
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
 
-	:r .\106\02_Definitions\b_ResourceDefinitions.sql
-	:r .\106\02_Definitions\c_ContractDefinitions.sql
-
 	:r .\106\05_Contracts\00_Agents.sql
 	:r .\106\05_Contracts\01_CashCustodians.sql
 	:r .\106\05_Contracts\02_InventoryCustodians.sql
@@ -80,7 +78,6 @@ BEGIN
 	:r .\106\05_Contracts\07_Creditors.sql
 	:r .\106\05_Contracts\08_Employees.sql
 
-	:r .\106\06_Accounts\a_AccountTypeContractDefinitions.sql
 	:r .\106\06_Accounts\b_AccountClassifications.sql
 	:r .\106\06_Accounts\c_Accounts.sql
 END

@@ -42,7 +42,7 @@ BEGIN
 	(0, 10, dbo.fn_UnitName__Id(N'wmo'),	1);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = @employee_benefits_expensesRD,
+		@DefinitionId = @employee_benefitsRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

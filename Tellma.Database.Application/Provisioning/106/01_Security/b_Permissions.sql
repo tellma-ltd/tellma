@@ -1,69 +1,29 @@
-﻿DELETE FROM @Roles;
-DELETE FROM @Members;
-DELETE FROM @Permissions;
+﻿INSERT INTO @Roles([Index],[Id], [Code],[Name],[Name2],[Name3],[IsPublic])
+SELECT [Id], [Id], [Code],[Name],[Name2],[Name3],[IsPublic]
+FROM dbo.Roles;
 
-INSERT INTO @Roles([Index],[Code],[Name],[Name2],[Name3],[IsPublic]) VALUES
-(0, N'Administrator', N'Administrator', N'አስተዳዳሪ', NULL, 0),
-(1, N'FinanceManager', N'Finance Manager', N'የፋይናንስ አስተዳዳሪ', NULL, 0),
-(2, N'GeneralManager', N'General Manager', N'ሰላም ነው', NULL, 0),
-(3, N'Reader', N'Reader', N'አንባቢ', NULL, 0),
-(4, N'AccountManager', N'Account Manager', N'የደንበኛ መለያ አቀናባሪ', NULL, 0),
-(5, N'Comptroller', N'Comptroller', N'የመለያ ኮምፒተር', NULL, 0),
-(6, N'CashCustodian', N'Cashier', N'ገንዘብ ተቀባይ', NULL, 0),
-(7, N'AdminAffairs', N'Admin. Affairs', N'አስተዳደራዊ ጉዳዮች', NULL, 0),
-(8, N'ProductionManager', N'Production Manager', N'የምርት ሥራ አስኪያጅ', NULL, 0),
-(9, N'HrManager', N'HR Manager', N'የሰው ኃይል ሥራ አስኪያጅ', NULL, 0),
-(10, N'SalesManager', N'Sales Manager', N'የሽያጭ ሃላፊ', NULL, 0),
-(11, N'SalesPerson', N'Sales Person', N'የሽያጭ ሰው', NULL, 0),
-(12, N'InventoryCustodian', N'Inventory Custodian', N'ኢን Custስትሜንት ባለሞያ', NULL, 0),
-(99, N'Public', N'Public', N'ሕዝባዊ', NULL, 1);
+INSERT INTO @Members
+([Index],	[HeaderIndex],		[UserId]) VALUES
+(0,			@AdministratorRL,	@AdminUserId),
+(1,			@AdministratorRL,	@106DerejeMulat),
+(2,			@AdministratorRL,	@106AbuBakrelHadi),
+(3,			@AdministratorRL,	@106AbrahamTenker),
+(4,			@AdministratorRL,	@106MosabelHafiz),
+(5,			@AdministratorRL,	@106YisakFikadu),
+(0,			@FinanceManagerRL,	@106BirhanuTakele),
+(0,			@ReaderRL,			@106BulbulaTulle);
 
+IF @106MohamadAkra <> @AdminUserId
+	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
+	VALUES(10,@AdministratorRL,@106MohamadAkra);
+IF @106AhmadAkra <> @AdminUserId
+	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
+	VALUES(11,@AdministratorRL,@106AhmadAkra);
 
+INSERT INTO @Permissions([Index], [HeaderIndex], [Id], [View], [Action], [Criteria], [Mask], [Memo])
+SELECT [Id], [RoleId], [Id], [View], [Action], [Criteria], [Mask], [Memo]
+FROM dbo.[Permissions];
 
-UPDATE FE
-SET FE.[Id] = BE.[Id]
-FROM @Roles FE
-JOIN dbo.Roles BE ON FE.[Code] = BE.[Code]
-
-INSERT INTO @Permissions([Index], [HeaderIndex],
---Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
-	[Action],	[Criteria],			[View]) VALUES
-(0,0,N'All',	NULL,				N'all'),
-(0,1,N'All',	NULL,				N'all'),
-(0,2,N'Read',	NULL,				N'all'),
-(0,3,N'All',	N'CreatedById = Me',N'documents/revenue-recognition-vouchers'),
-(1,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
-									N'documents/cash-payment-vouchers'),
-(2,3,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
-									N'documents/cash-receipt-vouchers'),
-(0,4,N'All',	NULL,				N'documents/manual-journal-vouchers'),
-(1,4,N'All',	NULL,				N'documents/cash-payment-vouchers'),
-(2,4,N'All',	NULL,				N'documents/revenue-recognition-vouchers'),
-(3,4,N'Read',	NULL,				N'accounts'),
-(0,5,N'Update',	N'Agent/UserId = Me or (AgentId = Null and AssigneeId = Me)', -- requires specifying the safe in the header
-									N'documents/cash-payment-vouchers'),
-(1,5,N'All',	N'Agent/UserId = Me or AssigneeId = Me',
-									N'documents/cash-receipt-vouchers'),
-(2,5,N'Update', NULL,				N'contracts/suppliers'),
-
-(0,9,N'Read',	NULL,				N'contracts/cash-custodians'),
-(1,9,N'Read',	NULL,				N'centers'),
-(2,9,N'Read',	NULL,				N'currencies'),
-(3,9,N'Update',	N'CreatedById = Me',N'documents/cash-payment-vouchers'),
-(4,9,N'Read',	NULL,				N'resources/employee-benefits-expenses'),
-(5,9,N'Read',	NULL,				N'entry-types'),
-(6,9,N'Read',	NULL,				N'lookups/it-equipment-manufacturers'),
-(7,9,N'Read',	NULL,				N'units'),
-(8,9,N'Read',	NULL,				N'lookups/operating-systems'),
-(9,9,N'Read',	NULL,				N'centers'),
-(10,9,N'Read',	NULL,				N'resources/services-expenses'),
-(11,9,N'Read',	NULL,				N'roles'),
-(12,9,N'Read',	NULL,				N'contracts/suppliers'),
-(13,9,N'Read',	NULL,				N'users');
-
---DELETE FROM @Roles WHERE [Name] IN (SELECT [Name] FROM dbo.Roles);
---DELETE FROM @Members WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
---DELETE FROM @Permissions WHERE [HeaderIndex] NOT IN (SELECT [Index] FROM @Roles);
 EXEC api.Roles__Save
 	@Entities = @Roles,
 	@Members = @Members,
@@ -75,3 +35,37 @@ BEGIN
 	Print 'Permissions: Inserting: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
+/*
+DECLARE @AdministratorRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Administrator');
+DECLARE @FinanceManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'FinanceManager');
+DECLARE @GeneralManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'GeneralManager');
+DECLARE @ReaderRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Reader');
+DECLARE @AccountManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AccountManager');
+DECLARE @ComptrollerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Comptroller');
+DECLARE @CashCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'CashCustodian');
+DECLARE @AdminAffairsRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'AdminAffairs');
+DECLARE @ProductionManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'ProductionManager');
+DECLARE @HrManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'HrManager');
+DECLARE @SalesManagerRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'SalesManager');
+DECLARE @SalesPersonRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'SalesPerson');
+DECLARE @InventoryCustodianRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'InventoryCustodian');
+DECLARE @PublicRL INT = (SELECT [Id] FROM dbo.Roles WHERE [Code] = N'Public');
+
+DECLARE @106DerejeMulat INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'dereje1@soreti.net');
+DECLARE @106BulbulaTulle INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'bulbula1@soreti.net');
+DECLARE @106DammaSheko INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'demma1@soreti.net');
+DECLARE @106TujarKassim INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'tujar1@soreti.net');
+DECLARE @106BirhanuTakele INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'birhanu1@soreti.net');
+DECLARE @106WakeGizaw INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'wakeyeyab@gmail.com');
+DECLARE @106AmanuelBayissa INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'amanuelbayisa64@gmail.com');
+DECLARE @106GaddisaDemise INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'gadisademissie51@gmail.com');
+DECLARE @106GetanehAseb INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'asabegetaneh@gmail.com');
+DECLARE @106LalisoGemechu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'lelisogem2017@gmail.com');
+DECLARE @106KeliliKoreso INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'kelilkorso2004@gmail.com');
+DECLARE @106AbuBakrelHadi INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abubakr.elhadi@banan-it.com');
+DECLARE @106AbrahamTenker INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abrham.Tenker@banan-it.com');
+DECLARE @106MosabelHafiz INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mosab.elhafiz@banan-it.com');
+DECLARE @106YisakFikadu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'yisak.fikadu@banan-it.com');
+DECLARE @106MohamadAkra INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@tellma.com');
+DECLARE @106AhmadAkra INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'ahmad.akra@tellma.com');
+*/

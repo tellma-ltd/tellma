@@ -408,3 +408,44 @@ UPDATE dbo.[AccountTypes] SET IsActive = 0 WHERE [Code] IN (SELECT [Code] FROM @
 DECLARE @ServicesExpenseNode HIERARCHYID = (SELECT [Node] FROM dbo.AccountTypes WHERE [Id] = @ServicesExpense);
 UPDATE dbo.[AccountTypes] SET IsSystem = 1 WHERE [Node].IsDescendantOf(@ServicesExpenseNode) = 0;
 
+INSERT INTO dbo.[AccountTypeResourceDefinitions]
+([AccountTypeId],		[ResourceDefinitionId]) VALUES
+(@RawMaterials,			@raw_grainsRD),
+(@RawMaterials,			@raw_vehiclesRD),
+(@RawMaterials,			@raw_oilsRD),
+
+(@WorkInProgress,		@work_in_progressRD),
+
+(@FinishedGoods,		@finished_grainsRD),
+(@FinishedGoods,		@finished_vehiclesRD),
+(@FinishedGoods,		@finished_oilsRD),
+(@FinishedGoods,		@byproducts_grainsRD),
+(@FinishedGoods,		@byproducts_oilsRD),
+
+(@Merchandise,			@medicinesRD),
+(@Merchandise,			@construction_materialsRD);
+
+INSERT INTO dbo.[AccountTypeContractDefinitions]
+([AccountTypeId],								[ContractDefinitionId]) VALUES
+(@CashOnHand,									@cashiersCD),
+(@CashOnHand,									@petty_cash_fundsCD),
+(@BalancesWithBanks	,							@bank_accountsCD),
+(@RawMaterials,									@warehousesCD),
+(@ProductionSupplies,							@warehousesCD),
+(@WorkInProgress,								@warehousesCD),
+(@FinishedGoods,								@warehousesCD),
+(@CurrentInventoriesInTransit,					@foreign_importsCD),
+(@CurrentInventoriesInTransit,					@foreign_exportsCD),
+(@CurrentPrepayments,							@suppliersCD),
+(@OtherCurrentFinancialAssets,					@debtorsCD), -- sundry debtor
+(@OtherCurrentFinancialAssets,					@employeesCD), -- staff debtor
+(@TradeAndOtherCurrentPayablesToTradeSuppliers,	@suppliersCD),
+(@AccrualsClassifiedAsCurrent,					@suppliersCD),
+(@AccrualsClassifiedAsCurrent,					@employeesCD), -- last  5 days unpaid
+(@CashPurchaseDocumentControlExtension,			@suppliersCD),
+(@DeferredIncomeClassifiedAsCurrent,			@customersCD),
+(@CurrentTradeReceivables,						@customersCD),
+(@CurrentAccruedIncome,							@customersCD),
+(@CashSaleDocumentControlExtension,				@customersCD),
+(@OtherCurrentFinancialLiabilities,				@creditorsCD),
+(@OtherCurrentFinancialLiabilities,				@partnersCD);
