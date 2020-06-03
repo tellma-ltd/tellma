@@ -4,12 +4,12 @@ import { MarkupTemplateUsage } from '../entities/markup-template';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
-    Documents: { [definitionId: string]: DocumentDefinitionForClient };
-    Lines: { [definitionId: string]: LineDefinitionForClient };
-    Agents: { [definitionId: string]: AgentDefinitionForClient };
-    Resources: { [definitionId: string]: ResourceDefinitionForClient };
-    Lookups: { [definitionId: string]: LookupDefinitionForClient };
-    Reports: { [definitionId: string]: ReportDefinitionForClient };
+    Documents: { [definitionId: number]: DocumentDefinitionForClient };
+    Lines: { [definitionId: number]: LineDefinitionForClient };
+    Agents: { [definitionId: number]: AgentDefinitionForClient };
+    Resources: { [definitionId: number]: ResourceDefinitionForClient };
+    Lookups: { [definitionId: number]: LookupDefinitionForClient };
+    Reports: { [definitionId: number]: ReportDefinitionForClient };
 }
 
 export interface DefinitionForClient {
@@ -19,6 +19,7 @@ export interface DefinitionForClient {
 }
 
 export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
+    Code?: string;
     TitleSingular: string;
     TitleSingular2: string;
     TitleSingular3: string;
@@ -38,7 +39,7 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Chart?: ChartType;
     DefaultsToChart: boolean; // ?
     Collection: string;
-    DefinitionId?: string;
+    DefinitionId?: number;
     Select: ReportSelectDefinitionForClient[];
     Parameters?: ReportParameterDefinitionForClient[];
     Filter?: string;
@@ -105,7 +106,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     DebitAgentVisibility: boolean;
     DebitAgentRequiredState: LineState;
     DebitAgentReadOnlyState: LineState;
-    DebitAgentDefinitionId: string;
+    DebitAgentDefinitionId: number;
     DebitAgentLabel: string;
     DebitAgentLabel2: string;
     DebitAgentLabel3: string;
@@ -114,7 +115,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     CreditAgentVisibility: boolean;
     CreditAgentRequiredState: LineState;
     CreditAgentReadOnlyState: LineState;
-    CreditAgentDefinitionId: string;
+    CreditAgentDefinitionId: number;
     CreditAgentLabel: string;
     CreditAgentLabel2: string;
     CreditAgentLabel3: string;
@@ -123,7 +124,7 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     NotedAgentVisibility: boolean;
     NotedAgentRequiredState: LineState;
     NotedAgentReadOnlyState: LineState;
-    NotedAgentDefinitionId: string;
+    NotedAgentDefinitionId: number;
     NotedAgentLabel: string;
     NotedAgentLabel2: string;
     NotedAgentLabel3: string;
@@ -199,11 +200,12 @@ export interface DocumentDefinitionMarkupTemplateForClient {
 }
 
 export interface DocumentDefinitionLineDefinitionForClient {
-    LineDefinitionId: string;
+    LineDefinitionId: number;
     IsVisibleByDefault: boolean;
 }
 
 export interface LineDefinitionForClient extends MasterDetailsDefinitionForClient {
+    Code: string;
     TitleSingular: string;
     TitleSingular2: string;
     TitleSingular3: string;
@@ -224,9 +226,9 @@ export interface LineDefinitionEntryForClient {
 
     // Copied from AccountTypeParent
     EntryTypeParentId?: number;
-    AgentDefinitionId?: string;
-    NotedAgentDefinitionId?: string;
-    ResourceDefinitionId?: string;
+    AgentDefinitionIds: number[];
+    NotedAgentDefinitionIds: number[];
+    ResourceDefinitionIds: number[];
     // DueDateLabel?: string;
     // DueDateLabel2?: string;
     // DueDateLabel3?: string;
@@ -360,7 +362,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup1Label3: string;
     Lookup1Visibility: Visibility;
     Lookup1DefaultValue: number;
-    Lookup1DefinitionId: string;
+    Lookup1DefinitionId: number;
 
     // Lookup 2
     Lookup2Label: string;
@@ -368,7 +370,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup2Label3: string;
     Lookup2Visibility: Visibility;
     Lookup2DefaultValue: number;
-    Lookup2DefinitionId: string;
+    Lookup2DefinitionId: number;
 
     // Lookup 3
     Lookup3Label: string;
@@ -376,7 +378,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup3Label3: string;
     Lookup3Visibility: Visibility;
     Lookup3DefaultValue: number;
-    Lookup3DefinitionId: string;
+    Lookup3DefinitionId: number;
 
     // Lookup 4
     Lookup4Label: string;
@@ -384,7 +386,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup4Label3: string;
     Lookup4Visibility: Visibility;
     Lookup4DefaultValue: number;
-    Lookup4DefinitionId: string;
+    Lookup4DefinitionId: number;
 
     //// Lookup 5
     // Lookup5Label: string;
@@ -392,7 +394,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     // Lookup5Label3: string;
     // Lookup5Visibility: Visibility;
     // Lookup5DefaultValue: number;
-    // Lookup5DefinitionId: string;
+    // Lookup5DefinitionId: number;
 
     // Text 1
     Text1Label: string;

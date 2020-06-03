@@ -24,7 +24,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// The definition Id that this <see cref="TypeMetadata"/> is based on
         /// </summary>
-        public string DefinitionId { get; }
+        public int? DefinitionId { get; }
 
         /// <summary>
         /// Properties with simple values such as strings, ints and decimals.
@@ -66,7 +66,7 @@ namespace Tellma.Controllers
         /// </summary>
         public TypeMetadata(
             TypeDescriptor desc,
-            string definitionId,
+            int? definitionId,
             Func<string> singularDisplay,
             Func<string> pluralDisplay,
             PropertyMetadata userKeyProp,

@@ -13,7 +13,7 @@ namespace Tellma.Entities
         [Required]
         [StringLength(50)]
         [AlwaysAccessible]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         [Display(Name = "Memo")]
         [StringLength(255)]

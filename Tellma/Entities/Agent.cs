@@ -71,7 +71,7 @@ namespace Tellma.Entities
     public class Agent : AgentForSave<AgentRate>, IEntityWithImage
     {
         [Display(Name = "Definition")]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         public string ImageId { get; set; }
 

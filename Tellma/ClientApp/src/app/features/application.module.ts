@@ -45,7 +45,29 @@ import {
   faCode,
   faFont,
   faImage,
-  faPortrait
+  faPortrait,
+  faWarehouse,
+  faPowerOff,
+  faCarSide,
+  faTint,
+  faTintSlash,
+  faFileImport,
+  faFileExport,
+  faPills,
+  faBalanceScale,
+  faMap,
+  faPalette,
+  faCopy,
+  faScroll,
+  faIndustry,
+  faCity,
+  faTractor,
+  faCar,
+  faUserCheck,
+  faFax,
+  faBoxes,
+  faHandsHelping,
+  faRecycle
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -469,7 +491,10 @@ export class ApplicationModule {
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
       faUser, faUsersCog, faUserTie, faUserTag, faUserShield, faFemale, faMale, faBook, faChartBar, faChartArea,
-      faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait
+      faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait,
+      faWarehouse, faPowerOff, faCarSide, faTint, faTintSlash, faFileImport, faFileExport, faPills, faUserCheck, faFax,
+      faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
+      faRecycle
     );
   }
 }

@@ -52,14 +52,8 @@ namespace Tellma.Controllers
         /// <param name="entityType">The type to retrieve the metadata of</param>
         /// <param name="definitionId">The definition ID to calculate the metadata based on</param>
         /// <returns>The <see cref="TypeMetadata"/> associated with the entity type and definition Id in a certain tenantId</returns>
-        public TypeMetadata GetMetadata(int? tenantId, Type entityType, string definitionId = null)
+        public TypeMetadata GetMetadata(int? tenantId, Type entityType, int? definitionId = null)
         {
-            // DefinitionId
-            if (string.IsNullOrWhiteSpace(definitionId))
-            {
-                definitionId = null;
-            }
-
             // Get the settings
             SettingsForClient settings = tenantId == null ? null : _settingsCache.GetSettingsIfCached(tenantId.Value)?.Data ??
                     throw new InvalidOperationException($"Bug: The settings cache is empty for tenantId = {tenantId}");
@@ -96,7 +90,7 @@ namespace Tellma.Controllers
                     {
                         case nameof(Resource):
                         case nameof(ResourceForSave):
-                            if (!defs.Resources.TryGetValue(definitionId, out ResourceDefinitionForClient resourceDef))
+                            if (!defs.Resources.TryGetValue(definitionId.Value, out ResourceDefinitionForClient resourceDef))
                             {
                                 var msg = _localizer[$"Error_ResourceDefinition0CouldNotBeFound", definitionId];
                                 throw new BadRequestException(msg);
@@ -106,7 +100,7 @@ namespace Tellma.Controllers
 
                         case nameof(Agent):
                         case nameof(AgentForSave):
-                            if (!defs.Agents.TryGetValue(definitionId, out AgentDefinitionForClient agentDef))
+                            if (!defs.Agents.TryGetValue(definitionId.Value, out AgentDefinitionForClient agentDef))
                             {
                                 var msg = _localizer[$"Error_AgentDefinition0CouldNotBeFound"];
                                 throw new BadRequestException(msg);
@@ -116,7 +110,7 @@ namespace Tellma.Controllers
 
                         case nameof(Lookup):
                         case nameof(LookupForSave):
-                            if (!defs.Lookups.TryGetValue(definitionId, out LookupDefinitionForClient lookupDef))
+                            if (!defs.Lookups.TryGetValue(definitionId.Value, out LookupDefinitionForClient lookupDef))
                             {
                                 var msg = _localizer[$"Error_LookupDefinition0CouldNotBeFound"];
                                 throw new BadRequestException(msg);
@@ -126,7 +120,7 @@ namespace Tellma.Controllers
 
                         case nameof(Document):
                         case nameof(DocumentForSave):
-                            if (!defs.Documents.TryGetValue(definitionId, out DocumentDefinitionForClient documentDef))
+                            if (!defs.Documents.TryGetValue(definitionId.Value, out DocumentDefinitionForClient documentDef))
                             {
                                 var msg = _localizer[$"Error_DocumentDefinition0CouldNotBeFound"];
                                 throw new BadRequestException(msg);
@@ -288,16 +282,10 @@ namespace Tellma.Controllers
                     PropertyMetadata propMetadata;
                     if (propDesc is CollectionPropertyDescriptor collPropDesc)
                     {
-                        #region propEntityDefinitionId
-
-                        string propEntityDefinitionId = defOverride?.DefinitionId;
-
-                        #endregion
-
                         #region getCollectionTypeMetadata
 
                         Type collectionType = propInfo.PropertyType.GetGenericArguments().SingleOrDefault();
-                        Func<TypeMetadata> getCollectionTypeMetadata = () => GetMetadata(tenantId, collectionType, propEntityDefinitionId);
+                        Func<TypeMetadata> getCollectionTypeMetadata = () => GetMetadata(tenantId, collectionType, defOverride?.DefinitionId);
 
                         #endregion
 
@@ -306,12 +294,6 @@ namespace Tellma.Controllers
                     }
                     else if (propDesc is NavigationPropertyDescriptor navPropDesc)
                     {
-                        #region propEntityDefinitionId
-
-                        string propEntityDefinitionId = defOverride?.DefinitionId;
-
-                        #endregion
-
                         #region foreignKeyMetadata
 
                         var fkName = propInfo.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
@@ -331,7 +313,7 @@ namespace Tellma.Controllers
 
                         #region getTypeMetadata
 
-                        Func<TypeMetadata> getTypeMetadata = () => GetMetadata(tenantId, propInfo.PropertyType, propEntityDefinitionId);
+                        Func<TypeMetadata> getTypeMetadata = () => GetMetadata(tenantId, propInfo.PropertyType, defOverride?.DefinitionId);
 
                         #endregion
 
@@ -860,7 +842,7 @@ namespace Tellma.Controllers
                 //    break;
             }
 
-            string targetDefId = propInfo.Name switch
+            int? targetDefId = propInfo.Name switch
             {
                 nameof(Resource.Lookup1) => def.Lookup1DefinitionId,
                 nameof(Resource.Lookup2) => def.Lookup2DefinitionId,
@@ -1017,11 +999,11 @@ namespace Tellma.Controllers
                     break;
             }
 
-            string targetDefId = propInfo.Name switch
+            int? targetDefId = propInfo.Name switch
             {
-                nameof(Document.DebitAgent) => def.DebitAgentDefinitionId,
-                nameof(Document.CreditAgent) => def.CreditAgentDefinitionId,
-                nameof(Document.NotedAgent) => def.NotedAgentDefinitionId,
+                nameof(Document.DebitAgent) => def.DebitAgentDefinitionIds.Count == 1 ? (int?)def.DebitAgentDefinitionIds[0] : null,
+                nameof(Document.CreditAgent) => def.CreditAgentDefinitionIds.Count == 1 ? (int?)def.CreditAgentDefinitionIds[0] : null,
+                nameof(Document.NotedAgent) => def.NotedAgentDefinitionIds.Count == 1 ? (int?)def.NotedAgentDefinitionIds[0] : null,
                 _ => null,
             };
 
@@ -1118,7 +1100,7 @@ namespace Tellma.Controllers
             /// <summary>
             /// For navigation properties, this specifies the target definition Id
             /// </summary>
-            public string DefinitionId { get; set; }
+            public int? DefinitionId { get; set; }
         }
 
         /// <summary>
@@ -1128,7 +1110,7 @@ namespace Tellma.Controllers
         {
             public int? TenantId { get; set; }
             public Type EntityType { get; set; }
-            public string DefinitionId { get; set; }
+            public int? DefinitionId { get; set; }
         }
 
         /// <summary>

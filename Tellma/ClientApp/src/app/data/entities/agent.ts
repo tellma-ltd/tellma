@@ -25,7 +25,7 @@ export interface AgentForSave<TAgentRate = AgentRateForSave> extends EntityWithK
 }
 
 export interface Agent extends AgentForSave<AgentRate> {
-  DefinitionId?: string;
+  DefinitionId?: number;
   ImageId?: string;
   IsActive?: boolean;
   CreatedAt?: string;
@@ -71,7 +71,7 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
+        DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'AgentDefinition', foreignKeyName: 'DefinitionId' },
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },

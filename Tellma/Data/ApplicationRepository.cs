@@ -987,6 +987,7 @@ namespace Tellma.Data
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
                 // Next load account types
+                var accountTypesDic = new Dictionary<int, AccountType>();
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -1022,6 +1023,58 @@ namespace Tellma.Data
                     };
 
                     accountTypes.Add(entity);
+                    accountTypesDic.Add(entity.Id, entity);
+                }
+
+                // Account Type Contract Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeContractDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        ContractDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.ContractDefinitions ??= new List<AccountTypeContractDefinition>();
+                    accountType.ContractDefinitions.Add(entity);
+                }
+
+                // Account Type Noted Contract Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeNotedContractDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        NotedContractDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.NotedContractDefinitions ??= new List<AccountTypeNotedContractDefinition>();
+                    accountType.NotedContractDefinitions.Add(entity);
+                }
+
+                // Account Type Resource Definitions
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountTypeResourceDefinition
+                    {
+                        Id = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                        ResourceDefinitionId = reader.GetInt32(i++),
+                    };
+
+                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
+                    accountType.ResourceDefinitions ??= new List<AccountTypeResourceDefinition>();
+                    accountType.ResourceDefinitions.Add(entity);
                 }
             }
 
@@ -1183,7 +1236,7 @@ namespace Tellma.Data
 
         #region Agents
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(string definitionId, List<AgentForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(int definitionId, List<AgentForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1216,7 +1269,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Agents__Save(string definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<List<int>> Agents__Save(int definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1314,7 +1367,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1923,7 +1976,7 @@ namespace Tellma.Data
 
         #region Lookups
 
-        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(string definitionId, List<LookupForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(int definitionId, List<LookupForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -1947,7 +2000,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Lookups__Save(string definitionId, List<LookupForSave> entities, bool returnIds)
+        public async Task<List<int>> Lookups__Save(int definitionId, List<LookupForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2020,7 +2073,7 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2200,7 +2253,7 @@ namespace Tellma.Data
 
         #region Resources
 
-        public async Task Resources__Preprocess(string definitionId, List<ResourceForSave> entities)
+        public async Task Resources__Preprocess(int definitionId, List<ResourceForSave> entities)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2239,7 +2292,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(int definitionId, List<ResourceForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -2272,7 +2325,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Resources__Save(string definitionId, List<ResourceForSave> entities, bool returnIds)
+        public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2353,7 +2406,7 @@ namespace Tellma.Data
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3411,7 +3464,7 @@ namespace Tellma.Data
 
         #region Documents
 
-        public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> docs)
+        public async Task Documents__Preprocess(int definitionId, List<DocumentForSave> docs)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3509,7 +3562,7 @@ namespace Tellma.Data
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> documents, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(int definitionId, List<DocumentForSave> documents, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3549,7 +3602,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(string definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
+        public async Task<(List<InboxNotificationInfo> NotificationInfos, List<string> DeletedFileIds, List<int> Ids)> Documents__SaveAndRefresh(int definitionId, List<DocumentForSave> documents, List<AttachmentWithExtras> attachments, bool returnIds)
         {
             var deletedFileIds = new List<string>();
             var notificationInfos = new List<InboxNotificationInfo>();
@@ -3869,7 +3922,7 @@ namespace Tellma.Data
             return (notificationInfos, deletedFileIds);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3896,7 +3949,7 @@ namespace Tellma.Data
 
         // Posting State Management
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3946,7 +3999,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -3994,7 +4047,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Cancel(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4044,7 +4097,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Uncancel(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();

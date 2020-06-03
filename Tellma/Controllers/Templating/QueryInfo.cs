@@ -12,7 +12,7 @@ namespace Tellma.Controllers.Templating
     /// </summary>
     public abstract class QueryInfo
     {
-        public QueryInfo(string collection, string definitionId)
+        public QueryInfo(string collection, int? definitionId)
         {
             Collection = collection ?? throw new ArgumentNullException(nameof(collection));
             DefinitionId = definitionId;
@@ -26,7 +26,7 @@ namespace Tellma.Controllers.Templating
         /// <summary>
         /// For definitioned collections, this determines which definition (if any) to set on the resolved <see cref="ServiceBase"/>
         /// </summary>
-        public string DefinitionId { get; }
+        public int? DefinitionId { get; }
 
         // This object implements equality like a struct. The purpose is to be able to use it in a dictionary to efficiently group
         // all select paths together from all the different API calls in a template

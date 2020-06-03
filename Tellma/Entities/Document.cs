@@ -123,7 +123,7 @@ namespace Tellma.Entities
     public class Document : DocumentForSave<Line, Attachment>
     {
         [Display(Name = "Definition")]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         [Display(Name = "Document_State")]
         [AlwaysAccessible]

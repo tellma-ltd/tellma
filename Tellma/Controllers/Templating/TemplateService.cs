@@ -154,13 +154,13 @@ namespace Tellma.Controllers.Templating
                         case nameof(Document):
                             {
                                 FactServiceBase<Document> controller;
-                                if (string.IsNullOrWhiteSpace(query.DefinitionId))
+                                if (query.DefinitionId == null)
                                 {
                                     controller = _provider.GetRequiredService<DocumentsGenericService>();
                                 }
                                 else
                                 {
-                                    controller = _provider.GetRequiredService<DocumentsService>().SetDefinitionId(query.DefinitionId);
+                                    controller = _provider.GetRequiredService<DocumentsService>().SetDefinitionId(query.DefinitionId.Value);
                                 }
 
                                 var (list, _, _, _) = await controller.GetFact(args, cancellation);
@@ -172,13 +172,13 @@ namespace Tellma.Controllers.Templating
                         case nameof(Agent):
                             {
                                 FactServiceBase<Agent> controller;
-                                if (string.IsNullOrWhiteSpace(query.DefinitionId))
+                                if (query.DefinitionId == null)
                                 {
                                     controller = _provider.GetRequiredService<AgentsGenericService>();
                                 }
                                 else
                                 {
-                                    controller = _provider.GetRequiredService<AgentsService>().SetDefinitionId(query.DefinitionId);
+                                    controller = _provider.GetRequiredService<AgentsService>().SetDefinitionId(query.DefinitionId.Value);
                                 }
 
                                 var (list, _, _, _) = await controller.GetFact(args, cancellation);
@@ -354,12 +354,23 @@ namespace Tellma.Controllers.Templating
             var idsObj = args[i++];
 
             string collection;
-            string definitionId;
+            int? definitionId = null;
             if (sourceObj is string source) // Required
             {
                 var split = source.Split("/");
                 collection = split.First();
-                definitionId = split.Length > 1 ? string.Join("/", split.Skip(1)) : null;
+                var definitionIdString = split.Length > 1 ? string.Join("/", split.Skip(1)) : null;
+                if (definitionIdString != null)
+                {
+                    if (int.TryParse(definitionIdString, out int definitionIdInt))
+                    {
+                        definitionId = definitionIdInt;
+                    }
+                    else
+                    {
+                        throw new TemplateException($"Function '{QueryByFilter}' could not interpret the definitionId '{definitionIdString}' as an integer");
+                    }
+                }
             }
             else
             {
@@ -452,12 +463,23 @@ namespace Tellma.Controllers.Templating
 
             // Source
             string collection;
-            string definitionId;
+            int? definitionId = null;
             if (sourceObj is string source) // Required
             {
                 var split = source.Split("/");
                 collection = split.First();
-                definitionId = split.Length > 1 ? string.Join("/", split.Skip(1)) : null;
+                var definitionIdString = split.Length > 1 ? string.Join("/", split.Skip(1)) : null;
+                if (definitionIdString != null)
+                {
+                    if (int.TryParse(definitionIdString, out int definitionIdInt))
+                    {
+                        definitionId = definitionIdInt;
+                    }
+                    else
+                    {
+                        throw new TemplateException($"Function '{QueryByFilter}' could not interpret the definitionId '{definitionIdString}' as an integer");
+                    }
+                }
             }
             else
             {

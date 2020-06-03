@@ -33,7 +33,7 @@ namespace Tellma.Entities
     public class Lookup : LookupForSave
     {
         [AlwaysAccessible]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         [AlwaysAccessible]
         public decimal SortKey { get; set; }

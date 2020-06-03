@@ -7,7 +7,6 @@ using Tellma.Services.BlobStorage;
 using Tellma.Services.ClientInfo;
 using Tellma.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,7 +21,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Tellma.Controllers.Templating;
 using System.Text;
-using Microsoft.VisualBasic;
 
 namespace Tellma.Controllers
 {
@@ -252,10 +250,31 @@ namespace Tellma.Controllers
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        private string ManualJournalVouchers => "manual-journal-vouchers";
-        private string ManualLine => "ManualLine";
-        private string Lines => "Lines";
-        private string Entries => "Entries";
+        private int? _manualLineDefId;
+
+        /// <summary>
+        /// Retrieves the definition Id of the line definition whose Code = "ManualLine"
+        /// </summary>
+        public int? ManualLineDefinitionId
+        {
+            get
+            {
+                if (_manualLineDefId == null)
+                {
+                    var match = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines?.Where(pair => pair.Value.Code == "ManualLine");
+                    if (match.Any())
+                    {
+                        _manualLineDefId = match.FirstOrDefault().Key;
+                    }
+                    else
+                    {
+                        throw new BadRequestException("The database is in an inconsistent state: ManualLine definition is missing");
+                    }
+                }
+
+                return _manualLineDefId;
+            }
+        }
 
         public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
@@ -281,12 +300,35 @@ namespace Tellma.Controllers
         #region Context Params
 
         private bool? _includeRequiredSignaturesOverride;
-        private string _definitionIdOverride;
+        private int? _definitionIdOverride;
         private int TenantId => _tenantIdAccessor.GetTenantId(); // Syntactic sugar
 
-        protected override string DefinitionId => _definitionIdOverride ??
-            _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
-            throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(DocumentsService)}");
+        protected override int? DefinitionId
+        {
+            get
+            {
+                if (_definitionIdOverride != null)
+                {
+                    return _definitionIdOverride;
+                }
+
+                string routeDefId = _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString();
+                if (routeDefId != null)
+                {
+                    if (int.TryParse(routeDefId, out int definitionId))
+                    {
+                        return definitionId;
+                    }
+                    else
+                    {
+                        throw new BadRequestException($"DefinitoinId '{routeDefId}' cannot be parsed into an integer");
+                    }
+                }
+
+                throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ResourcesService)}");
+            }
+        }
+
         private bool IncludeRequiredSignatures =>
             _includeRequiredSignaturesOverride ?? GetQueryParameter("includeRequiredSignatures")?.ToLower() == "true";
 
@@ -304,7 +346,7 @@ namespace Tellma.Controllers
         private string View => $"{DocumentsController.BASE_ADDRESS}{DefinitionId}";
 
         private DocumentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents?
-            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+            .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Document Definition with Id = {DefinitionId} is missing from the cache");
 
         #endregion
 
@@ -488,10 +530,10 @@ namespace Tellma.Controllers
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var errors = transition switch
             {
-                nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId, ids, top: remainingErrorCount),
-                nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId, ids, top: remainingErrorCount),
-                nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId, ids, top: remainingErrorCount),
-                nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId, ids, top: remainingErrorCount),
+                nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId.Value, ids, top: remainingErrorCount),
+                nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId.Value, ids, top: remainingErrorCount),
+                nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId.Value, ids, top: remainingErrorCount),
+                nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId.Value, ids, top: remainingErrorCount),
                 _ => throw new BadRequestException($"Unknown transition {transition}"),
             };
 
@@ -667,7 +709,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} '{DefinitionId}'";
+            string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} {DefinitionId}";
             return new FilteredRepository<Document>(_repo, filter);
         }
 
@@ -689,7 +731,7 @@ namespace Tellma.Controllers
                 var definitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents;
                 if (definitions != null)
                 {
-                    definitions.TryGetValue(DefinitionId, value: out result);
+                    definitions.TryGetValue(DefinitionId.Value, value: out result);
                 }
 
                 return result;
@@ -699,9 +741,9 @@ namespace Tellma.Controllers
         protected override Query<Document> Search(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             var prefix = CurrentDefinition?.Prefix;
-            var map = new List<(string Prefix, string DefinitionId)>
+            var map = new List<(string Prefix, int DefinitionId)>
             {
-                (prefix, DefinitionId)
+                (prefix, DefinitionId.Value)
             };
             return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, map);
         }
@@ -798,10 +840,9 @@ namespace Tellma.Controllers
 
                 // All fields that are marked as common, copy the common value across to the 
                 // lines and entries, we deal with the lines one definitionId at a time
-                foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId))
+                foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId.Value))
                 {
-                    var lineDef = lineDefinitions.GetValueOrDefault(linesGroup.Key);
-                    if (lineDef == null)
+                    if (!lineDefinitions.TryGetValue(linesGroup.Key, out LineDefinitionForClient lineDef))
                     {
                         // Validation takes care of this later on
                         continue;
@@ -826,7 +867,7 @@ namespace Tellma.Controllers
                         // Copy the direction from the definition
                         for (var i = 0; i < line.Entries.Count; i++)
                         {
-                            if (line.DefinitionId != ManualLine)
+                            if (line.DefinitionId != ManualLineDefinitionId)
                             {
                                 line.Entries[i].Direction = lineDef.Entries[i].Direction;
                             }
@@ -934,7 +975,7 @@ namespace Tellma.Controllers
             });
 
             // SQL server preprocessing
-            await _repo.Documents__Preprocess(DefinitionId, docs);
+            await _repo.Documents__Preprocess(DefinitionId.Value, docs);
 
             // C# Processing after SQL
             docs.ForEach(doc =>
@@ -946,7 +987,7 @@ namespace Tellma.Controllers
                         // If currency is functional, make sure that Value = MonetaryValue
                         if (entry.CurrencyId == settings.FunctionalCurrencyId)
                         {
-                            if (line.DefinitionId == ManualLine)
+                            if (line.DefinitionId == ManualLineDefinitionId)
                             {
                                 // Manual lines, the value is always entered by the user
                                 entry.MonetaryValue = entry.Value;
@@ -969,7 +1010,7 @@ namespace Tellma.Controllers
                 // => Take the difference and distribute it evenly on the entries
                 if (doc.Lines.Count > 0)
                 {
-                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != ManualLine).SelectMany(line => line.Entries);
+                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != ManualLineDefinitionId).SelectMany(line => line.Entries);
                     if (smartEntries.Any())
                     {
                         var currencyId = smartEntries.First().CurrencyId;
@@ -1065,8 +1106,7 @@ namespace Tellma.Controllers
                 {
                     var line = doc.Lines[lineIndex];
 
-                    var lineDef = lineDefs.GetValueOrDefault(line.DefinitionId);
-                    if (lineDef == null)
+                    if (!lineDefs.TryGetValue(line.DefinitionId.Value, out LineDefinitionForClient lineDef))// We checked earlier if this is null
                     {
                         ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                             _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
@@ -1305,7 +1345,7 @@ namespace Tellma.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Documents_Validate__Save(DefinitionId, docs, top: remainingErrorCount);
+            var sqlErrors = await _repo.Documents_Validate__Save(DefinitionId.Value, docs, top: remainingErrorCount);
 
             // Update the key of mapped errors
             foreach (var sqlError in sqlErrors)
@@ -1413,7 +1453,7 @@ namespace Tellma.Controllers
 
             // Save the documents
             var (notificationInfos, fileIdsToDelete, ids) = await _repo.Documents__SaveAndRefresh(
-                DefinitionId,
+                DefinitionId.Value,
                 documents: entities,
                 attachments: attachments,
                 returnIds: returnIds);
@@ -1442,7 +1482,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Documents_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Documents_Validate__Delete(DefinitionId.Value, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -1490,7 +1530,7 @@ namespace Tellma.Controllers
             return this;
         }
 
-        public DocumentsService SetDefinitionId(string definitionId)
+        public DocumentsService SetDefinitionId(int definitionId)
         {
             _definitionIdOverride = definitionId;
             return this;
@@ -1715,8 +1755,13 @@ namespace Tellma.Controllers
             // (since the controller will not filter the results per any specific definition Id)
             foreach (var permission in permissions.Where(e => e.View != "all"))
             {
-                string definitionId = permission.View.Remove(0, prefix.Length).Replace("'", "''");
-                string definitionPredicate = $"{nameof(Document.DefinitionId)} {Ops.eq} '{definitionId}'";
+                string definitionIdString = permission.View.Remove(0, prefix.Length).Replace("'", "''");
+                if (!int.TryParse(definitionIdString, out int definitionId))
+                {
+                    throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
+                }
+
+                string definitionPredicate = $"{nameof(Document.DefinitionId)} {Ops.eq} {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -1740,7 +1785,7 @@ namespace Tellma.Controllers
             var prefixMap = _definitionsCache.GetCurrentDefinitionsIfCached()?
                 .Data?.Documents? // Get document definitions for client from the cache
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
-                new List<(string, string)>(); // Avoiding null reference exception at all cost
+                new List<(string, int)>(); // Avoiding null reference exception at all cost
 
             return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
         }
@@ -1756,7 +1801,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, string DefinitionId)> prefixMap)
+        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, int DefinitionId)> prefixMap)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -1768,13 +1813,13 @@ namespace Tellma.Controllers
                     searchLower.StartsWith(e.Prefix.ToLower()) &&
                     searchLower.Length > e.Prefix.Length);
 
-                if (definitionId != null && int.TryParse(searchLower.Remove(0, prefix.Length), out int serial))
+                if (definitionId != 0 && int.TryParse(searchLower.Remove(0, prefix.Length), out int serial))
                 {
                     var serialNumberProp = nameof(Document.SerialNumber);
                     var definitionIdProp = nameof(Document.DefinitionId);
 
                     // Prepare the filter string
-                    var filterString = $"{serialNumberProp} {Ops.eq} {serial} and {definitionIdProp} {Ops.eq} '{definitionId}'";
+                    var filterString = $"{serialNumberProp} {Ops.eq} {serial} and {definitionIdProp} {Ops.eq} {definitionId}";
 
                     // Apply the filter
                     query = query.Filter(filterString);

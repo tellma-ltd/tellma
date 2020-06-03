@@ -1,26 +1,19 @@
-﻿using Tellma.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Tellma.Controllers.Dto;
 using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.MultiTenancy;
-using Tellma.Services.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.AspNetCore.Http;
 
 namespace Tellma.Controllers
 {
@@ -87,16 +80,41 @@ namespace Tellma.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IDefinitionsCache _definitionsCache;
 
-        private string _definitionIdOverride;
+        private int? _definitionIdOverride;
 
-        protected override string DefinitionId => _definitionIdOverride ?? 
-            _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString() ??
-            throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(AgentsService)}");
+        protected override int? DefinitionId
+        {
+            get
+            {
+                if (_definitionIdOverride != null)
+                {
+                    return _definitionIdOverride;
+                }
+
+                string routeDefId = _contextAccessor.HttpContext?.Request?.RouteValues?.GetValueOrDefault("definitionId")?.ToString();
+                if (routeDefId != null)
+                {
+                    if (int.TryParse(routeDefId, out int definitionId))
+                    {
+                        return definitionId;
+                    }
+                    else
+                    {
+                        throw new BadRequestException($"DefinitoinId '{routeDefId}' cannot be parsed into an integer");
+                    }
+                }
+
+                throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ResourcesService)}");
+            }
+        }
+
+        private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
+            .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Agent Definition with Id = {DefinitionId} is missing from the cache");
 
         /// <summary>
         /// Overrides the default behavior of reading the definition Id from the route data
         /// </summary>
-        public AgentsService SetDefinitionId(string definitionId)
+        public AgentsService SetDefinitionId(int definitionId)
         {
             _definitionIdOverride = definitionId;
             return this;
@@ -145,7 +163,7 @@ namespace Tellma.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Agent.DefinitionId)} {Ops.eq} '{DefinitionId}'";
+            string filter = $"{nameof(Agent.DefinitionId)} {Ops.eq} {DefinitionId}";
             return new FilteredRepository<Agent>(_repo, filter);
         }
 
@@ -177,7 +195,7 @@ namespace Tellma.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Agents_Validate__Save(DefinitionId.Value, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -189,7 +207,7 @@ namespace Tellma.Controllers
 
             // Save the agents
             var ids = await _repo.Agents__Save(
-                DefinitionId,
+                DefinitionId.Value,
                 entities: entities,
                 imageIds: imageIds,
                 returnIds: returnIds);
@@ -213,7 +231,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Agents_Validate__Delete(DefinitionId.Value, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -246,7 +264,12 @@ namespace Tellma.Controllers
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Agent"]]);
+                // TODO: test
+                var definition = Definition();
+                var tenantInfo = await _repo.GetTenantInfoAsync(cancellation: default);
+                var titleSingular = tenantInfo.Localize(definition.TitleSingular, definition.TitleSingular2, definition.TitleSingular3);
+
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", titleSingular]);
             }
         }
 
@@ -322,8 +345,13 @@ namespace Tellma.Controllers
             // (since the controller will not filter the results per any specific definition Id)
             foreach (var permission in permissions.Where(e => e.View != "all"))
             {
-                string definitionId = permission.View.Remove(0, prefix.Length).Replace("'", "''");
-                string definitionPredicate = $"{nameof(Agent.DefinitionId)} {Ops.eq} '{definitionId}'";
+                string definitionIdString = permission.View.Remove(0, prefix.Length).Replace("'", "''");
+                if (!int.TryParse(definitionIdString, out int definitionId))
+                {
+                    throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
+                }
+
+                string definitionPredicate = $"{nameof(Agent.DefinitionId)} {Ops.eq} {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";

@@ -191,7 +191,7 @@ namespace Tellma.Controllers.ImportExport
 
             // Each set of foreign keys will result in an API query to retrieve the corresponding Ids for FK hydration
             // So we group foreign keys by the target type, the target definition Id and the key property (e.g. Code or Name)
-            var queryInfos = new List<(Type, string, PropertyMetadata, HashSet<object>)>();
+            var queryInfos = new List<(Type, int?, PropertyMetadata, HashSet<object>)>();
             foreach (var g in mapping.GetForeignKeys().Where(p => p.NotUsingIdAsKey)
                 .GroupBy(fk => (fk.TargetType, fk.TargetDefId, fk.KeyPropertyMetadata)))
             {
@@ -413,7 +413,7 @@ namespace Tellma.Controllers.ImportExport
         /// <summary>
         /// Data structure for storing and efficiently retrieving preloaded related entities which are referenced by foreign keys in the imported list
         /// </summary>
-        private class RelatedEntities : Dictionary<(Type Type, string DefId, string PropName), Dictionary<object, IEnumerable<EntityWithKey>>>
+        private class RelatedEntities : Dictionary<(Type Type, int? DefId, string PropName), Dictionary<object, IEnumerable<EntityWithKey>>>
         {
         }
 
