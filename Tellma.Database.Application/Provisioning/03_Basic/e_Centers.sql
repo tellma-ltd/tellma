@@ -3,7 +3,7 @@
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @Centers([Index],
 			[Name],				[Name2],			[Name3],			[Code],	[CenterType], [ParentIndex])
-SELECT 0,[ShortCompanyName],[ShortCompanyName2],	[ShortCompanyName3],N'',	N'Investment',			NULL
+SELECT 0,[ShortCompanyName],[ShortCompanyName2],	[ShortCompanyName3],N'',	N'Segment',			NULL
 FROM dbo.Settings
 -- Purchasing - Hiring - Stocking - Manufacturing - Development - Marketing & Selling - Administration
 ELSE IF @DB = N'101' -- Banan SD, USD, en
@@ -18,16 +18,16 @@ BEGIN
 
 	INSERT INTO @Centers([Index],[ParentIndex],
 		[Name],					[Name2],				[Code],[CenterType],	[ExpenseEntryTypeId]) VALUES
-	(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Investment',	NULL),
-	(2,0,N'Departments',		N'الإدارات',				N'10',	N'Cost',		NULL),
+	(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Segment',	NULL),
+	(2,0,N'Departments',		N'الإدارات',			N'10',	N'Cost',		NULL),
 	(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
 	(4,2,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),
-	(5,2,N'System Admin',		N'إدارة النظم',			N'13',	N'Cost',		@ServiceExtension),
+	(5,2,N'System Admin',		N'إدارة النظم',		N'13',	N'Cost',		@ServiceExtension),
 	(6,2,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		@ServiceExtension),
-	--(7,2,N'Cafeteria',		N'الوجبات',				N'15',	N'Cost',		@ServiceExtension),
+	--(7,2,N'Cafeteria',		N'الوجبات',			N'15',	N'Cost',		@ServiceExtension),
 	(8,0,N'Products',			N'المنتجات',			N'20',	N'Profit',		NULL),
 	(9,8,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
-	(10,8,N'BSmart',			N'بيسمارت',				N'22',	N'Profit',		@CostOfSales),
+	(10,8,N'BSmart',			N'بيسمارت',			N'22',	N'Profit',		@CostOfSales),
 	(11,8,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
 	(12,8,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
 	(13,0,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		@CostOfSales);
@@ -48,13 +48,13 @@ END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 INSERT INTO @Centers([Index],
 			[Name],				[Code], [CenterType], [ParentIndex])
-SELECT 0,[ShortCompanyName],	N'',	N'Investment',			NULL
+SELECT 0,[ShortCompanyName],	N'',	N'Segment',			NULL
 FROM dbo.Settings
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @Centers([Index],
 			[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
+SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Segment',			NULL
 FROM dbo.Settings
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
@@ -62,7 +62,7 @@ BEGIN
 
 	INSERT INTO @Centers([Index],
 				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	N'Investment',	NULL -- Badege
+	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	N'Segment',	NULL -- Badege
 	FROM dbo.Settings
 	-- expenses, and fixed assets can be assigned to all
 	-- revenues can be assigned to Profit only
@@ -130,12 +130,12 @@ ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @Centers([Index],
 				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-	SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Investment',			NULL
+	SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Segment',			NULL
 	FROM dbo.Settings
 
 	INSERT INTO @Centers([Index],
 		[Name],						[Name2],					[Code], [CenterType], [ParentIndex]) VALUES -- HasBS, HasRevenues, HasExpenses 
-	(1,N'Simpex - Exec Office',		N'سيمبكس - مكتب تنفيذي',	N'0',	N'Investment',			0), -- ADM
+	(1,N'Simpex - Exec Office',		N'سيمبكس - مكتب تنفيذي',	N'0',	N'Segment',			0), -- ADM
 	(2,N'Jeddah Branch',			N'فرع جدة',					N'1',	N'Profit',				0), -- 
 	(3,N'Jeddah - Admin/Shared',	N'جدة - مكتب تنفيذي',		N'10',	N'Cost',				2), -- ADM
 	(4,N'Jeddah - Sales',			N'جدة - مبيعات',			N'11',	N'Revenue',				2), -- ADM, SND
@@ -155,26 +155,28 @@ BEGIN
 END
 ELSE IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
-	INSERT INTO @Centers([Index], [Name],[Name2],[Code], [CenterType], [SegmentId], [ParentIndex], [IsLeaf]) VALUES 
-	(0, N'Head Office Segment', N'ዋና መስሪያ ቤት ክፍል', N'101', N'Investment', @HeadOffice, NULL, 1),
-	(1, N'Trading Segment', N'የግብይት ክፍል', N'201', N'Investment', @Trading, NULL, 1),
-	(2, N'Export', N'ወደ ውጭ ይላኩ', N'21', N'Profit', @Trading, NULL, 0),
-	(3, N'Cereals', N'እህል', N'211', N'Profit', @Trading, 2, 1),
-	(4, N'Pulses', N'ጥራጥሬዎች', N'212', N'Profit', @Trading, 2, 1),
-	(5, N'Oilseeds', N'የቅባት እህሎች', N'213', N'Profit', @Trading, 2, 1),
-	(6, N'Import', N'አስመጣ', N'22', N'Profit', @Trading, NULL, 0),
-	(7, N'Spare Parts', N'መለዋወጫ አካላት', N'221', N'Profit', @Trading, 6, 1),
-	(8, N'Medicine', N'መድሃኒት', N'222', N'Profit', @Trading, 6, 1),
-	(9, N'Construction', N'ግንባታ', N'223', N'Profit', @Trading, 6, 1),
-	(10, N'FoodItems', N'የምግብ አይነቶች', N'224', N'Profit', @Trading, 6, 1),
-	(11, N'Minidor', N'አነስተኛ', N'231', N'Profit', @Trading, NULL, 1),
-	(12, N'Oil Mills', N'ዘይት ወፍጮዎች', N'241', N'Profit', @Trading, NULL, 1),
-	(13, N'Real Estate Segment', N'የሪል እስቴት ክፍል', N'301', N'Investment', @Rental, NULL, 1),
-	(14, N'Rental', N'ኪራይ', N'31', N'Profit', @Rental, NULL, 0),
-	(15, N'Rental - Adama', N'ኪራይ - አዳማ', N'311', N'Profit', @Rental, 14, 1),
-	(16, N'Rental - AA', N'ኪራይ - ኤኤ', N'312', N'Profit', @Rental, 14, 1);
+	INSERT INTO @Centers([Index], [Name],[Name2],[Code], [CenterType], [ParentIndex], [IsLeaf]) VALUES 
+	(0, N'Head Office Segment', N'ዋና መስሪያ ቤት ክፍል', N'101', N'Segment', NULL, 1),
+	(1, N'Trading Segment', N'የግብይት ክፍል', N'201', N'Segment', NULL, 1),
+	(2, N'Export', N'ወደ ውጭ ይላኩ', N'21', N'Profit', NULL, 0),
+	(3, N'Cereals', N'እህል', N'211', N'Profit', 2, 1),
+	(4, N'Pulses', N'ጥራጥሬዎች', N'212', N'Profit', 2, 1),
+	(5, N'Oilseeds', N'የቅባት እህሎች', N'213', N'Profit', 2, 1),
+	(6, N'Import', N'አስመጣ', N'22', N'Profit', NULL, 0),
+	(7, N'Spare Parts', N'መለዋወጫ አካላት', N'221', N'Profit', 6, 1),
+	(8, N'Medicine', N'መድሃኒት', N'222', N'Profit', 6, 1),
+	(9, N'Construction', N'ግንባታ', N'223', N'Profit', 6, 1),
+	(10, N'FoodItems', N'የምግብ አይነቶች', N'224', N'Profit', 6, 1),
+	(11, N'Minidor', N'አነስተኛ', N'231', N'Profit', NULL, 1),
+	(12, N'Oil Mills', N'ዘይት ወፍጮዎች', N'241', N'Profit', NULL, 1),
+	(13, N'Real Estate Segment', N'የሪል እስቴት ክፍል', N'301', N'Segment', NULL, 1),
+	(14, N'Rental', N'ኪራይ', N'31', N'Profit', NULL, 0),
+	(15, N'Rental - Adama', N'ኪራይ - አዳማ', N'311', N'Profit', 14, 1),
+	(16, N'Rental - AA', N'ኪራይ - ኤኤ', N'312', N'Profit', 14, 1);
+
+
 END
-UPDATE @Centers SET [SegmentId] = @MAIN_OS;
+
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -188,9 +190,9 @@ END;
 DECLARE @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
 		@RC_SalesAG INT, @RC_SalesBole INT, @RC_Inv INT;
 
-SELECT @RC_Inv = [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Investment';
+SELECT @RC_Inv = [Id] FROM dbo.[Centers] WHERE [CenterType] = N'Segment';
 
-	--(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Investment',	NULL),
+	--(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Segment',	NULL),
 	--(2,0,N'Departments',		N'الإدارات',				N'1',	N'Cost',		NULL),
 	--(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
 	--(4,2,N'Sales Unit',		N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),

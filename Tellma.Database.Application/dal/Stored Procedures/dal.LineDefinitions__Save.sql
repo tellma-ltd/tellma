@@ -164,6 +164,7 @@ SET NOCOUNT ON;
 			LDE.[AccountTypeId],
 			LDE.[ResourceDefinitionId],
 			LDE.[ContractDefinitionId],
+			LDE.[NotedContractDefinitionId],
 			LDE.[EntryTypeId]
 		FROM @LineDefinitionEntries LDE
 		JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -176,6 +177,7 @@ SET NOCOUNT ON;
 			t.[AccountTypeId]					<> s.[AccountTypeId] OR
 			ISNULL(t.[ResourceDefinitionId],0)	<> ISNULL(s.[ResourceDefinitionId],0) OR
 			ISNULL(t.[ContractDefinitionId],0)	<> ISNULL(s.[ContractDefinitionId],0) OR
+			ISNULL(t.[NotedContractDefinitionId],0)	<> ISNULL(s.[NotedContractDefinitionId],0) OR
 			ISNULL(t.[EntryTypeId],0)			<> ISNULL(s.[EntryTypeId],0)
 	)
 	THEN
@@ -185,6 +187,7 @@ SET NOCOUNT ON;
 			t.[AccountTypeId]			= s.[AccountTypeId],
 			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
 			t.[ContractDefinitionId]	= s.[ContractDefinitionId],
+			t.[NotedContractDefinitionId]=s.[NotedContractDefinitionId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
@@ -198,6 +201,7 @@ SET NOCOUNT ON;
 			[AccountTypeId],
 			[ResourceDefinitionId],
 			[ContractDefinitionId],
+			[NotedContractDefinitionId],
 			[EntryTypeId]
 		)
 		VALUES (
@@ -208,6 +212,7 @@ SET NOCOUNT ON;
 			s.[AccountTypeId],
 			s.[ResourceDefinitionId],
 			s.[ContractDefinitionId],
+			s.[NotedContractDefinitionId],
 			s.[EntryTypeId]
 		);
 -- TODO: Reduce updates by verifying that information has indeed been changed (like we did for LD, LDV, and LDE)

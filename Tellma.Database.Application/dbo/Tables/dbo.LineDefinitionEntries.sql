@@ -9,6 +9,7 @@
 	[AccountTypeId]				INT NOT NULL CONSTRAINT [FK_LineDefinitionEntryOptions__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[ResourceDefinitionId]		INT CONSTRAINT [FK_LineDefinitionEntryOptions__ResourceDefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	[ContractDefinitionId]		INT CONSTRAINT [FK_LineDefinitionEntryOptions__ContractDefinitionId] REFERENCES dbo.ContractDefinitions([Id]),
+	[NotedContractDefinitionId]	INT CONSTRAINT [FK_LineDefinitionEntryOptions__NotedContractDefinitionId] REFERENCES dbo.ContractDefinitions([Id]),
 	[EntryTypeId]				INT					CONSTRAINT [FK_LineDefinitionEntries__EntryTypeId] REFERENCES [dbo].[EntryTypes] ([Id]),
 	--[NotedContractDefinitionId]	INT					CONSTRAINT [FK_LineDefinitionEntries__NotedContractDefinitionId] REFERENCES dbo.[ContractDefinitions]([Id]),
 	[SavedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_LineDefinitionEntries__SavedById] REFERENCES [dbo].[Users] ([Id]),

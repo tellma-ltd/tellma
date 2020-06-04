@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 	USING (
 		SELECT
 			[Index], [Id], [Name], [Name2], [Name3],
-			[Description], [Description2], [Description3], [E]
+			[Description], [Description2], [Description3], [NumericCode], [E]
 		FROM @Entities 
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
@@ -24,11 +24,12 @@ SET NOCOUNT ON;
 			t.[Description]		= s.[Description],
 			t.[Description2]	= s.[Description2],
 			t.[Description3]	= s.[Description3],
+			t.[NumericCode]		= s.[NumericCode],
 			t.[E]				= s.[E],
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [E])
-		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[E]);
+		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [NumericCode], [E])
+		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[NumericCode], s.[E]);
 
 	UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

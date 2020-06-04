@@ -1710,4 +1710,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[VariantIndex]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="77fd476e-59ef-43f1-9865-339a3b89acc8" ChangeDateTime="06/03/2020 13:49:16">
+    <Property Name="ElementName" Value="[dbo].[Documents].[InvestmentCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SegmentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e3b8138e-448f-45cd-b897-4643da52574a" ChangeDateTime="06/03/2020 13:49:41">
+    <Property Name="ElementName" Value="[dbo].[Documents].[InvestmentCenterIsCommon]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SegmentIsCommon]" />
+  </Operation>
 </Operations>

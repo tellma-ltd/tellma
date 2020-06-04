@@ -1,12 +1,12 @@
 ﻿CREATE TABLE [dbo].[Centers] (
 	[Id]					INT					CONSTRAINT [PK_Centers]  PRIMARY KEY NONCLUSTERED IDENTITY,
 -- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
-	[SegmentId]				INT					NOT NULL CONSTRAINT [FK_Centers__SegmentId] REFERENCES dbo.[Segments]([Id]),
-	CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
+	--[SegmentId]				INT					NOT NULL CONSTRAINT [FK_Centers__SegmentId] REFERENCES dbo.[Segments]([Id]),
+	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
-	CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
+	--CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
 	[CenterType]			NVARCHAR (50)		CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
-													N'Investment', N'Profit', N'Revenue', N'Cost')
+													N'Segment', N'Profit', N'Revenue', N'Cost')
 												),
 	[IsLeaf]				BIT					NOT NULL,
 	[Name]					NVARCHAR (255)		NOT NULL,

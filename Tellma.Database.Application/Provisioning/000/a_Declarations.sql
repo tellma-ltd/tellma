@@ -45,6 +45,7 @@
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
+	DECLARE @Currencies dbo.[CurrencyList];
 
 	DECLARE @Agents dbo.AgentList, @AgentUsers dbo.AgentUserList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
@@ -52,8 +53,6 @@
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
 	DECLARE @DayOvertime INT, @NightOvertime INT, @RestOvertime INT, @HolidayOvertime INT;
 	DECLARE @MonthlySubscription INT;
-
-	DECLARE @SDG NCHAR (3) = N'SDG', @USD NCHAR (3) = N'USD', @SAR NCHAR (3) = N'SAR';
 
 	DECLARE @D dbo.DocumentList, @L dbo.LineList, @E dbo.EntryList, @WL dbo.WideLineList;
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList], @LinesIndexedIds dbo.[IndexedIdList];

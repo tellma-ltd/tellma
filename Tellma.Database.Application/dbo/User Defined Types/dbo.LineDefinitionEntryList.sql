@@ -8,5 +8,6 @@
 	[AccountTypeId]				INT NOT NULL,
 	[ResourceDefinitionId]		INT,
 	[ContractDefinitionId]		INT,
+	[NotedContractDefinitionId] INT,
 	[EntryTypeId]				INT
 );

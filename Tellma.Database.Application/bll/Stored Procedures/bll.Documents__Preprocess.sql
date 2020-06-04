@@ -311,23 +311,23 @@ END
 	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1) = 1
 	BEGIN
 		UPDATE @PreprocessedDocuments
-		SET [InvestmentCenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
+		SET [SegmentId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 		UPDATE @PreprocessedEntries
 		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 	END
-	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Investment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
+	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
 	BEGIN
-		DECLARE @InvestmentCenterId INT = (
+		DECLARE @SegmentId INT = (
 			SELECT [Id]	FROM dbo.[Centers]
-			WHERE [CenterType] = N'Investment'
+			WHERE [CenterType] = N'Segment'
 			AND [IsActive] = 1 AND [IsLeaf] = 1
 		);
 		UPDATE @PreprocessedDocuments
-		SET [InvestmentCenterId] = @InvestmentCenterId
-		WHERE InvestmentCenterIsCommon = 1;
+		SET [SegmentId] = @SegmentId
+		WHERE SegmentIsCommon = 1;
 		-- Manual Lines
 		UPDATE PE 
-		SET PE.CenterId = @InvestmentCenterId
+		SET PE.CenterId = @SegmentId
 		FROM @PreprocessedEntries PE
 		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
 		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
@@ -335,7 +335,7 @@ END
 		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0;
 		-- Smart Lines
 		--UPDATE PE 
-		--SET PE.CenterId = @InvestmentCenterId
+		--SET PE.CenterId = @SegmentId
 		--FROM @PreprocessedEntries PE
 		--JOIN @PreprocessedLines L ON PE.LineIndex = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
 		--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND PE.[Index] = LDE.[Index]
