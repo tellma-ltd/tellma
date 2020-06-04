@@ -43,7 +43,7 @@ namespace Tellma.Entities
         [Display(Name = "Currency_DecimalPlaces")]
         [Required]
         [ChoiceList(new object[] { (byte)0, (byte)2, (byte)3 })]
-        public byte? E { get; set; }
+        public short? E { get; set; }
     }
 
     public class Currency : CurrencyForSave

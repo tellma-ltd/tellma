@@ -1018,7 +1018,12 @@ namespace Tellma.Data
                         NotedAmountLabel3 = reader.String(i++),
                         NotedDateLabel = reader.String(i++),
                         NotedDateLabel2 = reader.String(i++),
-                        NotedDateLabel3 = reader.String(i++)
+                        NotedDateLabel3 = reader.String(i++),
+
+                        // Those will be filled next
+                        ContractDefinitions = new List<AccountTypeContractDefinition>(),
+                        NotedContractDefinitions = new List<AccountTypeNotedContractDefinition>(),
+                        ResourceDefinitions = new List<AccountTypeResourceDefinition>(),
                     };
 
                     accountTypes.Add(entity);
@@ -1038,7 +1043,6 @@ namespace Tellma.Data
                     };
 
                     var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.ContractDefinitions ??= new List<AccountTypeContractDefinition>();
                     accountType.ContractDefinitions.Add(entity);
                 }
 
@@ -1055,7 +1059,6 @@ namespace Tellma.Data
                     };
 
                     var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.NotedContractDefinitions ??= new List<AccountTypeNotedContractDefinition>();
                     accountType.NotedContractDefinitions.Add(entity);
                 }
 
@@ -1072,7 +1075,6 @@ namespace Tellma.Data
                     };
 
                     var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.ResourceDefinitions ??= new List<AccountTypeResourceDefinition>();
                     accountType.ResourceDefinitions.Add(entity);
                 }
             }

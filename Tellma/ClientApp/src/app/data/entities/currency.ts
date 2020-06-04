@@ -53,7 +53,7 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService, 
         E: {
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),
-          choices: [0, 2, 3],
+          choices: [0, 2, 3, 4],
           format: (c: number | string) => (c === null || c === undefined) ? '' : c.toString()
         },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
