@@ -21,8 +21,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }
 
-        [Display(Name = "Entry_Agent")]
-        public int? AgentId { get; set; }
+        [Display(Name = "Entry_Contract")]
+        public int? ContractId { get; set; }
 
         [Display(Name = "Entry_EntryType")]
         public int? EntryTypeId { get; set; }
@@ -81,8 +81,8 @@ namespace Tellma.Entities
         [StringLength(255)]
         public string AdditionalReference { get; set; }
 
-        [Display(Name = "Entry_NotedAgent")]
-        public int? NotedAgentId { get; set; }
+        [Display(Name = "Entry_NotedContract")]
+        public int? NotedContractId { get; set; }
 
         [Display(Name = "Entry_NotedAgentName")]
         [StringLength(50)]
@@ -108,9 +108,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(EntryTypeId))]
         public EntryType EntryType { get; set; }
 
-        [Display(Name = "Entry_Agent")]
-        [ForeignKey(nameof(AgentId))]
-        public Agent Agent { get; set; }
+        [Display(Name = "Entry_Contract")]
+        [ForeignKey(nameof(ContractId))]
+        public Contract Contract { get; set; }
 
         [Display(Name = "Entry_Center")]
         [ForeignKey(nameof(CenterId))]
@@ -124,8 +124,8 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
 
-        [Display(Name = "Entry_NotedAgent")]
-        [ForeignKey(nameof(NotedAgentId))]
-        public Agent NotedAgent { get; set; }
+        [Display(Name = "Entry_NotedContract")]
+        [ForeignKey(nameof(NotedContractId))]
+        public Contract NotedContract { get; set; }
     }
 }

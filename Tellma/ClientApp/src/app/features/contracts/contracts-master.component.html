@@ -1,4 +1,4 @@
-<t-master *ngIf="found;else pageNotFound" collection="Agent" [definitionId]="definitionId" [mode]="mode"
+<t-master *ngIf="found;else pageNotFound" collection="Contract" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated" selectForTiles="Code,ImageId"
@@ -23,14 +23,14 @@
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2 && Image_isVisible">
       <div class="border t-dp-wrapper2">
-        <t-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
+        <t-image [src]="'contracts/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
           [size]="42" icon="camera"></t-image>
       </div>
       &nbsp;&nbsp;&nbsp;
     </ng-container>
     <div class="flex-grow-1 d-inline-block t-mw-0">
       <div class="d-flex justify-content-between">
-        <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('Contract', id, 'Name') }}</span>
       </div>
       <div class="d-flex justify-content-between mt-1 small">
         <span>{{ c[id].Code }}</span>
@@ -47,7 +47,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <t-auto-cell collection="Agent" [definitionId]="definitionId" [entity]="c[id]"></t-auto-cell>
+    <t-auto-cell collection="Contract" [definitionId]="definitionId" [entity]="c[id]"></t-auto-cell>
   </span>
 </ng-template>
 

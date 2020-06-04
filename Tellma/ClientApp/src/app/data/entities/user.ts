@@ -65,7 +65,6 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService, _: s
           choices: companyLanguages,
           format: (c: string) => supportedCultures[c]
         },
-        // Agent: { control: 'navigation', label: () => trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
         State: {
           control: 'state',
           label: () => trx.instant('State'),

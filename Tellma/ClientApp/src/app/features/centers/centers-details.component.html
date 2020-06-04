@@ -81,7 +81,7 @@
                 [itemId]="model?.ManagerId">{{
                     ws.getMultilingualValue('Agent', model?.ManagerId, 'Name') }}</t-view-link>
         </t-restricted>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-agents-picker>
+        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-contracts-picker>
     </t-form-group>
 
     <!-- Parent -->

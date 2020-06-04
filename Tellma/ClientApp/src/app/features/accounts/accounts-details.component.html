@@ -73,7 +73,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
-            additionalSelect="CenterAssignment,CurrencyAssignment,AgentAssignment,AgentDefinitionId,ResourceAssignment,ResourceDefinitionId,IdentifierAssignment,IdentifierLabel,IdentifierLabel2,IdentifierLabel3,EntryTypeAssignment,IsResourceClassification,EntryTypeParentId">
+            additionalSelect="CenterAssignment,CurrencyAssignment,ContractAssignment,ContractDefinitionId,ResourceAssignment,ResourceDefinitionId,IdentifierAssignment,IdentifierLabel,IdentifierLabel2,IdentifierLabel3,EntryTypeAssignment,IsResourceClassification,EntryTypeParentId">
         </t-account-types-picker>
     </t-form-group>
 
@@ -156,17 +156,17 @@
         </div>
     </t-form-group>
 
-    <!-- Agent -->
-    <t-form-group class="t-form-group" *ngIf="showAgent(model)" [label]="labelAgent(model)"
-        [serverErrors]="model?.serverErrors?.AgentId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
-            [itemId]="model?.AgentId">
-            <t-auto-cell collection="Account" path="Agent" [entity]="model">
+    <!-- Contract -->
+    <t-form-group class="t-form-group" *ngIf="showContract(model)" [label]="labelContract(model)"
+        [serverErrors]="model?.serverErrors?.ContractId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.Contract)?.DefinitionId"
+            [itemId]="model?.ContractId">
+            <t-auto-cell collection="Account" path="Contract" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [definitionIds]="definitionIdsAgent(model)"
+        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ContractId" [definitionIds]="definitionIdsContract(model)"
             additionalSelect="DefinitionId" required>
-        </t-agents-picker>
+        </t-contracts-picker>
     </t-form-group>
 
     <!-- Entry Type -->
@@ -193,98 +193,6 @@
         <t-auto-cell collection="Account" [entity]="model" path="IsDeprecated">
         </t-auto-cell>
     </t-form-group>
-
-
-    <!-- Has Identifier -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasIdentifier' | translate"
-                        [serverErrors]="model?.serverErrors?.HasIdentifier">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasIdentifier">
-                            {{ (model?.HasIdentifier ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasIdentifier"
-                                id="hasIdentifier">
-                            <label class="custom-control-label t-pointer" for="hasIdentifier">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has ExternalReference -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasExternalReference' | translate"
-                        [serverErrors]="model?.serverErrors?.HasExternalReference">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasExternalReference">
-                            {{ (model?.HasExternalReference ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasExternalReference"
-                                id="hasExternalReference">
-                            <label class="custom-control-label t-pointer" for="hasExternalReference">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has AdditionalReference -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasAdditionalReference' | translate"
-                        [serverErrors]="model?.serverErrors?.HasAdditionalReference">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasAdditionalReference">
-                            {{ (model?.HasAdditionalReference ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input"
-                                [(ngModel)]="model.HasAdditionalReference" id="hasAdditionalReference">
-                            <label class="custom-control-label t-pointer" for="hasAdditionalReference">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has NotedAgentId -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasNotedAgentId' | translate"
-                        [serverErrors]="model?.serverErrors?.HasNotedAgentId">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentId">
-                            {{ (model?.HasNotedAgentId ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAgentId"
-                                id="hasNotedAgentId">
-                            <label class="custom-control-label t-pointer" for="hasNotedAgentId">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has NotedAgentName -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasNotedAgentName' | translate"
-                        [serverErrors]="model?.serverErrors?.HasNotedAgentName">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAgentName">
-                            {{ (model?.HasNotedAgentName ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAgentName"
-                                id="hasNotedAgentName">
-                            <label class="custom-control-label t-pointer" for="hasNotedAgentName">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has NotedAmount -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasNotedAmount' | translate"
-                        [serverErrors]="model?.serverErrors?.HasNotedAmount">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedAmount">
-                            {{ (model?.HasNotedAmount ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedAmount"
-                                id="hasNotedAmount">
-                            <label class="custom-control-label t-pointer" for="hasNotedAmount">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
-
-    <!-- Has NotedDate -->
-    <!-- <t-form-group class="t-form-group" [label]="'Account_HasNotedDate' | translate"
-                        [serverErrors]="model?.serverErrors?.HasNotedDate">
-                        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.HasNotedDate">
-                            {{ (model?.HasNotedDate ? 'Yes' : 'No') | translate }}
-                        </t-restricted>
-                        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-                            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.HasNotedDate"
-                                id="hasNotedDate">
-                            <label class="custom-control-label t-pointer" for="hasNotedDate">&zwnj;</label>
-                        </div>
-                    </t-form-group> -->
 
 </ng-template>
 

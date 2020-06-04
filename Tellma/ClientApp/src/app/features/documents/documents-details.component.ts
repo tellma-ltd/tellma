@@ -8,7 +8,7 @@ import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { DocumentForSave, Document, formatSerial, DocumentClearance, metadata_Document, DocumentState } from '~/app/data/entities/document';
 import {
   DocumentDefinitionForClient,
-  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DefinitionsForClient
+  LineDefinitionColumnForClient, LineDefinitionEntryForClient, DefinitionsForClient, LineDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
 import { LineForSave, Line, LineState, LineFlags } from '~/app/data/entities/line';
 import { Entry, EntryForSave } from '~/app/data/entities/entry';
@@ -24,7 +24,7 @@ import { of, throwError, Observable, Subscription } from 'rxjs';
 import { AccountForSave } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
-import { metadata_Agent } from '~/app/data/entities/agent';
+import { metadata_Contract } from '~/app/data/entities/contract';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
@@ -267,9 +267,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Is Common
       result.MemoIsCommon = true;
-      result.DebitAgentIsCommon = false;
-      result.CreditAgentIsCommon = false;
-      result.NotedAgentIsCommon = false;
+      result.DebitContractIsCommon = false;
+      result.CreditContractIsCommon = false;
+      result.NotedContractIsCommon = false;
       result.InvestmentCenterIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
@@ -286,9 +286,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Is Common
       result.MemoIsCommon = !!def.MemoIsCommonVisibility;
-      result.DebitAgentIsCommon = !!def.DebitAgentVisibility;
-      result.CreditAgentIsCommon = !!def.CreditAgentVisibility;
-      result.NotedAgentIsCommon = !!def.NotedAgentVisibility;
+      result.DebitContractIsCommon = !!def.DebitContractVisibility;
+      result.CreditContractIsCommon = !!def.CreditContractVisibility;
+      result.NotedContractIsCommon = !!def.NotedContractVisibility;
       result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
@@ -621,109 +621,109 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
   }
 
-  // DebitAgent
+  // DebitContract
 
-  public showDocumentDebitAgent(_: DocumentForSave): boolean {
-    return this.definition.DebitAgentVisibility;
+  public showDocumentDebitContract(_: DocumentForSave): boolean {
+    return this.definition.DebitContractVisibility;
   }
 
-  public requireDocumentDebitAgent(doc: Document): boolean {
+  public requireDocumentDebitContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDebitAgent;
+    return this._requireDebitContract;
   }
 
-  public readonlyDocumentDebitAgent(doc: Document): boolean {
+  public readonlyDocumentDebitContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDebitAgent;
+    return this._readonlyDebitContract;
   }
 
-  public labelDocumentDebitAgent(_: DocumentForSave): string {
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitAgentLabel');
+  public labelDocumentDebitContract(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'DebitContractLabel');
     if (!label) {
-      const agentDefId = this.definition.DebitAgentDefinitionId;
-      const agentDef = this.ws.definitions.Agents[agentDefId];
-      if (!!agentDef) {
-        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      const contractDefId = this.definition.DebitContractDefinitionId;
+      const contractDef = this.ws.definitions.Contracts[contractDefId];
+      if (!!contractDef) {
+        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
       } else {
-        label = this.translate.instant('Agent');
+        label = this.translate.instant('Contract');
       }
     }
 
     return label;
   }
 
-  public documentDebitAgentDefinitionIds(_: DocumentForSave): string[] {
-    return [this.definition.DebitAgentDefinitionId];
+  public documentDebitContractDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.DebitContractDefinitionId];
   }
 
-  // CreditAgent
+  // CreditContract
 
-  public showDocumentCreditAgent(_: DocumentForSave): boolean {
-    return this.definition.CreditAgentVisibility;
+  public showDocumentCreditContract(_: DocumentForSave): boolean {
+    return this.definition.CreditContractVisibility;
   }
 
-  public requireDocumentCreditAgent(doc: Document): boolean {
+  public requireDocumentCreditContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireCreditAgent;
+    return this._requireCreditContract;
   }
 
-  public readonlyDocumentCreditAgent(doc: Document): boolean {
+  public readonlyDocumentCreditContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyCreditAgent;
+    return this._readonlyCreditContract;
   }
 
-  public labelDocumentCreditAgent(_: DocumentForSave): string {
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditAgentLabel');
+  public labelDocumentCreditContract(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'CreditContractLabel');
     if (!label) {
-      const agentDefId = this.definition.CreditAgentDefinitionId;
-      const agentDef = this.ws.definitions.Agents[agentDefId];
-      if (!!agentDef) {
-        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      const contractDefId = this.definition.CreditContractDefinitionId;
+      const contractDef = this.ws.definitions.Contracts[contractDefId];
+      if (!!contractDef) {
+        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
       } else {
-        label = this.translate.instant('Agent');
+        label = this.translate.instant('Contract');
       }
     }
 
     return label;
   }
 
-  public documentCreditAgentDefinitionIds(_: DocumentForSave): string[] {
-    return [this.definition.CreditAgentDefinitionId];
+  public documentCreditContractDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.CreditContractDefinitionId];
   }
 
-  // NotedAgent
+  // NotedContract
 
-  public showDocumentNotedAgent(_: DocumentForSave): boolean {
-    return this.definition.NotedAgentVisibility;
+  public showDocumentNotedContract(_: DocumentForSave): boolean {
+    return this.definition.NotedContractVisibility;
   }
 
-  public requireDocumentNotedAgent(doc: Document): boolean {
+  public requireDocumentNotedContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireNotedAgent;
+    return this._requireNotedContract;
   }
 
-  public readonlyDocumentNotedAgent(doc: Document): boolean {
+  public readonlyDocumentNotedContract(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyNotedAgent;
+    return this._readonlyNotedContract;
   }
 
-  public labelDocumentNotedAgent(_: DocumentForSave): string {
-    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedAgentLabel');
+  public labelDocumentNotedContract(_: DocumentForSave): string {
+    let label = this.ws.getMultilingualValueImmediate(this.definition, 'NotedContractLabel');
     if (!label) {
-      const agentDefId = this.definition.NotedAgentDefinitionId;
-      const agentDef = this.ws.definitions.Agents[agentDefId];
-      if (!!agentDef) {
-        label = this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular');
+      const contractDefId = this.definition.NotedContractDefinitionId;
+      const contractDef = this.ws.definitions.Contracts[contractDefId];
+      if (!!contractDef) {
+        label = this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular');
       } else {
-        label = this.translate.instant('Agent');
+        label = this.translate.instant('Contract');
       }
     }
 
     return label;
   }
 
-  public documentNotedAgentDefinitionIds(_: DocumentForSave): string[] {
-    return [this.definition.NotedAgentDefinitionId];
+  public documentNotedContractDefinitionIds(_: DocumentForSave): string[] {
+    return [this.definition.NotedContractDefinitionId];
   }
 
   // Investment Center
@@ -855,12 +855,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _computeDocumentSettingsDef: DocumentDefinitionForClient;
   private _requireDocumentMemo: boolean;
   private _readonlyDocumentMemo: boolean;
-  private _requireDebitAgent: boolean;
-  private _readonlyDebitAgent: boolean;
-  private _requireCreditAgent: boolean;
-  private _readonlyCreditAgent: boolean;
-  private _requireNotedAgent: boolean;
-  private _readonlyNotedAgent: boolean;
+  private _requireDebitContract: boolean;
+  private _readonlyDebitContract: boolean;
+  private _requireCreditContract: boolean;
+  private _readonlyCreditContract: boolean;
+  private _requireNotedContract: boolean;
+  private _readonlyNotedContract: boolean;
   private _requireInvestmentCenter: boolean;
   private _readonlyInvestmentCenter: boolean;
   private _requireDocumentTime1: boolean;
@@ -877,12 +877,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!doc || !doc.Lines) {
       this._requireDocumentMemo = false;
       this._readonlyDocumentMemo = false;
-      this._requireDebitAgent = false;
-      this._readonlyDebitAgent = false;
-      this._requireCreditAgent = false;
-      this._readonlyCreditAgent = false;
-      this._requireNotedAgent = false;
-      this._readonlyNotedAgent = false;
+      this._requireDebitContract = false;
+      this._readonlyDebitContract = false;
+      this._requireCreditContract = false;
+      this._readonlyCreditContract = false;
+      this._requireNotedContract = false;
+      this._readonlyNotedContract = false;
       this._requireInvestmentCenter = false;
       this._readonlyInvestmentCenter = false;
       this._requireDocumentTime1 = false;
@@ -907,12 +907,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       this._requireDocumentMemo = def.MemoRequiredState === 0;
       this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
-      this._requireDebitAgent = def.DebitAgentRequiredState === 0;
-      this._readonlyDebitAgent = def.DebitAgentReadOnlyState === 0;
-      this._requireCreditAgent = def.CreditAgentRequiredState === 0;
-      this._readonlyCreditAgent = def.CreditAgentReadOnlyState === 0;
-      this._requireNotedAgent = def.NotedAgentRequiredState === 0;
-      this._readonlyNotedAgent = def.NotedAgentReadOnlyState === 0;
+      this._requireDebitContract = def.DebitContractRequiredState === 0;
+      this._readonlyDebitContract = def.DebitContractReadOnlyState === 0;
+      this._requireCreditContract = def.CreditContractRequiredState === 0;
+      this._readonlyCreditContract = def.CreditContractReadOnlyState === 0;
+      this._requireNotedContract = def.NotedContractRequiredState === 0;
+      this._readonlyNotedContract = def.NotedContractReadOnlyState === 0;
       this._requireInvestmentCenter = def.InvestmentCenterRequiredState === 0;
       this._readonlyInvestmentCenter = def.InvestmentCenterReadOnlyState === 0;
       this._requireDocumentTime1 = def.Time1RequiredState === 0;
@@ -941,34 +941,34 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
                 this._readonlyDocumentMemo = true;
               }
               break;
-            case 'AgentId':
-              if (!this._requireDebitAgent && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+            case 'ContractId':
+              if (!this._requireDebitContract && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireDebitAgent = true;
+                this._requireDebitContract = true;
               }
-              if (!this._requireCreditAgent && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+              if (!this._requireCreditContract && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireCreditAgent = true;
+                this._requireCreditContract = true;
               }
 
-              if (!this._readonlyDebitAgent && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
+              if (!this._readonlyDebitContract && lineDef.Entries[colDef.EntryIndex].Direction === 1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyDebitAgent = true;
+                this._readonlyDebitContract = true;
               }
-              if (!this._readonlyCreditAgent && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
+              if (!this._readonlyCreditContract && lineDef.Entries[colDef.EntryIndex].Direction === -1 &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyCreditAgent = true;
+                this._readonlyCreditContract = true;
               }
               break;
 
-            case 'NotedAgentId':
-              if (!this._requireNotedAgent &&
+            case 'NotedContractId':
+              if (!this._requireNotedContract &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireNotedAgent = true;
+                this._requireNotedContract = true;
               }
-              if (!this._readonlyNotedAgent &&
+              if (!this._readonlyNotedContract &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyNotedAgent = true;
+                this._readonlyNotedContract = true;
               }
               break;
 
@@ -1085,52 +1085,52 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!account ? account.CenterId : null;
   }
 
-  // AgentId
+  // ContractId
 
-  public showAgent_Manual(entry: Entry): boolean {
+  public showContract_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && at.AgentAssignment !== 'N';
+    return !!at && at.ContractAssignment !== 'N';
   }
 
-  public readonlyAgent_Manual(entry: Entry): boolean {
+  public readonlyContract_Manual(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !!account.AgentId;
+    return !!account && !!account.ContractId;
   }
 
-  public readonlyValueAgentId_Manual(entry: Entry): number {
+  public readonlyValueContractId_Manual(entry: Entry): number {
     const account = this.account(entry);
-    return !!account ? account.AgentId : null;
+    return !!account ? account.ContractId : null;
   }
 
-  public labelAgent_Manual(entry: Entry): string {
+  public labelContract_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    const defId = !!at ? at.AgentDefinitionId : null;
+    const defId = !!at ? at.ContractDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdAgent_Manual(entry: Entry): string {
+  public definitionIdContract_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    return at.AgentDefinitionId;
+    return at.ContractDefinitionId;
   }
 
-  // Noted Agent Id
+  // Noted Contract Id
 
-  public showNotedAgent_Manual(entry: Entry): boolean {
+  public showNotedContract_Manual(entry: Entry): boolean {
     const at = this.accountType(entry);
-    return !!at && at.NotedAgentAssignment !== 'N';
+    return !!at && at.NotedContractAssignment !== 'N';
   }
 
-  public labelNotedAgent_Manual(entry: Entry): string {
+  public labelNotedContract_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    const defId = !!at ? at.NotedAgentDefinitionId : null;
+    const defId = !!at ? at.NotedContractDefinitionId : null;
 
-    return metadata_Agent(this.workspace, this.translate, defId).titleSingular();
+    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdNotedAgent_Manual(entry: Entry): string {
+  public definitionIdNotedContract_Manual(entry: Entry): string {
     const at = this.accountType(entry);
-    return at.NotedAgentDefinitionId;
+    return at.NotedContractDefinitionId;
   }
 
   // ResourceId
@@ -2329,9 +2329,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           && (!col.InheritsFromHeader ||
             !(
               (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
-              (doc.DebitAgentIsCommon && col.ColumnName === 'AgentId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
-              (doc.CreditAgentIsCommon && col.ColumnName === 'AgentId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
-              (doc.NotedAgentIsCommon && col.ColumnName === 'NotedAgentId') ||
+              (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
+              (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
+              (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
               (doc.InvestmentCenterIsCommon && col.ColumnName === 'CenterId') ||
               (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
               (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
@@ -2395,7 +2395,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._columnTemplatesResult;
   }
 
-  private lineDefinition(lineDefId: string) {
+  private lineDefinition(lineDefId: string): LineDefinitionForClient {
     return !!lineDefId ? this.ws.definitions.Lines[lineDefId] : null;
   }
 
@@ -2445,14 +2445,14 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public definitionIdAgent_Smart(lineDefId: string, columnIndex: number): string {
+  public definitionIdContract_Smart(lineDefId: string, columnIndex: number): string {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.AgentDefinitionId ? entryDef.AgentDefinitionId : null;
+    return !!entryDef && !!entryDef.ContractDefinitionId ? entryDef.ContractDefinitionId : null;
   }
 
-  public definitionIdNotedAgent_Smart(lineDefId: string, columnIndex: number): string {
+  public definitionIdNotedContract_Smart(lineDefId: string, columnIndex: number): string {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.NotedAgentDefinitionId ? entryDef.NotedAgentDefinitionId : null;
+    return !!entryDef && !!entryDef.NotedContractDefinitionId ? entryDef.NotedContractDefinitionId : null;
   }
 
   public definitionIdResource_Smart(lineDefId: string, columnIndex: number): string {

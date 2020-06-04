@@ -9,7 +9,7 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { Subject, Observable } from 'rxjs';
-import { Agent } from './entities/agent';
+import { Contract } from './entities/contract';
 import { User } from './entities/user';
 import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
@@ -337,7 +337,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
-  Agent: EntityWorkspace<Agent>;
+  Contract: EntityWorkspace<Contract>;
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
@@ -369,7 +369,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Unit = {};
     this.Role = {};
     this.User = {};
-    this.Agent = {};
+    this.Contract = {};
     this.Lookup = {};
     this.Currency = {};
     this.Resource = {};

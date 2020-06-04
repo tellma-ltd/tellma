@@ -24,9 +24,9 @@ namespace Tellma.Controllers.Dto
         public Dictionary<int, ResourceDefinitionForClient> Resources { get; set; }
 
         /// <summary>
-        /// Mapping from agent definition Id to agent definition
+        /// Mapping from contract definition Id to contract definition
         /// </summary>
-        public Dictionary<int, AgentDefinitionForClient> Agents { get; set; }
+        public Dictionary<int, ContractDefinitionForClient> Contracts { get; set; }
 
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
@@ -143,32 +143,32 @@ namespace Tellma.Controllers.Dto
         public short? MemoRequiredState { get; set; }
         public short? MemoReadOnlyState { get; set; }
 
-        // Debit Agent
-        public bool DebitAgentVisibility { get; set; }
-        public short? DebitAgentRequiredState { get; set; }
-        public short? DebitAgentReadOnlyState { get; set; }
-        public List<int> DebitAgentDefinitionIds { get; set; }
-        public string DebitAgentLabel { get; set; }
-        public string DebitAgentLabel2 { get; set; }
-        public string DebitAgentLabel3 { get; set; }
+        // Debit Contract
+        public bool DebitContractVisibility { get; set; }
+        public short? DebitContractRequiredState { get; set; }
+        public short? DebitContractReadOnlyState { get; set; }
+        public List<int> DebitContractDefinitionIds { get; set; }
+        public string DebitContractLabel { get; set; }
+        public string DebitContractLabel2 { get; set; }
+        public string DebitContractLabel3 { get; set; }
 
-        // Credit Agent
-        public bool CreditAgentVisibility { get; set; }
-        public short? CreditAgentRequiredState { get; set; }
-        public short? CreditAgentReadOnlyState { get; set; }
-        public List<int> CreditAgentDefinitionIds { get; set; }
-        public string CreditAgentLabel { get; set; }
-        public string CreditAgentLabel2 { get; set; }
-        public string CreditAgentLabel3 { get; set; }
+        // Credit Contract
+        public bool CreditContractVisibility { get; set; }
+        public short? CreditContractRequiredState { get; set; }
+        public short? CreditContractReadOnlyState { get; set; }
+        public List<int> CreditContractDefinitionIds { get; set; }
+        public string CreditContractLabel { get; set; }
+        public string CreditContractLabel2 { get; set; }
+        public string CreditContractLabel3 { get; set; }
 
-        // Noted Agent
-        public bool NotedAgentVisibility { get; set; }
-        public short? NotedAgentRequiredState { get; set; }
-        public short? NotedAgentReadOnlyState { get; set; }
-        public List<int> NotedAgentDefinitionIds { get; set; }
-        public string NotedAgentLabel { get; set; }
-        public string NotedAgentLabel2 { get; set; }
-        public string NotedAgentLabel3 { get; set; }
+        // Noted Contract
+        public bool NotedContractVisibility { get; set; }
+        public short? NotedContractRequiredState { get; set; }
+        public short? NotedContractReadOnlyState { get; set; }
+        public List<int> NotedContractDefinitionIds { get; set; }
+        public string NotedContractLabel { get; set; }
+        public string NotedContractLabel2 { get; set; }
+        public string NotedContractLabel3 { get; set; }
 
         // Clearance
         public string ClearanceVisibility { get; set; }
@@ -273,8 +273,8 @@ namespace Tellma.Controllers.Dto
         // Computed from AccountTypeParent
         public int? EntryTypeParentId { get; set; }
         public List<int> ResourceDefinitionIds { get; set; }
-        public List<int> AgentDefinitionIds { get; set; }
-        public List<int> NotedAgentDefinitionIds { get; set; }
+        public List<int> ContractDefinitionIds { get; set; }
+        public List<int> NotedContractDefinitionIds { get; set; }
 
         //public string DueDateLabel { get; set; }
         //public string DueDateLabel2 { get; set; }
@@ -291,9 +291,9 @@ namespace Tellma.Controllers.Dto
         //public string AdditionalReferenceLabel { get; set; }
         //public string AdditionalReferenceLabel2 { get; set; }
         //public string AdditionalReferenceLabel3 { get; set; }
-        //public string NotedAgentNameLabel { get; set; }
-        //public string NotedAgentNameLabel2 { get; set; }
-        //public string NotedAgentNameLabel3 { get; set; }
+        //public string NotedContractNameLabel { get; set; }
+        //public string NotedContractNameLabel2 { get; set; }
+        //public string NotedContractNameLabel3 { get; set; }
         //public string NotedAmountLabel { get; set; }
         //public string NotedAmountLabel2 { get; set; }
         //public string NotedAmountLabel3 { get; set; }
@@ -455,7 +455,7 @@ namespace Tellma.Controllers.Dto
         public string Text2DefaultValue { get; set; }
     }
 
-    public class AgentDefinitionForClient : MasterDetailDefinitionForClient
+    public class ContractDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string TaxIdentificationNumberVisibility { get; set; }
         public string ImageVisibility { get; set; }

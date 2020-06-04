@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    [EntityDisplay(Singular = "AgentDefinition", Plural = "AgentDefinitions")] // TODO: Add to translations file
-    public class AgentDefinitionForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "ContractDefinition", Plural = "ContractDefinitions")]
+    public class ContractDefinitionForSave : EntityWithKey<int>
     {
         [Display(Name = "Code")]
         [Required]
@@ -71,7 +71,7 @@ namespace Tellma.Entities
         public decimal? MainMenuSortKey { get; set; }
     }
 
-    public class AgentDefinition : AgentDefinitionForSave
+    public class ContractDefinition : ContractDefinitionForSave
     {
         [Display(Name = "Definition_State")]
         [ChoiceList(new object[] { "Draft", "Deployed", "Archived" },

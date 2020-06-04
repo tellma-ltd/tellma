@@ -210,7 +210,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
-      this.addDefinitions(menu, ws.definitions.Agents, 'agents');
+      this.addDefinitions(menu, ws.definitions.Contracts, 'contracts');
       this.addDefinitions(menu, ws.definitions.Resources, 'resources');
       this.addDefinitions(menu, ws.definitions.Documents, 'documents');
 
@@ -236,7 +236,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const ws = this.workspace.currentTenant;
     const definitions = ws.definitions.Reports;
     if (!!definitions) {
-      const canViewAgents = Object.keys(ws.definitions.Agents).some(v => this.canView(`agents/${v}`));
+      const canViewContracts = Object.keys(ws.definitions.Contracts).some(v => this.canView(`contracts/${v}`));
       const canViewLookups = Object.keys(ws.definitions.Lookups).some(v => this.canView(`lookups/${v}`));
       const canViewResources = Object.keys(ws.definitions.Resources).some(v => this.canView(`resources/${v}`));
       const canViewDocuments = Object.keys(ws.definitions.Documents).some(v => this.canView(`documents/${v}`));
@@ -254,8 +254,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         let canView: boolean;
         if (!definition.DefinitionId) {
           switch (definition.Collection) {
-            case 'Agent':
-              canView = canViewAgents;
+            case 'Contract':
+              canView = canViewContracts;
               break;
             case 'Resource':
               canView = canViewResources;

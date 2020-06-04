@@ -169,16 +169,16 @@ namespace Tellma.Controllers.Templating
                                 break;
                             }
                         case nameof(DetailsEntry): // TODO
-                        case nameof(Agent):
+                        case nameof(Contract):
                             {
-                                FactServiceBase<Agent> controller;
+                                FactServiceBase<Contract> controller;
                                 if (query.DefinitionId == null)
                                 {
-                                    controller = _provider.GetRequiredService<AgentsGenericService>();
+                                    controller = _provider.GetRequiredService<ContractsGenericService>();
                                 }
                                 else
                                 {
-                                    controller = _provider.GetRequiredService<AgentsService>().SetDefinitionId(query.DefinitionId.Value);
+                                    controller = _provider.GetRequiredService<ContractsService>().SetDefinitionId(query.DefinitionId.Value);
                                 }
 
                                 var (list, _, _, _) = await controller.GetFact(args, cancellation);
@@ -220,7 +220,7 @@ namespace Tellma.Controllers.Templating
                                 break;
                             }
                         case nameof(DetailsEntry): // TODO
-                        case nameof(Agent):
+                        case nameof(Contract):
                             {
                                 // Definition Id
                                 var defId = query.DefinitionId ??
@@ -233,7 +233,7 @@ namespace Tellma.Controllers.Templating
                                 }
 
                                 // Load the result
-                                FactGetByIdServiceBase<Agent, int> controller = _provider.GetRequiredService<AgentsService>().SetDefinitionId(defId); ;
+                                FactGetByIdServiceBase<Contract, int> controller = _provider.GetRequiredService<ContractsService>().SetDefinitionId(defId); ;
                                 var (entity, _) = await controller.GetById(id, args, cancellation);
 
                                 queryResults[query] = entity;

@@ -19,7 +19,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType,CustomClassification,Currency,Center,Agent,Resource/Currency,EntryType`;
+  public expand = `AccountType,CustomClassification,Currency,Center,Contract,Resource/Currency,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -141,31 +141,31 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return false; // accountType.IsPersonal;
   }
 
-  // Agent
-  public showAgent(model: AccountForSave): boolean {
+  // Contract
+  public showContract(model: AccountForSave): boolean {
     const accountType = this.accountType(model);
     const isSmart = !!model && model.IsSmart;
-    const isAccountAssignment = !!accountType && accountType.AgentAssignment === 'A';
+    const isAccountAssignment = !!accountType && accountType.ContractAssignment === 'A';
 
     return isSmart && isAccountAssignment;
   }
 
-  public labelAgent(model: AccountForSave): string {
+  public labelContract(model: AccountForSave): string {
     let postfix = '';
     const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.AgentDefinitionId) {
-      const agentDef = this.ws.definitions.Agents[accountType.AgentDefinitionId];
-      if (!!agentDef) {
-        postfix = ` (${this.ws.getMultilingualValueImmediate(agentDef, 'TitleSingular')})`;
+    if (!!accountType && !!accountType.ContractDefinitionId) {
+      const contractDef = this.ws.definitions.Contracts[accountType.ContractDefinitionId];
+      if (!!contractDef) {
+        postfix = ` (${this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular')})`;
       }
     }
-    return this.translate.instant('Account_Agent') + postfix;
+    return this.translate.instant('Account_Contract') + postfix;
   }
 
-  public definitionIdsAgent(model: AccountForSave): string[] {
+  public definitionIdsContract(model: AccountForSave): string[] {
     const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.AgentDefinitionId) {
-      return [accountType.AgentDefinitionId];
+    if (!!accountType && !!accountType.ContractDefinitionId) {
+      return [accountType.ContractDefinitionId];
     } else {
       return [];
     }

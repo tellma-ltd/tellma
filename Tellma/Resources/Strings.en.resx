@@ -70,11 +70,11 @@
   <data name="Account" xml:space="preserve">
     <value>Account</value>
   </data>
-  <data name="Account_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>Center</value>
+  </data>
+  <data name="Account_Contract" xml:space="preserve">
+    <value>Contract</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
@@ -127,7 +127,7 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
   </data>
-  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+  <data name="AccountType_NotedِAgentNameLabel" xml:space="preserve">
     <value>Noted Agent Name Label</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
@@ -156,57 +156,6 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>Admin Users</value>
-  </data>
-  <data name="Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="Agent_BankAccountNumber" xml:space="preserve">
-    <value>Bank Account Number</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>Is Related</value>
-  </data>
-  <data name="Agent_Job" xml:space="preserve">
-    <value>Job</value>
-  </data>
-  <data name="Agent_Rates" xml:space="preserve">
-    <value>Rates</value>
-  </data>
-  <data name="Agent_StartDate" xml:space="preserve">
-    <value>Start Date</value>
-  </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>Tax Identification Number</value>
-  </data>
-  <data name="Agent_User" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="AgentDefinition" xml:space="preserve">
-    <value>Agent Definition</value>
-  </data>
-  <data name="AgentDefinitions" xml:space="preserve">
-    <value>Agent Definitions</value>
-  </data>
-  <data name="AgentRate" xml:space="preserve">
-    <value>Agent Rate</value>
-  </data>
-  <data name="AgentRate_Currency" xml:space="preserve">
-    <value>Currency</value>
-  </data>
-  <data name="AgentRate_Rate" xml:space="preserve">
-    <value>Rate</value>
-  </data>
-  <data name="AgentRate_Resource" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="AgentRate_Unit" xml:space="preserve">
-    <value>Unit</value>
-  </data>
-  <data name="AgentRates" xml:space="preserve">
-    <value>Agent Rates</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>Agents</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android</value>
@@ -318,6 +267,36 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>Confirm Password</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="Contract_BankAccountNumber" xml:space="preserve">
+    <value>Bank Account Number</value>
+  </data>
+  <data name="Contract_IsRelated" xml:space="preserve">
+    <value>Is Related</value>
+  </data>
+  <data name="Contract_Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="Contract_StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
+    <value>Tax Identification Number</value>
+  </data>
+  <data name="Contract_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ContractDefinition" xml:space="preserve">
+    <value>Contract Definition</value>
+  </data>
+  <data name="ContractDefinitions" xml:space="preserve">
+    <value>Contract Definitions</value>
+  </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>Contracts</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>Copyright © {0} Tellma, Ltd. All rights reserved.</value>
@@ -454,11 +433,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>Comment</value>
   </data>
-  <data name="Document_CreditAgent" xml:space="preserve">
-    <value>Credit Agent</value>
+  <data name="Document_CreditContract" xml:space="preserve">
+    <value>Credit Contract</value>
   </data>
-  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
-    <value>Credit Agent Is Common</value>
+  <data name="Document_CreditContractIsCommon" xml:space="preserve">
+    <value>Credit Contract Is Common</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>Currency</value>
@@ -466,11 +445,11 @@
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>Currency Is Common</value>
   </data>
-  <data name="Document_DebitAgent" xml:space="preserve">
-    <value>Credit Agent</value>
+  <data name="Document_DebitContract" xml:space="preserve">
+    <value>Debit Contract</value>
   </data>
-  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
-    <value>Debit Agent Is Common</value>
+  <data name="Document_DebitContractIsCommon" xml:space="preserve">
+    <value>Debit Contract Is Common</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>Attribute 1</value>
@@ -496,11 +475,11 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo Is Common</value>
   </data>
-  <data name="Document_NotedAgent" xml:space="preserve">
-    <value>Noted Agent</value>
+  <data name="Document_NotedContract" xml:space="preserve">
+    <value>Noted Contract</value>
   </data>
-  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
-    <value>Noted Agent Is Common</value>
+  <data name="Document_NotedContractIsCommon" xml:space="preserve">
+    <value>Noted Contract Is Common</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>Opened At</value>
@@ -616,11 +595,11 @@
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>
   </data>
-  <data name="Entry_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>Center</value>
+  </data>
+  <data name="Entry_Contract" xml:space="preserve">
+    <value>Contract</value>
   </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>Contract Type</value>
@@ -652,14 +631,14 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>Amount</value>
   </data>
-  <data name="Entry_NotedAgent" xml:space="preserve">
-    <value>Noted Agent</value>
-  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>Noted Agent Name</value>
   </data>
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>Noted Amount</value>
+  </data>
+  <data name="Entry_NotedContract" xml:space="preserve">
+    <value>Noted Contract</value>
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>Noted Date</value>
@@ -700,9 +679,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
   </data>
-  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>Agent DefinitionId '{0}' could not be found.</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>A user with email '{0}' could not be found.</value>
   </data>
@@ -741,6 +717,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
+  </data>
+  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>Contract DefinitionId '{0}' could not be found.</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>
@@ -2226,9 +2205,6 @@
   </data>
   <data name="User" xml:space="preserve">
     <value>User</value>
-  </data>
-  <data name="User_Agent" xml:space="preserve">
-    <value>Agent</value>
   </data>
   <data name="User_Companies" xml:space="preserve">
     <value>Companies</value>

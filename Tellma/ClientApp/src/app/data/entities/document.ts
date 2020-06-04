@@ -20,12 +20,12 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
-    DebitAgentId?: number;
-    DebitAgentIsCommon?: boolean;
-    CreditAgentId?: number;
-    CreditAgentIsCommon?: boolean;
-    NotedAgentId?: number;
-    NotedAgentIsCommon?: boolean;
+    DebitContractId?: number;
+    DebitContractIsCommon?: boolean;
+    CreditContractId?: number;
+    CreditContractIsCommon?: boolean;
+    NotedContractId?: number;
+    NotedContractIsCommon?: boolean;
     InvestmentCenterId?: number;
     InvestmentCenterIsCommon?: boolean;
     Time1?: string;
@@ -108,15 +108,15 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },
-                DebitAgentId: { control: 'number', label: () => `${trx.instant('Document_DebitAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                DebitAgent: { control: 'navigation', label: () => trx.instant('Document_DebitAgent'), type: 'Agent', foreignKeyName: 'DebitAgentId' },
-                DebitAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_DebitAgentIsCommon') },
-                CreditAgentId: { control: 'number', label: () => `${trx.instant('Document_CreditAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CreditAgent: { control: 'navigation', label: () => trx.instant('Document_CreditAgent'), type: 'Agent', foreignKeyName: 'CreditAgentId' },
-                CreditAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_CreditAgentIsCommon') },
-                NotedAgentId: { control: 'number', label: () => `${trx.instant('Document_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedAgent: { control: 'navigation', label: () => trx.instant('Document_NotedAgent'), type: 'Agent', foreignKeyName: 'NotedAgentId' },
-                NotedAgentIsCommon: { control: 'boolean', label: () => trx.instant('Document_NotedAgentIsCommon') },
+                DebitContractId: { control: 'number', label: () => `${trx.instant('Document_DebitContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                DebitContract: { control: 'navigation', label: () => trx.instant('Document_DebitContract'), type: 'Contract', foreignKeyName: 'DebitContractId' },
+                DebitContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_DebitContractIsCommon') },
+                CreditContractId: { control: 'number', label: () => `${trx.instant('Document_CreditContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CreditContract: { control: 'navigation', label: () => trx.instant('Document_CreditContract'), type: 'Contract', foreignKeyName: 'CreditContractId' },
+                CreditContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_CreditContractIsCommon') },
+                NotedContractId: { control: 'number', label: () => `${trx.instant('Document_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedContract: { control: 'navigation', label: () => trx.instant('Document_NotedContract'), type: 'Contract', foreignKeyName: 'NotedContractId' },
+                NotedContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_NotedContractIsCommon') },
                 InvestmentCenterId: { control: 'number', label: () => `${trx.instant('Document_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 InvestmentCenter: { control: 'navigation', label: () => trx.instant('Document_InvestmentCenter'), type: 'Center', foreignKeyName: 'InvestmentCenterId' },
                 InvestmentCenterIsCommon: { control: 'boolean', label: () => trx.instant('Document_InvestmentCenterIsCommon') },
@@ -208,7 +208,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitAgent', 'CreditAgent', 'NotedAgent', 'InvestmentCenter', 'Unit', 'Currency']) {
+            for (const propName of ['DebitContract', 'CreditContract', 'NotedContract', 'InvestmentCenter', 'Unit', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

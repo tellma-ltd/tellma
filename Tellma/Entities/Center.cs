@@ -86,7 +86,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Center_Manager")]
         [ForeignKey(nameof(ManagerId))]
-        public Agent Manager { get; set; }
+        public Contract Manager { get; set; }
 
         [AlwaysAccessible]
         public HierarchyId Node { get; set; }

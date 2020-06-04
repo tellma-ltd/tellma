@@ -6,8 +6,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    [EntityDisplay(Singular = "Agent", Plural = "Agents")]
-    public class AgentForSave<TAgentRate> : EntityWithKey<int>, IEntityWithImageForSave
+    [EntityDisplay(Singular = "Contract", Plural = "Contracts")]
+    public class ContractForSaveBase : EntityWithKey<int>, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -30,45 +30,41 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Agent_IsRelated")]
+        [Display(Name = "Contract_IsRelated")]
         [Required]
         [AlwaysAccessible]
         public bool? IsRelated { get; set; }
 
-        [Display(Name = "Agent_TaxIdentificationNumber")]
+        [Display(Name = "Contract_TaxIdentificationNumber")]
         [StringLength(30)]
         public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "Agent_StartDate")]
+        [Display(Name = "Contract_StartDate")]
         public DateTime? StartDate { get; set; }
 
-        [Display(Name = "Agent_Job")]
+        [Display(Name = "Contract_Job")]
         public int? JobId { get; set; }
 
-        [Display(Name = "Agent_BankAccountNumber")]
+        [Display(Name = "Contract_BankAccountNumber")]
         [StringLength(34)]
         public string BankAccountNumber { get; set; }
 
         public string CostObjectType { get; set; } // TODO: Deal with this
 
-        [Display(Name = "Agent_User")]
+        [Display(Name = "Contract_User")]
         public int? UserId { get; set; }
 
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
-
-        [Display(Name = "Agent_Rates")]
-        [ForeignKey(nameof(AgentRate.AgentId))]
-        public List<TAgentRate> Rates { get; set; }
     }
 
-    public class AgentForSave : AgentForSave<AgentRateForSave>
+    public class ContractForSave : ContractForSaveBase
     {
 
     }
 
-    public class Agent : AgentForSave<AgentRate>, IEntityWithImage
+    public class Contract : ContractForSave, IEntityWithImage
     {
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }
@@ -94,11 +90,11 @@ namespace Tellma.Entities
         // For Query
 
         // TODO 
-        // [Display(Name = "Agent_Job")]
+        // [Display(Name = "Contract_Job")]
         // [ForeignKey(nameof(JobId))]
         // public Job Job { get; set; }
         
-        [Display(Name = "Agent_User")]
+        [Display(Name = "Contract_User")]
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
 

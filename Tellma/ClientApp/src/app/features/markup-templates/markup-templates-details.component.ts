@@ -80,7 +80,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     result.SupportsTernaryLanguage = !!this.workspace.currentTenant.settings.TernaryLanguageId;
 
     result.Usage = 'QueryByFilter';
-    result.Collection = 'Agent';
+    result.Collection = 'Contract';
     result.MarkupLanguage = 'text/html';
     result.Body = defaultBody;
 

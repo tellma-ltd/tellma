@@ -162,22 +162,22 @@
         </t-selector>
     </t-form-group>
 
-    <!-- Debit Agent -->
-    <t-form-group class="t-form-group" [label]="labelDocumentDebitAgent(model)"
-        [serverErrors]="model?.serverErrors?.DebitAgentId" *ngIf="showDocumentDebitAgent(model)">
-        <ng-container *ngIf="model?.DebitAgentIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitAgentId">
-                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.DebitAgentId)?.DefinitionId"
-                    [itemId]="model?.DebitAgentId">
-                    {{ ws.getMultilingualValue('Agent', model?.DebitAgentId, 'Name') }}
+    <!-- Debit Contract -->
+    <t-form-group class="t-form-group" [label]="labelDocumentDebitContract(model)"
+        [serverErrors]="model?.serverErrors?.DebitContractId" *ngIf="showDocumentDebitContract(model)">
+        <ng-container *ngIf="model?.DebitContractIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DebitContractId">
+                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.DebitContractId)?.DefinitionId"
+                    [itemId]="model?.DebitContractId">
+                    {{ ws.getMultilingualValue('Contract', model?.DebitContractId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.DebitAgentId"
-                [definitionIds]="documentDebitAgentDefinitionIds(model)" [required]="requireDocumentDebitAgent(model)"
-                [disabled]="readonlyDocumentDebitAgent(model)">
-            </t-agents-picker>
+            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.DebitContractId"
+                [definitionIds]="documentDebitContractDefinitionIds(model)" [required]="requireDocumentDebitContract(model)"
+                [disabled]="readonlyDocumentDebitContract(model)">
+            </t-contracts-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitAgentIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitContractIsCommon' }"></ng-container>
     </t-form-group>
 
     <ng-template #perLine>
@@ -200,40 +200,40 @@
         </div>
     </ng-template>
 
-    <!-- Credit Agent -->
-    <t-form-group class="t-form-group" [label]="labelDocumentCreditAgent(model)"
-        [serverErrors]="model?.serverErrors?.CreditAgentId" *ngIf="showDocumentCreditAgent(model)">
-        <ng-container *ngIf="model?.CreditAgentIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditAgentId">
-                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.CreditAgentId)?.DefinitionId"
-                    [itemId]="model?.CreditAgentId">
-                    {{ ws.getMultilingualValue('Agent', model?.CreditAgentId, 'Name') }}
+    <!-- Credit Contract -->
+    <t-form-group class="t-form-group" [label]="labelDocumentCreditContract(model)"
+        [serverErrors]="model?.serverErrors?.CreditContractId" *ngIf="showDocumentCreditContract(model)">
+        <ng-container *ngIf="model?.CreditContractIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CreditContractId">
+                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.CreditContractId)?.DefinitionId"
+                    [itemId]="model?.CreditContractId">
+                    {{ ws.getMultilingualValue('Contract', model?.CreditContractId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.CreditAgentId"
-                [definitionIds]="documentCreditAgentDefinitionIds(model)" [required]="requireDocumentCreditAgent(model)"
-                [disabled]="readonlyDocumentCreditAgent(model)">
-            </t-agents-picker>
+            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.CreditContractId"
+                [definitionIds]="documentCreditContractDefinitionIds(model)" [required]="requireDocumentCreditContract(model)"
+                [disabled]="readonlyDocumentCreditContract(model)">
+            </t-contracts-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditAgentIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditContractIsCommon' }"></ng-container>
     </t-form-group>
 
-    <!-- Noted Agent -->
-    <t-form-group class="t-form-group" [label]="labelDocumentNotedAgent(model)"
-        [serverErrors]="model?.serverErrors?.NotedAgentId" *ngIf="showDocumentNotedAgent(model)">
-        <ng-container *ngIf="model?.NotedAgentIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedAgentId">
-                <t-view-link [link]="'../../../agents/' + ws.get('Agent', model?.NotedAgentId)?.DefinitionId"
-                    [itemId]="model?.NotedAgentId">
-                    {{ ws.getMultilingualValue('Agent', model?.NotedAgentId, 'Name') }}
+    <!-- Noted Contract -->
+    <t-form-group class="t-form-group" [label]="labelDocumentNotedContract(model)"
+        [serverErrors]="model?.serverErrors?.NotedContractId" *ngIf="showDocumentNotedContract(model)">
+        <ng-container *ngIf="model?.NotedContractIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.NotedContractId">
+                <t-view-link [link]="'../../../contracts/' + ws.get('Contract', model?.NotedContractId)?.DefinitionId"
+                    [itemId]="model?.NotedContractId">
+                    {{ ws.getMultilingualValue('Contract', model?.NotedContractId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.NotedAgentId"
-                [definitionIds]="documentNotedAgentDefinitionIds(model)" [required]="requireDocumentNotedAgent(model)"
-                [disabled]="readonlyDocumentNotedAgent(model)">
-            </t-agents-picker>
+            <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.NotedContractId"
+                [definitionIds]="documentNotedContractDefinitionIds(model)" [required]="requireDocumentNotedContract(model)"
+                [disabled]="readonlyDocumentNotedContract(model)">
+            </t-contracts-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedAgentIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedContractIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Investment Center -->
@@ -465,10 +465,10 @@
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
                                 {{ ws.getMultilingualValue('Currency', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
-                            <t-view-link *ngSwitchCase="'AgentId'"
-                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                            <t-view-link *ngSwitchCase="'ContractId'"
+                                [link]="'../../../contracts/' + ws.get('Contract', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('Contract', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'ResourceId'"
                                 [link]="'../../../resources/' + ws.get('Resource', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
@@ -504,10 +504,10 @@
                                 *ngSwitchCase="'ExternalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
                             <span
                                 *ngSwitchCase="'AdditionalReference'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
-                            <t-view-link *ngSwitchCase="'NotedAgentId'"
-                                [link]="'../../../agents/' + ws.get('Agent', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
+                            <t-view-link *ngSwitchCase="'NotedContractId'"
+                                [link]="'../../../contracts/' + ws.get('Contract', getFieldValue(lineDefId, columnIndex, line))?.DefinitionId"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Agent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ ws.getMultilingualValue('AgContractent', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
                             </t-view-link>
                             <span
                                 *ngSwitchCase="'NotedAgentName'">{{ getFieldValue(lineDefId, columnIndex, line) }}</span>
@@ -532,13 +532,13 @@
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
-                            <t-agents-picker *ngSwitchCase="'AgentId'"
+                            <t-contracts-picker *ngSwitchCase="'ContractId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="[definitionIdAgent_Smart(lineDefId, columnIndex)]"
+                                [definitionIds]="[definitionIdContract_Smart(lineDefId, columnIndex)]"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
-                            </t-agents-picker>
+                            </t-contracts-picker>
                             <t-resources-picker *ngSwitchCase="'ResourceId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -625,13 +625,13 @@
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);"
                                 [ngModelOptions]="{ updateOn: 'blur' }">
                             </t-text-editor>
-                            <t-agents-picker *ngSwitchCase="'NotedAgentId'"
+                            <t-contracts-picker *ngSwitchCase="'NotedContractId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="[definitionIdNotedAgent_Smart(lineDefId, columnIndex)]"
+                                [definitionIds]="[definitionIdNotedContract_Smart(lineDefId, columnIndex)]"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
-                            </t-agents-picker>
+                            </t-contracts-picker>
                             <t-text-editor *ngSwitchCase="'NotedAgentName'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
@@ -1086,24 +1086,24 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Agent -->
-            <ng-container *ngIf="showAgent_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAgent_Manual(entry)" [serverErrors]="entry.serverErrors?.AgentId">
+            <!-- Contract -->
+            <ng-container *ngIf="showContract_Manual(entry)">
+                <t-form-group-dynamic [label]="labelContract_Manual(entry)" [serverErrors]="entry.serverErrors?.ContractId">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AgentId">
-                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.AgentId)?.DefinitionId"
-                            [itemId]="entry.AgentId">
-                            {{ ws.getMultilingualValue('Agent', entry.AgentId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ContractId">
+                        <t-view-link [link]="'../../../contracts/' + ws.get('Contract', entry.ContractId)?.DefinitionId"
+                            [itemId]="entry.ContractId">
+                            {{ ws.getMultilingualValue('Contract', entry.ContractId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
                     <ng-container *ngIf="isEdit && !bookkeeping">
-                        <t-agents-picker *ngIf="!readonlyAgent_Manual(entry)" [(ngModel)]="entry.AgentId"
+                        <t-contracts-picker *ngIf="!readonlyContract_Manual(entry)" [(ngModel)]="entry.ContractId"
                             (ngModelChange)="update.call(null, pair);"
-                            [definitionIds]="[definitionIdAgent_Manual(entry)]" required>
-                        </t-agents-picker>
-                        <t-restricted *ngIf="readonlyAgent_Manual(entry)" [metadata]="entry.EntityMetadata?.AgentId">
-                            {{ ws.getMultilingualValue('Agent', readonlyValueAgentId_Manual(entry), 'Name') }}
+                            [definitionIds]="[definitionIdContract_Manual(entry)]" required>
+                        </t-contracts-picker>
+                        <t-restricted *ngIf="readonlyContract_Manual(entry)" [metadata]="entry.EntityMetadata?.ContractId">
+                            {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
                     &nbsp;&nbsp;
@@ -1290,22 +1290,22 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- Noted Agent -->
-            <ng-container *ngIf="showNotedAgent_Manual(entry)">
-                <t-form-group-dynamic [label]="labelNotedAgent_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.NotedAgent">
+            <!-- Noted Contract -->
+            <ng-container *ngIf="showNotedContract_Manual(entry)">
+                <t-form-group-dynamic [label]="labelNotedContract_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.NotedContract">
                     <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedAgentId">
-                        <t-view-link [link]="'../../../agents/' + ws.get('Agent', entry.NotedAgentId)?.DefinitionId"
-                            [itemId]="entry.NotedAgentId">
-                            {{ ws.getMultilingualValue('Agent', entry.NotedAgentId, 'Name') }}
+                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedContractId">
+                        <t-view-link [link]="'../../../contracts/' + ws.get('Contract', entry.NotedContractId)?.DefinitionId"
+                            [itemId]="entry.NotedContractId">
+                            {{ ws.getMultilingualValue('Contract', entry.NotedContractId, 'Name') }}
                         </t-view-link>
                     </t-restricted>
                     <!-- Edit -->
-                    <t-agents-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedAgentId"
+                    <t-contracts-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedContractId"
                         (ngModelChange)="update.call(null, pair);"
-                        [definitionIds]="[definitionIdNotedAgent_Manual(entry)]">
-                    </t-agents-picker>
+                        [definitionIds]="[definitionIdNotedContract_Manual(entry)]">
+                    </t-contracts-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
             </ng-container>

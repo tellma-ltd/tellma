@@ -237,7 +237,7 @@ namespace Tellma.Entities
         public int? AccountTypeId { get; set; }
 
         [ForeignKey(nameof(ContractDefinitionId))]
-        public AgentDefinition ContractDefinition { get; set; }
+        public ContractDefinition ContractDefinition { get; set; }
     }
 
     public class AccountTypeNotedContractDefinitionForSave : EntityWithKey<int>
@@ -250,7 +250,7 @@ namespace Tellma.Entities
         public int? AccountTypeId { get; set; }
 
         [ForeignKey(nameof(NotedContractDefinitionId))]
-        public AgentDefinition NotedContractDefinition { get; set; }
+        public ContractDefinition NotedContractDefinition { get; set; }
     }
 
 

@@ -46,8 +46,8 @@ namespace Tellma.Entities
         [Display(Name = "Account_IsRelated")]
         public bool? IsRelated { get; set; }
 
-        [Display(Name = "Account_Agent")]
-        public int? AgentId { get; set; }
+        [Display(Name = "Account_Contract")]
+        public int? ContractId { get; set; }
 
         [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
@@ -66,28 +66,6 @@ namespace Tellma.Entities
 
     public class Account : AccountForSave
     {
-        // TODO: Remove?
-        //[Display(Name = "Account_HasIdentifier")]
-        //public bool? HasIdentifier { get; set; }
-
-        //[Display(Name = "Account_HasExternalReference")]
-        //public bool? HasExternalReference { get; set; }
-
-        //[Display(Name = "Account_HasAdditionalReference")]
-        //public bool? HasAdditionalReference { get; set; }
-
-        //[Display(Name = "Account_HasNotedAgentId")]
-        //public bool? HasNotedAgentId { get; set; }
-
-        //[Display(Name = "Account_HasNotedAgentName")]
-        //public bool? HasNotedAgentName { get; set; }
-
-        //[Display(Name = "Account_HasNotedAmount")]
-        //public bool? HasNotedAmount { get; set; }
-
-        //[Display(Name = "Account_HasNotedDate")]
-        //public bool? HasNotedDate { get; set; }
-
         [Display(Name = "Account_IsDeprecated")]
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }
@@ -125,9 +103,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }
 
-        [Display(Name = "Account_Agent")]
-        [ForeignKey(nameof(AgentId))]
-        public Agent Agent { get; set; }
+        [Display(Name = "Account_Contract")]
+        [ForeignKey(nameof(ContractId))]
+        public Contract Contract { get; set; }
 
         [Display(Name = "Account_Resource")]
         [ForeignKey(nameof(ResourceId))]

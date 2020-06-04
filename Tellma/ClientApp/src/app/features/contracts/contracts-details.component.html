@@ -1,4 +1,4 @@
-<t-details *ngIf="found;else pageNotFound" collection="Agent" [definitionId]="definitionId" [createFunc]="create"
+<t-details *ngIf="found;else pageNotFound" collection="Contract" [definitionId]="definitionId" [createFunc]="create"
   [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect" [idString]="idString"
   [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -43,7 +43,7 @@
   <div class="col-12 col-md-4 t-details-image-container" *ngIf="Image_isVisible">
     <t-restricted [metadata]="model?.EntityMetadata?.ImageId">
       <div class="border">
-        <t-image *ngIf="!!model" [src]="model.Id ? 'agents/' + definitionId + '/' + model.Id + '/image' : null"
+        <t-image *ngIf="!!model" [src]="model.Id ? 'contracts/' + definitionId + '/' + model.Id + '/image' : null"
           [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit" icon="camera"></t-image>
       </div>
     </t-restricted>
@@ -79,7 +79,7 @@
 
   <!-- Tax Identification Number -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
-    [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+    [label]="'Contract_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
     </t-restricted>
@@ -100,7 +100,7 @@
   </t-form-group>
 
   <!-- Bank Account Number -->
-  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Agent_BankAccountNumber' | translate"
+  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Contract_BankAccountNumber' | translate"
     [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
@@ -111,10 +111,10 @@
   </t-form-group>
 
   <!-- User -->
-  <t-form-group class="t-form-group" [label]="'Agent_User' | translate" [serverErrors]="model?.serverErrors?.UserId">
+  <t-form-group class="t-form-group" [label]="'Contract_User' | translate" [serverErrors]="model?.serverErrors?.UserId">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.User">
       <t-view-link *ngIf="!isEdit" link="../../../users" [itemId]="model?.UserId">
-        <t-auto-cell collection="Agent" [definitionId]="definitionId" [entity]="model" path="User">
+        <t-auto-cell collection="Contract" [definitionId]="definitionId" [entity]="model" path="User">
         </t-auto-cell>
       </t-view-link>
     </t-restricted>
@@ -123,7 +123,7 @@
   </t-form-group>
 
   <!-- Is Related -->
-  <t-form-group class="t-form-group" [label]="'Agent_IsRelated' | translate"
+  <t-form-group class="t-form-group" [label]="'Contract_IsRelated' | translate"
     [serverErrors]="model?.serverErrors?.IsRelated">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsRelated">
       {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
@@ -140,10 +140,9 @@
   </t-form-group>
 
   <!-- Tabs -->
-  <ng-container *ngIf="Tabs_isVisible">
+  <!-- <ng-container *ngIf="Tabs_isVisible">
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
 
-      <!-- Rates -->
       <li ngbNavItem="rates" *ngIf="Rates_isVisible">
         <a ngbNavLink>
           <span *ngIf="Rates_showError(model)" class="text-danger">
@@ -165,8 +164,7 @@
             </t-table>
           </t-restricted>
 
-          <!-- Resource -->
-          <ng-template #header_Resource>{{ 'AgentRate_Resource' | translate }}</ng-template>
+          <ng-template #header_Resource>{{ 'ContractRate_Resource' | translate }}</ng-template>
           <ng-template #row_Resource let-item="item" let-index="index" let-update="update">
             <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.ResourceId">
               <div *ngIf="!isEdit">
@@ -178,8 +176,7 @@
             </t-form-group-cell>
           </ng-template>
 
-          <!-- Unit -->
-          <ng-template #header_Unit>{{ 'AgentRate_Unit' | translate }}</ng-template>
+          <ng-template #header_Unit>{{ 'ContractRate_Unit' | translate }}</ng-template>
           <ng-template #row_Unit let-item="item" let-index="index" let-update="update">
             <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
               <div *ngIf="!isEdit">
@@ -190,8 +187,7 @@
             </t-form-group-cell>
           </ng-template>
 
-          <!-- Rate -->
-          <ng-template #header_Rate>{{ 'AgentRate_Rate' | translate }}</ng-template>
+          <ng-template #header_Rate>{{ 'ContractRate_Rate' | translate }}</ng-template>
           <ng-template #row_Rate let-item="item" let-index="index" let-update="update">
             <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Rate">
               <div *ngIf="!isEdit">{{ item.Rate | number:Rate_format(item) }}</div>
@@ -202,9 +198,7 @@
             </t-form-group-cell>
           </ng-template>
 
-
-          <!-- Currency -->
-          <ng-template #header_Currency>{{ 'AgentRate_Currency' | translate }}</ng-template>
+          <ng-template #header_Currency>{{ 'ContractRate_Currency' | translate }}</ng-template>
           <ng-template #row_Currency let-item="item" let-index="index" let-update="update">
             <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.CurrencyId">
               <div *ngIf="!isEdit">
@@ -220,7 +214,7 @@
       </li>
     </ul>
     <div class="w-100" [ngbNavOutlet]="tabs"></div>
-  </ng-container>
+  </ng-container> -->
 </ng-template>
 
 <!-- Actions -->

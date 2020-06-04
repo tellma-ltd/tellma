@@ -6,7 +6,7 @@ import { MarkupTemplateUsage } from '../entities/markup-template';
 export interface DefinitionsForClient {
     Documents: { [definitionId: number]: DocumentDefinitionForClient };
     Lines: { [definitionId: number]: LineDefinitionForClient };
-    Agents: { [definitionId: number]: AgentDefinitionForClient };
+    Contracts: { [definitionId: number]: ContractDefinitionForClient };
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
@@ -102,32 +102,32 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     MemoRequiredState: LineState;
     MemoReadOnlyState: LineState;
 
-    // Debit Agent
-    DebitAgentVisibility: boolean;
-    DebitAgentRequiredState: LineState;
-    DebitAgentReadOnlyState: LineState;
-    DebitAgentDefinitionId: number;
-    DebitAgentLabel: string;
-    DebitAgentLabel2: string;
-    DebitAgentLabel3: string;
+    // Debit Contract
+    DebitContractVisibility: boolean;
+    DebitContractRequiredState: LineState;
+    DebitContractReadOnlyState: LineState;
+    DebitContractDefinitionId: number;
+    DebitContractLabel: string;
+    DebitContractLabel2: string;
+    DebitContractLabel3: string;
 
-    // Credit Agent
-    CreditAgentVisibility: boolean;
-    CreditAgentRequiredState: LineState;
-    CreditAgentReadOnlyState: LineState;
-    CreditAgentDefinitionId: number;
-    CreditAgentLabel: string;
-    CreditAgentLabel2: string;
-    CreditAgentLabel3: string;
+    // Credit Contract
+    CreditContractVisibility: boolean;
+    CreditContractRequiredState: LineState;
+    CreditContractReadOnlyState: LineState;
+    CreditContractDefinitionId: number;
+    CreditContractLabel: string;
+    CreditContractLabel2: string;
+    CreditContractLabel3: string;
 
-    // Noted Agent
-    NotedAgentVisibility: boolean;
-    NotedAgentRequiredState: LineState;
-    NotedAgentReadOnlyState: LineState;
-    NotedAgentDefinitionId: number;
-    NotedAgentLabel: string;
-    NotedAgentLabel2: string;
-    NotedAgentLabel3: string;
+    // Noted Contract
+    NotedContractVisibility: boolean;
+    NotedContractRequiredState: LineState;
+    NotedContractReadOnlyState: LineState;
+    NotedContractDefinitionId: number;
+    NotedContractLabel: string;
+    NotedContractLabel2: string;
+    NotedContractLabel3: string;
 
     // Clearance
     ClearanceVisibility: Visibility;
@@ -226,8 +226,8 @@ export interface LineDefinitionEntryForClient {
 
     // Copied from AccountTypeParent
     EntryTypeParentId?: number;
-    AgentDefinitionIds: number[];
-    NotedAgentDefinitionIds: number[];
+    ContractDefinitionIds: number[];
+    NotedContractDefinitionIds: number[];
     ResourceDefinitionIds: number[];
     // DueDateLabel?: string;
     // DueDateLabel2?: string;
@@ -244,9 +244,9 @@ export interface LineDefinitionEntryForClient {
     // AdditionalReferenceLabel?: string;
     // AdditionalReferenceLabel2?: string;
     // AdditionalReferenceLabel3?: string;
-    // NotedAgentNameLabel?: string;
-    // NotedAgentNameLabel2?: string;
-    // NotedAgentNameLabel3?: string;
+    // NotedContractNameLabel?: string;
+    // NotedContractNameLabel2?: string;
+    // NotedContractNameLabel3?: string;
     // NotedAmountLabel?: string;
     // NotedAmountLabel2?: string;
     // NotedAmountLabel3?: string;
@@ -276,10 +276,10 @@ export interface LineDefinitionStateReasonForClient {
 }
 
 export type EntryColumnName = 'Memo' | 'AccountId' | 'CurrencyId' |
-    'AgentId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
+    'ContractId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
-    'ExternalReference' | 'AdditionalReference' | 'NotedAgentId' |
-    'NotedAgentName' | 'NotedAmount' | 'NotedDate';
+    'ExternalReference' | 'AdditionalReference' | 'NotedContractId' |
+    'NotedContractName' | 'NotedAmount' | 'NotedDate';
 
 export type Visibility = 'None' | 'Optional' | 'Required';
 
@@ -415,7 +415,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
 }
 
-export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
+export interface ContractDefinitionForClient extends MasterDetailsDefinitionForClient {
 
     TaxIdentificationNumberVisibility?: Visibility;
     ImageVisibility: Visibility;
