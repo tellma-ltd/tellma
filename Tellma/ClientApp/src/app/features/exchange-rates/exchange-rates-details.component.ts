@@ -34,7 +34,7 @@ export class ExchangeRatesDetailsComponent extends DetailsBaseComponent {
   }
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_ExchangeRate(this.workspace, this.translate, null);
+    const entityDesc = metadata_ExchangeRate(this.workspace, this.translate);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 

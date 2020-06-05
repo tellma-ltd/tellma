@@ -55,7 +55,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get p(): { [prop: string]: PropDescriptor } {
-    return metadata_Account(this.workspace, this.translate, null).properties;
+    return metadata_Account(this.workspace, this.translate).properties;
   }
 
   public onActivate = (model: Account): void => {

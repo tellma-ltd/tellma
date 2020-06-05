@@ -39,7 +39,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private _allFields: FieldInfo[];
   private _currentCollection: string;
-  private _currentDefinitionId: string;
+  private _currentDefinitionId: number;
   private _isEdit = false;
   private _sections: { [key: string]: boolean } = {
     Data: true,
@@ -158,7 +158,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public decimalPlacesLookup(value: any): string {
-    const descriptor = metadata_ReportDefinition(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
+    const descriptor = metadata_ReportDefinition(this.workspace, this.translate).properties.E as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
@@ -313,17 +313,17 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get allCharts(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.Chart as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate).properties.Chart as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuSections(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.MainMenuSection as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuIcons(): SelectorChoice[] {
-    const desc = metadata_ReportDefinition(this.workspace, this.translate, null).properties.MainMenuIcon as ChoicePropDescriptor;
+    const desc = metadata_ReportDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
@@ -594,7 +594,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return (!this.search || node.match) && (!parent || (parent.isExpanded && this.showTreeNode(parent)));
   }
 
-  private getChildren(collection: string, definitionId: string, parent?: FieldInfo): FieldInfo[] {
+  private getChildren(collection: string, definitionId: number, parent?: FieldInfo): FieldInfo[] {
     if (!collection) {
       return [];
     }

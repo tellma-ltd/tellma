@@ -32,7 +32,7 @@ export const metadata: {
     [collection: string]: (
         ws: WorkspaceService,
         trx: TranslateService,
-        definitionId?: string) => EntityDescriptor
+        definitionId?: number) => EntityDescriptor
 } = {
     // Application
     Unit: metadata_Unit,
@@ -94,12 +94,12 @@ export interface EntityDescriptor {
     /**
      * The definition Id of this entity descriptor
      */
-    definitionId?: string;
+    definitionId?: number;
 
     /**
      * Collections that have definitions list the definitions here
      */
-    definitionIds?: string[];
+    definitionIds?: number[];
 
     /**
      * The plural name of the entity (e.g. Contracts).
@@ -269,7 +269,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     /**
      * Determines the definitionId of the entities that reside in these properties (e.g. Inventory vs. Resource)
      */
-    definition?: string;
+    definition?: number;
 
     /**
      * The name of the foreign key property
@@ -292,7 +292,7 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
     | StatePropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(
-    pathArray: string[], baseCollection: string, baseDefinition: string,
+    pathArray: string[], baseCollection: string, baseDefinition: number,
     wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
 
     if (!baseCollection) {

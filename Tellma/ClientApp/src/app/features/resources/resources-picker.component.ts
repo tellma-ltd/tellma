@@ -11,6 +11,6 @@ import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.compon
 export class ResourcesPickerComponent extends PickerBaseComponent {
 
   @Input()
-  definitionIds: string[];
+  definitionIds: number[];
 
 }

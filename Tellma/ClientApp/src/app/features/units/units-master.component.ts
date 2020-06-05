@@ -33,7 +33,7 @@ export class UnitsMasterComponent extends MasterBaseComponent {
   }
 
   public unitTypeLookup(value: string): string {
-    const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_Unit(this.workspace, this.translate).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 

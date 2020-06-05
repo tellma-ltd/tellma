@@ -37,6 +37,16 @@ namespace Tellma.Controllers.Dto
         /// Mapping from report definition Id to report definition
         /// </summary>
         public Dictionary<int, ReportDefinitionForClient> Reports { get; set; }
+
+        /// <summary>
+        /// The Id of the built-int manual journal vouchers document definition
+        /// </summary>
+        public int ManualJournalVouchersDefinitionId { get; set; }
+
+        /// <summary>
+        /// The Id of the built-int manual line line definition
+        /// </summary>
+        public int ManualLinesDefinitionId { get; set; }
     }
 
     ///////////////////// Base Classes

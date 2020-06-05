@@ -19,7 +19,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   collection: string;
 
   @Input()
-  definitionId: string;
+  definitionId: number;
 
   @Input()
   path: string;

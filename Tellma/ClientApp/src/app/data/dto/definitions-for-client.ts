@@ -10,6 +10,9 @@ export interface DefinitionsForClient {
     Resources: { [definitionId: number]: ResourceDefinitionForClient };
     Lookups: { [definitionId: number]: LookupDefinitionForClient };
     Reports: { [definitionId: number]: ReportDefinitionForClient };
+
+    ManualJournalVouchersDefinitionId: number;
+    ManualLinesDefinitionId: number;
 }
 
 export interface DefinitionForClient {

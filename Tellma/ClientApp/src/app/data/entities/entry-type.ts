@@ -35,7 +35,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {

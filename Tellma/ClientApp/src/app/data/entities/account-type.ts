@@ -47,6 +47,22 @@ export interface AccountTypeForSave extends EntityForSave {
   NotedDateLabel?: string;
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
+
+  // // TO DELETE
+  // CurrencyAssignment?: RequiredAssignment;
+  // ContractAssignment?: OptionalAssignment;
+  // ContractDefinitionId?: string;
+  // ResourceAssignment?: OptionalAssignment;
+  // ResourceDefinitionId?: string;
+  // CenterAssignment?: RequiredAssignment;
+  // EntryTypeAssignment?: OptionalAssignment;
+  // IdentifierAssignment?: OptionalAssignment;
+  // IdentifierLabel?: string;
+  // IdentifierLabel2?: string;
+  // IdentifierLabel3?: string;
+  // NotedContractAssignment?: EntryAssignment;
+  // NotedContractDefinitionId?: string;
+  // IsResourceClassification?: boolean;
 }
 
 export interface AccountType extends AccountTypeForSave {
@@ -67,7 +83,7 @@ let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
 let _cache: EntityDescriptor = null;
 
-export function metadata_AccountType(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_AccountType(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings || ws.definitions !== _definitions) {

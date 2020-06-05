@@ -21,7 +21,7 @@ export interface MarkupTemplateForSave extends EntityForSave {
 
     Usage?: MarkupTemplateUsage;
     Collection?: string;
-    DefinitionId?: string;
+    DefinitionId?: number;
     MarkupLanguage?: string;
     SupportsPrimaryLanguage?: boolean;
     SupportsSecondaryLanguage?: boolean;
@@ -41,7 +41,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
@@ -73,7 +73,7 @@ export function metadata_MarkupTemplate(wss: WorkspaceService, trx: TranslateSer
                     }
                 },
                 Collection: { control: 'text', label: () => trx.instant('MarkupTemplate_Collection') },
-                DefinitionId: { control: 'text', label: () => trx.instant('MarkupTemplate_DefinitionId') },
+                DefinitionId: { control: 'number', label: () => trx.instant('MarkupTemplate_DefinitionId'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 MarkupLanguage: {
                     control: 'choice',
                     label: () => trx.instant('MarkupTemplate_MarkupLanguage'),

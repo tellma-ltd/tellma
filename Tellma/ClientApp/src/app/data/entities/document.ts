@@ -63,10 +63,10 @@ export interface Document extends DocumentForSave<Line, Attachment> {
 const _select = ['SerialNumber'];
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
-let _cache: { [defId: string]: EntityDescriptor } = {};
-let _definitionIds: string[];
+let _cache: { [defId: number]: EntityDescriptor } = {};
+let _definitionIds: number[];
 
-export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_Document(wss: WorkspaceService, trx: TranslateService, definitionId: number): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
@@ -81,7 +81,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
     const key = definitionId || '-'; // undefined
     if (!_cache[key]) {
         if (!_definitionIds) {
-            _definitionIds = Object.keys(ws.definitions.Documents);
+            _definitionIds = Object.keys(ws.definitions.Documents).map(e => +e);
         }
 
         const entityDesc: EntityDescriptor = {
@@ -265,12 +265,12 @@ export function formatSerial(serial: number, prefix: string, codeWidth: number) 
     return result;
 }
 
-function getPrefix(ws: TenantWorkspace, definitionId: string) {
+function getPrefix(ws: TenantWorkspace, definitionId: number) {
     const def = ws.definitions.Documents[definitionId];
     return !!def ? def.Prefix : '';
 }
 
-function getCodeWidth(ws: TenantWorkspace, definitionId: string) {
+function getCodeWidth(ws: TenantWorkspace, definitionId: number) {
     const def = ws.definitions.Documents[definitionId];
     return !!def ? def.CodeWidth : 4;
 }

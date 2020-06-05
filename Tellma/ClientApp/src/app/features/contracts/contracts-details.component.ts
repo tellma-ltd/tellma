@@ -8,7 +8,6 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { Currency } from '~/app/data/entities/currency';
 
 @Component({
   selector: 't-contracts-details',
@@ -16,18 +15,18 @@ import { Currency } from '~/app/data/entities/currency';
 })
 export class ContractsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private contractsApi = this.api.contractsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private contractsApi = this.api.contractsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this.contractsApi = this.api.contractsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -75,7 +74,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;

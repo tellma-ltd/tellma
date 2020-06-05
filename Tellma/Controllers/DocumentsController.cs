@@ -251,32 +251,6 @@ namespace Tellma.Controllers
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        private int? _manualLineDefId;
-
-        /// <summary>
-        /// Retrieves the definition Id of the line definition whose Code = "ManualLine"
-        /// </summary>
-        public int? ManualLineDefinitionId
-        {
-            get
-            {
-                if (_manualLineDefId == null)
-                {
-                    var match = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines?.Where(pair => pair.Value.Code == "ManualLine");
-                    if (match.Any())
-                    {
-                        _manualLineDefId = match.FirstOrDefault().Key;
-                    }
-                    else
-                    {
-                        throw new BadRequestException("The database is in an inconsistent state: ManualLine definition is missing");
-                    }
-                }
-
-                return _manualLineDefId;
-            }
-        }
-
         public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
@@ -791,6 +765,8 @@ namespace Tellma.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var functionalId = settings.FunctionalCurrencyId;
 
+            var manualLineDefId = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.ManualLinesDefinitionId;
+
             // Set default values
             docs.ForEach(doc =>
             {
@@ -868,7 +844,7 @@ namespace Tellma.Controllers
                         // Copy the direction from the definition
                         for (var i = 0; i < line.Entries.Count; i++)
                         {
-                            if (line.DefinitionId != ManualLineDefinitionId)
+                            if (line.DefinitionId != manualLineDefId)
                             {
                                 line.Entries[i].Direction = lineDef.Entries[i].Direction;
                             }
@@ -988,7 +964,7 @@ namespace Tellma.Controllers
                         // If currency is functional, make sure that Value = MonetaryValue
                         if (entry.CurrencyId == settings.FunctionalCurrencyId)
                         {
-                            if (line.DefinitionId == ManualLineDefinitionId)
+                            if (line.DefinitionId == manualLineDefId)
                             {
                                 // Manual lines, the value is always entered by the user
                                 entry.MonetaryValue = entry.Value;
@@ -1011,7 +987,7 @@ namespace Tellma.Controllers
                 // => Take the difference and distribute it evenly on the entries
                 if (doc.Lines.Count > 0)
                 {
-                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != ManualLineDefinitionId).SelectMany(line => line.Entries);
+                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != manualLineDefId).SelectMany(line => line.Entries);
                     if (smartEntries.Any())
                     {
                         var currencyId = smartEntries.First().CurrencyId;

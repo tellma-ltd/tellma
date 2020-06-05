@@ -260,7 +260,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       }
 
       const lookups = this.ws.definitions.Lookups;
-      for (const definitionId of Object.keys(lookups)) {
+      for (const definitionId of Object.keys(lookups).map(e => +e)) {
         const entityDesc = metadata_Lookup(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
@@ -279,7 +279,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       }
 
       const contracts = this.ws.definitions.Contracts;
-      for (const definitionId of Object.keys(contracts)) {
+      for (const definitionId of Object.keys(contracts).map(e => +e)) {
         const entityDesc = metadata_Contract(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
@@ -298,7 +298,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       }
 
       const resources = this.ws.definitions.Resources;
-      for (const definitionId of Object.keys(resources)) {
+      for (const definitionId of Object.keys(resources).map(e => +e)) {
         const entityDesc = metadata_Resource(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {
@@ -317,7 +317,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       }
 
       const documents = this.ws.definitions.Documents;
-      for (const definitionId of Object.keys(documents)) {
+      for (const definitionId of Object.keys(documents).map(e => +e)) {
         const entityDesc = metadata_Document(this.workspace, this.translate, definitionId);
         if (!!entityDesc) {
           this._viewsDb[entityDesc.apiEndpoint] = {

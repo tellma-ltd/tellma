@@ -69,7 +69,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   collection: string; // This is one of two properties that define the screen
 
   @Input()
-  definitionId: string; // This is one of two properties that define the screen
+  definitionId: number; // This is one of two properties that define the screen
 
   @Input()
   tileTemplate: TemplateRef<any>;
@@ -1046,7 +1046,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public downloadingTemplate = false;
 
   private importKeyChoicesCollection: string;
-  private importKeyChoicesDefinitionId: string;
+  private importKeyChoicesDefinitionId: number;
   private importKeyChoicesResult: SelectorChoice[];
 
   public get importKeyChoices(): SelectorChoice[] {
@@ -1982,7 +1982,7 @@ function composeEntities(
   response: EntitiesResponse,
   colPaths: string[],
   collection: string,
-  defId: string,
+  defId: number,
   ws: WorkspaceService,
   trx: TranslateService): string[][] {
 

@@ -46,7 +46,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   collection: string;
 
   @Input()
-  definitionIds: string[] = [];
+  definitionIds: number[] = [];
 
   @Input()
   masterTemplate: TemplateRef<any>;
@@ -88,7 +88,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private chosenItem: string | number;
   private _errorMessage: string;
   private _initialText: string;
-  private _definitionId: string;
+  private _definitionId: number;
   // private _cacheMode = false;
   private _idString = 'new';
   private api = this.apiService.crudFactory('', null); // for intellisense
@@ -110,7 +110,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.input.nativeElement.focus();
   }
 
-  get chosenItemDefinition(): string {
+  get chosenItemDefinitionId(): number {
     const defIds = this.entityDescriptor().definitionIds;
     const chosenItem = this.workspace.current[this.collection][this.chosenItem];
     return !!defIds ? (!!chosenItem ? chosenItem.DefinitionId : null) : null;
@@ -234,12 +234,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   ///////////////// Helper Functions
 
-  entityDescriptor(definitionId?: string): EntityDescriptor {
+  entityDescriptor(definitionId?: number): EntityDescriptor {
     const coll = this.collection;
     return !!coll ? metadata[coll](this.workspace, this.translate, definitionId) : null;
   }
 
-  apiEndpoint(definitionId: string): string {
+  apiEndpoint(definitionId: number): string {
     const meta = this.entityDescriptor(definitionId);
     return !!meta ? meta.apiEndpoint : null;
   }
@@ -320,7 +320,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return !!this.entityDescriptor().definitionIds;
   }
 
-  private get allDefinitionIds(): string[] {
+  private get allDefinitionIds(): number[] {
     // If the api is definitioned, and definitionIds was not supplied, this method
     // Returns the full list of definitionIds form the definitions
     if (this.isDefinitioned) { // Definitioned API
@@ -332,7 +332,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.definitionIds.filter(e => !!e);
   }
 
-  private get definitionIdsSingleOrDefault() {
+  private get definitionIdsSingleOrDefault(): number {
     const defIds = this.allDefinitionIds;
     return !!defIds && defIds.length === 1 ? defIds[0] : null;
   }
@@ -383,7 +383,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
       const definitionfilter = this.definitionIds
         .filter(e => !!e)
-        .map(e => `DefinitionId eq '${e.replace('\'', '\'\'')}'`)
+        .map(e => `DefinitionId eq ${e}`)
         .reduce((e1, e2) => `${e1} or ${e2}`);
 
       if (!!this.filter) {
@@ -563,7 +563,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.indexCreateNew === this.highlightedIndex && this.canCreateNew;
   }
 
-  private hasCreatePermissions = (definitionId: string): boolean => {
+  private hasCreatePermissions = (definitionId: number): boolean => {
     // This returns false if the API is definitioned, but definitionId was not supplied
     const view = this.apiEndpoint(definitionId);
     return this.workspace.current.canCreate(view);
@@ -595,7 +595,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   // Edit Selected
 
   private get hasEditPermissions(): boolean {
-    return this.canUpdatePermissions(this.chosenItemDefinition);
+    return this.canUpdatePermissions(this.chosenItemDefinitionId);
   }
 
   public get canEdit(): boolean {
@@ -611,7 +611,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public get disableEditSelected(): boolean {
-    return !this.canUpdatePermissions(this.chosenItemDefinition);
+    return !this.canUpdatePermissions(this.chosenItemDefinitionId);
   }
 
   // The following methods handle displaying and interacting with master and details template
@@ -658,7 +658,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.openSearchModalInner(this.definitionIdsSingleOrDefault);
   }
 
-  private openSearchModalInner(definitionId?: string) {
+  private openSearchModalInner(definitionId?: number) {
 
     // it would be confusing if the user opens the details form the master
     // and find the text s/he typed in the input field a while ago
@@ -695,7 +695,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     }
   }
 
-  private openCreateModalInner = (definitionId?: string) => {
+  private openCreateModalInner = (definitionId?: number) => {
     // Launch the details modal
     this._definitionId = definitionId;
     this._idString = 'new';
@@ -709,7 +709,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private openEditModalInner = () => {
     if (!!this.collection && !!this.workspace.current[this.collection] && !!this.workspace.current[this.collection][this.chosenItem]) {
       this._idString = this.chosenItem.toString();
-      this._definitionId = this.chosenItemDefinition;
+      this._definitionId = this.chosenItemDefinitionId;
 
       if (!!this._idString) {
         this.modalService.open(this.detailsWrapperTemplate, { windowClass: 't-details-modal' })
@@ -728,24 +728,24 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this._initialText;
   }
 
-  get definitionId(): string {
+  get definitionId(): number {
     return this._definitionId;
   }
 
-  public canUpdatePermissions = (definitionId: string): boolean => {
+  public canUpdatePermissions = (definitionId: number): boolean => {
     const view = this.apiEndpoint(definitionId);
     return this.workspace.current.canUpdate(view, null);
   }
 
-  public canCreateFromOptions = (definitionId: string): boolean => {
+  public canCreateFromOptions = (definitionId: number): boolean => {
     return this.hasCreatePermissions(definitionId);
   }
 
-  public createFromOptionsTooltip = (definitionId: string): string => {
+  public createFromOptionsTooltip = (definitionId: number): string => {
     return this.hasCreatePermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  public optionName(definitionId: string) {
+  public optionName(definitionId: number) {
     return this.entityDescriptor(definitionId).titleSingular();
   }
 
@@ -769,7 +769,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.showEditSelected ? !this.workspace.ws.isRtl ? '24px!important' : null : null;
   }
 
-  public get createOptions(): string[] {
+  public get createOptions(): number[] {
     return this.allDefinitionIds;
   }
 }

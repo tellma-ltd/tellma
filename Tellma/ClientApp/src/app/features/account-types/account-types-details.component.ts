@@ -73,7 +73,7 @@ export class AccountTypesDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_AccountType(this.workspace, this.translate, null);
+    const entityDesc = metadata_AccountType(this.workspace, this.translate);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 

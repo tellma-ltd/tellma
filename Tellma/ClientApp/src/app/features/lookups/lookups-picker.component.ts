@@ -11,6 +11,6 @@ import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.compon
 export class LookupsPickerComponent extends PickerBaseComponent {
 
   @Input()
-  definitionId: string;
+  definitionId: number;
 
 }

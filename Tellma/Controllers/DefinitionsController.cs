@@ -767,6 +767,20 @@ namespace Tellma.Controllers
             result.Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, accountTypesDic));
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
+            // Set built in Ids for ease of access
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == "manual-journal-vouchers").Key;
+            if (result.ManualJournalVouchersDefinitionId == default)
+            {
+                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: 'manual-journal-vouchers' could not be found");
+            }
+
+            result.ManualLinesDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == "ManualLine").Key;
+            if (result.ManualJournalVouchersDefinitionId == default)
+            {
+                throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");
+            }
+
+
             // Return result
             return new Versioned<DefinitionsForClient>
             {

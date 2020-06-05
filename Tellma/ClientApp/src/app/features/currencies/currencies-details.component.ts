@@ -46,7 +46,7 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
   get decimalPlacesChoices(): SelectorChoice[] {
 
     if (!this._decimalPlacesChoices) {
-      const desc = metadata_Currency(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
+      const desc = metadata_Currency(this.workspace, this.translate).properties.E as ChoicePropDescriptor;
       this._decimalPlacesChoices = getChoices(desc);
     }
 
@@ -54,7 +54,7 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
   }
 
   public decimalPlacesLookup(value: any): string {
-    const descriptor = metadata_Currency(this.workspace, this.translate, null).properties.E as ChoicePropDescriptor;
+    const descriptor = metadata_Currency(this.workspace, this.translate).properties.E as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 

@@ -354,14 +354,14 @@
                     </fa-icon>&nbsp;
                 </span>
                 <span
-                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model?.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (lineDefId === 'ManualLine' ? manualEntries(model).length : lines(lineDefId, model).length | number) + ')' : '') }}</span>
+                    class="small t-slightly-bold">{{ tabTitle(lineDefId, model) + (!model?.Id || model?.EntityMetadata?.Lines === 2 ? ' (' + (isManualLine(lineDefId) ? manualEntries(model).length : lines(lineDefId, model).length | number) + ')' : '') }}</span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.Lines"
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
 
                     <!-- Smart Tab -->
-                    <ng-container *ngIf="lineDefId !== 'ManualLine'">
+                    <ng-container *ngIf="isManualLine(lineDefId)">
 
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
@@ -427,7 +427,7 @@
                     </ng-container>
 
                     <!-- Manual Lines Tab -->
-                    <ng-container *ngIf="lineDefId === 'ManualLine'">
+                    <ng-container *ngIf="isManualLine(lineDefId)">
                         <ng-container *ngTemplateOutlet="manualLines">
 
                         </ng-container>
@@ -828,7 +828,7 @@
         </li>
 
         <!-- Bookkeeping Tab -->
-        <li class="{{ attachmentsClass }}" [ngbNavItem]="'_Entries'" *ngIf="!isJV">
+        <li class="{{ attachmentsClass }}" [ngbNavItem]="-10" *ngIf="!isJV">
             <a class="px-2" ngbNavLink [title]="'Bookkeeping' | translate"
                 [style.background-color]="bookkeepingTabColor(model)">
                 <span class="small t-slightly-bold">
@@ -860,7 +860,7 @@
                     <ng-container *ngIf="hasManualLines">
                         <div class="col-12 mt-3 pb-2 border-bottom">
                             <h5 class="small2 font-weight-bold2">
-                                {{ (tabTitle('ManualLine', model))  + ' (' + manualEntries(model).length + ')' }}</h5>
+                                {{ (manualLineTabTitle(model))  + ' (' + manualEntries(model).length + ')' }}</h5>
                         </div>
                         <ng-container *ngTemplateOutlet="manualLines">
 
@@ -893,7 +893,7 @@
         </li>
 
         <!-- Attachments -->
-        <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="'_Attachments'">
+        <li class="{{ isJV ? attachmentsClass : '' }}" [ngbNavItem]="-20">
             <a class="px-2" ngbNavLink><span class="small t-slightly-bold" [title]="'Document_Attachments' | translate">
                     <span *ngIf="showAttachmentsErrors(model)" class="text-danger">
                         <fa-icon icon="exclamation-triangle">

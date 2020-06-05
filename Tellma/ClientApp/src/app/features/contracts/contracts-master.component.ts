@@ -15,18 +15,18 @@ import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-clie
 })
 export class ContractsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private contractsApi = this.api.contractsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private contractsApi = this.api.contractsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this.contractsApi = this.api.contractsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -44,7 +44,7 @@ export class ContractsMasterComponent extends MasterBaseComponent implements OnI
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;

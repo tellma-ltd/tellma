@@ -1,6 +1,6 @@
 export interface MarkupPreviewTemplate {
     Collection?: string;
-    DefinitionId?: string;
+    DefinitionId?: number;
     MarkupLanguage?: string;
     DownloadName?: string;
     Body?: string;

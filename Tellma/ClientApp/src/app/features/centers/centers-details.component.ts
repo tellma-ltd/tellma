@@ -47,14 +47,14 @@ export class CentersDetailsComponent extends DetailsBaseComponent {
 
   get centerTypeChoices(): SelectorChoice[] {
 
-    const descriptor = metadata_Center(this.workspace, this.translate, null)
+    const descriptor = metadata_Center(this.workspace, this.translate)
       .properties.CenterType as ChoicePropDescriptor;
 
     return getChoices(descriptor);
   }
 
   public centerTypeLookup(value: string): string {
-    const descriptor = metadata_Center(this.workspace, this.translate, null)
+    const descriptor = metadata_Center(this.workspace, this.translate)
       .properties.CenterType as ChoicePropDescriptor;
 
     return descriptor.format(value);

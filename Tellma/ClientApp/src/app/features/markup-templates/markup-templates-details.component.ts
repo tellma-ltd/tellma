@@ -280,14 +280,14 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
   get markupLanguageChoices(): SelectorChoice[] {
 
-    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate, null)
+    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate)
       .properties.MarkupLanguage as ChoicePropDescriptor;
 
     return getChoices(descriptor);
   }
 
   public markupLanguageLookup(value: string): string {
-    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate, null)
+    const descriptor = metadata_MarkupTemplate(this.workspace, this.translate)
       .properties.MarkupLanguage as ChoicePropDescriptor;
 
     return descriptor.format(value);

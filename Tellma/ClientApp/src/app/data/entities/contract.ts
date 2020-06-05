@@ -35,10 +35,10 @@ export interface Contract extends ContractForSave {
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
-let _cache: { [defId: string]: EntityDescriptor } = {};
-let _definitionIds: string[];
+let _cache: { [defId: number]: EntityDescriptor } = {};
+let _definitionIds: number[];
 
-export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, definitionId: number): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings || ws.definitions !== _definitions) {
@@ -53,7 +53,7 @@ export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, 
   const key = definitionId || '-'; // undefined
   if (!_cache[key]) {
     if (!_definitionIds) {
-      _definitionIds = Object.keys(ws.definitions.Contracts);
+      _definitionIds = Object.keys(ws.definitions.Contracts).map(e => +e);
     }
 
     const entityDesc: EntityDescriptor = {

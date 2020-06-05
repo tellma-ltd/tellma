@@ -43,7 +43,7 @@ export class UnitsDetailsComponent extends DetailsBaseComponent {
   get unitTypeChoices(): SelectorChoice[] {
 
     if (!this._unitTypeChoices) {
-      const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+      const descriptor = metadata_Unit(this.workspace, this.translate).properties.UnitType as ChoicePropDescriptor;
       this._unitTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
@@ -55,7 +55,7 @@ export class UnitsDetailsComponent extends DetailsBaseComponent {
       return '';
     }
 
-    const descriptor = metadata_Unit(this.workspace, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    const descriptor = metadata_Unit(this.workspace, this.translate).properties.UnitType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 

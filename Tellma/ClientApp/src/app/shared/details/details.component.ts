@@ -102,7 +102,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   collection: string;
 
   @Input()
-  definitionId: string;
+  definitionId: number;
 
   @Input()
   stateKey: string;
@@ -152,7 +152,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   // For ngDoCheck
   private _firstTime = true;
   private _collectionOld: string;
-  private _definitionIdOld: string;
+  private _definitionIdOld: number;
   private _stateKeyOld: string;
   private _idStringOld: string;
 
@@ -251,8 +251,8 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
         // definition Id
         const defIdParamName = 'definitionId';
         if (params.has(defIdParamName)) {
-          const newDefId = params.get(defIdParamName);
-          if (this.definitionId !== newDefId) {
+          const newDefId = +params.get(defIdParamName);
+          if (!!newDefId && this.definitionId !== newDefId) {
             this.definitionId = newDefId;
             screenDefChange = true;
           }
