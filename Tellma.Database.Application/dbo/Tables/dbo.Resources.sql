@@ -33,6 +33,8 @@ CREATE TABLE [dbo].[Resources] (
 	-- For complex assets, we show in the register the root parent only, summarizing the tree book value
 	[ParentId]						INT					CONSTRAINT [FK_Resources__ParentId] REFERENCES dbo.[Resources]([Id]),
 	-- For inventory, we also need a CenterId of EntryTypeParentId OtherExpenseByFunction
+	--[SegmentId]					INT					CONSTRAINT [FK_Resources__SegmentId] REFERENCES [dbo].[Centers] ([Id]),
+	--[UnitId]						INT					CONSTRAINT [FK_Resources__UnitId] REFERENCES [dbo].[Units] ([Id]),
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration

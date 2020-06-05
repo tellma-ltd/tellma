@@ -138,26 +138,29 @@ ELSE IF @DB IN (N'104', N'106') -- Walia Steel | SITCO, ETB, en/am,
 BEGIN
 	INSERT @DocumentDefinitions([Index],[DocumentType],
 		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
-	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
-	(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
-	(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
-	(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
-	(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
+	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0);
+	--(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
+	--(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
+	--(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
+	--(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
+	--(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
 
-	(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
-	(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
-	(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
-	(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
+	--(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
+	--(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
+	--(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
+	--(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
 
-	(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
+	--(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,							1),
+	(0,0,	@ManualLineLD,							1);
+	GOTO ENOUGH_DD
 	-- cash-purchase-vouchers
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(0,1,	@PaymentToSupplierCashPurchaseLD,		1);
-GOTO ENOUGH_DD
+
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(1,1,	@StockReceiptCashPurchaseLD,			1),
@@ -229,13 +232,13 @@ BEGIN
 	(0,2,	N'PettyCashPayment',1);
 END
 ENOUGH_DD:
-UPDATE DD
-SET DD.[TitleSingular2] = T.[Translated]
-FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
+--UPDATE DD
+--SET DD.[TitleSingular2] = T.[Translated]
+--FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
 
-UPDATE DD
-SET	DD.[TitlePlural2] = T.[Translated]
-FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
+--UPDATE DD
+--SET	DD.[TitlePlural2] = T.[Translated]
+--FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
 
 SKIP_DD:
 

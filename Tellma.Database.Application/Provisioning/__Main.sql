@@ -8,13 +8,12 @@
 :r .\000\b_ResourceDefinitions.sql
 :r .\000\c_ContractDefinitions.sql
 :r .\000\e_AccountTypes.sql
--- Account Type 
 :r .\000\f_IfrsConcepts.sql
 --:r .\000\g_IfrsDisclosures.sql
 :r .\000\h_Currencies.sql
 :r .\000\i_Settings.sql
 :r .\000\l_LineDefinitions.sql
---:r .\02_Definitions\g_DocumentDefinitions.sql
+:r .\000\m_DocumentDefinitions.sql
 :r .\000\j_ReportDefinitions.sql
 :r .\000\z_Translations.sql
 
@@ -22,7 +21,6 @@ IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
 BEGIN
 	:r .\03_Basic\b_Units.sql
 	--:r .\03_Basic\c_Lookups.sql
-	:r .\03_Basic\d_Segments.sql
 	:r .\03_Basic\e_Centers.sql
 END
 IF @DB <> N'106'
@@ -64,6 +62,7 @@ END
 
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
+	:r .\106\00_Setup\Script.sql
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
 
