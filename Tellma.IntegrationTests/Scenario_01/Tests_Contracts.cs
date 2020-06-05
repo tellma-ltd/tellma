@@ -13,21 +13,21 @@ using Xunit.Abstractions;
 
 namespace Tellma.IntegrationTests.Scenario_01
 {
-    public class Tests_02_Agents : Scenario_01
+    public class Tests_02_Contracts : Scenario_01
     {
-        public Tests_02_Agents(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_02_Contracts(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "agents";
+        public readonly string _baseAddress = "contracts";
         public readonly string _definitionId = "customers";
 
         public string View => $"{_baseAddress}/{_definitionId}"; // For permissions
-        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic agents
-        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific agent definition
+        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic contracts
+        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific contract definition
 
 
-        [Fact(DisplayName = "01 Getting all agents before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting all contracts before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -39,7 +39,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "02 Getting all customer agents before creating any returns a 200 OK singleton collection")]
+        [Fact(DisplayName = "02 Getting all customer contracts before creating any returns a 200 OK singleton collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
@@ -55,14 +55,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseData = await response.Content.ReadAsAsync<GetResponse<Contract>>();
 
             // Assert the result makes sense
-            Assert.Equal("Agent", responseData.CollectionName);
+            Assert.Equal("Contract", responseData.CollectionName);
 
             Assert.Null(responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
 
-        [Fact(DisplayName = "03 Getting all generic agents before creating any returns a 200 OK singleton collection")]
+        [Fact(DisplayName = "03 Getting all generic contracts before creating any returns a 200 OK singleton collection")]
         public async Task Test03()
         {
             // Call the API
@@ -76,13 +76,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseData = await response.Content.ReadAsAsync<GetResponse<Contract>>();
 
             // Assert the result makes sense
-            Assert.Equal("Agent", responseData.CollectionName);
+            Assert.Equal("Contract", responseData.CollectionName);
 
             Assert.Null(responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "04 Getting a non-existent agent id returns a 404 Not Found")]
+        [Fact(DisplayName = "04 Getting a non-existent contract id returns a 404 Not Found")]
         public async Task Test04()
         {
             int nonExistentId = 500;
@@ -92,7 +92,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "05 Saving two well-formed AgentForSave returns a 200 OK result")]
+        [Fact(DisplayName = "05 Saving two well-formed ContractForSave returns a 200 OK result")]
         public async Task Test05()
         {
             // Prepare a well formed entity
@@ -122,14 +122,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of Agent
+            // Assert that the response is well-formed singleton of Contract
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Contract>>();
             Assert.Collection(responseData.Result,
                 e => Assert.NotEqual(0, e.Id),
                 e => Assert.NotEqual(0, e.Id));
 
             // Assert that the result matches the saved entity
-            Assert.Equal("Agent", responseData.CollectionName);
+            Assert.Equal("Contract", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDto = responseData.Result.FirstOrDefault();
@@ -149,24 +149,24 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave2.Code, responseDto2.Code);
             Assert.Equal(dtoForSave2.TaxIdentificationNumber, responseDto2.TaxIdentificationNumber);
 
-            Shared.Set("Agent_JohnWick", responseDto);
-            Shared.Set("Agent_JasonBourne", responseDto2);
+            Shared.Set("Contract_JohnWick", responseDto);
+            Shared.Set("Contract_JasonBourne", responseDto2);
         }
 
-        [Fact(DisplayName = "06 Getting the Id of the AgentForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "06 Getting the Id of the ContractForSave just saved returns a 200 OK result")]
         public async Task Test06()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<Contract>("Agent_JohnWick");
+            var entity = Shared.Get<Contract>("Contract_JohnWick");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of agent
+            // Confirm that the response is a well formed GetByIdResponse of contract
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Contract>>();
-            Assert.Equal("Agent", getByIdResponse.CollectionName);
+            Assert.Equal("Contract", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
@@ -175,7 +175,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.Code, responseDto.Code);
         }
 
-        [Fact(DisplayName = "07 Saving an AgentForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "07 Saving an ContractForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test07()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
@@ -208,7 +208,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "08 Saving an AgentForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "08 Saving an ContractForSave trims string fields with trailing or leading spaces")]
         public async Task Test08()
         {
             // Prepare a DTO for save, that contains leading and 
@@ -237,16 +237,16 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("Agent_Matilda", responseDto);
+            Shared.Set("Contract_Matilda", responseDto);
         }
 
-        [Fact(DisplayName = "09 Deleting an existing agent Id returns a 200 OK")]
+        [Fact(DisplayName = "09 Deleting an existing contract Id returns a 200 OK")]
         public async Task Test09()
         {
             await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<Contract>("Agent_Matilda");
+            var entity = Shared.Get<Contract>("Contract_Matilda");
             var id = entity.Id;
 
             // Query the delete API
@@ -260,7 +260,7 @@ namespace Tellma.IntegrationTests.Scenario_01
         public async Task Test10()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Agent_Matilda");
+            var entity = Shared.Get<Contract>("Contract_Matilda");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -271,13 +271,13 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "11 Deactivating an active agent returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "11 Deactivating an active contract returns a 200 OK inactive entity")]
         public async Task Test11()
         {
             await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
-            var entity = Shared.Get<Contract>("Agent_JohnWick");
+            var entity = Shared.Get<Contract>("Contract_JohnWick");
             var id = entity.Id;
 
             // Call the API
@@ -293,14 +293,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The Agent was not deactivated");
+            Assert.False(responseDto.IsActive, "The Contract was not deactivated");
         }
 
-        [Fact(DisplayName = "12 Activating an inactive agent returns a 200 OK active entity")]
+        [Fact(DisplayName = "12 Activating an inactive contract returns a 200 OK active entity")]
         public async Task Test12()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Agent_JohnWick");
+            var entity = Shared.Get<Contract>("Contract_JohnWick");
             var id = entity.Id;
 
             // Call the API
@@ -316,14 +316,14 @@ namespace Tellma.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The Agent was not activated");
+            Assert.True(responseDto.IsActive, "The Contract was not activated");
         }
 
         [Fact(DisplayName = "13 Using Select argument works as expected")]
         public async Task Test13()
         {
             // Get the Id
-            var entity = Shared.Get<Contract>("Agent_JohnWick");
+            var entity = Shared.Get<Contract>("Contract_JohnWick");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -331,9 +331,9 @@ namespace Tellma.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of Agent
+            // Confirm that the response is a well formed GetByIdResponse of Contract
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Contract>>();
-            Assert.Equal("Agent", getByIdResponse.CollectionName);
+            Assert.Equal("Contract", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
