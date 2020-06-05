@@ -5,7 +5,6 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { DefinitionsForClient } from '../dto/definitions-for-client';
 
 export interface AccountForSave extends EntityWithKey {
     CenterId?: number;
@@ -17,7 +16,7 @@ export interface AccountForSave extends EntityWithKey {
     CustomClassificationId?: number;
     IsSmart?: boolean;
     IsRelated?: boolean;
-    AgentId?: number;
+    ContractId?: number;
     ResourceId?: number;
     CurrencyId?: string;
     Identifier?: string;
@@ -25,14 +24,6 @@ export interface AccountForSave extends EntityWithKey {
 }
 
 export interface Account extends AccountForSave {
-    // HasIdentifier?: boolean;
-    // HasExternalReference?: boolean;
-    // HasAdditionalReference?: boolean;
-    // HasNotedAgentId?: boolean;
-    // HasNotedAgentName?: boolean;
-    // HasNotedAmount?: boolean;
-    // HasNotedDate?: boolean;
-
     IsDeprecated?: boolean;
     IsActive?: boolean;
     CreatedAt?: string;
@@ -45,7 +36,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Account(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
@@ -73,8 +64,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _
                 CustomClassification: { control: 'navigation', label: () => trx.instant('Account_CustomClassification'), type: 'CustomClassification', foreignKeyName: 'CustomClassificationId' },
                 IsSmart: { control: 'boolean', label: () => trx.instant('Account_IsSmart') },
                 IsRelated: { control: 'boolean', label: () => trx.instant('Account_IsRelated') },
-                AgentId: { control: 'number', label: () => `${trx.instant('Account_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Agent: { control: 'navigation', label: () => trx.instant('Account_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
+                ContractId: { control: 'number', label: () => `${trx.instant('Account_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Contract: { control: 'navigation', label: () => trx.instant('Account_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
                 ResourceId: { control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { control: 'navigation', label: () => trx.instant('Account_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
@@ -82,13 +73,6 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService, _
                 Identifier: { control: 'text', label: () => trx.instant('Account_Identifier') },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Account_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
-                // HasIdentifier: { control: 'boolean', label: () => trx.instant('Account_HasIdentifier') },
-                // HasExternalReference: { control: 'boolean', label: () => trx.instant('Account_HasExternalReference') },
-                // HasAdditionalReference: { control: 'boolean', label: () => trx.instant('Account_HasAdditionalReference') },
-                // HasNotedAgentId: { control: 'boolean', label: () => trx.instant('Account_HasNotedAgentId') },
-                // HasNotedAgentName: { control: 'boolean', label: () => trx.instant('Account_HasNotedAgentName') },
-                // HasNotedAmount: { control: 'boolean', label: () => trx.instant('Account_HasNotedAmount') },
-                // HasNotedDate: { control: 'boolean', label: () => trx.instant('Account_HasNotedDate') },
                 IsDeprecated: { control: 'boolean', label: () => trx.instant('Account_IsDeprecated') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

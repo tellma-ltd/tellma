@@ -179,7 +179,7 @@ namespace Tellma
                 // Add service for generating markup from templates
                 services.AddMarkupTemplates();
 
-                // Add the business logic services (DocumentsService, AgentsService, etc...)
+                // Add the business logic services (DocumentsService, ContractsService, etc...)
                 services.AddBusinessServices();
 
             }

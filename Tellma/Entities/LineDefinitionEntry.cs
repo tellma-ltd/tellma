@@ -11,9 +11,9 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? AccountTypeId { get; set; }
 
-        public int? AgentDefinitionId { get; set; }
+        public int? ContractDefinitionId { get; set; }
 
-        public int? NotedAgentDefinitionId { get; set; }
+        public int? NotedContractDefinitionId { get; set; }
 
         public int? ResourceDefinitionId { get; set; }
 

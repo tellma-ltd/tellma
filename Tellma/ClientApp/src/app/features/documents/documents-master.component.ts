@@ -17,18 +17,18 @@ import { Document } from '~/app/data/entities/document';
 })
 export class DocumentsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private documentsApi = this.api.documentsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this.documentsApi = this.api.documentsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -44,7 +44,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     this.route.paramMap.subscribe((params: ParamMap) => {
       // This triggers changes on the screen
       if (this.isScreenMode) {
-        this.definitionId = params.get('definitionId');
+        this.definitionId = +params.get('definitionId');
       }
     });
   }

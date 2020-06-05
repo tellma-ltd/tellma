@@ -69,7 +69,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   collection: string; // This is one of two properties that define the screen
 
   @Input()
-  definitionId: string; // This is one of two properties that define the screen
+  definitionId: number; // This is one of two properties that define the screen
 
   @Input()
   tileTemplate: TemplateRef<any>;
@@ -1046,7 +1046,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public downloadingTemplate = false;
 
   private importKeyChoicesCollection: string;
-  private importKeyChoicesDefinitionId: string;
+  private importKeyChoicesDefinitionId: number;
   private importKeyChoicesResult: SelectorChoice[];
 
   public get importKeyChoices(): SelectorChoice[] {
@@ -1185,7 +1185,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Returns true when the screen is a generic master screen of otherwise definitioned entities
-   * e.g. screen Resources or Agents showing entities of various DefinitionId
+   * e.g. screen Resources or Contracts showing entities of various DefinitionId
    */
   private get missingDefinitionId(): boolean {
     return !!this.entityDescriptor.definitionIds && !this.definitionId;
@@ -1982,7 +1982,7 @@ function composeEntities(
   response: EntitiesResponse,
   colPaths: string[],
   collection: string,
-  defId: string,
+  defId: number,
   ws: WorkspaceService,
   trx: TranslateService): string[][] {
 

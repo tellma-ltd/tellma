@@ -11,7 +11,7 @@ import { EntityForSave } from './base/entity-for-save';
 export type LineState = 0 | -1 | 1 | -2 | 2 | -3 | 3 | -4 | 4;
 
 export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
-    DefinitionId?: string;
+    DefinitionId?: number;
     Memo?: string;
     Entries?: TEntry[];
 
@@ -38,7 +38,7 @@ export interface LineFlags {
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_Line(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Line(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {

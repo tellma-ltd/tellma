@@ -1,41 +1,39 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Agent, AgentForSave } from '~/app/data/entities/agent';
+import { Contract, ContractForSave } from '~/app/data/entities/contract';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
-import { AgentRateForSave } from '~/app/data/entities/agent-rate';
-import { Currency } from '~/app/data/entities/currency';
+import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
-  selector: 't-agents-details',
-  templateUrl: './agents-details.component.html'
+  selector: 't-contracts-details',
+  templateUrl: './contracts-details.component.html'
 })
-export class AgentsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class ContractsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private agentsApi = this.api.agentsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private contractsApi = this.api.contractsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
-      this.agentsApi = this.api.agentsApi(t, this.notifyDestruct$);
+      this.contractsApi = this.api.contractsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
   public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
 
   create = () => {
-    const result: AgentForSave = {};
+    const result: ContractForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -44,25 +42,17 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
       result.Name3 = this.initialText;
     }
     result.IsRelated = false;
-    result.Rates = [];
 
     // TODO Set defaults from definition
 
     return result;
   }
 
-  clone = (item: Agent): Agent => {
+  clone = (item: Contract): Contract => {
 
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as Agent;
+      const clone = JSON.parse(JSON.stringify(item)) as Contract;
       clone.Id = null;
-
-      if (!!clone.Rates) {
-        clone.Rates.forEach(e => {
-          e.Id = null;
-          delete e.AgentId;
-        });
-      }
 
       return clone;
     } else {
@@ -84,7 +74,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
@@ -94,11 +84,11 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   }
 
   get view(): string {
-    return `agents/${this.definitionId}`;
+    return `contracts/${this.definitionId}`;
   }
 
-  private get definition(): AgentDefinitionForClient {
-    return !!this.definitionId ? this.ws.definitions.Agents[this.definitionId] : null;
+  private get definition(): ContractDefinitionForClient {
+    return !!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null;
   }
 
   // UI Bindings
@@ -107,28 +97,28 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return !!this.definition;
   }
 
-  public onActivate = (model: Agent): void => {
+  public onActivate = (model: Contract): void => {
     if (!!model && !!model.Id) {
-      this.agentsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.contractsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: Agent): void => {
+  public onDeactivate = (model: Contract): void => {
     if (!!model && !!model.Id) {
-      this.agentsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.contractsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: Agent) => !!model && !model.IsActive;
-  public showDeactivate = (model: Agent) => !!model && model.IsActive;
+  public showActivate = (model: Contract) => !!model && !model.IsActive;
+  public showDeactivate = (model: Contract) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo(this.view, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Contract) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: Agent) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Contract) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
@@ -162,7 +152,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public get StartDate_label(): string {
     return !!this.definition.StartDateLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'StartDateLabel') :
-      this.translate.instant('Agent_StartDate');
+      this.translate.instant('Contract_StartDate');
   }
 
   public get Job_isVisible(): boolean {
@@ -182,39 +172,39 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   }
 
   public get Tabs_isVisible(): boolean {
-    return this.Rates_isVisible; // More tabs may be added
+    return false; // More tabs may be added
   }
 
-  public get Rates_isVisible(): boolean {
-    return !!this.definition.RatesVisibility;
-  }
+  // public get Rates_isVisible(): boolean {
+  //   return !!this.definition.RatesVisibility;
+  // }
 
-  public get Rates_label(): string {
-    return !!this.definition.RatesLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'RatesLabel') :
-      this.translate.instant('Agent_Rates');
-  }
+  // public get Rates_label(): string {
+  //   return !!this.definition.RatesLabel ?
+  //     this.ws.getMultilingualValueImmediate(this.definition, 'RatesLabel') :
+  //     this.translate.instant('Contract_Rates');
+  // }
 
-  public Rates_count(model: AgentForSave): number {
-    return !!model && !!model.Rates ? model.Rates.length : 0;
-  }
+  // public Rates_count(model: ContractForSave): number {
+  //   return !!model && !!model.Rates ? model.Rates.length : 0;
+  // }
 
-  public Rates_showError(model: AgentForSave): boolean {
-    return !!model && !!model.Rates && model.Rates.some(e => !!e.serverErrors);
-  }
+  // public Rates_showError(model: ContractForSave): boolean {
+  //   return !!model && !!model.Rates && model.Rates.some(e => !!e.serverErrors);
+  // }
 
-  public Rate_minDecimalPlaces(line: AgentRateForSave): number {
-    const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
-    return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
-  }
+  // public Rate_minDecimalPlaces(line: ContractRateForSave): number {
+  //   const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
+  //   return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
+  // }
 
-  public Rate_maxDecimalPlaces(line: AgentRateForSave): number {
-    const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
-    return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
-  }
+  // public Rate_maxDecimalPlaces(line: ContractRateForSave): number {
+  //   const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
+  //   return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
+  // }
 
-  public Rate_format(line: AgentRateForSave): string {
-    return `1.${this.Rate_minDecimalPlaces(line)}-${this.Rate_maxDecimalPlaces(line)}`;
-  }
+  // public Rate_format(line: ContractRateForSave): string {
+  //   return `1.${this.Rate_minDecimalPlaces(line)}-${this.Rate_maxDecimalPlaces(line)}`;
+  // }
 
 }

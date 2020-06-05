@@ -70,11 +70,11 @@
   <data name="Account" xml:space="preserve">
     <value>حساب</value>
   </data>
-  <data name="Account_Agent" xml:space="preserve">
-    <value>الذمة</value>
-  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>المركز</value>
+  </data>
+  <data name="Account_Contract" xml:space="preserve">
+    <value>العقد</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
@@ -127,7 +127,7 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الخارجي</value>
   </data>
-  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+  <data name="AccountType_NotedِAgentNameLabel" xml:space="preserve">
     <value>اسم اسم الذمة المعنية</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
@@ -156,57 +156,6 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>حسابات مشرفين</value>
-  </data>
-  <data name="Agent" xml:space="preserve">
-    <value>ذمة</value>
-  </data>
-  <data name="Agent_BankAccountNumber" xml:space="preserve">
-    <value>رقم حساب البنك</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>ذو علاقة</value>
-  </data>
-  <data name="Agent_Job" xml:space="preserve">
-    <value>الوظيفة</value>
-  </data>
-  <data name="Agent_Rates" xml:space="preserve">
-    <value>المعدلات</value>
-  </data>
-  <data name="Agent_StartDate" xml:space="preserve">
-    <value>تاريخ البدأ</value>
-  </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>رقم التعريف الضريبي</value>
-  </data>
-  <data name="Agent_User" xml:space="preserve">
-    <value>المستخدم</value>
-  </data>
-  <data name="AgentDefinition" xml:space="preserve">
-    <value>تعريف ذمة</value>
-  </data>
-  <data name="AgentDefinitions" xml:space="preserve">
-    <value>تعريفات ذمم</value>
-  </data>
-  <data name="AgentRate" xml:space="preserve">
-    <value>مبلغ ذمة</value>
-  </data>
-  <data name="AgentRate_Currency" xml:space="preserve">
-    <value>العملة</value>
-  </data>
-  <data name="AgentRate_Rate" xml:space="preserve">
-    <value>المعدل</value>
-  </data>
-  <data name="AgentRate_Resource" xml:space="preserve">
-    <value>البيان</value>
-  </data>
-  <data name="AgentRate_Unit" xml:space="preserve">
-    <value>الوحدة</value>
-  </data>
-  <data name="AgentRates" xml:space="preserve">
-    <value>مبالغ ذمم</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>ذمم</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>الآندرويد</value>
@@ -318,6 +267,36 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>عقد</value>
+  </data>
+  <data name="Contract_BankAccountNumber" xml:space="preserve">
+    <value>رقم حساب البنك</value>
+  </data>
+  <data name="Contract_IsRelated" xml:space="preserve">
+    <value>ذو علاقة</value>
+  </data>
+  <data name="Contract_Job" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
+  <data name="Contract_StartDate" xml:space="preserve">
+    <value>تاريخ البدأ</value>
+  </data>
+  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
+    <value>رقم التعريف الضريبي</value>
+  </data>
+  <data name="Contract_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="ContractDefinition" xml:space="preserve">
+    <value>تعريف عقد</value>
+  </data>
+  <data name="ContractDefinitions" xml:space="preserve">
+    <value>تعريفات العقود</value>
+  </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>عقود</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>تلما لتقنية المعلومات © {0} جميع الحقوق محفوظة</value>
@@ -454,11 +433,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>التعليق</value>
   </data>
-  <data name="Document_CreditAgent" xml:space="preserve">
-    <value>الذمة الدائنة</value>
+  <data name="Document_CreditContract" xml:space="preserve">
+    <value>العقد الدائن</value>
   </data>
-  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
-    <value>الذمة الدائنة مشتركة</value>
+  <data name="Document_CreditContractIsCommon" xml:space="preserve">
+    <value>العقد الدائن مشترك</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>العملة</value>
@@ -466,11 +445,11 @@
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>العملة مشتركة</value>
   </data>
-  <data name="Document_DebitAgent" xml:space="preserve">
-    <value>الذمة المدينة</value>
+  <data name="Document_DebitContract" xml:space="preserve">
+    <value>العقد المدين</value>
   </data>
-  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
-    <value>الذمة المدينة مشتركة</value>
+  <data name="Document_DebitContractIsCommon" xml:space="preserve">
+    <value>العقدالمدين مشترك</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -496,11 +475,11 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>الملاحظات مشتركة</value>
   </data>
-  <data name="Document_NotedAgent" xml:space="preserve">
-    <value>الذمة المعنية</value>
+  <data name="Document_NotedContract" xml:space="preserve">
+    <value>العقد المعني</value>
   </data>
-  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
-    <value>الذمة المعنية مشتركة</value>
+  <data name="Document_NotedContractIsCommon" xml:space="preserve">
+    <value>العقد المعني مشترك</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>زمن الاطلاع</value>
@@ -616,11 +595,11 @@
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>المرجع الإضافي</value>
   </data>
-  <data name="Entry_Agent" xml:space="preserve">
-    <value>الذمّة</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>المركز</value>
+  </data>
+  <data name="Entry_Contract" xml:space="preserve">
+    <value>العقد</value>
   </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>نوع العقد</value>
@@ -652,14 +631,14 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>المبلغ</value>
   </data>
-  <data name="Entry_NotedAgent" xml:space="preserve">
-    <value>الذمة المعنية</value>
-  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>اسم الذمة المعنية</value>
   </data>
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>المبلغ المعني</value>
+  </data>
+  <data name="Entry_NotedContract" xml:space="preserve">
+    <value>العقد المعني</value>
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>التاريخ المعني</value>
@@ -700,9 +679,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
   </data>
-  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>تعذر العثور على مفتاح تعريف الذمة ({0}).</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>
   </data>
@@ -741,6 +717,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
+  </data>
+  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>تعذر العثور على مفتاح تعريف العقد ({0}).</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
     <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة.</value>
@@ -2226,9 +2205,6 @@
   </data>
   <data name="User" xml:space="preserve">
     <value>مستخدم</value>
-  </data>
-  <data name="User_Agent" xml:space="preserve">
-    <value>الذمّة</value>
   </data>
   <data name="User_Companies" xml:space="preserve">
     <value>الشركات</value>

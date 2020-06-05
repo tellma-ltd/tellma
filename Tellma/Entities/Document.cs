@@ -52,23 +52,23 @@ namespace Tellma.Entities
         [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
-        [Display(Name = "Document_DebitAgent")]
-        public int? DebitAgentId { get; set; }
+        [Display(Name = "Document_DebitContract")]
+        public int? DebitContractId { get; set; }
 
-        [Display(Name = "Document_DebitAgentIsCommon")]
-        public bool? DebitAgentIsCommon { get; set; }
+        [Display(Name = "Document_DebitContractIsCommon")]
+        public bool? DebitContractIsCommon { get; set; }
 
-        [Display(Name = "Document_CreditAgent")]
-        public int? CreditAgentId { get; set; }
+        [Display(Name = "Document_CreditContract")]
+        public int? CreditContractId { get; set; }
 
-        [Display(Name = "Document_CreditAgentIsCommon")]
-        public bool? CreditAgentIsCommon { get; set; }
+        [Display(Name = "Document_CreditContractIsCommon")]
+        public bool? CreditContractIsCommon { get; set; }
 
-        [Display(Name = "Document_NotedAgent")]
-        public int? NotedAgentId { get; set; }
+        [Display(Name = "Document_NotedContract")]
+        public int? NotedContractId { get; set; }
 
-        [Display(Name = "Document_NotedAgentIsCommon")]
-        public bool? NotedAgentIsCommon { get; set; }
+        [Display(Name = "Document_NotedContractIsCommon")]
+        public bool? NotedContractIsCommon { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]
         public int? InvestmentCenterId { get; set; }
@@ -170,17 +170,17 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-        [Display(Name = "Document_DebitAgent")]
-        [ForeignKey(nameof(DebitAgentId))]
-        public Agent DebitAgent { get; set; }
+        [Display(Name = "Document_DebitContract")]
+        [ForeignKey(nameof(DebitContractId))]
+        public Contract DebitContract { get; set; }
 
-        [Display(Name = "Document_CreditAgent")]
-        [ForeignKey(nameof(CreditAgentId))]
-        public Agent CreditAgent { get; set; }
+        [Display(Name = "Document_CreditContract")]
+        [ForeignKey(nameof(CreditContractId))]
+        public Contract CreditContract { get; set; }
 
-        [Display(Name = "Document_NotedAgent")]
-        [ForeignKey(nameof(NotedAgentId))]
-        public Agent NotedAgent { get; set; }
+        [Display(Name = "Document_NotedContract")]
+        [ForeignKey(nameof(NotedContractId))]
+        public Contract NotedContract { get; set; }
 
         [Display(Name = "Document_InvestmentCenter")]
         [ForeignKey(nameof(InvestmentCenterId))]

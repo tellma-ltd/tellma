@@ -8,8 +8,8 @@ import { MainMenuComponent } from './main-menu/main-menu.component';
 import { UnitsDetailsComponent } from './units/units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
-import { AgentsMasterComponent } from './agents/agents-master.component';
-import { AgentsDetailsComponent } from './agents/agents-details.component';
+import { ContractsMasterComponent } from './contracts/contracts-master.component';
+import { ContractsDetailsComponent } from './contracts/contracts-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
 import { RolesDetailsComponent } from './roles/roles-details.component';
 import { UsersDetailsComponent } from './users/users-details.component';
@@ -84,7 +84,7 @@ import { AccountTypesPickerComponent } from './account-types/account-types-picke
 import { AccountsMasterComponent } from './accounts/accounts-master.component';
 import { AccountsDetailsComponent } from './accounts/accounts-details.component';
 import { AccountsPickerComponent } from './accounts/accounts-picker.component';
-import { AgentsPickerComponent } from './agents/agents-picker.component';
+import { ContractsPickerComponent } from './contracts/contracts-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
 import { ReportComponent } from './report/report.component';
 import { ReportResultsComponent } from './report-results/report-results.component';
@@ -159,20 +159,20 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Agents
+      // Contracts
       {
-        path: 'agents',
-        component: AgentsMasterComponent,
+        path: 'contracts',
+        component: ContractsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'agents/:definitionId',
-        component: AgentsMasterComponent,
+        path: 'contracts/:definitionId',
+        component: ContractsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'agents/:definitionId/:id',
-        component: AgentsDetailsComponent,
+        path: 'contracts/:definitionId/:id',
+        component: ContractsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -410,8 +410,8 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     UnitsDetailsComponent,
     ApplicationPageNotFoundComponent,
     MainMenuComponent,
-    AgentsMasterComponent,
-    AgentsDetailsComponent,
+    ContractsMasterComponent,
+    ContractsDetailsComponent,
     RolesMasterComponent,
     RolesDetailsComponent,
     UsersDetailsComponent,
@@ -434,7 +434,7 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     AccountsMasterComponent,
     AccountsDetailsComponent,
     AccountsPickerComponent,
-    AgentsPickerComponent,
+    ContractsPickerComponent,
     ResourcesPickerComponent,
     ReportComponent,
     ReportResultsComponent,

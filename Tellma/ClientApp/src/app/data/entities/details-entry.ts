@@ -13,7 +13,7 @@ export interface DetailsEntry extends EntityWithKey {
     AccountIdentifier?: string;
     Direction?: number;
     AccountId?: number;
-    AgentId: number;
+    ContractId: number;
     EntryTypeId?: number;
     ResourceId?: number;
     DueDate?: string;
@@ -32,7 +32,7 @@ export interface DetailsEntry extends EntityWithKey {
     AlgebraicValue?: number;
     ExternalReference?: string;
     AdditionalReference?: string;
-    NotedAgentId?: number;
+    NotedContractId?: number;
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
@@ -41,7 +41,7 @@ export interface DetailsEntry extends EntityWithKey {
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
@@ -81,8 +81,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 },
                 AccountId: { control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Account: { control: 'navigation', label: () => trx.instant('Entry_Account'), type: 'Account', foreignKeyName: 'AccountId' },
-                AgentId: { control: 'number', label: () => `${trx.instant('Entry_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Agent: { control: 'navigation', label: () => trx.instant('Entry_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
+                ContractId: { control: 'number', label: () => `${trx.instant('Entry_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Contract: { control: 'navigation', label: () => trx.instant('Entry_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Entry_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Entry_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
                 ResourceId: { control: 'number', label: () => `${trx.instant('Entry_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -104,8 +104,8 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 AlgebraicValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicValue'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },
                 AdditionalReference: { control: 'text', label: () => trx.instant('Entry_AdditionalReference') },
-                NotedAgentId: { control: 'number', label: () => `${trx.instant('Entry_NotedAgent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                NotedAgent: { control: 'navigation', label: () => trx.instant('Entry_NotedAgent'), type: 'Agent', foreignKeyName: 'AgentId' },
+                NotedContractId: { control: 'number', label: () => `${trx.instant('Entry_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                NotedContract: { control: 'navigation', label: () => trx.instant('Entry_NotedContract'), type: 'Contract', foreignKeyName: 'ContractId' },
                 NotedAgentName: { control: 'text', label: () => trx.instant('Entry_NotedAgentName') },
                 NotedAmount: { control: 'number', label: () => trx.instant('Entry_NotedAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 NotedDate: { control: 'date', label: () => trx.instant('Entry_NotedDate') },

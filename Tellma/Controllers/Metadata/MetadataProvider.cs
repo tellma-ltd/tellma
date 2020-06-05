@@ -98,14 +98,14 @@ namespace Tellma.Controllers
                             def = resourceDef;
                             break;
 
-                        case nameof(Agent):
-                        case nameof(AgentForSave):
-                            if (!defs.Agents.TryGetValue(definitionId.Value, out AgentDefinitionForClient agentDef))
+                        case nameof(Contract):
+                        case nameof(ContractForSave):
+                            if (!defs.Contracts.TryGetValue(definitionId.Value, out ContractDefinitionForClient contractDef))
                             {
-                                var msg = _localizer[$"Error_AgentDefinition0CouldNotBeFound"];
+                                var msg = _localizer[$"Error_ContractDefinition0CouldNotBeFound"];
                                 throw new BadRequestException(msg);
                             }
-                            def = agentDef;
+                            def = contractDef;
                             break;
 
                         case nameof(Lookup):
@@ -196,8 +196,8 @@ namespace Tellma.Controllers
                             nameof(Resource) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
                             nameof(ResourceForSave) => ResourcePropertyOverrides(def as ResourceDefinitionForClient, settings, propInfo, display),
 
-                            nameof(Agent) => AgentPropertyOverrides(def as AgentDefinitionForClient, settings, propInfo, display),
-                            nameof(AgentForSave) => AgentPropertyOverrides(def as AgentDefinitionForClient, settings, propInfo, display),
+                            nameof(Contract) => ContractPropertyOverrides(def as ContractDefinitionForClient, settings, propInfo, display),
+                            nameof(ContractForSave) => ContractPropertyOverrides(def as ContractDefinitionForClient, settings, propInfo, display),
 
                             nameof(Lookup) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
                             nameof(LookupForSave) => LookupPropertyOverrides(def as LookupDefinitionForClient, settings, propInfo, display),
@@ -861,13 +861,13 @@ namespace Tellma.Controllers
         }
 
         /// <summary>
-        /// Specifies any overriding changes to a agent property metadata that stem from the definition. 
+        /// Specifies any overriding changes to a contract property metadata that stem from the definition. 
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
 
-        private static DefinitionPropOverrides AgentPropertyOverrides(
-            AgentDefinitionForClient def,
+        private static DefinitionPropOverrides ContractPropertyOverrides(
+            ContractDefinitionForClient def,
             SettingsForClient _,
             PropertyInfo propInfo,
             Func<string> display)
@@ -876,19 +876,19 @@ namespace Tellma.Controllers
 
             switch (propInfo.Name)
             {
-                case nameof(Agent.TaxIdentificationNumber):
+                case nameof(Contract.TaxIdentificationNumber):
                     display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
                     break;
-                case nameof(Agent.StartDate):
+                case nameof(Contract.StartDate):
                     display = PropertyDisplay(def.StartDateVisibility, display);
                     isRequired = def.StartDateVisibility == Visibility.Required;
                     break;
-                case nameof(Agent.JobId):
+                case nameof(Contract.JobId):
                     display = PropertyDisplay(def.JobVisibility, display);
                     isRequired = def.JobVisibility == Visibility.Required;
                     break;
-                case nameof(Agent.BankAccountNumber):
+                case nameof(Contract.BankAccountNumber):
                     display = PropertyDisplay(def.BankAccountNumberVisibility, display);
                     isRequired = def.BankAccountNumberVisibility == Visibility.Required;
                     break;
@@ -937,29 +937,29 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
                     isRequired = def.MemoVisibility == Visibility.Required;
                     break;
-                case nameof(Document.DebitAgentId):
-                    display = PropertyDisplay(settings, def.DebitAgentVisibility, def.DebitAgentLabel, def.DebitAgentLabel2, def.DebitAgentLabel3, display);
-                    isRequired = def.DebitAgentVisibility;
+                case nameof(Document.DebitContractId):
+                    display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
+                    isRequired = def.DebitContractVisibility;
                     break;
-                case nameof(Document.DebitAgent):
-                    display = PropertyDisplay(settings, def.DebitAgentVisibility, def.DebitAgentLabel, def.DebitAgentLabel2, def.DebitAgentLabel3, display);
-                    isRequired = def.DebitAgentVisibility;
+                case nameof(Document.DebitContract):
+                    display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
+                    isRequired = def.DebitContractVisibility;
                     break;
-                case nameof(Document.CreditAgentId):
-                    display = PropertyDisplay(settings, def.CreditAgentVisibility, def.CreditAgentLabel, def.CreditAgentLabel2, def.CreditAgentLabel3, display);
-                    isRequired = def.CreditAgentVisibility;
+                case nameof(Document.CreditContractId):
+                    display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
+                    isRequired = def.CreditContractVisibility;
                     break;
-                case nameof(Document.CreditAgent):
-                    display = PropertyDisplay(settings, def.CreditAgentVisibility, def.CreditAgentLabel, def.CreditAgentLabel2, def.CreditAgentLabel3, display);
-                    isRequired = def.CreditAgentVisibility;
+                case nameof(Document.CreditContract):
+                    display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
+                    isRequired = def.CreditContractVisibility;
                     break;
-                case nameof(Document.NotedAgentId):
-                    display = PropertyDisplay(settings, def.NotedAgentVisibility, def.NotedAgentLabel, def.NotedAgentLabel2, def.NotedAgentLabel3, display);
-                    isRequired = def.NotedAgentVisibility;
+                case nameof(Document.NotedContractId):
+                    display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
+                    isRequired = def.NotedContractVisibility;
                     break;
-                case nameof(Document.NotedAgent):
-                    display = PropertyDisplay(settings, def.NotedAgentVisibility, def.NotedAgentLabel, def.NotedAgentLabel2, def.NotedAgentLabel3, display);
-                    isRequired = def.NotedAgentVisibility;
+                case nameof(Document.NotedContract):
+                    display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
+                    isRequired = def.NotedContractVisibility;
                     break;
                 case nameof(Document.InvestmentCenter):
                     display = PropertyDisplay(settings, def.InvestmentCenterVisibility, def.InvestmentCenterLabel, def.InvestmentCenterLabel2, def.InvestmentCenterLabel3, display);
@@ -1001,9 +1001,9 @@ namespace Tellma.Controllers
 
             int? targetDefId = propInfo.Name switch
             {
-                nameof(Document.DebitAgent) => def.DebitAgentDefinitionIds.Count == 1 ? (int?)def.DebitAgentDefinitionIds[0] : null,
-                nameof(Document.CreditAgent) => def.CreditAgentDefinitionIds.Count == 1 ? (int?)def.CreditAgentDefinitionIds[0] : null,
-                nameof(Document.NotedAgent) => def.NotedAgentDefinitionIds.Count == 1 ? (int?)def.NotedAgentDefinitionIds[0] : null,
+                nameof(Document.DebitContract) => def.DebitContractDefinitionIds.Count == 1 ? (int?)def.DebitContractDefinitionIds[0] : null,
+                nameof(Document.CreditContract) => def.CreditContractDefinitionIds.Count == 1 ? (int?)def.CreditContractDefinitionIds[0] : null,
+                nameof(Document.NotedContract) => def.NotedContractDefinitionIds.Count == 1 ? (int?)def.NotedContractDefinitionIds[0] : null,
                 _ => null,
             };
 

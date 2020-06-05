@@ -25,7 +25,7 @@ namespace Tellma.Controllers.Dto
 
         public string FunctionalCurrencyDescription3 { get; set; }
 
-        public byte FunctionalCurrencyDecimals { get; set; }
+        public short FunctionalCurrencyDecimals { get; set; }
 
         public DateTime ArchiveDate { get; set; }
 

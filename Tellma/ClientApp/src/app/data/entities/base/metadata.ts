@@ -3,7 +3,7 @@ import { WorkspaceService } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { metadata_Role } from '../role';
-import { metadata_Agent } from '../agent';
+import { metadata_Contract } from '../contract';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
@@ -32,12 +32,12 @@ export const metadata: {
     [collection: string]: (
         ws: WorkspaceService,
         trx: TranslateService,
-        definitionId?: string) => EntityDescriptor
+        definitionId?: number) => EntityDescriptor
 } = {
     // Application
     Unit: metadata_Unit,
     User: metadata_User,
-    Agent: metadata_Agent,
+    Contract: metadata_Contract,
     Role: metadata_Role,
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
@@ -94,20 +94,20 @@ export interface EntityDescriptor {
     /**
      * The definition Id of this entity descriptor
      */
-    definitionId?: string;
+    definitionId?: number;
 
     /**
      * Collections that have definitions list the definitions here
      */
-    definitionIds?: string[];
+    definitionIds?: number[];
 
     /**
-     * The plural name of the entity (e.g. Agents).
+     * The plural name of the entity (e.g. Contracts).
      */
     titlePlural: () => string;
 
     /**
-     * The singular name of the entity (e.g. Agent).
+     * The singular name of the entity (e.g. Contract).
      */
     titleSingular: () => string;
 
@@ -269,7 +269,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     /**
      * Determines the definitionId of the entities that reside in these properties (e.g. Inventory vs. Resource)
      */
-    definition?: string;
+    definition?: number;
 
     /**
      * The name of the foreign key property
@@ -279,7 +279,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     /**
      * Determines the type of this property
      */
-    type: string; // e.g. Agent
+    type: string; // e.g. Contract
 
     /**
      * Determines the name of the collection holding the entities represented by this property
@@ -292,7 +292,7 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
     | StatePropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(
-    pathArray: string[], baseCollection: string, baseDefinition: string,
+    pathArray: string[], baseCollection: string, baseDefinition: number,
     wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
 
     if (!baseCollection) {

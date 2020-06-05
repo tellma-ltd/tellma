@@ -3,14 +3,13 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.component';
 
 @Component({
-  selector: 't-resources-picker',
-  templateUrl: './resources-picker.component.html',
+  selector: 't-contracts-picker',
+  templateUrl: './contracts-picker.component.html',
   styles: [],
-  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ResourcesPickerComponent }]
+  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ContractsPickerComponent }]
 })
-export class ResourcesPickerComponent extends PickerBaseComponent {
+export class ContractsPickerComponent extends PickerBaseComponent {
 
   @Input()
   definitionIds: number[];
-
 }

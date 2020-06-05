@@ -28,7 +28,7 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_Currency(wss: WorkspaceService, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Currency(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
@@ -53,7 +53,7 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService, 
         E: {
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),
-          choices: [0, 2, 3],
+          choices: [0, 2, 3, 4],
           format: (c: number | string) => (c === null || c === undefined) ? '' : c.toString()
         },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },

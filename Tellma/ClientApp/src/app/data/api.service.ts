@@ -17,7 +17,7 @@ import { ExportForImportArguments } from './dto/export-for-import-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appsettings } from './global-resolver.guard';
-import { Agent } from './entities/agent';
+import { Contract } from './entities/contract';
 import { Role } from './entities/role';
 import { Settings } from './entities/settings';
 import { SettingsForClient } from './dto/settings-for-client';
@@ -282,10 +282,10 @@ export class ApiService {
     };
   }
 
-  public agentsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public contractsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Agent>(`agents/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Agent>(`agents/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<Contract>(`contracts/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Contract>(`contracts/${definitionId}`, cancellationToken$)
     };
   }
 
@@ -303,7 +303,7 @@ export class ApiService {
     };
   }
 
-  public lookupsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public lookupsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Lookup>(`lookups/${definitionId}`, cancellationToken$),
       deactivate: this.deactivateFactory<Lookup>(`lookups/${definitionId}`, cancellationToken$)
@@ -317,7 +317,7 @@ export class ApiService {
     };
   }
 
-  public resourcesApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public resourcesApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Resource>(`resources/${definitionId}`, cancellationToken$),
       deactivate: this.deactivateFactory<Resource>(`resources/${definitionId}`, cancellationToken$)
@@ -401,7 +401,7 @@ export class ApiService {
     };
   }
 
-  public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public documentsApi(definitionId: number, cancellationToken$: Observable<void>) {
     return {
       assign: (ids: (string | number)[], args: AssignArguments, extras?: { [key: string]: any }) => {
 
@@ -1172,7 +1172,7 @@ export class ApiService {
     return obs$;
   }
 
-  private updateStateFactory(definitionId: string, transition: string, cancellationToken$: Observable<void>) {
+  private updateStateFactory(definitionId: number, transition: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: ActionArguments, extras?: { [key: string]: any }) => {
 
       const paramsArray = this.stringifyActionArguments(args);

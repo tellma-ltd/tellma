@@ -19,14 +19,14 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationController]
-    public class AgentsController : CrudControllerBase<AgentForSave, Agent, int>
+    public class ContractsController : CrudControllerBase<ContractForSave, Contract, int>
     {
-        public const string BASE_ADDRESS = "agents/";
+        public const string BASE_ADDRESS = "contracts/";
 
-        private readonly AgentsService _service;
+        private readonly ContractsService _service;
         private readonly ILogger _logger;
 
-        public AgentsController(AgentsService service, ILogger<AgentsController> logger) : base(logger)
+        public ContractsController(ContractsService service, ILogger<ContractsController> logger) : base(logger)
         {
             _service = service;
             _logger = logger;
@@ -45,7 +45,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Contract>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -57,7 +57,7 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<Agent>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Contract>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
@@ -68,10 +68,10 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        protected override CrudServiceBase<AgentForSave, Agent, int> GetCrudService() => _service;
+        protected override CrudServiceBase<ContractForSave, Contract, int> GetCrudService() => _service;
     }
 
-    public class AgentsService : CrudServiceBase<AgentForSave, Agent, int>
+    public class ContractsService : CrudServiceBase<ContractForSave, Contract, int>
     {
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -109,20 +109,20 @@ namespace Tellma.Controllers
         }
 
         private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
-            .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Agent Definition with Id = {DefinitionId} is missing from the cache");
+            .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Contract Definition with Id = {DefinitionId} is missing from the cache");
 
         /// <summary>
         /// Overrides the default behavior of reading the definition Id from the route data
         /// </summary>
-        public AgentsService SetDefinitionId(int definitionId)
+        public ContractsService SetDefinitionId(int definitionId)
         {
             _definitionIdOverride = definitionId;
             return this;
         }
 
-        private string View => $"{AgentsController.BASE_ADDRESS}{DefinitionId}";
+        private string View => $"{ContractsController.BASE_ADDRESS}{DefinitionId}";
 
-        public AgentsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo,
+        public ContractsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo,
             ITenantIdAccessor tenantIdAccessor, IBlobService blobService, IHttpContextAccessor contextAccessor,
             IDefinitionsCache definitionsCache, IServiceProvider sp) : base(sp)
         {
@@ -137,8 +137,8 @@ namespace Tellma.Controllers
         public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
         {
             // This enforces read permissions
-            var (agent, _) = await GetById(id, new GetByIdArguments { Select = nameof(Agent.ImageId) }, cancellation);
-            string imageId = agent.ImageId;
+            var (contract, _) = await GetById(id, new GetByIdArguments { Select = nameof(Contract.ImageId) }, cancellation);
+            string imageId = contract.ImageId;
 
             // Get the blob name
             if (imageId != null)
@@ -158,13 +158,13 @@ namespace Tellma.Controllers
         private string BlobName(string guid)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
-            return $"{tenantId}/Agents/{guid}";
+            return $"{tenantId}/Contracts/{guid}";
         }
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Agent.DefinitionId)} {Ops.eq} {DefinitionId}";
-            return new FilteredRepository<Agent>(_repo, filter);
+            string filter = $"{nameof(Contract.DefinitionId)} {Ops.eq} {DefinitionId}";
+            return new FilteredRepository<Contract>(_repo, filter);
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -172,18 +172,18 @@ namespace Tellma.Controllers
             return _repo.UserPermissions(action, View, cancellation);
         }
 
-        protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Contract> Search(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return AgentServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ContractServiceUtil.SearchImpl(query, args, filteredPermissions);
         }
 
-        protected override Task<List<AgentForSave>> SavePreprocessAsync(List<AgentForSave> entities)
+        protected override Task<List<ContractForSave>> SavePreprocessAsync(List<ContractForSave> entities)
         {
             // TODO: Add definition defaults here
             return base.SavePreprocessAsync(entities);
         }
 
-        protected override async Task SaveValidateAsync(List<AgentForSave> entities)
+        protected override async Task SaveValidateAsync(List<ContractForSave> entities)
         {
             // TODO: Add definition validation here
 
@@ -195,18 +195,18 @@ namespace Tellma.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Save(DefinitionId.Value, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Contracts_Validate__Save(DefinitionId.Value, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<AgentForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ContractForSave> entities, bool returnIds)
         {
-            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Agent, AgentForSave>(_repo, entities, BlobName);
+            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Contract, ContractForSave>(_repo, entities, BlobName);
 
-            // Save the agents
-            var ids = await _repo.Agents__Save(
+            // Save the contracts
+            var ids = await _repo.Contracts__Save(
                 DefinitionId.Value,
                 entities: entities,
                 imageIds: imageIds,
@@ -231,7 +231,7 @@ namespace Tellma.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Delete(DefinitionId.Value, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Contracts_Validate__Delete(DefinitionId.Value, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -240,9 +240,9 @@ namespace Tellma.Controllers
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
             // For the entities we're about to delete retrieve their imageIds (if any) to delete from the blob storage
-            var dbEntitiesWithImageIds = await _repo.Agents
-                .Select(nameof(Agent.ImageId))
-                .Filter($"{nameof(Agent.ImageId)} ne null")
+            var dbEntitiesWithImageIds = await _repo.Contracts
+                .Select(nameof(Contract.ImageId))
+                .Filter($"{nameof(Contract.ImageId)} ne null")
                 .FilterByIds(ids.ToArray())
                 .ToListAsync(cancellation: default);
 
@@ -253,7 +253,7 @@ namespace Tellma.Controllers
             try
             {
                 using var trx = ControllerUtilities.CreateTransaction();
-                await _repo.Agents__Delete(ids);
+                await _repo.Contracts__Delete(ids);
 
                 if (blobsToDelete.Any())
                 {
@@ -273,24 +273,24 @@ namespace Tellma.Controllers
             }
         }
 
-        public Task<(List<Agent>, Extras)> Activate(List<int> ids, ActionArguments args)
+        public Task<(List<Contract>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
         }
 
-        public Task<(List<Agent>, Extras)> Deactivate(List<int> ids, ActionArguments args)
+        public Task<(List<Contract>, Extras)> Deactivate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: false);
         }
 
-        private async Task<(List<Agent>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
+        private async Task<(List<Contract>, Extras)> SetIsActive(List<int> ids, ActionArguments args, bool isActive)
         {
             // Check user permissions
             await CheckActionPermissions("IsActive", ids);
 
             // Execute and return
             using var trx = ControllerUtilities.CreateTransaction();
-            await _repo.Agents__Activate(ids, isActive);
+            await _repo.Contracts__Activate(ids, isActive);
 
             if (args.ReturnEntities ?? false)
             {
@@ -307,28 +307,28 @@ namespace Tellma.Controllers
         }
     }
 
-    [Route("api/" + AgentsController.BASE_ADDRESS)]
+    [Route("api/" + ContractsController.BASE_ADDRESS)]
     [ApplicationController]
-    public class AgentsGenericController : FactWithIdControllerBase<Agent, int>
+    public class ContractsGenericController : FactWithIdControllerBase<Contract, int>
     {
-        private readonly AgentsGenericService _service;
+        private readonly ContractsGenericService _service;
 
-        public AgentsGenericController(AgentsGenericService service, ILogger<AgentsGenericController> logger) : base(logger)
+        public ContractsGenericController(ContractsGenericService service, ILogger<ContractsGenericController> logger) : base(logger)
         {
             _service = service;
         }
 
-        protected override FactWithIdServiceBase<Agent, int> GetFactWithIdService()
+        protected override FactWithIdServiceBase<Contract, int> GetFactWithIdService()
         {
             return _service;
         }
     }
 
-    public class AgentsGenericService : FactWithIdServiceBase<Agent, int>
+    public class ContractsGenericService : FactWithIdServiceBase<Contract, int>
     {
         private readonly ApplicationRepository _repo;
 
-        public AgentsGenericService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
+        public ContractsGenericService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
         }
@@ -337,8 +337,8 @@ namespace Tellma.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
         {
-            // Get all permissions pertaining to agents
-            string prefix = AgentsController.BASE_ADDRESS;
+            // Get all permissions pertaining to contracts
+            string prefix = ContractsController.BASE_ADDRESS;
             var permissions = await _repo.GenericUserPermissions(action, prefix, cancellation);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
@@ -351,7 +351,7 @@ namespace Tellma.Controllers
                     throw new BadRequestException($"Could not parse definition Id {definitionIdString} to a valid integer");
                 }
 
-                string definitionPredicate = $"{nameof(Agent.DefinitionId)} {Ops.eq} {definitionId}";
+                string definitionPredicate = $"{nameof(Contract.DefinitionId)} {Ops.eq} {definitionId}";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -366,28 +366,28 @@ namespace Tellma.Controllers
             return permissions;
         }
 
-        protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Contract> Search(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return AgentServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ContractServiceUtil.SearchImpl(query, args, filteredPermissions);
         }
     }
 
-    internal class AgentServiceUtil
+    internal class ContractServiceUtil
     {
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Agent> SearchImpl(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        public static Query<Contract> SearchImpl(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(Agent.Name);
-                var name2 = nameof(Agent.Name2);
-                var name3 = nameof(Agent.Name3);
-                var code = nameof(Agent.Code);
+                var name = nameof(Contract.Name);
+                var name2 = nameof(Contract.Name2);
+                var name3 = nameof(Contract.Name3);
+                var code = nameof(Contract.Code);
 
                 var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));

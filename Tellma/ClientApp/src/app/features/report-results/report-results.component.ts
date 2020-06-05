@@ -1741,7 +1741,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return !!this.definition ? this.definition.Collection : null;
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return !!this.definition ? this.definition.DefinitionId : null;
   }
 

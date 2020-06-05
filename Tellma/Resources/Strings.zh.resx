@@ -70,11 +70,11 @@
   <data name="Account" xml:space="preserve">
     <value>帐户</value>
   </data>
-  <data name="Account_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
   <data name="Account_Center" xml:space="preserve">
     <value>责任中心</value>
+  </data>
+  <data name="Account_Contract" xml:space="preserve">
+    <value>代理人</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
@@ -127,7 +127,7 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
   </data>
-  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
+  <data name="AccountType_NotedِAgentNameLabel" xml:space="preserve">
     <value>注意代理名称标签</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
@@ -156,57 +156,6 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>管理员用户</value>
-  </data>
-  <data name="Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
-  <data name="Agent_BankAccountNumber" xml:space="preserve">
-    <value>银行帐号</value>
-  </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>相关的</value>
-  </data>
-  <data name="Agent_Job" xml:space="preserve">
-    <value>工作</value>
-  </data>
-  <data name="Agent_Rates" xml:space="preserve">
-    <value>价格</value>
-  </data>
-  <data name="Agent_StartDate" xml:space="preserve">
-    <value>开始日期</value>
-  </data>
-  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
-    <value>税号</value>
-  </data>
-  <data name="Agent_User" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="AgentDefinition" xml:space="preserve">
-    <value>代理定义</value>
-  </data>
-  <data name="AgentDefinitions" xml:space="preserve">
-    <value>代理定义</value>
-  </data>
-  <data name="AgentRate" xml:space="preserve">
-    <value>代理费率</value>
-  </data>
-  <data name="AgentRate_Currency" xml:space="preserve">
-    <value>货币</value>
-  </data>
-  <data name="AgentRate_Rate" xml:space="preserve">
-    <value>价格</value>
-  </data>
-  <data name="AgentRate_Resource" xml:space="preserve">
-    <value>资源</value>
-  </data>
-  <data name="AgentRate_Unit" xml:space="preserve">
-    <value>单元</value>
-  </data>
-  <data name="AgentRates" xml:space="preserve">
-    <value>代理价格</value>
-  </data>
-  <data name="Agents" xml:space="preserve">
-    <value>代理</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android的</value>
@@ -318,6 +267,36 @@
   </data>
   <data name="ConfirmPassword" xml:space="preserve">
     <value>确认密码</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Contract_BankAccountNumber" xml:space="preserve">
+    <value>银行帐号</value>
+  </data>
+  <data name="Contract_IsRelated" xml:space="preserve">
+    <value>相关的</value>
+  </data>
+  <data name="Contract_Job" xml:space="preserve">
+    <value>工作</value>
+  </data>
+  <data name="Contract_StartDate" xml:space="preserve">
+    <value>开始日期</value>
+  </data>
+  <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
+    <value>税号</value>
+  </data>
+  <data name="Contract_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="ContractDefinition" xml:space="preserve">
+    <value>契约定义</value>
+  </data>
+  <data name="ContractDefinitions" xml:space="preserve">
+    <value>合同定义</value>
+  </data>
+  <data name="Contracts" xml:space="preserve">
+    <value>代理</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>版权所有©{0}巴南IT，Ltd.保留所有权利。</value>
@@ -454,11 +433,11 @@
   <data name="Document_Comment" xml:space="preserve">
     <value>评论</value>
   </data>
-  <data name="Document_CreditAgent" xml:space="preserve">
+  <data name="Document_CreditContract" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Document_CreditAgentIsCommon" xml:space="preserve">
-    <value>债权代理人是常有的事</value>
+  <data name="Document_CreditContractIsCommon" xml:space="preserve">
+    <value>信贷合同是常有的事</value>
   </data>
   <data name="Document_Currency" xml:space="preserve">
     <value>货币</value>
@@ -466,11 +445,11 @@
   <data name="Document_CurrencyIsCommon" xml:space="preserve">
     <value>货币是通用</value>
   </data>
-  <data name="Document_DebitAgent" xml:space="preserve">
+  <data name="Document_DebitContract" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Document_DebitAgentIsCommon" xml:space="preserve">
-    <value>借记代理是很常见</value>
+  <data name="Document_DebitContractIsCommon" xml:space="preserve">
+    <value>借记合同是常有的事</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>属性1</value>
@@ -496,11 +475,11 @@
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>备注是常有的事</value>
   </data>
-  <data name="Document_NotedAgent" xml:space="preserve">
+  <data name="Document_NotedContract" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Document_NotedAgentIsCommon" xml:space="preserve">
-    <value>注意代理是很常见</value>
+  <data name="Document_NotedContractIsCommon" xml:space="preserve">
+    <value>注意合同是常有的事</value>
   </data>
   <data name="Document_OpenedAt" xml:space="preserve">
     <value>开盘报</value>
@@ -616,11 +595,11 @@
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>其他参考</value>
   </data>
-  <data name="Entry_Agent" xml:space="preserve">
-    <value>代理人</value>
-  </data>
   <data name="Entry_Center" xml:space="preserve">
     <value>责任中心</value>
+  </data>
+  <data name="Entry_Contract" xml:space="preserve">
+    <value>代理人</value>
   </data>
   <data name="Entry_ContractType" xml:space="preserve">
     <value>合同类型</value>
@@ -652,14 +631,14 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
   </data>
-  <data name="Entry_NotedAgent" xml:space="preserve">
-    <value>相关代理</value>
-  </data>
   <data name="Entry_NotedAgentName" xml:space="preserve">
     <value>相关代理机构名称</value>
   </data>
   <data name="Entry_NotedAmount" xml:space="preserve">
     <value>关联量</value>
+  </data>
+  <data name="Entry_NotedContract" xml:space="preserve">
+    <value>相关代理</value>
   </data>
   <data name="Entry_NotedDate" xml:space="preserve">
     <value>相关日期</value>
@@ -700,9 +679,6 @@
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
   </data>
-  <data name="Error_AgentDefinition0CouldNotBeFound" xml:space="preserve">
-    <value>代理DefinitionId“{0}”未能找到。</value>
-  </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>
   </data>
@@ -741,6 +717,9 @@
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
+  </data>
+  <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
+    <value>合同DefinitionId“{0}”未能找到。</value>
   </data>
   <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
     <value>该日期不能存档日期之前{0}</value>
@@ -2226,9 +2205,6 @@
   </data>
   <data name="User" xml:space="preserve">
     <value>用户</value>
-  </data>
-  <data name="User_Agent" xml:space="preserve">
-    <value>代理人</value>
   </data>
   <data name="User_Companies" xml:space="preserve">
     <value>公司</value>

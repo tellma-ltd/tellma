@@ -81,10 +81,6 @@ namespace Tellma.Entities
 
         // For Query
 
-        //[Display(Name = "User_Agent")]
-        //[ForeignKey(nameof(Id))]
-        //public Agent Agent { get; set; }
-
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }

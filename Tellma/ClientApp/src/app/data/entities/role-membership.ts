@@ -2,7 +2,7 @@
 import { EntityForSave } from './base/entity-for-save';
 
 export interface RoleMembershipForSave extends EntityForSave {
-    AgentId?: number;
+    UserId?: number;
     RoleId?: number;
     Memo?: string;
 }

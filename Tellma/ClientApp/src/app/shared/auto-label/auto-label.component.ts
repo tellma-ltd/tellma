@@ -17,7 +17,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
   collection: string;
 
   @Input()
-  definitionId: string;
+  definitionId: number;
 
   @Input()
   path: string;

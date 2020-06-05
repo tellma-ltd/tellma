@@ -16,18 +16,18 @@ import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client
 })
 export class LookupsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private lookupsApi = this.api.lookupsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private lookupsApi = this.api.lookupsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this.lookupsApi = this.api.lookupsApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -45,13 +45,17 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
         }
       }
     });
+  }
+
+  get view(): string {
+    return `lookups/${this.definitionId}`;
   }
 
   public get c() {
@@ -88,7 +92,7 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.definitionId, 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

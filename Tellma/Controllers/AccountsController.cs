@@ -118,7 +118,7 @@ namespace Tellma.Controllers
                 if (!entity.IsSmart.Value)
                 {
                     entity.ResourceId = null;
-                    entity.AgentId = null;
+                    entity.ContractId = null;
                     entity.Identifier = null;
                     entity.EntryTypeId = null;
                 }

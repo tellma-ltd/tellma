@@ -31,9 +31,9 @@ namespace Tellma.Data.Queries
         public TypeDescriptor EntityDescriptor { get; private set; }
 
         /// <summary>
-        /// The foreign key on the *parent* DTO
+        /// The foreign key on the *parent* Entity
         /// </summary>
-        public string ForeignKeyName { get; private set; } // e.g. 'AgentId'
+        public string ForeignKeyName { get; private set; } // e.g. 'ContractId'
 
         /// <summary>
         /// The symbol of the path leading up to the current node, root node usually has the symbol "P"

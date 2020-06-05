@@ -23,7 +23,7 @@ export interface VoucherBooklet extends VoucherBookletForSave {
 let _voucherBookletSettings: SettingsForClient;
 let _voucherBookletCache: EntityDescriptor;
 
-export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _voucherBookletSettings) {

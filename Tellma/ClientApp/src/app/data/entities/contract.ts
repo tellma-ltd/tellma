@@ -6,9 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { AgentRateForSave, AgentRate } from './agent-rate';
 
-export interface AgentForSave<TAgentRate = AgentRateForSave> extends EntityWithKey {
+export interface ContractForSave extends EntityWithKey {
 
   Name?: string;
   Name2?: string;
@@ -21,10 +20,9 @@ export interface AgentForSave<TAgentRate = AgentRateForSave> extends EntityWithK
   BankAccountNumber?: number;
   UserId?: number;
   Image?: string;
-  Rates?: TAgentRate[];
 }
 
-export interface Agent extends AgentForSave<AgentRate> {
+export interface Contract extends ContractForSave {
   DefinitionId?: number;
   ImageId?: string;
   IsActive?: boolean;
@@ -37,10 +35,10 @@ export interface Agent extends AgentForSave<AgentRate> {
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
-let _cache: { [defId: string]: EntityDescriptor } = {};
-let _definitionIds: string[];
+let _cache: { [defId: number]: EntityDescriptor } = {};
+let _definitionIds: number[];
 
-export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, definitionId: number): EntityDescriptor {
   const ws = wss.currentTenant;
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings || ws.definitions !== _definitions) {
@@ -55,35 +53,35 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
   const key = definitionId || '-'; // undefined
   if (!_cache[key]) {
     if (!_definitionIds) {
-      _definitionIds = Object.keys(ws.definitions.Agents);
+      _definitionIds = Object.keys(ws.definitions.Contracts).map(e => +e);
     }
 
     const entityDesc: EntityDescriptor = {
-      collection: 'Agent',
+      collection: 'Contract',
       definitionId,
       definitionIds: _definitionIds,
-      titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitleSingular') || trx.instant('Agent'),
-      titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitlePlural') || trx.instant('Agents'),
+      titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Contracts[definitionId], 'TitleSingular') || trx.instant('Contract'),
+      titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Contracts[definitionId], 'TitlePlural') || trx.instant('Contracts'),
       select: _select,
-      apiEndpoint: !!definitionId ? `agents/${definitionId}` : 'agents',
-      screenUrl: !!definitionId ? `agents/${definitionId}` : 'agents',
+      apiEndpoint: !!definitionId ? `contracts/${definitionId}` : 'contracts',
+      screenUrl: !!definitionId ? `contracts/${definitionId}` : 'contracts',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'AgentDefinition', foreignKeyName: 'DefinitionId' },
+        Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ContractDefinition', foreignKeyName: 'DefinitionId' },
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
-        TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
-        StartDate: { control: 'date', label: () => trx.instant('Agent_StartDate') },
-        JobId: { control: 'number', label: () => `${trx.instant('Agent_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        BankAccountNumber: { control: 'text', label: () => trx.instant('Agent_BankAccountNumber') },
-        UserId: { control: 'number', label: () => `${trx.instant('Agent_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'UserId' },
-        IsRelated: { control: 'boolean', label: () => trx.instant('Agent_IsRelated') },
+        TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Contract_TaxIdentificationNumber') },
+        StartDate: { control: 'date', label: () => trx.instant('Contract_StartDate') },
+        JobId: { control: 'number', label: () => `${trx.instant('Contract_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        BankAccountNumber: { control: 'text', label: () => trx.instant('Contract_BankAccountNumber') },
+        UserId: { control: 'number', label: () => `${trx.instant('Contract_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        User: { control: 'navigation', label: () => trx.instant('Contract_User'), type: 'User', foreignKeyName: 'UserId' },
+        IsRelated: { control: 'boolean', label: () => trx.instant('Contract_IsRelated') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
@@ -100,7 +98,7 @@ export function metadata_Agent(wss: WorkspaceService, trx: TranslateService, def
       delete entityDesc.properties.Name3;
     }
     // Adjust according to definitions
-    const definition = _definitions.Agents[definitionId];
+    const definition = _definitions.Contracts[definitionId];
     if (!definition) {
       if (!!definitionId) {
         // Programmer mistake

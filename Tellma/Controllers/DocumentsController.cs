@@ -251,32 +251,6 @@ namespace Tellma.Controllers
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        private int? _manualLineDefId;
-
-        /// <summary>
-        /// Retrieves the definition Id of the line definition whose Code = "ManualLine"
-        /// </summary>
-        public int? ManualLineDefinitionId
-        {
-            get
-            {
-                if (_manualLineDefId == null)
-                {
-                    var match = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines?.Where(pair => pair.Value.Code == "ManualLine");
-                    if (match.Any())
-                    {
-                        _manualLineDefId = match.FirstOrDefault().Key;
-                    }
-                    else
-                    {
-                        throw new BadRequestException("The database is in an inconsistent state: ManualLine definition is missing");
-                    }
-                }
-
-                return _manualLineDefId;
-            }
-        }
-
         public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
@@ -791,6 +765,8 @@ namespace Tellma.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var functionalId = settings.FunctionalCurrencyId;
 
+            var manualLineDefId = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.ManualLinesDefinitionId;
+
             // Set default values
             docs.ForEach(doc =>
             {
@@ -800,16 +776,16 @@ namespace Tellma.Controllers
                 }
 
                 // Document defaults
-                doc.MemoIsCommon ??= docDef.MemoVisibility != null ? doc.MemoIsCommon ?? false : false;
-                doc.DebitAgentIsCommon = docDef.DebitAgentVisibility ? doc.DebitAgentIsCommon ?? false : false;
-                doc.CreditAgentIsCommon = docDef.CreditAgentVisibility ? doc.CreditAgentIsCommon ?? false : false;
-                doc.NotedAgentIsCommon = docDef.NotedAgentVisibility ? doc.NotedAgentIsCommon ?? false : false;
-                doc.InvestmentCenterIsCommon = docDef.InvestmentCenterVisibility ? doc.InvestmentCenterIsCommon ?? false : false;
-                doc.Time1IsCommon = docDef.Time1Visibility ? doc.Time1IsCommon ?? false : false;
-                doc.Time2IsCommon = docDef.Time2Visibility ? doc.Time2IsCommon ?? false : false;
-                doc.QuantityIsCommon = docDef.QuantityVisibility ? doc.QuantityIsCommon ?? false : false;
-                doc.UnitIsCommon = docDef.UnitVisibility ? doc.UnitIsCommon ?? false : false;
-                doc.CurrencyIsCommon = docDef.CurrencyVisibility ? doc.CurrencyIsCommon ?? false : false;
+                doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
+                doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
+                doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
+                doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);
+                doc.InvestmentCenterIsCommon = docDef.InvestmentCenterVisibility && (doc.InvestmentCenterIsCommon ?? false);
+                doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
+                doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
+                doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
+                doc.UnitIsCommon = docDef.UnitVisibility && (doc.UnitIsCommon ?? false);
+                doc.CurrencyIsCommon = docDef.CurrencyVisibility && (doc.CurrencyIsCommon ?? false);
 
                 doc.Clearance ??= 0; // Public
                 doc.Lines ??= new List<LineForSave>();
@@ -829,9 +805,9 @@ namespace Tellma.Controllers
             {
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
-                doc.DebitAgentId = doc.DebitAgentIsCommon.Value ? doc.DebitAgentId : null;
-                doc.CreditAgentId = doc.CreditAgentIsCommon.Value ? doc.CreditAgentId : null;
-                doc.NotedAgentId = doc.NotedAgentIsCommon.Value ? doc.NotedAgentId : null;
+                doc.DebitContractId = doc.DebitContractIsCommon.Value ? doc.DebitContractId : null;
+                doc.CreditContractId = doc.CreditContractIsCommon.Value ? doc.CreditContractId : null;
+                doc.NotedContractId = doc.NotedContractIsCommon.Value ? doc.NotedContractId : null;
                 doc.InvestmentCenterId = doc.InvestmentCenterIsCommon.Value ? doc.InvestmentCenterId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
@@ -868,7 +844,7 @@ namespace Tellma.Controllers
                         // Copy the direction from the definition
                         for (var i = 0; i < line.Entries.Count; i++)
                         {
-                            if (line.DefinitionId != ManualLineDefinitionId)
+                            if (line.DefinitionId != manualLineDefId)
                             {
                                 line.Entries[i].Direction = lineDef.Entries[i].Direction;
                             }
@@ -898,23 +874,23 @@ namespace Tellma.Controllers
                                 var entry = line.Entries[columnDef.EntryIndex];
                                 switch (columnDef.ColumnName)
                                 {
-                                    case nameof(Entry.AgentId):
+                                    case nameof(Entry.ContractId):
                                         var entryDef = lineDef.Entries[columnDef.EntryIndex];
-                                        if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
+                                        if (entryDef.Direction == 1 && doc.DebitContractIsCommon.Value)
                                         {
-                                            entry.AgentId = doc.DebitAgentId;
+                                            entry.ContractId = doc.DebitContractId;
                                         }
-                                        else if (entryDef.Direction == -1 && doc.CreditAgentIsCommon.Value)
+                                        else if (entryDef.Direction == -1 && doc.CreditContractIsCommon.Value)
                                         {
-                                            entry.AgentId = doc.CreditAgentId;
+                                            entry.ContractId = doc.CreditContractId;
                                         }
 
                                         break;
 
-                                    case nameof(Entry.NotedAgentId):
-                                        if (doc.NotedAgentIsCommon.Value)
+                                    case nameof(Entry.NotedContractId):
+                                        if (doc.NotedContractIsCommon.Value)
                                         {
-                                            entry.NotedAgentId = doc.NotedAgentId;
+                                            entry.NotedContractId = doc.NotedContractId;
                                         }
 
                                         break;
@@ -988,7 +964,7 @@ namespace Tellma.Controllers
                         // If currency is functional, make sure that Value = MonetaryValue
                         if (entry.CurrencyId == settings.FunctionalCurrencyId)
                         {
-                            if (line.DefinitionId == ManualLineDefinitionId)
+                            if (line.DefinitionId == manualLineDefId)
                             {
                                 // Manual lines, the value is always entered by the user
                                 entry.MonetaryValue = entry.Value;
@@ -1011,7 +987,7 @@ namespace Tellma.Controllers
                 // => Take the difference and distribute it evenly on the entries
                 if (doc.Lines.Count > 0)
                 {
-                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != ManualLineDefinitionId).SelectMany(line => line.Entries);
+                    var smartEntries = doc.Lines.Where(line => line.DefinitionId != manualLineDefId).SelectMany(line => line.Entries);
                     if (smartEntries.Any())
                     {
                         var currencyId = smartEntries.First().CurrencyId;
@@ -1183,34 +1159,34 @@ namespace Tellma.Controllers
                             var entry = line.Entries[entryIndex];
                             switch (columnDef.ColumnName)
                             {
-                                case nameof(Entry.AgentId):
+                                case nameof(Entry.ContractId):
                                     var entryDef = lineDef.Entries[entryIndex];
-                                    if (entryDef.Direction == 1 && doc.DebitAgentIsCommon.Value)
+                                    if (entryDef.Direction == 1 && doc.DebitContractIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.AgentId)), $"[{docIndex}].{nameof(Document.DebitAgentId)}");
-                                        if (entry.AgentId != doc.DebitAgentId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ContractId)), $"[{docIndex}].{nameof(Document.DebitContractId)}");
+                                        if (entry.ContractId != doc.DebitContractId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.DebitAgentId));
+                                            AddReadOnlyError(docIndex, nameof(Document.DebitContractId));
                                         }
                                     }
-                                    else if (entryDef.Direction == -1 && doc.CreditAgentIsCommon.Value)
+                                    else if (entryDef.Direction == -1 && doc.CreditContractIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.AgentId)), $"[{docIndex}].{nameof(Document.CreditAgentId)}");
-                                        if (entry.AgentId != doc.CreditAgentId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.ContractId)), $"[{docIndex}].{nameof(Document.CreditContractId)}");
+                                        if (entry.ContractId != doc.CreditContractId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.CreditAgentId));
+                                            AddReadOnlyError(docIndex, nameof(Document.CreditContractId));
                                         }
                                     }
 
                                     break;
 
-                                case nameof(Entry.NotedAgentId):
-                                    if (doc.NotedAgentIsCommon.Value)
+                                case nameof(Entry.NotedContractId):
+                                    if (doc.NotedContractIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.NotedAgentId)), $"[{docIndex}].{nameof(Document.NotedAgentId)}");
-                                        if (entry.NotedAgentId != doc.NotedAgentId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.NotedContractId)), $"[{docIndex}].{nameof(Document.NotedContractId)}");
+                                        if (entry.NotedContractId != doc.NotedContractId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.NotedAgentId));
+                                            AddReadOnlyError(docIndex, nameof(Document.NotedContractId));
                                         }
                                     }
 
@@ -1572,9 +1548,9 @@ namespace Tellma.Controllers
             .Concat(AttachmentPaths(nameof(Document.Attachments)))
             .Concat(DocumentStateChangePaths(nameof(Document.StatesHistory)))
             .Concat(DocumentAssignmentPaths(nameof(Document.AssignmentsHistory)))
-            .Concat(AgentPaths(nameof(Document.DebitAgent)))
-            .Concat(AgentPaths(nameof(Document.CreditAgent)))
-            .Concat(AgentPaths(nameof(Document.NotedAgent)))
+            .Concat(ContractPaths(nameof(Document.DebitContract)))
+            .Concat(ContractPaths(nameof(Document.CreditContract)))
+            .Concat(ContractPaths(nameof(Document.NotedContract)))
             .Concat(CenterPaths(nameof(Document.InvestmentCenter)))
             .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
@@ -1591,9 +1567,9 @@ namespace Tellma.Controllers
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(AgentPaths(nameof(Entry.Agent)))
+            .Concat(ContractPaths(nameof(Entry.Contract)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
-            .Concat(AgentPaths(nameof(Entry.NotedAgent)))
+            .Concat(ContractPaths(nameof(Entry.NotedContract)))
             .Concat(CenterPaths(nameof(Entry.Center)))
             .Concat(UnitPaths(nameof(Entry.Unit)))
             .Select(p => path == null ? p : $"{path}/{p}");
@@ -1608,7 +1584,7 @@ namespace Tellma.Controllers
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
-        public static IEnumerable<string> AgentPaths(string path = null) => AgentProps
+        public static IEnumerable<string> ContractPaths(string path = null) => ContractProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
             .Concat( // Entry Resource also adds the Currency
@@ -1637,7 +1613,7 @@ namespace Tellma.Controllers
             .Concat(CenterPaths(nameof(Account.Center)))
             .Concat(EntryTypePaths(nameof(Account.EntryType)))
             .Concat(CurrencyPaths(nameof(Account.Currency)))
-            .Concat(AgentPaths(nameof(Account.Agent)))
+            .Concat(ContractPaths(nameof(Account.Contract)))
             .Concat(ResourcePaths(nameof(Account.Resource)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
@@ -1659,7 +1635,7 @@ namespace Tellma.Controllers
         private static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         private static IEnumerable<string> ResourceUnitsProps => Enum(nameof(ResourceUnit.Multiplier));
         private static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
-        private static IEnumerable<string> AgentProps => Enum(nameof(Agent.Name), nameof(Agent.Name2), nameof(Agent.Name3), nameof(Agent.DefinitionId));
+        private static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
         private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
         private static IEnumerable<string> AccountProps => Enum(nameof(Account.Name), nameof(Account.Name2), nameof(Account.Name3));
         private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3));
@@ -1671,21 +1647,6 @@ namespace Tellma.Controllers
 
             // Misc
             nameof(AccountType.EntryTypeParentId),
-            //nameof(AccountType.IsResourceClassification),
-
-            //// Definitions
-            //nameof(AccountType.AgentDefinitionId),
-            //nameof(AccountType.NotedAgentDefinitionId),
-            //nameof(AccountType.ResourceDefinitionId),
-
-            //// Assignments
-            //nameof(AccountType.CurrencyAssignment),
-            //nameof(AccountType.AgentAssignment),
-            //nameof(AccountType.ResourceAssignment),
-            //nameof(AccountType.CenterAssignment),
-            //nameof(AccountType.EntryTypeAssignment),
-            //nameof(AccountType.IdentifierAssignment),
-            //nameof(AccountType.NotedAgentAssignment),
 
             // Labels
             nameof(AccountType.DueDateLabel), nameof(AccountType.DueDateLabel2), nameof(AccountType.DueDateLabel3),

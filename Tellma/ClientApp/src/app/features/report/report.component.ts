@@ -56,7 +56,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
   ];
 
-  private definitionId: string;
+  private definitionId: number;
 
   public view: ReportView;
   public arguments: ReportArguments = {};
@@ -74,7 +74,7 @@ export class ReportComponent implements OnInit, OnDestroy {
       // This triggers changes on the screen
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (!definitionId || !this.workspace.currentTenant.definitions.Reports[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
@@ -388,7 +388,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId : '<preview>'; // In preview mode a local state is used anyways
+    return this.mode === 'screen' ? this.definitionId.toString() : '<preview>'; // In preview mode a local state is used anyways
   }
 
   public get isChart(): boolean {

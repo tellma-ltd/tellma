@@ -17,18 +17,18 @@ import { Currency } from '~/app/data/entities/currency';
 })
 export class ResourcesDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private resourcesApi = this.api.resourcesApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private resourcesApi = this.api.resourcesApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this.resourcesApi = this.api.resourcesApi(t, this.notifyDestruct$);
       this._definitionId = t;
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -47,7 +47,7 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
@@ -400,7 +400,7 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
       this.translate.instant('Resource_Lookup1');
   }
 
-  public get Lookup1_DefinitionId() {
+  public get Lookup1_DefinitionId(): number {
     return this.definition.Lookup1DefinitionId;
   }
 
@@ -418,7 +418,7 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
       this.translate.instant('Resource_Lookup2');
   }
 
-  public get Lookup2_DefinitionId() {
+  public get Lookup2_DefinitionId(): number {
     return this.definition.Lookup2DefinitionId;
   }
 
@@ -436,7 +436,7 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
       this.translate.instant('Resource_Lookup3');
   }
 
-  public get Lookup3_DefinitionId() {
+  public get Lookup3_DefinitionId(): number {
     return this.definition.Lookup3DefinitionId;
   }
 
@@ -454,11 +454,11 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
       this.translate.instant('Resource_Lookup4');
   }
 
-  public get Lookup4_DefinitionId() {
+  public get Lookup4_DefinitionId(): number {
     return this.definition.Lookup4DefinitionId;
   }
 
-  // public get Lookup5_DefinitionId() {
+  // public get Lookup5_DefinitionId(): number {
   //   return this.definition.Lookup5DefinitionId;
   // }
 

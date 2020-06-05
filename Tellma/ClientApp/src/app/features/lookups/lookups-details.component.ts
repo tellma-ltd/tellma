@@ -15,18 +15,18 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class LookupsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private lookupsApi = this.api.lookupsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
+  private lookupsApi = this.api.lookupsApi(null, this.notifyDestruct$); // for intellisense
+  private _definitionId: number;
 
   @Input()
-  public set definitionId(t: string) {
+  public set definitionId(t: number) {
     if (this._definitionId !== t) {
       this._definitionId = t;
       this.lookupsApi = this.api.lookupsApi(t, this.notifyDestruct$);
     }
   }
 
-  public get definitionId(): string {
+  public get definitionId(): number {
     return this._definitionId;
   }
 
@@ -44,7 +44,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
 
       if (this.isScreenMode) {
 
-        const definitionId = params.get('definitionId');
+        const definitionId = +params.get('definitionId');
 
         if (!definitionId || !this.ws.definitions.Lookups[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
@@ -56,6 +56,11 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
       }
     });
   }
+
+  get view(): string {
+    return `lookups/${this.definitionId}`;
+  }
+
   // UI Binding
 
   create = () => {
@@ -93,7 +98,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   public showActivate = (model: Lookup) => !!model && !model.IsActive;
   public showDeactivate = (model: Lookup) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Lookup) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Lookup) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Lookup) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
