@@ -3261,13 +3261,20 @@ namespace Tellma.Data
             }
 
             // Return ordered result
-            var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            if (returnIds)
             {
-                sortedResult[e.Index] = e.Id;
-            });
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
 
-            return sortedResult.ToList();
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
         }
 
         public async Task Centers__Activate(List<int> ids, bool isActive)
@@ -4372,7 +4379,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ReportDefinitions__Save(List<ReportDefinitionForSave> entities)
+        public async Task<List<int>> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -4428,11 +4435,44 @@ namespace Tellma.Data
             cmd.Parameters.Add(rowsTvp);
             cmd.Parameters.Add(columnsTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add("@ReturnIds", returnIds);
 
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Save)}]";
 
-            await cmd.ExecuteNonQueryAsync();
+            if (returnIds)
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new IndexedId
+                    {
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
+                }
+            }
+            else
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Return ordered result
+            if (returnIds)
+            {
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
+
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
         }
 
         public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<int> ids, int top)

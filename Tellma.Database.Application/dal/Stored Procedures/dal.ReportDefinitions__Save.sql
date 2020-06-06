@@ -4,7 +4,8 @@
 	@Select [ReportSelectDefinitionList] READONLY,
 	@Rows [ReportDimensionDefinitionList] READONLY,
 	@Columns [ReportDimensionDefinitionList] READONLY,
-	@Measures [ReportMeasureDefinitionList] READONLY
+	@Measures [ReportMeasureDefinitionList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
@@ -222,3 +223,6 @@ SET NOCOUNT ON;
 
 	-- Signal clients to refresh their cache
 	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
+	IF @ReturnIds = 1
+		SELECT * FROM @IndexedIds;

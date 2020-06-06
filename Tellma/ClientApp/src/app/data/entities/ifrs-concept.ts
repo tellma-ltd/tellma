@@ -48,10 +48,12 @@ export function metadata_IfrsConcept(wss: WorkspaceService, trx: TranslateServic
 
         if (!ws.settings.SecondaryLanguageId) {
             delete entityDesc.properties.Name2;
+            delete entityDesc.properties.Documentation2;
         }
 
         if (!ws.settings.TernaryLanguageId) {
             delete entityDesc.properties.Name3;
+            delete entityDesc.properties.Documentation3;
         }
 
         _cache = entityDesc;

@@ -310,8 +310,14 @@
   <data name="Contract" xml:space="preserve">
     <value>ወኪል</value>
   </data>
+  <data name="Contract_Agent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
+  </data>
+  <data name="Contract_Currency" xml:space="preserve">
+    <value>ገንዘብ</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>ሥራ</value>

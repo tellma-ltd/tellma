@@ -30,7 +30,8 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
+  // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
+  public expand = 'User,Agent,Currency';
 
   create = () => {
     const result: ContractForSave = {};
@@ -126,6 +127,22 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
 
   public get masterCrumb(): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
+  }
+
+  public get Agent_isVisible(): boolean {
+    return true; // !!this.definition.AgentVisibility;
+  }
+
+  public get Agent_isRequired(): boolean {
+    return false; // this.definition.AgentVisibility === 'Required';
+  }
+
+  public get Currency_isVisible(): boolean {
+    return true; // !!this.definition.CurrencyVisibility;
+  }
+
+  public get Currency_isRequired(): boolean {
+    return false; // this.definition.CurrencyVisibility === 'Required';
   }
 
   public get TaxIdentificationNumber_isVisible(): boolean {

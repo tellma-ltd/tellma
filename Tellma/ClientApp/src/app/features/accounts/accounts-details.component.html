@@ -73,7 +73,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
-            additionalSelect="CenterAssignment,CurrencyAssignment,ContractAssignment,ContractDefinitionId,ResourceAssignment,ResourceDefinitionId,IdentifierAssignment,IdentifierLabel,IdentifierLabel2,IdentifierLabel3,EntryTypeAssignment,IsResourceClassification,EntryTypeParentId">
+            additionalSelect="ContractDefinitions/ContractDefinitionId,NotedContractDefinitions/NotedContractDefinitionId,ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId">
         </t-account-types-picker>
     </t-form-group>
 
@@ -103,7 +103,8 @@
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
         [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
         <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId"
+            (ngModelChange)="onResourceDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
@@ -143,7 +144,8 @@
     <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
         [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
         <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId"
+            (ngModelChange)="onContractDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
@@ -176,7 +178,8 @@
         [label]="'Account_NotedContractDefinition' | translate"
         [serverErrors]="model?.serverErrors?.NotedContractDefinitionId">
         <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.NotedContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedContractDefinitionId" [choices]="choicesContractDefinitionId">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedContractDefinitionId"
+            [choices]="choicesContractDefinitionId">
         </t-selector>
     </t-form-group>
 

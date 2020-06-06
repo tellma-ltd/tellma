@@ -10,6 +10,7 @@ import { PropDescriptor, ChoicePropDescriptor, getChoices } from '~/app/data/ent
 import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { Contract } from '~/app/data/entities/contract';
 
 @Component({
   selector: 't-accounts-details',
@@ -147,6 +148,19 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
   }
 
+  public onContractDefinitionChange(defId: number, model: Account) {
+    // Delete the ContractId if an incompatible definition is selected
+    if (!defId) {
+      // Will be deleted by the server anyways
+      return;
+    }
+
+    const contract = this.ws.get('Contract', model.ContractId) as Contract;
+    if (!!contract && contract.DefinitionId !== defId) {
+      delete model.ContractId;
+    }
+  }
+
   // Contract
   public showContract(model: AccountForSave): boolean {
     return this.showContractDefinitionId(model) && !!model.ContractDefinitionId;
@@ -188,6 +202,18 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
     const def = this.ws.definitions.Resources[defId];
     return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
+  public onResourceDefinitionChange(defId: number, model: Account) {
+    // Delete the ResourceId if an incompatible definition is selected
+    if (!defId) {
+      return;
+    }
+
+    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+    if (!!resource && resource.DefinitionId !== defId) {
+      delete model.ResourceId;
+    }
   }
 
   // Resource
