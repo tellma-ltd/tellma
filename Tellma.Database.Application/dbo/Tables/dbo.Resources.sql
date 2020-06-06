@@ -35,6 +35,19 @@ CREATE TABLE [dbo].[Resources] (
 	-- For inventory, we also need a CenterId of EntryTypeParentId OtherExpenseByFunction
 	--[SegmentId]					INT					CONSTRAINT [FK_Resources__SegmentId] REFERENCES [dbo].[Centers] ([Id]),
 	--[UnitId]						INT					CONSTRAINT [FK_Resources__UnitId] REFERENCES [dbo].[Units] ([Id]),
+
+	-- Begin To verify
+	DefaultUnitId			INT,
+	ReferenceCount			INT,
+	ReferenceCountUnitId	INT,
+	ReferenceMass			DECIMAL,
+	ReferenceMassUnitId		INT,
+	ReferenceVolume			DECIMAL,
+	ReferenceVolumeUnitId	INT,
+	ReferenceMonetaryValue	DECIMAL,
+	ReferenceCurrencyId		INT,
+	-- End to verify
+
 	[ReorderLevel]					Decimal (19,4),
 	[EconomicOrderQuantity]			Decimal (19,4),
 -- Google Drive, One Drive, etc. | Activate collaboration
