@@ -41,7 +41,6 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     } else if (this.ws.isTernaryLanguage) {
       result.Name3 = this.initialText;
     }
-    result.IsRelated = false;
 
     // TODO Set defaults from definition
 

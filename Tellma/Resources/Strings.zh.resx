@@ -73,32 +73,32 @@
   <data name="Account_Center" xml:space="preserve">
     <value>责任中心</value>
   </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>分类</value>
+  </data>
   <data name="Account_Contract" xml:space="preserve">
     <value>代理人</value>
+  </data>
+  <data name="Account_ContractDefinition" xml:space="preserve">
+    <value>契约定义</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Account_CustomClassification" xml:space="preserve">
-    <value>分类</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>进入分类</value>
-  </data>
-  <data name="Account_Identifier" xml:space="preserve">
-    <value>识别码</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>已弃用</value>
   </data>
-  <data name="Account_IsRelated" xml:space="preserve">
-    <value>相关的</value>
-  </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>是聪明</value>
+  <data name="Account_NotedContractDefinition" xml:space="preserve">
+    <value>注意合同的定义</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="Account_ResourceDefinition" xml:space="preserve">
+    <value>资源定义</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>
@@ -118,6 +118,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>其他参考标签</value>
   </data>
+  <data name="AccountType_ContractDefinitions" xml:space="preserve">
+    <value>合同定义</value>
+  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>截止日期标签</value>
   </data>
@@ -133,14 +136,38 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>注意金额标签</value>
   </data>
+  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
+    <value>注意合同的定义</value>
+  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>注意日期标签</value>
+  </data>
+  <data name="AccountType_ResourceDefinitions" xml:space="preserve">
+    <value>资源定义</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>时间1个标签</value>
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>时间2标签</value>
+  </data>
+  <data name="AccountTypeContractDefinition" xml:space="preserve">
+    <value>帐户类型合同的定义</value>
+  </data>
+  <data name="AccountTypeContractDefinitions" xml:space="preserve">
+    <value>帐户类型合同的定义</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
+    <value>帐户类型注意到合同定义</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
+    <value>帐户类型注意到合同定义</value>
+  </data>
+  <data name="AccountTypeResourceDefinition" xml:space="preserve">
+    <value>帐户类型资源定义</value>
+  </data>
+  <data name="AccountTypeResourceDefinitions" xml:space="preserve">
+    <value>帐户类型资源定义</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>账户类型</value>
@@ -156,6 +183,15 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>管理员用户</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Agent_IsRelated" xml:space="preserve">
+    <value>相关的</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>代理</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android的</value>
@@ -273,9 +309,6 @@
   </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>银行帐号</value>
-  </data>
-  <data name="Contract_IsRelated" xml:space="preserve">
-    <value>相关的</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>工作</value>
@@ -1771,9 +1804,6 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
-  <data name="Resource_AssetType" xml:space="preserve">
-    <value>分类</value>
-  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>由于可用</value>
   </data>
@@ -1797,9 +1827,6 @@
   </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>费用条目类型</value>
-  </data>
-  <data name="Resource_ExpenseType" xml:space="preserve">
-    <value>分类</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>识别码</value>
@@ -1836,9 +1863,6 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>剩余价值</value>
-  </data>
-  <data name="Resource_RevenueType" xml:space="preserve">
-    <value>分类</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>文本属性1</value>

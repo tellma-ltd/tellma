@@ -148,7 +148,7 @@
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
-              *ngIf="showExport">
+              *ngIf="showExportForImport">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
                 [class.t-text-whitish]="isDark" (click)="onExport(exportPagingModal, 'ForImport')"
                 [disabled]="!canExport">
@@ -254,7 +254,7 @@
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
-              *ngIf="showExport">
+              *ngIf="showExportForImport">
               <button type="button" class="dropdown-item t-transparent-background" [class.btn-light]="isLight"
                 [class.t-text-whitish]="isDark" (click)="onExportByIds('ForImport')" [disabled]="!canExport">
                 {{ 'ExportForImport' | translate }}

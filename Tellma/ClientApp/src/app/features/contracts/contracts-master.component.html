@@ -1,7 +1,7 @@
 <t-master *ngIf="found;else pageNotFound" collection="Contract" [definitionId]="definitionId" [mode]="mode"
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated" selectForTiles="Code,ImageId"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code" selectForTiles="Code,ImageId"
   [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }

@@ -13,14 +13,14 @@ export interface AccountForSave extends EntityWithKey {
     Name3?: string;
     Code?: string;
     AccountTypeId?: string;
-    CustomClassificationId?: number;
-    IsSmart?: boolean;
-    IsRelated?: boolean;
+    ClassificationId?: number;
+    ContractDefinitionId?: number;
     ContractId?: number;
+    ResourceDefinitionId?: number;
     ResourceId?: number;
     CurrencyId?: string;
-    Identifier?: string;
     EntryTypeId?: number;
+    NotedContractDefinitionId?: number;
 }
 
 export interface Account extends AccountForSave {
@@ -58,21 +58,39 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: () => trx.instant('Code') },
-                AccountTypeId: { control: 'number', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0  },
+                AccountTypeId: { control: 'number', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
-                CustomClassificationId: { control: 'number', label: () => `${trx.instant('Account_CustomClassification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CustomClassification: { control: 'navigation', label: () => trx.instant('Account_CustomClassification'), type: 'CustomClassification', foreignKeyName: 'CustomClassificationId' },
-                IsSmart: { control: 'boolean', label: () => trx.instant('Account_IsSmart') },
-                IsRelated: { control: 'boolean', label: () => trx.instant('Account_IsRelated') },
+                ClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Classification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'ClassificationId' },
+                ContractDefinitionId: {
+                    control: 'choice',
+                    label: () => trx.instant('Account_ContractDefinition'),
+                    choices: Object.keys(ws.definitions.Contracts).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Contracts[defId], 'TitlePlural')
+                },
+                ContractDefinition: { control: 'navigation', label: () => trx.instant('Account_ContractDefinition'), type: 'ContractDefinition', foreignKeyName: 'ContractDefinitionId' },
                 ContractId: { control: 'number', label: () => `${trx.instant('Account_Contract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Contract: { control: 'navigation', label: () => trx.instant('Account_Contract'), type: 'Contract', foreignKeyName: 'ContractId' },
+                ResourceDefinitionId: {
+                    control: 'choice',
+                    label: () => trx.instant('Account_ResourceDefinition'),
+                    choices: Object.keys(ws.definitions.Resources).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Resources[defId], 'TitlePlural')
+                },
+                ResourceDefinition: { control: 'navigation', label: () => trx.instant('Account_ResourceDefinition'), type: 'ResourceDefinition', foreignKeyName: 'ResourceDefinitionId' },
                 ResourceId: { control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Resource: { control: 'navigation', label: () => trx.instant('Account_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Account_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-                Identifier: { control: 'text', label: () => trx.instant('Account_Identifier') },
                 EntryTypeId: { control: 'number', label: () => `${trx.instant('Account_EntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 EntryType: { control: 'navigation', label: () => trx.instant('Account_EntryType'), type: 'EntryType', foreignKeyName: 'EntryTypeId' },
+                NotedContractDefinitionId: {
+                    control: 'choice',
+                    label: () => trx.instant('Account_NotedContractDefinition'),
+                    choices: Object.keys(ws.definitions.Contracts).map(stringDefId => +stringDefId),
+                    format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Contracts[defId], 'TitlePlural')
+                },
+                NotedContractDefinition: { control: 'navigation', label: () => trx.instant('Account_NotedContractDefinition'), type: 'ContractDefinition', foreignKeyName: 'NotedContractDefinitionId' },
                 IsDeprecated: { control: 'boolean', label: () => trx.instant('Account_IsDeprecated') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

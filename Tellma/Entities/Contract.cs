@@ -30,10 +30,10 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Contract_IsRelated")]
-        [Required]
-        [AlwaysAccessible]
-        public bool? IsRelated { get; set; }
+        //[Display(Name = "Agent_IsRelated")]
+        //[Required]
+        //[AlwaysAccessible]
+        //public bool? IsRelated { get; set; }
 
         [Display(Name = "Contract_TaxIdentificationNumber")]
         [StringLength(30)]
@@ -48,8 +48,6 @@ namespace Tellma.Entities
         [Display(Name = "Contract_BankAccountNumber")]
         [StringLength(34)]
         public string BankAccountNumber { get; set; }
-
-        public string CostObjectType { get; set; } // TODO: Deal with this
 
         [Display(Name = "Contract_User")]
         public int? UserId { get; set; }

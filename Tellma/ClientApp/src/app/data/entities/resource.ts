@@ -9,9 +9,6 @@ import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityWithKey {
-    AssetTypeId?: number;
-    RevenueTypeId?: number;
-    ExpenseTypeId?: number;
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -95,12 +92,6 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ResourceDefinition', foreignKeyName: 'DefinitionId' },
-                AssetTypeId: { control: 'number', label: () => `${trx.instant('Resource_AssetType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AssetType: { control: 'navigation', label: () => trx.instant('Resource_AssetType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'AssetTypeId' },
-                RevenueTypeId: { control: 'number', label: () => `${trx.instant('Resource_RevenueType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                RevenueType: { control: 'navigation', label: () => trx.instant('Resource_RevenueType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'RevenueTypeId' },
-                ExpenseTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ExpenseType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseType'), type: 'AccountType', definition: definitionId, foreignKeyName: 'ExpenseTypeId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },

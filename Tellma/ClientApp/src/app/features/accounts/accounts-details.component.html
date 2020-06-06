@@ -77,27 +77,15 @@
         </t-account-types-picker>
     </t-form-group>
 
-    <!-- Account Classification -->
-    <t-form-group class="t-form-group" [label]="'Account_AccountClassification' | translate"
-        [serverErrors]="model?.serverErrors?.AccountClassificationId">
-        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.AccountClassificationId">
-            <t-auto-cell collection="Account" path="AccountClassification" [entity]="model">
+    <!-- Classification -->
+    <t-form-group class="t-form-group" [label]="'Account_Classification' | translate"
+        [serverErrors]="model?.serverErrors?.ClassificationId">
+        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.ClassificationId">
+            <t-auto-cell collection="Account" path="Classification" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
+        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId">
         </t-account-classifications-picker>
-    </t-form-group>
-
-    <!-- Is Smart -->
-    <t-form-group class="t-form-group" [label]="'Account_IsSmart' | translate"
-        [serverErrors]="model?.serverErrors?.IsSmart">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsSmart">
-            {{ (model?.IsSmart ? 'Yes' : 'No') | translate }}
-        </t-restricted>
-        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsSmart" id="IsSmart">
-            <label class="custom-control-label t-pointer" for="IsSmart">&zwnj;</label>
-        </div>
     </t-form-group>
 
     <!-- Center -->
@@ -107,8 +95,16 @@
             <t-auto-cell collection="Account" path="Center" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true and IsActive eq true" required>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true and IsActive eq true">
         </t-centers-picker>
+    </t-form-group>
+
+    <!-- Resource Definition -->
+    <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
+        [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
+        <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId">
+        </t-selector>
     </t-form-group>
 
     <!-- Resource -->
@@ -120,8 +116,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId" [definitionIds]="definitionIdsResource(model)"
-            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3"
-            [filter]="filterResource(model)" required>
+            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3">
         </t-resources-picker>
     </t-form-group>
 
@@ -139,21 +134,17 @@
         <ng-container *ngIf="isEdit">
             <span
                 *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency', readonlyValueCurrencyId(model), 'Name') }}</span>
-            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId" required>
+            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
             </t-currencies-picker>
         </ng-container>
     </t-form-group>
 
-    <!-- Is Related -->
-    <t-form-group class="t-form-group" *ngIf="showIsRelated(model)" [label]="'Account_IsRelated' | translate"
-        [serverErrors]="model?.serverErrors?.IsRelated">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsRelated">
-            {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
-        </t-restricted>
-        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
-            <label class="custom-control-label t-pointer" for="isRelated">&zwnj;</label>
-        </div>
+    <!-- Contract Definition -->
+    <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
+        [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
+        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId">
+        </t-selector>
     </t-form-group>
 
     <!-- Contract -->
@@ -165,7 +156,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ContractId" [definitionIds]="definitionIdsContract(model)"
-            additionalSelect="DefinitionId" required>
+            additionalSelect="DefinitionId">
         </t-contracts-picker>
     </t-form-group>
 
@@ -180,12 +171,13 @@
         </t-entry-types-picker>
     </t-form-group>
 
-    <!-- Identifier -->
-    <t-form-group *ngIf="showIdentifier(model)" class="t-form-group" [label]="labelIdentifier(model)"
-        [serverErrors]="model?.serverErrors?.Identifier">
-        <div *ngIf="!isEdit">{{ model?.Identifier }}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }" required>
-        </t-text-editor>
+    <!-- Noted Contract Definition -->
+    <t-form-group class="t-form-group" *ngIf="showNotedContractDefinitionId(model)"
+        [label]="'Account_NotedContractDefinition' | translate"
+        [serverErrors]="model?.serverErrors?.NotedContractDefinitionId">
+        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.NotedContractDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedContractDefinitionId" [choices]="choicesContractDefinitionId">
+        </t-selector>
     </t-form-group>
 
     <!-- Is Deprecated -->

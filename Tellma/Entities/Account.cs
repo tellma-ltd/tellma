@@ -8,6 +8,11 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "Account", Plural = "Accounts")]
     public class AccountForSave : EntityWithKey<int>
     {
+        [Display(Name = "Account_Type")]
+        [Required]
+        [AlwaysAccessible]
+        public int? AccountTypeId { get; set; }
+
         [Display(Name = "Account_Center")]
         public int? CenterId { get; set; }
 
@@ -32,22 +37,18 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Account_Type")]
-        [Required]
-        [AlwaysAccessible]
-        public int? AccountTypeId { get; set; }
+        [Display(Name = "Account_Classification")]
+        public int? ClassificationId { get; set; }
 
-        [Display(Name = "Account_CustomClassification")]
-        public int? CustomClassificationId { get; set; }
 
-        [Display(Name = "Account_IsSmart")]
-        public bool? IsSmart { get; set; }
-
-        [Display(Name = "Account_IsRelated")]
-        public bool? IsRelated { get; set; }
+        [Display(Name = "Account_ContractDefinition")]
+        public int? ContractDefinitionId { get; set; }
 
         [Display(Name = "Account_Contract")]
         public int? ContractId { get; set; }
+
+        [Display(Name = "Account_ResourceDefinition")]
+        public int? ResourceDefinitionId { get; set; }
 
         [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
@@ -56,12 +57,11 @@ namespace Tellma.Entities
         [StringLength(3)]
         public string CurrencyId { get; set; }
 
-        [Display(Name = "Account_Identifier")]
-        [StringLength(10)]
-        public string Identifier { get; set; }
-
         [Display(Name = "Account_EntryType")]
         public int? EntryTypeId { get; set; }
+
+        [Display(Name = "Account_NotedContractDefinition")]
+        public int? NotedContractDefinitionId { get; set; }
     }
 
     public class Account : AccountForSave
@@ -91,9 +91,17 @@ namespace Tellma.Entities
         [ForeignKey(nameof(AccountTypeId))]
         public AccountType AccountType { get; set; }
 
-        [Display(Name = "Account_CustomClassification")]
-        [ForeignKey(nameof(CustomClassificationId))]
-        public AccountClassification CustomClassification { get; set; }
+        [Display(Name = "Account_Classification")]
+        [ForeignKey(nameof(ClassificationId))]
+        public AccountClassification Classification { get; set; }
+
+        [Display(Name = "Account_ContractDefinition")]
+        [ForeignKey(nameof(ContractDefinitionId))]
+        public ContractDefinition ContractDefinition { get; set; }
+
+        [Display(Name = "Account_ResourceDefinition")]
+        [ForeignKey(nameof(ResourceDefinitionId))]
+        public ResourceDefinition ResourceDefinition { get; set; }
 
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]
@@ -122,5 +130,9 @@ namespace Tellma.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        [Display(Name = "Account_NotedContractDefinition")]
+        [ForeignKey(nameof(NotedContractDefinitionId))]
+        public ContractDefinition NotedContractDefinition { get; set; }
     }
 }

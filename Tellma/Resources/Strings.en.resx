@@ -73,32 +73,32 @@
   <data name="Account_Center" xml:space="preserve">
     <value>Center</value>
   </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>Classification</value>
+  </data>
   <data name="Account_Contract" xml:space="preserve">
     <value>Contract</value>
+  </data>
+  <data name="Account_ContractDefinition" xml:space="preserve">
+    <value>Contract Definition</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>Currency</value>
   </data>
-  <data name="Account_CustomClassification" xml:space="preserve">
-    <value>Custom Classification</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>Entry Type</value>
-  </data>
-  <data name="Account_Identifier" xml:space="preserve">
-    <value>Identifier</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>Is Deprecated</value>
   </data>
-  <data name="Account_IsRelated" xml:space="preserve">
-    <value>Is Related</value>
-  </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>Is Smart</value>
+  <data name="Account_NotedContractDefinition" xml:space="preserve">
+    <value>Noted Contract Definition</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>Resource</value>
+  </data>
+  <data name="Account_ResourceDefinition" xml:space="preserve">
+    <value>Resource Definition</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>Type</value>
@@ -118,6 +118,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>Additional Reference Label</value>
   </data>
+  <data name="AccountType_ContractDefinitions" xml:space="preserve">
+    <value>Contract Definitions</value>
+  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>Due Date Label</value>
   </data>
@@ -133,14 +136,38 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>Noted Amount Label</value>
   </data>
+  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
+    <value>Noted Contract Definitions</value>
+  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>Noted Date Label</value>
+  </data>
+  <data name="AccountType_ResourceDefinitions" xml:space="preserve">
+    <value>Resource Definitions</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>Time 1 Label</value>
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>Time 2 Label</value>
+  </data>
+  <data name="AccountTypeContractDefinition" xml:space="preserve">
+    <value>Account Type Contract Definition</value>
+  </data>
+  <data name="AccountTypeContractDefinitions" xml:space="preserve">
+    <value>Account Type Contract Definitions</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
+    <value>Account Type Noted Contract Definition</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
+    <value>Account Type Noted Contract Definitions</value>
+  </data>
+  <data name="AccountTypeResourceDefinition" xml:space="preserve">
+    <value>Account Type Resource Definition</value>
+  </data>
+  <data name="AccountTypeResourceDefinitions" xml:space="preserve">
+    <value>Account Type Resource Definitions</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>Account Types</value>
@@ -156,6 +183,15 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>Admin Users</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Agent_IsRelated" xml:space="preserve">
+    <value>Is Related</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>Agents</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>Android</value>
@@ -273,9 +309,6 @@
   </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>Bank Account Number</value>
-  </data>
-  <data name="Contract_IsRelated" xml:space="preserve">
-    <value>Is Related</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>Job</value>
@@ -1771,9 +1804,6 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
-  <data name="Resource_AssetType" xml:space="preserve">
-    <value>Asset Type</value>
-  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>Available Since</value>
   </data>
@@ -1797,9 +1827,6 @@
   </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>Purpose</value>
-  </data>
-  <data name="Resource_ExpenseType" xml:space="preserve">
-    <value>Expense Type</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>
@@ -1836,9 +1863,6 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>Residual Value</value>
-  </data>
-  <data name="Resource_RevenueType" xml:space="preserve">
-    <value>Revenue Type</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>Text Attribute 1</value>

@@ -81,45 +81,6 @@
         </t-text-editor>
     </t-form-group>
 
-    <!-- Asset Type -->
-    <t-form-group class="t-form-group" *ngIf="AssetType_isVisible" [label]="'Resource_AssetType' | translate"
-        [serverErrors]="model?.serverErrors?.AssetTypeId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AssetType">
-            <t-view-link link="../../../account-types" [itemId]="model?.AssetTypeId">
-                {{ ws.getMultilingualValue('AccountType', model.AssetTypeId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AssetTypeId"
-            filter="IsResourceClassification eq true" [required]="AssetType_isRequired">
-        </t-account-types-picker>
-    </t-form-group>
-    
-    <!-- Revenue Type -->
-    <t-form-group class="t-form-group" *ngIf="RevenueType_isVisible" [label]="'Resource_RevenueType' | translate"
-        [serverErrors]="model?.serverErrors?.RevenueTypeId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.RevenueType">
-            <t-view-link link="../../../account-types" [itemId]="model?.RevenueTypeId">
-                {{ ws.getMultilingualValue('AccountType', model.RevenueTypeId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.RevenueTypeId"
-            filter="IsResourceClassification eq true" [required]="RevenueType_isRequired">
-        </t-account-types-picker>
-    </t-form-group>
-    
-    <!-- Expense Type -->
-    <t-form-group class="t-form-group" *ngIf="ExpenseType_isVisible" [label]="'Resource_ExpenseType' | translate"
-        [serverErrors]="model?.serverErrors?.ExpenseTypeId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseType">
-            <t-view-link link="../../../account-types" [itemId]="model?.ExpenseTypeId">
-                {{ ws.getMultilingualValue('AccountType', model.ExpenseTypeId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseTypeId"
-            filter="IsResourceClassification eq true" [required]="ExpenseType_isRequired">
-        </t-account-types-picker>
-    </t-form-group>
-
     <!-- Currency -->
     <t-form-group *ngIf="Currency_isVisible" class="t-form-group" [label]="Currency_label"
         [serverErrors]="model?.serverErrors?.CurrencyId">
