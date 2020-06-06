@@ -431,6 +431,8 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 
 export interface ContractDefinitionForClient extends MasterDetailsDefinitionForClient {
 
+    AgentVisibility?: Visibility;
+    CurrencyVisibility?: Visibility;
     TaxIdentificationNumberVisibility?: Visibility;
     ImageVisibility: Visibility;
     StartDateVisibility?: Visibility;

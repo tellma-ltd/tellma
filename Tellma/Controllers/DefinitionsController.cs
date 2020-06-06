@@ -94,6 +94,8 @@ namespace Tellma.Controllers
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
 
+                AgentVisibility = MapVisibility(def.AgentVisibility),
+                CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 ImageVisibility = MapVisibility(def.ImageVisibility),
                 StartDateVisibility = MapVisibility(def.StartDateVisibility),

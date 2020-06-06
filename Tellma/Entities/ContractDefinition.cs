@@ -45,6 +45,8 @@ namespace Tellma.Entities
 
         // TODO: Add metadata
 
+        public string AgentVisibility { get; set; }
+        public string CurrencyVisibility { get; set; }
         public string TaxIdentificationNumberVisibility { get; set; }
         public string ImageVisibility { get; set; }
         public string StartDateVisibility { get; set; }

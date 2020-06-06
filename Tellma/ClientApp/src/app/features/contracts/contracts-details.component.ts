@@ -130,19 +130,19 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Agent_isVisible(): boolean {
-    return true; // !!this.definition.AgentVisibility;
+    return !!this.definition.AgentVisibility;
   }
 
   public get Agent_isRequired(): boolean {
-    return false; // this.definition.AgentVisibility === 'Required';
+    return this.definition.AgentVisibility === 'Required';
   }
 
   public get Currency_isVisible(): boolean {
-    return true; // !!this.definition.CurrencyVisibility;
+    return !!this.definition.CurrencyVisibility;
   }
 
   public get Currency_isRequired(): boolean {
-    return false; // this.definition.CurrencyVisibility === 'Required';
+    return this.definition.CurrencyVisibility === 'Required';
   }
 
   public get TaxIdentificationNumber_isVisible(): boolean {

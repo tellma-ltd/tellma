@@ -876,6 +876,16 @@ namespace Tellma.Controllers
 
             switch (propInfo.Name)
             {
+                case nameof(Contract.AgentId):
+                case nameof(Contract.Agent):
+                    display = PropertyDisplay(def.AgentVisibility, display);
+                    isRequired = def.AgentVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.CurrencyId):
+                case nameof(Contract.Currency):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                    isRequired = def.CurrencyVisibility == Visibility.Required;
+                    break;
                 case nameof(Contract.TaxIdentificationNumber):
                     display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
