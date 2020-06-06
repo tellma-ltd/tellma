@@ -505,7 +505,7 @@
     <Build Include="map\map.ExchangeRates.sql" />
     <Build Include="map\map.LineDefinitions.sql" />
     <Build Include="map\map.DocumentStatesHistory.sql" />
-    <Build Include="dbo\Tables\dbo.AgentUsers.sql" />
+    <Build Include="dbo\Tables\dbo.ContractUsers.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinancialRatios.sql" />
     <Build Include="dbo\Tables\dbo.ApportionmentRates.sql" />
     <Build Include="dbo\Tables\dbo.AbsorptionRates.sql" />
@@ -535,7 +535,7 @@
     <Build Include="dbo\Tables\dbo.AccountBalances.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AgentUserList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ContractUserList.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Activate.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />

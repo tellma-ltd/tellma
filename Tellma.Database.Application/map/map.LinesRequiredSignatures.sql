@@ -16,13 +16,10 @@ RETURN (
 				)
 			) AS UserId,
 			(
-				SELECT AgentId FROM dbo.Contracts WHERE [Id] IN
-				(
-					SELECT [ContractId] FROM dbo.Entries
-					WHERE LineId = L.Id
-					AND [Index] = WS.[RuleTypeEntryIndex]
-				)
-			) AS AgentId,
+				SELECT [ContractId] FROM dbo.Entries
+				WHERE LineId = L.Id
+				AND [Index] = WS.[RuleTypeEntryIndex]
+			) AS ContractId,
 			WS.PredicateType, WS.[PredicateTypeEntryIndex], WS.[Value],
 			W.ToState, WS.ProxyRoleId
 		FROM dbo.Lines L
@@ -46,7 +43,7 @@ RETURN (
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RM.RoleId IS NULL, 0, 1) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -67,7 +64,7 @@ RETURN (
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(IIF(RS.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')), 1, 0) AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -84,7 +81,7 @@ RETURN (
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,
 			COALESCE(LS.[ToState], RS.[ToState]) AS ToState,
-			RS.RuleType, RS.RoleId, RS.UserId, RS.AgentId,
+			RS.RuleType, RS.RoleId, RS.UserId, RS.ContractId,
 			LS.CreatedById AS SignedById, LS.CreatedAt AS SignedAt, LS.OnBehalfOfUserId,
 			CAST(1 AS BIT) AS CanSign,
 			RS.ProxyRoleId,
@@ -95,7 +92,7 @@ RETURN (
 		WHERE RS.RuleType = N'Public'
 	)
 	SELECT
-		LineId, LineSignatureId, ToState, RuleType, RoleId, UserId, AgentId,
+		LineId, LineSignatureId, ToState, RuleType, RoleId, UserId, ContractId,
 		SignedById, SignedAt, OnBehalfOfUserId,
 		(SELECT MIN(ToState) FROM AvailableSignatures
 		WHERE LineId = S.LineId AND ToState < S.ToState AND ToState > 0

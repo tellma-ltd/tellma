@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[AgentUserList] AS TABLE
+﻿CREATE TYPE [dbo].[ContractUserList] AS TABLE
 (
 	[Index]						INT,
 	[HeaderIndex]				INT,

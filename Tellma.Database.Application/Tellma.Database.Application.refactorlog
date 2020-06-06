@@ -1724,4 +1724,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[SegmentIsCommon]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a51ff4ba-7fe0-4023-86d6-e9ec10830865" ChangeDateTime="06/06/2020 06:39:05">
+    <Property Name="ElementName" Value="[dbo].[AgentUsers]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ContractUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c90d53f3-9023-41e0-8447-dfa5a03a54be" ChangeDateTime="06/06/2020 06:39:19">
+    <Property Name="ElementName" Value="[dbo].[ContractUsers].[AgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ContractUsers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ContractId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7a3fd395-ad59-40f7-9767-68365c42b80c" ChangeDateTime="06/06/2020 06:42:54">
+    <Property Name="ElementName" Value="[dbo].[AgentUserList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ContractUserList]" />
+  </Operation>
 </Operations>
