@@ -60,6 +60,7 @@ import { MarkupPreviewTemplate } from './dto/markup-preview-template';
 import { ExportSelectedArguments } from './dto/export-selected-arguments';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
+import { Agent } from './entities/agent';
 
 
 @Injectable({
@@ -279,6 +280,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<Unit>('units', cancellationToken$),
       deactivate: this.deactivateFactory<Unit>('units', cancellationToken$)
+    };
+  }
+
+  public agentsApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Agent>('agents', cancellationToken$),
+      deactivate: this.deactivateFactory<Agent>('agents', cancellationToken$)
     };
   }
 

@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<AdminPermissionsService>()
                 .AddScoped<AdminSettingsService>()
                 .AddScoped<AdminUsersService>()
+                .AddScoped<AgentsService>()
                 .AddScoped<ContractsService>()
                 .AddScoped<ContractsGenericService>()
                 .AddScoped<CentersService>()
@@ -86,6 +87,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Account) => sp.GetRequiredService<AccountsService>(),
                 nameof(AccountType) => sp.GetRequiredService<AccountTypesService>(),
                 nameof(AdminUser) => sp.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => sp.GetRequiredService<AgentsService>(),
                 nameof(Contract) => definitionId == null ? sp.GetRequiredService<ContractsGenericService>() : (IFactServiceBase)sp.GetRequiredService<ContractsService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),
@@ -128,6 +130,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(Account) => sp.GetRequiredService<AccountsService>(),
                 nameof(AccountType) => sp.GetRequiredService<AccountTypesService>(),
                 nameof(AdminUser) => sp.GetRequiredService<AdminUsersService>(),
+                nameof(Agent) => sp.GetRequiredService<AgentsService>(),
                 nameof(Contract) => definitionId == null ? sp.GetRequiredService<ContractsGenericService>() : (IFactWithIdService)sp.GetRequiredService<ContractsService>().SetDefinitionId(definitionId.Value),
                 nameof(Center) => sp.GetRequiredService<CentersService>(),
                 nameof(Currency) => sp.GetRequiredService<CurrenciesService>(),

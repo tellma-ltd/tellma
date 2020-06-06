@@ -187,6 +187,18 @@
                         Delete = true,
                         Actions = new ActionInfo[] { }
                     },
+                    new ViewInfo
+                    {
+                        Id = "agents",
+                        Name = "Agents",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsActive")
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",

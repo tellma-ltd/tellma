@@ -1,0 +1,43 @@
+<t-master collection="Agent" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="IsRelated,IsActive" selectForTiles="Name,Name2,Name3"
+  [multiselectActions]="[
+            { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ]
+          }">
+</t-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Description') }}</span>
+  </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+  {{ 'Agent' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+  <span class="text-truncate">
+    <t-auto-cell collection="Agent" [entity]="c[id]"></t-auto-cell>
+  </span>
+</ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [StrongEntity]
-    [EntityDisplay(Singular = "Lookup", Plural = "Lookups")]
+    [EntityDisplay(Singular = "Agent", Plural = "Agents")]
     public class AgentForSave : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
@@ -28,6 +28,9 @@ namespace Tellma.Entities
         //[StringLength(255)]
         //[AlwaysAccessible]
         //public string Code { get; set; }
+
+        [Display(Name = "Agent_IsRelated")]
+        public bool? IsRelated { get; set; }
     }
 
     public class Agent : AgentForSave

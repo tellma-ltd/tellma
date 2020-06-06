@@ -260,6 +260,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'boxes',
                         'car',
                         'recycle',
+                        'id-badge',
 
                         'camera',
                         'camera-retro',

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { metadata_Unit } from '~/app/data/entities/unit';
+import { metadata_Agent } from '~/app/data/entities/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
@@ -10,35 +10,36 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
-  selector: 't-units-master',
-  templateUrl: './units-master.component.html'
+  selector: 't-agents-master',
+  templateUrl: './agents-master.component.html',
+  styles: []
 })
-export class UnitsMasterComponent extends MasterBaseComponent {
+export class AgentsMasterComponent extends MasterBaseComponent {
 
-  private unitsApi = this.api.unitsApi(this.notifyDestruct$); // for intellisense
+  private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    this.unitsApi = this.api.unitsApi(this.notifyDestruct$);
+    this.agentsApi = this.api.agentsApi(this.notifyDestruct$);
   }
 
   public get c() {
-    return this.ws.Unit;
+    return this.ws.Agent;
   }
 
   public get ws() {
     return this.workspace.currentTenant;
   }
 
-  public unitTypeLookup(value: string): string {
-    const descriptor = metadata_Unit(this.workspace, this.translate).properties.UnitType as ChoicePropDescriptor;
+  public agentTypeLookup(value: string): string {
+    const descriptor = metadata_Agent(this.workspace, this.translate).properties.AgentType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.unitsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.agentsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -47,7 +48,7 @@ export class UnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.unitsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+    const obs$ = this.agentsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -55,7 +56,7 @@ export class UnitsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('units', 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('agents', 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

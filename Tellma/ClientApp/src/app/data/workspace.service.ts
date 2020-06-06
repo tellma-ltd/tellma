@@ -38,6 +38,7 @@ import { InboxRecord } from './entities/inbox-record';
 import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
 import { MarkupTemplate } from './entities/markup-template';
+import { Agent } from './entities/agent';
 
 enum WhichWorkspace {
   /**
@@ -337,6 +338,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Unit: EntityWorkspace<Unit>;
   Role: EntityWorkspace<Role>;
   User: EntityWorkspace<User>;
+  Agent: EntityWorkspace<Agent>;
   Contract: EntityWorkspace<Contract>;
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
@@ -369,6 +371,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Unit = {};
     this.Role = {};
     this.User = {};
+    this.Agent = {};
     this.Contract = {};
     this.Lookup = {};
     this.Currency = {};
