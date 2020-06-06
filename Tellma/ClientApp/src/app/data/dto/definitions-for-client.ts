@@ -256,6 +256,17 @@ export interface LineDefinitionEntryForClient {
     // NotedDateLabel?: string;
     // NotedDateLabel2?: string;
     // NotedDateLabel3?: string;
+
+
+    // TO DELETE
+
+    ContractDefinitionId?: number;
+    ResourceDefinitionId?: number;
+    NotedContractDefinitionId?: number;
+    IsResourceClassification?: boolean;
+    AccountTypeParentId?: number;
+
+    // END TO DELETE
 }
 
 export interface LineDefinitionColumnForClient {
