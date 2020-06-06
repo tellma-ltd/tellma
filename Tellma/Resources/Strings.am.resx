@@ -73,32 +73,32 @@
   <data name="Account_Center" xml:space="preserve">
     <value>ኃላፊነት ማዕከል</value>
   </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>ምደባ</value>
+  </data>
   <data name="Account_Contract" xml:space="preserve">
     <value>ወኪል</value>
+  </data>
+  <data name="Account_ContractDefinition" xml:space="preserve">
+    <value>የኮንትራት ፍቺ</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>ገንዘብ</value>
   </data>
-  <data name="Account_CustomClassification" xml:space="preserve">
-    <value>ምደባ</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>ምዝግብ አይነት</value>
-  </data>
-  <data name="Account_Identifier" xml:space="preserve">
-    <value>መለያ</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>ቀንሷል</value>
   </data>
-  <data name="Account_IsRelated" xml:space="preserve">
-    <value>የሆነው ተዛማጅ</value>
-  </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>የሆነው ስማርት</value>
+  <data name="Account_NotedContractDefinition" xml:space="preserve">
+    <value>እንደተጠቀሰው የኮንትራት ፍቺ</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>ምንጭ</value>
+  </data>
+  <data name="Account_ResourceDefinition" xml:space="preserve">
+    <value>የመገልገያ ፍቺ</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>ዓይነት</value>
@@ -118,6 +118,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ መሰየሚያ</value>
   </data>
+  <data name="AccountType_ContractDefinitions" xml:space="preserve">
+    <value>የኮንትራት ፍቺዎች</value>
+  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>መጠናቀቅ ያለበት ቀን መሰየሚያ</value>
   </data>
@@ -133,14 +136,38 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>እንደተጠቀሰው መጠን መለያ ስም</value>
   </data>
+  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
+    <value>እንደተጠቀሰው ኮንትራት ፍቺዎች</value>
+  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>እንደተጠቀሰው ቀን መሰየሚያ</value>
+  </data>
+  <data name="AccountType_ResourceDefinitions" xml:space="preserve">
+    <value>ሪሶርስ ፍቺዎች</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>ጊዜ 1 መሰየሚያ</value>
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>ሰዓት 2 መሰየሚያ</value>
+  </data>
+  <data name="AccountTypeContractDefinition" xml:space="preserve">
+    <value>የመለያ አይነት ኮንትራት ፍቺ</value>
+  </data>
+  <data name="AccountTypeContractDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት ኮንትራት ፍቺዎች</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
+    <value>የመለያ አይነት በመቆየቱ የኮንትራት ፍቺ</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት ኮንትራት ትርጓሜ በመቆየቱ</value>
+  </data>
+  <data name="AccountTypeResourceDefinition" xml:space="preserve">
+    <value>የመለያ አይነት ሃብት ፍቺ</value>
+  </data>
+  <data name="AccountTypeResourceDefinitions" xml:space="preserve">
+    <value>የመለያ አይነት ሃብት ፍቺዎች</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>የመለያ አይነቶች</value>
@@ -156,6 +183,15 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>የአስተዳደር ተጠቃሚዎች</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
+  <data name="Agent_IsRelated" xml:space="preserve">
+    <value>ተዛማጅ የሆነ</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>ወኪሎች</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>የ Android</value>
@@ -273,9 +309,6 @@
   </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
-  </data>
-  <data name="Contract_IsRelated" xml:space="preserve">
-    <value>ተዛማጅ የሆነ</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>ሥራ</value>
@@ -1771,9 +1804,6 @@
   <data name="Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
-  <data name="Resource_AssetType" xml:space="preserve">
-    <value>የመለያ አይነት</value>
-  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>የሚገኝ በመሆኑ</value>
   </data>
@@ -1797,9 +1827,6 @@
   </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>ዓላማ</value>
-  </data>
-  <data name="Resource_ExpenseType" xml:space="preserve">
-    <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>መለያ</value>
@@ -1836,9 +1863,6 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>ትራፊ እሴት</value>
-  </data>
-  <data name="Resource_RevenueType" xml:space="preserve">
-    <value>የመለያ አይነት</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 1</value>

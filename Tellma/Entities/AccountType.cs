@@ -1,15 +1,13 @@
-﻿using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Tellma.Controllers.Dto;
 
 namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "AccountType", Plural = "AccountTypes")]
-    public class AccountTypeForSave : EntityWithKey<int>, ITreeEntityForSave<int>
+    public class AccountTypeForSave<TContractDef, TNotedContractDef, TResourceDef> : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -158,9 +156,25 @@ namespace Tellma.Entities
         [MultilingualDisplay(Name = "AccountType_NotedDateLabel", Language = Language.Ternary)]
         [StringLength(50)]
         public string NotedDateLabel3 { get; set; }
+
+        [Display(Name = "AccountType_ContractDefinitions")]
+        [ForeignKey(nameof(AccountTypeContractDefinition.AccountTypeId))]
+        public List<TContractDef> ContractDefinitions { get; set; }
+
+        [Display(Name = "AccountType_NotedContractDefinitions")]
+        [ForeignKey(nameof(AccountTypeNotedContractDefinition.AccountTypeId))]
+        public List<TNotedContractDef> NotedContractDefinitions { get; set; }
+
+        [Display(Name = "AccountType_ResourceDefinitions")]
+        [ForeignKey(nameof(AccountTypeResourceDefinition.AccountTypeId))]
+        public List<TResourceDef> ResourceDefinitions { get; set; }
     }
 
-    public class AccountType : AccountTypeForSave, ITreeEntity<int>
+    public class AccountTypeForSave : AccountTypeForSave<AccountTypeContractDefinitionForSave, AccountTypeNotedContractDefinitionForSave, AccountTypeResourceDefinitionForSave>
+    {
+    }
+
+    public class AccountType : AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition>, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public string Path { get; set; }
@@ -210,61 +224,12 @@ namespace Tellma.Entities
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
-        [Display(Name = "CreatedBy")]
+        [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
         [Display(Name = "AccountType_EntryTypeParent")]
         [ForeignKey(nameof(EntryTypeParentId))]
         public EntryType EntryTypeParent { get; set; }
-
-        public List<AccountTypeContractDefinition> ContractDefinitions { get; set; }
-        
-        public List<AccountTypeNotedContractDefinition> NotedContractDefinitions { get; set; }
-
-        public List<AccountTypeResourceDefinition> ResourceDefinitions { get; set; }
-    }
-
-    // TODO......
-    
-    public class AccountTypeContractDefinitionForSave : EntityWithKey<int>
-    {
-        public int? ContractDefinitionId { get; set; }
-    }
-
-    public class AccountTypeContractDefinition : AccountTypeContractDefinitionForSave
-    {
-        public int? AccountTypeId { get; set; }
-
-        [ForeignKey(nameof(ContractDefinitionId))]
-        public ContractDefinition ContractDefinition { get; set; }
-    }
-
-    public class AccountTypeNotedContractDefinitionForSave : EntityWithKey<int>
-    {
-        public int? NotedContractDefinitionId { get; set; }
-    }
-
-    public class AccountTypeNotedContractDefinition : AccountTypeNotedContractDefinitionForSave
-    {
-        public int? AccountTypeId { get; set; }
-
-        [ForeignKey(nameof(NotedContractDefinitionId))]
-        public ContractDefinition NotedContractDefinition { get; set; }
-    }
-
-
-    public class AccountTypeResourceDefinitionForSave : EntityWithKey<int>
-    {
-        public int? ResourceDefinitionId { get; set; }
-    }
-
-    public class AccountTypeResourceDefinition : AccountTypeResourceDefinitionForSave
-    {
-        public int? AccountTypeId { get; set; }
-
-        [ForeignKey(nameof(ResourceDefinitionId))]
-        public ResourceDefinition ResourceDefinition { get; set; }
-
     }
 }

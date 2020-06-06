@@ -560,6 +560,12 @@
     <None Include="Provisioning\000\c_ContractDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeNotedContractDefinitions.sql" />
     <None Include="Provisioning\000\m_DocumentDefinitions.sql" />
+    <Build Include="map\map.AccountTypeContractDefinitions.sql" />
+    <Build Include="map\map.AccountTypeNotedContractDefinitions.sql" />
+    <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
+    <Build Include="map\map.Agents.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
     <Build Include="dbo\Tables\dbo.ResourceUnitRates.sql" />
   </ItemGroup>
   <ItemGroup>

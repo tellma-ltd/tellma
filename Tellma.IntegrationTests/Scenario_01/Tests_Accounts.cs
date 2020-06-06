@@ -80,7 +80,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name2 = "مستحقات",
                 Code = "Payables",
                 AccountTypeId = accountTypeId,
-                CustomClassificationId = null,
+                ClassificationId = null,
                 CurrencyId = "ETB",
                 CenterId = Shared.Get<Center>("Center_Child").Id,
             };
@@ -109,7 +109,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name3, responseDto.Name3);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.AccountTypeId, responseDto.AccountTypeId);
-            Assert.Equal(dtoForSave.CustomClassificationId, responseDto.CustomClassificationId);
+            Assert.Equal(dtoForSave.ClassificationId, responseDto.ClassificationId);
             Shared.Set("Account_Payables", responseDto);
         }
 
@@ -135,7 +135,7 @@ namespace Tellma.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name3, responseDto.Name3);
             Assert.Equal(entity.Code, responseDto.Code);
             Assert.Equal(entity.AccountTypeId, responseDto.AccountTypeId);
-            Assert.Equal(entity.CustomClassificationId, responseDto.CustomClassificationId);
+            Assert.Equal(entity.ClassificationId, responseDto.ClassificationId);
         }
 
         [Fact(DisplayName = "06 Saving a AccountForSave with an existing code returns a 422 Unprocessable Entity")]
@@ -151,7 +151,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                     Name2 = "Another Name",
                     Code = "Payables",
                     AccountTypeId = accountTypeId,
-                    CustomClassificationId = null,
+                    ClassificationId = null,
                 }
             };
 
@@ -186,7 +186,7 @@ namespace Tellma.IntegrationTests.Scenario_01
                 Name = "  Accounts Receivable", // Leading space
                 Name2 = "مطلوبات",
                 Code = "Receivables  ", // Trailing space
-                CustomClassificationId = null,
+                ClassificationId = null,
                 AccountTypeId = accountTypeId,
                 CurrencyId = "ETB",
                 CenterId = Shared.Get<Center>("Center_Child").Id,

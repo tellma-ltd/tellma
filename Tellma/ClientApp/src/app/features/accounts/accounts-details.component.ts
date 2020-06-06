@@ -6,9 +6,10 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountForSave, Account, metadata_Account } from '~/app/data/entities/account';
-import { PropDescriptor } from '~/app/data/entities/base/metadata';
+import { PropDescriptor, ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 't-accounts-details',
@@ -19,7 +20,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType,CustomClassification,Currency,Center,Contract,Resource/Currency,EntryType`;
+  public expand = `AccountType/ContractDefinitions,AccountType/NotedContractDefinitions,AccountType/ResourceDefinitions
+,Classification,Currency,Center,Contract,Resource/Currency,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -43,9 +45,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     } else if (this.ws.isTernaryLanguage) {
       result.Name3 = this.initialText;
     }
-
-    result.IsRelated = false;
-    result.IsSmart = false;
 
     return result;
   }
@@ -95,22 +94,13 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   // CenterId
 
-  public showCenter(model: AccountForSave): boolean {
-    const accountType = this.accountType(model);
-    const isAccountAssignment = !!accountType && accountType.CenterAssignment === 'A';
-    const isSmart = !!model && model.IsSmart;
-
-    return this.ws.settings.IsMultiCenter && (!isSmart || isAccountAssignment);
+  public showCenter(_: AccountForSave): boolean {
+    return this.ws.settings.IsMultiCenter;
   }
 
   // CurrencyId
-  public showCurrency(model: AccountForSave): boolean {
-    const accountType = this.accountType(model);
-    const isAccountAssignment = !!accountType && accountType.CurrencyAssignment === 'A';
-    const isSmart = !!model && model.IsSmart;
-
-    // Currency is required in dumb accounts,
-    return !isSmart || isAccountAssignment;
+  public showCurrency(_: AccountForSave): boolean {
+    return true;
   }
 
   public readonlyCurrencyId(model: AccountForSave): boolean {
@@ -131,30 +121,41 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return !!model.ResourceId ? resource.CurrencyId : null;
   }
 
-  // IsRelated
-  public showIsRelated(_: AccountForSave): boolean {
-    // if (!model || !model.AccountTypeId) {
-    //   return false;
-    // }
+  // Noted Contract Definition
 
-    // const accountType = this.accountType(model);
-    return false; // accountType.IsPersonal;
+  public showNotedContractDefinitionId(model: Account): boolean {
+    const at = this.accountType(model);
+    return !!at && !!at.NotedContractDefinitions && at.NotedContractDefinitions.length > 0;
+  }
+
+  // Contract Definition
+  public get choicesContractDefinitionId(): SelectorChoice[] {
+    return getChoices(this.p.ContractDefinitionId as ChoicePropDescriptor);
+  }
+
+  public showContractDefinitionId(model: Account): boolean {
+    const at = this.accountType(model);
+    return !!at && !!at.ContractDefinitions && at.ContractDefinitions.length > 0;
+  }
+
+  public formatContractDefinitionId(defId: number): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Contracts[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
   }
 
   // Contract
   public showContract(model: AccountForSave): boolean {
-    const accountType = this.accountType(model);
-    const isSmart = !!model && model.IsSmart;
-    const isAccountAssignment = !!accountType && accountType.ContractAssignment === 'A';
-
-    return isSmart && isAccountAssignment;
+    return this.showContractDefinitionId(model) && !!model.ContractDefinitionId;
   }
 
   public labelContract(model: AccountForSave): string {
     let postfix = '';
-    const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.ContractDefinitionId) {
-      const contractDef = this.ws.definitions.Contracts[accountType.ContractDefinitionId];
+    if (!!model && !!model.ContractDefinitionId) {
+      const contractDef = this.ws.definitions.Contracts[model.ContractDefinitionId];
       if (!!contractDef) {
         postfix = ` (${this.ws.getMultilingualValueImmediate(contractDef, 'TitleSingular')})`;
       }
@@ -162,21 +163,38 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return this.translate.instant('Account_Contract') + postfix;
   }
 
-  public definitionIdsContract(model: AccountForSave): string[] {
-    const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.ContractDefinitionId) {
-      return [accountType.ContractDefinitionId];
+  public definitionIdsContract(model: AccountForSave): number[] {
+    if (!!model && !!model.ContractDefinitionId) {
+      return [model.ContractDefinitionId];
     } else {
       return [];
     }
   }
 
+  // Resource Definition
+  public get choicesResourceDefinitionId(): SelectorChoice[] {
+    return getChoices(this.p.ResourceDefinitionId as ChoicePropDescriptor);
+  }
+
+  public showResourceDefinitionId(model: Account): boolean {
+    const at = this.accountType(model);
+    return !!at && !!at.ResourceDefinitions && at.ResourceDefinitions.length > 0;
+  }
+
+  public formatResourceDefinitionId(defId: number): string {
+    if (!defId) {
+      return '';
+    }
+
+    const def = this.ws.definitions.Resources[defId];
+    return this.ws.getMultilingualValueImmediate(def, 'TitlePlural');
+  }
+
   // Resource
   public labelResource(model: AccountForSave): string {
     let postfix = '';
-    const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.ResourceDefinitionId) {
-      const resourceDef = this.ws.definitions.Resources[accountType.ResourceDefinitionId];
+    if (!!model && !!model.ResourceDefinitionId) {
+      const resourceDef = this.ws.definitions.Resources[model.ResourceDefinitionId];
       if (!!resourceDef) {
         postfix = ` (${this.ws.getMultilingualValueImmediate(resourceDef, 'TitleSingular')})`;
       }
@@ -185,62 +203,22 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showResource(model: AccountForSave): boolean {
-    const accountType = this.accountType(model);
-    const isAccountAssignment = !!accountType && accountType.ResourceAssignment === 'A';
-    const isSmart = !!model && model.IsSmart;
-
-    return isSmart && isAccountAssignment;
+    return this.showResourceDefinitionId(model) && !!model.ResourceDefinitionId;
   }
 
-  public filterResource(model: AccountForSave) {
-    if (!model || !model.AccountTypeId) {
-      return null;
-    }
-
-    const accountType = this.accountType(model);
-    if (!!accountType.IsResourceClassification) {
-      return `AssetType/Node descof ${model.AccountTypeId}`;
-    } else {
-      return null;
-    }
-  }
-
-  public definitionIdsResource(model: AccountForSave): string[] {
-    const accountType = this.accountType(model);
-    if (!!accountType && !!accountType.ResourceDefinitionId) {
-      return [accountType.ResourceDefinitionId];
+  public definitionIdsResource(model: AccountForSave): number[] {
+    if (!!model && !!model.ResourceDefinitionId) {
+      return [model.ResourceDefinitionId];
     } else {
       return [];
     }
   }
 
-  // Identifier
-
-  public showIdentifier(model: AccountForSave): boolean {
-    const accountType = this.accountType(model);
-    const isAccountAssignment = !!accountType && accountType.IdentifierAssignment === 'A';
-    const isSmart = !!model && model.IsSmart;
-
-    return isSmart && isAccountAssignment;
-  }
-
-  public labelIdentifier(model: AccountForSave): string {
-    let postfix = '';
-    const accountType = this.accountType(model);
-    if (!!accountType.IdentifierLabel) {
-      postfix = ` (${this.ws.getMultilingualValueImmediate(accountType, 'IdentifierLabel')})`;
-    }
-
-    return this.translate.instant('Account_Identifier') + postfix;
-  }
-
   // EntryTypeId
   public showEntryType(model: AccountForSave) {
     const accountType = this.accountType(model);
-    const isSmart = !!model && model.IsSmart;
-    const isAccountAssignment = !!accountType && accountType.EntryTypeAssignment === 'A';
 
-    return isSmart && isAccountAssignment;
+    return !!accountType && !!accountType.EntryTypeParentId;
   }
 
   public filterEntryType(model: AccountForSave) {

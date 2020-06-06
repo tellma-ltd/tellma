@@ -32,7 +32,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `AssetType,RevenueType,ExpenseType,Currency,ExpenseEntryType,
+  public expand = `Currency,ExpenseEntryType,
 Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   constructor(
@@ -211,30 +211,6 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   public get Description_isRequired(): boolean {
     return this.definition.DescriptionVisibility === 'Required';
-  }
-
-  public get AssetType_isVisible(): boolean {
-    return !!this.definition.AssetTypeVisibility;
-  }
-
-  public get AssetType_isRequired(): boolean {
-    return this.definition.AssetTypeVisibility === 'Required';
-  }
-
-  public get RevenueType_isVisible(): boolean {
-    return !!this.definition.RevenueTypeVisibility;
-  }
-
-  public get RevenueType_isRequired(): boolean {
-    return this.definition.RevenueTypeVisibility === 'Required';
-  }
-
-  public get ExpenseType_isVisible(): boolean {
-    return !!this.definition.ExpenseTypeVisibility;
-  }
-
-  public get ExpenseType_isRequired(): boolean {
-    return this.definition.ExpenseTypeVisibility === 'Required';
   }
 
   public get ExpenseEntryType_isVisible(): boolean {

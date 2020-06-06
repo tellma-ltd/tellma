@@ -107,20 +107,18 @@ namespace Tellma.Controllers
         protected override async Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
         {
             // Defaults
-            //var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             entities.ForEach(entity =>
             {
-                // Set defaults
-                entity.IsRelated ??= false;
-                entity.IsSmart ??= false;
+                // Can't have a contract without the contract definition
+                if (entity.ContractDefinitionId == null)
+                {
+                    entity.ContractId = null;
+                }
 
-                // Set invisible fields to NULL when IsSmart = false
-                if (!entity.IsSmart.Value)
+                // Can't have a resource without the resource definition
+                if (entity.ResourceDefinitionId == null)
                 {
                     entity.ResourceId = null;
-                    entity.ContractId = null;
-                    entity.Identifier = null;
-                    entity.EntryTypeId = null;
                 }
             });
 
@@ -131,48 +129,21 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<AccountForSave> entities)
         {
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
-            {
-                if (entity.IsSmart.Value)
-                {
-                    // Can we add any validation here?
-                }
-                else
-                {
-                    // These are required for smart accounts
-                    if (entity.CurrencyId == null)
-                    {
-                        string path = $"[{index}].{nameof(AccountForSave.CurrencyId)}";
-                        string propDisplayName = _localizer["Account_Currency"];
-                        string errorMsg = _localizer[Services.Utilities.Constants.Error_Field0IsRequired, propDisplayName];
+            //foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            //{
+            //    if (ModelState.HasReachedMaxErrors)
+            //    {
+            //        // No need to keep going forever
+            //        break;
+            //    }
+            //}
 
-                        ModelState.AddModelError(path, errorMsg);
-                    }
-
-                    //// These are required for smart accounts
-                    //if (entity.CenterId == null)
-                    //{
-                    //    string path = $"[{index}].{nameof(AccountForSave.CenterId)}";
-                    //    string propDisplayName = _localizer["Account_Center"];
-                    //    string errorMsg = _localizer[Services.Utilities.Constants.Error_TheField0IsRequired, propDisplayName];
-
-                    //    ModelState.AddModelError(path, errorMsg);
-                    //}
-                }
-
-                if (ModelState.HasReachedMaxErrors)
-                {
-                    // No need to keep going forever
-                    break;
-                }
-            }
-
-            // No need to invoke SQL if the model state is full of errors
-            if (ModelState.HasReachedMaxErrors)
-            {
-                // null Ids will cause an error when calling the SQL validation
-                return;
-            }
+            //// No need to invoke SQL if the model state is full of errors
+            //if (ModelState.HasReachedMaxErrors)
+            //{
+            //    // null Ids will cause an error when calling the SQL validation
+            //    return;
+            //}
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;

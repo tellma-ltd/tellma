@@ -7,12 +7,17 @@ import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { AccountTypeContractDefinitionForSave, AccountTypeContractDefinition } from './account-type-contract-definition';
+import { AccountTypeNotedContractDefinitionForSave, AccountTypeNotedContractDefinition } from './account-type-noted-contract-definition';
+import { AccountTypeResourceDefinitionForSave, AccountTypeResourceDefinition } from './account-type-resource-definition';
 
 export type RequiredAssignment = 'A' | 'E';
 export type OptionalAssignment = 'N' | 'A' | 'E';
 export type EntryAssignment = 'N' | 'E';
 
-export interface AccountTypeForSave extends EntityForSave {
+export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinitionForSave,
+  TNotedContractDef = AccountTypeNotedContractDefinitionForSave,
+  TResourceDef = AccountTypeResourceDefinitionForSave> extends EntityForSave {
   ParentId?: number;
   Name?: string;
   Name2?: string;
@@ -48,24 +53,12 @@ export interface AccountTypeForSave extends EntityForSave {
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  // // TO DELETE
-  // CurrencyAssignment?: RequiredAssignment;
-  // ContractAssignment?: OptionalAssignment;
-  // ContractDefinitionId?: string;
-  // ResourceAssignment?: OptionalAssignment;
-  // ResourceDefinitionId?: string;
-  // CenterAssignment?: RequiredAssignment;
-  // EntryTypeAssignment?: OptionalAssignment;
-  // IdentifierAssignment?: OptionalAssignment;
-  // IdentifierLabel?: string;
-  // IdentifierLabel2?: string;
-  // IdentifierLabel3?: string;
-  // NotedContractAssignment?: EntryAssignment;
-  // NotedContractDefinitionId?: string;
-  // IsResourceClassification?: boolean;
+  ContractDefinitions?: TContractDef[];
+  NotedContractDefinitions?: TNotedContractDef[];
+  ResourceDefinitions?: TResourceDef[];
 }
 
-export interface AccountType extends AccountTypeForSave {
+export interface AccountType extends AccountTypeForSave<AccountTypeContractDefinition, AccountTypeNotedContractDefinition, AccountTypeResourceDefinition> {
   Path?: string;
   Level?: number;
   ActiveChildCount?: number;

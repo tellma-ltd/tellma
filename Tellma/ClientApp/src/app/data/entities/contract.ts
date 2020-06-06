@@ -8,12 +8,10 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
 export interface ContractForSave extends EntityWithKey {
-
   Name?: string;
   Name2?: string;
   Name3?: string;
   Code?: string;
-  IsRelated?: boolean;
   TaxIdentificationNumber?: string;
   StartDate?: string;
   JobId?: number;
@@ -81,7 +79,6 @@ export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, 
         BankAccountNumber: { control: 'text', label: () => trx.instant('Contract_BankAccountNumber') },
         UserId: { control: 'number', label: () => `${trx.instant('Contract_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         User: { control: 'navigation', label: () => trx.instant('Contract_User'), type: 'User', foreignKeyName: 'UserId' },
-        IsRelated: { control: 'boolean', label: () => trx.instant('Contract_IsRelated') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

@@ -73,32 +73,32 @@
   <data name="Account_Center" xml:space="preserve">
     <value>المركز</value>
   </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
   <data name="Account_Contract" xml:space="preserve">
     <value>العقد</value>
+  </data>
+  <data name="Account_ContractDefinition" xml:space="preserve">
+    <value>تعريف العقد</value>
   </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Account_CustomClassification" xml:space="preserve">
-    <value>التصنيف المخصص</value>
-  </data>
   <data name="Account_EntryType" xml:space="preserve">
     <value>تصنيف السطر</value>
-  </data>
-  <data name="Account_Identifier" xml:space="preserve">
-    <value>رقم التعريف</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
-  <data name="Account_IsRelated" xml:space="preserve">
-    <value>ذمة ذات علاقة</value>
-  </data>
-  <data name="Account_IsSmart" xml:space="preserve">
-    <value>حساب ذكي</value>
+  <data name="Account_NotedContractDefinition" xml:space="preserve">
+    <value>تعريف العقد المعني</value>
   </data>
   <data name="Account_Resource" xml:space="preserve">
     <value>المورد</value>
+  </data>
+  <data name="Account_ResourceDefinition" xml:space="preserve">
+    <value>تعريف المورد</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>
@@ -118,6 +118,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الإضافي</value>
   </data>
+  <data name="AccountType_ContractDefinitions" xml:space="preserve">
+    <value>تعريفات العقود</value>
+  </data>
   <data name="AccountType_DueDateLabel" xml:space="preserve">
     <value>اسم تاريخ الاستحقاق</value>
   </data>
@@ -133,14 +136,38 @@
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">
     <value>اسم المبلغ المعني</value>
   </data>
+  <data name="AccountType_NotedContractDefinitions" xml:space="preserve">
+    <value>تعريفات العقود المعنية</value>
+  </data>
   <data name="AccountType_NotedDateLabel" xml:space="preserve">
     <value>اسم التاريخ المعني</value>
+  </data>
+  <data name="AccountType_ResourceDefinitions" xml:space="preserve">
+    <value>تعريفات الذمم</value>
   </data>
   <data name="AccountType_Time1Label" xml:space="preserve">
     <value>اسم الزمن 1</value>
   </data>
   <data name="AccountType_Time2Label" xml:space="preserve">
     <value>اسم الزمن 2</value>
+  </data>
+  <data name="AccountTypeContractDefinition" xml:space="preserve">
+    <value>تعريف عقد نوع حساب</value>
+  </data>
+  <data name="AccountTypeContractDefinitions" xml:space="preserve">
+    <value>تعريفات عقود أنواع حسابات</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinition" xml:space="preserve">
+    <value>تعريف عقد معني بنوع حساب</value>
+  </data>
+  <data name="AccountTypeNotedContractDefinitions" xml:space="preserve">
+    <value>تعريفات عقود معنية بأنواع حسابات</value>
+  </data>
+  <data name="AccountTypeResourceDefinition" xml:space="preserve">
+    <value>تعريف مورد نوع حساب</value>
+  </data>
+  <data name="AccountTypeResourceDefinitions" xml:space="preserve">
+    <value>تعريفات موارد أنواع حسابات</value>
   </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
@@ -156,6 +183,15 @@
   </data>
   <data name="AdminUsers" xml:space="preserve">
     <value>حسابات مشرفين</value>
+  </data>
+  <data name="Agent" xml:space="preserve">
+    <value>ذمة</value>
+  </data>
+  <data name="Agent_IsRelated" xml:space="preserve">
+    <value>ذو علاقة</value>
+  </data>
+  <data name="Agents" xml:space="preserve">
+    <value>ذمم</value>
   </data>
   <data name="Android" xml:space="preserve">
     <value>الآندرويد</value>
@@ -273,9 +309,6 @@
   </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
-  </data>
-  <data name="Contract_IsRelated" xml:space="preserve">
-    <value>ذو علاقة</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>الوظيفة</value>
@@ -1771,9 +1804,6 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
-  <data name="Resource_AssetType" xml:space="preserve">
-    <value>نوع الأصل</value>
-  </data>
   <data name="Resource_AvailableSince" xml:space="preserve">
     <value>متاح من</value>
   </data>
@@ -1797,9 +1827,6 @@
   </data>
   <data name="Resource_ExpenseEntryType" xml:space="preserve">
     <value>الغرض</value>
-  </data>
-  <data name="Resource_ExpenseType" xml:space="preserve">
-    <value>نوع المصروف</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>رقم التعريف</value>
@@ -1836,9 +1863,6 @@
   </data>
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>قيمة الخردة</value>
-  </data>
-  <data name="Resource_RevenueType" xml:space="preserve">
-    <value>نوع الإيراد</value>
   </data>
   <data name="Resource_Text1" xml:space="preserve">
     <value>الصفة النصية 1</value>

@@ -967,6 +967,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return !this.isPopupMode && this.showExportButton;
   }
 
+  get showExportForImport(): boolean {
+    return this.showExport && this.showImport;
+  }
+
   get showDataDropdown(): boolean {
     return this.showImport || this.showExport || this.showCollapseAll;
   }

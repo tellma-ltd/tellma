@@ -9,15 +9,6 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "Resource", Plural = "Resources")]
     public class ResourceForSave<TResourceUnit> : EntityWithKey<int>
     {
-        [Display(Name = "Resource_AssetType")]
-        public int? AssetTypeId { get; set; }
-
-        [Display(Name = "Resource_RevenueType")]
-        public int? RevenueTypeId { get; set; }
-
-        [Display(Name = "Resource_ExpenseType")]
-        public int? ExpenseTypeId { get; set; }
-
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
         [StringLength(255)]
@@ -137,7 +128,7 @@ namespace Tellma.Entities
     public class Resource : ResourceForSave<ResourceUnit>
     {
         [Display(Name = "Definition")]
-        public string DefinitionId { get; set; }
+        public int? DefinitionId { get; set; }
 
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
@@ -173,37 +164,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
-        [Display(Name = "Resource_AssetType")]
-        [ForeignKey(nameof(AssetTypeId))]
-        public AccountType AssetType { get; set; }
-
-        [Display(Name = "Resource_ExpenseType")]
-        [ForeignKey(nameof(ExpenseTypeId))]
-        public AccountType ExpenseType { get; set; }
-
-        [Display(Name = "Resource_RevenueType")]
-        [ForeignKey(nameof(RevenueTypeId))]
-        public AccountType RevenueType { get; set; }
-
         [Display(Name = "Resource_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
-
-        //[Display(Name = "Resource_MassUnit")]
-        //[ForeignKey(nameof(MassUnitId))]
-        //public Unit MassUnit { get; set; }
-
-        //[Display(Name = "Resource_VolumeUnit")]
-        //[ForeignKey(nameof(VolumeUnitId))]
-        //public Unit VolumeUnit { get; set; }
-
-        //[Display(Name = "Resource_TimeUnit")]
-        //[ForeignKey(nameof(TimeUnitId))]
-        //public Unit TimeUnit { get; set; }
-
-        //[Display(Name = "Resource_CountUnit")]
-        //[ForeignKey(nameof(CountUnitId))]
-        //public Unit CountUnit { get; set; }
 
         [Display(Name = "Resource_Lookup1")]
         [ForeignKey(nameof(Lookup1Id))]
