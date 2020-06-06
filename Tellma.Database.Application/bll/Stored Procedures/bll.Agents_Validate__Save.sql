@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Agents_Validate__Save]
 	@Entities [dbo].[AgentList] READONLY,
-	@AgentUsers dbo.[AgentUserList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

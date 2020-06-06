@@ -9,6 +9,8 @@
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 
+	[AgentVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'None',
+	[CurrencyVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'Optional',
 	[TaxIdentificationNumberVisibility] NVARCHAR (50) NOT NULL DEFAULT N'None',
 	[ImageVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'Optional',
 	[StartDateVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None',
@@ -32,4 +34,4 @@
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- Required when the state is "Deployed"
 	[MainMenuSortKey]					DECIMAL (9,4)
-)
+);

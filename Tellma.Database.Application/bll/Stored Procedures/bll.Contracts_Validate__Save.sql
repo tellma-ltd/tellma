@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Contracts_Validate__Save]
 	@DefinitionId INT,
 	@Entities [ContractList] READONLY,
+	@ContractUsers dbo.[ContractUserList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

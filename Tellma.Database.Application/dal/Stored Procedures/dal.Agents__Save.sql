@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Agents__Save]
 	@Entities [dbo].[AgentList] READONLY,
-	@AgentUsers dbo.[AgentUserList] READONLY,
+
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -46,36 +46,6 @@ SET NOCOUNT ON;
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
-
-	WITH AU AS (
-		SELECT * FROM dbo.AgentUsers RU
-		WHERE RU.AgentId IN (SELECT [Id] FROM @IndexedIds)
-	)
-	MERGE INTO AU AS t
-	USING (
-		SELECT
-			RU.[Id],
-			I.[Id] AS [AgentId],
-			RU.[UserId]
-		FROM @AgentUsers RU
-		JOIN @IndexedIds I ON RU.[HeaderIndex] = I.[Index]
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[UserId] <> s.[UserId])
-	THEN
-		UPDATE SET
-			t.[UserId]					= s.[UserId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT (
-			[AgentId],
-			[UserId]
-		) VALUES (
-			s.[AgentId],
-			s.[UserId]
-		)
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

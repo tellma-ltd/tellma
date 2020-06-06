@@ -38,7 +38,7 @@ CREATE TABLE [dbo].[Resources] (
 
 	-- Begin To verify
 	DefaultUnitId			INT,
-	ReferenceCount			INT,
+	BaseCount			INT,
 	ReferenceCountUnitId	INT,
 	ReferenceMass			DECIMAL,
 	ReferenceMassUnitId		INT,

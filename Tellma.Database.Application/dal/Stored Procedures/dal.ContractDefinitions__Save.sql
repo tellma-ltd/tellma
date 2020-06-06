@@ -15,6 +15,8 @@ SET NOCOUNT ON;
 		USING (
 			SELECT [Index], [Id], [Code], [TitleSingular], [TitleSingular2], [TitleSingular3],
 				[TitlePlural], [TitlePlural2], [TitlePlural3], 
+				[AgentVisibility],
+				[CurrencyVisibility],
 				[TaxIdentificationNumberVisibility],
 				[ImageVisibility],
 				[StartDateVisibility],
@@ -47,6 +49,8 @@ SET NOCOUNT ON;
 				t.[TitlePlural2]		= s.[TitlePlural2],
 				t.[TitlePlural3]		= s.[TitlePlural3],
 
+				t.[AgentVisibility]		= s.[AgentVisibility],
+				t.[CurrencyVisibility]	= s.[CurrencyVisibility],
 				t.[TaxIdentificationNumberVisibility]
 										= s.[TaxIdentificationNumberVisibility],
 				t.[ImageVisibility]		= s.[ImageVisibility],
@@ -70,7 +74,9 @@ SET NOCOUNT ON;
 				t.[MainMenuSortKey]		= s.[MainMenuSortKey],
 				t.[SavedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], 
+			INSERT ([Code],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3],
+				[AgentVisibility],
+				[CurrencyVisibility],
 				[TaxIdentificationNumberVisibility],
 				[ImageVisibility],
 				[StartDateVisibility],
@@ -86,7 +92,9 @@ SET NOCOUNT ON;
 				[UserVisibility],
 				[AllowMultipleUsers],	
 				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
-			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], 
+			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
+				s.[AgentVisibility],
+				s.[CurrencyVisibility],
 				s.[TaxIdentificationNumberVisibility],
 				s.[ImageVisibility],
 				s.[StartDateVisibility],

@@ -5,9 +5,9 @@
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
 	--CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
-	[CenterType]			NVARCHAR (50)		CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
+	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
 													N'Segment', N'Profit', N'Revenue', N'Cost')
-												),
+												), -- Nullable to avoid using abstract. May add Parent, to represent a leaf acting on behalf of non-segment Ancestor
 	[IsLeaf]				BIT					NOT NULL,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

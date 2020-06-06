@@ -8,6 +8,8 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
+	[AgentVisibility]					NVARCHAR (50),
+	[CurrencyVisibility]				NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
 	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[StartDateVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([StartDateVisibility] IN (N'None', N'Optional', N'Required')),

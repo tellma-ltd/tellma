@@ -47,7 +47,7 @@
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList];
 
-	DECLARE @Agents dbo.AgentList, @AgentUsers dbo.AgentUserList;
+	DECLARE @Agents dbo.AgentList, @ContractUsers dbo.ContractUserList;
 	DECLARE @Resources dbo.ResourceList, @ResourceUnits dbo.ResourceUnitList;
 	DECLARE @AccountClassifications dbo.AccountClassificationList;
 	DECLARE @BasicSalary INT, @TransportationAllowance INT, @DataPackage INT, @MealAllowance INT, @HourlyWage INT;
