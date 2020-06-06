@@ -563,6 +563,9 @@
     <Build Include="map\map.AccountTypeContractDefinitions.sql" />
     <Build Include="map\map.AccountTypeNotedContractDefinitions.sql" />
     <Build Include="map\map.AccountTypeResourceDefinitions.sql" />
+    <Build Include="map\map.Agents.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
