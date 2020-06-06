@@ -560,6 +560,7 @@
     <None Include="Provisioning\000\c_ContractDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeNotedContractDefinitions.sql" />
     <None Include="Provisioning\000\m_DocumentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceUnitRates.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
