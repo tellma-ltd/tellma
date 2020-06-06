@@ -77,9 +77,32 @@
     <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
   </t-form-group>
 
+  <!-- Agent -->
+  <t-form-group class="t-form-group" *ngIf="Agent_isVisible" [label]="'Contract_Agent' | translate"
+    [serverErrors]="model?.serverErrors?.AgentId">
+    <t-view-link *ngIf="!isEdit" link="../../../agents/" [itemId]="model?.AgentId">
+      <t-auto-cell collection="Contract" path="Agent" [entity]="model">
+      </t-auto-cell>
+    </t-view-link>
+    <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" [required]="Agent_isRequired">
+    </t-agents-picker>
+  </t-form-group>
+
+  <!-- Currency -->
+  <t-form-group class="t-form-group" *ngIf="Currency_isVisible" [label]="'Contract_Currency' | translate"
+    [serverErrors]="model?.serverErrors?.CurrencyId">
+    <t-view-link *ngIf="!isEdit" link="../../../currencies/" [itemId]="model?.CurrencyId">
+      <t-auto-cell collection="Contract" path="Currency" [entity]="model">
+      </t-auto-cell>
+    </t-view-link>
+    <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
+    </t-currencies-picker>
+  </t-form-group>
+
   <!-- Tax Identification Number -->
   <t-form-group class="t-form-group" *ngIf="TaxIdentificationNumber_isVisible"
-    [label]="'Contract_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+    [label]="'Contract_TaxIdentificationNumber' | translate"
+    [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
     </t-restricted>
@@ -100,8 +123,8 @@
   </t-form-group>
 
   <!-- Bank Account Number -->
-  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Contract_BankAccountNumber' | translate"
-    [serverErrors]="model?.serverErrors?.BankAccountNumber">
+  <t-form-group class="t-form-group" *ngIf="BankAccountNumber_isVisible"
+    [label]="'Contract_BankAccountNumber' | translate" [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
     </t-restricted>

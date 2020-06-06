@@ -1405,6 +1405,157 @@ namespace Tellma.Data
 
         #endregion
 
+        #region Agents
+
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Agent)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task<List<int>> Agents__Save(List<AgentForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Agent)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Agents__Save)}]";
+
+                if (returnIds)
+                {
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task Agents__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@IsActive", isActive);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Agents__Activate)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Delete)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task Agents__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(Agents__Delete)}]";
+
+            // Execute
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+            {
+                throw new ForeignKeyViolationException();
+            }
+        }
+
+        #endregion
+
         #region Users
 
         public async Task Users__SaveSettings(string key, string value)
@@ -3110,13 +3261,20 @@ namespace Tellma.Data
             }
 
             // Return ordered result
-            var sortedResult = new int[entities.Count];
-            result.ForEach(e =>
+            if (returnIds)
             {
-                sortedResult[e.Index] = e.Id;
-            });
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
 
-            return sortedResult.ToList();
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
         }
 
         public async Task Centers__Activate(List<int> ids, bool isActive)
@@ -4221,7 +4379,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task ReportDefinitions__Save(List<ReportDefinitionForSave> entities)
+        public async Task<List<int>> ReportDefinitions__Save(List<ReportDefinitionForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -4277,11 +4435,44 @@ namespace Tellma.Data
             cmd.Parameters.Add(rowsTvp);
             cmd.Parameters.Add(columnsTvp);
             cmd.Parameters.Add(measuresTvp);
+            cmd.Parameters.Add("@ReturnIds", returnIds);
 
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = $"[dal].[{nameof(ReportDefinitions__Save)}]";
 
-            await cmd.ExecuteNonQueryAsync();
+            if (returnIds)
+            {
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new IndexedId
+                    {
+                        Index = reader.GetInt32(i++),
+                        Id = reader.GetInt32(i++)
+                    });
+                }
+            }
+            else
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            // Return ordered result
+            if (returnIds)
+            {
+                var sortedResult = new int[entities.Count];
+                result.ForEach(e =>
+                {
+                    sortedResult[e.Index] = e.Id;
+                });
+
+                return sortedResult.ToList();
+            }
+            else
+            {
+                return new List<int>();
+            }
         }
 
         public async Task<IEnumerable<ValidationError>> ReportDefinitions_Validate__Delete(List<int> ids, int top)

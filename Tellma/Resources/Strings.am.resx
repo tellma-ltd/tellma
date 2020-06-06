@@ -247,14 +247,17 @@
   <data name="Center_CenterType_Cost" xml:space="preserve">
     <value>ዋጋ</value>
   </data>
-  <data name="Center_CenterType_Investment" xml:space="preserve">
-    <value>የኢንቨስትመንት</value>
-  </data>
   <data name="Center_CenterType_Profit" xml:space="preserve">
     <value>ትርፍ</value>
   </data>
   <data name="Center_CenterType_Revenue" xml:space="preserve">
     <value>ገቢ</value>
+  </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>ክፍል</value>
+  </data>
+  <data name="Center_ExpenseEntryType" xml:space="preserve">
+    <value>የሚመዘገብ አይነት የወጪ</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>አስተዳዳሪ</value>
@@ -307,8 +310,14 @@
   <data name="Contract" xml:space="preserve">
     <value>ወኪል</value>
   </data>
+  <data name="Contract_Agent" xml:space="preserve">
+    <value>ወኪል</value>
+  </data>
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
+  </data>
+  <data name="Contract_Currency" xml:space="preserve">
+    <value>ገንዘብ</value>
   </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>ሥራ</value>

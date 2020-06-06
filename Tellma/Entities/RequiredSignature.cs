@@ -44,7 +44,7 @@ namespace Tellma.Entities
         public Role Role { get; set; }
 
         [ForeignKey(nameof(AgentId))]
-        public Contract Agent { get; set; }
+        public Agent Agent { get; set; }
 
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

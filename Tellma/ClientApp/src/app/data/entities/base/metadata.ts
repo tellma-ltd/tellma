@@ -27,6 +27,7 @@ import { metadata_IfrsConcept } from '../ifrs-concept';
 import { metadata_MarkupTemplate } from '../markup-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
+import { metadata_Agent } from '../agent';
 
 export const metadata: {
     [collection: string]: (
@@ -37,6 +38,7 @@ export const metadata: {
     // Application
     Unit: metadata_Unit,
     User: metadata_User,
+    Agent: metadata_Agent,
     Contract: metadata_Contract,
     Role: metadata_Role,
     Lookup: metadata_Lookup,

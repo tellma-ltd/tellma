@@ -196,8 +196,8 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ReportDefinitionForSave> entities, bool returnIds)
         {
-            await _repo.ReportDefinitions__Save(entities);
-            return entities.Select(e => e.Id).ToList();
+            var ids = await _repo.ReportDefinitions__Save(entities, returnIds);
+            return ids;
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)

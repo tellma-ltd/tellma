@@ -42,7 +42,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
 }
 
 export interface Resource extends ResourceForSave<ResourceUnit> {
-    DefinitionId?: string;
+    DefinitionId?: number;
     IsActive?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;

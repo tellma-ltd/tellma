@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,10 +29,12 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        //[Display(Name = "Agent_IsRelated")]
-        //[Required]
-        //[AlwaysAccessible]
-        //public bool? IsRelated { get; set; }
+        [Display(Name = "Contract_Agent")]
+        public int? AgentId { get; set; }
+
+        [Display(Name = "Contract_Currency")]
+        [StringLength(3)]
+        public string CurrencyId { get; set; }
 
         [Display(Name = "Contract_TaxIdentificationNumber")]
         [StringLength(30)]
@@ -87,11 +88,19 @@ namespace Tellma.Entities
 
         // For Query
 
+        [Display(Name = "Contract_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
+
+        [Display(Name = "Contract_Currency")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; }
+
         // TODO 
         // [Display(Name = "Contract_Job")]
         // [ForeignKey(nameof(JobId))]
         // public Job Job { get; set; }
-        
+
         [Display(Name = "Contract_User")]
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

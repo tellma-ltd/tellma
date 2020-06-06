@@ -12,6 +12,8 @@ export interface ContractForSave extends EntityWithKey {
   Name2?: string;
   Name3?: string;
   Code?: string;
+  AgentId?: number;
+  CurrencyId?: string;
   TaxIdentificationNumber?: string;
   StartDate?: string;
   JobId?: number;
@@ -73,6 +75,10 @@ export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, 
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
+        AgentId: { control: 'number', label: () => `${trx.instant('Contract_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Agent: { control: 'navigation', label: () => trx.instant('Contract_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
+        CurrencyId: { control: 'text', label: () => `${trx.instant('Contract_Currency')} (${trx.instant('Id')})` },
+        Currency: { control: 'navigation', label: () => trx.instant('Contract_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Contract_TaxIdentificationNumber') },
         StartDate: { control: 'date', label: () => trx.instant('Contract_StartDate') },
         JobId: { control: 'number', label: () => `${trx.instant('Contract_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

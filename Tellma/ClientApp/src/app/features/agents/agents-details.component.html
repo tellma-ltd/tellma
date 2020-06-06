@@ -1,9 +1,10 @@
-<t-details collection="Center" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate" [detailsCrumb]="detailsCrumb"
-    [documentTemplate]="document" [actions]="[
+<t-details collection="Agent" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'Agents' | translate" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
+
 </t-details>
 
 <!-- Details Crumb -->
@@ -56,67 +57,23 @@
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
     </t-form-group>
 
-    <!-- Code -->
-    <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-        <div *ngIf="!isEdit">{{model?.Code}}</div>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
-    </t-form-group>
-
-    <!-- Center Type -->
-    <t-form-group class="t-form-group" [label]="'Center_CenterType' | translate"
-        [serverErrors]="model?.serverErrors?.CenterType">
-        <div *ngIf="!isEdit">
-            <t-restricted [metadata]="model?.EntityMetadata?.CenterType">
-                {{ centerTypeLookup(model?.CenterType) | translate }}
-            </t-restricted>
-        </div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices" required></t-selector>
-    </t-form-group>
-
-    <!-- Expense Entry Type -->
-    <t-form-group class="t-form-group" [label]="'Center_ExpenseEntryType' | translate"
-        [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
-        <t-restricted [metadata]="model?.EntityMetadata?.ExpenseEntryTypeId">
-            <t-view-link *ngIf="!isEdit" link="../../entry-types/" [itemId]="model?.ExpenseEntryTypeId">{{
-                    ws.getMultilingualValue('EntryType', model?.ExpenseEntryTypeId, 'Name') }}</t-view-link>
+    <!-- Is Related -->
+    <t-form-group class="t-form-group" [label]="'Agent_IsRelated' | translate"
+        [serverErrors]="model?.serverErrors?.IsRelated">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsRelated">
+            {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
         </t-restricted>
-        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseEntryTypeId"></t-entry-types-picker>
-    </t-form-group>
-
-    <!-- Manager -->
-    <t-form-group class="t-form-group" [label]="'Center_Manager' | translate"
-        [serverErrors]="model?.serverErrors?.ManagerId">
-        <t-restricted [metadata]="model?.EntityMetadata?.ManagerId">
-            <t-view-link *ngIf="!isEdit" link="../../agents/"
-                [itemId]="model?.ManagerId">{{
-                    ws.getMultilingualValue('Agent', model?.ManagerId, 'Name') }}</t-view-link>
-        </t-restricted>
-        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-agents-picker>
-    </t-form-group>
-
-    <!-- Parent -->
-    <t-form-group class="t-form-group" [label]="'TreeParent' | translate"
-        [serverErrors]="model?.serverErrors?.ParentId">
-        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="model?.ParentId">{{
-            ws.getMultilingualValue('Center', model?.ParentId, 'Name') }}</t-view-link>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.ParentId"></t-centers-picker>
-    </t-form-group>
-
-    <!-- Is Leaf -->
-    <t-form-group class="t-form-group" [label]="'IsLeaf' | translate">
-        <div *ngIf="!isEdit">{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>
         <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsLeaf" id="isLeaf">
-            <label class="custom-control-label t-pointer" for="isLeaf">&zwnj;</label>
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
+            <label class="custom-control-label t-pointer" for="isRelated">&zwnj;</label>
         </div>
     </t-form-group>
 
     <!-- Is Active -->
     <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-        <t-auto-cell collection="Center" [entity]="model" path="IsActive"></t-auto-cell>
+        <t-auto-cell collection="Unit" [entity]="model" path="IsActive"></t-auto-cell>
     </t-form-group>
 </ng-template>
-
 
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

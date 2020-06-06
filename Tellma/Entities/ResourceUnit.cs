@@ -8,9 +8,11 @@ namespace Tellma.Entities
     public class ResourceUnitForSave : EntityWithKey<int>
     {
         [Display(Name = "ResourceUnit_Unit")]
+        [Required]
         public int? UnitId { get; set; }
 
         [Display(Name = "ResourceUnit_Multiplier")]
+        [Required]
         public double? Multiplier { get; set; }
     }
 

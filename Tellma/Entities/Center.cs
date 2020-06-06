@@ -16,10 +16,11 @@ namespace Tellma.Entities
         public int? ParentId { get; set; }
 
         [Display(Name = "Center_CenterType")]
+        [Required]
         [StringLength(255)]
-        [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
+        [ChoiceList(new object[] { "Segment", "Profit", "Revenue", "Cost" },
             new string[] {
-                "Center_CenterType_Investment",
+                "Center_CenterType_Segment",
                 "Center_CenterType_Profit",
                 "Center_CenterType_Revenue",
                 "Center_CenterType_Cost" })]
@@ -40,6 +41,9 @@ namespace Tellma.Entities
         [StringLength(255)]
         [AlwaysAccessible]
         public string Name3 { get; set; }
+
+        [Display(Name = "Center_ExpenseEntryType")]
+        public int? ExpenseEntryTypeId { get; set; }
 
         [Display(Name = "Center_Manager")]
         public int? ManagerId { get; set; }
@@ -84,9 +88,13 @@ namespace Tellma.Entities
 
         // For Query
 
+        [Display(Name = "Center_ExpenseEntryType")]
+        [ForeignKey(nameof(ExpenseEntryTypeId))]
+        public EntryType ExpenseEntryType { get; set; }
+
         [Display(Name = "Center_Manager")]
         [ForeignKey(nameof(ManagerId))]
-        public Contract Manager { get; set; }
+        public Agent Manager { get; set; }
 
         [AlwaysAccessible]
         public HierarchyId Node { get; set; }

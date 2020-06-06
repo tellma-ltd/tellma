@@ -412,7 +412,7 @@
                             {{ ws.getMultilingualValue('Unit', item.UnitId, 'Name') }}
                         </div>
                         <t-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
-                            (ngModelChange)="update.call(null, item);">
+                            (ngModelChange)="update.call(null, item);" [required]="!item.PH">
                         </t-units-picker>
                     </t-form-group-cell>
                 </ng-template>
@@ -424,7 +424,7 @@
                         <div *ngIf="!isEdit">{{ item.Multiplier | number }}</div>
                         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Multiplier"
                             (ngModelChange)="update.call(null, item)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
+                            [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [required]="!item.PH">
                         </t-decimal-editor>
                     </t-form-group-cell>
                 </ng-template>

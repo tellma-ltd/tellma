@@ -67,7 +67,8 @@ import {
   faFax,
   faBoxes,
   faHandsHelping,
-  faRecycle
+  faRecycle,
+  faIdBadge
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -115,6 +116,9 @@ import { AceConfigInterface } from 'ngx-ace-wrapper';
 import { MarkupTemplatesMasterComponent } from './markup-templates/markup-templates-master.component';
 import { MarkupTemplatesDetailsComponent } from './markup-templates/markup-templates-details.component';
 import { DocumentsPickerComponent } from './documents/documents-picker.component';
+import { AgentsDetailsComponent } from './agents/agents-details.component';
+import { AgentsMasterComponent } from './agents/agents-master.component';
+import { AgentsPickerComponent } from './agents/agents-picker.component';
 
 const routes: Routes = [
   {
@@ -173,6 +177,18 @@ const routes: Routes = [
       {
         path: 'contracts/:definitionId/:id',
         component: ContractsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Agents
+      {
+        path: 'agents',
+        component: AgentsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'agents/:id',
+        component: AgentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -462,6 +478,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     MarkupTemplatesMasterComponent,
     MarkupTemplatesDetailsComponent,
     DocumentsPickerComponent,
+    AgentsDetailsComponent,
+    AgentsMasterComponent,
+    AgentsPickerComponent,
   ],
   imports: [
     SharedModule,
@@ -486,7 +505,7 @@ export class ApplicationModule {
       faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileCode,
       faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
 
-      // Main menu icons
+      // Main menu icons, IMPORTANT: Keep in sync with metadata_ReportDefinition
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,
@@ -494,7 +513,7 @@ export class ApplicationModule {
       faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait,
       faWarehouse, faPowerOff, faCarSide, faTint, faTintSlash, faFileImport, faFileExport, faPills, faUserCheck, faFax,
       faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
-      faRecycle
+      faRecycle, faIdBadge
     );
   }
 }
