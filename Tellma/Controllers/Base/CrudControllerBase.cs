@@ -233,20 +233,20 @@ namespace Tellma.Controllers
                 // This implements field level security
                 entities = await ApplyUpdatePermissionsMask(entities);
 
+                // Validate
+                // Check that non-null non-0 Ids are unique
+                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
+
+                // Basic Validation (before preprocessing)
+                var meta = GetMetadataForSave();
+                ValidateList(entities, meta);
+                ModelState.ThrowIfInvalid();
+
                 // Start a transaction scope for save since it causes data modifications
                 using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
 
                 // Optional preprocessing
                 await SavePreprocessAsync(entities);
-
-                // Validate
-                // Check that non-null non-0 Ids are unique
-                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
-
-                // Validation
-                var meta = GetMetadataForSave();
-                ValidateList(entities, meta);
-                ModelState.ThrowIfInvalid();
 
                 // Custom Validation
                 await SaveValidateAsync(entities);
