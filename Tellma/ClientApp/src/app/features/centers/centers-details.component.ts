@@ -21,7 +21,7 @@ export class CentersDetailsComponent extends DetailsBaseComponent {
 
   private centersApi = this.api.centersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent,Manager';
+  public expand = 'Parent,Manager,ExpenseEntryType';
 
   create = () => {
     const result: CenterForSave = { };

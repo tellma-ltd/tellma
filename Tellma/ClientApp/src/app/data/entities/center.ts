@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
@@ -56,32 +57,22 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ParentId: {
-                    control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
-                    minDecimalPlaces: 0, maxDecimalPlaces: 0
-                },
+                ParentId: { control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterType: {
                     control: 'choice',
                     label: () => trx.instant('Center_CenterType'),
-                    choices: ['Investment', 'Profit', 'Revenue', 'Cost'],
+                    choices: ['Segment', 'Profit', 'Revenue', 'Cost'],
                     format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                ManagerId: {
-                    control: 'number',
-                    label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`,
-                    minDecimalPlaces: 0,
-                    maxDecimalPlaces: 0
-                },
+                ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Center_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Center_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
+                ManagerId: { control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Manager: { control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent', foreignKeyName: 'ManagerId' },
                 Code: { control: 'text', label: () => trx.instant('Code') },
                 IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
-
-                Manager: {
-                    control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent',
-                    foreignKeyName: 'ManagerId'
-                },
 
                 // Tree stuff
                 Level: {

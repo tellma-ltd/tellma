@@ -247,14 +247,17 @@
   <data name="Center_CenterType_Cost" xml:space="preserve">
     <value>تكلفة</value>
   </data>
-  <data name="Center_CenterType_Investment" xml:space="preserve">
-    <value>استثمار</value>
-  </data>
   <data name="Center_CenterType_Profit" xml:space="preserve">
     <value>ربح</value>
   </data>
   <data name="Center_CenterType_Revenue" xml:space="preserve">
     <value>إيراد</value>
+  </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>نشاط</value>
+  </data>
+  <data name="Center_ExpenseEntryType" xml:space="preserve">
+    <value>نوع سطر المصروف</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>

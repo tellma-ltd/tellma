@@ -247,14 +247,17 @@
   <data name="Center_CenterType_Cost" xml:space="preserve">
     <value>成本</value>
   </data>
-  <data name="Center_CenterType_Investment" xml:space="preserve">
-    <value>投资</value>
-  </data>
   <data name="Center_CenterType_Profit" xml:space="preserve">
     <value>利润</value>
   </data>
   <data name="Center_CenterType_Revenue" xml:space="preserve">
     <value>收入</value>
+  </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>分割</value>
+  </data>
+  <data name="Center_ExpenseEntryType" xml:space="preserve">
+    <value>费用条目类型</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>经理</value>

@@ -1,6 +1,6 @@
 <t-details collection="Center" [idString]="idString" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate"
-    [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+    [additionalSelect]="additionalSelect" [masterCrumb]="'Centers' | translate" [detailsCrumb]="detailsCrumb"
+    [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -70,18 +70,28 @@
                 {{ centerTypeLookup(model?.CenterType) | translate }}
             </t-restricted>
         </div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices"></t-selector>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices" required></t-selector>
+    </t-form-group>
+
+    <!-- Expense Entry Type -->
+    <t-form-group class="t-form-group" [label]="'Center_ExpenseEntryType' | translate"
+        [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
+        <t-restricted [metadata]="model?.EntityMetadata?.ExpenseEntryTypeId">
+            <t-view-link *ngIf="!isEdit" link="../../entry-types/" [itemId]="model?.ExpenseEntryTypeId">{{
+                    ws.getMultilingualValue('EntryType', model?.ExpenseEntryTypeId, 'Name') }}</t-view-link>
+        </t-restricted>
+        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseEntryTypeId"></t-entry-types-picker>
     </t-form-group>
 
     <!-- Manager -->
     <t-form-group class="t-form-group" [label]="'Center_Manager' | translate"
         [serverErrors]="model?.serverErrors?.ManagerId">
         <t-restricted [metadata]="model?.EntityMetadata?.ManagerId">
-            <t-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.ManagerId)?.DefinitionId"
+            <t-view-link *ngIf="!isEdit" link="../../agents/"
                 [itemId]="model?.ManagerId">{{
                     ws.getMultilingualValue('Agent', model?.ManagerId, 'Name') }}</t-view-link>
         </t-restricted>
-        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-contracts-picker>
+        <t-agents-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></t-agents-picker>
     </t-form-group>
 
     <!-- Parent -->

@@ -247,14 +247,17 @@
   <data name="Center_CenterType_Cost" xml:space="preserve">
     <value>Cost</value>
   </data>
-  <data name="Center_CenterType_Investment" xml:space="preserve">
-    <value>Investment</value>
-  </data>
   <data name="Center_CenterType_Profit" xml:space="preserve">
     <value>Profit</value>
   </data>
   <data name="Center_CenterType_Revenue" xml:space="preserve">
     <value>Revenue</value>
+  </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>Segment</value>
+  </data>
+  <data name="Center_ExpenseEntryType" xml:space="preserve">
+    <value>Expense Entry Type</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>

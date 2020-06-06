@@ -9,7 +9,7 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'CenterType' : [
-                { template: investment, expression: 'CenterType eq \'Investment\''},
+                { template: segment, expression: 'CenterType eq \'Segment\''},
                 { template: profit, expression: 'CenterType eq \'Profit\''},
                 { template: revenue, expression: 'CenterType eq \'Revenue\''},
                 { template: cost, expression: 'CenterType eq \'Cost\''}
@@ -44,7 +44,7 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #investment> {{ 'Center_CenterType_Investment' | translate }} </ng-template>
+<ng-template #segment> {{ 'Center_CenterType_Segment' | translate }} </ng-template>
 <ng-template #profit> {{ 'Center_CenterType_Profit' | translate }} </ng-template>
 <ng-template #revenue> {{ 'Center_CenterType_Revenue' | translate }} </ng-template>
 <ng-template #cost> {{ 'Center_CenterType_Cost' | translate }} </ng-template>
