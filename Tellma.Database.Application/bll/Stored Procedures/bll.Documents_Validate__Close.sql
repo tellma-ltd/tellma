@@ -154,6 +154,8 @@ SET NOCOUNT ON;
 	FROM dbo.Entries E
 	JOIN @Lines L ON E.[LineId] = L.[Id];
 
+	-- To do: cannot close a document with a control account having non zero balance
+
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__State_Data]
 		@Lines = @Lines, @Entries = @Entries, @State = 2;

@@ -358,21 +358,29 @@ END
 	AND L.[DefinitionId] <> @ManualLineLD;
 
 	With LineEntries AS (
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], LDE.[AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], LDEAT.[AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
 				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index] AND L.[VariantIndex] = LDE.[VariantIndex]
+		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+		JOIN dbo.[LineDefinitionEntryAccountTypes] LDEAT ON LDE.[Id] = LDEAT.[LineDefinitionEntryId]
 		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
-		WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] = LDE.[ResourceDefinitionId])
-		AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] = LDE.[ContractDefinitionId])
+		WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
+			SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
+			WHERE [LineDefinitionEntryId] = LDE.[Id]
+		))
+		AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] IN (
+			SELECT [ContractDefinitionId] FROM [LineDefinitionEntryContractDefinitions]
+			WHERE [LineDefinitionEntryId] = LDE.[Id]		
+		))
 	),
 	ConformantAccounts AS (
 		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], MIN(A.Id) AS MINAccountId, MAX(A.[Id]) AS MAXAccountId
 		FROM dbo.Accounts A
 		JOIN LineEntries LE ON LE.[AccountTypeId] = A.[AccountTypeId]
-		WHERE (A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+		WHERE
+			(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])

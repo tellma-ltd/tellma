@@ -1,6 +1,6 @@
 ﻿IF NOT EXISTS (SELECT * FROM dbo.RuleTypes)
 INSERT INTO dbo.RuleTypes([RuleType]) VALUES
-(N'ByAgent'),
+(N'ByContract'),
 (N'ByRole'),
 (N'ByUser'),
 (N'Public'); 

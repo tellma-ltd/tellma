@@ -1,5 +1,5 @@
 ﻿
-	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
+	-- The list includes the following transaction types, and their flavours depending on country and industry:
 	-- lease-in agreement, lease-in receipt, lease-in invoice
 	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
 	-- lease-out agreement, lease out issue, lease-out invoice

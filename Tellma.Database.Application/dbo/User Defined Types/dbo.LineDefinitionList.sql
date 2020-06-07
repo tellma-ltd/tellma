@@ -11,7 +11,6 @@
 	[TitlePlural]						NVARCHAR (50) NOT NULL,
 	[TitlePlural2]						NVARCHAR (50),
 	[TitlePlural3]						NVARCHAR (50),
-	[DefaultVariantIndex]				TINYINT		DEFAULT 0,
 	[AllowSelectiveSigning]				BIT DEFAULT 0,
 	[ViewDefaultsToForm]				BIT DEFAULT 0,
 	[Script]							NVARCHAR (MAX) -- to store SQL code that populates the line

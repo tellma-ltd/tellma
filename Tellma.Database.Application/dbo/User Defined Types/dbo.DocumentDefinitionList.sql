@@ -11,7 +11,6 @@
 	[TitlePlural2]				NVARCHAR (255),
 	[TitlePlural3]				NVARCHAR (255),
 
-	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes

@@ -8,7 +8,7 @@
 	CONSTRAINT [CK_WorkflowSignatures__RuleType_RoleId] CHECK ([RuleType] <> N'ByRole' OR [RoleId] IS NOT NULL),
 	[UserId]				INT					CONSTRAINT [FK_WorkflowSignatures__UserId] REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [CK_WorkflowSignatures__RuleType_UserId] CHECK ([RuleType] <> N'ByUser' OR [UserId] IS NOT NULL),
-	CONSTRAINT [CK_WorkflowSignatures__RuleType_RuleTypeIndex] CHECK ([RuleType] <> N'ByAgent' OR [RuleTypeEntryIndex] IS NOT NULL),
+	CONSTRAINT [CK_WorkflowSignatures__RuleType_RuleTypeIndex] CHECK ([RuleType] <> N'ByContract' OR [RuleTypeEntryIndex] IS NOT NULL),
 	[PredicateType]			NVARCHAR(50)		CONSTRAINT [FK_WorkflowSignatures__PredicateType] REFERENCES dbo.PredicateTypes([PredicateType]),
 	[PredicateTypeEntryIndex]	INT				CONSTRAINT [FK_WorkflowSignatures__PredicateTypeIndex_Value] CHECK([PredicateTypeEntryIndex] >= 0),
 	[Value]					DECIMAL (19,4),

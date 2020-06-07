@@ -62,16 +62,16 @@ SELECT T.[Id],
 	T.[NotedDateLabel2],
 	T.[NotedDateLabel3]
 	FROM [dbo].[AccountTypes] T
-	WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	--WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
 	
 -- Get the contract definitions of the used account types
 SELECT [Id], [AccountTypeId], [ContractDefinitionId] FROM [dbo].[AccountTypeContractDefinitions]
-	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	--WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
 	
 -- Get the noted contract definitions of the used account types
 SELECT [Id], [AccountTypeId], [NotedContractDefinitionId] FROM [dbo].[AccountTypeNotedContractDefinitions]
-	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	--WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
 	
 -- Get the resource definitions of the used account types
 SELECT [Id], [AccountTypeId], [ResourceDefinitionId] FROM [dbo].[AccountTypeResourceDefinitions]
-	WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+	--WHERE [AccountTypeId] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())

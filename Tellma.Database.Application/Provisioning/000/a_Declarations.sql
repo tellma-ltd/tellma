@@ -41,9 +41,12 @@
 	DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	DECLARE @LookupDefinitions dbo.LookupDefinitionList;
 	DECLARE @LineDefinitions dbo.LineDefinitionList;
-	DECLARE @LineDefinitionVariants dbo.LineDefinitionVariantList;
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
+	DECLARE @LineDefinitionEntryAccountTypes LineDefinitionEntryAccountTypeList;
+	DECLARE @LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList;
+	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
+	DECLARE @LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList;
 	DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 	DECLARE @Currencies dbo.[CurrencyList];
 

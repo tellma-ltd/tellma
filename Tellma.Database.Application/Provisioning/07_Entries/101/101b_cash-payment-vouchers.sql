@@ -258,7 +258,7 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 3, -- N'Completed',
 		@OnBehalfOfuserId = @amtaam,
-		@RuleType = N'ByAgent',
+		@RuleType = N'ByContract',
 		@RoleId = @1GeneralManager, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

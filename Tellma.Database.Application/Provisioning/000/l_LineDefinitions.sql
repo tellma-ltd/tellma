@@ -30,11 +30,7 @@
 INSERT @LineDefinitions([Index],
 [Code],			[TitleSingular], [TitlePlural]) VALUES
 (0,N'ManualLine', N'Adjustment', N'Adjustments');
-INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
-(0,0,N'Default');
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[VariantIndex],
-[Direction], [AccountTypeId]) VALUES
-(0,0,0,+1, @StatementOfFinancialPositionAbstract);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction]) VALUES (0,0,+1);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
 													[ReadOnlyState],
@@ -52,9 +48,6 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm], [Code],			[TitleSingular],				[TitlePlural]) VALUES
 (1,1,N'PaymentToSupplierCreditPurchase',N'Payment (Credit Purchase)',	N'Payments (Credit Purchases)');
-INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
-(0,1,N'Cash'),
-(1,1,N'Cheque')
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -64,13 +57,20 @@ SET [Script] = N'
 		[CenterId0]			= [CenterId1]
 '
 WHERE [Index] = 1;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], [VariantIndex],
-[Direction],[AccountTypeId],							[EntryTypeId]) VALUES
-(0,1,0,+1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL),
-(1,1,0,-1,	@CashOnHand,						@PaymentsToSuppliersForGoodsAndServices),
-
-(0,1,1,+1,	@TradeAndOtherCurrentPayablesToTradeSuppliers,	NULL),
-(1,1,1,-1,	@BalancesWithBanks,						@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[EntryTypeId]) VALUES
+(0,1,+1,	NULL),
+(1,1,-1,	@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+			[AccountTypeId]) VALUES
+(0,0,1,		@TradeAndOtherCurrentPayablesToTradeSuppliers),
+(0,1,1,		@CashOnHand),
+(1,1,1,		@BalancesWithBanks);
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+			[ContractDefinitionId]) VALUES
+(0,0,1,		@suppliersCD),
+(0,1,1,		@petty_cash_fundsCD),
+(1,1,1,		@bank_accountsCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -90,18 +90,15 @@ INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 (2,1,+3),
 (3,1,+4);
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,1,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,1,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,1,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,1,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
---2:PaymentToSupplierCashPurchase (inv-cash-gs)
+[RuleType],				[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
+(0,0,1,N'Public',		NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,1,N'ByRole',		@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,1,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,1,N'ByRole',		@ComptrollerRL,		NULL,			NULL);
+--2:PaymentToSupplierWithInvoice(inv-cash-gs) or  (inv-cash,gs) or (gs,inv-cash)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],		[TitlePlural]) VALUES
-(2,1,N'PaymentToSupplierCashPurchase',	N'Payment (Cash Purchase)',	N'Payments (Cash Purchases)');
-INSERT INTO @LineDefinitionVariants([Index], [HeaderIndex], [Name]) VALUES
-(0,2,N'Cash'),
-(1,2,N'Cheque')
+(2,1,N'PaymentToSupplierWithInvoice',	N'Payment (w/ Invoice)',	N'Payments (w/ Invoices)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -118,15 +115,27 @@ SET [Script] = N'
 		[CenterId1]		= [CenterId2]
 '
 WHERE [Index] = 2;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex], [VariantIndex],
-[Direction],[AccountTypeId],					[EntryTypeId]) VALUES
-(0,2,0,+1,	@CashPurchaseDocumentControlExtension,	NULL),
-(1,2,0,+1,	@CurrentValueAddedTaxReceivables,		NULL),
-(2,2,0,-1,	@CashOnHand,							@PaymentsToSuppliersForGoodsAndServices),
-
-(0,2,1,+1,	@CashPurchaseDocumentControlExtension,	NULL),
-(1,2,1,+1,	@CurrentValueAddedTaxReceivables,		NULL),
-(2,2,1,-1,	@BalancesWithBanks,						@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
+[Direction],[EntryTypeId]) VALUES
+(0,2,+1,	NULL),
+(1,2,+1,	NULL),
+(2,2,-1,	@PaymentsToSuppliersForGoodsAndServices);
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+			[AccountTypeId]) VALUES
+(0,0,2,		@CashPurchaseDocumentControlExtension),
+(1,0,2,		@CurrentPrepayments),
+(2,0,2,		@AccrualsClassifiedAsCurrent),
+(0,1,2,		@CurrentValueAddedTaxReceivables),
+(0,2,2,		@CashOnHand),
+(1,2,2,		@BalancesWithBanks);
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+			[ContractDefinitionId]) VALUES
+(0,0,2,		@suppliersCD),
+(0,2,2,		@petty_cash_fundsCD),
+(1,2,2,		@bank_accountsCD);
+INSERT INTO @LineDefinitionEntryNotedContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+			[NotedContractDefinitionId]) VALUES
+(0,1,2,		@suppliersCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -153,50 +162,51 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,2,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,2,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,2,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,2,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 GOTO ENOUGH_LD
---3:PrepaymentToSupplier (inv-cash,gs)
+/*
+--3:PaymentToEmployee (used in a payroll voucher)
 INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],	[TitleSingular],			[TitlePlural]) VALUES
-(3,1,N'PrepaymentToSupplier',	N'Prepayment to Supplier',	N'Prepayments to Suppliers');
+[ViewDefaultsToForm],[Code],[TitleSingular],			[TitlePlural]) VALUES
+(3,1,N'PaymentToEmployee',	N'Payment Employee Benefit',N'Payments Employee Benefits');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
 	SET
-		[CurrencyId0]	= [CurrencyId2],
-		[CurrencyId1]	= [CurrencyId2],
-
+		[CurrencyId1]	= [CurrencyId0],
 		[NotedContractId1] = [ContractId0],
-		[NotedAgentName2] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
-		[NotedAmount1]		= [MonetaryValue0],
-		[MonetaryValue2]	= ISNULL([MonetaryValue0],0) + ISNULL([MonetaryValue1],0),
-		
-		[CenterId0]		= [CenterId2],
-		[CenterId1]		= [CenterId2]
+		[MonetaryValue1]= [MonetaryValue0],
+		[CenterId0]		= [CenterId1]
 '
 WHERE [Index] = 3;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
-(0,3,+1,	@CurrentPrepayments,				NULL),
-(1,3,+1,	@CurrentValueAddedTaxReceivables,	NULL),
-(2,3,-1,	@CashAndCashEquivalents,			@PaymentsToSuppliersForGoodsAndServices);
+-- We might better add ContractDefinitionId and limit it to employees for this case
+[Direction],[EntryTypeId]) VALUES
+(0,3,+1,	NULL),
+(1,3,-1,	@PaymentsToAndOnBehalfOfEmployees);
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+			[AccountTypeId]) VALUES
+(0,0,3,		@OtherCurrentPayables),
+(0,1,3,		@CashOnHand),
+(1,1,3,		@BalancesWithBanks);
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+			[ContractDefinitionId]) VALUES
+(0,0,3,		@employeesCD),
+(0,1,3,		@petty_cash_fundsCD),
+(1,1,3,		@bank_accountsCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,3,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,3,	N'NotedDate',			1,	N'Invoice Date',	3,4,0), 
-(2,3,	N'ExternalReference',	1,	N'Invoice #',		3,4,0), 
-(3,3,	N'ContractId',			0,	N'Supplier',		3,4,1),
-(4,3,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(5,3,	N'MonetaryValue',		0,	N'Price Excl. VAT',	1,2,0),
-(6,3,	N'MonetaryValue',		1,	N'VAT',				3,4,0),
-(7,3,	N'MonetaryValue',		2,	N'Total',			3,0,0),
-(8,3,	N'ContractId',			2,	N'Bank/Cashier',	3,4,0),
-(9,3,	N'ExternalReference',	2,	N'Check/Receipt #',	3,4,0),
-(10,3,	N'NotedDate',			2,	N'Check Date',		5,4,0),
-(11,3,	N'CenterId',			2,	N'Inv. Ctr',		4,4,1);
+(0,3,	N'Memo',				0,	N'Memo',			1,4,1),
+(1,3,	N'ContractId',			0,	N'Employee',		3,4,1),
+(2,3,	N'CurrencyId',			0,	N'Currency',		1,2,1),
+(3,3,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
+(4,3,	N'ContractId',			1,	N'Bank/Cashier',	3,4,0),
+(5,3,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
+(6,3,	N'NotedDate',			1,	N'Check Date',		5,4,0),
+(7,3,	N'CenterId',			1,	N'Inv. Ctr',		4,4,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
 (0,3,+1),
@@ -207,104 +217,8 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,3,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,3,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,3,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,3,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,3,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
---4:PaymentToSupplierAccrual (gs,inv-cash) [for utilities, rarely used, mostly treated as cash purchase]
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],		[TitleSingular],			[TitlePlural]) VALUES
-(4,1,N'PaymentToSupplierAccrual',	N'Postpayment to Supplier',	N'Postpayments to Suppliers');
-UPDATE @LineDefinitions
-SET [Script] = N'
-	UPDATE @ProcessedWideLines
-	SET
-		[CurrencyId0]	= [CurrencyId2],
-		[CurrencyId1]	= [CurrencyId2],
-
-		[NotedContractId1] = [ContractId0],
-		[NotedAgentName2] = (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId0]),
-		[MonetaryValue0]= ISNULL([NotedAmount1],0),
-		[MonetaryValue2]= ISNULL([MonetaryValue1],0) + ISNULL([NotedAmount1],0),
-		
-		[CenterId0]		= [CenterId2],
-		[CenterId1]		= [CenterId2]
-'
-WHERE [Index] = 4;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId],				[EntryTypeId]) VALUES
-(0,4,+1,	@AccrualsClassifiedAsCurrent,		NULL),
-(1,4,+1,	@CurrentValueAddedTaxReceivables,	NULL),
-(2,4,-1,	@CashAndCashEquivalents,			@PaymentsToSuppliersForGoodsAndServices);
-INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
-														[ReadOnlyState],
-														[InheritsFromHeader]) VALUES
-(0,4,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,4,	N'NotedDate',			1,	N'Invoice Date',	3,4,0), 
-(2,4,	N'ExternalReference',	1,	N'Invoice #',		3,4,0), 
-(3,4,	N'ContractId',			0,	N'Supplier',		3,4,1),
-(4,4,	N'CurrencyId',			2,	N'Currency',		1,2,1),
-(5,4,	N'NotedAmount',			1,	N'Price Excl. VAT',	1,2,0),
-(6,4,	N'MonetaryValue',		1,	N'VAT',				3,4,0),
-(7,4,	N'MonetaryValue',		2,	N'Total',			3,0,0),
-(8,4,	N'ContractId',			2,	N'Bank/Cashier',	3,4,0),
-(9,4,	N'ExternalReference',	2,	N'Check/Receipt #',	3,4,0),
-(10,4,	N'NotedDate',			2,	N'Check Date',		5,4,0),
-(11,4,	N'CenterId',			2,	N'Inv. Ctr',		4,4,1);
-INSERT INTO @Workflows([Index],[LineDefinitionIndex],
-[ToState]) Values
-(0,4,+1),
-(1,4,+2),
-(2,4,+3),
-(3,4,+4);
-INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,4,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,4,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,4,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,4,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
---8:PaymentToEmployee (used in a payroll voucher)
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],[TitleSingular],			[TitlePlural]) VALUES
-(8,1,N'PaymentToEmployee',	N'Payment Employee Benefit',N'Payments Employee Benefits');
-UPDATE @LineDefinitions
-SET [Script] = N'
-	UPDATE @ProcessedWideLines
-	SET
-		[CurrencyId1]	= [CurrencyId0],
-		[NotedContractId1] = [ContractId0],
-		[MonetaryValue1]= [MonetaryValue0],
-		[CenterId0]		= [CenterId1]
-'
-WHERE [Index] = 8;
-INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
--- We might better add ContractDefinitionId and limit it to employees for this case
-[Direction],[AccountTypeId],		[EntryTypeId]) VALUES
-(0,8,+1,	@OtherCurrentPayables,		NULL),
-(1,8,-1,	@CashAndCashEquivalents,	@PaymentsToAndOnBehalfOfEmployees);
-INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
-		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
-														[ReadOnlyState],
-														[InheritsFromHeader]) VALUES
-(0,8,	N'Memo',				0,	N'Memo',			1,4,1),
-(1,8,	N'ContractId',			0,	N'Employee',		3,4,1),
-(2,8,	N'CurrencyId',			0,	N'Currency',		1,2,1),
-(3,8,	N'MonetaryValue',		0,	N'Amount',			1,2,0),
-(4,8,	N'ContractId',			1,	N'Bank/Cashier',	3,4,0),
-(5,8,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
-(6,8,	N'NotedDate',			1,	N'Check Date',		5,4,0),
-(7,8,	N'CenterId',			1,	N'Inv. Ctr',		4,4,1);
-INSERT INTO @Workflows([Index],[LineDefinitionIndex],
-[ToState]) Values
-(0,8,+1),
-(1,8,+2),
-(2,8,+3),
-(3,8,+4);
-INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,8,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,8,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,8,N'ByAgent',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,8,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 --9:PaymentToOther
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],	[TitlePlural]) VALUES (
@@ -319,9 +233,14 @@ SET [Script] = N'
 '
 WHERE [Index] = 9;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
-[Direction],[AccountTypeId]) VALUES
-(0,9,	+1,	@OtherDocumentControlExtension),
-(1,9,	-1,	@CashAndCashEquivalents);
+[Direction]) VALUES
+(0,9,	+1),
+(1,9,	-1);
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+			[AccountTypeId]) VALUES
+(0,0,9,		@OtherDocumentControlExtension),
+(0,1,9,		@CashOnHand),
+(1,1,9,		@BalancesWithBanks);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
@@ -349,7 +268,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,9,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,9,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,9,N'ByAgent',	NULL,				1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,9,N'ByContract',	NULL,				1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,9,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
 --10:CashTransferExchange
 INSERT @LineDefinitions([Index],
@@ -396,8 +315,8 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],			[RoleId],			[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
 (0,0,10,N'Public',	NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
 (0,1,10,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,10,N'ByAgent',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(1,2,10,N'ByAgent',	NULL,				1,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,2,10,N'ByContract',	NULL,				0,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(1,2,10,N'ByContract',	NULL,				1,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,10,N'ByRole',	@ComptrollerRL,		NULL,		NULL);
 --11:StockReceiptCreditPurchase (inv-gs,cash) [rarely used in ET]
 INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
@@ -1093,13 +1012,16 @@ FROM @LineDefinitionStateReasons LDSR JOIN @TranslationsLD T ON LDSR.[Name] = T.
 UPDATE LDC
 SET	LDC.[Label2] = T.[Translated]
 FROM @LineDefinitionColumns LDC JOIN @TranslationsLD T ON LDC.[Label] = T.[Word] WHERE T.[Lang] = @Lang2
-
+*/
 ENOUGH_LD:
 
 EXEC [api].[LineDefinitions__Save]
 	@Entities = @LineDefinitions,
-	@LineDefinitionVariants = @LineDefinitionVariants,
 	@LineDefinitionEntries = @LineDefinitionEntries,
+	@LineDefinitionEntryAccountTypes = @LineDefinitionEntryAccountTypes,
+	@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+	@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
+	@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 	@LineDefinitionColumns = @LineDefinitionColumns,
 	@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 	@Workflows = @Workflows,

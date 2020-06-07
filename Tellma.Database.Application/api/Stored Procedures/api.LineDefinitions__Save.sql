@@ -1,7 +1,10 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
-	@LineDefinitionVariants [LineDefinitionVariantList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
+	@LineDefinitionEntryAccountTypes LineDefinitionEntryAccountTypeList READONLY,
+	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
+	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
+	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
 	@LineDefinitionColumns [LineDefinitionColumnList] READONLY,
 	@LineDefinitionStateReasons [LineDefinitionStateReasonList] READONLY,
 	@Workflows [WorkflowList] READONLY,
@@ -15,8 +18,11 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
-		@LineDefinitionVariants = @LineDefinitionVariants,
 		@LineDefinitionEntries = @LineDefinitionEntries,
+		@LineDefinitionEntryAccountTypes = @LineDefinitionEntryAccountTypes,
+		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
+		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,
 		@Workflows = @Workflows,
@@ -35,7 +41,10 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
-		@LineDefinitionVariants = @LineDefinitionVariants,
+		@LineDefinitionEntryAccountTypes = @LineDefinitionEntryAccountTypes,
+		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
+		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
+		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
 		@LineDefinitionColumns = @LineDefinitionColumns,
 		@LineDefinitionEntries = @LineDefinitionEntries,
 		@LineDefinitionStateReasons = @LineDefinitionStateReasons,

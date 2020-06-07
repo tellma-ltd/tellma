@@ -76,7 +76,7 @@ RETURN (
 			SELECT RoleId FROM dbo.RoleMemberships
 			WHERE UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
 		) RM ON RS.ProxyRoleId = RM.RoleId
-		WHERE RS.RuleType IN(N'ByUser', N'ByAgent')
+		WHERE RS.RuleType IN(N'ByUser', N'ByContract')
 		UNION
 		SELECT
 			RS.[LineId], LS.Id AS LineSignatureId,

@@ -124,7 +124,7 @@ SET NOCOUNT ON;
 	END
 
 	-- cannot sign a line by Agent, if Contract/Agent/UserId is null
-	IF @RuleType = N'ByAgent'
+	IF @RuleType = N'ByContract'
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT DISTINCT
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -136,7 +136,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Contracts] AG ON AG.[Id] = E.[ContractId]
 	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
 	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
-	WHERE WS.RuleType = N'ByAgent' AND WS.[RuleTypeEntryIndex]  = E.[Index]
+	WHERE WS.RuleType = N'ByContract' AND WS.[RuleTypeEntryIndex]  = E.[Index]
 	AND AG.UserId IS NULL
 
 	-- Cannot sign a line with no Entries

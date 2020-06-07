@@ -72,8 +72,9 @@ BEGIN -- Inserting
 	DECLARE @WashmRevenueTemplate INT = (
 		SELECT L.[Id]
 		FROM dbo.Lines L
-		JOIN map.Documents () D ON L.[DocumentId] = D.[Id]
-		WHERE D.[DocumentType] = 0
+		JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
+		JOIN dbo.DocumentDefinitions DD ON D.DefinitionId = DD.[Id]
+		WHERE DD.[DocumentType] = 0
 		AND L.[DefinitionId] = @LeaseOutPrepaidLD
 		AND L.[Memo] =  N'Washm'
 	)
