@@ -61,12 +61,12 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[EntryTypeId]) VALUES
 (0,1,+1,	NULL),
 (1,1,-1,	@PaymentsToSuppliersForGoodsAndServices);
-INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[AccountTypeId]) VALUES
 (0,0,1,		@TradeAndOtherCurrentPayablesToTradeSuppliers),
 (0,1,1,		@CashOnHand),
 (1,1,1,		@BalancesWithBanks);
-INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,1,		@suppliersCD),
 (0,1,1,		@petty_cash_fundsCD),
@@ -120,7 +120,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 (0,2,+1,	NULL),
 (1,2,+1,	NULL),
 (2,2,-1,	@PaymentsToSuppliersForGoodsAndServices);
-INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[AccountTypeId]) VALUES
 (0,0,2,		@CashPurchaseDocumentControlExtension),
 (1,0,2,		@CurrentPrepayments),
@@ -128,12 +128,12 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinit
 (0,1,2,		@CurrentValueAddedTaxReceivables),
 (0,2,2,		@CashOnHand),
 (1,2,2,		@BalancesWithBanks);
-INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,2,		@suppliersCD),
 (0,2,2,		@petty_cash_fundsCD),
 (1,2,2,		@bank_accountsCD);
-INSERT INTO @LineDefinitionEntryNotedContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryNotedContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[NotedContractDefinitionId]) VALUES
 (0,1,2,		@suppliersCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
@@ -165,7 +165,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,2,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 GOTO ENOUGH_LD
-/*
+
 --3:PaymentToEmployee (used in a payroll voucher)
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],[TitleSingular],			[TitlePlural]) VALUES
@@ -185,12 +185,12 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[EntryTypeId]) VALUES
 (0,3,+1,	NULL),
 (1,3,-1,	@PaymentsToAndOnBehalfOfEmployees);
-INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[AccountTypeId]) VALUES
 (0,0,3,		@OtherCurrentPayables),
 (0,1,3,		@CashOnHand),
 (1,1,3,		@BalancesWithBanks);
-INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
 (0,0,3,		@employeesCD),
 (0,1,3,		@petty_cash_fundsCD),
@@ -236,7 +236,7 @@ INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction]) VALUES
 (0,9,	+1),
 (1,9,	-1);
-INSERT INTO @LineDefinitionEntryAccountTypes([Index], [HeaderIndex],[LineDefinitionIndex],
+INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[AccountTypeId]) VALUES
 (0,0,9,		@OtherDocumentControlExtension),
 (0,1,9,		@CashOnHand),
@@ -270,6 +270,7 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,1,9,N'ByRole',	@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
 (0,2,9,N'ByContract',	NULL,				1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,9,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
+/*
 --10:CashTransferExchange
 INSERT @LineDefinitions([Index],
 [ViewDefaultsToForm],[Code],	[TitleSingular],		[TitlePlural]) VALUES (
