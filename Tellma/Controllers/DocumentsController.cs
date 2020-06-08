@@ -743,7 +743,7 @@ namespace Tellma.Controllers
 
                 var query = _repo.Query<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp)
-                    .Expand("Role,Agent,User,SignedBy,OnBehalfOfUser,ProxyRole")
+                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.Contract)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(cancellation);
@@ -777,6 +777,7 @@ namespace Tellma.Controllers
 
                 // Document defaults
                 doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
+                doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
                 doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
                 doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
                 doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);
@@ -805,6 +806,7 @@ namespace Tellma.Controllers
             {
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
+                doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
                 doc.DebitContractId = doc.DebitContractIsCommon.Value ? doc.DebitContractId : null;
                 doc.CreditContractId = doc.CreditContractIsCommon.Value ? doc.CreditContractId : null;
                 doc.NotedContractId = doc.NotedContractIsCommon.Value ? doc.NotedContractId : null;
@@ -859,6 +861,13 @@ namespace Tellma.Controllers
                                 if (doc.MemoIsCommon.Value)
                                 {
                                     line.Memo = doc.Memo;
+                                }
+                            }
+                            else if (columnDef.ColumnName == nameof(Line.PostingDate))
+                            {
+                                if (doc.PostingDateIsCommon.Value)
+                                {
+                                    line.PostingDate = doc.PostingDate;
                                 }
                             }
                             else
@@ -1036,6 +1045,7 @@ namespace Tellma.Controllers
 
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var docDef = Definition();
+            var meta = GetMetadataForSave();
             var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
             // SQL may return keys representing line and entry properties that inherit from a common document property
@@ -1064,18 +1074,22 @@ namespace Tellma.Controllers
                     }
                 }
 
-                // Date cannot be in the future
-                if (doc.PostingDate > DateTime.Today.AddDays(1))
+                if (doc.PostingDateIsCommon.Value && doc.PostingDate != null)
                 {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                        _localizer["Error_DateCannotBeInTheFuture"]);
-                }
+                    // Date cannot be in the future
+                    if (doc.PostingDate > DateTime.Today.AddDays(1))
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                            _localizer["Error_DateCannotBeInTheFuture"]);
+                    }
 
-                // Date cannot be before archive date
-                if (doc.PostingDate <= settings.ArchiveDate)
-                {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                        _localizer["Error_DateCannotBeBeforeArchiveDate0", settings.ArchiveDate.ToString("yyyy-MM-dd")]);
+                    // Date cannot be before archive date
+                    if (doc.PostingDate <= settings.ArchiveDate)
+                    {
+                        var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                            _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                    }
                 }
 
                 ///////// Line Validation
@@ -1085,8 +1099,10 @@ namespace Tellma.Controllers
 
                     if (!lineDefs.TryGetValue(line.DefinitionId.Value, out LineDefinitionForClient lineDef))// We checked earlier if this is null
                     {
-                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.DefinitionId)),
                             _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
+
+                        continue;
                     }
 
                     // Prevent duplicate line Ids
@@ -1096,6 +1112,29 @@ namespace Tellma.Controllers
                         var id = duplicateLineIds[line];
                         ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
+                    }
+
+                    foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
+                    {
+                        // What's the most appropriate pattern here?
+                    }
+
+                    if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
+                    {
+                        // Date cannot be in the future
+                        if (line.PostingDate > DateTime.Today.AddDays(1))
+                        {
+                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                _localizer["Error_DateCannotBeInTheFuture"]);
+                        }
+
+                        // Date cannot be before archive date
+                        if (line.PostingDate <= settings.ArchiveDate)
+                        {
+                            var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                        }
                     }
 
                     ///////// Entry Validation
@@ -1142,6 +1181,17 @@ namespace Tellma.Controllers
                                 if (doc.Memo != line.Memo)
                                 {
                                     AddReadOnlyError(docIndex, nameof(Document.Memo));
+                                }
+                            }
+                        }
+                        else if (columnDef.ColumnName == nameof(Line.PostingDate))
+                        {
+                            if (doc.PostingDateIsCommon.Value)
+                            {
+                                errorKeyMap.Add(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)), $"[{docIndex}].{nameof(Document.PostingDate)}");
+                                if (doc.PostingDate != line.PostingDate)
+                                {
+                                    AddReadOnlyError(docIndex, nameof(Document.PostingDate));
                                 }
                             }
                         }

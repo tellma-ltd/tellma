@@ -1745,4 +1745,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ContractUserList]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="74b4af98-9518-4e1b-9abf-e34410916db1" ChangeDateTime="06/07/2020 04:13:33">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNoteContractDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionEntryNotedContractDefinitions]" />
+  </Operation>
 </Operations>

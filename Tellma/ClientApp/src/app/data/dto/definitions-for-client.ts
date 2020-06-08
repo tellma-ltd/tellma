@@ -93,6 +93,7 @@ export interface ReportDimensionDefinitionForClient {
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     IsOriginalDocument: boolean;
+    DocumentType: number;
     Prefix: string;
     CodeWidth: number;
 
@@ -226,37 +227,10 @@ export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
     AccountTypeId?: number;
     EntryTypeId: number;
-
-    // Copied from AccountTypeParent
-    EntryTypeParentId?: number;
+    EntryTypeParentId?: number; // Comes from the Account Types
     ContractDefinitionIds: number[];
     NotedContractDefinitionIds: number[];
     ResourceDefinitionIds: number[];
-    // DueDateLabel?: string;
-    // DueDateLabel2?: string;
-    // DueDateLabel3?: string;
-    // Time1Label?: string;
-    // Time1Label2?: string;
-    // Time1Label3?: string;
-    // Time2Label?: string;
-    // Time2Label2?: string;
-    // Time2Label3?: string;
-    // ExternalReferenceLabel?: string;
-    // ExternalReferenceLabel2?: string;
-    // ExternalReferenceLabel3?: string;
-    // AdditionalReferenceLabel?: string;
-    // AdditionalReferenceLabel2?: string;
-    // AdditionalReferenceLabel3?: string;
-    // NotedContractNameLabel?: string;
-    // NotedContractNameLabel2?: string;
-    // NotedContractNameLabel3?: string;
-    // NotedAmountLabel?: string;
-    // NotedAmountLabel2?: string;
-    // NotedAmountLabel3?: string;
-    // NotedDateLabel?: string;
-    // NotedDateLabel2?: string;
-    // NotedDateLabel3?: string;
-
 
     // TO DELETE
 
@@ -278,6 +252,7 @@ export interface LineDefinitionColumnForClient {
     RequiredState?: number;
     ReadOnlyState?: LineState;
     InheritsFromHeader?: boolean;
+    IsVisibleInTemplate?: boolean;
 }
 
 export interface LineDefinitionStateReasonForClient {
@@ -289,7 +264,8 @@ export interface LineDefinitionStateReasonForClient {
     IsActive: boolean;
 }
 
-export type EntryColumnName = 'Memo' | 'AccountId' | 'CurrencyId' |
+export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
+    'Multiplier' | 'AccountId' | 'CurrencyId' |
     'ContractId' | 'ResourceId' | 'CenterId' | 'EntryTypeId' | 'DueDate' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
     'ExternalReference' | 'AdditionalReference' | 'NotedContractId' |

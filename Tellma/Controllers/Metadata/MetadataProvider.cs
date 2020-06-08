@@ -947,6 +947,10 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.MemoVisibility, def.MemoLabel, def.MemoLabel2, def.MemoLabel3, display);
                     isRequired = def.MemoVisibility == Visibility.Required;
                     break;
+                case nameof(Document.PostingDate):
+                    display = PropertyDisplay(settings, def.PostingDateVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
+                    isRequired = def.PostingDateVisibility;
+                    break;
                 case nameof(Document.DebitContractId):
                     display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
                     isRequired = def.DebitContractVisibility;

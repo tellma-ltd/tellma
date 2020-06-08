@@ -141,6 +141,7 @@ namespace Tellma.Controllers.Dto
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
         public bool IsOriginalDocument { get; set; }
+        public byte DocumentType { get; set; }
         public string Prefix { get; set; }
         public byte CodeWidth { get; set; }
 
@@ -152,6 +153,14 @@ namespace Tellma.Controllers.Dto
         public string MemoLabel3 { get; set; }
         public short? MemoRequiredState { get; set; }
         public short? MemoReadOnlyState { get; set; }
+
+        // Posting Date
+        public bool PostingDateVisibility { get; set; }
+        public short? PostingDateRequiredState { get; set; }
+        public short? PostingDateReadOnlyState { get; set; }
+        public string PostingDateLabel { get; set; }
+        public string PostingDateLabel2 { get; set; }
+        public string PostingDateLabel3 { get; set; }
 
         // Debit Contract
         public bool DebitContractVisibility { get; set; }
@@ -267,6 +276,7 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural { get; set; }
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
+        public byte DefaultVariantIndex { get; set; }
         public bool AllowSelectiveSigning { get; set; }
         public bool ViewDefaultsToForm { get; set; }
         public List<LineDefinitionEntryForClient> Entries { get; set; }
@@ -277,7 +287,6 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
-        public int? AccountTypeId { get; set; }
         public int? EntryTypeId { get; set; }
 
         // Computed from AccountTypeParent
@@ -285,31 +294,6 @@ namespace Tellma.Controllers.Dto
         public List<int> ResourceDefinitionIds { get; set; }
         public List<int> ContractDefinitionIds { get; set; }
         public List<int> NotedContractDefinitionIds { get; set; }
-
-        //public string DueDateLabel { get; set; }
-        //public string DueDateLabel2 { get; set; }
-        //public string DueDateLabel3 { get; set; }
-        //public string Time1Label { get; set; }
-        //public string Time1Label2 { get; set; }
-        //public string Time1Label3 { get; set; }
-        //public string Time2Label { get; set; }
-        //public string Time2Label2 { get; set; }
-        //public string Time2Label3 { get; set; }
-        //public string ExternalReferenceLabel { get; set; }
-        //public string ExternalReferenceLabel2 { get; set; }
-        //public string ExternalReferenceLabel3 { get; set; }
-        //public string AdditionalReferenceLabel { get; set; }
-        //public string AdditionalReferenceLabel2 { get; set; }
-        //public string AdditionalReferenceLabel3 { get; set; }
-        //public string NotedContractNameLabel { get; set; }
-        //public string NotedContractNameLabel2 { get; set; }
-        //public string NotedContractNameLabel3 { get; set; }
-        //public string NotedAmountLabel { get; set; }
-        //public string NotedAmountLabel2 { get; set; }
-        //public string NotedAmountLabel3 { get; set; }
-        //public string NotedDateLabel { get; set; }
-        //public string NotedDateLabel2 { get; set; }
-        //public string NotedDateLabel3 { get; set; }
     }
 
     public class LineDefinitionColumnForClient
@@ -322,6 +306,7 @@ namespace Tellma.Controllers.Dto
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
         public bool? InheritsFromHeader { get; set; }
+        public bool? IsVisibleInTemplate { get; set; }
     }
 
     public class LineDefinitionStateReasonForClient

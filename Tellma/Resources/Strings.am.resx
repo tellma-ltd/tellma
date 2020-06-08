@@ -476,7 +476,7 @@
     <value>አስተያየት</value>
   </data>
   <data name="Document_CreditContract" xml:space="preserve">
-    <value>የዱቤ ወኪል</value>
+    <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_CreditContractIsCommon" xml:space="preserve">
     <value>የብድር ኮንትራት የጋራ</value>
@@ -488,7 +488,7 @@
     <value>ምንዛሬ ነው ኮመን</value>
   </data>
   <data name="Document_DebitContract" xml:space="preserve">
-    <value>የዱቤ ወኪል</value>
+    <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_DebitContractIsCommon" xml:space="preserve">
     <value>ዴቢት ኮንትራት የጋራ</value>
@@ -518,7 +518,7 @@
     <value>Memoየጋራ ነው</value>
   </data>
   <data name="Document_NotedContract" xml:space="preserve">
-    <value>የታወቁ ወኪል</value>
+    <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_NotedContractIsCommon" xml:space="preserve">
     <value>የታወቁ ወኪል የተለመደ ነው</value>
@@ -528,6 +528,9 @@
   </data>
   <data name="Document_PostingDate" xml:space="preserve">
     <value>ቀን</value>
+  </data>
+  <data name="Document_PostingDateIsCommon" xml:space="preserve">
+    <value>የታወቁ ወኪል የተለመደ ነው</value>
   </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>ብዛት</value>
@@ -582,6 +585,18 @@
   </data>
   <data name="DocumentDefinition" xml:space="preserve">
     <value>የሰነድ ፍቺ</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
+    <value>የሰነድ አይነት</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
+    <value>የአብነት</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
+    <value>አንቀጽ</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
+    <value>ድርጊት</value>
   </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>የሰነድ ፍቺ መስመር ፍቺ</value>
@@ -763,7 +778,7 @@
   <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
     <value>የኮንትራት DefinitionId «{0} 'ሊገኝ አልቻለም.</value>
   </data>
-  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+  <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>ቀኑ ማህደሩ ቀን በፊት ሊሆን አይችልም {0}</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
@@ -1231,6 +1246,12 @@
   <data name="Line_Document" xml:space="preserve">
     <value>የሰነድ</value>
   </data>
+  <data name="Line_Multiplier" xml:space="preserve">
+    <value>ማባዣ</value>
+  </data>
+  <data name="Line_PostingDate" xml:space="preserve">
+    <value>ቀን</value>
+  </data>
   <data name="Line_State_0" xml:space="preserve">
     <value>ረቂቅ</value>
   </data>
@@ -1257,6 +1278,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>ዋጋ ቢስ</value>
+  </data>
+  <data name="Line_TemplateLine" xml:space="preserve">
+    <value>የአብነት</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>የመስመር ፍቺ</value>

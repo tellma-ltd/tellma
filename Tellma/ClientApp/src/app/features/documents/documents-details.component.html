@@ -361,7 +361,7 @@
                     [class.p-4]="model?.EntityMetadata?.Lines === 1">
 
                     <!-- Smart Tab -->
-                    <ng-container *ngIf="isManualLine(lineDefId)">
+                    <ng-container *ngIf="!isManualLine(lineDefId)">
 
                         <!-- Table -->
                         <t-table *ngIf="!showAsForm(lineDefId, model)" [dataSource]="lines(lineDefId, model)"
@@ -764,10 +764,10 @@
                                         [itemId]="signature.RoleId">
                                         <span>{{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
                                     </t-view-link>
-                                    <t-view-link *ngIf="signature.RuleType === 'ByAgent'"
-                                        [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
-                                        [itemId]="signature.AgentId">
-                                        <span>{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span>
+                                    <t-view-link *ngIf="signature.RuleType === 'ByContract'"
+                                        [link]="'../../../contracts/' + ws.get('Contract', signature.ContractId)?.DefinitionId"
+                                        [itemId]="signature.ContractId">
+                                        <span>{{ ws.getMultilingualValue('Contract', signature.ContractId, 'Name') }}</span>
                                     </t-view-link>
                                     <t-view-link *ngIf="signature.RuleType === 'ByUser'" link="../../../users"
                                         [itemId]="signature.UserId">

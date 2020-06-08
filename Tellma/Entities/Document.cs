@@ -18,6 +18,9 @@ namespace Tellma.Entities
         [Display(Name = "Document_PostingDate")]
         public DateTime? PostingDate { get; set; }
 
+        [Display(Name = "Document_PostingDateIsCommon")]
+        public bool? PostingDateIsCommon { get; set; }
+
         [Display(Name = "Document_Clearance")]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]

@@ -16,6 +16,12 @@ namespace Tellma.Entities
 
         public bool? IsOriginalDocument { get; set; }
 
+        [Display(Name = "DocumentDefinition_DocumentType")]
+        [Required]
+        [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 }, 
+            new string[] { "DocumentDefinition_DocumentType_0", "DocumentDefinition_DocumentType_1", "DocumentDefinition_DocumentType_2" })]
+        public byte? DocumentType { get; set; }
+
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
         [StringLength(255)]
         [AlwaysAccessible]

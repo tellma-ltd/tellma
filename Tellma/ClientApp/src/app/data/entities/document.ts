@@ -17,6 +17,7 @@ export type DocumentClearance = 0 | 1 | 2;
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     SerialNumber?: number;
     PostingDate?: string;
+    PostingDateIsCommon?: boolean;
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
@@ -100,6 +101,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
                 PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
+                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Document_PostingDateIsCommon') },
                 Clearance: {
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
