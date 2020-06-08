@@ -275,7 +275,7 @@
   "Error_LoadingCompanySettings": "Error loading company settings",
   "Error_LoadingGlobalSettings": "Error loading system settings",
   "Error_LoginSessionExpired": "Your session has expired, please sign-in again",
-  "Error_NoExRateFoundForCurrency0Date1": "No exchange rate was found for currency '{{0}}' on date: {{1}}.",
+  "Error_NoExRateFoundForCurrency0Date1": "No exchange rate found for currency '{{0}}' on date: {{1}}.",
   "Error_OpenDocumentBeforeEdit": "Please open the document first.",
   "Error_PageNotFound": "404 Page Not Found",
   "Error_PageNotFoundMessage": "This link is broken and does not point to a valid page.",

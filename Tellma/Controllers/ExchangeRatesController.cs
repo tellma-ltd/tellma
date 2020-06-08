@@ -72,7 +72,8 @@ namespace Tellma.Controllers
             var result = await _repo.ConvertToFunctional(date, currencyId, amount, cancellation);
             if (result == null)
             {
-                throw new NotFoundException<(DateTime, string)>((date, currencyId));
+                // The client side shows this error in a friendly way
+                throw new NotFoundException<string>("Exchange rate was not found");
             }
             else
             {
