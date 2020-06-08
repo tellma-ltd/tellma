@@ -438,9 +438,14 @@ namespace Tellma.Data.Queries
                 }
                 else
                 {
-                    principalQuerySql = $@"INNER JOIN (
+                    //                    principalQuerySql = $@"INNER JOIN (
+                    //{innerSql}
+                    //) As [S] ON [S].[Id] = [P].[{ForeignKeyToPrincipalQuery}]";
+
+                    // This works since when there is a principal query, there is no WHERE clause
+                    principalQuerySql = $@"WHERE [P].[{ForeignKeyToPrincipalQuery}] IN (
 {innerSql}
-) As [S] ON [S].[Id] = [P].[{ForeignKeyToPrincipalQuery}]";
+)";
                 }
             }
 

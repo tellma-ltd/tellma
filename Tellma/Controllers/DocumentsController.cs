@@ -765,7 +765,10 @@ namespace Tellma.Controllers
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var functionalId = settings.FunctionalCurrencyId;
 
+            var jvDefId = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.ManualJournalVouchersDefinitionId;
             var manualLineDefId = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.ManualLinesDefinitionId;
+
+            bool isJV = DefinitionId == jvDefId;
 
             // Set default values
             docs.ForEach(doc =>
@@ -777,7 +780,7 @@ namespace Tellma.Controllers
 
                 // Document defaults
                 doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
-                doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
+                doc.PostingDateIsCommon = (docDef.PostingDateVisibility || isJV) && (doc.PostingDateIsCommon ?? false);
                 doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
                 doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
                 doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);

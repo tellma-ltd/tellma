@@ -147,14 +147,16 @@
         [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
         <ng-container *ngIf="model?.PostingDateIsCommon; else perLine">
             <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
-                <div>{{ model?.PostingDate | number:'1.0-4'  }}</div>
+                <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
             </t-restricted>
-            <t-decimal-editor *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
+            <t-date-picker *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
                 [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
-                [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
-            </t-decimal-editor>
+                [ngModelOptions]="{ updateOn: 'blur' }">
+            </t-date-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'PostingDateIsCommon' }"></ng-container>
+        <ng-container *ngIf="showDocumentPostingDateIsCommon(model)">
+            <ng-container *ngTemplateOutlet="lock; context:{ prop: 'PostingDateIsCommon' }"></ng-container>
+        </ng-container>
     </t-form-group>
 
     <!-- Clearance -->
@@ -1053,7 +1055,7 @@
                     </t-restricted>
                     <!-- Edit -->
                     <t-currencies-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.CurrencyId"
-                        (ngModelChange)="update.call(null, pair);" required>
+                        (ngModelChange)="update.call(null, pair);" filter="IsActive eq true" required>
                     </t-currencies-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>

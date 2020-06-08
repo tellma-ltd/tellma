@@ -474,6 +474,11 @@ namespace Tellma.Data.Queries
                             collection = query.ResultDescriptor.CreateList();
                         }
 
+                        if (collection.Count == 4)
+                        {
+
+                        }
+
                         collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
                         collectionProp.SetValue(collectionEntity, collection);
 

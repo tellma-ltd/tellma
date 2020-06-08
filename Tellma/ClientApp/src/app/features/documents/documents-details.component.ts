@@ -280,6 +280,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Posting Date
       result.PostingDate = toLocalDateISOString(new Date());
+      result.PostingDateIsCommon = true;
 
       // Is Common
       result.MemoIsCommon = true;
@@ -640,17 +641,21 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Posting Date
 
   public showDocumentPostingDate(_: DocumentForSave) {
-    return this.definition.PostingDateVisibility;
+    return this.definition.PostingDateVisibility || this.isJV;
+  }
+
+  public showDocumentPostingDateIsCommon(_: Document): boolean {
+    return !this.isJV;
   }
 
   public requireDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireDocumentPostingDate;
+    return this._requireDocumentPostingDate || this.isJV;
   }
 
   public readonlyDocumentPostingDate(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyDocumentPostingDate;
+    return this._readonlyDocumentPostingDate && !this.isJV;
   }
 
   public labelDocumentPostingDate(_: Document): string {
