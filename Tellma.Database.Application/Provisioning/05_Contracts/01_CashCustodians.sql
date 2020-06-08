@@ -22,7 +22,7 @@ ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 	Print N''
 EXEC [api].[Contracts__Save]
-	@DefinitionId = @cashiersCD,
+	@DefinitionId = @cash_registersCD,
 	@Entities = @cashiers,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 IF @ValidationErrorsJson IS NOT NULL 
@@ -93,7 +93,7 @@ BEGIN
 END;
 
 
-	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe' AND [DefinitionId] = @cashiersCD);
+	DECLARE @GMSafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe' AND [DefinitionId] = @cash_registersCD);
 --	DECLARE @GMSafeUSD INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'GM Safe - USD' AND [DefinitionId] = @cash_accountsCD);
 	DECLARE @AdminPettyCash INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Admin Petty Cash' AND [DefinitionId] =  @petty_cash_fundsCD);
 	DECLARE @KSASafe INT = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Ahmad Abdussalam - Cash' AND [DefinitionId] =  @petty_cash_fundsCD);
