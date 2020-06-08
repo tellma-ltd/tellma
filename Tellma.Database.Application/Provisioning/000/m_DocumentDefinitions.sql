@@ -49,58 +49,43 @@ INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(0,0,	@ManualLineLD,							1),
 	-- cash-purchase-vouchers
-	(0,1,	@PaymentToSupplierCashPurchaseLD,		1),
-	(1,1,	@StockReceiptCashPurchaseLD,			1),
-	(2,1,	@ConsumableServiceReceiptCashPurchaseLD,1),
+	(0,1,	@PaymentToSupplierPurchaseLD,			1),
+	(1,1,	@StockReceiptPurchaseLD,				1),
+	(2,1,	@ConsumableServiceReceiptPurchaseLD,	1),
 	(8,1,	@CashTransferExchangeLD,				0),
 	(9,1,	@ManualLineLD,							0), -- this can be removed if a budget system is activated
 	-- cash-payment-vouchers
 	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
-	(1,2,	@PrepaymentToSupplierLD,				1),
-	(2,2,	@PaymentToSupplierAccrualLD,			1),
+	(1,2,	@PaymentToSupplierPurchaseLD,			1),
 	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
 	(9,2,	@ManualLineLD,							0),
 	-- cash-payroll-vouchers
 	(0,3,	@PaymentToEmployeeLD,					1),
 	(9,3,	@ManualLineLD,							0),
-	--- lease-in-vouchers, for subscription and rental recognition
-	(0,4,	@LeaseInPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,4,	@LeaseInPostinvoicedLD,					0),-- hotels, 
-	(9,4,	@ManualLineLD,							0),
-	--- gs-receipt-vouchers, for prepaid and post invoiced
+	--- gs-receipt-vouchers
 	(0,5,	@StockReceiptCreditPurchaseLD,			0),	-- suppliers with credit line
-	(1,5,	@StockReceiptPrepaidLD,					0),--  , 
-	(2,5,	@StockReceiptPostInvoicedLD,			0),--  , 
-	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,1),-- fuel consumption,
-	(4,5,	@ConsumableServiceReceiptPrepaidLD,		0),-- tickets paid in cash, 
-	(5,5,	@ConsumableServiceReceiptPostInvoicedLD,0),-- utilities, 
+	(1,5,	@StockReceiptPurchaseLD,				1),--  , 
+	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,0),-- fuel consumption,
+	(4,5,	@ConsumableServiceReceiptPurchaseLD,	1),-- tickets paid in cash, utilities
 	(9,5,	@ManualLineLD,							0),
 	-- cash-sale-vouchers
-	(0,11,	@PaymentFromCustomerCashSaleLD,			1),
-	--(1,11,	@StockIssueCashSaleLD,					1),
-	--(2,11,	@ServiceIssueCashSaleLD,				1), -- TODO: Add it for completion
+	(0,11,	@PaymentFromCustomerSaleLD,				1),
+	--(1,11,	@StockIssueSaleLD,					1),
+	--(2,11,	@ServiceIssueSaleLD,				1), -- TODO: Add it for completion
 	(9,11,	@ManualLineLD,							0), -- this
 	-- cash-receipt-vouchers
 	(0,12,	@PaymentFromCustomerCreditSaleLD,		0),	
-	(1,12,	@PrepaymentFromCustomerLD,				1),
-	(2,12,	@PaymentFromCustomerAccrualLD,			1),
 	(8,12,	@PaymentFromOtherLD,					1), -- including partner, creditor
 	(9,12,	@ManualLineLD,							0),
-	--- lease-out-vouchers, for subscription and rental recognition
-	(0,14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,14,	@LeaseOutPostinvoicedLD,				0),-- hotels, 
-	(9,14,	@ManualLineLD,							0),
-	--- gs-issue-vouchers, for prepaid and post invoiced
-	(0,15,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
-	(1,15,	@StockIssuePrepaidLD,					0),--  , 
-	(2,15,	@StockIssuePostInvoicedLD,				0),--  , 
-	--(3,15,	@ServiceIssueCreditSaleLD,				1),--
-	--(4,15,	@ServiceIssuePrepaidLD,					0),--
-	--(5,15,	@ServiceIssuePostInvoicedLD,			0),-- 
-	(9,15,	@ManualLineLD,							0),
+	--- good-issue-vouchers, for prepaid and post invoiced
+	(0,13,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
+	(1,13,	@StockIssueSaleLD,						0),--  , 
+	--- service-issue-vouchers, for prepaid and post invoiced
+	(0,15,	@ServiceIssueCreditSaleLD,				0),	-- customers with credit line
+	(1,15,	@ServiceIssueSaleLD,					0),
 	--- lease-out-templates, for subscription and rental agreements
-	(0,-14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
+	(0,-14,	@ServiceIssueCreditSaleLD,				1),-- software subscription, domain registration, office rental...
+	(1,-14,	@ServiceIssueSaleLD,					0)-- hotels,
 	;
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
@@ -138,8 +123,8 @@ ELSE IF @DB IN (N'104', N'106') -- Walia Steel | SITCO, ETB, en/am,
 BEGIN
 	INSERT @DocumentDefinitions([Index],[DocumentType],
 		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0);
-	--(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
+	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
+	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20);
 	--(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
 	--(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
 	--(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
@@ -155,22 +140,22 @@ BEGIN
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(0,0,	@ManualLineLD,							1);
-	GOTO ENOUGH_DD
 	-- cash-purchase-vouchers
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,1,	@PaymentToSupplierCashPurchaseLD,		1);
+	(0,1,	@PaymentToSupplierPurchaseLD,			1),
+	(1,1,	@StockReceiptPurchaseLD,				1),
+	(2,1,	@ConsumableServiceReceiptPurchaseLD,	1),
+		    
+	(8,1,	@CashTransferExchangeLD,				0),
+	(9,1,	@ManualLineLD,							0); -- this can be removed if a budget system is activated
 
+		GOTO ENOUGH_DD
+/*
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(1,1,	@StockReceiptCashPurchaseLD,			1),
-	(2,1,	@ConsumableServiceReceiptCashPurchaseLD,1),
-	(8,1,	@CashTransferExchangeLD,				0),
-	(9,1,	@ManualLineLD,							0), -- this can be removed if a budget system is activated
 	-- cash-payment-vouchers
 	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
-	(1,2,	@PrepaymentToSupplierLD,				1),
-	(2,2,	@PaymentToSupplierAccrualLD,			1),
 	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
 	(9,2,	@ManualLineLD,							0),
 	-- cash-payroll-vouchers
@@ -215,6 +200,7 @@ BEGIN
 	(0,-14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
 	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
 	;
+	*/
 END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN

@@ -5,6 +5,7 @@
 	[Name2]				NVARCHAR (50),
 	[Name3]				NVARCHAR (50),
 	[IsRelated]			BIT					NOT NULL DEFAULT 0,
+	[Category]			NVARCHAR (50), --ParentMember, JointControlOrSignificantInfluenceMember, SubsidiariesMembe, AssociatesMember, JointVenturesWhereEntityIsVenturerMember, KeyManagementPersonnelOfEntityOrParentMember, OtherRelatedPartiesMember
 	[IsActive]			BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__CreatedById] REFERENCES [dbo].[Users] ([Id]),

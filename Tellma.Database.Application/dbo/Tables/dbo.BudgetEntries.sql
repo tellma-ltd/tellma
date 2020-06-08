@@ -3,6 +3,7 @@
 	[FromDate]				DATE			NOT NULL,
 	[ToDate]				DATE			NOT NULL,
 	CONSTRAINT [CK_BudgetEntries__FromDate_ToDate] CHECK ([FromDate] <= [ToDate]),
+	-- TODO: We might be able to use the same pivot trick used in details entries to rely only on default unit Id for budget entry
 	[BudgetId]				INT				NOT NULL CONSTRAINT [FK_Budgets__BudgetId] REFERENCES [dbo].[Budgets] ([Id]),
 	[MonetaryValue]			DECIMAL (19,4)	NOT NULL DEFAULT 0,
 	[Value]					DECIMAL (19,4)	NOT NULL DEFAULT 0,

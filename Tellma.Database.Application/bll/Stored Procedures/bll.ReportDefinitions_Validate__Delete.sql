@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[ReportDefinitions_Validate__Delete]
-	@Ids [dbo].[IndexediDList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
