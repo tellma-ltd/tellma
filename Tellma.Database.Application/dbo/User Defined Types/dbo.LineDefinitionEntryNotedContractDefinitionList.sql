@@ -1,8 +1,8 @@
 ﻿CREATE TYPE [dbo].[LineDefinitionEntryNotedContractDefinitionList] AS TABLE (
 	[Index]						INT,
-	[HeaderIndex]				INT,
+	[LineDefinitionEntryIndex]				INT,
 	[LineDefinitionIndex]		INT,
-	PRIMARY KEY ([Index], [HeaderIndex], [LineDefinitionIndex]),
+	PRIMARY KEY ([Index], [LineDefinitionEntryIndex], [LineDefinitionIndex]),
 	[Id]						INT			DEFAULT 0,
 	[NotedContractDefinitionId]		INT
 );

@@ -1745,11 +1745,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ContractUserList]" />
   </Operation>
-  <Operation Name="Rename Refactor" Key="74b4af98-9518-4e1b-9abf-e34410916db1" ChangeDateTime="06/07/2020 04:13:33">
+  <Operation Name="Rename Refactor" Key="49a2b824-7268-46f0-b3aa-f0b567a94239" ChangeDateTime="06/07/2020 04:40:12">
     <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNoteContractDefinitions]" />
     <Property Name="ElementType" Value="SqlTable" />
     <Property Name="ParentElementName" Value="[dbo]" />
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[LineDefinitionEntryNotedContractDefinitions]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1dbab9b-1b1e-45c8-a79b-8f6cf0be15ab" ChangeDateTime="06/07/2020 04:49:47">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntryNotedContractDefinitions].[NoteContractDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntryNotedContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[NotedContractDefinitionId]" />
   </Operation>
 </Operations>

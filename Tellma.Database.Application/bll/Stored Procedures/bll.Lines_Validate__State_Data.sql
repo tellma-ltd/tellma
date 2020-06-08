@@ -167,7 +167,7 @@ IF @State > 0
 		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
-		AND (E.[AccountId] = AB.[AccountId])
+		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
 		WHERE AB.BalanceEnforcedState <= @State
 		AND AB.[BalanceEnforcedState] BETWEEN 1 AND 4
 		AND (L.[State] >= AB.[BalanceEnforcedState] OR LD.[HasWorkflow] = 0 AND L.[State] = 0)
@@ -185,7 +185,7 @@ IF @State > 0
 		AND (AB.[ContractId] IS NULL OR E.[ContractId] = AB.[ContractId])
 		AND (AB.[ResourceId] IS NULL OR E.[ResourceId] = AB.[ResourceId])
 		AND (AB.[CurrencyId] = E.[CurrencyId])
-		AND (E.[AccountId] = AB.[AccountId])
+		AND (E.[AccountId] = AB.[AccountId]) -- This will work only after E.AccountId is determined
 		WHERE AB.Id IN (Select [AccountBalanceId] FROM FE_AB)
 		AND ((L.[State] >= AB.[BalanceEnforcedState]) OR 
 			L.[Id] IN (Select [Id] FROM @Lines)
