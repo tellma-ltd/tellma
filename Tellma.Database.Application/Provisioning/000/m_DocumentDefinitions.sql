@@ -124,7 +124,9 @@ BEGIN
 	INSERT @DocumentDefinitions([Index],[DocumentType],
 		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
-	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20);
+	(1,2,N'test-vouchers',				N'Test Voucher',				N'Test Vouchers',				N'TV',		N'book',				N'Financials',		0);
+
+	--(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20);
 	--(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
 	--(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
 	--(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
@@ -140,6 +142,28 @@ BEGIN
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	(0,0,	@ManualLineLD,							1);
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+	[LineDefinitionId],						[IsVisibleByDefault]) VALUES
+	(0,1,	@PaymentToSupplierCreditPurchaseLD,		0);
+	--(1,1,	@PaymentToSupplierPurchaseLD,			0),
+	--(2,1,	@PaymentToEmployeeLD,					0),		    
+	--(3,1,	@PaymentToOtherLD,						0),
+	--(4,1,	@CashTransferExchangeLD,				0),
+	--(5,1,	@StockReceiptCreditPurchaseLD,			0),
+	--(6,1,	@StockReceiptPurchaseLD,				0),
+	--(7,1,	@ConsumableServiceReceiptCreditPurchaseLD,0),
+	--(8,1,	@ConsumableServiceReceiptPurchaseLD,	0),
+	--(9,1,	@PaymentFromCustomerCreditSaleLD,		0),
+	--(10,1,	@PaymentFromCustomerSaleLD,				0),
+	--(11,1,	@PaymentFromEmployeeLD,					0),
+	--(12,1,	@PaymentFromOtherLD,					0),
+	--(13,1,	@StockIssueCreditSaleLD,				0),
+	--(14,1,	@StockIssueSaleLD,						0),
+	--(15,1,	@ServiceIssueCreditSaleLD,				0),
+	--(16,1,	@ServiceIssueSaleLD,					0),
+	--(17,1,	@PaymentFromCustomerSaleLD,				0),
+	--(18,1,	@ManualLineLD,							0); 
+/*
 	-- cash-purchase-vouchers
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
@@ -151,7 +175,7 @@ BEGIN
 	(9,1,	@ManualLineLD,							0); -- this can be removed if a budget system is activated
 
 		GOTO ENOUGH_DD
-/*
+
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
 	-- cash-payment-vouchers
