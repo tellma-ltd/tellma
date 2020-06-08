@@ -10,7 +10,6 @@ import { EntityWithKey } from './base/entity-with-key';
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
     CenterId?: number;
-    AccountIdentifier?: string;
     Direction?: number;
     AccountId?: number;
     ContractId: number;
@@ -66,7 +65,6 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 Line: { control: 'navigation', label: () => trx.instant('Entry_Line'), type: 'Line', foreignKeyName: 'LineId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Entry_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Entry_Center'), type: 'Center', foreignKeyName: 'CenterId' },
-                AccountIdentifier: { control: 'text', label: () => trx.instant('Entry_AccountIdentifier') },
                 Direction: {
                     control: 'choice',
                     label: () => trx.instant('Entry_Direction'),

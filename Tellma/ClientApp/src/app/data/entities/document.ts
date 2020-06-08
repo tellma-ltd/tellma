@@ -17,6 +17,7 @@ export type DocumentClearance = 0 | 1 | 2;
 export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentForSave> extends EntityForSave {
     SerialNumber?: number;
     PostingDate?: string;
+    PostingDateIsCommon?: boolean;
     Clearance?: DocumentClearance;
     Memo?: string;
     MemoIsCommon?: boolean;
@@ -26,8 +27,8 @@ export interface DocumentForSave<TLine = LineForSave, TAttachment = AttachmentFo
     CreditContractIsCommon?: boolean;
     NotedContractId?: number;
     NotedContractIsCommon?: boolean;
-    InvestmentCenterId?: number;
-    InvestmentCenterIsCommon?: boolean;
+    SegmentId?: number;
+    SegmentIsCommon?: boolean;
     Time1?: string;
     Time1IsCommon?: boolean;
     Time2?: string;
@@ -100,6 +101,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 DefinitionId: { control: 'number', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
                 PostingDate: { control: 'date', label: () => trx.instant('Document_PostingDate') },
+                PostingDateIsCommon: { control: 'boolean', label: () => trx.instant('Document_PostingDateIsCommon') },
                 Clearance: {
                     control: 'choice',
                     label: () => trx.instant('Document_Clearance'),
@@ -117,9 +119,9 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 NotedContractId: { control: 'number', label: () => `${trx.instant('Document_NotedContract')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 NotedContract: { control: 'navigation', label: () => trx.instant('Document_NotedContract'), type: 'Contract', foreignKeyName: 'NotedContractId' },
                 NotedContractIsCommon: { control: 'boolean', label: () => trx.instant('Document_NotedContractIsCommon') },
-                InvestmentCenterId: { control: 'number', label: () => `${trx.instant('Document_InvestmentCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                InvestmentCenter: { control: 'navigation', label: () => trx.instant('Document_InvestmentCenter'), type: 'Center', foreignKeyName: 'InvestmentCenterId' },
-                InvestmentCenterIsCommon: { control: 'boolean', label: () => trx.instant('Document_InvestmentCenterIsCommon') },
+                SegmentId: { control: 'number', label: () => `${trx.instant('Document_Segment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Segment: { control: 'navigation', label: () => trx.instant('Document_Segment'), type: 'Center', foreignKeyName: 'SegmentId' },
+                SegmentIsCommon: { control: 'boolean', label: () => trx.instant('Document_SegmentIsCommon') },
                 Time1: { control: 'date', label: () => trx.instant('Document_Time1') },
                 Time1IsCommon: { control: 'boolean', label: () => trx.instant('Document_Time1IsCommon') },
                 Time2: { control: 'date', label: () => trx.instant('Document_Time2') },
@@ -208,7 +210,7 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties whose label and visibility are overriden by the definition
-            for (const propName of ['DebitContract', 'CreditContract', 'NotedContract', 'InvestmentCenter', 'Unit', 'Currency']) {
+            for (const propName of ['DebitContract', 'CreditContract', 'NotedContract', 'Segment', 'Unit', 'Currency']) {
                 if (!definition[propName + 'Visibility']) {
 
                     delete props[propName + 'Id'];

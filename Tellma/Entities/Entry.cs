@@ -7,6 +7,9 @@ namespace Tellma.Entities
     [EntityDisplay(Singular = "Entry", Plural = "Entries")]
     public class EntryForSave : EntityWithKey<int>
     {
+        [Display(Name = "IsSystem")]
+        public bool? IsSystem { get; set; }
+
         [Display(Name = "Entry_Direction")]
         [AlwaysAccessible]
         [ChoiceList(new object[] { (short)-1, (short)1 })]
@@ -28,12 +31,8 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Center")]
         public int? CenterId { get; set; }
 
-        [Display(Name = "Entry_AccountIdentifier")]
-        [StringLength(10)]
-        public string AccountIdentifier { get; set; }
-
         [Display(Name = "Entry_EntryType")]
-        public int? EntryTypeId { get; set; } // EntryTypeId
+        public int? EntryTypeId { get; set; }
 
         [Display(Name = "Entry_DueDate")]
         public DateTime? DueDate { get; set; }

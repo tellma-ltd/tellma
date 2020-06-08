@@ -508,12 +508,6 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>Text Attribute 2</value>
   </data>
-  <data name="Document_InvestmentCenter" xml:space="preserve">
-    <value>Investment Center</value>
-  </data>
-  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
-    <value>Investment Center Is Common</value>
-  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo Is Common</value>
   </data>
@@ -529,11 +523,20 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="Document_PostingDateIsCommon" xml:space="preserve">
+    <value>Date Is Common</value>
+  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>Quantity</value>
   </data>
   <data name="Document_QuantityIsCommon" xml:space="preserve">
     <value>Quantity Is Common</value>
+  </data>
+  <data name="Document_Segment" xml:space="preserve">
+    <value>Segment</value>
+  </data>
+  <data name="Document_SegmentIsCommon" xml:space="preserve">
+    <value>Segment Is Common</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>
@@ -545,7 +548,7 @@
     <value>Current</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>Posted</value>
+    <value>Closed</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>Canceled</value>
@@ -582,6 +585,18 @@
   </data>
   <data name="DocumentDefinition" xml:space="preserve">
     <value>Document Definition</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
+    <value>Document Type</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
+    <value>Template</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
+    <value>Clause</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
+    <value>Event</value>
   </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>Document Definition Line Definition</value>
@@ -630,9 +645,6 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
-  </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>Identifier</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>
@@ -742,8 +754,8 @@
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
     <value>Canceled documents cannot be modified.</value>
   </data>
-  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>Posted documents cannot be modified.</value>
+  <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
+    <value>Closed documents cannot be modified.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>Cannot modify an inactive item.</value>
@@ -763,7 +775,7 @@
   <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
     <value>Contract DefinitionId '{0}' could not be found.</value>
   </data>
-  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+  <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>The date cannot be before the archive date {0}.</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
@@ -1231,6 +1243,12 @@
   <data name="Line_Document" xml:space="preserve">
     <value>Document</value>
   </data>
+  <data name="Line_Multiplier" xml:space="preserve">
+    <value>Multiplier</value>
+  </data>
+  <data name="Line_PostingDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
   <data name="Line_State_0" xml:space="preserve">
     <value>Draft</value>
   </data>
@@ -1257,6 +1275,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>Invalid</value>
+  </data>
+  <data name="Line_TemplateLine" xml:space="preserve">
+    <value>Template</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>Line Definition</value>
@@ -1511,7 +1532,7 @@
     <value>Delete</value>
   </data>
   <data name="Permission_DocumentState" xml:space="preserve">
-    <value>Post/Cancel</value>
+    <value>Close/Cancel</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>Activate/Deactivate</value>

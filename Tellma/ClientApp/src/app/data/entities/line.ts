@@ -12,6 +12,9 @@ export type LineState = 0 | -1 | 1 | -2 | 2 | -3 | 3 | -4 | 4;
 
 export interface LineForSave<TEntry = EntryForSave> extends EntityForSave {
     DefinitionId?: number;
+    PostingDate?: string;
+    TemplateLineId?: number;
+    Multiplier?: number;
     Memo?: string;
     Entries?: TEntry[];
 
@@ -28,7 +31,6 @@ export interface Line extends LineForSave<Entry> {
     ModifiedById?: number | string;
     SortKey?: number;
 }
-
 
 export interface LineFlags {
     isModified?: boolean;
@@ -54,7 +56,13 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService): Ent
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
+                IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
                 DefinitionId: { control: 'number', label: () => trx.instant('Line_Definition'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                PostingDate: { control: 'date', label: () => trx.instant('Line_PostingDate') },
+                TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'Line', foreignKeyName: 'TemplateLineId' },
+                Multiplier: { control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 State: {
                     control: 'state',

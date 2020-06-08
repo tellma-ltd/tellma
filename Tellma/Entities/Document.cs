@@ -18,6 +18,9 @@ namespace Tellma.Entities
         [Display(Name = "Document_PostingDate")]
         public DateTime? PostingDate { get; set; }
 
+        [Display(Name = "Document_PostingDateIsCommon")]
+        public bool? PostingDateIsCommon { get; set; }
+
         [Display(Name = "Document_Clearance")]
         [ChoiceList(new object[] { (byte)0, (byte)1, (byte)2 },
             new string[] { "Document_Clearance_0", "Document_Clearance_1", "Document_Clearance_2" })]
@@ -70,11 +73,11 @@ namespace Tellma.Entities
         [Display(Name = "Document_NotedContractIsCommon")]
         public bool? NotedContractIsCommon { get; set; }
 
-        [Display(Name = "Document_InvestmentCenter")]
-        public int? InvestmentCenterId { get; set; }
+        [Display(Name = "Document_Segment")]
+        public int? SegmentId { get; set; }
 
-        [Display(Name = "Document_InvestmentCenterIsCommon")]
-        public bool? InvestmentCenterIsCommon { get; set; }
+        [Display(Name = "Document_SegmentIsCommon")]
+        public bool? SegmentIsCommon { get; set; }
 
         [Display(Name = "Document_Time1")]
         public DateTime? Time1 { get; set; }
@@ -182,9 +185,9 @@ namespace Tellma.Entities
         [ForeignKey(nameof(NotedContractId))]
         public Contract NotedContract { get; set; }
 
-        [Display(Name = "Document_InvestmentCenter")]
-        [ForeignKey(nameof(InvestmentCenterId))]
-        public Center InvestmentCenter { get; set; }
+        [Display(Name = "Document_Segment")]
+        [ForeignKey(nameof(SegmentId))]
+        public Center Segment { get; set; }
 
         [Display(Name = "Document_Unit")]
         [ForeignKey(nameof(UnitId))]

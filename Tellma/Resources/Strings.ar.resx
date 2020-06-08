@@ -508,12 +508,6 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>الصفة النصية 2</value>
   </data>
-  <data name="Document_InvestmentCenter" xml:space="preserve">
-    <value>مركز الاستثمار</value>
-  </data>
-  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
-    <value>مركز الاستثمار مشترك</value>
-  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>الملاحظات مشتركة</value>
   </data>
@@ -529,11 +523,20 @@
   <data name="Document_PostingDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
+  <data name="Document_PostingDateIsCommon" xml:space="preserve">
+    <value>التاريخ مشترك</value>
+  </data>
   <data name="Document_Quantity" xml:space="preserve">
     <value>الكمية</value>
   </data>
   <data name="Document_QuantityIsCommon" xml:space="preserve">
     <value>الكمية مشتركة</value>
+  </data>
+  <data name="Document_Segment" xml:space="preserve">
+    <value>النشاط</value>
+  </data>
+  <data name="Document_SegmentIsCommon" xml:space="preserve">
+    <value>النشاط مشترك</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
@@ -545,7 +548,7 @@
     <value>جار</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>مرحّل</value>
+    <value>مقل</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>ملغى</value>
@@ -582,6 +585,18 @@
   </data>
   <data name="DocumentDefinition" xml:space="preserve">
     <value>تعريف مستند</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType" xml:space="preserve">
+    <value>نوع المستند</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_0" xml:space="preserve">
+    <value>قالب</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_1" xml:space="preserve">
+    <value>بند</value>
+  </data>
+  <data name="DocumentDefinition_DocumentType_2" xml:space="preserve">
+    <value>حدث مالي</value>
   </data>
   <data name="DocumentDefinitionLineDefinition" xml:space="preserve">
     <value>تعريف سطر مستند</value>
@@ -630,9 +645,6 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
-  </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>رقم التعريف</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>المرجع الإضافي</value>
@@ -742,8 +754,8 @@
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
     <value>لا يمكن تعديل المستندات الملغاة.</value>
   </data>
-  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>لا يمكن تعديل المستندات المرحلة.</value>
+  <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
+    <value>لا يمكن تعديل المستندات المقفلة.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
@@ -763,7 +775,7 @@
   <data name="Error_ContractDefinition0CouldNotBeFound" xml:space="preserve">
     <value>تعذر العثور على مفتاح تعريف العقد ({0}).</value>
   </data>
-  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+  <data name="Error_DateCannotBeBeforeArchiveDate1" xml:space="preserve">
     <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة.</value>
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
@@ -1231,6 +1243,12 @@
   <data name="Line_Document" xml:space="preserve">
     <value>المستند</value>
   </data>
+  <data name="Line_Multiplier" xml:space="preserve">
+    <value>المعامل</value>
+  </data>
+  <data name="Line_PostingDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
   <data name="Line_State_0" xml:space="preserve">
     <value>جديد</value>
   </data>
@@ -1257,6 +1275,9 @@
   </data>
   <data name="Line_State_minus_4" xml:space="preserve">
     <value>خطأ</value>
+  </data>
+  <data name="Line_TemplateLine" xml:space="preserve">
+    <value>القالب</value>
   </data>
   <data name="LineDefinition" xml:space="preserve">
     <value>تعريف سطر</value>
@@ -1511,7 +1532,7 @@
     <value>حذف</value>
   </data>
   <data name="Permission_DocumentState" xml:space="preserve">
-    <value>ترحيل/إلغاء</value>
+    <value>إقفال/إلغاء</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>

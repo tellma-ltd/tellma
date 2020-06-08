@@ -11,9 +11,17 @@ namespace Tellma.Entities
     {
         [Display(Name = "Definition")]
         [Required]
-        [StringLength(50)]
         [AlwaysAccessible]
         public int? DefinitionId { get; set; }
+
+        [Display(Name = "Line_PostingDate")]
+        public DateTime? PostingDate { get; set; }
+
+        [Display(Name = "Line_TemplateLine")]
+        public int? TemplateLineId { get; set; }
+
+        [Display(Name = "Line_Multiplier")]
+        public decimal? Multiplier { get; set; }
 
         [Display(Name = "Memo")]
         [StringLength(255)]
@@ -25,7 +33,6 @@ namespace Tellma.Entities
 
     public class LineForSave : LineForSave<EntryForSave>
     {
-
     }
 
     public class Line : LineForSave<Entry>
@@ -73,6 +80,10 @@ namespace Tellma.Entities
         public int? Index { get; set; }
 
         // For Query
+
+        [Display(Name = "Line_TemplateLine")]
+        [ForeignKey(nameof(TemplateLineId))]
+        public Line TemplateLine { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

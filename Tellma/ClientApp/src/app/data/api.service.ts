@@ -515,8 +515,8 @@ export class ApiService {
 
         return obs$;
       },
-      post: this.updateStateFactory(definitionId, 'post', cancellationToken$),
-      unpost: this.updateStateFactory(definitionId, 'unpost', cancellationToken$),
+      close: this.updateStateFactory(definitionId, 'close', cancellationToken$),
+      open: this.updateStateFactory(definitionId, 'open', cancellationToken$),
       cancel: this.updateStateFactory(definitionId, 'cancel', cancellationToken$),
       uncancel: this.updateStateFactory(definitionId, 'uncancel', cancellationToken$),
       getAttachment: (docId: string | number, attachmentId: string | number) => {

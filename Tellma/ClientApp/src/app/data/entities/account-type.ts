@@ -53,26 +53,6 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   NotedDateLabel2?: string;
   NotedDateLabel3?: string;
 
-  // TO DELETE
-
-  CurrencyAssignment?: RequiredAssignment;
-  ContractAssignment?: OptionalAssignment;
-  ContractDefinitionId?: number;
-  ResourceAssignment?: OptionalAssignment;
-  ResourceDefinitionId?: number;
-  CenterAssignment?: RequiredAssignment;
-  EntryTypeAssignment?: OptionalAssignment;
-  IdentifierAssignment?: OptionalAssignment;
-  IdentifierLabel?: string;
-  IdentifierLabel2?: string;
-  IdentifierLabel3?: string;
-
-  NotedContractAssignment?: EntryAssignment;
-  NotedContractDefinitionId?: number;
-  IsResourceClassification?: boolean;
-
-  // END TO DELETE
-
   ContractDefinitions?: TContractDef[];
   NotedContractDefinitions?: TNotedContractDef[];
   ResourceDefinitions?: TResourceDef[];

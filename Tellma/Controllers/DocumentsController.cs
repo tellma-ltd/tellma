@@ -114,13 +114,13 @@ namespace Tellma.Controllers
             , _logger);
         }
 
-        [HttpPut("post")]
-        public async Task<ActionResult<EntitiesResponse<Document>>> Post([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        [HttpPut("close")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Close([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Post(ids, args);
+                var (data, extras) = await _service.Close(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -134,13 +134,13 @@ namespace Tellma.Controllers
             }, _logger);
         }
 
-        [HttpPut("unpost")]
-        public async Task<ActionResult<EntitiesResponse<Document>>> Unpost([FromBody] List<int> ids, [FromQuery] ActionArguments args)
+        [HttpPut("open")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Open([FromBody] List<int> ids, [FromQuery] ActionArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, extras) = await _service.Unpost(ids, args);
+                var (data, extras) = await _service.Open(ids, args);
                 var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
 
                 if (args.ReturnEntities ?? false)
@@ -470,14 +470,14 @@ namespace Tellma.Controllers
             }
         }
 
-        public async Task<(List<Document>, Extras)> Post(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Close(List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Post));
+            return await UpdateDocumentState(ids, args, nameof(Close));
         }
 
-        public async Task<(List<Document>, Extras)> Unpost(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Open(List<int> ids, [FromQuery] ActionArguments args)
         {
-            return await UpdateDocumentState(ids, args, nameof(Unpost));
+            return await UpdateDocumentState(ids, args, nameof(Open));
         }
 
         public async Task<(List<Document>, Extras)> Cancel(List<int> ids, [FromQuery] ActionArguments args)
@@ -505,8 +505,8 @@ namespace Tellma.Controllers
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var errors = transition switch
             {
-                nameof(Post) => await _repo.Documents_Validate__Post(DefinitionId.Value, ids, top: remainingErrorCount),
-                nameof(Unpost) => await _repo.Documents_Validate__Unpost(DefinitionId.Value, ids, top: remainingErrorCount),
+                nameof(Close) => await _repo.Documents_Validate__Close(DefinitionId.Value, ids, top: remainingErrorCount),
+                nameof(Open) => await _repo.Documents_Validate__Open(DefinitionId.Value, ids, top: remainingErrorCount),
                 nameof(Cancel) => await _repo.Documents_Validate__Cancel(DefinitionId.Value, ids, top: remainingErrorCount),
                 nameof(Uncancel) => await _repo.Documents_Validate__Uncancel(DefinitionId.Value, ids, top: remainingErrorCount),
                 _ => throw new BadRequestException($"Unknown transition {transition}"),
@@ -520,8 +520,8 @@ namespace Tellma.Controllers
 
             var notificationInfos = transition switch
             {
-                nameof(Post) => await _repo.Documents__Post(ids),
-                nameof(Unpost) => await _repo.Documents__Unpost(ids),
+                nameof(Close) => await _repo.Documents__Close(ids),
+                nameof(Open) => await _repo.Documents__Open(ids),
                 nameof(Cancel) => await _repo.Documents__Cancel(ids),
                 nameof(Uncancel) => await _repo.Documents__Uncancel(ids),
                 _ => throw new BadRequestException($"Unknown transition {transition}"),
@@ -670,7 +670,7 @@ namespace Tellma.Controllers
                     // Mark the entity's OpenedAt both in the DB and in the returned entity
                     var assignedAt = entity.AssignedAt.Value;
                     var openedAt = DateTimeOffset.Now;
-                    var infos = await _repo.Documents__Open(entity.Id, assignedAt, openedAt);
+                    var infos = await _repo.Documents__Preview(entity.Id, assignedAt, openedAt);
                     entity.OpenedAt = openedAt;
 
                     // Notify the user
@@ -743,7 +743,7 @@ namespace Tellma.Controllers
 
                 var query = _repo.Query<RequiredSignature>()
                     .AdditionalParameters(docIdsTvp)
-                    .Expand("Role,Agent,User,SignedBy,OnBehalfOfUser,ProxyRole")
+                    .Expand($"{nameof(RequiredSignature.Role)},{nameof(RequiredSignature.Contract)},{nameof(RequiredSignature.User)},{nameof(RequiredSignature.SignedBy)},{nameof(RequiredSignature.OnBehalfOfUser)},{nameof(RequiredSignature.ProxyRole)}")
                     .OrderBy(nameof(RequiredSignature.LineId));
 
                 var requiredSignatures = await query.ToListAsync(cancellation);
@@ -772,15 +772,16 @@ namespace Tellma.Controllers
             {
                 if (!settings.IsMultiCenter)
                 {
-                    doc.InvestmentCenterIsCommon = false;
+                    doc.SegmentIsCommon = false;
                 }
 
                 // Document defaults
                 doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
+                doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
                 doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
                 doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
                 doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);
-                doc.InvestmentCenterIsCommon = docDef.InvestmentCenterVisibility && (doc.InvestmentCenterIsCommon ?? false);
+                doc.SegmentIsCommon = docDef.SegmentVisibility && (doc.SegmentIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
@@ -805,15 +806,19 @@ namespace Tellma.Controllers
             {
                 // All fields that aren't marked  as common, set them to
                 // null, the UI makes them invisible anyways
+                doc.PostingDate = doc.PostingDateIsCommon.Value ? doc.PostingDate : null;
                 doc.DebitContractId = doc.DebitContractIsCommon.Value ? doc.DebitContractId : null;
                 doc.CreditContractId = doc.CreditContractIsCommon.Value ? doc.CreditContractId : null;
                 doc.NotedContractId = doc.NotedContractIsCommon.Value ? doc.NotedContractId : null;
-                doc.InvestmentCenterId = doc.InvestmentCenterIsCommon.Value ? doc.InvestmentCenterId : null;
+                doc.SegmentId = doc.SegmentIsCommon.Value ? doc.SegmentId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
                 doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
                 doc.UnitId = doc.UnitIsCommon.Value ? doc.UnitId : null;
                 doc.CurrencyId = doc.CurrencyIsCommon.Value ? doc.CurrencyId : null;
+
+                // System IsSystem to false by default
+                doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
 
                 // All fields that are marked as common, copy the common value across to the 
                 // lines and entries, we deal with the lines one definitionId at a time
@@ -861,6 +866,13 @@ namespace Tellma.Controllers
                                     line.Memo = doc.Memo;
                                 }
                             }
+                            else if (columnDef.ColumnName == nameof(Line.PostingDate))
+                            {
+                                if (doc.PostingDateIsCommon.Value)
+                                {
+                                    line.PostingDate = doc.PostingDate;
+                                }
+                            }
                             else
                             {
                                 if (columnDef.EntryIndex >= line.Entries.Count ||
@@ -896,9 +908,9 @@ namespace Tellma.Controllers
                                         break;
 
                                     case nameof(Entry.CenterId):
-                                        if (doc.InvestmentCenterIsCommon.Value)
+                                        if (doc.SegmentIsCommon.Value)
                                         {
-                                            entry.CenterId = doc.InvestmentCenterId;
+                                            entry.CenterId = doc.SegmentId;
                                         }
 
                                         break;
@@ -1036,6 +1048,7 @@ namespace Tellma.Controllers
 
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var docDef = Definition();
+            var meta = GetMetadataForSave();
             var lineDefs = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lines;
 
             // SQL may return keys representing line and entry properties that inherit from a common document property
@@ -1064,18 +1077,22 @@ namespace Tellma.Controllers
                     }
                 }
 
-                // Date cannot be in the future
-                if (doc.PostingDate > DateTime.Today.AddDays(1))
+                if (doc.PostingDateIsCommon.Value && doc.PostingDate != null)
                 {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                        _localizer["Error_DateCannotBeInTheFuture"]);
-                }
+                    // Date cannot be in the future
+                    if (doc.PostingDate > DateTime.Today.AddDays(1))
+                    {
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                            _localizer["Error_DateCannotBeInTheFuture"]);
+                    }
 
-                // Date cannot be before archive date
-                if (doc.PostingDate <= settings.ArchiveDate)
-                {
-                    ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
-                        _localizer["Error_DateCannotBeBeforeArchiveDate0", settings.ArchiveDate.ToString("yyyy-MM-dd")]);
+                    // Date cannot be before archive date
+                    if (doc.PostingDate <= settings.ArchiveDate)
+                    {
+                        var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                        ModelState.AddModelError($"[{docIndex}].{nameof(doc.PostingDate)}",
+                            _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                    }
                 }
 
                 ///////// Line Validation
@@ -1085,8 +1102,10 @@ namespace Tellma.Controllers
 
                     if (!lineDefs.TryGetValue(line.DefinitionId.Value, out LineDefinitionForClient lineDef))// We checked earlier if this is null
                     {
-                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
+                        ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.DefinitionId)),
                             _localizer["Error_UnknownLineDefinitionId0", line.DefinitionId]);
+
+                        continue;
                     }
 
                     // Prevent duplicate line Ids
@@ -1096,6 +1115,29 @@ namespace Tellma.Controllers
                         var id = duplicateLineIds[line];
                         ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
+                    }
+
+                    foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
+                    {
+                        // What's the most appropriate pattern here?
+                    }
+
+                    if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
+                    {
+                        // Date cannot be in the future
+                        if (line.PostingDate > DateTime.Today.AddDays(1))
+                        {
+                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                _localizer["Error_DateCannotBeInTheFuture"]);
+                        }
+
+                        // Date cannot be before archive date
+                        if (line.PostingDate <= settings.ArchiveDate)
+                        {
+                            var archiveDate = settings.ArchiveDate.ToString("yyyy-MM-dd");
+                            ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)),
+                                _localizer["Error_DateCannotBeBeforeArchiveDate1", archiveDate]);
+                        }
                     }
 
                     ///////// Entry Validation
@@ -1142,6 +1184,17 @@ namespace Tellma.Controllers
                                 if (doc.Memo != line.Memo)
                                 {
                                     AddReadOnlyError(docIndex, nameof(Document.Memo));
+                                }
+                            }
+                        }
+                        else if (columnDef.ColumnName == nameof(Line.PostingDate))
+                        {
+                            if (doc.PostingDateIsCommon.Value)
+                            {
+                                errorKeyMap.Add(LinePath(docIndex, lineIndex, nameof(Line.PostingDate)), $"[{docIndex}].{nameof(Document.PostingDate)}");
+                                if (doc.PostingDate != line.PostingDate)
+                                {
+                                    AddReadOnlyError(docIndex, nameof(Document.PostingDate));
                                 }
                             }
                         }
@@ -1193,12 +1246,12 @@ namespace Tellma.Controllers
                                     break;
 
                                 case nameof(Entry.CenterId):
-                                    if (doc.InvestmentCenterIsCommon.Value)
+                                    if (doc.SegmentIsCommon.Value)
                                     {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)), $"[{docIndex}].{nameof(Document.InvestmentCenterId)}");
-                                        if (entry.CenterId != doc.InvestmentCenterId)
+                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)), $"[{docIndex}].{nameof(Document.SegmentId)}");
+                                        if (entry.CenterId != doc.SegmentId)
                                         {
-                                            AddReadOnlyError(docIndex, nameof(Document.InvestmentCenterId));
+                                            AddReadOnlyError(docIndex, nameof(Document.SegmentId));
                                         }
                                     }
 
@@ -1551,7 +1604,7 @@ namespace Tellma.Controllers
             .Concat(ContractPaths(nameof(Document.DebitContract)))
             .Concat(ContractPaths(nameof(Document.CreditContract)))
             .Concat(ContractPaths(nameof(Document.NotedContract)))
-            .Concat(CenterPaths(nameof(Document.InvestmentCenter)))
+            .Concat(CenterPaths(nameof(Document.Segment)))
             .Concat(UnitPaths(nameof(Document.Unit)))
             .Concat(CurrencyPaths(nameof(Document.Currency)))
             .Concat(LookupPaths(nameof(Document.DocumentLookup1)))
@@ -1631,13 +1684,23 @@ namespace Tellma.Controllers
         private static IEnumerable<string> DocumentStateChangeProps => TypeDescriptor.Get<DocumentStateChange>().SimpleProperties.Select(p => p.Name);
         private static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
         private static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
-        private static IEnumerable<string> UserProps => Enum(nameof(Entities.User.Name), nameof(Entities.User.Name2), nameof(Entities.User.Name3), nameof(Entities.User.ImageId));
+        private static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
         private static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         private static IEnumerable<string> ResourceUnitsProps => Enum(nameof(ResourceUnit.Multiplier));
         private static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
         private static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
         private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
-        private static IEnumerable<string> AccountProps => Enum(nameof(Account.Name), nameof(Account.Name2), nameof(Account.Name3));
+        private static IEnumerable<string> AccountProps => Enum(
+            // Names
+            nameof(Account.Name), 
+            nameof(Account.Name2), 
+            nameof(Account.Name3), 
+            
+            // Definitions
+            nameof(Account.ContractDefinitionId),
+            nameof(Account.NotedContractDefinitionId),
+            nameof(Account.ResourceDefinitionId)
+        );
         private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3));
         private static IEnumerable<string> AccountTypeProps => Enum(
             // Names
@@ -1656,7 +1719,12 @@ namespace Tellma.Controllers
             nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
-            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel),
+
+            // Definitions
+            $"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",
+            $"{nameof(AccountType.NotedContractDefinitions)}/{nameof(AccountTypeNotedContractDefinition.NotedContractDefinitionId)}",
+            $"{nameof(AccountType.ResourceDefinitions)}/{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}"
          );
 
         // Helper method
@@ -1808,7 +1876,7 @@ namespace Tellma.Controllers
                     // If the search is a date, include documents with that date
                     if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                     {
-                        filterString = $"{filterString} or {postingDateProp} {Ops.eq} {searchDate.ToString("yyyy-MM-dd")}";
+                        filterString = $"{filterString} or {postingDateProp} {Ops.eq} {searchDate:yyyy-MM-dd}";
                     }
 
                     // Apply the filter

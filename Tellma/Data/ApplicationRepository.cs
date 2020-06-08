@@ -611,8 +611,7 @@ namespace Tellma.Data
             IEnumerable<ResourceDefinition>,
             IEnumerable<ReportDefinition>,
             IEnumerable<DocumentDefinition>,
-            IEnumerable<LineDefinition>,
-            IEnumerable<AccountType>)> 
+            IEnumerable<LineDefinition>)> 
             Definitions__Load(CancellationToken cancellation)
         {
             Guid version;
@@ -622,7 +621,6 @@ namespace Tellma.Data
             var reportDefinitions = new List<ReportDefinition>();
             var documentDefinitions = new List<DocumentDefinition>();
             var lineDefinitions = new List<LineDefinition>();
-            var accountTypes = new List<AccountType>();
 
             var conn = await GetConnectionAsync(cancellation);
             using (SqlCommand cmd = conn.CreateCommand())
@@ -906,11 +904,11 @@ namespace Tellma.Data
 
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
 
-
                 // Next load line definitions
                 await reader.NextResultAsync(cancellation);
 
                 var lineDefinitionsDic = new Dictionary<int, LineDefinition>();
+                var lineDefinitionEntrisDic = new Dictionary<int, LineDefinitionEntry>();
                 var lineDefinitionProps = TypeDescriptor.Get<LineDefinition>().SimpleProperties;
                 while (await reader.ReadAsync(cancellation))
                 {
@@ -932,7 +930,14 @@ namespace Tellma.Data
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
-                    var entity = new LineDefinitionEntry();
+                    var entity = new LineDefinitionEntry 
+                    {
+                        ContractDefinitions = new List<LineDefinitionEntryContractDefinition>(),
+                        NotedContractDefinitions = new List<LineDefinitionEntryNotedContractDefinition>(),
+                        ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
+                        AccountTypes = new List<LineDefinitionEntryAccountType>()
+                    };
+
                     foreach (var prop in lineDefinitionEntryProps)
                     {
                         // get property value
@@ -945,6 +950,8 @@ namespace Tellma.Data
                     var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
                     lineDefinition.Entries ??= new List<LineDefinitionEntry>();
                     lineDefinition.Entries.Add(entity);
+
+                    lineDefinitionEntrisDic[entity.Id] = entity;
                 }
 
                 // line definition columns
@@ -999,91 +1006,80 @@ namespace Tellma.Data
                     {
                         Id = reader.GetInt32(i++),
                         EntryTypeParentId = reader.Int32(i++),
-                        DueDateLabel = reader.String(i++),
-                        DueDateLabel2 = reader.String(i++),
-                        DueDateLabel3 = reader.String(i++),
-                        Time1Label = reader.String(i++),
-                        Time1Label2 = reader.String(i++),
-                        Time1Label3 = reader.String(i++),
-                        Time2Label = reader.String(i++),
-                        Time2Label2 = reader.String(i++),
-                        Time2Label3 = reader.String(i++),
-                        ExternalReferenceLabel = reader.String(i++),
-                        ExternalReferenceLabel2 = reader.String(i++),
-                        ExternalReferenceLabel3 = reader.String(i++),
-                        AdditionalReferenceLabel = reader.String(i++),
-                        AdditionalReferenceLabel2 = reader.String(i++),
-                        AdditionalReferenceLabel3 = reader.String(i++),
-                        NotedAgentNameLabel = reader.String(i++),
-                        NotedAgentNameLabel2 = reader.String(i++),
-                        NotedAgentNameLabel3 = reader.String(i++),
-                        NotedAmountLabel = reader.String(i++),
-                        NotedAmountLabel2 = reader.String(i++),
-                        NotedAmountLabel3 = reader.String(i++),
-                        NotedDateLabel = reader.String(i++),
-                        NotedDateLabel2 = reader.String(i++),
-                        NotedDateLabel3 = reader.String(i++),
-
-                        // Those will be filled next
-                        ContractDefinitions = new List<AccountTypeContractDefinition>(),
-                        NotedContractDefinitions = new List<AccountTypeNotedContractDefinition>(),
-                        ResourceDefinitions = new List<AccountTypeResourceDefinition>(),
                     };
 
-                    accountTypes.Add(entity);
                     accountTypesDic.Add(entity.Id, entity);
                 }
 
-                // Account Type Contract Definitions
+                // Line Definition Entry Contract Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new AccountTypeContractDefinition
+                    var entity = new LineDefinitionEntryContractDefinition
                     {
                         Id = reader.GetInt32(i++),
-                        AccountTypeId = reader.GetInt32(i++),
+                        LineDefinitionEntryId = reader.GetInt32(i++),
                         ContractDefinitionId = reader.GetInt32(i++),
                     };
 
-                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.ContractDefinitions.Add(entity);
+                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
+                    lineDefEntry.ContractDefinitions.Add(entity);
                 }
 
-                // Account Type Noted Contract Definitions
+                // Line Definition Entry Noted Contract Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new AccountTypeNotedContractDefinition
+                    var entity = new LineDefinitionEntryNotedContractDefinition
                     {
                         Id = reader.GetInt32(i++),
-                        AccountTypeId = reader.GetInt32(i++),
+                        LineDefinitionEntryId = reader.GetInt32(i++),
                         NotedContractDefinitionId = reader.GetInt32(i++),
                     };
 
-                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.NotedContractDefinitions.Add(entity);
+                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
+                    lineDefEntry.NotedContractDefinitions.Add(entity);
                 }
 
-                // Account Type Resource Definitions
+                // Line Definition Entry Resource Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
                 {
                     int i = 0;
-                    var entity = new AccountTypeResourceDefinition
+                    var entity = new LineDefinitionEntryResourceDefinition
                     {
                         Id = reader.GetInt32(i++),
-                        AccountTypeId = reader.GetInt32(i++),
+                        LineDefinitionEntryId = reader.GetInt32(i++),
                         ResourceDefinitionId = reader.GetInt32(i++),
                     };
 
-                    var accountType = accountTypesDic[entity.AccountTypeId.Value];
-                    accountType.ResourceDefinitions.Add(entity);
+                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
+                    lineDefEntry.ResourceDefinitions.Add(entity);
+                }
+
+                // Line Definition Entry Account Type
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new LineDefinitionEntryAccountType
+                    {
+                        Id = reader.GetInt32(i++),
+                        LineDefinitionEntryId = reader.GetInt32(i++),
+                        AccountTypeId = reader.GetInt32(i++),
+                    };
+
+                    // Set the Account Type navigation property
+                    entity.AccountType = accountTypesDic[entity.AccountTypeId.Value];
+
+                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
+                    lineDefEntry.AccountTypes.Add(entity);
                 }
             }
 
-            return (version, lookupDefinitions, contractDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions, accountTypes);
+            return (version, lookupDefinitions, contractDefinitions, resourceDefinitions, reportDefinitions, documentDefinitions, lineDefinitions);
         }
 
         #endregion
@@ -4096,7 +4092,7 @@ namespace Tellma.Data
 
         // Posting State Management
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(int definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Close(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4114,13 +4110,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Post)}]";
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Close)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Post(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Close(List<int> ids)
         {
             var result = new List<int>();
 
@@ -4139,14 +4135,14 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Post)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Close)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(int definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Open(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4164,13 +4160,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Unpost)}]";
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Open)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Unpost(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Open(List<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4187,7 +4183,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Unpost)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
@@ -4292,7 +4288,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Open(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
+        public async Task<List<InboxNotificationInfo>> Documents__Preview(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4304,7 +4300,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Preview)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();

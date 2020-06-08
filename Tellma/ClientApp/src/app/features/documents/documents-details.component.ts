@@ -286,7 +286,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DebitContractIsCommon = false;
       result.CreditContractIsCommon = false;
       result.NotedContractIsCommon = false;
-      result.InvestmentCenterIsCommon = false;
+      result.SegmentIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
       result.QuantityIsCommon = false;
@@ -305,7 +305,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DebitContractIsCommon = !!def.DebitContractVisibility;
       result.CreditContractIsCommon = !!def.CreditContractVisibility;
       result.NotedContractIsCommon = !!def.NotedContractVisibility;
-      result.InvestmentCenterIsCommon = !!def.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
+      result.SegmentIsCommon = !!def.SegmentVisibility && this.ws.settings.IsMultiCenter;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
       result.QuantityIsCommon = !!def.QuantityVisibility;
@@ -419,7 +419,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
 
     if (model.State === 1) {
-      return 'Error_UnpostDocumentBeforeEdit';
+      return 'Error_OpenDocumentBeforeEdit';
     }
 
     if (model.State === -1) {
@@ -543,12 +543,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public stateUpdateDisplay(event: DocumentStateChangeEvent) {
     if (event.toState === 1) {
-      return 'PostedThisDocument';
+      return 'ClosedThisDocument';
     } else if (event.toState === -1) {
       return 'CanceledThisDocument';
     } else {
       if (event.fromState === 1) {
-        return 'UnpostedThisDocument';
+        return 'OpenedThisDocument';
       } else {
         return 'UncanceledThisDocument';
       }
@@ -635,6 +635,27 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public labelDocumentMemo(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'MemoLabel') || this.translate.instant('Memo');
+  }
+
+  // Posting Date
+
+  public showDocumentPostingDate(_: DocumentForSave) {
+    return this.definition.PostingDateVisibility;
+  }
+
+  public requireDocumentPostingDate(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._requireDocumentPostingDate;
+  }
+
+  public readonlyDocumentPostingDate(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return this._readonlyDocumentPostingDate;
+  }
+
+  public labelDocumentPostingDate(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'PostingDateLabel') ||
+      this.translate.instant('Document_PostingDate');
   }
 
   // DebitContract
@@ -742,25 +763,25 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return [this.definition.NotedContractDefinitionId];
   }
 
-  // Investment Center
+  // Segment
 
-  public showDocumentInvestmentCenter(_: DocumentForSave) {
-    return this.definition.InvestmentCenterVisibility && this.ws.settings.IsMultiCenter;
+  public showDocumentSegment(_: DocumentForSave) {
+    return this.definition.SegmentVisibility && this.ws.settings.IsMultiCenter;
   }
 
-  public requireDocumentInvestmentCenter(doc: Document): boolean {
+  public requireDocumentSegment(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._requireInvestmentCenter;
+    return this._requireSegment;
   }
 
-  public readonlyDocumentInvestmentCenter(doc: Document): boolean {
+  public readonlyDocumentSegment(doc: Document): boolean {
     this.computeDocumentSettings(doc);
-    return this._readonlyInvestmentCenter;
+    return this._readonlySegment;
   }
 
-  public labelDocumentInvestmentCenter(_: Document): string {
-    return this.ws.getMultilingualValueImmediate(this.definition, 'InvestmentCenterLabel') ||
-      this.translate.instant('Document_InvestmentCenter');
+  public labelDocumentSegment(_: Document): string {
+    return this.ws.getMultilingualValueImmediate(this.definition, 'SegmentLabel') ||
+      this.translate.instant('Document_Segment');
   }
 
   public showDocumentTime1(_: DocumentForSave) {
@@ -871,14 +892,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _computeDocumentSettingsDef: DocumentDefinitionForClient;
   private _requireDocumentMemo: boolean;
   private _readonlyDocumentMemo: boolean;
+  private _requireDocumentPostingDate: boolean;
+  private _readonlyDocumentPostingDate: boolean;
   private _requireDebitContract: boolean;
   private _readonlyDebitContract: boolean;
   private _requireCreditContract: boolean;
   private _readonlyCreditContract: boolean;
   private _requireNotedContract: boolean;
   private _readonlyNotedContract: boolean;
-  private _requireInvestmentCenter: boolean;
-  private _readonlyInvestmentCenter: boolean;
+  private _requireSegment: boolean;
+  private _readonlySegment: boolean;
   private _requireDocumentTime1: boolean;
   private _readonlyDocumentTime1: boolean;
   private _requireDocumentTime2: boolean;
@@ -893,14 +916,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!doc || !doc.Lines) {
       this._requireDocumentMemo = false;
       this._readonlyDocumentMemo = false;
+      this._requireDocumentPostingDate = false;
+      this._readonlyDocumentPostingDate = false;
       this._requireDebitContract = false;
       this._readonlyDebitContract = false;
       this._requireCreditContract = false;
       this._readonlyCreditContract = false;
       this._requireNotedContract = false;
       this._readonlyNotedContract = false;
-      this._requireInvestmentCenter = false;
-      this._readonlyInvestmentCenter = false;
+      this._requireSegment = false;
+      this._readonlySegment = false;
       this._requireDocumentTime1 = false;
       this._readonlyDocumentTime1 = false;
       this._requireDocumentTime2 = false;
@@ -923,14 +948,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       this._requireDocumentMemo = def.MemoRequiredState === 0;
       this._readonlyDocumentMemo = def.MemoReadOnlyState === 0;
+      this._requireDocumentPostingDate = def.PostingDateRequiredState === 0;
+      this._readonlyDocumentPostingDate = def.PostingDateReadOnlyState === 0;
       this._requireDebitContract = def.DebitContractRequiredState === 0;
       this._readonlyDebitContract = def.DebitContractReadOnlyState === 0;
       this._requireCreditContract = def.CreditContractRequiredState === 0;
       this._readonlyCreditContract = def.CreditContractReadOnlyState === 0;
       this._requireNotedContract = def.NotedContractRequiredState === 0;
       this._readonlyNotedContract = def.NotedContractReadOnlyState === 0;
-      this._requireInvestmentCenter = def.InvestmentCenterRequiredState === 0;
-      this._readonlyInvestmentCenter = def.InvestmentCenterReadOnlyState === 0;
+      this._requireSegment = def.SegmentRequiredState === 0;
+      this._readonlySegment = def.SegmentReadOnlyState === 0;
       this._requireDocumentTime1 = def.Time1RequiredState === 0;
       this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
@@ -955,6 +982,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyDocumentMemo &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyDocumentMemo = true;
+              }
+              break;
+            case 'PostingDate':
+              if (!this._requireDocumentPostingDate &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
+                this._requireDocumentPostingDate = true;
+              }
+              if (!this._readonlyDocumentPostingDate &&
+                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
+                this._readonlyDocumentPostingDate = true;
               }
               break;
             case 'ContractId':
@@ -989,13 +1026,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               break;
 
             case 'CenterId':
-              if (!this._requireInvestmentCenter &&
+              if (!this._requireSegment &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireInvestmentCenter = true;
+                this._requireSegment = true;
               }
-              if (!this._readonlyInvestmentCenter &&
+              if (!this._readonlySegment &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlyInvestmentCenter = true;
+                this._readonlySegment = true;
               }
               break;
 
@@ -1104,8 +1141,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // ContractId
 
   public showContract_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.ContractAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.ContractDefinitionId;
   }
 
   public readonlyContract_Manual(entry: Entry): boolean {
@@ -1119,41 +1156,41 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public labelContract_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.ContractDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.ContractDefinitionId : null;
 
     return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdContract_Manual(entry: Entry): number {
+  public definitionIdsContract_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.ContractDefinitionId;
+    return !!at && !!at.ContractDefinitions ? at.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
   }
 
   // Noted Contract Id
 
   public showNotedContract_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.NotedContractAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.NotedContractDefinitionId;
   }
 
   public labelNotedContract_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.NotedContractDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.NotedContractDefinitionId : null;
 
     return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdNotedContract_Manual(entry: Entry): number {
+  public definitionIdsNotedContract_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.NotedContractDefinitionId;
+    return !!at && !!at.NotedContractDefinitions ? at.NotedContractDefinitions.map(e => e.NotedContractDefinitionId) : [];
   }
 
   // ResourceId
 
   public showResource_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.ResourceAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.ResourceDefinitionId;
   }
 
   public readonlyResource_Manual(entry: Entry): boolean {
@@ -1166,28 +1203,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!account ? account.ResourceId : null;
   }
 
-  public filterResource_Manual(entry: Entry): string {
-    // For manual JV
-    const account = this.account(entry);
-    const accountType = this.accountType(entry);
-
-    if (!!accountType.IsResourceClassification) {
-      return `AssetType/Node descof ${account.AccountTypeId}`;
-    } else {
-      return null;
-    }
-  }
-
   public labelResource_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.ResourceDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.ResourceDefinitionId : null;
 
     return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdResource_Manual(entry: Entry): number {
+  public definitionIdsResource_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.ResourceDefinitionId;
+    return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
   }
 
   // Quantity + Unit
@@ -1323,7 +1348,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public showEntryType_Manual(entry: Entry): boolean {
     // Show entry type when the account's type has an entry type parent Id
     const at = this.accountType(entry);
-    return !!at && at.EntryTypeAssignment !== 'N';
+    return !!at && !!at.EntryTypeParentId;
   }
 
   public readonlyEntryType_Manual(entry: Entry): boolean {
@@ -1339,29 +1364,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
     return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
-  }
-
-  // Account Identifier
-  public showAccountIdentifier_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.IdentifierAssignment === 'E';
-  }
-
-  // public readonlyAccountIdentifier_Manual(entry: Entry): boolean {
-  //   const account = this.account(entry);
-  //   return !!account && !!account.Identifier;
-  // }
-
-  // public readonlyValueAccountIdentifier_Manual(entry: Entry): string {
-  //   const account = this.account(entry);
-  //   return !!account ? account.Identifier : null;
-  // }
-
-  public labelAccountIdentifier_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    return !!at.ExternalReferenceLabel ?
-      this.ws.getMultilingualValueImmediate(at, 'IdentifierLabel') :
-      this.translate.instant('Entry_AccountIdentifier');
   }
 
   // External Reference
@@ -1964,7 +1966,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!model) {
       return null;
     } else if (model.State === 1) {
-      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
+      return this.translate.instant('Error_OpenDocumentBeforeEdit');
     } else if (model.State === -1) {
       return this.translate.instant('Error_UncancelDocumentBeforeEdit');
     } else {
@@ -2053,7 +2055,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     if (!model) {
       return null;
     } else if (model.State === 1) {
-      return this.translate.instant('Error_UnpostDocumentBeforeEdit');
+      return this.translate.instant('Error_OpenDocumentBeforeEdit');
     } else if (model.State === -1) {
       return this.translate.instant('Error_UncancelDocumentBeforeEdit');
     } else if (this.areNegativeLines(signature)) {
@@ -2353,7 +2355,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
               (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
               (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
-              (doc.InvestmentCenterIsCommon && col.ColumnName === 'CenterId') ||
+              (doc.SegmentIsCommon && col.ColumnName === 'CenterId') ||
               (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
               (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
               (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
@@ -2466,26 +2468,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public definitionIdContract_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsContract_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.ContractDefinitionId ? entryDef.ContractDefinitionId : null;
+    return !!entryDef && !!entryDef.ContractDefinitionIds ? entryDef.ContractDefinitionIds : [];
   }
 
-  public definitionIdNotedContract_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsNotedContract_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.NotedContractDefinitionId ? entryDef.NotedContractDefinitionId : null;
+    return !!entryDef && !!entryDef.NotedContractDefinitionIds ? entryDef.NotedContractDefinitionIds : [];
   }
 
-  public definitionIdResource_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsResource_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.ResourceDefinitionId ? entryDef.ResourceDefinitionId : null;
-  }
-
-  public filterResource_Smart(lineDefId: number, columnIndex: number): string {
-    // Filter for smart line
-    const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.IsResourceClassification &&
-      !!entryDef.AccountTypeParentId ? `AssetType/Node descof ${entryDef.AccountTypeParentId}` : null;
+    return !!entryDef && !!entryDef.ResourceDefinitionIds ? entryDef.ResourceDefinitionIds : [];
   }
 
   public entryTypeFilter(lineDefId: number, columnIndex: number): string {
@@ -2669,7 +2664,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     if (state === 0) { // Current
       return !model.State && !def.HasWorkflow;
-    } else { // Posted + Canceled
+    } else { // Closed + Canceled
       return model.State === state;
     }
   }
@@ -2694,7 +2689,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const def = this.definition;
     if (state === 0) { // Current
       return !def || !def.HasWorkflow;
-    } else { // Posted
+    } else { // Closed
       return true;
     }
   }
@@ -2707,7 +2702,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       documentStates.some(state => this.isDocumentStateActive(state, model));
   }
 
-  ////////////// Posting State
+  ////////////// State
 
   public onDocumentState(
     doc: Document,
@@ -2724,12 +2719,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     ).subscribe({ error: this.details.handleActionError });
   }
 
-  public onPost(doc: Document): void {
-    this.onDocumentState(doc, this.documentsApi.post);
+  public onClose(doc: Document): void {
+    this.onDocumentState(doc, this.documentsApi.close);
   }
 
-  public onUnpost(doc: Document): void {
-    this.onDocumentState(doc, this.documentsApi.unpost);
+  public onOpen(doc: Document): void {
+    this.onDocumentState(doc, this.documentsApi.open);
   }
 
   public onCancel(doc: Document): void {
@@ -2755,32 +2750,33 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       requiredSignatures.some(e => !e.LastNegativeState));
   }
 
-  // Post
+  // Close
 
-  public showPost(doc: Document, _: RequiredSignature[]): boolean {
+  public showClose(doc: Document, _: RequiredSignature[]): boolean {
     return !!doc && !doc.State;
   }
 
-  public disablePost(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
+  public disableClose(doc: Document, requiredSignatures: RequiredSignature[]): boolean {
 
     return !doc || !doc.Id || // Missing document
       // Missing posting date
-      !doc.PostingDate ||
+     // !doc.PostingDate ||
       // OR missing permissions
       !this.hasPermissionToUpdateState(doc) ||
       // OR missing signatures
       this.missingSignatures(doc, requiredSignatures);
   }
 
-  public postTooltip(doc: Document, requiredSignatures: RequiredSignature[]): string {
+  public closeTooltip(doc: Document, requiredSignatures: RequiredSignature[]): string {
 
     if (!this.hasPermissionToUpdateState(doc)) {
       return this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
     } else if (this.missingSignatures(doc, requiredSignatures)) {
       return this.translate.instant('Error_LineIsMissingSignatures');
-    } else if (!!doc && !doc.PostingDate) {
-      return this.translate.instant('Error_ThePostingDateIsRequiredForPosting');
     }
+    // else if (!!doc && !doc.PostingDate) {
+    //   return this.translate.instant('Error_ThePostingDateIsRequiredForClosing');
+    // }
 
     return null;
   }
@@ -2811,9 +2807,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  // Unpost & Uncancel
+  // Open & Uncancel
 
-  public showUnpost(doc: Document, _: RequiredSignature[]): boolean {
+  public showOpen(doc: Document, _: RequiredSignature[]): boolean {
     return !!doc && !!doc.Id && doc.State === 1;
   }
 
@@ -3223,7 +3219,7 @@ export interface PrintingTemplate {
   [3] !State and !!HasWorkflow and State === 3
   [4] !State and !!HasWorkflow and State === 4
   [Current] !State and !HasWorkflow
-  [Posted] State === 1
+  [Closed] State === 1
   [Canceled] State === -1
 
   --------- IsVisible (In +ve state and wide screen)
@@ -3233,7 +3229,7 @@ export interface PrintingTemplate {
   [3] (!!HasWorkflow && CanReachState3) || isActive(3)
   [4] !!HasWorkflow || isActive(4)
   [Current] !HasWorkflow
-  [Posted] Always
+  [Closed] Always
 
   --------- IsVisible (In -ve state or narrow screen)
   IsVisible = IsActive

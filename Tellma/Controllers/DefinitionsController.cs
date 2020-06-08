@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Tellma.Controllers
 {
@@ -288,21 +289,11 @@ namespace Tellma.Controllers
             };
         }
 
-        private static List<int> ToList(int? defId)
+        private static LineDefinitionForClient MapLineDefinition(LineDefinition def)
         {
-            List<int> result = null;
-            if (defId != null)
+            return new LineDefinitionForClient
             {
-                result = new List<int>(defId.Value);
-            }
-
-            return result;
-        }
-
-        private static LineDefinitionForClient MapLineDefinition(LineDefinition def, Dictionary<int, AccountType> accountTypesDic)
-        {
-            var result = new LineDefinitionForClient
-            {
+                // Basics
                 Code = def.Code,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
@@ -311,16 +302,17 @@ namespace Tellma.Controllers
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
 
+                // Data
                 AllowSelectiveSigning = def.AllowSelectiveSigning ?? false,
                 ViewDefaultsToForm = def.ViewDefaultsToForm ?? false,
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,
-                    AccountTypeId = e.AccountTypeId,
                     EntryTypeId = e.EntryTypeId,
-                    ContractDefinitionIds = e.ContractDefinitionId == null ? null : new List<int> { e.ContractDefinitionId.Value },
-                    NotedContractDefinitionIds = e.NotedContractDefinitionId == null ? null : new List<int> { e.NotedContractDefinitionId.Value },
-                    ResourceDefinitionIds = e.ResourceDefinitionId == null ? null : new List<int> { e.ResourceDefinitionId.Value },
+                    EntryTypeParentId = e.AccountTypes.FirstOrDefault()?.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
+                    ContractDefinitionIds = e.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList(),
+                    NotedContractDefinitionIds = e.NotedContractDefinitions.Select(e => e.NotedContractDefinitionId.Value).ToList(),
+                    ResourceDefinitionIds = e.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList(),
                 })?.ToList() ?? new List<LineDefinitionEntryForClient>(),
 
                 Columns = def.Columns?.Select(c => new LineDefinitionColumnForClient
@@ -332,7 +324,8 @@ namespace Tellma.Controllers
                     Label3 = c.Label3,
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
-                    InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader
+                    InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader,
+                    IsVisibleInTemplate =  c.IsVisibleInTemplate == false ? null : c.IsVisibleInTemplate
                 })?.ToList() ?? new List<LineDefinitionColumnForClient>(),
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient
@@ -345,118 +338,6 @@ namespace Tellma.Controllers
                     IsActive = r.IsActive ?? false,
                 })?.ToList() ?? new List<LineDefinitionStateReasonForClient>(),
             };
-
-            // Copy across some values from Account Type
-            foreach (var entry in result.Entries)
-            {
-                var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeId ?? 0);
-                if (accountType == null)
-                {
-                    throw new BadRequestException($"Account type with Id {entry.AccountTypeId} was not loaded"); // Just in case
-                }
-
-                entry.EntryTypeParentId = accountType.EntryTypeParentId;
-
-                // If the LineDefinitionEntry itself does not specify a single definitionId
-                // get the list of permitted definitions from the account type
-                if (entry.ContractDefinitionIds == null)
-                {
-                    entry.ContractDefinitionIds = accountType.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList();
-                }
-
-                if (entry.NotedContractDefinitionIds == null)
-                {
-                    entry.NotedContractDefinitionIds = accountType.NotedContractDefinitions.Select(e => e.NotedContractDefinitionId.Value).ToList();
-                }
-
-                if (entry.ResourceDefinitionIds == null)
-                {
-                    entry.ResourceDefinitionIds = accountType.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList();
-                }
-            }
-
-            foreach (var col in result.Columns)
-            {
-                if (col.EntryIndex < result.Entries.Count)
-                {
-                    var entry = result.Entries[col.EntryIndex];
-                    var accountType = accountTypesDic.GetValueOrDefault(entry.AccountTypeId.Value);
-                    switch (col.ColumnName)
-                    {
-                        //case nameof(Entry.ContractId):
-                        //    if (accountType.ContractDefinitionId != null && contractDefs.TryGetValue(accountType.ContractDefinitionId, out var contractDef))
-                        //    {
-                        //        col.Label ??= contractDef.TitleSingular;
-                        //        col.Label2 ??= contractDef.TitleSingular2;
-                        //        col.Label3 ??= contractDef.TitleSingular3;
-                        //    }
-                        //    break;
-                        //case nameof(Entry.NotedContractId):
-                        //    if (accountType.NotedContractDefinitionId != null && contractDefs.TryGetValue(accountType.NotedContractDefinitionId, out var notedContractDef))
-                        //    {
-                        //        col.Label ??= notedContractDef.TitleSingular;
-                        //        col.Label2 ??= notedContractDef.TitleSingular2;
-                        //        col.Label3 ??= notedContractDef.TitleSingular3;
-                        //    }
-                        //    break;
-                        //case nameof(Entry.ResourceId):
-                        //    if (accountType.ResourceDefinitionId != null && resourceDefs.TryGetValue(accountType.ResourceDefinitionId, out var resourceDef))
-                        //    {
-                        //        col.Label ??= resourceDef.TitleSingular;
-                        //        col.Label2 ??= resourceDef.TitleSingular2;
-                        //        col.Label3 ??= resourceDef.TitleSingular3;
-                        //    }
-                        //    break;
-                        //case nameof(Entry.AccountIdentifier):
-                        //    col.Label ??= accountType?.IdentifierLabel;
-                        //    col.Label2 ??= accountType?.IdentifierLabel2;
-                        //    col.Label3 ??= accountType?.IdentifierLabel3;
-                        //    break;
-                        case nameof(Entry.DueDate):
-                            col.Label ??= accountType?.DueDateLabel;
-                            col.Label2 ??= accountType?.DueDateLabel2;
-                            col.Label3 ??= accountType?.DueDateLabel3;
-                            break;
-                        case nameof(Entry.Time1):
-                            col.Label ??= accountType?.Time1Label;
-                            col.Label2 ??= accountType?.Time1Label2;
-                            col.Label3 ??= accountType?.Time1Label3;
-                            break;
-                        case nameof(Entry.Time2):
-                            col.Label ??= accountType?.Time2Label;
-                            col.Label2 ??= accountType?.Time2Label2;
-                            col.Label3 ??= accountType?.Time2Label3;
-                            break;
-                        case nameof(Entry.ExternalReference):
-                            col.Label ??= accountType?.ExternalReferenceLabel;
-                            col.Label2 ??= accountType?.ExternalReferenceLabel2;
-                            col.Label3 ??= accountType?.ExternalReferenceLabel3;
-                            break;
-                        case nameof(Entry.AdditionalReference):
-                            col.Label ??= accountType?.AdditionalReferenceLabel;
-                            col.Label2 ??= accountType?.AdditionalReferenceLabel2;
-                            col.Label3 ??= accountType?.AdditionalReferenceLabel3;
-                            break;
-                        case nameof(Entry.NotedAgentName):
-                            col.Label ??= accountType?.NotedAgentNameLabel;
-                            col.Label2 ??= accountType?.NotedAgentNameLabel2;
-                            col.Label3 ??= accountType?.NotedAgentNameLabel3;
-                            break;
-                        case nameof(Entry.NotedAmount):
-                            col.Label ??= accountType?.NotedAmountLabel;
-                            col.Label2 ??= accountType?.NotedAmountLabel2;
-                            col.Label3 ??= accountType?.NotedAmountLabel3;
-                            break;
-                        case nameof(Entry.NotedDate):
-                            col.Label ??= accountType?.NotedDateLabel;
-                            col.Label2 ??= accountType?.NotedDateLabel2;
-                            col.Label3 ??= accountType?.NotedDateLabel3;
-                            break;
-                    }
-                }
-            }
-
-            return result;
         }
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
@@ -465,6 +346,7 @@ namespace Tellma.Controllers
             {
                 Code = def.Code,
                 IsOriginalDocument = def.IsOriginalDocument ?? false,
+                DocumentType = def.DocumentType.Value,
                 TitlePlural = def.TitlePlural,
                 TitlePlural2 = def.TitlePlural2,
                 TitlePlural3 = def.TitlePlural3,
@@ -538,6 +420,27 @@ namespace Tellma.Controllers
                         if (colDef.ReadOnlyState < (result.MemoReadOnlyState ?? 5))
                         {
                             result.MemoReadOnlyState = colDef.ReadOnlyState;
+                        }
+                    }
+
+                    // Posting Date
+                    else if (colDef.ColumnName == nameof(Line.PostingDate))
+                    {
+                        result.PostingDateVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.PostingDateLabel))
+                        {
+                            result.PostingDateLabel = colDef.Label;
+                            result.PostingDateLabel2 = colDef.Label2;
+                            result.PostingDateLabel3 = colDef.Label3;
+                        }
+                        if (colDef.RequiredState < (result.PostingDateRequiredState ?? 5))
+                        {
+                            result.PostingDateRequiredState = colDef.RequiredState;
+                        }
+
+                        if (colDef.ReadOnlyState < (result.PostingDateReadOnlyState ?? 5))
+                        {
+                            result.PostingDateReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
 
@@ -619,24 +522,24 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // InvestmentCenter
+                    // Segment
                     if (colDef.ColumnName == nameof(Entry.CenterId))
                     {
-                        result.InvestmentCenterVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.InvestmentCenterLabel))
+                        result.SegmentVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.SegmentLabel))
                         {
-                            result.InvestmentCenterLabel = colDef.Label;
-                            result.InvestmentCenterLabel2 = colDef.Label2;
-                            result.InvestmentCenterLabel3 = colDef.Label3;
+                            result.SegmentLabel = colDef.Label;
+                            result.SegmentLabel2 = colDef.Label2;
+                            result.SegmentLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.InvestmentCenterRequiredState ?? 5))
+                        if (colDef.RequiredState < (result.SegmentRequiredState ?? 5))
                         {
-                            result.InvestmentCenterRequiredState = colDef.RequiredState;
+                            result.SegmentRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.InvestmentCenterReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState < (result.SegmentReadOnlyState ?? 5))
                         {
-                            result.InvestmentCenterReadOnlyState = colDef.ReadOnlyState;
+                            result.SegmentReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
 
@@ -753,7 +656,7 @@ namespace Tellma.Controllers
         public static async Task<Versioned<DefinitionsForClient>> LoadDefinitionsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
             // Load definitions
-            var (version, lookupDefs, contractDefs, resourceDefs, reportDefs, docDefs, lineDefs, accountTypes) = await repo.Definitions__Load(cancellation);
+            var (version, lookupDefs, contractDefs, resourceDefs, reportDefs, docDefs, lineDefs) = await repo.Definitions__Load(cancellation);
 
             // Map Lookups, Contracts, Resources, Reports (Straight forward)
             var result = new DefinitionsForClient
@@ -762,11 +665,10 @@ namespace Tellma.Controllers
                 Contracts = contractDefs.ToDictionary(def => def.Id, def => MapContractDefinition(def)),
                 Resources = resourceDefs.ToDictionary(def => def.Id, def => MapResourceDefinition(def)),
                 Reports = reportDefs.ToDictionary(def => def.Id, def => MapReportDefinition(def)),
+                Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def))
             };
 
             // Map Lines and Documents (Special handling)
-            var accountTypesDic = accountTypes.ToDictionary(e => e.Id, e => e);
-            result.Lines = lineDefs.ToDictionary(def => def.Id, def => MapLineDefinition(def, accountTypesDic));
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
@@ -776,7 +678,7 @@ namespace Tellma.Controllers
                 throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: 'manual-journal-vouchers' could not be found");
             }
 
-            result.ManualLinesDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == "ManualLine").Key;
+            result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == "ManualLine").Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
                 throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");
