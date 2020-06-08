@@ -40,13 +40,13 @@
         <t-spinner *ngIf="isPrinting"></t-spinner>
     </div>
 
-    <!-- Unpost -->
+    <!-- Open -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="updateStateTooltip(model)"
-        container="body" *ngIf="!isEdit && showUnpost(model, extras?.RequiredSignatures)">
-        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="onUnpost(model)"
+        container="body" *ngIf="!isEdit && showOpen(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-light t-white-button text-primary t-toolbar-button" (click)="onOpen(model)"
             [disabled]="!hasPermissionToUpdateState(model)">
             <fa-icon icon="undo"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Unpost" | translate }}</span>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Open" | translate }}</span>
         </button>
     </div>
     <!-- Cancel -->
@@ -59,14 +59,14 @@
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Cancel" | translate }}</span>
         </button>
     </div>
-    <!-- Post -->
+    <!-- Close -->
     <div class="d-inline-block" [placement]="actionsDropdownPlacement"
-        [ngbTooltip]="postTooltip(model, extras?.RequiredSignatures)" container="body"
-        *ngIf="!isEdit && showPost(model, extras?.RequiredSignatures)">
-        <button class="btn btn-sm btn-success t-toolbar-button" (click)="onPost(model)"
-            [disabled]="disablePost(model, extras?.RequiredSignatures)">
+        [ngbTooltip]="closeTooltip(model, extras?.RequiredSignatures)" container="body"
+        *ngIf="!isEdit && showClose(model, extras?.RequiredSignatures)">
+        <button class="btn btn-sm btn-success t-toolbar-button" (click)="onClose(model)"
+            [disabled]="disableClose(model, extras?.RequiredSignatures)">
             <fa-icon icon="check"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Post" | translate }}</span>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ "Close" | translate }}</span>
         </button>
     </div>
     <!-- Uncancel -->
@@ -143,13 +143,18 @@
     </t-form-group>
 
     <!-- Posting Date -->
-    <t-form-group class="t-form-group" [label]="'Document_PostingDate' | translate"
-        [serverErrors]="model?.serverErrors?.PostingDate">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
-            <div>{{ model?.PostingDate | date:'yyyy-MM-dd' }}</div>
-        </t-restricted>
-        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.PostingDate" [ngModelOptions]="{ updateOn: 'blur' }">
-        </t-date-picker>
+    <t-form-group class="t-form-group" [label]="labelDocumentPostingDate(model)"
+        [serverErrors]="model?.serverErrors?.PostingDate" *ngIf="showDocumentPostingDate(model)">
+        <ng-container *ngIf="model?.PostingDateIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.PostingDate">
+                <div>{{ model?.PostingDate | number:'1.0-4'  }}</div>
+            </t-restricted>
+            <t-decimal-editor *ngIf="isEdit" [disabled]="readonlyDocumentPostingDate(model)"
+                [required]="requireDocumentPostingDate(model)" [(ngModel)]="model.PostingDate"
+                [ngModelOptions]="{ updateOn: 'blur' }" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+            </t-decimal-editor>
+        </ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'PostingDateIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Clearance -->
@@ -236,22 +241,22 @@
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedContractIsCommon' }"></ng-container>
     </t-form-group>
 
-    <!-- Investment Center -->
-    <t-form-group class="t-form-group" [label]="labelDocumentInvestmentCenter(model)"
-        [serverErrors]="model?.serverErrors?.InvestmentCenterId" *ngIf="showDocumentInvestmentCenter(model)">
-        <ng-container *ngIf="model?.InvestmentCenterIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.InvestmentCenterId">
-                <t-view-link link="../../../centers" [itemId]="model?.InvestmentCenterId">
-                    {{ ws.getMultilingualValue('Center', model?.InvestmentCenterId, 'Name') }}
+    <!-- Segment -->
+    <t-form-group class="t-form-group" [label]="labelDocumentSegment(model)"
+        [serverErrors]="model?.serverErrors?.SegmentId" *ngIf="showDocumentSegment(model)">
+        <ng-container *ngIf="model?.SegmentIsCommon; else perLine">
+            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.SegmentId">
+                <t-view-link link="../../../centers" [itemId]="model?.SegmentId">
+                    {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
                 </t-view-link>
             </t-restricted>
-            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.InvestmentCenterId"
-                filter="CenterType eq 'Investment' and IsLeaf = true and IsActive = true"
-                [required]="requireDocumentInvestmentCenter(model)"
-                [disabled]="readonlyDocumentInvestmentCenter(model)">
+            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
+                filter="CenterType eq 'Segment' and IsLeaf = true and IsActive = true"
+                [required]="requireDocumentSegment(model)"
+                [disabled]="readonlyDocumentSegment(model)">
             </t-centers-picker>
         </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'InvestmentCenterIsCommon' }"></ng-container>
+        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'SegmentIsCommon' }"></ng-container>
     </t-form-group>
 
     <!-- Time1 -->
@@ -325,7 +330,7 @@
                 </t-view-link>
             </t-restricted>
             <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
-                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)">
+                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)" filter="IsActive eq true">
             </t-currencies-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CurrencyIsCommon' }"></ng-container>

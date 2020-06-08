@@ -56,6 +56,7 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService): Ent
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DocumentId: { control: 'number', label: () => `${trx.instant('Line_Document')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Document: { control: 'navigation', label: () => trx.instant('Line_Document'), type: 'Document', foreignKeyName: 'DocumentId' },
+                IsSystem: { control: 'boolean', label: () => trx.instant('IsSystem') },
                 DefinitionId: { control: 'number', label: () => trx.instant('Line_Definition'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 PostingDate: { control: 'date', label: () => trx.instant('Line_PostingDate') },
                 TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

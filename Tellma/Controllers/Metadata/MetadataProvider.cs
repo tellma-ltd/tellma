@@ -975,13 +975,13 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
                     isRequired = def.NotedContractVisibility;
                     break;
-                case nameof(Document.InvestmentCenter):
-                    display = PropertyDisplay(settings, def.InvestmentCenterVisibility, def.InvestmentCenterLabel, def.InvestmentCenterLabel2, def.InvestmentCenterLabel3, display);
-                    isRequired = def.InvestmentCenterVisibility;
+                case nameof(Document.Segment):
+                    display = PropertyDisplay(settings, def.SegmentVisibility, def.SegmentLabel, def.SegmentLabel2, def.SegmentLabel3, display);
+                    isRequired = def.SegmentVisibility;
                     break;
-                case nameof(Document.InvestmentCenterId):
-                    display = PropertyDisplay(settings, def.InvestmentCenterVisibility, def.InvestmentCenterLabel, def.InvestmentCenterLabel2, def.InvestmentCenterLabel3, display);
-                    isRequired = def.InvestmentCenterVisibility;
+                case nameof(Document.SegmentId):
+                    display = PropertyDisplay(settings, def.SegmentVisibility, def.SegmentLabel, def.SegmentLabel2, def.SegmentLabel3, display);
+                    isRequired = def.SegmentVisibility;
                     break;
                 case nameof(Document.Time1):
                     display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);

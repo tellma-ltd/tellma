@@ -3,9 +3,9 @@
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="PostingDate,State,Assignee,AssignedAt,Memo" selectForTiles="PostingDate,State,Memo"
   [includeInactiveLabel]="'IncludeCanceled' | translate" inactiveFilter="State ne -1" [multiselectActions]="[
-                { template: post, action: onPost, showAction: showPost, canAction: hasStatePermission, actionTooltip: stateTooltip },
+                { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasStatePermission, actionTooltip: stateTooltip },
-                { template: unpost, action: onUnpost, showAction: showUnpost, canAction: hasStatePermission, actionTooltip: stateTooltip },
+                { template: open, action: onOpen, showAction: showOpen, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: uncancel, action: onUncancel, showAction: showUncancel, canAction: hasStatePermission, actionTooltip: stateTooltip }
             ]" [filterDefinition]="{
             'CreatedBy' : [
@@ -67,7 +67,7 @@
 <ng-template #state_1> {{ 'Document_State_1' | translate }} </ng-template>
 
 
-<ng-template #post> {{ 'Post' | translate }} </ng-template>
-<ng-template #unpost> {{ 'Unpost' | translate }} </ng-template>
+<ng-template #close> {{ 'Close' | translate }} </ng-template>
+<ng-template #open> {{ 'Open' | translate }} </ng-template>
 <ng-template #cancel> {{ 'Cancel' | translate }} </ng-template>
 <ng-template #uncancel> {{ 'Uncancel' | translate }} </ng-template>

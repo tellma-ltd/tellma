@@ -522,24 +522,24 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // InvestmentCenter
+                    // Segment
                     if (colDef.ColumnName == nameof(Entry.CenterId))
                     {
-                        result.InvestmentCenterVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.InvestmentCenterLabel))
+                        result.SegmentVisibility = true;
+                        if (string.IsNullOrWhiteSpace(result.SegmentLabel))
                         {
-                            result.InvestmentCenterLabel = colDef.Label;
-                            result.InvestmentCenterLabel2 = colDef.Label2;
-                            result.InvestmentCenterLabel3 = colDef.Label3;
+                            result.SegmentLabel = colDef.Label;
+                            result.SegmentLabel2 = colDef.Label2;
+                            result.SegmentLabel3 = colDef.Label3;
                         }
-                        if (colDef.RequiredState < (result.InvestmentCenterRequiredState ?? 5))
+                        if (colDef.RequiredState < (result.SegmentRequiredState ?? 5))
                         {
-                            result.InvestmentCenterRequiredState = colDef.RequiredState;
+                            result.SegmentRequiredState = colDef.RequiredState;
                         }
 
-                        if (colDef.ReadOnlyState < (result.InvestmentCenterReadOnlyState ?? 5))
+                        if (colDef.ReadOnlyState < (result.SegmentReadOnlyState ?? 5))
                         {
-                            result.InvestmentCenterReadOnlyState = colDef.ReadOnlyState;
+                            result.SegmentReadOnlyState = colDef.ReadOnlyState;
                         }
                     }
 

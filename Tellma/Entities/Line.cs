@@ -11,7 +11,6 @@ namespace Tellma.Entities
     {
         [Display(Name = "Definition")]
         [Required]
-        [StringLength(50)]
         [AlwaysAccessible]
         public int? DefinitionId { get; set; }
 

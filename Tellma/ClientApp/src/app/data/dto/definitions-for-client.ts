@@ -106,6 +106,14 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     MemoRequiredState: LineState;
     MemoReadOnlyState: LineState;
 
+    // Posting Date
+    PostingDateVisibility: boolean;
+    PostingDateRequiredState: LineState;
+    PostingDateReadOnlyState: LineState;
+    PostingDateLabel: string;
+    PostingDateLabel2: string;
+    PostingDateLabel3: string;
+
     // Debit Contract
     DebitContractVisibility: boolean;
     DebitContractRequiredState: LineState;
@@ -136,13 +144,13 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     // Clearance
     ClearanceVisibility: Visibility;
 
-    // Investment Center
-    InvestmentCenterVisibility: boolean;
-    InvestmentCenterRequiredState: LineState;
-    InvestmentCenterReadOnlyState: LineState;
-    InvestmentCenterLabel: string;
-    InvestmentCenterLabel2: string;
-    InvestmentCenterLabel3: string;
+    // Segment
+    SegmentVisibility: boolean;
+    SegmentRequiredState: LineState;
+    SegmentReadOnlyState: LineState;
+    SegmentLabel: string;
+    SegmentLabel2: string;
+    SegmentLabel3: string;
 
     // Time1
     Time1Visibility: boolean;

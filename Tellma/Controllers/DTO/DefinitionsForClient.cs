@@ -192,13 +192,13 @@ namespace Tellma.Controllers.Dto
         // Clearance
         public string ClearanceVisibility { get; set; }
 
-        // Investment Center
-        public bool InvestmentCenterVisibility { get; set; }
-        public short? InvestmentCenterRequiredState { get; set; }
-        public short? InvestmentCenterReadOnlyState { get; set; }
-        public string InvestmentCenterLabel { get; set; }
-        public string InvestmentCenterLabel2 { get; set; }
-        public string InvestmentCenterLabel3 { get; set; }
+        // Segment
+        public bool SegmentVisibility { get; set; }
+        public short? SegmentRequiredState { get; set; }
+        public short? SegmentReadOnlyState { get; set; }
+        public string SegmentLabel { get; set; }
+        public string SegmentLabel2 { get; set; }
+        public string SegmentLabel3 { get; set; }
 
         // Time 1
         public bool Time1Visibility { get; set; }

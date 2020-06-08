@@ -4092,7 +4092,7 @@ namespace Tellma.Data
 
         // Posting State Management
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Post(int definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Close(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4110,13 +4110,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Post)}]";
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Close)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Post(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Close(List<int> ids)
         {
             var result = new List<int>();
 
@@ -4135,14 +4135,14 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Post)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Close)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Unpost(int definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Open(int definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4160,13 +4160,13 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Unpost)}]";
+            cmd.CommandText = $"[bll].[{nameof(Documents_Validate__Open)}]";
 
             // Execute
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Unpost(List<int> ids)
+        public async Task<List<InboxNotificationInfo>> Documents__Open(List<int> ids)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4183,7 +4183,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Unpost)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();
@@ -4288,7 +4288,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadAssignmentNotificationInfos(reader);
         }
 
-        public async Task<List<InboxNotificationInfo>> Documents__Open(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
+        public async Task<List<InboxNotificationInfo>> Documents__Preview(int documentId, DateTimeOffset createdAt, DateTimeOffset openedAt)
         {
             var conn = await GetConnectionAsync();
             using var cmd = conn.CreateCommand();
@@ -4300,7 +4300,7 @@ namespace Tellma.Data
 
             // Command
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = $"[dal].[{nameof(Documents__Open)}]";
+            cmd.CommandText = $"[dal].[{nameof(Documents__Preview)}]";
 
             // Execute
             using var reader = await cmd.ExecuteReaderAsync();

@@ -508,12 +508,6 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>የጽሑፍ መገለጫ ባህሪ 2</value>
   </data>
-  <data name="Document_InvestmentCenter" xml:space="preserve">
-    <value>የኢንቨስትመንት ማዕከል</value>
-  </data>
-  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
-    <value>የኢንቨስትመንት ማዕከል ነው የጋራ</value>
-  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memoየጋራ ነው</value>
   </data>
@@ -537,6 +531,12 @@
   </data>
   <data name="Document_QuantityIsCommon" xml:space="preserve">
     <value>ብዛት የሆነው የጋራ</value>
+  </data>
+  <data name="Document_Segment" xml:space="preserve">
+    <value>ክፍል</value>
+  </data>
+  <data name="Document_SegmentIsCommon" xml:space="preserve">
+    <value>ክፍል ናት የጋራ</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>ተከታታይ ቁጥር</value>
@@ -646,9 +646,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>ሒሳብ</value>
   </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>መለያ</value>
-  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>ተጨማሪ ማጣቀሻ</value>
   </data>
@@ -757,8 +754,8 @@
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
     <value>የተሰረዙ ሰነዶችን ሊቀየሩ አይችሉም.</value>
   </data>
-  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>የተለጠፉ ሰነዶች ሊቀየሩ አይችሉም.</value>
+  <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
+    <value>ዝግ ሰነዶች ሊቀየሩ አይችሉም.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>አንድ ያልተንቀሳቀሰ ንጥል ማስተካከል አይቻልም.</value>

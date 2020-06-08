@@ -508,12 +508,6 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>الصفة النصية 2</value>
   </data>
-  <data name="Document_InvestmentCenter" xml:space="preserve">
-    <value>مركز الاستثمار</value>
-  </data>
-  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
-    <value>مركز الاستثمار مشترك</value>
-  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>الملاحظات مشتركة</value>
   </data>
@@ -538,6 +532,12 @@
   <data name="Document_QuantityIsCommon" xml:space="preserve">
     <value>الكمية مشتركة</value>
   </data>
+  <data name="Document_Segment" xml:space="preserve">
+    <value>النشاط</value>
+  </data>
+  <data name="Document_SegmentIsCommon" xml:space="preserve">
+    <value>النشاط مشترك</value>
+  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
@@ -548,7 +548,7 @@
     <value>جار</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>مرحّل</value>
+    <value>مقل</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>ملغى</value>
@@ -645,9 +645,6 @@
   </data>
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
-  </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>رقم التعريف</value>
   </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>المرجع الإضافي</value>
@@ -757,8 +754,8 @@
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
     <value>لا يمكن تعديل المستندات الملغاة.</value>
   </data>
-  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>لا يمكن تعديل المستندات المرحلة.</value>
+  <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
+    <value>لا يمكن تعديل المستندات المقفلة.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
@@ -1535,7 +1532,7 @@
     <value>حذف</value>
   </data>
   <data name="Permission_DocumentState" xml:space="preserve">
-    <value>ترحيل/إلغاء</value>
+    <value>إقفال/إلغاء</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>

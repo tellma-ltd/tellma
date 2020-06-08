@@ -508,12 +508,6 @@
   <data name="Document_DocumentText2" xml:space="preserve">
     <value>文本属性2</value>
   </data>
-  <data name="Document_InvestmentCenter" xml:space="preserve">
-    <value>投资中心</value>
-  </data>
-  <data name="Document_InvestmentCenterIsCommon" xml:space="preserve">
-    <value>投资中心是常有的事</value>
-  </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>备注是常有的事</value>
   </data>
@@ -537,6 +531,12 @@
   </data>
   <data name="Document_QuantityIsCommon" xml:space="preserve">
     <value>数量是很常见</value>
+  </data>
+  <data name="Document_Segment" xml:space="preserve">
+    <value>分割</value>
+  </data>
+  <data name="Document_SegmentIsCommon" xml:space="preserve">
+    <value>段是常见</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
@@ -646,9 +646,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
   </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>识别码</value>
-  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>其他参考</value>
   </data>
@@ -757,8 +754,8 @@
   <data name="Error_CannotEditCanceledDocuments" xml:space="preserve">
     <value>取消的文件不能被修改。</value>
   </data>
-  <data name="Error_CannotEditPostedDocuments" xml:space="preserve">
-    <value>发布的文件不能被修改。</value>
+  <data name="Error_CannotEditClosedDocuments" xml:space="preserve">
+    <value>封闭的文件不能被修改。</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>无法修改非活动项目。</value>

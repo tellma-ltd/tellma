@@ -77,8 +77,8 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
 
   // State
 
-  public onPost = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.documentsApi.post(ids, { returnEntities: true }).pipe(
+  public onClose = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.documentsApi.close(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -95,8 +95,8 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     return obs$;
   }
 
-  public onUnpost = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.documentsApi.unpost(ids, { returnEntities: true }).pipe(
+  public onOpen = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.documentsApi.open(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -113,7 +113,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     return obs$;
   }
 
-  public showPost = (ids: (number | string)[]): boolean => {
+  public showClose = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.State === 0;
@@ -127,7 +127,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     });
   }
 
-  public showUnpost = (ids: (number | string)[]): boolean => {
+  public showOpen = (ids: (number | string)[]): boolean => {
     return ids.some(id => {
       const doc = this.ws.get('Document', id) as Document;
       return !!doc && doc.State === 1;
