@@ -1,5 +1,5 @@
 ﻿INSERT INTO @Accounts([Index],[Code],[Name], [AccountTypeId], [ContractDefinitionId],[ResourceDefinitionId],[NotedContractDefinitionId]) VALUES
-(4, N'1101-101', N'Cash on Hand -', @CashOnHand, @cashiersCD, NULL, NULL),
+(4, N'1101-101', N'Cash on Hand -', @CashOnHand, @cash_registersCD, NULL, NULL),
 (6, N'1102-101', N'Petty Cash-', @CashOnHand, @petty_cash_fundsCD, NULL, NULL),
 (8, N'1103-001', N'AIB Bole OD', @BalancesWithBanks, @bank_accountsCD, NULL, NULL),
 (9, N'1103-002', N'AIB Bole Special OD', @BalancesWithBanks, @bank_accountsCD, NULL, NULL),

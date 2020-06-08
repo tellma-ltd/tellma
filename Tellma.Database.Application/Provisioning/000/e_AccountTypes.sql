@@ -427,7 +427,7 @@ INSERT INTO dbo.[AccountTypeResourceDefinitions]
 
 INSERT INTO dbo.[AccountTypeContractDefinitions]
 ([AccountTypeId],								[ContractDefinitionId]) VALUES
-(@CashOnHand,									@cashiersCD),
+(@CashOnHand,									@cash_registersCD),
 (@CashOnHand,									@petty_cash_fundsCD),
 (@BalancesWithBanks	,							@bank_accountsCD),
 (@RawMaterials,									@warehousesCD),
