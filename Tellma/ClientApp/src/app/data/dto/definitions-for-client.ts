@@ -239,16 +239,6 @@ export interface LineDefinitionEntryForClient {
     ContractDefinitionIds: number[];
     NotedContractDefinitionIds: number[];
     ResourceDefinitionIds: number[];
-
-    // TO DELETE
-
-    ContractDefinitionId?: number;
-    ResourceDefinitionId?: number;
-    NotedContractDefinitionId?: number;
-    IsResourceClassification?: boolean;
-    AccountTypeParentId?: number;
-
-    // END TO DELETE
 }
 
 export interface LineDefinitionColumnForClient {

@@ -540,15 +540,14 @@
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="[definitionIdContract_Smart(lineDefId, columnIndex)]"
+                                [definitionIds]="definitionIdsContract_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-contracts-picker>
                             <t-resources-picker *ngSwitchCase="'ResourceId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="[definitionIdResource_Smart(lineDefId, columnIndex)]"
-                                [filter]="filterResource_Smart(lineDefId, columnIndex)"
+                                [definitionIds]="definitionIdsResource_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-resources-picker>
@@ -633,7 +632,7 @@
                             <t-contracts-picker *ngSwitchCase="'NotedContractId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [definitionIds]="[definitionIdNotedContract_Smart(lineDefId, columnIndex)]"
+                                [definitionIds]="definitionIdsNotedContract_Smart(lineDefId, columnIndex)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-contracts-picker>
@@ -1105,7 +1104,7 @@
                     <ng-container *ngIf="isEdit && !bookkeeping">
                         <t-contracts-picker *ngIf="!readonlyContract_Manual(entry)" [(ngModel)]="entry.ContractId"
                             (ngModelChange)="update.call(null, pair);"
-                            [definitionIds]="[definitionIdContract_Manual(entry)]" required>
+                            [definitionIds]="definitionIdsContract_Manual(entry)" required>
                         </t-contracts-picker>
                         <t-restricted *ngIf="readonlyContract_Manual(entry)" [metadata]="entry.EntityMetadata?.ContractId">
                             {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual(entry), 'Name') }}
@@ -1130,8 +1129,7 @@
                     <ng-container *ngIf="isEdit && !bookkeeping">
                         <t-resources-picker *ngIf="!readonlyResource_Manual(entry)" [(ngModel)]="entry.ResourceId"
                             (ngModelChange)="update.call(null, pair);" [additionalSelect]="additionalSelectResource"
-                            [definitionIds]="[definitionIdResource_Manual(entry)]"
-                            [filter]="filterResource_Manual(entry)" required>
+                            [definitionIds]="definitionIdsResource_Manual(entry)" required>
                         </t-resources-picker>
                         <t-restricted *ngIf="readonlyResource_Manual(entry)"
                             [metadata]="entry.EntityMetadata?.ResourceId">
@@ -1241,24 +1239,6 @@
                 </t-form-group-dynamic>
             </ng-container>
 
-            <!-- AccountIdentifier -->
-            <ng-container *ngIf="showAccountIdentifier_Manual(entry)">
-                <t-form-group-dynamic [label]="labelAccountIdentifier_Manual(entry)"
-                    [serverErrors]="entry.serverErrors?.AccountIdentifier">
-                    <!-- View -->
-                    <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.AccountIdentifier">
-                        <div class="text-truncate">
-                            {{ entry.AccountIdentifier }}
-                        </div>
-                    </t-restricted>
-                    <!-- Edit -->
-                    <t-text-editor *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.AccountIdentifier"
-                        (ngModelChange)="update.call(null, pair);" required>
-                    </t-text-editor>
-                    &nbsp;&nbsp;
-                </t-form-group-dynamic>
-            </ng-container>
-
             <!-- External Reference -->
             <ng-container *ngIf="showExternalReference_Manual(entry)">
                 <t-form-group-dynamic [label]="labelExternalReference_Manual(entry)"
@@ -1309,7 +1289,7 @@
                     <!-- Edit -->
                     <t-contracts-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.NotedContractId"
                         (ngModelChange)="update.call(null, pair);"
-                        [definitionIds]="[definitionIdNotedContract_Manual(entry)]">
+                        [definitionIds]="definitionIdsNotedContract_Manual(entry)">
                     </t-contracts-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>

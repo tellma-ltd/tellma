@@ -1141,8 +1141,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // ContractId
 
   public showContract_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.ContractAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.ContractDefinitionId;
   }
 
   public readonlyContract_Manual(entry: Entry): boolean {
@@ -1156,41 +1156,41 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public labelContract_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.ContractDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.ContractDefinitionId : null;
 
     return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdContract_Manual(entry: Entry): number {
+  public definitionIdsContract_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.ContractDefinitionId;
+    return !!at && !!at.ContractDefinitions ? at.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
   }
 
   // Noted Contract Id
 
   public showNotedContract_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.NotedContractAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.NotedContractDefinitionId;
   }
 
   public labelNotedContract_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.NotedContractDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.NotedContractDefinitionId : null;
 
     return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdNotedContract_Manual(entry: Entry): number {
+  public definitionIdsNotedContract_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.NotedContractDefinitionId;
+    return !!at && !!at.NotedContractDefinitions ? at.NotedContractDefinitions.map(e => e.NotedContractDefinitionId) : [];
   }
 
   // ResourceId
 
   public showResource_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.ResourceAssignment !== 'N';
+    const account = this.account(entry);
+    return !!account && !!account.ResourceDefinitionId;
   }
 
   public readonlyResource_Manual(entry: Entry): boolean {
@@ -1203,28 +1203,16 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return !!account ? account.ResourceId : null;
   }
 
-  public filterResource_Manual(entry: Entry): string {
-    // For manual JV
-    const account = this.account(entry);
-    const accountType = this.accountType(entry);
-
-    if (!!accountType.IsResourceClassification) {
-      return `AssetType/Node descof ${account.AccountTypeId}`;
-    } else {
-      return null;
-    }
-  }
-
   public labelResource_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    const defId = !!at ? at.ResourceDefinitionId : null;
+    const account = this.account(entry);
+    const defId = !!account ? account.ResourceDefinitionId : null;
 
     return metadata_Resource(this.workspace, this.translate, defId).titleSingular();
   }
 
-  public definitionIdResource_Manual(entry: Entry): number {
+  public definitionIdsResource_Manual(entry: Entry): number[] {
     const at = this.accountType(entry);
-    return at.ResourceDefinitionId;
+    return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
   }
 
   // Quantity + Unit
@@ -1360,7 +1348,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public showEntryType_Manual(entry: Entry): boolean {
     // Show entry type when the account's type has an entry type parent Id
     const at = this.accountType(entry);
-    return !!at && at.EntryTypeAssignment !== 'N';
+    return !!at && !!at.EntryTypeParentId;
   }
 
   public readonlyEntryType_Manual(entry: Entry): boolean {
@@ -1376,29 +1364,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
     return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
-  }
-
-  // Account Identifier
-  public showAccountIdentifier_Manual(entry: Entry): boolean {
-    const at = this.accountType(entry);
-    return !!at && at.IdentifierAssignment === 'E';
-  }
-
-  // public readonlyAccountIdentifier_Manual(entry: Entry): boolean {
-  //   const account = this.account(entry);
-  //   return !!account && !!account.Identifier;
-  // }
-
-  // public readonlyValueAccountIdentifier_Manual(entry: Entry): string {
-  //   const account = this.account(entry);
-  //   return !!account ? account.Identifier : null;
-  // }
-
-  public labelAccountIdentifier_Manual(entry: Entry): string {
-    const at = this.accountType(entry);
-    return !!at.ExternalReferenceLabel ?
-      this.ws.getMultilingualValueImmediate(at, 'IdentifierLabel') :
-      this.translate.instant('Entry_AccountIdentifier');
   }
 
   // External Reference
@@ -2503,26 +2468,19 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return null;
   }
 
-  public definitionIdContract_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsContract_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.ContractDefinitionId ? entryDef.ContractDefinitionId : null;
+    return !!entryDef && !!entryDef.ContractDefinitionIds ? entryDef.ContractDefinitionIds : [];
   }
 
-  public definitionIdNotedContract_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsNotedContract_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.NotedContractDefinitionId ? entryDef.NotedContractDefinitionId : null;
+    return !!entryDef && !!entryDef.NotedContractDefinitionIds ? entryDef.NotedContractDefinitionIds : [];
   }
 
-  public definitionIdResource_Smart(lineDefId: number, columnIndex: number): number {
+  public definitionIdsResource_Smart(lineDefId: number, columnIndex: number): number[] {
     const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.ResourceDefinitionId ? entryDef.ResourceDefinitionId : null;
-  }
-
-  public filterResource_Smart(lineDefId: number, columnIndex: number): string {
-    // Filter for smart line
-    const entryDef = this.entryDefinition(lineDefId, columnIndex);
-    return !!entryDef && !!entryDef.IsResourceClassification &&
-      !!entryDef.AccountTypeParentId ? `AssetType/Node descof ${entryDef.AccountTypeParentId}` : null;
+    return !!entryDef && !!entryDef.ResourceDefinitionIds ? entryDef.ResourceDefinitionIds : [];
   }
 
   public entryTypeFilter(lineDefId: number, columnIndex: number): string {

@@ -1684,13 +1684,23 @@ namespace Tellma.Controllers
         private static IEnumerable<string> DocumentStateChangeProps => TypeDescriptor.Get<DocumentStateChange>().SimpleProperties.Select(p => p.Name);
         private static IEnumerable<string> UnitProps => Enum(nameof(Unit.Name), nameof(Unit.Name2), nameof(Unit.Name3));
         private static IEnumerable<string> CurrencyProps => Enum(nameof(Currency.Name), nameof(Currency.Name2), nameof(Currency.Name3), nameof(Currency.E));
-        private static IEnumerable<string> UserProps => Enum(nameof(Entities.User.Name), nameof(Entities.User.Name2), nameof(Entities.User.Name3), nameof(Entities.User.ImageId));
+        private static IEnumerable<string> UserProps => Enum(nameof(User.Name), nameof(User.Name2), nameof(User.Name3), nameof(User.ImageId));
         private static IEnumerable<string> ResourceProps => Enum(nameof(Resource.Name), nameof(Resource.Name2), nameof(Resource.Name3), nameof(Resource.DefinitionId));
         private static IEnumerable<string> ResourceUnitsProps => Enum(nameof(ResourceUnit.Multiplier));
         private static IEnumerable<string> LookupProps => Enum(nameof(Lookup.Name), nameof(Lookup.Name2), nameof(Lookup.Name3), nameof(Lookup.DefinitionId));
         private static IEnumerable<string> ContractProps => Enum(nameof(Contract.Name), nameof(Contract.Name2), nameof(Contract.Name3), nameof(Contract.DefinitionId));
         private static IEnumerable<string> CenterProps => Enum(nameof(Center.Name), nameof(Center.Name2), nameof(Center.Name3));
-        private static IEnumerable<string> AccountProps => Enum(nameof(Account.Name), nameof(Account.Name2), nameof(Account.Name3));
+        private static IEnumerable<string> AccountProps => Enum(
+            // Names
+            nameof(Account.Name), 
+            nameof(Account.Name2), 
+            nameof(Account.Name3), 
+            
+            // Definitions
+            nameof(Account.ContractDefinitionId),
+            nameof(Account.NotedContractDefinitionId),
+            nameof(Account.ResourceDefinitionId)
+        );
         private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3));
         private static IEnumerable<string> AccountTypeProps => Enum(
             // Names
@@ -1709,7 +1719,12 @@ namespace Tellma.Controllers
             nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
-            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel),
+
+            // Definitions
+            $"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",
+            $"{nameof(AccountType.NotedContractDefinitions)}/{nameof(AccountTypeNotedContractDefinition.NotedContractDefinitionId)}",
+            $"{nameof(AccountType.ResourceDefinitions)}/{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}"
          );
 
         // Helper method
