@@ -2259,6 +2259,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     // Add the entry to it
     manualLine.Entries.push(pair.entry);
+    pair.line = manualLine;
   }
 
   public onDeleteManualEntry(pair: LineEntryPair, model: Document): void {
