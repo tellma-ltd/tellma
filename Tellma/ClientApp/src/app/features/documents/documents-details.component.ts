@@ -280,9 +280,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
       // Posting Date
       result.PostingDate = toLocalDateISOString(new Date());
-      result.PostingDateIsCommon = true;
 
       // Is Common
+      result.PostingDateIsCommon = true;
       result.MemoIsCommon = true;
       result.DebitContractIsCommon = false;
       result.CreditContractIsCommon = false;
@@ -621,7 +621,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public showDocumentMemoIsCommon(_: DocumentForSave): boolean {
-    return this.definition.MemoIsCommonVisibility;
+    return this.definition.MemoIsCommonVisibility && !this.isJV;
   }
 
   public requireDocumentMemo(doc: Document): boolean {
@@ -2272,6 +2272,24 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return pair;
   }
 
+  public onNewSmartLine = (pair: LineEntryPair) => {
+    // Called when a new smart line is created, including placeholder entry
+
+    // Set the entry
+    pair.entry = {
+      Direction: 1
+    };
+
+    // Set the line
+    pair.line = {
+      DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
+      Entries: [pair.entry],
+      _flags: { isModified: true }
+    };
+
+    return pair;
+  }
+
   private _smartEntries: LineEntryPair[];
   private _manualEntries: LineEntryPair[];
   private _computeEntriesModel: DocumentForSave;
@@ -2853,6 +2871,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     } else {
       let result = line._flags;
       if (setUndefined && !result) {
+        // setUndefined = add an empty flags object if non exist
         result = (line._flags = {});
       }
 

@@ -261,6 +261,8 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'car',
                         'recycle',
                         'id-badge',
+                        'funnel-dollar',
+                        'cash-register',
 
                         'camera',
                         'camera-retro',

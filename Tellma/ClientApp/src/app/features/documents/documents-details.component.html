@@ -859,7 +859,7 @@
                                 'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2, argument: true },
                                 'ModifiedWarning' : { rowTemplate : row_ModifiedWarning },
                                 'Commands' : { rowTemplate : row_SmartEntryCommands }
-                            }" [onNewItem]="onNewManualEntry" (insert)="onInsertSmartLine($event, model)"
+                            }" [onNewItem]="onNewSmartLine" (insert)="onInsertSmartLine($event, model)"
                         (delete)="onDeleteSmartLine($event, model)">
                     </t-table>
 
