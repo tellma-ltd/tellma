@@ -216,7 +216,7 @@
                 {{ ws.getMultilingualValue('Currency', item.CurrencyId, 'Name') }}
               </div>
               <t-currencies-picker *ngIf="isEdit" [(ngModel)]="item.CurrencyId"
-                (ngModelChange)="update.call(null, item);" additionalSelect="E">
+                (ngModelChange)="update.call(null, item);" additionalSelect="E" filter="IsActive eq true">
               </t-currencies-picker>
             </t-form-group-cell>
           </ng-template>

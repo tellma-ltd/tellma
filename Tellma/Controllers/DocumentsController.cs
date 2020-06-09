@@ -833,6 +833,16 @@ namespace Tellma.Controllers
                 // System IsSystem to false by default
                 doc.Lines.ForEach(line => line.Entries.ForEach(entry => entry.IsSystem ??= false));
 
+                // For JVs some properties are always copied across to the lines
+                if (isJV)
+                {
+                    doc.Lines.ForEach(line =>
+                    {
+                        line.PostingDate = doc.PostingDate;
+                        line.Memo = doc.Memo;
+                    });
+                }
+
                 // All fields that are marked as common, copy the common value across to the 
                 // lines and entries, we deal with the lines one definitionId at a time
                 foreach (var linesGroup in doc.Lines.GroupBy(e => e.DefinitionId.Value))
@@ -853,11 +863,11 @@ namespace Tellma.Controllers
                             line.Entries.Add(new EntryForSave());
                         }
 
-                        while (line.Entries.Count > lineDef.Entries.Count)
-                        {
-                            // If more, pop the excess entries from the end
-                            line.Entries.RemoveAt(line.Entries.Count - 1);
-                        }
+                        //while (line.Entries.Count > lineDef.Entries.Count)
+                        //{
+                        //    // If more, pop the excess entries from the end
+                        //    line.Entries.RemoveAt(line.Entries.Count - 1);
+                        //}
 
                         // Copy the direction from the definition
                         for (var i = 0; i < line.Entries.Count; i++)
@@ -1128,11 +1138,6 @@ namespace Tellma.Controllers
                         var id = duplicateLineIds[line];
                         ModelState.AddModelError(LinePath(docIndex, lineIndex, nameof(Line.Id)),
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
-                    }
-
-                    foreach (var columnDef in lineDef.Columns.Where(c => c.InheritsFromHeader ?? false))
-                    {
-                        // What's the most appropriate pattern here?
                     }
 
                     if (!doc.PostingDateIsCommon.Value && line.PostingDate != null)
