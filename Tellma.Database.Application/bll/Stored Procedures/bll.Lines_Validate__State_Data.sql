@@ -4,8 +4,8 @@
 	@Lines LineList READONLY,
 	@Entries EntryList READONLY,
 	@State SMALLINT,
-	@Top INT = 10,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10--,
+	--@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
@@ -264,11 +264,11 @@ IF @State > 0
 
 	*/
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	--SELECT @ValidationErrorsJson = 
+	--(
+	--	SELECT *
+	--	FROM @ValidationErrors
+	--	FOR JSON PATH
+	--);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -7,120 +7,7 @@
 	-- production, maintenance
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 
-IF @DB = N'100' -- ACME, USD, en/ar/zh
-BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],							[TitleSingular],				[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',		N'Manual Journal Voucher',		N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',			N'Petty Cash Voucher',			N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(3,	N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'ورقة قبض نقدي',	N'Cash Receipt Vouchers',		N'أوراق قبض نقدية',				N'CRV'),
-	(4,	N'revenue-recognition-vouchers',N'Revenue Recognition Voucher',	N'ورقة إثبات إيرادات',N'Revenue Recognition Vouchers',	N'أوراق إثبات إيرادات',		N'RRV');
 
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],			[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,				1),
-	(0,1,	N'CashPayment',				1),
-	(1,1,	@ManualLineLD,				1),
-	(2,1,	N'PurchaseInvoice',			0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',		1),
-	(0,3,	N'LeaseOut',				1),
-	(1,3,	@ManualLineLD,				0);
-END
-ELSE IF @DB = N'101' -- Banan SD, USD, en
-BEGIN
-	INSERT @DocumentDefinitions([Index],[DocumentType],
-		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
-	(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20),
-	(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
-	(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
-	(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
-	(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
-
-	(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
-	(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
-	(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
-	(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
-
-	(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
-
-INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,							1),
-	-- cash-purchase-vouchers
-	(0,1,	@PaymentToSupplierPurchaseLD,			1),
-	(1,1,	@StockReceiptPurchaseLD,				1),
-	(2,1,	@ConsumableServiceReceiptPurchaseLD,	1),
-	(8,1,	@CashTransferExchangeLD,				0),
-	(9,1,	@ManualLineLD,							0), -- this can be removed if a budget system is activated
-	-- cash-payment-vouchers
-	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
-	(1,2,	@PaymentToSupplierPurchaseLD,			1),
-	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
-	(9,2,	@ManualLineLD,							0),
-	-- cash-payroll-vouchers
-	(0,3,	@PaymentToEmployeeLD,					1),
-	(9,3,	@ManualLineLD,							0),
-	--- gs-receipt-vouchers
-	(0,5,	@StockReceiptCreditPurchaseLD,			0),	-- suppliers with credit line
-	(1,5,	@StockReceiptPurchaseLD,				1),--  , 
-	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,0),-- fuel consumption,
-	(4,5,	@ConsumableServiceReceiptPurchaseLD,	1),-- tickets paid in cash, utilities
-	(9,5,	@ManualLineLD,							0),
-	-- cash-sale-vouchers
-	(0,11,	@PaymentFromCustomerSaleLD,				1),
-	--(1,11,	@StockIssueSaleLD,					1),
-	--(2,11,	@ServiceIssueSaleLD,				1), -- TODO: Add it for completion
-	(9,11,	@ManualLineLD,							0), -- this
-	-- cash-receipt-vouchers
-	(0,12,	@PaymentFromCustomerCreditSaleLD,		0),	
-	(8,12,	@PaymentFromOtherLD,					1), -- including partner, creditor
-	(9,12,	@ManualLineLD,							0),
-	--- good-issue-vouchers, for prepaid and post invoiced
-	(0,13,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
-	(1,13,	@StockIssueSaleLD,						0),--  , 
-	--- service-issue-vouchers, for prepaid and post invoiced
-	(0,15,	@ServiceIssueCreditSaleLD,				0),	-- customers with credit line
-	(1,15,	@ServiceIssueSaleLD,					0),
-	--- lease-out-templates, for subscription and rental agreements
-	(0,-14,	@ServiceIssueCreditSaleLD,				1),-- software subscription, domain registration, office rental...
-	(1,-14,	@ServiceIssueSaleLD,					0)-- hotels,
-	;
-END
-ELSE IF @DB = N'102' -- Banan ET, ETB, en
-BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(3,	N'withholding-tax-vouchers',N'Withholding Tax Voucher',	N'إشعار خصم ضريبة',N'Withholding Tax Vouchers',N'إشعارات خصم ضريبة',	N'WT')
-	--N'et-sales-witholding-tax-vouchers'
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineLD,		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);
-END
-ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineLD,		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);END
-ELSE IF @DB IN (N'104', N'106') -- Walia Steel | SITCO, ETB, en/am, 
-BEGIN
 	INSERT @DocumentDefinitions([Index],[DocumentType],
 		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
 	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
@@ -144,25 +31,23 @@ BEGIN
 	(0,0,	@ManualLineLD,							1);
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
 	[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,1,	@PaymentToSupplierCreditPurchaseLD,		0);
-	--(1,1,	@PaymentToSupplierPurchaseLD,			0),
-	--(2,1,	@PaymentToEmployeeLD,					0),		    
-	--(3,1,	@PaymentToOtherLD,						0),
-	--(4,1,	@CashTransferExchangeLD,				0),
-	--(5,1,	@StockReceiptCreditPurchaseLD,			0),
-	--(6,1,	@StockReceiptPurchaseLD,				0),
-	--(7,1,	@ConsumableServiceReceiptCreditPurchaseLD,0),
-	--(8,1,	@ConsumableServiceReceiptPurchaseLD,	0),
-	--(9,1,	@PaymentFromCustomerCreditSaleLD,		0),
-	--(10,1,	@PaymentFromCustomerSaleLD,				0),
-	--(11,1,	@PaymentFromEmployeeLD,					0),
-	--(12,1,	@PaymentFromOtherLD,					0),
+	(0,1,	@PaymentToSupplierCreditPurchaseLD,		0),
+	(1,1,	@PaymentToSupplierPurchaseLD,			0),
+	(2,1,	@PaymentToEmployeeLD,					0),		    
+	(3,1,	@PaymentToOtherLD,						0),
+	(4,1,	@CashTransferExchangeLD,				0),
+	(5,1,	@StockReceiptCreditPurchaseLD,			0),
+	(6,1,	@StockReceiptPurchaseLD,				0),
+	(7,1,	@ConsumableServiceReceiptCreditPurchaseLD,0),
+	(8,1,	@ConsumableServiceReceiptPurchaseLD,	0),
+	(9,1,	@PaymentFromCustomerCreditSaleLD,		0),
+	(10,1,	@PaymentFromCustomerSaleLD,				0),
+	(11,1,	@PaymentFromOtherLD,					0),
 	--(13,1,	@StockIssueCreditSaleLD,				0),
 	--(14,1,	@StockIssueSaleLD,						0),
-	--(15,1,	@ServiceIssueCreditSaleLD,				0),
-	--(16,1,	@ServiceIssueSaleLD,					0),
-	--(17,1,	@PaymentFromCustomerSaleLD,				0),
-	--(18,1,	@ManualLineLD,							0); 
+	(15,1,	@ServiceIssueCreditSaleLD,				0),
+	(16,1,	@ServiceIssueSaleLD,					0),
+	(18,1,	@PPEDepreciationLD,							0); 
 /*
 	-- cash-purchase-vouchers
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
@@ -225,32 +110,8 @@ BEGIN
 	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
 	;
 	*/
-END
-ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
-BEGIN
-	INSERT @DocumentDefinitions([Index],	
-		[Code],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
-	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
-	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,		1),
-	(0,1,	N'CashPayment',		1),
-	(1,1,	@ManualLineLD,		1),
-	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);
-END
-ENOUGH_DD:
---UPDATE DD
---SET DD.[TitleSingular2] = T.[Translated]
---FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitleSingular] = T.[Word] WHERE T.[Lang] = @Lang2
 
---UPDATE DD
---SET	DD.[TitlePlural2] = T.[Translated]
---FROM @LineDefinitions DD JOIN @Translations T ON DD.[TitlePlural] = T.[Word] WHERE T.[Lang] = @Lang2
 
-SKIP_DD:
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
