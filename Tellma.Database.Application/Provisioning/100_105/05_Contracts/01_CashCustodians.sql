@@ -7,9 +7,8 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	Print N''
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @cashiers
-	([Index],	[Name],
-	[Name2],					[UserId]) VALUES
-	(0,			N'GM Safe',					N'خزنة المدير العام',		@amtaam);
+	([Index],	[Name],		[Name2],					[UserId]) VALUES
+	(0,			N'GM Safe',	N'خزنة المدير العام',		@amtaam);
 	;
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	Print N''

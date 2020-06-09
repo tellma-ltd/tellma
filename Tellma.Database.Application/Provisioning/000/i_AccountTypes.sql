@@ -429,6 +429,7 @@ INSERT INTO dbo.[AccountTypeContractDefinitions]
 ([AccountTypeId],								[ContractDefinitionId]) VALUES
 (@CashOnHand,									@cash_registersCD),
 (@CashOnHand,									@petty_cash_fundsCD),
+(@CashOnHand,									@vault_cash_fundsCD),
 (@BalancesWithBanks	,							@bank_accountsCD),
 (@RawMaterials,									@warehousesCD),
 (@ProductionSupplies,							@warehousesCD),
