@@ -24,11 +24,25 @@
 -- cash sale: Dr. Cash sale Doc control, Cr. VAT payable, Cr. Revenues
 -- prepaid: Dr. Unearned Revenues, Cr. Revenues
 -- post invoiced: Dr. Accrued income, Cr. Revenues
+INSERT INTO @LineDefinitions([Index], [Code], [Description], [TitleSingular], [TitlePlural], [AllowSelectiveSigning], [ViewDefaultsToForm]) VALUES
+(0, N'ManualLine', N'Making any adjustment', N'Adjustment', N'Adjustments', 0, 0),
+(1, N'PaymentToSupplierCreditPurchase', N'Payment done some time after having received Goods and services with invoice. ', N'Payment (Credit Purchase)', N'Payments (Credit Purchases)', 0, 1),
+(2, N'PaymentToSupplierPurchase', N'Invoice received with payment (which could be before, during, or after receipt of good or service)', N'Payment (Purchase)', N'Payments (Purchases)', 0, 1),
+(3, N'PaymentToEmployee', N'Payment to or on behalf of employee', N'Payment (Employee Benefit)', N'Payments Employee Benefits', 0, 1),
+(9, N'PaymentToOther', N'Payment to other than employee or supplier', N'Payment (Other)', N'Other Payments', 0, 1),
+(10, N'CashTransferExchange', N'Cash transfer between two accounts and/or exchange between two different currencies', N'Transfer/Exchange', N'Transfers/Exchanges', 0, 1),
+(11, N'StockReceiptCreditPurchase', N'Receiving goods with invoice. Payment is to be done later', N'Stock Receipt (On Account)', N'Stocks Receipts (Credit Purchases)', 0, 0),
+(12, N'StockReceiptPurchase', N'Receiving goods without invoice. Invoice is received with Payment', N'Stock Receipt (in Cash)', N'Stocks Receipts (Purchases)', 0, 0),
+(13, N'ConsumableServiceReceiptCreditPurchase', N'Receiving services/consumables with invoice. Payment is to be done later', N'C/S Receipt (On Account)', N'C/S Receipts (Credit Purchases)', 0, 0),
+(14, N'ConsumableServiceReceiptPurchase', N'Receiving services/consumables without invoice. Invoice is received with Payment', N'C/S Receipt (Cash)', N'C/S Receipts (Purchases)', 0, 0),
+(21, N'PaymentFromCustomerCreditSale', N'Payment collected some time after having issuing Goods and services with invoice. ', N'Payment (Credit Sale)', N'Payments (Credit Sale)', 0, 1),
+(22, N'PaymentFromCustomerSale', N'Invoice issued  with payment collection (which could be before, during, or after delivery of good or rendering of service)', N'Payment (Sale)', N'Customer Payments (Sale)', 0, 1),
+(29, N'PaymentFromOther', N'Payment collected from other than customer', N'Payment from Others', N'Payments from Others', 0, 1),
+(33, N'ServiceIssueCreditSale', N'To recgonize revenues from delivering services on credit', N'Service (Credit Sale)', N'Services (Credit Sale)', 0, 1),
+(34, N'ServiceIssueSale', N'To recgonize revenues from delivering services', N'Service (Sale)', N'Services (Sale)', 0, 1),
+(91, N'PPEDepreciation', N'For depreciation of assets that are time based, and using the number of days as criteria', N'Asset Depreciation', N'Assets Depreciation', 0, 1);
 
 --0:ManualLine 
-INSERT @LineDefinitions([Index],
-[Code],			[TitleSingular], [TitlePlural]) VALUES
-(0,N'ManualLine', N'Adjustment', N'Adjustments');
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],[Direction]) VALUES (0,0,+1);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],		[RequiredState],
@@ -44,9 +58,6 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 (1,0,-4,	N'Incorrect Analysis'),
 (2,0,-4,	N'Other reasons');
 --1:PaymentToSupplierCreditPurchase (inv-gs,cash) [for suppliers w/ credit line, rarely used in ET]
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm], [Code],			[TitleSingular],				[TitlePlural]) VALUES
-(1,1,N'PaymentToSupplierCreditPurchase',N'Payment (Credit Purchase)',	N'Payments (Credit Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -95,9 +106,6 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,1,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,1,N'ByRole',		@ComptrollerRL,		NULL,			NULL);
 --2:PaymentToSupplierPurchase (inv-cash-gs), (inv-cash,gs), (gs,inv-cash)
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],[TitleSingular],		[TitlePlural]) VALUES
-(2,1,N'PaymentToSupplierPurchase',	N'Payment (Purchase)',	N'Payments (Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -164,9 +172,6 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,2,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,2,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 --3:PaymentToEmployee (used in a payroll voucher)
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],[TitleSingular],			[TitlePlural]) VALUES
-(3,1,N'PaymentToEmployee',	N'Payment Employee Benefit',N'Payments Employee Benefits');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -217,9 +222,6 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,3,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,3,N'ByRole',	@ComptrollerRL,		NULL,			NULL);
 --9:PaymentToOther
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],[TitleSingular],	[TitlePlural]) VALUES (
-9,1,N'PaymentToOther',		N'Other Payment',	N'Other Payments');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -268,9 +270,6 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (0,2,9,N'ByContract',	NULL,				1,				NULL), -- cash/check custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,9,N'ByRole',	@ComptrollerRL,	NULL,			NULL);
 --10:CashTransferExchange
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],	[TitleSingular],		[TitlePlural]) VALUES (
-10,1,N'CashTransferExchange',	N'Transfer/Exchange',	N'Transfers/Exchanges');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -323,9 +322,6 @@ INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 (1,2,10,N'ByContract',	NULL,				1,				@ComptrollerRL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
 (0,3,10,N'ByRole',	@ComptrollerRL,		NULL,		NULL);
 --11:StockReceiptCreditPurchase (inv-gs,cash) [rarely used in ET]
-INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
-	[Code],							[TitleSingular],					[TitlePlural]) VALUES
-(11,0,N'StockReceiptCreditPurchase',N'Stock Receipt (Credit Purchase)',	N'Stocks Receipts (Credit Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -370,9 +366,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (9,11,	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (10,11,	N'NotedContractId',		0,	N'Supplier',		N'المورد',			3,3,1);
 --12:StockReceiptPurchase (inv-cash-gs),  (inv-cash,gs), (gs,inv-cash)
-INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
-	[Code],							[TitleSingular],				[TitlePlural]) VALUES
-(12,0,N'StockReceiptPurchase',	N'Stock Receipt (Purchase)',	N'Stocks Receipts (Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -402,9 +395,6 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (1,1,12,	@CurrentPrepayments),
 (2,1,12,	@AccrualsClassifiedAsCurrent);
 --13:ConsumableServiceReceiptCreditPurchase (inv-gs,cash) [rarely used, applies to travel expenses]
-INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
-	[Code],										[TitleSingular],					[TitlePlural]) VALUES
-(13,0,N'ConsumableServiceReceiptCreditPurchase',N'C/S Receipt (Credit Purchase)',	N'C/S Receipts (Credit Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -454,9 +444,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,13,	N'CenterId',			0,	N'Cost. Ctr',		4,4,1),
 (5,13,	N'NotedContractId',		0,	N'Supplier',		3,3,1);
 --14:ConsumableServiceReceiptPurchase (inv-cash-gs) (inv-cash,gs) (gs,inv-cash), can used for LeaseIn as well...
-INSERT @LineDefinitions([Index],[ViewDefaultsToForm],
-	[Code],										[TitleSingular],				[TitlePlural]) VALUES
-(14,0,N'ConsumableServiceReceiptPurchase',	N'C/S Receipt (Purchase)',	N'C/S Receipts (Purchases)');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	UPDATE @ProcessedWideLines
@@ -510,25 +497,15 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 -- cash sale: Dr. Cash, Cr. Cash sale Doc control
 -- prepayment: Dr. Cash, Cr. VAT Payable, Cr. Unearned Revenues
 -- post pay accrual: Dr. Cash, Cr. VAT Payable, Cr. Accrued income
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],			[TitleSingular],			[TitlePlural]) VALUES (
-21,1,N'PaymentFromCustomerCreditSale',	N'Payment (Credit Sale)',	N'Payments (Credit Sale)');
 UPDATE @LineDefinitions
 SET [Script] = N'
-	--SET NOCOUNT ON
-	--DECLARE @ProcessedWideLines WideLineList;
-
-	--INSERT INTO @ProcessedWideLines
-	--SELECT * FROM @WideLines;
-	-----
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId0],
 		[CenterId1]			= [CenterId0],
 		[MonetaryValue1]	= [MonetaryValue0],
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [ContractId1])
-	-----
-	--SELECT * FROM @ProcessedWideLines;'
+'
 WHERE [Index] = 21;
 INSERT INTO @LineDefinitionEntries([Index], [HeaderIndex],
 [Direction],[EntryTypeId]) VALUES
@@ -550,17 +527,8 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,21,	N'ContractId',			0,	N'Bank/Cashier',	3,4,1),
 (5,21,	N'CenterId',			0,	N'Inv. Ctr',		4,4,1);
 --22:PaymentFromCustomerSale (inv-cash-gs) (inv-Cash,gs) (gs,inv-cash)
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],		[TitleSingular], [TitlePlural]) VALUES (
-22,1,N'PaymentFromCustomerSale',N'Payment (Sale)',N'Customer Payments (Sale)');
 UPDATE @LineDefinitions
 SET [Script] = N'
-	--SET NOCOUNT ON
-	--DECLARE @ProcessedWideLines WideLineList;
-
-	--INSERT INTO @ProcessedWideLines
-	--SELECT * FROM @WideLines;
-	-----
 	UPDATE @ProcessedWideLines
 	SET
 		[CurrencyId1]		= [CurrencyId2],
@@ -569,8 +537,7 @@ SET [Script] = N'
 		[NotedAgentName0]	= (SELECT [Name] FROM dbo.Contracts WHERE [Id] = [NotedContractId1]),
 		[ContractId2]		= [ContractId1],
 		[NotedAmount1]		= ISNULL([MonetaryValue2],0)
-	-----
-	--SELECT * FROM @ProcessedWideLines;'
+'
 WHERE [Index] = 22;
 INSERT INTO @LineDefinitionEntries([Index],[HeaderIndex],
 [Direction],[EntryTypeId]) VALUES
@@ -603,9 +570,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (11,22,	N'ExternalReference',	1,	N'Invoice #',		3,5,0),
 (22,22,	N'CenterId',			0,	N'Inv. Ctr',		4,4,1);
 --29:PaymentFromOther, 27:RefundFromSupplier, 28:PaymentFromEmployee
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],[TitleSingular],		[TitleSingular2],		[TitlePlural],			[TitlePlural2]) VALUES (
-29,1,N'PaymentFromOther',	N'Payment from Others',	N'دفعية من جهة أخرى',	N'Payments from Others',N'دفعيات من جهات أخرى');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -643,14 +607,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (6,29,	N'CenterId',			0,	N'Invest. Ctr',		N'مركز الاستثمار',	4,4,1),
 (7,29,	N'EntryTypeId',			0,	N'Purpose',			N'الغرض',			4,4,0),
 (8,29,	N'Memo',				0,	N'Memo',			N'البيان',			1,2,1);
---31:Stock Issue Credit Sale
---32:Stock Issue Sale
---33:Service Issue Credit Sale (inv-gs,cash)
-INSERT @LineDefinitions([Index], 
-[ViewDefaultsToForm],[Code],[TitleSingular],[TitlePlural],
-[Description]) VALUES (
-33,1,N'ServiceIssueCreditSale',	N'Service (Credit Sale)',		N'Services (Credit Sale)',
-N'To recgonize revenues from delivering services on credit');
+--33:Service Issue Credit Sale (inv-gs,cash) --31:Stock Issue Credit Sale --32:Stock Issue Sale
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -698,11 +655,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (10,33,	N'MonetaryValue',	0,	N'Price Incl. VAT',	1,0,0),
 (11,33,	N'CenterId',		0,	N'Segment',			4,4,1);
 --34:Service Issue Sale,  (inv-cash-gs) (inv-Cash,gs) (gs,inv-cash)
-INSERT @LineDefinitions([Index], 
-[ViewDefaultsToForm],[Code],[TitleSingular],[TitlePlural],
-[Description]) VALUES (
-34,1,N'ServiceIssueSale',	N'Service (Sale)',		N'Services (Sale)',
-N'To recgonize revenues from delivering services');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -744,11 +696,6 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (8,34,	N'MonetaryValue',	0,	N'Price Excl. VAT',	1,4,0),
 (9,34,	N'CenterId',		0,	N'Segment',			4,4,1);
 --91:PPEDepreciation
-INSERT @LineDefinitions([Index],
-[ViewDefaultsToForm],[Code],	[TitleSingular],		[TitlePlural],
-[Description]) VALUES (
-91,0,N'PPEDepreciation',		N'Asset Depreciation',	N'Assets Depreciation',
-N'For depreciation of assets that are time based, and using the number of days as criteria');
 UPDATE @LineDefinitions
 SET [Script] = N'
 	--SET NOCOUNT ON
@@ -870,6 +817,7 @@ EXEC [api].[LineDefinitions__Save]
 	@WorkflowSignatures = @WorkflowSignatures,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+-- Declarations
 DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ManualLine');
 DECLARE @PaymentToSupplierCreditPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentToSupplierCreditPurchase');
 DECLARE @PaymentToSupplierPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentToSupplierPurchase');
@@ -880,23 +828,14 @@ DECLARE @StockReceiptCreditPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinition
 DECLARE @StockReceiptPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockReceiptPurchase');
 DECLARE @ConsumableServiceReceiptCreditPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptCreditPurchase');
 DECLARE @ConsumableServiceReceiptPurchaseLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ConsumableServiceReceiptPurchase');
-
 DECLARE @PaymentFromCustomerCreditSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromCustomerCreditSale');
 DECLARE @PaymentFromCustomerSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromCustomerSale');
-DECLARE @PaymentFromEmployeeLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromEmployee');
 DECLARE @PaymentFromOtherLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PaymentFromOther');
-
-DECLARE @StockIssueCreditSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockIssueCreditSale');
-DECLARE @StockIssueSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'StockIssueSale');
 DECLARE @ServiceIssueCreditSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ServiceIssueCreditSale');
 DECLARE @ServiceIssueSaleLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'ServiceIssueSale');
+DECLARE @PPEDepreciationLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = N'PPEDepreciation');
 
 /*
 61-69: employees payroll/
 71-79: machines
 */
-IF @ValidationErrorsJson IS NOT NULL 
-BEGIN
-	Print 'Line Definitions: Inserting: ' + @ValidationErrorsJson
-	GOTO Err_Label;
-END;
