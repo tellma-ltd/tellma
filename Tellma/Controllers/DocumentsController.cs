@@ -779,8 +779,18 @@ namespace Tellma.Controllers
                 }
 
                 // Document defaults
-                doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
-                doc.PostingDateIsCommon = (docDef.PostingDateVisibility || isJV) && (doc.PostingDateIsCommon ?? false);
+                if (isJV)
+                {
+                    // Those are always true in JV
+                    doc.PostingDateIsCommon = true;
+                    doc.MemoIsCommon = true;
+                }
+                else
+                {
+                    doc.MemoIsCommon ??= (docDef.MemoVisibility != null && (doc.MemoIsCommon ?? false));
+                    doc.PostingDateIsCommon = docDef.PostingDateVisibility && (doc.PostingDateIsCommon ?? false);
+                }
+
                 doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
                 doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
                 doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);

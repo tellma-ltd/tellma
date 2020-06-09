@@ -537,6 +537,7 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                filter="IsActive eq true"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
@@ -859,7 +860,7 @@
                                 'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2, argument: true },
                                 'ModifiedWarning' : { rowTemplate : row_ModifiedWarning },
                                 'Commands' : { rowTemplate : row_SmartEntryCommands }
-                            }" [onNewItem]="onNewManualEntry" (insert)="onInsertSmartLine($event, model)"
+                            }" [onNewItem]="onNewSmartLine" (insert)="onInsertSmartLine($event, model)"
                         (delete)="onDeleteSmartLine($event, model)">
                     </t-table>
 
