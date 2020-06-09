@@ -189,9 +189,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public setActiveTab(newTab: number) {
+  public setActiveTab(newTab: number, model: Document) {
     (this.state.detailsState as DocumentDetailsState).tab = newTab;
-    this.details.urlStateChange();
+    setTimeout(() => {
+      // Otherwise details may be null
+      this.details.urlStateChange();
+    });
   }
 
   public getActiveTab(model: Document): number {
@@ -209,7 +212,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return s.tab;
     } else {
       // Get the first visible tab
-      return visibleTabs[0];
+      return visibleTabs[0] || -10;
     }
   }
 
@@ -2185,12 +2188,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._invisibleTabs;
   }
 
-  public onOtherTab(lineDefId: number): void {
+  public onOtherTab(lineDefId: number, model: Document): void {
     this._visibleTabs.push(lineDefId);
     this._visibleTabs = this._visibleTabs.slice();
     this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
 
-    this.setActiveTab(lineDefId);
+    this.setActiveTab(lineDefId, model);
   }
 
   public manualLineTabTitle(model: DocumentForSave): string {
@@ -2348,7 +2351,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       paths.splice(1, 0, 'Center');
     }
 
-    if (!model.MemoIsCommon) {
+    // if (!model.MemoIsCommon) {
+    if (smart) {
+      // This only appears in the smart bookkeeping grid
       paths.push('Memo');
     }
 

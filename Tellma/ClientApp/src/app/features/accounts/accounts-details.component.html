@@ -135,7 +135,7 @@
         <ng-container *ngIf="isEdit">
             <span
                 *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency', readonlyValueCurrencyId(model), 'Name') }}</span>
-            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
+            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId" filter="IsActive eq true">
             </t-currencies-picker>
         </ng-container>
     </t-form-group>

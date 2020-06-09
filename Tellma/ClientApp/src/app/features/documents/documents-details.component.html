@@ -351,7 +351,7 @@
     </t-form-group>
 
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true"
-        [activeId]="getActiveTab(model)" (activeIdChange)="setActiveTab($event)">
+        [activeId]="getActiveTab(model)" (activeIdChange)="setActiveTab($event, model)">
 
         <!-- Smart Tabs -->
         <li *ngFor="let lineDefId of visibleTabs(model)" [ngbNavItem]="lineDefId">
@@ -830,7 +830,7 @@
                 </span></a>
             <div ngbDropdownMenu>
                 <button class="t-transparent-background" *ngFor="let lineDefId of invisibleTabs(model)" ngbDropdownItem
-                    (click)="onOtherTab(lineDefId)">{{ tabTitle(lineDefId, model) }}</button>
+                    (click)="onOtherTab(lineDefId, model)">{{ tabTitle(lineDefId, model) }}</button>
             </div>
         </li>
 
