@@ -189,7 +189,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public setActiveTab(newTab: number, model: Document) {
+  public setActiveTab(newTab: number) {
     (this.state.detailsState as DocumentDetailsState).tab = newTab;
     setTimeout(() => {
       // Otherwise details may be null
@@ -2193,7 +2193,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     this._visibleTabs = this._visibleTabs.slice();
     this._invisibleTabs = this._invisibleTabs.filter(e => e !== lineDefId);
 
-    this.setActiveTab(lineDefId, model);
+    this.setActiveTab(lineDefId);
   }
 
   public manualLineTabTitle(model: DocumentForSave): string {
@@ -2243,17 +2243,37 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
     // Called when the user inserts a new entry
-    model.Lines.push(pair.line);
+    // model.Lines.push(pair.line);
+
+    // Get the one and only manual line
+    let manualLine = model.Lines.find(line => this.isManualLine(line.DefinitionId));
+    if (!manualLine) {
+      manualLine = {
+        DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
+        Entries: [],
+        _flags: { isModified: true }
+      };
+
+      model.Lines.push(manualLine);
+    }
+
+    // Add the entry to it
+    manualLine.Entries.push(pair.entry);
   }
 
   public onDeleteManualEntry(pair: LineEntryPair, model: Document): void {
 
     this.cancelAutofill(pair); // Good tidying up
 
-    // Called when the user deletes an entry
-    const index = model.Lines.indexOf(pair.line);
+    // // Called when the user deletes an entry
+    // const index = model.Lines.indexOf(pair.line);
+    // if (index > -1) {
+    //   model.Lines.splice(index, 1);
+    // }
+
+    const index = pair.line.Entries.indexOf(pair.entry);
     if (index > -1) {
-      model.Lines.splice(index, 1);
+      pair.line.Entries.splice(index, 1);
     }
   }
 
@@ -2265,12 +2285,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       Direction: 1
     };
 
-    // Set the line
-    pair.line = {
-      DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
-      Entries: [pair.entry],
-      _flags: { isModified: true }
-    };
+    // // Set the line
+    // pair.line = {
+    //   DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
+    //   Entries: [pair.entry],
+    //   _flags: { isModified: true }
+    // };
 
     return pair;
   }
@@ -2788,7 +2808,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     return !doc || !doc.Id || // Missing document
       // Missing posting date
-     // !doc.PostingDate ||
+      // !doc.PostingDate ||
       // OR missing permissions
       !this.hasPermissionToUpdateState(doc) ||
       // OR missing signatures
@@ -2885,11 +2905,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public getIsModified(line: LineForSave, doc: DocumentForSave): boolean {
+    // if (!line) {
+    //   return false;
+    // }
     const flags = this.flags(line, doc);
     return !!flags ? flags.isModified : false;
   }
 
-  public setModified(line: LineForSave, doc: DocumentForSave) {
+  public setModified(line: LineForSave, doc: DocumentForSave): void {
+    // if (!line) {
+    //   return;
+    // }
     this.flags(line, doc, true).isModified = true;
   }
 
