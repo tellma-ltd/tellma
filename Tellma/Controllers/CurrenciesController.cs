@@ -93,6 +93,7 @@ namespace Tellma.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
+                var id = nameof(Currency.Id);
                 var name = nameof(Currency.Name);
                 var name2 = nameof(Currency.Name2);
                 var name3 = nameof(Currency.Name3);
@@ -100,7 +101,7 @@ namespace Tellma.Controllers
                 var desc2 = nameof(Currency.Description2);
                 var desc3 = nameof(Currency.Description3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
+                var filterString = $"{id} {Ops.contains} '{search}' or {name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 

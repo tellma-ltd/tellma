@@ -537,6 +537,7 @@
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
                                 [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
+                                filter="IsActive eq true"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
