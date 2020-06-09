@@ -331,7 +331,7 @@ namespace Tellma.Data.Queries
                             break;
                     }
 
-                    string paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
+                    var paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
 
                     // (D) Prepare the SQL property
                     string propSQL = AtomSql(symbol, atom.Property, null, atom.Modifier);
@@ -368,26 +368,32 @@ namespace Tellma.Data.Queries
 
                         case Ops.contains: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} LIKE N'%' + {paramSymbol} + N'%'";
 
                         case Ops.ncontains: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
 
                         case Ops.startsw: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} LIKE {paramSymbol} + N'%'";
 
                         case Ops.nstartsw: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} NOT LIKE {paramSymbol} + N'%'";
 
                         case Ops.endsw: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} LIKE N'%' + {paramSymbol}";
 
                         case Ops.nendsw: // Must be text
                             EnsureTypeString(atom, propName, propType);
+                            paramSymbol = "@" + ps.AddParameter(value.ToString().Replace("%", "[%]"));
                             return $"{propSQL} NOT LIKE N'%' + {paramSymbol}";
 
                         case Ops.childof: // Must be hierarchy Id
