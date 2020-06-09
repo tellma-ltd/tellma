@@ -36,11 +36,11 @@ BEGIN
 
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-				[AccountTypeId],				[Name],			[AvailableSince],	[Lookup1Id],									[Identifier]) VALUES
-	(0, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172'),--1
-	(1, dbo.fn_ATCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662'),--1
-	(2, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000'),
-	(3, dbo.fn_ATCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812');
+		[Name],			[AvailableSince],	[Lookup1Id],									[Identifier]) VALUES
+	(0, N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172'),--1
+	(1, N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662'),--1
+	(2, N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000'),
+	(3, N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'LM999812');
 	;
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],					[Multiplier]) VALUES

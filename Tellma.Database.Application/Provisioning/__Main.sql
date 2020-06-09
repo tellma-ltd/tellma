@@ -1,70 +1,81 @@
 ﻿:r .\000\a_Declarations.sql
 :r .\000\b_AdminUser.sql
 :r .\000\c_Roles.sql
-:r .\000\c_RuleTypes.sql
-:r .\000\d_EntryTypes.sql
+:r .\000\d_RuleTypes.sql
+:r .\000\e_EntryTypes.sql
 
-:r .\000\a_LookupDefinitions.sql
-:r .\000\b_ResourceDefinitions.sql
-:r .\000\c_ContractDefinitions.sql
-:r .\000\e_AccountTypes.sql
-:r .\000\f_IfrsConcepts.sql
---:r .\000\g_IfrsDisclosures.sql
-:r .\000\h_Currencies.sql
-:r .\000\i_Settings.sql
-:r .\000\l_LineDefinitions.sql
-:r .\000\m_DocumentDefinitions.sql
-:r .\000\j_ReportDefinitions.sql
+:r .\000\f_LookupDefinitions.sql
+:r .\000\g_ResourceDefinitions.sql
+:r .\000\h_ContractDefinitions.sql
+:r .\000\i_AccountTypes.sql
+:r .\000\j_IfrsConcepts.sql
+--:r .\000\k_IfrsDisclosures.sql
+:r .\000\l_Currencies.sql
+:r .\000\m_Units.sql
+:r .\000\n_Settings.sql
+:r .\000\o_LineDefinitions.sql
+:r .\000\p_DocumentDefinitions.sql
+:r .\000\q_ReportDefinitions.sql
 :r .\000\z_Translations.sql
 
-IF (1=1)-- @DB <> N'106' -- Banan SD, USD, en
+IF @DB = N'ZZZ'
 BEGIN
 	:r .\03_Basic\b_Units.sql
-	--:r .\03_Basic\c_Lookups.sql
-	:r .\03_Basic\e_Centers.sql
+
 END
-IF @DB <> N'106'
+IF @DB IN (N'100', N'101', N'102', N'103', N'104', N'105')
 BEGIN
-	:r .\01_Security\a_Users.sql
-	:r .\01_Security\b_Permissions.sql
+	:r .\100_105\00_Setup\Script.sql
+	:r .\100_105\01_Security\a_Users.sql
+	:r .\100_105\01_Security\b_Permissions.sql
 
-	:r .\04_Resources\101_property-plant-and-equipment.sql
-	:r .\04_Resources\101_employee-benefits.sql
-	:r .\04_Resources\101_revenue_services.sql
-	--:r .\04_Resources\102_employee-benefits.sql
-	--:r .\04_Resources\102_property-plant-and-equipment.sql
-	--:r .\04_Resources\104_finished_goods.sql
-	--:r .\04_Resources\104_raw-materials.sql
-	--:r .\04_Resources\105_merchandise.sql
+	:r .\100_105\02_Basic\a_Lookups.sql
+	:r .\100_105\02_Basic\b_Centers.sql
 
-	--:r .\04_Resources\a1_PPE_motor-vehicles.sql
-	--:r .\04_Resources\a3_PPE_machineries.sql
+	:r .\100_105\04_Resources\101_property-plant-and-equipment.sql
+	:r .\100_105\04_Resources\101_employee-benefits.sql
+	:r .\100_105\04_Resources\101_revenue_services.sql
+	:r .\100_105\04_Resources\102_employee-benefits.sql
+	:r .\100_105\04_Resources\102_property-plant-and-equipment.sql
+	:r .\100_105\04_Resources\104_finished_goods.sql
+	:r .\100_105\04_Resources\104_raw-materials.sql
+	:r .\100_105\04_Resources\105_merchandise.sql
 
-	--:r .\04_Resources\d1_FG_vehicles.sql
-	----:r .\04_Resources\e1_CCE_received-checks.sql
-	:r .\05_Contracts\00_Agents.sql
-	:r .\05_Contracts\01_CashCustodians.sql
-	:r .\05_Contracts\02_InventoryCustodians.sql
-	:r .\05_Contracts\03_Customers.sql
-	:r .\05_Contracts\04_Debtors.sql
-	:r .\05_Contracts\05_Partners.sql
-	:r .\05_Contracts\06_Suppliers.sql
-	:r .\05_Contracts\07_Creditors.sql
-	:r .\05_Contracts\08_Employees.sql
+	:r .\100_105\04_Resources\a1_PPE_motor-vehicles.sql
+	:r .\100_105\04_Resources\a3_PPE_machineries.sql
 
-	:r .\06_Accounts\101_AccountClassifications.sql
---	:r .\06_Accounts\101_Accounts.sql
-	--:r .\07_Entries\101\101a_manual-journal-vouchers.sql
-	--:r .\07_Entries\101\101b_cash-payment-vouchers.sql
-	--:r .\07_Entries\101\101e_revenue-templates.sql
-	--:r .\07_Entries\101\101f_revenue-recognition-vouchers.sql
+	:r .\100_105\04_Resources\d1_FG_vehicles.sql
+	--:r .\100_105\04_Resources\e1_CCE_received-checks.sql
+
+
+	:r .\100_105\05_Contracts\00_Agents.sql
+	:r .\100_105\05_Contracts\01_CashCustodians.sql
+	:r .\100_105\05_Contracts\02_InventoryCustodians.sql
+	:r .\100_105\05_Contracts\03_Customers.sql
+	:r .\100_105\05_Contracts\04_Debtors.sql
+	:r .\100_105\05_Contracts\05_Partners.sql
+	:r .\100_105\05_Contracts\06_Suppliers.sql
+	:r .\100_105\05_Contracts\07_Creditors.sql
+	:r .\100_105\05_Contracts\08_Employees.sql
+
+	:r .\100_105\06_Accounts\a_AccountClassifications.sql
+	:r .\100_105\06_Accounts\b_Accounts.sql
+	--IF @DB = N'101'
+	--BEGIN
+	--:r .\100_105\07_Entries\101\a_manual-journal-vouchers.sql
+	--:r .\100_105\07_Entries\101\b_cash-payment-vouchers.sql
+	--:r .\100_105\07_Entries\101\e_revenue-templates.sql
+	--:r .\100_105\07_Entries\101\f_revenue-recognition-vouchers.sql
+	--END
 END
-
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
 	:r .\106\00_Setup\Script.sql
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
+
+	:r .\106\02_Basic\a_Lookups.sql
+	:r .\106\02_Basic\b_Centers.sql
 
 	:r .\106\05_Contracts\00_Agents.sql
 	:r .\106\05_Contracts\01_CashCustodians.sql
@@ -76,8 +87,8 @@ BEGIN
 	:r .\106\05_Contracts\07_Creditors.sql
 	:r .\106\05_Contracts\08_Employees.sql
 
-	:r .\106\06_Accounts\b_AccountClassifications.sql
-	:r .\106\06_Accounts\c_Accounts.sql
+	:r .\106\06_Accounts\a_AccountClassifications.sql
+	:r .\106\06_Accounts\b_Accounts.sql
 END
 
 --UPDATE Settings SET DefinitionsVersion = NewId()

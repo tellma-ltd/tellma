@@ -1,19 +1,6 @@
 ﻿IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
-	--INSERT INTO @Resources ([Index],
-	--					[ExpenseTypeId],					[Name]) VALUES
-	--(0,	dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Basic'),
-	--(1, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Transportation Allowance'),
-	--(2, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Day Overtime'),
-	--(3, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Night Overtime'),
-	--(4, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Rest Overtime'),
-	--(5, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Holiday Overtime'),
-	--(6, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (hourly)'),
-	--(7, dbo.fn_ATCode__Id(N'WagesAndSalaries'),				N'Labor (daily)'),
-	--(8, dbo.fn_ATCode__Id(N'OtherShorttermEmployeeBenefits'),N'Data package'),
-	--(9, dbo.fn_ATCode__Id(N'SocialSecurityContributions'),	N'SS Contribution (11%)'),
-	--(10, dbo.fn_ATCode__Id(N'WagesAndSalaries'),			N'Meal Allowance');
 	INSERT INTO @Resources ([Index],
 		[Name]) VALUES
 	(0,	N'Basic'),

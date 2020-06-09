@@ -153,29 +153,6 @@ BEGIN
 	;
 
 END
-ELSE IF @DB = N'106' -- Soreti, ETB, en/am
-BEGIN
-	INSERT INTO @Centers([Index], [Name],[Name2],[Code], [CenterType], [ParentIndex], [IsLeaf]) VALUES 
-	(0, N'Head Office Segment', N'ዋና መስሪያ ቤት ክፍል', N'101', N'Segment', NULL, 1),
-	(1, N'Trading Segment', N'የግብይት ክፍል', N'201', N'Segment', NULL, 1),
-	(2, N'Export', N'ወደ ውጭ ይላኩ', N'21', N'Profit', NULL, 0),
-	(3, N'Cereals', N'እህል', N'211', N'Profit', 2, 1),
-	(4, N'Pulses', N'ጥራጥሬዎች', N'212', N'Profit', 2, 1),
-	(5, N'Oilseeds', N'የቅባት እህሎች', N'213', N'Profit', 2, 1),
-	(6, N'Import', N'አስመጣ', N'22', N'Profit', NULL, 0),
-	(7, N'Spare Parts', N'መለዋወጫ አካላት', N'221', N'Profit', 6, 1),
-	(8, N'Medicine', N'መድሃኒት', N'222', N'Profit', 6, 1),
-	(9, N'Construction', N'ግንባታ', N'223', N'Profit', 6, 1),
-	(10, N'FoodItems', N'የምግብ አይነቶች', N'224', N'Profit', 6, 1),
-	(11, N'Minidor', N'አነስተኛ', N'231', N'Profit', NULL, 1),
-	(12, N'Oil Mills', N'ዘይት ወፍጮዎች', N'241', N'Profit', NULL, 1),
-	(13, N'Real Estate Segment', N'የሪል እስቴት ክፍል', N'301', N'Segment', NULL, 1),
-	(14, N'Rental', N'ኪራይ', N'31', N'Profit', NULL, 0),
-	(15, N'Rental - Adama', N'ኪራይ - አዳማ', N'311', N'Profit', 14, 1),
-	(16, N'Rental - AA', N'ኪራይ - ኤኤ', N'312', N'Profit', 14, 1);
-
-
-END
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,

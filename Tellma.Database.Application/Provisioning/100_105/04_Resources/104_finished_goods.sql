@@ -45,13 +45,13 @@ BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
 	--N'FinishedGoods'
-		[AccountTypeId],			[Name],				[Code]) VALUES
-	(0,	dbo.fn_ATCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0'),
-	(1, dbo.fn_ATCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8'),
-	(2, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-120x80x2.8',	N'RHS120x80x2.8'),
-	(3, dbo.fn_ATCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8'),
-	(4, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1'),
-	(5, dbo.fn_ATCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2');
+		[Name],				[Code]) VALUES
+	(0,	N'CHS-76X2.0',		N'CHS76X2.0'),
+	(1, N'CHS-200x3.8',		N'CHS200x3.8'),
+	(2, N'RHS-120x80x2.8',	N'RHS120x80x2.8'),
+	(3, N'RHS-30x20x2.8',	N'RHS30x20x2.8'),
+	(4, N'L-38x1.1',		N'L38x1.1'),
+	(5, N'L-38x1.2',		N'L38x1.2');
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],
 			[UnitId],					[Multiplier]) VALUES

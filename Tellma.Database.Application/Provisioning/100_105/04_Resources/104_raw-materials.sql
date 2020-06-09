@@ -40,9 +40,9 @@ BEGIN
 	
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[AccountTypeId],						[Name],				[Code],			[Identifier], 	[Lookup1Id]) VALUES
-	(0, dbo.fn_ATCode__Id(N'HotRollExtension'),	N'HR 1000MMx1.9MM',	N'HR1000x1.9',	N'1001',		dbo.fn_Lookup(N'steel-thicknesses', N'1.9')),
-	(1, dbo.fn_ATCode__Id(N'ColdRollExtension'),N'CR 1000MMx1.4MM',	N'CR1000x1.4',	N'1002',		dbo.fn_Lookup(N'steel-thicknesses', N'1.4'));
+		[Name],				[Code],			[Identifier], 	[Lookup1Id]) VALUES
+	(0, N'HR 1000MMx1.9MM',	N'HR1000x1.9',	N'1001',		dbo.fn_Lookup(N'steel-thicknesses', N'1.9')),
+	(1, N'CR 1000MMx1.4MM',	N'CR1000x1.4',	N'1002',		dbo.fn_Lookup(N'steel-thicknesses', N'1.4'));
 	-- For RM, we use the descriptor - if any - in Entries
 
 	INSERT INTO @ResourceUnits([Index], [HeaderIndex],

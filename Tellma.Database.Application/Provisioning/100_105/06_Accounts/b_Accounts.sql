@@ -7,13 +7,13 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	INSERT INTO @Accounts([Index],
 		[Code], [AccountTypeId],				[ClassificationId],		[ContractDefinitionId],	[ResourceDefinitionId],	[Name],							[CurrencyId],	[CenterId],		[EntryTypeId],		[ContractId]) VALUES
 	-- Assets Accounts
---	(10,N'12001',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittings,	N'Fixtures and fittings',		@USD,			NULL,			@PPEAdditions,		NULL),
-	(11,N'12002',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,		N'Office equipment',			@USD,			NULL,			@PPEAdditions,		NULL),
-	(12,N'12003',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,		N'Comp. equip. & acc.',			@USD,			NULL,			@PPEAdditions,		NULL),
+--	(10,N'12001',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittings,	N'Fixtures and fittings',		@USD,			NULL,			@@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
+	(11,N'12002',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@office_equipmentRD,	N'Office equipment',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
+	(12,N'12003',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@office_equipmentRD,	N'Comp. equip. & acc.',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
 
 --	(310,N'12011',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittings,	N'Acc. Dep.- Fixtures and fittings',@USD,		NULL,			@PPEDepreciations,	NULL),
-	(311,N'12012',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,		N'Acc. Dep.- Office equipment',	@USD,			NULL,			@PPEDepreciations,	NULL),
-	(312,N'12013',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,		N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@PPEDepreciations,	NULL),
+	(311,N'12012',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@office_equipmentRD,	N'Acc. Dep.- Office equipment',	@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
+	(312,N'12013',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@office_equipmentRD,	N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
 
 	(15,N'11201',@CurrentTradeReceivables,		@Debtors_AC,			@customersCD,			NULL,					N'Trade Receivables',			NULL,			@C101_INV,		NULL,				NULL),
 --	(18,N'11208',@employeeADef,					@Debtors_AC,			@CurrentTradeReceivables,NULL,					N'Employees Expenditures',		NULL,			@C101_INV,		NULL,				NULL),
@@ -36,10 +36,10 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 
 	(38,N'11241',@DeferredIncomeClassifiedAsCurrent,@Debtors_AC,		@customersCD,			NULL,					N'Accrued Income',				NULL,			@C101_INV,		NULL,				NULL),
 
-	(41,N'11111',@CashOnHand,					@BankAndCash_AC,		@cash_accountsCD,		NULL,					N'GM Fund',						NULL,			@C101_INV,		NULL,				@GMSafe),
-	(43,N'11112',@CashOnHand,					@BankAndCash_AC,		@cash_accountsCD,		NULL,					N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,				@AdminPettyCash),
-	(44,N'11113',@CashOnHand,					@BankAndCash_AC,		@cash_accountsCD,		NULL,					N'KSA Fund',					NULL,			@C101_INV,		NULL,				@KSASafe),
-	(45,N'11121',@BalancesWithBanks,			@BankAndCash_AC,		@BalancesWithBanksCD,		NULL,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,				@KRTBank),
+	(41,N'11111',@CashOnHand,					@BankAndCash_AC,		@vault_cash_fundsCD,	NULL,					N'GM Fund',						NULL,			@C101_INV,		NULL,				@GMSafe),
+	(43,N'11112',@CashOnHand,					@BankAndCash_AC,		@petty_cash_fundsCD,	NULL,					N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,				@AdminPettyCash),
+	(44,N'11113',@CashOnHand,					@BankAndCash_AC,		@petty_cash_fundsCD,	NULL,					N'KSA Fund',					NULL,			@C101_INV,		NULL,				@KSASafe),
+	(45,N'11121',@BalancesWithBanks,			@BankAndCash_AC,		@bank_accountsCD,		NULL,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,				@KRTBank),
 
 	-- Equity and Liabilities accounts
 	(50,N'30001',@IssuedCapital,				@Equity_AC,				NULL,					NULL,					N'Issued Capital',				@USD,			@C101_INV,		NULL,				NULL),

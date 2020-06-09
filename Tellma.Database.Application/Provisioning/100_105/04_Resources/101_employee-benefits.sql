@@ -2,9 +2,6 @@
 BEGIN
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-	--	[ExpenseTypeId],				[Name]) VALUES
-	--(0,	@EmployeeBenefitsExpense,		N'Basic'),
-	--(1, @EmployeeBenefitsExpense,		N'Labor (hourly)');
 			[Name]) VALUES
 	(0,		N'Basic'),
 	(1,		N'Labor (hourly)');

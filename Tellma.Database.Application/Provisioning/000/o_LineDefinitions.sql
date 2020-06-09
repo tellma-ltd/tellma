@@ -92,7 +92,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (4,1,	N'ContractId',			1,	N'Bank/Cashier',	3,4,0),
 (5,1,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
 (6,1,	N'NotedDate',			1,	N'Check Date',		5,4,0),
-(7,1,	N'CenterId',			1,	N'Inv. Ctr',		4,4,1);
+(7,1,	N'CenterId',			1,	N'Segment',			4,4,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
 (0,1,+1),
