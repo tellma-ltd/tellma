@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Tellma.Controllers
 {
@@ -291,7 +290,7 @@ namespace Tellma.Controllers
 
         private static LineDefinitionForClient MapLineDefinition(LineDefinition def)
         {
-            return new LineDefinitionForClient
+            var line = new LineDefinitionForClient
             {
                 // Basics
                 Code = def.Code,
@@ -338,7 +337,19 @@ namespace Tellma.Controllers
                     IsActive = r.IsActive ?? false,
                 })?.ToList() ?? new List<LineDefinitionStateReasonForClient>(),
             };
+
+            // For consistency, Manual lines do not have columns or entries
+            if (line.Code == _ManualLine)
+            {
+                line.Entries.Clear();
+                line.Columns.Clear();
+            }
+
+            return line;
         }
+
+        private const string _ManualLine = "ManualLine";
+        private const string _ManualJournalVouchers = "manual-journal-vouchers";
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {
@@ -672,13 +683,13 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
-            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == "manual-journal-vouchers").Key;
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVouchers).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
                 throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: 'manual-journal-vouchers' could not be found");
             }
 
-            result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == "ManualLine").Key;
+            result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == _ManualLine).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
                 throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");

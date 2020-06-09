@@ -277,6 +277,7 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 .t-body {
   height: 100% !important;
   background-color: $light;
+  overflow-y: overlay;
 }
 
 // these are buttons that only have an icon in them

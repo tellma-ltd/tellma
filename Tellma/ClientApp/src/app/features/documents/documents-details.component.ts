@@ -2241,20 +2241,40 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._lines[lineDefId];
   }
 
+  private _manualLineModel: Document;
+  private _manualLineResult: LineForSave;
+
+  public manualLine(model: Document): LineForSave {
+    // Retrieves the one and only manual line in the document
+    if (this._manualLineModel !== model) {
+      this._manualLineModel = model;
+      this._manualLineResult = model.Lines.find(e => this.isManualLine(e.DefinitionId));
+    }
+
+    return this._manualLineResult;
+  }
+
+  public showManualLineProps(model: Document): boolean {
+    // Manual Line Memo and Posting Date fields are shown in non JV documents that have a manual line
+    return !this.isJV && !!this.manualLine(model);
+  }
+
   public onInsertManualEntry(pair: LineEntryPair, model: Document): void {
     // Called when the user inserts a new entry
-    // model.Lines.push(pair.line);
-
     // Get the one and only manual line
-    let manualLine = model.Lines.find(line => this.isManualLine(line.DefinitionId));
+    let manualLine = this.manualLine(model);
     if (!manualLine) {
       manualLine = {
+        PostingDate: toLocalDateISOString(new Date()),
         DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
         Entries: [],
         _flags: { isModified: true }
       };
 
       model.Lines.push(manualLine);
+
+      this._manualLineModel = model;
+      this._manualLineResult = manualLine;
     }
 
     // Add the entry to it
@@ -2266,15 +2286,18 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     this.cancelAutofill(pair); // Good tidying up
 
-    // // Called when the user deletes an entry
-    // const index = model.Lines.indexOf(pair.line);
-    // if (index > -1) {
-    //   model.Lines.splice(index, 1);
-    // }
+    const entryIndex = pair.line.Entries.indexOf(pair.entry);
+    if (entryIndex > -1) {
+      pair.line.Entries.splice(entryIndex, 1);
+    }
 
-    const index = pair.line.Entries.indexOf(pair.entry);
-    if (index > -1) {
-      pair.line.Entries.splice(index, 1);
+    // If the line is empty, remove it
+    if (pair.line.Entries.length === 0) {
+      const lineIndex = model.Lines.indexOf(pair.line);
+      model.Lines.splice(lineIndex);
+
+      this._manualLineModel = model;
+      this._manualLineResult = null;
     }
   }
 
@@ -2284,31 +2307,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // Set the entry
     pair.entry = {
       Direction: 1
-    };
-
-    // // Set the line
-    // pair.line = {
-    //   DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
-    //   Entries: [pair.entry],
-    //   _flags: { isModified: true }
-    // };
-
-    return pair;
-  }
-
-  public onNewSmartLine = (pair: LineEntryPair) => {
-    // Called when a new smart line is created, including placeholder entry
-
-    // Set the entry
-    pair.entry = {
-      Direction: 1
-    };
-
-    // Set the line
-    pair.line = {
-      DefinitionId: this.ws.definitions.ManualLinesDefinitionId,
-      Entries: [pair.entry],
-      _flags: { isModified: true }
     };
 
     return pair;

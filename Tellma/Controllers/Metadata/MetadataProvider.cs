@@ -949,67 +949,67 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Document.PostingDate):
                     display = PropertyDisplay(settings, def.PostingDateVisibility, def.PostingDateLabel, def.PostingDateLabel2, def.PostingDateLabel3, display);
-                    isRequired = def.PostingDateVisibility;
+                    isRequired = def.PostingDateRequiredState == 0;
                     break;
                 case nameof(Document.DebitContractId):
                     display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
-                    isRequired = def.DebitContractVisibility;
+                    isRequired = def.DebitContractRequiredState == 0;
                     break;
                 case nameof(Document.DebitContract):
                     display = PropertyDisplay(settings, def.DebitContractVisibility, def.DebitContractLabel, def.DebitContractLabel2, def.DebitContractLabel3, display);
-                    isRequired = def.DebitContractVisibility;
+                    isRequired = def.DebitContractRequiredState == 0;
                     break;
                 case nameof(Document.CreditContractId):
                     display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
-                    isRequired = def.CreditContractVisibility;
+                    isRequired = def.CreditContractRequiredState == 0;
                     break;
                 case nameof(Document.CreditContract):
                     display = PropertyDisplay(settings, def.CreditContractVisibility, def.CreditContractLabel, def.CreditContractLabel2, def.CreditContractLabel3, display);
-                    isRequired = def.CreditContractVisibility;
+                    isRequired = def.CreditContractRequiredState == 0;
                     break;
                 case nameof(Document.NotedContractId):
                     display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
-                    isRequired = def.NotedContractVisibility;
+                    isRequired = def.NotedContractRequiredState == 0;
                     break;
                 case nameof(Document.NotedContract):
                     display = PropertyDisplay(settings, def.NotedContractVisibility, def.NotedContractLabel, def.NotedContractLabel2, def.NotedContractLabel3, display);
-                    isRequired = def.NotedContractVisibility;
+                    isRequired = def.NotedContractRequiredState == 0;
                     break;
                 case nameof(Document.Segment):
                     display = PropertyDisplay(settings, def.SegmentVisibility, def.SegmentLabel, def.SegmentLabel2, def.SegmentLabel3, display);
-                    isRequired = def.SegmentVisibility;
+                    isRequired = def.SegmentRequiredState == 0;
                     break;
                 case nameof(Document.SegmentId):
                     display = PropertyDisplay(settings, def.SegmentVisibility, def.SegmentLabel, def.SegmentLabel2, def.SegmentLabel3, display);
-                    isRequired = def.SegmentVisibility;
+                    isRequired = def.SegmentRequiredState == 0;
                     break;
                 case nameof(Document.Time1):
                     display = PropertyDisplay(settings, def.Time1Visibility, def.Time1Label, def.Time1Label2, def.Time1Label3, display);
-                    isRequired = def.Time1Visibility;
+                    isRequired = def.Time1RequiredState == 0;
                     break;
                 case nameof(Document.Time2):
                     display = PropertyDisplay(settings, def.Time2Visibility, def.Time2Label, def.Time2Label2, def.Time2Label3, display);
-                    isRequired = def.Time2Visibility;
+                    isRequired = def.Time2RequiredState == 0;
                     break;
                 case nameof(Document.Quantity):
                     display = PropertyDisplay(settings, def.QuantityVisibility, def.QuantityLabel, def.QuantityLabel2, def.QuantityLabel3, display);
-                    isRequired = def.QuantityVisibility;
+                    isRequired = def.QuantityRequiredState == 0;
                     break;
                 case nameof(Document.UnitId):
                     display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    isRequired = def.UnitVisibility;
+                    isRequired = def.UnitRequiredState == 0;
                     break;
                 case nameof(Document.Unit):
                     display = PropertyDisplay(settings, def.UnitVisibility, def.UnitLabel, def.UnitLabel2, def.UnitLabel3, display);
-                    isRequired = def.UnitVisibility;
+                    isRequired = def.UnitRequiredState == 0;
                     break;
                 case nameof(Document.CurrencyId):
                     display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    isRequired = def.CurrencyVisibility;
+                    isRequired = def.CurrencyRequiredState == 0;
                     break;
                 case nameof(Document.Currency):
                     display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
-                    isRequired = def.CurrencyVisibility;
+                    isRequired = def.CurrencyRequiredState == 0;
                     break;
             }
 

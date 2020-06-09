@@ -180,8 +180,8 @@
                 </t-view-link>
             </t-restricted>
             <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.DebitContractId"
-                [definitionIds]="documentDebitContractDefinitionIds(model)" [required]="requireDocumentDebitContract(model)"
-                [disabled]="readonlyDocumentDebitContract(model)">
+                [definitionIds]="documentDebitContractDefinitionIds(model)"
+                [required]="requireDocumentDebitContract(model)" [disabled]="readonlyDocumentDebitContract(model)">
             </t-contracts-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'DebitContractIsCommon' }"></ng-container>
@@ -218,8 +218,8 @@
                 </t-view-link>
             </t-restricted>
             <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.CreditContractId"
-                [definitionIds]="documentCreditContractDefinitionIds(model)" [required]="requireDocumentCreditContract(model)"
-                [disabled]="readonlyDocumentCreditContract(model)">
+                [definitionIds]="documentCreditContractDefinitionIds(model)"
+                [required]="requireDocumentCreditContract(model)" [disabled]="readonlyDocumentCreditContract(model)">
             </t-contracts-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CreditContractIsCommon' }"></ng-container>
@@ -236,8 +236,8 @@
                 </t-view-link>
             </t-restricted>
             <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.NotedContractId"
-                [definitionIds]="documentNotedContractDefinitionIds(model)" [required]="requireDocumentNotedContract(model)"
-                [disabled]="readonlyDocumentNotedContract(model)">
+                [definitionIds]="documentNotedContractDefinitionIds(model)"
+                [required]="requireDocumentNotedContract(model)" [disabled]="readonlyDocumentNotedContract(model)">
             </t-contracts-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'NotedContractIsCommon' }"></ng-container>
@@ -254,8 +254,7 @@
             </t-restricted>
             <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
                 filter="CenterType eq 'Segment' and IsLeaf = true and IsActive = true"
-                [required]="requireDocumentSegment(model)"
-                [disabled]="readonlyDocumentSegment(model)">
+                [required]="requireDocumentSegment(model)" [disabled]="readonlyDocumentSegment(model)">
             </t-centers-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'SegmentIsCommon' }"></ng-container>
@@ -332,7 +331,8 @@
                 </t-view-link>
             </t-restricted>
             <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
-                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)" filter="IsActive eq true">
+                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)"
+                filter="IsActive eq true">
             </t-currencies-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CurrencyIsCommon' }"></ng-container>
@@ -536,8 +536,7 @@
                             <t-currencies-picker *ngSwitchCase="'CurrencyId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                filter="IsActive eq true"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)" filter="IsActive eq true"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
@@ -850,7 +849,7 @@
                         <h5 class="small2 font-weight-bold2">
                             {{ ('SmartEntries' | translate) + ' (' + smartEntries(model).length + ')' }}</h5>
                     </div>
-                    <t-table [dataSource]="smartEntries(model)" [isEdit]="false" [itemSize]="70" [visibleRows]="5"
+                    <t-table [dataSource]="smartEntries(model)" [itemSize]="70" [visibleRows]="5"
                         [highlightFunc]="highlightPairFactory(model)" [columnPaths]="manualColumnPaths(model, true)"
                         [columnTemplates]="{
                                 'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3, argument: true },
@@ -860,8 +859,7 @@
                                 'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 2, argument: true },
                                 'ModifiedWarning' : { rowTemplate : row_ModifiedWarning },
                                 'Commands' : { rowTemplate : row_SmartEntryCommands }
-                            }" [onNewItem]="onNewSmartLine" (insert)="onInsertSmartLine($event, model)"
-                        (delete)="onDeleteSmartLine($event, model)">
+                            }">
                     </t-table>
 
                     <ng-container *ngIf="hasManualLines">
@@ -1006,7 +1004,32 @@
 
     <!------------ Templates for Manual Lines ----------->
     <ng-template #manualLines>
-        <!-- Manual Lines Table -->
+        <!-- Manual Line Properties -->
+        <div class="row m-0 pt-2" *ngIf="showManualLineProps(model)">
+            <!-- Posting Date -->
+            <t-form-group class="t-form-group" [label]="'Line_PostingDate' | translate"
+                [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
+                <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.PostingDate">
+                    <div>{{ manualLine(model)?.PostingDate | date:'yyyy-MM-dd' }}</div>
+                </t-restricted>
+                <t-date-picker *ngIf="isEdit" required [(ngModel)]="manualLine(model).PostingDate"
+                    [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-date-picker>
+            </t-form-group>
+            
+            <!-- Memo -->
+            <t-form-group class="t-form-group" [label]="'Memo' | translate"
+                [serverErrors]="manualLine(model)?.serverErrors?.Memo">
+                <t-restricted *ngIf="!isEdit" [metadata]="manualLine(model)?.EntityMetadata?.Memo">
+                    <div>{{ manualLine(model)?.Memo }}</div>
+                </t-restricted>
+                <t-text-editor *ngIf="isEdit" required [(ngModel)]="manualLine(model).Memo"
+                    [ngModelOptions]="{ updateOn: 'blur' }">
+                </t-text-editor>
+            </t-form-group>
+        </div>
+
+        <!-- Manual Entries Table -->
         <t-table [dataSource]="manualEntries(model)" [isEdit]="isEdit" [itemSize]="70"
             [columnPaths]="manualColumnPaths(model)" [columnTemplates]="{
                             'AccountId' : { headerTemplate : header_Account, rowTemplate : row_Account, weight : 3 },
@@ -1095,7 +1118,8 @@
 
             <!-- Contract -->
             <ng-container *ngIf="showContract_Manual(entry)">
-                <t-form-group-dynamic [label]="labelContract_Manual(entry)" [serverErrors]="entry.serverErrors?.ContractId">
+                <t-form-group-dynamic [label]="labelContract_Manual(entry)"
+                    [serverErrors]="entry.serverErrors?.ContractId">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.ContractId">
                         <t-view-link [link]="'../../../contracts/' + ws.get('Contract', entry.ContractId)?.DefinitionId"
@@ -1109,7 +1133,8 @@
                             (ngModelChange)="update.call(null, pair);"
                             [definitionIds]="definitionIdsContract_Manual(entry)" required>
                         </t-contracts-picker>
-                        <t-restricted *ngIf="readonlyContract_Manual(entry)" [metadata]="entry.EntityMetadata?.ContractId">
+                        <t-restricted *ngIf="readonlyContract_Manual(entry)"
+                            [metadata]="entry.EntityMetadata?.ContractId">
                             {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual(entry), 'Name') }}
                         </t-restricted>
                     </ng-container>
@@ -1284,7 +1309,8 @@
                     [serverErrors]="entry.serverErrors?.NotedContract">
                     <!-- View -->
                     <t-restricted *ngIf="!isEdit || bookkeeping" [metadata]="entry.EntityMetadata?.NotedContractId">
-                        <t-view-link [link]="'../../../contracts/' + ws.get('Contract', entry.NotedContractId)?.DefinitionId"
+                        <t-view-link
+                            [link]="'../../../contracts/' + ws.get('Contract', entry.NotedContractId)?.DefinitionId"
                             [itemId]="entry.NotedContractId">
                             {{ ws.getMultilingualValue('Contract', entry.NotedContractId, 'Name') }}
                         </t-view-link>
