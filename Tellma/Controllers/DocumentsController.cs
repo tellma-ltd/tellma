@@ -1739,10 +1739,10 @@ namespace Tellma.Controllers
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
             nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel),
 
-            // Definitions
-            $"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",
-            $"{nameof(AccountType.NotedContractDefinitions)}/{nameof(AccountTypeNotedContractDefinition.NotedContractDefinitionId)}",
-            $"{nameof(AccountType.ResourceDefinitions)}/{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}"
+            //// Definitions
+            //$"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",
+            //$"{nameof(AccountType.NotedContractDefinitions)}/{nameof(AccountTypeNotedContractDefinition.NotedContractDefinitionId)}",
+            //$"{nameof(AccountType.ResourceDefinitions)}/{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}"
          );
 
         // Helper method

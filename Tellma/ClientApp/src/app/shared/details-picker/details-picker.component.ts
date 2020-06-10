@@ -322,7 +322,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   private get allDefinitionIds(): number[] {
     // If the api is definitioned, and definitionIds was not supplied, this method
-    // Returns the full list of definitionIds form the definitions
+    // Returns the full list of definitionIds form the definitions, otherwise returns the supplied list
     if (this.isDefinitioned) { // Definitioned API
       if (!this.definitionIds || this.definitionIds.filter(e => !!e).length === 0) { // The definitionId were not specified
         return this.entityDescriptor().definitionIds;
@@ -569,6 +569,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.workspace.current.canCreate(view);
   }
 
+  private hasReadPermissions = (definitionId: number): boolean => {
+    // This returns false if the API is definitioned, but definitionId was not supplied
+    const view = this.apiEndpoint(definitionId);
+    return this.workspace.current.canRead(view);
+  }
+
   private get canCreateNewInner(): boolean {
     if (this.isDefinitioned) {
       const defId = this.definitionIdsSingleOrDefault;
@@ -654,8 +660,33 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.openEditModalInner();
   }
 
+  // Search Modal
+
+  public get searchOptions(): number[] {
+    return this.allDefinitionIds.filter(defId => this.hasReadPermissions(defId));
+  }
+
   public openSearchModal = () => {
-    this.openSearchModalInner(this.definitionIdsSingleOrDefault);
+    if (this.searchOptions.length > 1) {
+      // Without the setTimeout it misbehaves when createFromFocus,
+      // applying the Enter press on the modal itself
+      setTimeout(() => {
+        this.modalService.open(this.masterOptionsTemplate)
+          .result.then(
+            (definitionId) => {
+              // if (!this.canSearchFromOptions(definitionId)) {
+              //   return;
+              // }
+              this.openSearchModalInner(definitionId);
+            },
+            (_: any) => {
+            }
+          );
+      }, 0);
+    } else {
+      // This isn't definitioned, or there is exactly one definition
+      this.openSearchModalInner(this.searchOptions[0]);
+    }
   }
 
   private openSearchModalInner(definitionId?: number) {
@@ -669,6 +700,16 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
       // this guarantees that the input will be focused again when the modal closes
       .result.then(this.onFocusInput, this.onFocusInput);
+  }
+
+  public searchOptionName(definitionId: number) {
+    return this.entityDescriptor(definitionId).titlePlural();
+  }
+
+  // Create Modal
+
+  public get createOptions(): number[] {
+    return this.allDefinitionIds;
   }
 
   private openCreateModal = () => {
@@ -745,7 +786,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.hasCreatePermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  public optionName(definitionId: number) {
+  public createOptionName(definitionId: number) {
     return this.entityDescriptor(definitionId).titleSingular();
   }
 
@@ -767,9 +808,5 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   public get inputRightPadding(): string {
     return this.showEditSelected ? !this.workspace.ws.isRtl ? '24px!important' : null : null;
-  }
-
-  public get createOptions(): number[] {
-    return this.allDefinitionIds;
   }
 }

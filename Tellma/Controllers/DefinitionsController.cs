@@ -695,7 +695,6 @@ namespace Tellma.Controllers
                 throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");
             }
 
-
             // Return result
             return new Versioned<DefinitionsForClient>
             {

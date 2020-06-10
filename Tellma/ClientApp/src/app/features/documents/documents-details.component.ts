@@ -1171,8 +1171,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsContract_Manual(entry: Entry): number[] {
-    const at = this.accountType(entry);
-    return !!at && !!at.ContractDefinitions ? at.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
+    const account = this.account(entry);
+    return [account.ContractDefinitionId];
+    // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
   }
 
   // Noted Contract Id
@@ -1190,8 +1191,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsNotedContract_Manual(entry: Entry): number[] {
-    const at = this.accountType(entry);
-    return !!at && !!at.NotedContractDefinitions ? at.NotedContractDefinitions.map(e => e.NotedContractDefinitionId) : [];
+    const account = this.account(entry);
+    return [account.NotedContractDefinitionId];
+    // return !!at && !!at.NotedContractDefinitions ? at.NotedContractDefinitions.map(e => e.NotedContractDefinitionId) : [];
   }
 
   // ResourceId
@@ -1219,8 +1221,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public definitionIdsResource_Manual(entry: Entry): number[] {
-    const at = this.accountType(entry);
-    return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
+    const account = this.account(entry);
+    return [account.ResourceDefinitionId];
+    // return !!at && !!at.ResourceDefinitions ? at.ResourceDefinitions.map(e => e.ResourceDefinitionId) : [];
   }
 
   // Quantity + Unit
