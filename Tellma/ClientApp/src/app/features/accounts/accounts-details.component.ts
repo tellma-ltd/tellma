@@ -248,7 +248,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public filterEntryType(model: AccountForSave) {
-    let result = 'IsAssignable eq true and IsActive eq true';
+    let result = 'IsAssignable eq true';
     const accountType = this.accountType(model);
     if (!!accountType && !!accountType.EntryTypeParentId) {
       result += ` and Node descof ${accountType.EntryTypeParentId}`;

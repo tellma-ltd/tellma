@@ -58,6 +58,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             // ],
             screenUrl: 'details-entries', // TODO
             orderby: () => ['Id'],
+            inactiveFilter: null,
             format: (__: EntityWithKey) => '',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

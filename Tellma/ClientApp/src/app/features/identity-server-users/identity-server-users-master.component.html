@@ -2,7 +2,7 @@
     [additionalSelect]="additionalSelect" [masterCrumb]="'IdentityServerUsers' | translate" [tileTemplate]="tile"
     [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" [showImportButton]="false"
     [showDeleteButton]="false" selectDefault="EmailConfirmed,PasswordSet,TwoFactorEnabled" selectForTiles="Email"
-    inactiveFilter="" [multiselectActions]="[]" [filterDefinition]="{
+    [multiselectActions]="[]" [filterDefinition]="{
         'EmailConfirmed' : [
           { template: emailConfirmed, expression: 'EmailConfirmed eq true'},
           { template: emailNotConfirmed, expression: 'EmailConfirmed eq false'}

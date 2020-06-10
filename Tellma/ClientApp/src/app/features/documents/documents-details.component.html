@@ -331,8 +331,7 @@
                 </t-view-link>
             </t-restricted>
             <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
-                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)"
-                filter="IsActive eq true">
+                [required]="requireDocumentCurrency(model)" [disabled]="readonlyDocumentCurrency(model)">
             </t-currencies-picker>
         </ng-container>
         <ng-container *ngTemplateOutlet="lock; context:{ prop: 'CurrencyIsCommon' }"></ng-container>
@@ -536,7 +535,7 @@
                             <t-currencies-picker *ngSwitchCase="'CurrencyId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)" filter="IsActive eq true"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-currencies-picker>
                             <t-contracts-picker *ngSwitchCase="'ContractId'"
@@ -1080,7 +1079,7 @@
                     </t-restricted>
                     <!-- Edit -->
                     <t-currencies-picker *ngIf="isEdit && !bookkeeping" [(ngModel)]="entry.CurrencyId"
-                        (ngModelChange)="update.call(null, pair);" filter="IsActive eq true" required>
+                        (ngModelChange)="update.call(null, pair);" required>
                     </t-currencies-picker>
                     &nbsp;&nbsp;
                 </t-form-group-dynamic>
@@ -1394,7 +1393,7 @@
         <ng-container *ngIf="isEdit && !bookkeeping">
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.CenterId">
                 <t-centers-picker *ngIf="!readonlyCenter_Manual(entry)" [(ngModel)]="entry.CenterId"
-                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true and IsActive eq true">
+                    (ngModelChange)="update.call(null, pair);" filter="IsLeaf eq true">
                 </t-centers-picker>
                 <t-restricted *ngIf="readonlyCenter_Manual(entry)" [metadata]="entry.EntityMetadata?.CenterId">
                     {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual(entry), 'Name') }}

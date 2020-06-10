@@ -39,6 +39,11 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   @Input()
   selectTemplate: string;
 
+  // This is mostly unused for now, all details pickers will always filter out inactive items
+  // If the need arises we would have to bind it in all master implementation and all picker implementations
+  @Input()
+  includeInactive = false;
+
   @Input()
   filter: string;
 
@@ -371,11 +376,28 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this._isDisabled = isDisabled;
   }
 
+  private inactiveFilter(definitionId?: number): string {
+    return this.entityDescriptor(definitionId).inactiveFilter;
+  }
+
   ////////////////// UI Bindings
 
   public get queryFilter(): string {
     // IF this is a definitioned API and the definition id is ambigious
     // then we add the definitions to the filter
+    let result: string = this.filter;
+
+    // Add include inactive filter, if any
+    if (!this.includeInactive) {
+      const inactiveFilter = this.inactiveFilter();
+      if (!!result) {
+        result = `${inactiveFilter} and ${result}`;
+      } else {
+        result = inactiveFilter;
+      }
+    }
+
+    // Add definition filter, if any
     if (this.isDefinitioned &&
       !this.definitionIdsSingleOrDefault &&
       !!this.definitionIds &&
@@ -386,15 +408,15 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
         .map(e => `DefinitionId eq ${e}`)
         .reduce((e1, e2) => `${e1} or ${e2}`);
 
-      if (!!this.filter) {
-        return `${definitionfilter} and ${this.filter}`;
+      if (!!result) {
+        result = `${definitionfilter} and ${result}`;
 
       } else {
-        return definitionfilter;
+        result = definitionfilter;
       }
-    } else {
-      return this.filter;
     }
+
+    return result;
   }
 
   get searchResults(): (string | number)[] {

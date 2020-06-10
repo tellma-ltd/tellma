@@ -41,7 +41,7 @@ export class ExchangeRatesDetailsComponent extends DetailsBaseComponent {
   // Currency
 
   public get currenciesFilter(): string {
-    return `IsActive eq true and Id ne '${this.ws.settings.FunctionalCurrencyId}'`;
+    return `Id ne '${this.ws.settings.FunctionalCurrencyId}'`;
   }
 
   // Amount in Currency

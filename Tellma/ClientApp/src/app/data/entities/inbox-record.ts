@@ -38,6 +38,7 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
             apiEndpoint: 'inbox',
             screenUrl: 'inbox',
             orderby: () => ['CreatedAt desc'],
+            inactiveFilter: null,
             format: (__: EntityWithKey) => '',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

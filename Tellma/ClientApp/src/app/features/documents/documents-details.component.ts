@@ -1374,7 +1374,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public filterEntryType_Manual(entry: Entry): string {
     const accountType = this.accountType(entry);
-    return `IsAssignable eq true and IsActive eq true and Node descof ${accountType.EntryTypeParentId}`;
+    return `IsAssignable eq true and Node descof ${accountType.EntryTypeParentId}`;
   }
 
   // External Reference

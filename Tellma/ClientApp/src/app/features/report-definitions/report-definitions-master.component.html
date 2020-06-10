@@ -2,7 +2,7 @@
     [masterCrumb]="'ReportDefinitions' | translate" [additionalSelect]="additionalSelect" [tileTemplate]="tile"
     [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Type,ShowInMainMenu"
     selectForTiles="Title,Title2,Title3,Description,Description2,Description3" theme="dark"
-    inactiveFilter="" [multiselectActions]="[]" [filterDefinition]="{
+    [multiselectActions]="[]" [filterDefinition]="{
             'ShowInMainMenu' : [
               { template: visibleInMainMenu, expression: 'ShowInMainMenu eq true'},
               { template: notVisibleInMainMenu, expression: 'ShowInMainMenu eq false'}

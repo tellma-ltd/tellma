@@ -95,7 +95,7 @@
             <t-auto-cell collection="Account" path="Center" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true and IsActive eq true">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true">
         </t-centers-picker>
     </t-form-group>
 
@@ -135,7 +135,7 @@
         <ng-container *ngIf="isEdit">
             <span
                 *ngIf="readonlyCurrencyId(model)">{{ ws.getMultilingualValue('Currency', readonlyValueCurrencyId(model), 'Name') }}</span>
-            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId" filter="IsActive eq true">
+            <t-currencies-picker *ngIf="!readonlyCurrencyId(model)" [(ngModel)]="model.CurrencyId">
             </t-currencies-picker>
         </ng-container>
     </t-form-group>

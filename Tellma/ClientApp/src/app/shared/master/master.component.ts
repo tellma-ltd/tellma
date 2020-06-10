@@ -99,13 +99,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   enableTreeView = false;
 
   @Input()
-  inactiveFilter = 'IsActive eq true';
+  includeInactive = false;
 
   @Input()
   multiselectActions: MultiselectAction[] = [];
-
-  @Input()
-  includeInactiveLabel: string;
 
   @Input()
   selectDefault: string;
@@ -271,6 +268,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
           hasChanged = true;
         }
 
+        const inactive = this.includeInactive;
+        if (inactive !== s.inactive) {
+          s.inactive = inactive;
+          hasChanged = true;
+        }
+
       } else { // this is only in screen mode
 
         // view: tiles vs table
@@ -321,7 +324,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         // Inactive
         const urlInactiveString = params.get('inactive');
-        const urlInactive = !!urlInactiveString ? (urlInactiveString.toString() === 'true') : false;
+        const urlInactive = !!urlInactiveString ? (urlInactiveString.toString() === 'true') : this.includeInactive;
         if (urlInactive !== !!s.inactive) {
           s.inactive = urlInactive;
           hasChanged = true;
@@ -1063,7 +1066,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const props = this.entityDescriptor.properties;
 
       // Collect the names of all foreign keys
-      const fks: { [fkName: string]: true} = {};
+      const fks: { [fkName: string]: true } = {};
       for (const propName of Object.keys(props)) {
         const prop = props[propName];
         if (prop.control === 'navigation') {
@@ -1111,7 +1114,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const choices = this.importKeyChoices;
       if (choices.find(e => e.value === 'Code')) {
         this.importKey = 'Code';
-      } else if (choices.find (e => e.value === 'Name')) {
+      } else if (choices.find(e => e.value === 'Name')) {
         this.importKey = 'Name';
       } else if (choices.find(e => e.value === 'Label')) {
         this.importKey = 'Label';
@@ -1757,8 +1760,18 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       !!custom ? custom : !!builtin ? builtin : null;
   }
 
+  public get inactiveFilter(): string {
+    const desc = this.entityDescriptor;
+    return desc.inactiveFilter;
+  }
+
+  public get includeInactiveLabel(): string {
+    const desc = this.entityDescriptor;
+    return !!desc.includeInactveLabel ? desc.includeInactveLabel() : this.translate.instant('IncludeInactive');
+  }
+
   public get showIncludeInactive(): boolean {
-    return !!this.includeInactiveLabel; // If the label is not specified then hide the option
+    return !!this.inactiveFilter; // If the label is not specified then hide the option
   }
 
   public onIncludeInactive(): void {
