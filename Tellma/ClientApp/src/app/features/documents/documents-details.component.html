@@ -1005,7 +1005,7 @@
     <!------------ Templates for Manual Lines ----------->
     <ng-template #manualLines>
         <!-- Manual Line Properties -->
-        <div class="row m-0 pt-2" *ngIf="showManualLineProps(model)">
+        <div class="row m-0 py-2" *ngIf="showManualLineProps(model)">
             <!-- Posting Date -->
             <t-form-group class="t-form-group" [label]="'Line_PostingDate' | translate"
                 [serverErrors]="manualLine(model)?.serverErrors?.PostingDate">
