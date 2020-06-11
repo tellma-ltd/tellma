@@ -240,6 +240,7 @@ namespace Tellma.Data
                 nameof(EntryType) => "[map].[EntryTypes]()",
                 nameof(Document) => "[map].[Documents]()",
                 nameof(Line) => "[map].[Lines]()",
+                nameof(LineForQuery) => "[map].[Lines]()",
                 nameof(Entry) => "[map].[Entries]()",
                 nameof(Attachment) => "[map].[Attachments]()",
                 nameof(DocumentAssignment) => "[map].[DocumentAssignmentsHistory]()",

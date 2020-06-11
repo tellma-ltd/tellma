@@ -98,7 +98,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Entry_Line")]
         [ForeignKey(nameof(LineId))]
-        public Line Line { get; set; }
+        public LineForQuery Line { get; set; }
 
         [Display(Name = "Entry_Account")]
         [ForeignKey(nameof(AccountId))]

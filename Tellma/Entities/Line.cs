@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    [StrongEntity]
     [EntityDisplay(Singular = "Line", Plural = "Lines")]
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
@@ -92,10 +91,6 @@ namespace Tellma.Entities
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
-
-        [Display(Name = "Line_Document")]
-        [ForeignKey(nameof(DocumentId))]
-        public Document Document { get; set; }
     }
 
     public static class LineState
