@@ -121,6 +121,7 @@ import { DocumentsPickerComponent } from './documents/documents-picker.component
 import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
+import { AgmCoreModule } from '@agm/core';
 
 const routes: Routes = [
   {
