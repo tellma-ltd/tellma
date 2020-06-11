@@ -15,6 +15,7 @@
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
+	[Location]						GEOGRAPHY,
 	-- For PPE
 	[ExpenseEntryTypeId]			INT,
 	[CenterId]						INT,

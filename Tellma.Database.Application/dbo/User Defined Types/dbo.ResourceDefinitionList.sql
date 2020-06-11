@@ -16,7 +16,7 @@
 	-- [CustomsReferenceVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([CustomsReferenceVisibility] IN (N'None', N'Optional', N'Required')),
 	-- [PreferredSupplierVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([PreferredSupplierVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
-	
+	[LocationVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([LocationVisibility] IN (N'None', N'Optional', N'Required')),	
 	[ExpenseEntryTypeVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([ExpenseEntryTypeVisibility] IN (N'None', N'Optional', N'Required')),
 	[CenterVisibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
 	[ResidualMonetaryValueVisibility]	NVARCHAR (50) DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),

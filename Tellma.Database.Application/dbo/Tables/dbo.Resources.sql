@@ -24,6 +24,7 @@ CREATE TABLE [dbo].[Resources] (
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
+	[Location]						GEOGRAPHY,
 	-- For PPE
 	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__ExpenseEntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 	[CenterId]						INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
