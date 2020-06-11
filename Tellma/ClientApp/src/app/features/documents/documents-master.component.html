@@ -2,7 +2,7 @@
   [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="PostingDate,State,Assignee,AssignedAt,Memo" selectForTiles="PostingDate,State,Memo"
-  [includeInactiveLabel]="'IncludeCanceled' | translate" inactiveFilter="State ne -1" [multiselectActions]="[
+  [multiselectActions]="[
                 { template: close, action: onClose, showAction: showClose, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: cancel, action: onCancel, showAction: showCancel, canAction: hasStatePermission, actionTooltip: stateTooltip },
                 { template: open, action: onOpen, showAction: showOpen, canAction: hasStatePermission, actionTooltip: stateTooltip },

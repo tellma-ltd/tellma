@@ -89,7 +89,7 @@
                 {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired" filter="IsActive eq true">
+        <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
         </t-currencies-picker>
     </t-form-group>
 

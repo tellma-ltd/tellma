@@ -124,6 +124,16 @@ export interface EntityDescriptor {
     orderby: () => string[];
 
     /**
+     * The filter that filters away inactive/canceled/archived items by default
+     */
+    inactiveFilter: string;
+
+    /**
+     * The label on the button that eliminates 'inactiveFilter' from the query
+     */
+    includeInactveLabel?: () => string;
+
+    /**
      * The server endpoint from which to retrieve Entities of this type, after the 'https://web.tellma.com/api/' part.
      */
     apiEndpoint?: string;

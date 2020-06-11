@@ -30,6 +30,7 @@ export function metadata_SummaryEntry(wss: WorkspaceService, trx: TranslateServi
             ],
             screenUrl: 'summary-entries',
             orderby: () => ['AccountId'],
+            inactiveFilter: null,
             format: (__: Entity) => '',
             properties: {
                 AccountId: { control: 'number', label: () => `${trx.instant('Entry_Account')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

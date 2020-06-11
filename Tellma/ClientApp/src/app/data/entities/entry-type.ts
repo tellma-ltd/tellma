@@ -55,6 +55,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
       apiEndpoint: 'entry-types',
       screenUrl: 'entry-types',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+      inactiveFilter: 'IsActive eq true',
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
 

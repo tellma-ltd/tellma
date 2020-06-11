@@ -49,6 +49,8 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
             apiEndpoint: 'accounts',
             screenUrl: 'accounts',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+            inactiveFilter: 'IsDeprecated eq false',
+            includeInactveLabel: () => trx.instant('IncludeDeprecated'),
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

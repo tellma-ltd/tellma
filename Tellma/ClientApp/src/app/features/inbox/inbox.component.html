@@ -3,7 +3,7 @@
     [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
     [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Document/Memo,CreatedAt,CreatedBy,Comment,OpenedAt"
     selectForTiles="Comment,CreatedAt,CreatedBy/Name,CreatedBy/Name2,CreatedBy/Name3,CreatedBy/ImageId,OpenedAt,Document/DefinitionId,Document/SerialNumber,Document/Memo"
-    inactiveFilter="" [multiselectActions]="[]" [customChoiceHandler]="customChoiceHandler" [filterDefinition]="{
+    [multiselectActions]="[]" [customChoiceHandler]="customChoiceHandler" [filterDefinition]="{
         'OpenedAt' : [
           { template: notopened, expression: 'OpenedAt eq null'},
           { template: opened, expression: 'OpenedAt ne null'}

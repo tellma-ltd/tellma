@@ -36,6 +36,7 @@ export function metadata_VoucherBooklet(wss: WorkspaceService, trx: TranslateSer
       apiEndpoint: 'voucher-booklets',
       screenUrl: 'voucher-booklets',
       orderby: () => ['VoucherTypeId'],
+      inactiveFilter: 'IsActive eq true',
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

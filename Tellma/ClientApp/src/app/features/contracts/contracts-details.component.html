@@ -95,7 +95,7 @@
       <t-auto-cell collection="Contract" path="Currency" [entity]="model">
       </t-auto-cell>
     </t-view-link>
-    <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired" filter="IsActive eq true">
+    <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
     </t-currencies-picker>
   </t-form-group>
 
@@ -216,7 +216,7 @@
                 {{ ws.getMultilingualValue('Currency', item.CurrencyId, 'Name') }}
               </div>
               <t-currencies-picker *ngIf="isEdit" [(ngModel)]="item.CurrencyId"
-                (ngModelChange)="update.call(null, item);" additionalSelect="E" filter="IsActive eq true">
+                (ngModelChange)="update.call(null, item);" additionalSelect="E">
               </t-currencies-picker>
             </t-form-group-cell>
           </ng-template>

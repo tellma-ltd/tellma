@@ -4,7 +4,7 @@
   selectForTiles="Name,Name2,Name3,Description,Description2,Description3" [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]

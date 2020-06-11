@@ -1737,7 +1737,7 @@ namespace Tellma.Controllers
             nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel), nameof(AccountType.AdditionalReferenceLabel),
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
-            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel),
+            nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
 
             //// Definitions
             //$"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",

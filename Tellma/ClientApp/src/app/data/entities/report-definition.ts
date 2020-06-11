@@ -149,6 +149,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             screenUrl: 'report-definitions',
             select: _select,
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+            inactiveFilter: null, // TODO
             format: (item: EntityWithKey) => (ws.getMultilingualValueImmediate(item, _select[0]) || trx.instant('Untitled')),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

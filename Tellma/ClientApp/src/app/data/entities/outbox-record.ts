@@ -38,6 +38,7 @@ export function metadata_OutboxRecord(wss: WorkspaceService, trx: TranslateServi
             apiEndpoint: 'outbox',
             screenUrl: 'outbox',
             orderby: () => ['CreatedAt desc'],
+            inactiveFilter: null,
             format: (__: EntityWithKey) => '',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },

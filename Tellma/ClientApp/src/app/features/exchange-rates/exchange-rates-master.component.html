@@ -2,7 +2,7 @@
     [additionalSelect]="additionalSelect" [masterCrumb]="'ExchangeRates' | translate" [tileTemplate]="tile"
     [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="ValidAsOf,AmountInCurrency,Currency,AmountInFunctional"
-    selectForTiles="ValidAsOf,Currency/Name,Currency/Name2,Currency/Name3" inactiveFilter="" [multiselectActions]="[]"
+    selectForTiles="ValidAsOf,Currency/Name,Currency/Name2,Currency/Name3" [multiselectActions]="[]"
     [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
