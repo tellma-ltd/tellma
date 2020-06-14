@@ -36,8 +36,6 @@ export class MapBoundsFitterComponent implements FitBoundsAccessor {
         return;
       }
 
-      console.log('Map Bounds: ', point);
-
       // Notify the map to adjust boundaries
       setTimeout(() => {
         this._fitBoundsDetails$.next({ latLng: point });

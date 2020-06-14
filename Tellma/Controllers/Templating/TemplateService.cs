@@ -510,7 +510,7 @@ namespace Tellma.Controllers.Templating
             int maxArgCount = 3;
             if (args.Length < minArgCount || args.Length > maxArgCount)
             {
-                throw new TemplateException($"Function '{nameof(Sum)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
+                throw new TemplateException($"Function '{nameof(Localize)}' expects at least {minArgCount} and at most {maxArgCount} arguments");
             }
 
             object sObj = args[0];
@@ -518,13 +518,13 @@ namespace Tellma.Controllers.Templating
             object sObj3 = args.Length > 2 ? args[2] : null;
 
             string s = null;
-            if (sObj is string)
+            if (sObj is null || sObj is string)
             {
                 s = sObj as string;
             }
             else
             {
-                throw new TemplateException($"Function expects a 1st argument of type string");
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 1st argument of type string");
             }
 
             string s2 = null;
@@ -534,7 +534,7 @@ namespace Tellma.Controllers.Templating
             }
             else
             {
-                throw new TemplateException($"Function expects a 2nd argument of type string");
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 2nd argument of type string");
             }
 
             string s3 = null;
@@ -544,7 +544,7 @@ namespace Tellma.Controllers.Templating
             }
             else
             {
-                throw new TemplateException($"Function expects a 3rd argument of type string");
+                throw new TemplateException($"Function '{nameof(Localize)}' expects a 3rd argument of type string");
             }
 
 

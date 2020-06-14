@@ -55,7 +55,6 @@ namespace Tellma.Entities
         public string Collection { get; set; }
 
         [Display(Name = "MarkupTemplate_DefinitionId")]
-        [StringLength(50)]
         public int? DefinitionId { get; set; }
 
         [Display(Name = "MarkupTemplate_MarkupLanguage")]

@@ -79,7 +79,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     result.SupportsTernaryLanguage = !!this.workspace.currentTenant.settings.TernaryLanguageId;
 
     result.Usage = 'QueryByFilter';
-    result.Collection = 'Contract';
+    result.Collection = 'Document';
     result.MarkupLanguage = 'text/html';
     result.Body = defaultBody;
 
@@ -687,6 +687,59 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
 
 // tslint:disable:no-trailing-whitespace
 const defaultBody = `<!DOCTYPE html>
+<html lang="{{ $Lang }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Document' }}</title>
+    <style>
+
+        /* Printing CSS: Remove if not for printing */
+        @media screen {
+            body {
+                background-color: #F9F9F9;
+            }
+            .page {
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                border: 1px solid lightgrey;
+                background-color: white;
+                box-shadow: rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+                box-sizing: border-box;
+                width: 210mm;
+                min-height: 297mm;
+                padding: 0.5in;
+            }
+        }
+        @page {
+            margin: 0.5in;
+            size: A4 Portrait;
+        }
+        /* End Printing CSS */
+        
+        * {
+            font-family: sans-serif;
+        }
+        
+        body {
+            margin: 0;
+        }
+        
+        /* More CSS Here */
+    
+    </style>
+</head>
+<body class="{{ IF($IsRtl, 'rtl', '') }}">
+    <div class="page">
+        <!-- HTML Template Here -->
+        
+    </div>
+</body>
+</html>`;
+
+
+const defaultBodyOld = `<!DOCTYPE html>
 <html lang="{{ $Lang }}">
 <head>
     <meta charset="UTF-8">
