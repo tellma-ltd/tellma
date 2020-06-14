@@ -1,181 +1,112 @@
-﻿
-	-- The list includes the following transaction types, and their flavours depending on country and industry:
-	-- lease-in agreement, lease-in receipt, lease-in invoice
-	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
-	-- lease-out agreement, lease out issue, lease-out invoice
-	-- Inventory transfer, stock issue to consumption, inventory adjustment 
-	-- production, maintenance
-	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
+﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuSection], [MainMenuSortKey]) VALUES
+(0, N'ManualJournal',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV', N'Financials', 20),
+(8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'CPV', N'Financials', 30),
+(9, N'ClosingYearVoucher',2, N'Fiscal Close, Manual',N'Closing Year Voucher', N'Closing Year Vouchers', N'CYV', N'Financials', 40),
 
+(10, N'PaymentIssueToNonTradingAgents',2, N'payment to partner, debtor, creditor, to other cash, to bank, to exchange, to other',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'PIO', N'Cash', 20),
+(11, N'DepositCashToBank',2, N'cash to bank (same currency), check to bank (same currency)',N'Cash Transfer/Exchange Voucher', N'Cash Transfer/Exchange Vouchers', N'CTE', N'Cash', 30),
+(12, N'PaymentReceiptFromNonTradingAgents',2, N'payment from partner, debtor, creditor, other',N'Cash Receipt Voucher', N'Cash Receipt Vouchers', N'PRO', N'Cash', 50),
 
-	INSERT @DocumentDefinitions([Index],[DocumentType],
-		[Code],							[TitleSingular],				[TitlePlural],					[Prefix],	[MainMenuIcon],			[MainMenuSection],	[MainMenuSortKey]) VALUES
-	(0,2,N'manual-journal-vouchers',	N'Manual Journal Voucher',		N'Manual Journal Vouchers',		N'JV',		N'book',				N'Financials',		0),
-	(1,2,N'test-vouchers',				N'Test Voucher',				N'Test Vouchers',				N'TV',		N'book',				N'Financials',		0);
+(20, N'StockIssueToNonTradingAgent',2, N'Stock issue to production/maintenance/job/Consumption/Reclassification',N'Stock Issue Voucher (NT)', N'Stock Issue Vouchers (NT)', N'MIO', N'Inventory', 20),
+(21, N'StockTransfer',2, N'transfer between warehouses',N'Stock Transfer', N'Stock Transfers (NT)', N'MTV', N'Inventory', 30),
+(22, N'StockReceiptFromNonTradingAgent',2, N'FG receipt from production, RM/production supplies return from production/maintenance/job/consumption/Reclassification',N'Stock Receipt Voucher (NT)', N'Stock Receipt Voucher (NT)', N'MRO', N'Inventory', 40),
+(23, N'InventoryAdjustment',2, N'Shortage, Overage, impairment, reversal of impairment',N'Inventory Adjustment', N'Inventory Adjustments', N'MAV', N'Inventory', 50),
 
-	--(1,2,N'cash-purchase-vouchers',		N'Cash Purchase Voucher',		N'Cash Purchase Vouchers',		N'CPRV',	N'money-check-alt',		N'Cash',			20);
-	--(2,2,N'cash-payment-vouchers',		N'Cash Payment Voucher',		N'Cash Payment Vouchers',		N'CPMV',	N'money-check-alt',		N'Cash',			20),
-	--(3,2,N'cash-payroll-vouchers',		N'Cash Payroll Voucher',		N'Cash Payroll Vouchers',		N'PRLV',	N'money-check-alt',		N'Cash',			20),
-	--(4,2,N'lease-in-vouchers',			N'Lease In Expense Voucher',	N'Lease in Expense Vouchers',	N'LIEV',	N'file-contract',		N'Purchasing',		20),
-	--(5,2,N'gs-receipt-vouchers',		N'G/S Receipt Voucher',			N'G/S Receipt Vouchers',		N'GSRV',	N'file-contract',		N'Purchasing',		20),
+(30, N'PaymentIssueToTradePayable',2, N'payment to supplier, purchase invoice, stock/PPE/C/S receipt from supplier',N'Cash Payment (Supplier)', N'Cash Payments (Supplier)', N'PIS', N'Purchasing', 20),
+(31, N'RefundFromTradePayable',2, N'refund from supplier, credit note (supplier), stock return to supplier, ppe return to supplier',N'Supplier Refund Voucher', N'Suppliers Refund Vouchers', N'PRS', N'Purchasing', 40),
+(32, N'WithholdingTaxFromTradePayable',2, N'Witholding tax from suppliers/lessors',N'WT (Supplier)', N'WT (Suppliers)', N'WTS', N'Purchasing', 50),
+(33, N'ImportFromTradePayable',2, N'Shipment In Transit, Payment, Commercial Invoice, Related Expenses',N'Import Shipment', N'Import Shipments', N'IRS', N'Purchasing', 60),
+(34, N'GoodReceiptFromImport',2, N'goods receipt from import (PPE treated as stock till mise in use)',N'Good Receipt (Import)', N'Goods Receipts (Import)', N'GRI', N'Purchasing', 70),
+(35, N'GoodServiceReceiptFromTradePayable',2, N'PPE/consumables/services/rental receipt from supplier, purchase invoice, debit note (supplier)',N'Good/Service Receipt (Purchase)', N'Goods/Services Receipts (Purchase)', N'GSRS', N'Purchasing', 80),
 
-	--(11,2,N'cash-sale-vouchers',		N'Cash Sale Voucher',			N'Cash Sale Vouchers',			N'CSLV',	N'file-invoice-dollar',	N'Cash',			50),
-	--(12,2,N'cash-receipt-vouchers',		N'Cash Receipt Voucher',		N'Cash Receipt Vouchers',		N'CRCV',	N'file-invoice-dollar',	N'Cash',			50),
-	--(14,2,N'lease-out-vouchers',		N'Lease Out Revenue Voucher',	N'Lease Out Revenue Vouchers',	N'LORV',	N'file-contract',		N'Purchasing',		20),
-	--(15,2,N'gs-issue-vouchers',			N'G/S Issue Voucher',			N'G/S Issue Vouchers',			N'GSIV',	N'file-contract',		N'Purchasing',		20),
+(40, N'PaymentReceiptFromTradeReceivable',2, N'payment from customer, sales invoice, Goods/Service issue to customer',N'Cash Receipt (Customer)', N'Cash Receipts (Customers)', N'PRC', N'Sales', 20),
+(41, N'RefundToTradeReceivable',2, N'payment to customer, credit note (customer), stock receipt from customer',N'Customer Refund', N'Customer Refunds', N'PIC', N'Sales', 40),
+(42, N'WithholdingTaxByTradeReceivable',2, N'Witholding tax by customers/lessees',N'WT (Customer)', N'WT (Customers)', N'WTC', N'Sales', 50),
+(43, N'GoodIssueToExport',2, N'goods issue to export, payment, sales invoice, FOB destination',N'Export Shipment', N'Goods Issues (Exports)', N'GIE', N'Sales', 60),
+(44, N'ExportToTradeReceivable',2, N'goods delivery from export',N'Goods Delivery (Export)', N'Goods Deliveries (Exports)', N'EIC', N'Sales', 70),
+(45, N'GoodServiceIssueToTradeReceivable',2, N'stock/rental/service issue to customer, sales invoice, debit note (customer)',N'Good/Service Issue (Customer)', N'Goods/Services Issue (Customer)', N'GSIC', N'Sales', 80),
 
-	--(-14,2,N'lease-out-templates',		N'Lease Out Agreement',			N'Lease Out Agreements',		N'LOAT',	N'file-contract',		N'Purchasing',		20);
+(50, N'SteelProduction',2, N'DM/DL/OH to WIP/Byproduct, DM/DL/OH + WIP to WIP/Byproduct, DM/DL/OH + WIP to FG/Byproduct',N'Steel Production Voucher', N'Steel Production Vouchers', N'PV1', N'Production', 20),
+(51, N'PlasticProduction',2, N'',N'Plastic Production Voucher', N'Plastic Production Vouchers', N'PV2', N'Production', 30),
+(52, N'PaintProduction',2, N'',N'Paint Production Voucher', N'Paint Production Vouchers', N'PV3', N'Production', 40),
+(53, N'VehicleAssembly',2, N'',N'Vehicle Assembly Voucher', N'Vehicle Assembly Vouchers', N'PV4', N'Production', 50),
+(54, N'GrainProcessing',2, N'',N'Grain Processing Voucher', N'Grain Processing Vouchers', N'PV5', N'Production', 60),
+(55, N'OilMilling',2, N'',N'Oil Milling Voucher', N'Oil Milling Vouchers', N'PV6', N'Production', 70),
 
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,0,	@ManualLineLD,							1);
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-	[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,1,	@PaymentToSupplierCreditPurchaseLD,		0),
-	(1,1,	@PaymentToSupplierPurchaseLD,			0),
-	(2,1,	@PaymentToEmployeeLD,					0),		    
-	(3,1,	@PaymentToOtherLD,						0),
-	(4,1,	@CashTransferExchangeLD,				0),
-	(5,1,	@StockReceiptCreditPurchaseLD,			0),
-	(6,1,	@StockReceiptPurchaseLD,				0),
-	(7,1,	@ConsumableServiceReceiptCreditPurchaseLD,0),
-	(8,1,	@ConsumableServiceReceiptPurchaseLD,	0),
-	(9,1,	@PaymentFromCustomerCreditSaleLD,		0),
-	(10,1,	@PaymentFromCustomerSaleLD,				0),
-	(11,1,	@PaymentFromOtherLD,					0),
-	--(13,1,	@StockIssueCreditSaleLD,				0),
-	--(14,1,	@StockIssueSaleLD,						0),
-	(15,1,	@ServiceIssueCreditSaleLD,				0),
-	(16,1,	@ServiceIssueSaleLD,					0),
-	(18,1,	@PPEDepreciationLD,							0); 
-/*
-	-- cash-purchase-vouchers
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	(0,1,	@PaymentToSupplierPurchaseLD,			1),
-	(1,1,	@StockReceiptPurchaseLD,				1),
-	(2,1,	@ConsumableServiceReceiptPurchaseLD,	1),
-		    
-	(8,1,	@CashTransferExchangeLD,				0),
-	(9,1,	@ManualLineLD,							0); -- this can be removed if a budget system is activated
+(69, N'Maintenance',2, N'DM/DL/OH to Job, then total allocated to machine',N'Internal Maintenance Job', N'Internal Maintenance Jobs', N'IMJ', N'Production', 80),
 
-		GOTO ENOUGH_DD
-
-	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
-			[LineDefinitionId],						[IsVisibleByDefault]) VALUES
-	-- cash-payment-vouchers
-	(0,2,	@PaymentToSupplierCreditPurchaseLD,		0),	
-	(8,2,	@PaymentToOtherLD,						1), -- including partner, creditor
-	(9,2,	@ManualLineLD,							0),
-	-- cash-payroll-vouchers
-	(0,3,	@PaymentToEmployeeLD,					1),
-	(9,3,	@ManualLineLD,							0),
-	--- lease-in-vouchers, for subscription and rental recognition
-	(0,4,	@LeaseInPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,4,	@LeaseInPostinvoicedLD,					0),-- hotels, 
-	(9,4,	@ManualLineLD,							0),
-	--- gs-receipt-vouchers, for prepaid and post invoiced
-	(0,5,	@StockReceiptCreditPurchaseLD,			0),	-- suppliers with credit line
-	(1,5,	@StockReceiptPrepaidLD,					0),--  , 
-	(2,5,	@StockReceiptPostInvoicedLD,			0),--  , 
-	(3,5,	@ConsumableServiceReceiptCreditPurchaseLD,1),-- fuel consumption,
-	(4,5,	@ConsumableServiceReceiptPrepaidLD,		0),-- tickets paid in cash, 
-	(5,5,	@ConsumableServiceReceiptPostInvoicedLD,0),-- utilities, 
-	(9,5,	@ManualLineLD,							0),
-	-- cash-sale-vouchers
-	(0,11,	@PaymentFromCustomerCashSaleLD,			1),
-	--(1,11,	@StockIssueCashSaleLD,					1),
-	--(2,11,	@ServiceIssueCashSaleLD,				1),
-	(9,11,	@ManualLineLD,							0), -- this
-	-- cash-receipt-vouchers
-	(0,12,	@PaymentFromCustomerCreditSaleLD,		0),	
-	(1,12,	@PrepaymentFromCustomerLD,				1),
-	(2,12,	@PaymentFromCustomerAccrualLD,			1),
-	(8,12,	@PaymentFromOtherLD,					1), -- including partner, creditor
-	(9,12,	@ManualLineLD,							0),
-	--- lease-out-vouchers, for subscription and rental recognition
-	(0,14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,14,	@LeaseOutPostinvoicedLD,				0),-- hotels, 
-	(9,14,	@ManualLineLD,							0),
-	--- gs-issue-vouchers, for prepaid and post invoiced
-	--(0,15,	@StockIssueCreditSaleLD,				0),	-- customers with credit line
-	--(1,15,	@StockIssuePrepaidLD,					0),--  , 
-	--(2,15,	@StockIssuePostInvoicedLD,				0),--  , 
-	--(3,15,	@ServiceIssueCreditSaleLD,				1),--
-	--(4,15,	@ServiceIssuePrepaidLD,					0),--
-	--(5,15,	@ServiceIssuePostInvoicedLD,			0),-- 
-	(9,15,	@ManualLineLD,							0),
-	--- lease-out-templates, for subscription and rental agreements
-	(0,-14,	@LeaseOutPrepaidLD,						1),-- software subscription, domain registration, office rental...
-	(1,-14,	@LeaseOutPostinvoicedLD,				0)-- hotels,
-	;
-	*/
-
+(70, N'PaymentIssueToEmployee',2, N'payment - employee benefits, payment - employee loan, salary, overtime, absence, deduction, due installments, Bonus',N'Cash Payment', N'Cash Payments', N'PIE', N'HumanCapital', 20),
+(71, N'EmployeeLoan',2, N'salary advance, long term loan, loan installments',N'Employee Loan Voucher', N'', N'ELN', N'HumanCapital', 30),
+(72, N'AttendanceRegister',2, N'arrivals, departures',N'Attendance Register', N'Attendance Register', N'SRE', N'HumanCapital', 40),
+(73, N'EmployeeOvertime',2, N'Overtime (Employee)',N'Overtime', N'Overtime', N'ORE', N'HumanCapital', 50),
+(74, N'EmployeePenalty',2, N'absence penalty, Other penalties',N'Penalty', N'Penalties', N'PTE', N'HumanCapital', 60),
+(75, N'EmployeeReward',2, N'periodic bonus, special bonus',N'Reward', N'Rewards', N'RTE', N'HumanCapital', 70),
+(76, N'EmployeeLeave',2, N'Paid leave, Unpaid leave, hourly leave',N'Leave', N'Leaves', N'LIE', N'HumanCapital', 80),
+(77, N'EmployeeLeaveAllowance',2, N'Yearly Leave',N'Leave Allowance', N'Leave Allowances', N'LAE', N'HumanCapital', 90),
+(78, N'EmployeeTravel',2, N'Per diem, Petty Cash, Fuel Allowance, ...',N'Travel', N'Travels', N'TIE', N'HumanCapital', 100);
+INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
+(0,0, @ManualLineLD, 1),
+(0,10, @CashPaymentToOtherLD, 1),
+(4,10, @CashTransferExchangeLD, 1),
+(0,11, @DepositCashToBankLD, 1),
+(1,11, @DepositCheckToBankLD, 1),
+(0,12, @CashReceiptFromOtherLD, 1),
+(1,12, @CheckReceiptFromOtherInCashierLD, 1),
+(0,30, @CashPaymentToTradePayableLD, 1),
+(1,30, @InvoiceFromTradePayableLD, 1),
+(2,30, @StockReceiptFromTradePayableLD, 1),
+(3,30, @PPEReceiptFromTradePayableLD, 1),
+(4,30, @ConsumableServiceReceiptFromTradePayableLD, 1),
+(5,30, @RentalReceiptFromTradePayableLD, 1);
 
 
 EXEC dal.DocumentDefinitions__Save
 	@Entities = @DocumentDefinitions,
 	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;
 	
----------------------------------------------------------------------
---	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
+--Declarations
+DECLARE @ManualJournalDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ManualJournal')
+DECLARE @ClosingPeriodVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ClosingPeriodVoucher')
+DECLARE @ClosingYearVoucherDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ClosingYearVoucher')
 
---	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),
---	(N'et-sales-witholding-tax-vouchers', N'ReceivableCredit', 1), 
---	(N'et-sales-witholding-tax-vouchers', N'CashIssue', 0),
+DECLARE @PaymentIssueToNonTradingAgentsDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentIssueToNonTradingAgents')
+DECLARE @DepositCashToBankDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'DepositCashToBank')
+DECLARE @PaymentReceiptFromNonTradingAgentsDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentReceiptFromNonTradingAgents')
 
---	(N'cash-payment-vouchers', N'ServiceReceiptWithInvoice', 1),
---	(N'cash-payment-vouchers', N'PayableDebit', 0), -- pay dues
---	(N'cash-payment-vouchers', N'ReceivableDebit', 0), -- lend
---	(N'cash-payment-vouchers', N'GoodReceiptWithInvoice', 0),
---	(N'cash-payment-vouchers', N'CashReceipt', 0),
---	(N'cash-payment-vouchers', N'LeaseInInvoiceWithoutReceipt', 0),
+DECLARE @StockIssueToNonTradingAgentDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'StockIssueToNonTradingAgent')
+DECLARE @StockTransferDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'StockTransfer')
+DECLARE @StockReceiptFromNonTradingAgentDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'StockReceiptFromNonTradingAgent')
+DECLARE @InventoryAdjustmentDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'InventoryAdjustment')
 
---	(N'sales-cash', N'CashReceipt', 1),
---	(N'sales-cash', N'GoodIssueWithInvoice', 1),
---	(N'sales-cash', N'ServiceIssueWithInvoice', 0),
---	(N'sales-cash', N'CustomerTaxWithholding', 0),	
---	(N'sales-cash', N'GoodServiceInvoiceWithoutIssue', 0),
---	(N'sales-cash', N'LeaseOutInvoiceWithoutIssue', 0),
+DECLARE @PaymentIssueToTradePayableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentIssueToTradePayable')
+DECLARE @RefundFromTradePayableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'RefundFromTradePayable')
+DECLARE @WithholdingTaxFromTradePayableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'WithholdingTaxFromTradePayable')
+DECLARE @ImportFromTradePayableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ImportFromTradePayable')
+DECLARE @GoodReceiptFromImportDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'GoodReceiptFromImport')
+DECLARE @GoodServiceReceiptFromTradePayableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'GoodServiceReceiptFromTradePayable')
 
---	(N'production-events', N'GoodIssue', 1), -- input to production
---	(N'production-events', N'LaborIssue', 0), -- input to production
---	(N'production-events', N'GoodReceipt', 1) -- output from production
---;
+DECLARE @PaymentReceiptFromTradeReceivableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentReceiptFromTradeReceivable')
+DECLARE @RefundToTradeReceivableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'RefundToTradeReceivable')
+DECLARE @WithholdingTaxByTradeReceivableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'WithholdingTaxByTradeReceivable')
+DECLARE @GoodIssueToExportDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'GoodIssueToExport')
+DECLARE @ExportToTradeReceivableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'ExportToTradeReceivable')
+DECLARE @GoodServiceIssueToTradeReceivableDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'GoodServiceIssueToTradeReceivable')
 
----------------------------------------------
+DECLARE @SteelProductionDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'SteelProduction')
+DECLARE @PlasticProductionDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PlasticProduction')
+DECLARE @PaintProductionDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaintProduction')
+DECLARE @VehicleAssemblyDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'VehicleAssembly')
+DECLARE @GrainProcessingDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'GrainProcessing')
+DECLARE @OilMillingDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'OilMilling')
 
-	--(N'et-sales-witholding-tax-vouchers', N'WT'), -- (N'et-customers-tax-withholdings'), (N'receivable-credit'), (N'cash-issue')
+DECLARE @MaintenanceDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'Maintenance')
 
-	--(N'cash-payment-vouchers', NULL, NULL, N'CPV'), -- (N'cash-issue'), (N'manual-line')
-	--(N'cash-receipt-vouchers', NULL, NULL, N'CRV'), -- (N'cash-receipt')
-
-
-	---- posts if customer account balance stays >= 0, if changes or refund, use negative
-	--(N'sales-cash', NULL, NULL, N'CSI'), -- (N'customers-issue-goods-with-invoice'), (N'customers-issue-services-with-invoice'), (N'cash-receipt')
-	---- posts if customer account balance stays >= customer account credit line
-	--(N'sales-credit', NULL, NULL, N'CRSI'), 
-	
-	--(N'goods-received-notes', NULL, NULL, N'GRN'), -- Header: Supplier account, Lines: goods received (warehouse)
-	--(N'goods-received-issued-vouchers', NULL, NULL, N'GRIV'), -- Header: Supplier account, Lines: goods & center
-	--(N'raw-materials-issue-vouchers', NULL, NULL, N'RMIV'), -- Header: RM Warehouse account, Lines: Materials & destination warehouse
-	--(N'finished-products-receipt-notes', NULL, NULL, N'FPRN'), -- Header: Supplier account, Lines: goods received & warehouse
-
-	--(N'equity-issues', NULL, NULL, N'EI'),	--	(N'equity-issues-foreign'),
-	--(N'employees-overtime', NULL, NULL, N'OT'),	--	(N'employee-overtime'),
-	--(N'employees-deductions', NULL, NULL, N'ED'),	--	(N'et-employees-unpaid-absences'),(N'et-employees-penalties'), (N'employees-loans-dues');
-	--(N'employees-leaves-hourly', NULL, NULL, N'LH'),
-	--(N'employees-leaves-daily', NULL, NULL, N'LD'),
-	--(N'salaries', NULL, NULL, N'MS'),				--	(N'salaries')
-	--(N'payroll-payments', NULL, NULL, N'PP'),		--	(N'employees'), (N'employees-income-tax') 
-	
-	--(N'purchasing-domestic', NULL, NULL, N'PD'), --
-	--(N'purchasing-international', NULL, NULL, N'PI'), -- 
-	
-	--(N'production-events', NULL, NULL, N'PRD');
-
-DECLARE @manual_journal_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'manual-journal-vouchers'); 
-DECLARE @cash_purchase_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-purchase-vouchers');
-DECLARE @cash_payment_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'cash-payment-vouchers');
-DECLARE @lease_out_vouchersDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'lease-out-vouchers');
-DECLARE @lease_out_templatesDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE Code = N'lease-out-templates');
+DECLARE @PaymentIssueToEmployeeDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'PaymentIssueToEmployee')
+DECLARE @EmployeeLoanDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeLoan')
+DECLARE @AttendanceRegisterDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'AttendanceRegister')
+DECLARE @EmployeeOvertimeDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeOvertime')
+DECLARE @EmployeePenaltyDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeePenalty')
+DECLARE @EmployeeRewardDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeReward')
+DECLARE @EmployeeLeaveDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeLeave')
+DECLARE @EmployeeLeaveAllowanceDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeLeaveAllowance')
+DECLARE @EmployeeTravelDD INT = (SELECT [Id] FROM dbo.DocumentDefinitions WHERE [Code] = N'EmployeeTravel')

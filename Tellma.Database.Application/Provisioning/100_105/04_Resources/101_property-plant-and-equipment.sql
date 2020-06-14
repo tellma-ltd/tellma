@@ -84,7 +84,7 @@ INSERT INTO @Resources ([Index],
 	(0, 12, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 13, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
-		@DefinitionId = @property_plant_equipmentRD,
+		@DefinitionId = @PropertyPlantAndEquipmentRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

@@ -21,6 +21,9 @@ SET NOCOUNT ON;
 				t.[Code]				= s.[Code],
 				t.[IsOriginalDocument]	= s.[IsOriginalDocument], 
 				t.[DocumentType]		= s.[DocumentType],
+				t.[Description]			= s.[Description],
+				t.[Description2]		= s.[Description2],
+				t.[Description3]		= s.[Description3],
 				t.[TitleSingular]		= s.[TitleSingular],
 				t.[TitleSingular2]		= s.[TitleSingular2],
 				t.[TitleSingular3]		= s.[TitleSingular3],
@@ -37,11 +40,17 @@ SET NOCOUNT ON;
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (
 				[Code], [IsOriginalDocument], [DocumentType],
+				[Description],
+				[Description2],
+				[Description3],
 				[TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
 				[Prefix], [CodeWidth], [MemoVisibility], [ClearanceVisibility],
 				[MainMenuIcon], [MainMenuSection], [MainMenuSortKey]
 			) VALUES (
 				s.[Code], s.[IsOriginalDocument], s.[DocumentType],
+				s.[Description],
+				s.[Description2],
+				s.[Description3],
 				s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[Prefix], s.[CodeWidth], s.[MemoVisibility], s.[ClearanceVisibility],
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])

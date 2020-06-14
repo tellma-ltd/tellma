@@ -36,18 +36,20 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 
 	(38,N'11241',@DeferredIncomeClassifiedAsCurrent,@Debtors_AC,		@customersCD,			NULL,					N'Accrued Income',				NULL,			@C101_INV,		NULL,				NULL),
 
-	(41,N'11111',@CashOnHand,					@BankAndCash_AC,		@vault_cash_fundsCD,	NULL,					N'GM Fund',						NULL,			@C101_INV,		NULL,				@GMSafe),
-	(43,N'11112',@CashOnHand,					@BankAndCash_AC,		@petty_cash_fundsCD,	NULL,					N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,				@AdminPettyCash),
-	(44,N'11113',@CashOnHand,					@BankAndCash_AC,		@petty_cash_fundsCD,	NULL,					N'KSA Fund',					NULL,			@C101_INV,		NULL,				@KSASafe),
+	(41,N'11111',@CashOnHand,					@BankAndCash_AC,		@cashonhand_accountsCD,	NULL,					N'GM Fund',						NULL,			@C101_INV,		NULL,				@GMSafe),
+	(43,N'11112',@CashOnHand,					@BankAndCash_AC,		@cashonhand_accountsCD,	NULL,					N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,				@AdminPettyCash),
+	(44,N'11113',@CashOnHand,					@BankAndCash_AC,		@cashonhand_accountsCD,	NULL,					N'KSA Fund',					NULL,			@C101_INV,		NULL,				@KSASafe),
 	(45,N'11121',@BalancesWithBanks,			@BankAndCash_AC,		@bank_accountsCD,		NULL,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,				@KRTBank),
 
 	-- Equity and Liabilities accounts
 	(50,N'30001',@IssuedCapital,				@Equity_AC,				NULL,					NULL,					N'Issued Capital',				@USD,			@C101_INV,		NULL,				NULL),
 	(51,N'30002',@RetainedEarnings,				@Equity_AC,				NULL,					NULL,					N'Retained Earnings',			@USD,			@C101_INV,		NULL,				NULL),
-	(57,N'30091',@CashPurchaseDocumentControlExtension,@Equity_AC,		@suppliersCD,			NULL,					N'Cash Suppliers',				NULL,			@C101_INV,		NULL,				NULL),
-	(58,N'30092',@CashSaleDocumentControlExtension,@Equity_AC,			@customersCD,			NULL,					N'Cash Customers',				NULL,			@C101_INV,		NULL,				NULL),
+	(55,N'30090',@CashControlExtension,			@Equity_AC,				NULL,					NULL,					N'Payments from/to others Control',NULL,		@C101_INV,		NULL,				NULL),
+	(56,N'30091',@CashControlExtension,			@Equity_AC,				@suppliersCD,			NULL,					N'Payments to Suppliers Control',	NULL,		@C101_INV,		NULL,				NULL),
+	(57,N'30092',@CashControlExtension,			@Equity_AC,				@customersCD,			NULL,					N'Payents from Customers Control',	NULL,		@C101_INV,		NULL,				NULL),
+	(58,N'30093',@TradingControlExtension,		@Equity_AC,				@suppliersCD,			NULL,					N'Receipts from Suppliers Control',	NULL,		@C101_INV,		NULL,				NULL),
+	(59,N'30094',@TradingControlExtension,		@Equity_AC,				@customersCD,			NULL,					N'Deliveries to Customers Control',	NULL,		@C101_INV,		NULL,				NULL),
 
-	(59,N'30099',@OtherDocumentControlExtension,@Equity_AC,				NULL,					NULL,					N'Cash Payments',				NULL,			@C101_INV,		NULL,				NULL),
 
 --	(61,N'21101',@employeeADef,	@CurrentLiabilities_AC,@TradeAndOtherCurrentPayables,	N'Employees Payables',			NULL,			@C101_INV,		NULL,				NULL),
 	(63,N'21103',@OtherCurrentFinancialLiabilities,@CurrentLiabilities_AC,@employeesCD,			NULL,					N'10% Retained Salaries',		@USD,			@C101_INV,		NULL,				NULL),

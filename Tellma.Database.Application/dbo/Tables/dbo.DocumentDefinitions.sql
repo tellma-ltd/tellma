@@ -6,10 +6,13 @@
 	-- Is Original, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
 	[IsOriginalDocument]		BIT				DEFAULT 1,
 	[DocumentType]				TINYINT			NOT NULL DEFAULT 2, -- 0: Template, 1: Clause, 2: Event
-	[TitleSingular]				NVARCHAR (255),
+	[Description]				NVARCHAR (1024)	NOT NULL,
+	[Description2]				NVARCHAR (1024),
+	[Description3]				NVARCHAR (1024),
+	[TitleSingular]				NVARCHAR (255)	NOT NULL,
 	[TitleSingular2]			NVARCHAR (255),
 	[TitleSingular3]			NVARCHAR (255),
-	[TitlePlural]				NVARCHAR (255),
+	[TitlePlural]				NVARCHAR (255)	NOT NULL,
 	[TitlePlural2]				NVARCHAR (255),
 	[TitlePlural3]				NVARCHAR (255),
 	-- UI Specs

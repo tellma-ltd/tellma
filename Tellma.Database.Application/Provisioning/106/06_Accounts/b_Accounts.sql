@@ -1,6 +1,6 @@
 ﻿INSERT INTO @Accounts([Index],[Code],[Name], [AccountTypeId], [ContractDefinitionId],[ResourceDefinitionId],[CurrencyId],[CenterId],[NotedContractDefinitionId]) VALUES
-(4, N'1101-101', N'Petty Cash - Bizunesh Birhanu', @CashOnHand, @petty_cash_fundsCD, NULL, @ETB,@106C_HeadOfficeSegment,NULL),
-(6, N'1102-101', N'Petty Cash - Amanuel Bayissa', @CashOnHand, @petty_cash_fundsCD, NULL, @ETB,@106C_Rental,NULL),
+(4, N'1101-101', N'Petty Cash - Bizunesh Birhanu', @CashOnHand, @cashonhand_accountsCD, NULL, @ETB,@106C_HeadOfficeSegment,NULL),
+(6, N'1102-101', N'Petty Cash - Amanuel Bayissa', @CashOnHand, @cashonhand_accountsCD, NULL, @ETB,@106C_Rental,NULL),
 (8, N'1103-001', N'AIB Bole OD', @BalancesWithBanks, @bank_accountsCD, NULL, @ETB,@106C_HeadOfficeSegment,NULL),
 (9, N'1103-002', N'AIB Bole Special OD', @BalancesWithBanks, @bank_accountsCD, NULL, @ETB,@106C_HeadOfficeSegment,NULL),
 (10, N'1103-003', N'ECX AIB Bole Payout', @BalancesWithBanks, @bank_accountsCD, NULL, @ETB,@106C_HeadOfficeSegment,NULL),
