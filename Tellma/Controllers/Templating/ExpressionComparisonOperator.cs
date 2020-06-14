@@ -117,7 +117,7 @@ namespace Tellma.Controllers.Templating
 
         public override string ToString()
         {
-            return $"{Left.ToString()} {Operator} {Right.ToString()}";
+            return $"{Left} {Operator} {Right}";
         }
     }
 }

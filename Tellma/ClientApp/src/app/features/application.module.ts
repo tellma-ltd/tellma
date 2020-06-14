@@ -70,7 +70,8 @@ import {
   faRecycle,
   faIdBadge,
   faCashRegister,
-  faFunnelDollar
+  faFunnelDollar,
+  faMapMarkerAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -121,6 +122,7 @@ import { DocumentsPickerComponent } from './documents/documents-picker.component
 import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
+import { AgmCoreModule } from '@agm/core';
 
 const routes: Routes = [
   {
@@ -487,7 +489,10 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
   imports: [
     SharedModule,
     RouterModule.forChild(routes),
-    AceModule
+    AceModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyDYbuDK2rxW4IVe4AsGdjvGnt2fJ83U4RU'
+    })
   ],
   providers: [
     {
@@ -515,7 +520,7 @@ export class ApplicationModule {
       faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait,
       faWarehouse, faPowerOff, faCarSide, faTint, faTintSlash, faFileImport, faFileExport, faPills, faUserCheck, faFax,
       faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
-      faRecycle, faIdBadge, faFunnelDollar, faCashRegister
+      faRecycle, faIdBadge, faFunnelDollar, faCashRegister, faMapMarkerAlt
     );
   }
 }

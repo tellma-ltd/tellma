@@ -44,6 +44,11 @@ namespace Tellma.Entities.Descriptors
         public bool IsHierarchyId { get; }
 
         /// <summary>
+        /// True if the property is of type <see cref="Geography"/>
+        /// </summary>
+        public bool IsGeography { get; set; }
+
+        /// <summary>
         /// The maximum length of string properties
         /// </summary>
         public int MaxLength { get; }
@@ -87,6 +92,7 @@ namespace Tellma.Entities.Descriptors
             _getter = getter ?? throw new ArgumentNullException(nameof(getter));
 
             IsHierarchyId = Type == typeof(HierarchyId);
+            IsGeography = Type == typeof(Geography);
             MaxLength = maxLength;
         }
     }

@@ -720,6 +720,12 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.DescriptionVisibility, display);
                     isRequired = def.DescriptionVisibility == Visibility.Required;
                     break;
+                case nameof(Resource.Location):
+                case nameof(Resource.LocationJson):
+                case nameof(Resource.LocationWkb):
+                    display = PropertyDisplay(def.LocationVisibility, display);
+                    isRequired = def.LocationVisibility == Visibility.Required;
+                    break;
                 case nameof(Resource.ReorderLevel):
                     display = PropertyDisplay(def.ReorderLevelVisibility, display);
                     isRequired = def.ReorderLevelVisibility == Visibility.Required;

@@ -10,7 +10,7 @@
 	[Description3]		NVARCHAR (1024),
 	[Usage]				NVARCHAR (50),
 	[Collection]		NVARCHAR (50)		NOT NULL,
-	[DefinitionId]		NVARCHAR (50),
+	[DefinitionId]		INT,
 	[MarkupLanguage]	NVARCHAR (255)		NOT NULL,
 	[SupportsPrimaryLanguage] BIT NOT NULL,
 	[SupportsSecondaryLanguage] BIT NOT NULL,

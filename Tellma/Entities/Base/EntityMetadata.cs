@@ -36,5 +36,11 @@ namespace Tellma.Entities
         /// Used by the flatten and trim logic to remember which entities have already been flattened and trimmed
         /// </summary>
         public bool FlattenedAndTrimmed { get; set; }
+
+
+        /// <summary>
+        /// Used to store any error message when parsing <see cref="ILocationEntityForSave.LocationJson"/>
+        /// </summary>
+        public string LocationJsonParseError { get; set; }
     }
 }

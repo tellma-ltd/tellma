@@ -129,6 +129,7 @@ namespace Tellma.Controllers
                 IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),
+                LocationVisibility = MapVisibility(def.LocationVisibility),
                 ExpenseEntryTypeVisibility = MapVisibility(def.ExpenseEntryTypeVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
                 ResidualMonetaryValueVisibility = MapVisibility(def.ResidualMonetaryValueVisibility),

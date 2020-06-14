@@ -292,6 +292,7 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     MonetaryValueDefaultValue: number;
 
     DescriptionVisibility: Visibility;
+    LocationVisibility: Visibility;
 
     ExpenseEntryTypeVisibility: Visibility;
     CenterVisibility: Visibility;

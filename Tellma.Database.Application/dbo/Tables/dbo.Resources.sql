@@ -25,6 +25,8 @@ CREATE TABLE [dbo].[Resources] (
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
 	[Location]						GEOGRAPHY,
+	[LocationJson]					NVARCHAR(MAX),
+
 	-- For PPE
 	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__ExpenseEntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 	[CenterId]						INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),

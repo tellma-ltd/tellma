@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Resource", Plural = "Resources")]
-    public class ResourceForSave<TResourceUnit> : EntityWithKey<int>
+    public class ResourceForSave<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -55,6 +55,12 @@ namespace Tellma.Entities
         [StringLength(2048)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
+
+        [Display(Name = "Resource_LocationJson")]
+        public string LocationJson { get; set; }
+
+        // Auto computed from the GeoJSON property, not visible to clients
+        public byte[] LocationWkb { get; set; } 
 
         [Display(Name = "Resource_ExpenseEntryType")]
         public int? ExpenseEntryTypeId { get; set; }
@@ -125,7 +131,7 @@ namespace Tellma.Entities
 
     }
 
-    public class Resource : ResourceForSave<ResourceUnit>
+    public class Resource : ResourceForSave<ResourceUnit>, ILocationEntity
     {
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }
@@ -147,6 +153,8 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+
+        public Geography Location { get; set; }
 
         [Display(Name = "Resource_ExpenseEntryType")]
         [ForeignKey(nameof(ExpenseEntryTypeId))]

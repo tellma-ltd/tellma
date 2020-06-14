@@ -548,7 +548,7 @@
     <value>የአሁኑ</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>የተለጠፈው</value>
+    <value>የተዘጋ</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>ተትቷል</value>
@@ -560,7 +560,7 @@
     <value>የገለፃ ታሪክ</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
-    <value>የጊዜ 1</value>
+    <value>የሰዓት 1</value>
   </data>
   <data name="Document_Time1IsCommon" xml:space="preserve">
     <value>የጊዜ 1 የጋራ</value>
@@ -1259,10 +1259,10 @@
     <value>የተፈቀዱ</value>
   </data>
   <data name="Line_State_3" xml:space="preserve">
-    <value>የተጠናቀቁ</value>
+    <value>አልቋል</value>
   </data>
   <data name="Line_State_4" xml:space="preserve">
-    <value>ይጠናቀቃል</value>
+    <value>ተለጠፈ</value>
   </data>
   <data name="Line_State_minus_1" xml:space="preserve">
     <value>ባዶ</value>
@@ -1532,7 +1532,7 @@
     <value>ሰርዝ</value>
   </data>
   <data name="Permission_DocumentState" xml:space="preserve">
-    <value>ልጥፍ / ሰርዝ</value>
+    <value>ዝጋ/ ሰርዝ</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>አንቃ / አቦዝንን</value>
@@ -1866,6 +1866,12 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
+  </data>
+  <data name="Resource_Location" xml:space="preserve">
+    <value>አካባቢ</value>
+  </data>
+  <data name="Resource_LocationJson" xml:space="preserve">
+    <value>አካባቢ (በ GeoJSON)</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>አይነታ 1</value>
