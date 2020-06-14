@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { addToWorkspace } from '~/app/data/util';
@@ -9,6 +10,12 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';
+import { LatLngLiteral } from '@agm/core';
+import { AceConfigInterface } from 'ngx-ace-wrapper';
+
+import 'brace';
+import 'brace/mode/json';
+import 'brace/theme/clouds';
 
 @Component({
   selector: 't-resources-details',
@@ -472,5 +479,147 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   public Units_showError(model: ResourceForSave): boolean {
     return !!model && !!model.Units && model.Units.some(e => !!e.serverErrors);
+  }
+
+  // Location + Map stuff
+
+  public get Location_isVisible(): boolean {
+    return !!this.definition.LocationVisibility;
+  }
+
+  public Map_showError(model: ResourceForSave): boolean {
+    return !!model && !!model.serverErrors;
+  }
+
+  public get zoom(): number {
+    // console.log(+localStorage.map_zoom);
+    return +localStorage.map_zoom || 2;
+  }
+
+  public set zoom(v: number) {
+    localStorage.map_zoom = v;
+  }
+
+  private _lat: number;
+  private _lng: number;
+
+  public get latitude(): number {
+    if (this._lat === undefined) {
+      this._lat = +localStorage.map_latitude || 0;
+    }
+    return this._lat;
+  }
+
+  public get longitude(): number {
+    if (this._lng === undefined) {
+      this._lng = +localStorage.map_longitude || 0;
+    }
+    return this._lng;
+  }
+
+  public onCenterChange(event: LatLngLiteral) {
+    localStorage.map_latitude = event.lat;
+    localStorage.map_longitude = event.lng;
+  }
+
+  public styleFunc = (feature: any) => {
+
+    // This is the result object
+    const styleOptions = {
+      clickable: false,
+    };
+
+    // https://developers.google.com/maps/documentation/javascript/reference/data#Data.StyleOptions
+    const propNames = ['fillColor', 'fillOpacity', 'icon', 'strokeColor', 'shape', 'strokeOpacity', 'strokeWeight', 'visible'];
+
+    // Go over the properties and copy them across
+    for (const propName of propNames) {
+      const propValue = feature.getProperty(propName);
+      if (propValue !== undefined && propValue !== null) {
+        styleOptions[propName] = propValue;
+      }
+    }
+
+    // Return the style options
+    return styleOptions;
+  }
+
+  private locationJsonAceConfigBase: AceConfigInterface = {
+    mode: 'json',
+    theme: 'clouds',
+    useWorker: false,
+    showPrintMargin: false,
+  };
+
+  private locationJsonAceConfigEditable: AceConfigInterface;
+  private locationJsonAceConfigReadonly: AceConfigInterface;
+
+  public locationJsonAceConfig(isEdit: boolean): AceConfigInterface {
+    if (isEdit) {
+      if (!this.locationJsonAceConfigEditable) {
+        const clone = { ... this.locationJsonAceConfigBase };
+        clone.readOnly = false;
+        clone.highlightActiveLine = true;
+        clone.highlightGutterLine = true;
+
+        this.locationJsonAceConfigEditable = clone;
+      }
+
+      return this.locationJsonAceConfigEditable;
+    } else {
+      if (!this.locationJsonAceConfigReadonly) {
+        const clone = { ... this.locationJsonAceConfigBase };
+        clone.readOnly = true;
+        clone.highlightActiveLine = false;
+        clone.highlightGutterLine = false;
+
+        this.locationJsonAceConfigReadonly = clone;
+      }
+
+      return this.locationJsonAceConfigReadonly;
+    }
+  }
+
+  public onLocationJsonValueChange(value: string, model: ResourceForSave) {
+    // The ace component triggers value change on init
+    value = value || undefined;
+    if (model.LocationJson !== value) {
+      model.LocationJson = value;
+    }
+  }
+
+  private parseJsonString: string;
+  private parseJsonResult: any;
+  public parseJsonError: string;
+
+  public parseJson(json: string) {
+    json = json || undefined;
+    if (this.parseJsonString !== json) {
+      this.parseJsonString = json;
+      if (!json) {
+        delete this.parseJsonResult;
+        delete this.parseJsonError;
+      } else {
+        try {
+          this.parseJsonResult = JSON.parse(json);
+          delete this.parseJsonError;
+        } catch (err) {
+          this.parseJsonError = err;
+          delete this.parseJsonResult;
+        }
+      }
+    }
+
+    return this.parseJsonResult;
+  }
+
+  public locationView: 'map' | 'json' = 'map';
+
+  public onView(view: 'map' | 'json'): void {
+    this.locationView = view;
+  }
+
+  public isView(view: 'map' | 'json'): boolean {
+    return this.locationView === view;
   }
 }

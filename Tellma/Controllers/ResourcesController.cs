@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GeoJSON.Net;
+using GeoJSON.Net.Contrib.Wkb;
+using GeoJSON.Net.Feature;
+using GeoJSON.Net.Geometry;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -147,35 +152,35 @@ namespace Tellma.Controllers
 
         protected override async Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
         {
-            var definition = Definition();
+            var def = Definition();
 
             // Set default values
-            SetDefaultValue(entities, e => e.Identifier, definition.IdentifierDefaultValue);
-            SetDefaultValue(entities, e => e.CurrencyId, definition.CurrencyDefaultValue);
-            SetDefaultValue(entities, e => e.MonetaryValue, definition.MonetaryValueDefaultValue);
+            SetDefaultValue(entities, e => e.Identifier, def.IdentifierDefaultValue);
+            SetDefaultValue(entities, e => e.CurrencyId, def.CurrencyDefaultValue);
+            SetDefaultValue(entities, e => e.MonetaryValue, def.MonetaryValueDefaultValue);
             //SetDefaultValue(entities, e => e.Description, definition.DescriptionDefaultValue);
             //SetDefaultValue(entities, e => e.Description2, definition.Description2DefaultValue);
             //SetDefaultValue(entities, e => e.Description3, definition.Description3DefaultValue);
-            SetDefaultValue(entities, e => e.ReorderLevel, definition.ReorderLevelDefaultValue);
-            SetDefaultValue(entities, e => e.EconomicOrderQuantity, definition.EconomicOrderQuantityDefaultValue);
-            SetDefaultValue(entities, e => e.AvailableSince, definition.AvailableSinceDefaultValue);
-            SetDefaultValue(entities, e => e.AvailableTill, definition.AvailableTillDefaultValue);
-            SetDefaultValue(entities, e => e.Decimal1, definition.Decimal1DefaultValue);
-            SetDefaultValue(entities, e => e.Decimal2, definition.Decimal2DefaultValue);
-            SetDefaultValue(entities, e => e.Int1, definition.Int1DefaultValue);
-            SetDefaultValue(entities, e => e.Int2, definition.Int2DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup1Id, definition.Lookup1DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup2Id, definition.Lookup2DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup3Id, definition.Lookup3DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup4Id, definition.Lookup4DefaultValue);
+            SetDefaultValue(entities, e => e.ReorderLevel, def.ReorderLevelDefaultValue);
+            SetDefaultValue(entities, e => e.EconomicOrderQuantity, def.EconomicOrderQuantityDefaultValue);
+            SetDefaultValue(entities, e => e.AvailableSince, def.AvailableSinceDefaultValue);
+            SetDefaultValue(entities, e => e.AvailableTill, def.AvailableTillDefaultValue);
+            SetDefaultValue(entities, e => e.Decimal1, def.Decimal1DefaultValue);
+            SetDefaultValue(entities, e => e.Decimal2, def.Decimal2DefaultValue);
+            SetDefaultValue(entities, e => e.Int1, def.Int1DefaultValue);
+            SetDefaultValue(entities, e => e.Int2, def.Int2DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup1Id, def.Lookup1DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup2Id, def.Lookup2DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup3Id, def.Lookup3DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup4Id, def.Lookup4DefaultValue);
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
-            SetDefaultValue(entities, e => e.Text1, definition.Text1DefaultValue);
-            SetDefaultValue(entities, e => e.Text2, definition.Text2DefaultValue);
+            SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
+            SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
 
             var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
             var functionalId = settings.FunctionalCurrencyId;
 
-            if (IsVisible(definition.ResidualMonetaryValueVisibility))
+            if (IsVisible(def.ResidualMonetaryValueVisibility))
             {
                 entities.ForEach(entity =>
                 {
@@ -185,7 +190,7 @@ namespace Tellma.Controllers
 
             // For resources that use residual monetary value, if currency id is functional
             // copy residual monetary value into residual value
-            if (IsVisible(definition.ResidualMonetaryValueVisibility) && IsVisible(definition.ResidualValueVisibility))
+            if (IsVisible(def.ResidualMonetaryValueVisibility) && IsVisible(def.ResidualValueVisibility))
             {
                 entities.ForEach(entity =>
                 {
@@ -196,9 +201,73 @@ namespace Tellma.Controllers
                 });
             }
 
+            // TODO: Check if location is visible from definitions
+            // TODO: Move the logic to a more central place so other entities can be locationed
+            entities.ForEach(entity =>
+            {
+                // Here we convert the GeoJson to Well-Known Binary
+                var json = entity.LocationJson;
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    entity.LocationWkb = null;
+                    return;
+                }
+
+                try
+                {
+                    var spy = JsonConvert.DeserializeObject<GeoJsonSpy>(json);
+                    if (spy.Type == GeoJSONObjectType.Feature)
+                    {
+                        // A simple feature can be turned in to a simple WKB
+                        var feature = JsonConvert.DeserializeObject<Feature>(json);
+
+                        var geometry = feature?.Geometry;
+                        entity.LocationWkb = geometry?.ToWkb();
+                    }
+                    else if (spy.Type == GeoJSONObjectType.FeatureCollection)
+                    {
+                        // A feature collection must be converted to a geometry collection and then turned to WKB
+                        var coll = JsonConvert.DeserializeObject<FeatureCollection>(json);
+                        var geometries = coll?.Features?.Select(feat => feat.Geometry)?.Where(e => e != null) ?? new List<IGeometryObject>();
+
+                        if (geometries.Count() == 1)
+                        {
+                            // If it's just a single geometry, no need to wrap it in a geometry collection
+                            var geometry = geometries.Single();
+                            entity.LocationWkb = geometry?.ToWkb();
+                        }
+                        else
+                        {
+                            // If it's zero or multiple geometries, wrap in a geometry collection
+                            var geomCollection = new GeometryCollection(geometries);
+                            entity.LocationWkb = geomCollection?.ToWkb();
+                        }
+                    }
+                    else
+                    {
+                        // I don't know what'd be the point of localizing this message
+                        throw new InvalidOperationException("Root GeoJSON element must be a feature or a feature collection");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    entity.EntityMetadata.LocationJsonParseError = ex.Message;
+                    return;
+                }
+            });
+
             // SQL Preprocessing
             await _repo.Resources__Preprocess(DefinitionId.Value, entities);
             return entities;
+        }
+
+        /// <summary>
+        /// Used to peek at the root element of a GeoJson string using JSON.NET
+        /// </summary>
+        public class GeoJsonSpy : IGeometryObject
+        {
+            [JsonProperty(PropertyName = "type")]
+            public GeoJSONObjectType Type { get; set; }
         }
 
         private bool IsVisible(string visibility)
@@ -208,6 +277,18 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
+            foreach (var (e, i) in entities.Select((e, i) => (e, i)))
+            {
+                if (e.EntityMetadata.LocationJsonParseError != null)
+                {
+                    ModelState.AddModelError($"[{i}].{nameof(e.LocationJson)}", e.EntityMetadata.LocationJsonParseError);
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        return;
+                    }
+                }
+            }
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Resources_Validate__Save(DefinitionId.Value, entities, top: remainingErrorCount);

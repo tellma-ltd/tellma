@@ -254,7 +254,7 @@
     <value>إيراد</value>
   </data>
   <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>نشاط</value>
+    <value>قطاع</value>
   </data>
   <data name="Center_ExpenseEntryType" xml:space="preserve">
     <value>نوع سطر المصروف</value>
@@ -491,7 +491,7 @@
     <value>العقد المدين</value>
   </data>
   <data name="Document_DebitContractIsCommon" xml:space="preserve">
-    <value>العقدالمدين مشترك</value>
+    <value>العقد المدين مشترك</value>
   </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -533,10 +533,10 @@
     <value>الكمية مشتركة</value>
   </data>
   <data name="Document_Segment" xml:space="preserve">
-    <value>النشاط</value>
+    <value>القطاع</value>
   </data>
   <data name="Document_SegmentIsCommon" xml:space="preserve">
-    <value>النشاط مشترك</value>
+    <value>القطاع مشترك</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
@@ -548,13 +548,13 @@
     <value>جار</value>
   </data>
   <data name="Document_State_1" xml:space="preserve">
-    <value>مقل</value>
+    <value>مقفل</value>
   </data>
   <data name="Document_State_minus_1" xml:space="preserve">
     <value>ملغى</value>
   </data>
   <data name="Document_StateAt" xml:space="preserve">
-    <value>زمن الحالة</value>
+    <value>منذ</value>
   </data>
   <data name="Document_StatesHistory" xml:space="preserve">
     <value>تاريخ الأِحوال</value>
@@ -1262,7 +1262,7 @@
     <value>منفذ</value>
   </data>
   <data name="Line_State_4" xml:space="preserve">
-    <value>جاهز</value>
+    <value>مرحل</value>
   </data>
   <data name="Line_State_minus_1" xml:space="preserve">
     <value>ملغى</value>
@@ -1866,6 +1866,12 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>الصفة العددية 2</value>
+  </data>
+  <data name="Resource_Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="Resource_LocationJson" xml:space="preserve">
+    <value>الموقع (GeoJSON)</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>الصفة 1</value>

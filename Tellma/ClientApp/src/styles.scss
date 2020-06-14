@@ -1750,3 +1750,7 @@ input[type="password"]::-ms-clear {
 button:focus {
   outline: 1px auto $primary;
 }
+
+.t-hidden-cursor .ace_cursor-layer .ace_cursor {
+	display: none;
+}

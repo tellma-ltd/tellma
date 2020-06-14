@@ -264,6 +264,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
                         'id-badge',
                         'funnel-dollar',
                         'cash-register',
+                        'map-marker-alt',
 
                         'camera',
                         'camera-retro',

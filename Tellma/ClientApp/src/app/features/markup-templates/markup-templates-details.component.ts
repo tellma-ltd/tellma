@@ -16,13 +16,12 @@ import 'brace/theme/monokai';
 // import 'brace/theme/terminal';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, Observable, of, Subscription, merge } from 'rxjs';
-import { tap, catchError, switchMap, debounceTime, skip } from 'rxjs/operators';
-import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob, isSpecified } from '~/app/data/util';
+import { tap, catchError, switchMap, debounceTime } from 'rxjs/operators';
+import { fileSizeDisplay, FriendlyError, downloadBlob, printBlob } from '~/app/data/util';
 import {
   GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments
 } from '~/app/data/dto/generate-markup-arguments';
 import { MarkupPreviewResponse } from '~/app/data/dto/markup-preview-response';
-import { Params, ParamMap, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 't-markup-templates-details',

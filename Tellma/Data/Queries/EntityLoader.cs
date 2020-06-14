@@ -99,7 +99,7 @@ namespace Tellma.Data.Queries
                 {
                     foreach (var (propDesc, index, aggregation, function) in entityDef.Properties)
                     {
-                        if (propDesc.IsHierarchyId)
+                        if (propDesc.IsHierarchyId || propDesc.IsGeography)
                         {
                             continue;
                         }
@@ -259,7 +259,7 @@ namespace Tellma.Data.Queries
                     // Hydrate the simple properties at the current entityDef level
                     foreach (var (propDesc, index, aggregation, function) in entityTrie.Properties)
                     {
-                        if (propDesc.IsHierarchyId)
+                        if (propDesc.IsHierarchyId || propDesc.IsGeography)
                         {
                             continue;
                         }

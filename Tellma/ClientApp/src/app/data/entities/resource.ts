@@ -7,8 +7,9 @@ import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
+import { EntityForSave } from './base/entity-for-save';
 
-export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityWithKey {
+export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
     Name?: string;
     Name2?: string;
     Name3?: string;
@@ -19,6 +20,7 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Description?: string;
     Description2?: string;
     Description3?: string;
+    LocationJson?: string;
     ExpenseEntryTypeId?: number;
     CenterId?: number;
     ResidualMonetaryValue?: number;
@@ -104,6 +106,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+                LocationJson: { control: 'text', label: () => trx.instant('Resource_LocationJson') },
                 ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Resource_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -165,6 +168,11 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 delete entityDesc.properties.Description;
                 delete entityDesc.properties.Description2;
                 delete entityDesc.properties.Description3;
+            }
+
+            // Location, special case
+            if (!definition.LocationVisibility) {
+                delete entityDesc.properties.LocationJson;
             }
 
             // Simple properties Visibility

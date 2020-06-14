@@ -70,7 +70,8 @@ import {
   faRecycle,
   faIdBadge,
   faCashRegister,
-  faFunnelDollar
+  faFunnelDollar,
+  faMapMarkerAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -519,7 +520,7 @@ export class ApplicationModule {
       faShoppingCart, faProjectDiagram, faShareSquare, faInbox, faShare, faPrint, faCode, faFont, faImage, faPortrait,
       faWarehouse, faPowerOff, faCarSide, faTint, faTintSlash, faFileImport, faFileExport, faPills, faUserCheck, faFax,
       faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
-      faRecycle, faIdBadge, faFunnelDollar, faCashRegister
+      faRecycle, faIdBadge, faFunnelDollar, faCashRegister, faMapMarkerAlt
     );
   }
 }

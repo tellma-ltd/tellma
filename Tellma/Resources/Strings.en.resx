@@ -1262,7 +1262,7 @@
     <value>Completed</value>
   </data>
   <data name="Line_State_4" xml:space="preserve">
-    <value>Finalized</value>
+    <value>Posted</value>
   </data>
   <data name="Line_State_minus_1" xml:space="preserve">
     <value>Void</value>
@@ -1866,6 +1866,12 @@
   </data>
   <data name="Resource_Int2" xml:space="preserve">
     <value>Integer Attribute 2</value>
+  </data>
+  <data name="Resource_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Resource_LocationJson" xml:space="preserve">
+    <value>Location (GeoJSON)</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>Attribute 1</value>

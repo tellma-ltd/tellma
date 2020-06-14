@@ -15,7 +15,9 @@
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
-	[Location]						GEOGRAPHY,
+	[LocationJson]					NVARCHAR(MAX),
+	[LocationWkb]					VARBINARY(MAX),
+
 	-- For PPE
 	[ExpenseEntryTypeId]			INT,
 	[CenterId]						INT,
