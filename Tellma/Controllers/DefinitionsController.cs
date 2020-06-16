@@ -350,7 +350,7 @@ namespace Tellma.Controllers
         }
 
         private const string _ManualLine = "ManualLine";
-        private const string _ManualJournalVouchers = "manual-journal-vouchers";
+        private const string _ManualJournalVoucher = "ManualJournalVoucher";
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {
@@ -684,10 +684,10 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
-            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVouchers).Key;
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVoucher).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: 'manual-journal-vouchers' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{_ManualJournalVoucher}' could not be found");
             }
 
             result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == _ManualLine).Key;

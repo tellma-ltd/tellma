@@ -8,69 +8,46 @@ FROM dbo.Settings
 -- Purchasing - Hiring - Stocking - Manufacturing - Development - Marketing & Selling - Administration
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	INSERT INTO @Centers([Index],
-				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	NULL,			NULL
-	FROM dbo.Settings
-	-- expenses, and fixed assets can be assigned to all leaves
-	-- revenues can be assigned to Profit leaves only
-	-- All other accounts to @investment leaves only
-
 	INSERT INTO @Centers([Index],[ParentIndex],
-		[Name],					[Name2],				[Code],[CenterType],	[ExpenseEntryTypeId]) VALUES
-	(1,0,N'Unallocated',		N'غ مخصص',				N'00',	N'Segment',	NULL),
-	(2,0,N'Departments',		N'الإدارات',			N'10',	N'Cost',		NULL),
-	(3,2,N'Executive Office',	N'المكتب التنفيذي',	N'11',	N'Cost',		@AdministrativeExpense),
-	(4,2,N'Sales Unit',			N'التسويق والمبيعات',	N'12',	N'Cost',		@DistributionCosts),
-	(5,2,N'System Admin',		N'إدارة النظم',		N'13',	N'Cost',		@ServiceExtension),
-	(6,2,N'Power Gen.',			N'إنتاج الكهرباء',		N'14',	N'Cost',		@ServiceExtension),
-	--(7,2,N'Cafeteria',		N'الوجبات',			N'15',	N'Cost',		@ServiceExtension),
-	(8,0,N'Products',			N'المنتجات',			N'20',	N'Profit',		NULL),
-	(9,8,N'B10/HCM',			N'بابل',				N'21',	N'Profit',		@CostOfSales), -- should we say: ExpenseByFunctionExtension
-	(10,8,N'BSmart',			N'بيسمارت',			N'22',	N'Profit',		@CostOfSales),
-	(11,8,N'Campus',			N'كامبوس',				N'23',	N'Profit',		@CostOfSales),
-	(12,8,N'Tellma',			N'تلما',				N'24',	N'Profit',		@CostOfSales),
-	(13,0,N'1st Floor',			N'ط - 1',				N'30',	N'Profit',		@CostOfSales);
+		[Name],					[Name2],				[Code],[CenterType]) VALUES
+	(0,NULL,N'Unallocated',		N'غ مخصص',				N'00',	N'Common'),
+	(1,NULL,N'Departments',		N'الإدارات',				N'10',	N'Abstract'),
+	(2,1,	N'Exec. Office',	N'المكتب التنفيذي',	N'11',	N'AdministrativeExpense'),
+	(3,1,	N'Sales Unit',		N'التسويق والمبيعات',	N'12',	N'DistributionCosts'),
+	(4,1,	N'Services Unit',	N'وحدة الخدمات',		N'13',	N'ServicesExtension'), -- Rent, Power, and IT support
+	(5,NULL,N'Profit Centers',	N'مراكز الإيرادات',		N'20',	N'Abstract'),
+	(6,5,	N'B10/HCM',			N'بابل',				N'21',	N'CostOfSales'),
+	(7,5,	N'BSmart',			N'بيسمارت',				N'22',	N'CostOfSales'),
+	(8,5,	N'Campus',			N'كامبوس',				N'23',	N'CostOfSales'),
+	(9,5,	N'Tellma',			N'تلما',				N'24',	N'CostOfSales'),
+	(10,5,	N'1st Floor',		N'ط - 1',				N'29',	N'CostOfSales');
 
-	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'1', N'2');
---	Dr. Tellma: WIP Acct, Resource:Job XYZ, Qty:1 [Open a new job]
---	Dr. Tellma: Travel
---		Cr. Cash
---	Dr. Unallocated: WIP Acct, Resource:Job XYZ, Qty:0, Value
---		Cr. Tellma: O/H Control
---  Dr. Tellma: COS, Resource: Job XYZ, Qty:1, Total cost
---		Dr. Unallocated: WIP Acct, Resource:Job XYZ, Qty:1, Value
---	(6,1,N'1st Floor',	N'ط 1',		N'7',	N'Profit',		NULL);
---	Dr. Tellma:O/H Control Acct
---		Cr. Unallocated: O/H Control Acct
-
+--	UPDATE @Centers SET [isLeaf] = 0 WHERE [Code] IN (N'', N'1', N'2');
 END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
-INSERT INTO @Centers([Index],
-			[Name],				[Code], [CenterType], [ParentIndex])
-SELECT 0,[ShortCompanyName],	N'',	N'Segment',			NULL
-FROM dbo.Settings
-
+BEGIN
+	INSERT INTO @Centers([Index],[ParentIndex],
+			[Name],						[Code],[CenterType]) VALUES
+	(1,NULL,N'Unallocated',				N'00',	N'Common'),
+	(2,NULL,N'Support Servies',			N'01',	N'ServicesExtension'),
+	(3,NULL,N'Selling and Gen. Admin',	N'10',	N'Abstract'),
+	(4,3,	N'Shared Admin',			N'11',	N'AdministrativeExpense'),
+	(5,3,	N'Shared S&D',				N'12',	N'DistributionCosts'),	
+	(6,NULL,N'Projects',				N'20',	N'Abstract'),
+	(7,6,	N'Lifan Motors',			N'201',	N'CostOfSales'),
+	(8,6,	N'Sesay',					N'202',	N'CostOfSales'),
+	(9,6,	N'Soreti',					N'203',	N'CostOfSales');
+END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
-INSERT INTO @Centers([Index],
-			[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-SELECT 0,[ShortCompanyName],[ShortCompanyName2],	N'',	N'Segment',			NULL
-FROM dbo.Settings
+	INSERT INTO @Centers([Index],[ParentIndex],
+		[Name],							[Code],[CenterType]) VALUES
+	(1,NULL,N'Unallocated',				N'00',	N'Common');
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-
-	INSERT INTO @Centers([Index],
-				[Name],				[Name2],			[Code], [CenterType], [ParentIndex])
-	SELECT 0,[ShortCompanyName],	[ShortCompanyName2],N'',	N'Segment',	NULL -- Badege
-	FROM dbo.Settings
-	-- expenses, and fixed assets can be assigned to all
-	-- revenues can be assigned to Profit only
-	-- all other accounts to investment only
-
-	INSERT INTO @Centers([Index],
-		[Name],						[Code], [CenterType],	[ParentIndex]) VALUES
-	(1,N'WSI - Unallocated',		N'10',	NULL,			0),-- expenses to be allocated
+	INSERT INTO @Centers([Index],[ParentIndex],
+		[Name],						[Code], [CenterType]) VALUES
+	(1,NULL,N'Unallocated',				N'00',	N'Abstract'),-- expenses to be allocated
 	(2,N'Exec Office',				N'11',	N'Cost',		0), -- Badege
 	(3,N'Finance Dept',				N'12',	N'Cost',		0), -- Tizita
 	(4,N'Marketing & Sales Dept',	N'13',	N'Cost',		0), -- Ashenafi

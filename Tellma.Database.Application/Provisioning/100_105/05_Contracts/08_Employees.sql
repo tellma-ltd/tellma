@@ -91,7 +91,7 @@ BEGIN
 	END
 	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @employeesCD,
+		@DefinitionId = @EmployeeCD,
 		@Entities = @employees,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

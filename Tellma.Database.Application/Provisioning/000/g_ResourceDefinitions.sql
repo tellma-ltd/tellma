@@ -1,25 +1,25 @@
 ﻿INSERT INTO @ResourceDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'PropertyPlantAndEquipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'FixedAssets',60),
-(1, N'office-equipment', N'Office Equipment', N'Office Equipment', N'fax', N'FixedAssets',60),
-(2, N'computer-equipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',60),
-(3, N'machinery', N'Machinery', N'Machineries', N'cogs', N'FixedAssets',70),
-(4, N'vehicles', N'Vehicles', N'Vehicles', N'car', N'FixedAssets',40),
-(5, N'buildings', N'Building', N'Buildings', N'building', N'FixedAssets',50),
-(6, N'investment-properties', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',80),
-(7, N'raw-grains', N'Raw Grain', N'Raw Grains', N'tractor', N'Purchasing',90),
-(8, N'finished-grains', N'Cleaned Grain', N'Cleaned Grains', N'boxes', N'Production',100),
-(9, N'byproducts-grains', N'Reject Grain', N'Reject Grains', N'recycle', N'Production',60),
-(10, N'raw-vehicles', N'Vehicles Component', N'Vehicles Components', N'cogs', N'Purchasing',120),
-(11, N'finished-vehicles', N'Assembled Vehicle', N'Assembled Vehicles', N'car-side', N'Production',120),
-(12, N'raw-oils', N'Raw Material (Oil Milling)', N'Raw Materials (Oil Milling)', N'file-export', N'Purchasing',121),
-(13, N'finished-oils', N'Processed Oil (Milling)', N'Processed Oil (Milling)', N'tint', N'Production',122),
-(14, N'byproducts-oils', N'Oil Byproduct', N'Oil Byproducts', N'tint-slash', N'Production',123),
-(15, N'work-in-progress', N'Work in Progress', N'Work In Progress', N'spinner', N'Production',124),
-(16, N'medicines', N'Medicine', N'Medicines', N'pills', N'Purchasing',125),
-(17, N'construction-materials', N'Construction Material', N'Construction Materials', N'building', N'Purchasing',126),
-(18, N'employee-benefits', N'Employee Benefit', N'Employee Benefits', N'user-check', N'HumanCapital',127),
-(19, N'finished-services', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',128),
-(20, N'ChecksReceived', N'Check Received', N'Checks Received', N'money-check', N'Finance',129);
+(0, N'PropertyPlantAndEquipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'FixedAssets',10),
+(1, N'OfficeEquipment', N'Office Equipment', N'Office Equipment', N'fax', N'FixedAssets',14),
+(2, N'ComputerEquipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',18),
+(3, N'Machinery', N'Machinery', N'Machineries', N'cogs', N'FixedAssets',22),
+(4, N'Vehicle', N'Vehicles', N'Vehicles', N'car', N'FixedAssets',26),
+(5, N'Building', N'Building', N'Buildings', N'building', N'FixedAssets',30),
+(6, N'InvestmentProperty', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',34),
+(7, N'RawGrain', N'Raw Grain', N'Raw Grains', N'tractor', N'Purchasing',38),
+(8, N'FinishedGrain', N'Cleaned Grain', N'Cleaned Grains', N'boxes', N'Production',42),
+(9, N'ByproductGrain', N'Reject Grain', N'Reject Grains', N'recycle', N'Production',46),
+(10, N'RawVehicle', N'Vehicles Component', N'Vehicles Components', N'cogs', N'Purchasing',50),
+(11, N'FinishedVehicle', N'Assembled Vehicle', N'Assembled Vehicles', N'car-side', N'Production',54),
+(12, N'RawOil', N'Raw Material (Oil Milling)', N'Raw Materials (Oil Milling)', N'file-export', N'Purchasing',58),
+(13, N'FinishedOil', N'Processed Oil (Milling)', N'Processed Oil (Milling)', N'tint', N'Production',62),
+(14, N'ByproductOil', N'Oil Byproduct', N'Oil Byproducts', N'tint-slash', N'Production',66),
+(15, N'WorkInProgress', N'Work in Progress', N'Work In Progress', N'spinner', N'Production',70),
+(16, N'Medicine', N'Medicine', N'Medicines', N'pills', N'Purchasing',74),
+(17, N'ConstructionMaterial', N'Construction Material', N'Construction Materials', N'building', N'Purchasing',78),
+(18, N'EmployeeBenefit', N'Employee Benefit', N'Employee Benefits', N'user-check', N'HumanCapital',82),
+(19, N'FinishedService', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',86),
+(20, N'CheckReceived', N'Check Received', N'Checks Received', N'money-check', N'Finance',90);
 
 
 	UPDATE @ResourceDefinitions
@@ -31,23 +31,22 @@
 		[CenterVisibility]					= N'Required',
 		[ResidualMonetaryValueVisibility]	= N'Required',
 		[ResidualValueVisibility]			= N'Required'
-	WHERE [Code] IN (N'computer-equipment', N'properties-plants-and-equipment');
+	WHERE [Code] IN (N'ComputerEquipment', N'PropertyPlantAndEquipment');
 
 	UPDATE @ResourceDefinitions
 	SET 
 		[Lookup1Visibility]					= N'Optional',
 		[Lookup1Label]						= N'Manufacturer',
-		-- TODO: uncomment
-		--[Lookup1DefinitionId]				= @it_equipment_manufacturersLKD,
+		[Lookup1DefinitionId]				= @ITEquipmentManufacturerLKD,
 		[Lookup2Visibility]					= N'Optional',
-		[Lookup2Label]						= N'Operating System'
-		--[Lookup2DefinitionId]				= @operating_systemsLKD
-	WHERE [Code] = N'computer-equipment';
+		[Lookup2Label]						= N'Operating System',
+		[Lookup2DefinitionId]				= @OperatingSystemLKD
+	WHERE [Code] = N'ComputerEquipment';
 
 	UPDATE @ResourceDefinitions
 	SET 
 		[DescriptionVisibility]				= N'Optional'
-	WHERE [Code] IN (N'finished-services');
+	WHERE [Code] IN (N'FinishedService');
 
 	UPDATE @ResourceDefinitions
 	SET
@@ -94,7 +93,11 @@
 		[Text2Label2] = N'المقاس',
 		[Text2Visibility] = N'Optional'
 
-	WHERE [Code] = N'paper-products'
+	WHERE [Code] = N'PaperProducts'
+
+	UPDATE @ResourceDefinitions
+	SET [LocationVisibility] = N'Optional'
+	WHERE [Code] = N'InvestmentProperty'
 
 EXEC [api].[ResourceDefinitions__Save]
 	@Entities = @ResourceDefinitions,
@@ -108,23 +111,23 @@ END;
 
 --Declarations
 DECLARE @PropertyPlantAndEquipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'PropertyPlantAndEquipment');
-DECLARE @office_equipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'office-equipment');
-DECLARE @computer_equipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'computer-equipment');
-DECLARE @machineryRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'machinery');
-DECLARE @vehiclesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'vehicles');
-DECLARE @buildingsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'buildings');
-DECLARE @investment_propertiesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'investment-properties');
-DECLARE @raw_grainsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'raw-grains');
-DECLARE @finished_grainsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'finished-grains');
-DECLARE @byproducts_grainsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'byproducts-grains');
-DECLARE @raw_vehiclesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'raw-vehicles');
-DECLARE @finished_vehiclesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'finished-vehicles');
-DECLARE @raw_oilsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'raw-oils');
-DECLARE @finished_oilsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'finished-oils');
-DECLARE @byproducts_oilsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'byproducts-oils');
-DECLARE @work_in_progressRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'work-in-progress');
-DECLARE @medicinesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'medicines');
-DECLARE @construction_materialsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'construction-materials');
-DECLARE @employee_benefitsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'employee-benefits');
-DECLARE @finished_servicesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'finished-services');
-DECLARE @ChecksReceivedRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ChecksReceived');
+DECLARE @OfficeEquipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'OfficeEquipment');
+DECLARE @ComputerEquipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ComputerEquipment');
+DECLARE @MachineryRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'Machinery');
+DECLARE @VehicleRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'Vehicle');
+DECLARE @BuildingRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'Building');
+DECLARE @InvestmentPropertyRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'InvestmentProperty');
+DECLARE @RawGrainRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'RawGrain');
+DECLARE @FinishedGrainRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'FinishedGrain');
+DECLARE @ByproductGrainRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ByproductGrain');
+DECLARE @RawVehicleRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'RawVehicle');
+DECLARE @FinishedVehicleRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'FinishedVehicle');
+DECLARE @RawOilRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'RawOil');
+DECLARE @FinishedOilRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'FinishedOil');
+DECLARE @ByproductOilRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ByproductOil');
+DECLARE @WorkInProgressRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'WorkInProgress');
+DECLARE @MedicineRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'Medicine');
+DECLARE @ConstructionMaterialRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ConstructionMaterial');
+DECLARE @EmployeeBenefitRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'EmployeeBenefit');
+DECLARE @FinishedServiceRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'FinishedService');
+DECLARE @CheckReceivedRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'CheckReceived');

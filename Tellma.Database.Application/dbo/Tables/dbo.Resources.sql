@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[Resources] (
 	[Location]						GEOGRAPHY,
 	[LocationJson]					NVARCHAR(MAX),
 
-	-- For PPE
+	-- For PPE. Center Id is also cost entity Id for revenue account, when the resource is being sold, if the relation is 1 - many
 	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__ExpenseEntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 	[CenterId]						INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
 

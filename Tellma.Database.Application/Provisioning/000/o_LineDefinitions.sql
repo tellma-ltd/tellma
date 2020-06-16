@@ -47,8 +47,8 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,100,		@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,1,100,		@cashonhand_accountsCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
-(1,1,100,		@bank_accountsCD);
+(0,1,100,		@CashOnHandAccountCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
+(1,1,100,		@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
@@ -105,10 +105,10 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,2,104,		@GainLossOnForeignExchangeExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,104,		@cashonhand_accountsCD),
-(1,0,104,		@bank_accountsCD),
-(0,1,104,		@cashonhand_accountsCD),
-(1,1,104,		@bank_accountsCD);
+(0,0,104,		@CashOnHandAccountCD),
+(1,0,104,		@BankAccountCD),
+(0,1,104,		@CashOnHandAccountCD),
+(1,1,104,		@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -156,8 +156,8 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,110,	@CashOnHand);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,110,		@bank_accountsCD),
-(0,1,110,		@cashonhand_accountsCD);
+(0,0,110,		@BankAccountCD),
+(0,1,110,		@CashOnHandAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -193,11 +193,11 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,111,	@CashOnHand);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,111,		@bank_accountsCD),
-(0,1,111,		@cashonhand_accountsCD);
+(0,0,111,		@BankAccountCD),
+(0,1,111,		@CashOnHandAccountCD);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ResourceDefinitionId]) VALUES
-(0,1,111,		@ChecksReceivedRD);
+(0,1,111,		@CheckReceivedRD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -227,8 +227,8 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,120,		@CashControlExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,120,		@cashonhand_accountsCD),
-(1,0,120,		@bank_accountsCD);
+(0,0,120,		@CashOnHandAccountCD),
+(1,0,120,		@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
@@ -264,10 +264,10 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,121,		@CashControlExtension);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,121,		@cashonhand_accountsCD);
+(0,0,121,		@CashOnHandAccountCD);
 INSERT INTO @LineDefinitionEntryResourceDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ResourceDefinitionId]) VALUES
-(0,0,121,		@ChecksReceivedRD);
+(0,0,121,		@CheckReceivedRD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],				[RequiredState],
 															[ReadOnlyState],
@@ -302,9 +302,9 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,300,	@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,300,	@suppliersCD),
-(0,1,300,	@cashonhand_accountsCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
-(1,1,300,	@bank_accountsCD);
+(0,0,300,	@SupplierCD),
+(0,1,300,	@CashOnHandAccountCD), -- do we have to list them? They are simply the union of AccountTypeContractDefinitions
+(1,1,300,	@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
@@ -353,9 +353,9 @@ INSERT INTO @LineDefinitionEntryAccountTypes([Index], [LineDefinitionEntryIndex]
 (0,1,3,		@CashAndCashEquivalents);
 INSERT INTO @LineDefinitionEntryContractDefinitions([Index], [LineDefinitionEntryIndex],[LineDefinitionIndex],
 			[ContractDefinitionId]) VALUES
-(0,0,3,		@employeesCD),
-(0,1,3,		@cashonhand_accountsCD),
-(1,1,3,		@bank_accountsCD);
+(0,0,3,		@EmployeeCD),
+(0,1,3,		@CashOnHandAccountCD),
+(1,1,3,		@BankAccountCD);
 INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],

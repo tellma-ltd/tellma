@@ -631,6 +631,7 @@
     <None Include="Provisioning\106\02_Basic\b_Centers.sql" />
     <None Include="Provisioning\000\m_Units.sql" />
     <None Include="Provisioning\100_105\00_Setup\Script.sql" />
+    <None Include="106.AzureSoretiTraining.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
