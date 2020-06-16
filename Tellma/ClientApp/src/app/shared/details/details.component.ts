@@ -86,7 +86,7 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
   actions: DropdownAction[] = [];
 
   @Input() // popup: only the title and the document are visible
-  mode: 'popup' | 'screen' = 'screen';
+  mode: 'popup' | 'screen' | 'preview' = 'screen';
 
   @Input() // determines the shape of the document
   layout: DocumentLayout = 'document';

@@ -418,5 +418,8 @@ SET NOCOUNT ON;
 			s.[ProxyRoleId]
 		);
 
+	-- Signal clients to refresh their cache
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
 IF @ReturnIds = 1
 	SELECT * FROM @LineDefinitionsIndexedIds;

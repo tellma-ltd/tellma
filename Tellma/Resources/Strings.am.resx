@@ -334,6 +334,9 @@
   <data name="ContractDefinition" xml:space="preserve">
     <value>የኮንትራት ፍቺ</value>
   </data>
+  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
+    <value>በርካታ ተጠቃሚዎችን ፍቀድ</value>
+  </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>የኮንትራት ፍቺዎች</value>
   </data>
@@ -560,7 +563,7 @@
     <value>የገለፃ ታሪክ</value>
   </data>
   <data name="Document_Time1" xml:space="preserve">
-    <value>የሰዓት 1</value>
+    <value>የጊዜ 1</value>
   </data>
   <data name="Document_Time1IsCommon" xml:space="preserve">
     <value>የጊዜ 1 የጋራ</value>
@@ -1090,6 +1093,12 @@
   <data name="Facebook" xml:space="preserve">
     <value>facebook</value>
   </data>
+  <data name="Field0Label" xml:space="preserve">
+    <value>{0} ሰይም</value>
+  </data>
+  <data name="Field0Visibility" xml:space="preserve">
+    <value>{0} ታይነት</value>
+  </data>
   <data name="File" xml:space="preserve">
     <value>ፋይል</value>
   </data>
@@ -1573,9 +1582,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>አባክዎ ያጽድቁ</value>
   </data>
-  <data name="PluralName" xml:space="preserve">
-    <value>የብዙ ቁጥር ስም</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>የ ግል የሆነ</value>
   </data>
@@ -1782,15 +1788,6 @@
   </data>
   <data name="ReportDefinition_Visibility" xml:space="preserve">
     <value>ለማየት መቻል</value>
-  </data>
-  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
-    <value>አንድም</value>
-  </data>
-  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
-    <value>ግዴታ ያልሆነ</value>
-  </data>
-  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
-    <value>የሚያስፈልግ</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>ሪፖርት ፍቺዎች</value>
@@ -2188,6 +2185,9 @@
   <data name="Title" xml:space="preserve">
     <value>አርእስት</value>
   </data>
+  <data name="TitlePlural" xml:space="preserve">
+    <value>የብዙ ቁጥር ስም</value>
+  </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>በነጠላ ስም</value>
   </data>
@@ -2325,6 +2325,15 @@
   </data>
   <data name="Views" xml:space="preserve">
     <value>ዕይታዎች</value>
+  </data>
+  <data name="Visibility_None" xml:space="preserve">
+    <value>አንድም</value>
+  </data>
+  <data name="Visibility_Optional" xml:space="preserve">
+    <value>ግዴታ ያልሆነ</value>
+  </data>
+  <data name="Visibility_Required" xml:space="preserve">
+    <value>የሚያስፈልግ</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>አዎ</value>

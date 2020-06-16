@@ -123,6 +123,9 @@ import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { AgmCoreModule } from '@agm/core';
+import { ContractDefinitionsDetailsComponent } from './contract-definitions/contract-definitions-details.component';
+import { ContractDefinitionsMasterComponent } from './contract-definitions/contract-definitions-master.component';
+import { ContractDefinitionsPickerComponent } from './contract-definitions/contract-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -377,7 +380,7 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
-      // Exchange Rates
+      // Markup Templates
       {
         path: 'markup-templates',
         component: MarkupTemplatesMasterComponent,
@@ -386,6 +389,18 @@ const routes: Routes = [
       {
         path: 'markup-templates/:id',
         component: MarkupTemplatesDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+      // Contract Definitions
+      {
+        path: 'contract-definitions',
+        component: ContractDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'contract-definitions/:id',
+        component: ContractDefinitionsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
 
@@ -485,6 +500,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     AgentsDetailsComponent,
     AgentsMasterComponent,
     AgentsPickerComponent,
+    ContractDefinitionsDetailsComponent,
+    ContractDefinitionsMasterComponent,
+    ContractDefinitionsPickerComponent,
   ],
   imports: [
     SharedModule,
@@ -512,7 +530,7 @@ export class ApplicationModule {
       faFile, faFilePdf, faFileWord, faFileExcel, faFilePowerpoint, faFileAlt, faFileCode,
       faFileArchive, faFileImage, faFileVideo, faFileAudio, faEllipsisV, faEllipsisH, faArchive,
 
-      // Main menu icons, IMPORTANT: Keep in sync with metadata_ReportDefinition
+      // Main menu icons, IMPORTANT: Keep in sync with definition-common.ts
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
       faTruck, faUserFriends, faExchangeAlt, faLock, faLaptop, faMicrochip, faLaptopCode,

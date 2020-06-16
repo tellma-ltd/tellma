@@ -6,7 +6,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
@@ -29,6 +29,9 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   public get definitionId(): number {
     return this._definitionId;
   }
+
+  @Input()
+  previewDefinition: ContractDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
   public expand = 'User,Agent,Currency';
@@ -64,7 +67,8 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
-    private translate: TranslateService, private route: ActivatedRoute) {
+    private translate: TranslateService, private router: Router,
+    private route: ActivatedRoute) {
     super();
   }
 
@@ -88,7 +92,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   private get definition(): ContractDefinitionForClient {
-    return !!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null;
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null);
   }
 
   // UI Bindings
@@ -113,8 +117,21 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
+  public onEditDefinition = (_: Contract) => {
+    const ws = this.workspace;
+    ws.isEdit = true;
+    this.router.navigate(['../../../contract-definitions', this.definitionId], { relativeTo: this.route })
+      .then(success => {
+        if (!success) {
+          delete ws.isEdit;
+        }
+      })
+      .catch(() => delete ws.isEdit);
+  }
+
   public showActivate = (model: Contract) => !!model && !model.IsActive;
   public showDeactivate = (model: Contract) => !!model && model.IsActive;
+  public showEditDefinition = (model: Contract) => this.ws.canDo('contract-definitions', 'Update', null);
 
   public canActivateDeactivateItem = (model: Contract) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
@@ -190,37 +207,5 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   public get Tabs_isVisible(): boolean {
     return false; // More tabs may be added
   }
-
-  // public get Rates_isVisible(): boolean {
-  //   return !!this.definition.RatesVisibility;
-  // }
-
-  // public get Rates_label(): string {
-  //   return !!this.definition.RatesLabel ?
-  //     this.ws.getMultilingualValueImmediate(this.definition, 'RatesLabel') :
-  //     this.translate.instant('Contract_Rates');
-  // }
-
-  // public Rates_count(model: ContractForSave): number {
-  //   return !!model && !!model.Rates ? model.Rates.length : 0;
-  // }
-
-  // public Rates_showError(model: ContractForSave): boolean {
-  //   return !!model && !!model.Rates && model.Rates.some(e => !!e.serverErrors);
-  // }
-
-  // public Rate_minDecimalPlaces(line: ContractRateForSave): number {
-  //   const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
-  //   return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
-  // }
-
-  // public Rate_maxDecimalPlaces(line: ContractRateForSave): number {
-  //   const curr = this.ws.get('Currency', line.CurrencyId) as Currency;
-  //   return !!curr ? curr.E : this.ws.settings.FunctionalCurrencyDecimals;
-  // }
-
-  // public Rate_format(line: ContractRateForSave): string {
-  //   return `1.${this.Rate_minDecimalPlaces(line)}-${this.Rate_maxDecimalPlaces(line)}`;
-  // }
 
 }

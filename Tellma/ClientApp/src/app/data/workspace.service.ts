@@ -39,6 +39,7 @@ import { OutboxRecord } from './entities/outbox-record';
 import { IfrsConcept } from './entities/ifrs-concept';
 import { MarkupTemplate } from './entities/markup-template';
 import { Agent } from './entities/agent';
+import { ContractDefinition } from './entities/contract-definition';
 
 enum WhichWorkspace {
   /**
@@ -357,6 +358,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   InboxRecord: EntityWorkspace<InboxRecord>;
   OutboxRecord: EntityWorkspace<OutboxRecord>;
   MarkupTemplate: EntityWorkspace<MarkupTemplate>;
+  ContractDefinition: EntityWorkspace<ContractDefinition>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -390,6 +392,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.MarkupTemplate = {};
     this.InboxRecord = {};
     this.OutboxRecord = {};
+    this.ContractDefinition = {};
 
     this.notifyStateChanged();
   }

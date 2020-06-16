@@ -38,5 +38,7 @@ SET NOCOUNT ON;
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

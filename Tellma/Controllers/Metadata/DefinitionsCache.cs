@@ -28,29 +28,35 @@ namespace Tellma.Controllers
         /// <summary>
         /// Implementation of <see cref="IDefinitionsCache"/>
         /// </summary>
-        public Versioned<DefinitionsForClient> GetDefinitionsIfCached(int tenantId)
+        public Versioned<DefinitionsForClient> GetDefinitionsIfCached(int tenantId, bool forceFresh = false)
         {
             // This first step ensures that the same definitions are always returned within
             // the scope of a single request, even if another thread updates the cache
             var ctx = _contextAccessor.HttpContext;
-            if (ctx.Items.TryGetValue(HttpContextKey(tenantId), out object defsObj) && defsObj is Versioned<DefinitionsForClient> definitions)
+            if (!forceFresh && ctx.Items.TryGetValue(HttpContextKey(tenantId), out object defsObj) && defsObj is Versioned<DefinitionsForClient> definitions)
             {
                 return definitions;
             }
 
             _cache.TryGetValue(tenantId, out definitions);
+
+            // Set the definitions in the HttpContext, to ensure subsequent requests return the same result
             if (definitions != null)
             {
-                ctx.Items.Add(HttpContextKey(tenantId), definitions);
+                var key = HttpContextKey(tenantId);
+                if (!ctx.Items.ContainsKey(key))
+                {
+                    ctx.Items.Add(key, definitions);
+                }
             }
 
             return definitions;
         }
 
-        public Versioned<DefinitionsForClient> GetCurrentDefinitionsIfCached()
+        public Versioned<DefinitionsForClient> GetCurrentDefinitionsIfCached(bool forceFresh = false)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
-            return GetDefinitionsIfCached(tenantId);
+            return GetDefinitionsIfCached(tenantId, forceFresh);
         }
 
         /// <summary>

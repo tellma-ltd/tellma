@@ -1,0 +1,36 @@
+<t-master collection="ContractDefinition" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'ContractDefinitions' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code" selectForTiles="Code" theme="dark"
+  [multiselectActions]="[]" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ]
+          }">
+</t-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('ContractDefinition', id, 'TitleSingular') }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span class="d-block text-truncate">{{ ws.get('ContractDefinition', id)?.Code }}</span>
+  </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+  {{ 'ContractDefinition' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+  <span class="text-truncate">
+    <t-auto-cell collection="ContractDefinition" [entity]="c[id]"></t-auto-cell>
+  </span>
+</ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

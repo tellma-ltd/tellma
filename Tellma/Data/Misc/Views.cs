@@ -199,6 +199,17 @@
                             Li("IsActive")
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "contract-definitions",
+                        Name = "ContractDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",

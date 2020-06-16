@@ -9,6 +9,34 @@
 @{
     ViewData["Title"] = Localizer["SignIn"];
 }
+
+@{
+    if ((Model.ExternalLogins?.Count ?? 0) > 0)
+    {
+        <div>
+            <section>
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    @foreach (var provider in Model.ExternalLogins)
+                    {
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary w-100" name="provider" value="@provider.Name"
+                                    title="Log in using your @provider.DisplayName account">
+                                <i class="fab fa-@provider.Name.ToLower() font-weight-normal"></i>&nbsp;&nbsp;&nbsp;@Localizer["SignInWith0", Localizer[provider.DisplayName]]
+                            </button>
+                        </div>
+                    }
+
+                </form>
+                <div class="d-flex align-items-center">
+                    <hr class="flex-grow-1 b-bar" />
+                    <span class="p-3">@Localizer["Or"]</span>
+                    <hr class="flex-grow-1 b-bar" />
+                </div>
+            </section>
+        </div>
+    }
+}
+
 <div>
     @*<h1 class="mt-4">@ViewData["Title"]</h1>*@
     <section>
@@ -48,35 +76,6 @@
         </form>
     </section>
 </div>
-@{
-    if ((Model.ExternalLogins?.Count ?? 0) > 0)
-    {
-        <div>
-            <section>
-                <div class="d-flex align-items-center">
-                    <hr class="flex-grow-1 b-bar" />
-                    <span class="p-3">@Localizer["Or"]</span>
-                    <hr class="flex-grow-1 b-bar" />
-                </div>
-                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                    <div class="d-flex justify-content-center">
-                        <div class="d-flex flex-column align-items-start">
-                            @foreach (var provider in Model.ExternalLogins)
-                        {
-                            <button type="submit" class="btn btn-light b-white-button text-primary mb-2" name="provider" value="@provider.Name"
-                                    title="Log in using your @provider.DisplayName account">
-                                <i class="fab fa-@provider.Name.ToLower() font-weight-normal"></i>&nbsp;&nbsp;&nbsp;@Localizer["SignInWith0", Localizer[provider.DisplayName]]
-                            </button>
-                        }
-                        </div>
-                    </div>
-
-                </form>
-            </section>
-        </div>
-    }
-}
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

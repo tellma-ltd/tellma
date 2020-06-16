@@ -134,7 +134,7 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<AdminUserForSave, AdminUser, int> GetCrudService()
         {
-            return _service;
+            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
         }
 
         protected override async Task OnSuccessfulSave(List<AdminUser> data, Extras extras)
@@ -163,16 +163,28 @@ namespace Tellma.Controllers
         private readonly GlobalOptions _options;
         private readonly IStringLocalizer _localizer;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
-        private readonly IHttpContextAccessor _contextAccessor;
-        private readonly LinkGenerator _linkGenerator;
 
         // This is created and disposed across multiple methods
         private TransactionScope _identityTrxScope;
 
+        private IUrlHelper _urlHelper = null;
+        private string _scheme = null;
+
+        public AdminUsersService SetUrlHelper(IUrlHelper urlHelper)
+        {
+            _urlHelper = urlHelper;
+            return this;
+        }
+
+        public AdminUsersService SetScheme(string scheme)
+        {
+            _scheme = scheme;
+            return this;
+        }
+
         private string View => AdminUsersController.BASE_ADDRESS;
 
-        public AdminUsersService(IHttpContextAccessor contextAccessor,
-            LinkGenerator linkGenerator,
+        public AdminUsersService(
             AdminRepository repo,
             IOptions<GlobalOptions> options,
             IServiceProvider serviceProvider,
@@ -181,8 +193,6 @@ namespace Tellma.Controllers
             IStringLocalizer<Strings> localizer,
             MetadataProvider metadataProvider) : base(serviceProvider)
         {
-            _contextAccessor = contextAccessor;
-            _linkGenerator = linkGenerator;
             _repo = repo;
             _metadataProvider = metadataProvider;
             _emailSender = emailSender;
@@ -589,15 +599,15 @@ namespace Tellma.Controllers
             string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
             string nameOfInvitor = _localizer["AppName"];
 
-            string callbackUrl = _linkGenerator.GetUriByPage(
-                    httpContext: _contextAccessor.HttpContext ?? throw new InvalidOperationException("Unable to access the HttpContext to generate invitation links"),
-                    page: "/Account/ConfirmEmail");
+            //string callbackUrl = _linkGenerator.GetUriByPage(
+            //        httpContext: _contextAccessor.HttpContext ?? throw new InvalidOperationException("Unable to access the HttpContext to generate invitation links"),
+            //        page: "/Account/ConfirmEmail");
 
-            //string callbackUrl = Url.Page(
-            //        pageName: "/Account/ConfirmEmail",
-            //        pageHandler: null,
-            //        values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-            //        protocol: Request.Scheme);
+            string callbackUrl = _urlHelper.Page(
+                    pageName: "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
+                    protocol: _scheme);
 
             // Prepare the email
             string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];

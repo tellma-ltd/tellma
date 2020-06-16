@@ -9,6 +9,7 @@ import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/defini
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
+import { MainMenuSection } from '~/app/data/entities/base/definition-common';
 
 interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
 interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
@@ -66,18 +67,22 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'account-types', sortKey: 300
         },
         {
-          label: 'IfrsConcepts', icon: 'list', link: '../ifrs-concepts',
-          view: 'ifrs-concepts', sortKey: 400
-        },
-        {
           label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
           view: 'account-classifications', sortKey: 500
+        },
+        {
+          label: 'Centers', icon: 'sitemap', link: '../centers',
+          view: 'centers', sortKey: 600
         },
       ]
     },
     Cash: {
       background: 't-green1',
-      items: []
+      items: [
+        { label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
+          view: 'exchange-rates', sortKey: 100
+        }
+      ]
     },
     FixedAssets: {
       background: 't-teal2',
@@ -125,12 +130,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         { label: 'Currencies', icon: 'euro-sign', link: '../currencies',
           view: 'currencies', sortKey: 200
         },
-        { label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
-          view: 'exchange-rates', sortKey: 300
-        },
         {
-          label: 'Centers', icon: 'sitemap', link: '../centers',
-          view: 'centers', sortKey: 400
+          label: 'IfrsConcepts', icon: 'list', link: '../ifrs-concepts',
+          view: 'ifrs-concepts', sortKey: 400
         },
         {
           label: 'Settings', icon: 'cog', link: '../settings',
@@ -157,6 +159,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
           view: 'report-definitions', sortKey: 500
+        },
+        {
+          label: 'ContractDefinitions', icon: 'tools', link: '../contract-definitions',
+          view: 'contract-definitions', sortKey: 550
         },
         {
           label: 'MarkupTemplates', icon: 'file-code', link: '../markup-templates',
@@ -675,5 +681,18 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public canView(view: string) {
     return this.workspace.currentTenant.canRead(view);
+  }
+
+  /**
+   * This is to help the business analyst choose the right sort key for a new screen
+   */
+  public onSectionDoubleClick(section: MenuSectionInfo) {
+    if (!section || !section.items)  {
+      return;
+    }
+    console.log(`------- Section: ${section.label} -------`);
+    for (const item of section.items) {
+      console.log(`${item.sortKey} ${item.label}`);
+    }
   }
 }

@@ -8,15 +8,21 @@ namespace Tellma.Controllers
     /// </summary>
     public interface IDefinitionsCache
     {
-        /// <summary>
-        /// Returns the cached model metadata associated with the given database ID or null if non exist
-        /// </summary>
-        Versioned<DefinitionsForClient> GetDefinitionsIfCached(int databaseId);
+
 
         /// <summary>
-        /// Returns the cached model metadata associated with the given database ID or null if non exist
+        /// Returns the cached model metadata associated with the given database ID or null if non exist.
+        /// Once this it is called, the result is guaranteed to be be the same for any subsequent calls
+        /// within the same request scope, unless parameter forceFresh = true
         /// </summary>
-        Versioned<DefinitionsForClient> GetCurrentDefinitionsIfCached();
+        Versioned<DefinitionsForClient> GetDefinitionsIfCached(int databaseId, bool forceFresh = false);
+
+        /// <summary>
+        /// Returns the cached model metadata associated with the given database ID or null if non exist.
+        /// Once this it is called, the result is guaranteed to be be the same for any subsequent calls
+        /// within the same request scope, unless parameter forceFresh = true
+        /// </summary>
+        Versioned<DefinitionsForClient> GetCurrentDefinitionsIfCached(bool forceFresh = false);
 
         /// <summary>
         /// Sets the cached model metadata associated with the given database ID

@@ -8,9 +8,9 @@ namespace Tellma.Entities
     /// Indicates that the adorned property can only be one of the supported system languages
     /// </summary>
     [AttributeUsage(validOn: AttributeTargets.Property)]
-    public class CultureAttribute : ChoiceListAttribute
+    public class CultureChoiceListAttribute : ChoiceListAttribute
     {
-        public CultureAttribute() : base(Startup.SUPPORTED_CULTURES, GetCultureDisplayNames()) { }
+        public CultureChoiceListAttribute() : base(Startup.SUPPORTED_CULTURES, GetCultureDisplayNames()) { }
 
         private static string[] GetCultureDisplayNames()
         {

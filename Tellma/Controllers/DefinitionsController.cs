@@ -34,7 +34,8 @@ namespace Tellma.Controllers
             try
             {
                 // Simply retrieves the cached definitions, which were refreshed by ApiController
-                var result = _definitionsCache.GetCurrentDefinitionsIfCached();
+                // We ask for the latest cached version, not the one at the beginning of the request which may have changed
+                var result = _definitionsCache.GetCurrentDefinitionsIfCached(forceFresh: true);
                 if (result == null)
                 {
                     throw new InvalidOperationException("The definitions were missing from the cache");
@@ -52,6 +53,32 @@ namespace Tellma.Controllers
 
     public class DefinitionsService : ServiceBase
     {
+        private const string _ManualLine = "ManualLine";
+        private const string _ManualJournalVoucher = "ManualJournalVoucher";
+        //private readonly IDefinitionsCache _definitionsCache;
+        //private readonly ApplicationRepository _repo;
+
+        //public DefinitionsService(IDefinitionsCache definitionsCache, ApplicationRepository repo)
+        //{
+        //    _definitionsCache = definitionsCache;
+        //    _repo = repo;
+        //}
+
+        //public async Task<Versioned<DefinitionsForClient>> DefinitionsForClient(bool forceRefresh, CancellationToken cancellation)
+        //{
+        //    var result = await LoadDefinitionsForClient(_repo, cancellation);
+        //    if (forceRefresh)
+        //    {
+
+        //        _definitionsCache.SetDefinitions();
+        //    }
+
+        //    else
+        //    {
+        //        return _definitionsCache.GetCurrentDefinitionsIfCached();
+        //    }
+        //}
+
         private static string MapVisibility(string visibility)
         {
             if (visibility == Visibility.None)
@@ -104,7 +131,8 @@ namespace Tellma.Controllers
                 StartDateLabel3 = def.StartDateLabel3,
                 JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
-
+                UserVisibility = MapVisibility(def.UserVisibility),
+                AllowMultipleUsers = def.AllowMultipleUsers ?? false,
             };
         }
 
@@ -348,9 +376,6 @@ namespace Tellma.Controllers
 
             return line;
         }
-
-        private const string _ManualLine = "ManualLine";
-        private const string _ManualJournalVouchers = "manual-journal-vouchers";
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {
@@ -684,10 +709,10 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
-            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVouchers).Key;
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVoucher).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: 'manual-journal-vouchers' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{_ManualJournalVoucher}' could not be found");
             }
 
             result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == _ManualLine).Key;

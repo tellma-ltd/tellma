@@ -9,7 +9,6 @@ using System.Reflection;
 using Tellma.Controllers.Dto;
 using Tellma.Entities;
 using Tellma.Entities.Descriptors;
-using Tellma.Services.MultiTenancy;
 using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
@@ -178,6 +177,36 @@ namespace Tellma.Controllers
                         {
                             display = () => _localizer[name];
                         }
+                    }
+
+                    // e.g. "Currency Field Label"
+                    var labelAtt = propInfo.GetCustomAttribute<DefinitionLabelDisplayAttribute>();
+                    if (labelAtt != null)
+                    {
+                        string labelName = "Field0Label";
+                        string name = labelAtt.Name;
+                        if (settings.SecondaryLanguageId != null || settings.TernaryLanguageId != null)
+                        {
+                            display = labelAtt.Language switch
+                            {
+                                Language.Primary => () => $"{_localizer[labelName, _localizer[name]]} ({settings.PrimaryLanguageSymbol})",
+                                Language.Secondary => settings.SecondaryLanguageId == null ? (Func<string>)null : () => $"{_localizer[labelName, _localizer[name]]} ({settings.SecondaryLanguageSymbol})",
+                                Language.Ternary => settings.TernaryLanguageId == null ? (Func<string>)null : () => $"{_localizer[labelName, _localizer[name]]} ({settings.TernaryLanguageSymbol})",
+                                _ => throw new InvalidOperationException($"Unknown Language {labelAtt.Language}") // Future proofing
+                            };
+                        }
+                        else
+                        {
+                            display = () => _localizer[labelName, _localizer[name]];
+                        }
+                    }
+
+                    // e.g. "Currency Field Visibility"
+                    var visibilityDisplayAtt = propInfo.GetCustomAttribute<VisibilityDisplayAttribute>();
+                    if (visibilityDisplayAtt != null)
+                    {
+                        string name = visibilityDisplayAtt.Name;
+                        display = () => _localizer["Field0Visibility", _localizer[name]];
                     }
 
                     #endregion
@@ -907,6 +936,18 @@ namespace Tellma.Controllers
                 case nameof(Contract.BankAccountNumber):
                     display = PropertyDisplay(def.BankAccountNumberVisibility, display);
                     isRequired = def.BankAccountNumberVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.User):
+                    if (def.UserVisibility != null && def.AllowMultipleUsers)
+                    {
+                        display = null;
+                        isRequired = false;
+                    }
+                    else
+                    {
+                        display = PropertyDisplay(def.UserVisibility, display);
+                        isRequired = def.UserVisibility == Visibility.Required;
+                    }
                     break;
             }
 

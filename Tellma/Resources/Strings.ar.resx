@@ -334,6 +334,9 @@
   <data name="ContractDefinition" xml:space="preserve">
     <value>تعريف عقد</value>
   </data>
+  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
+    <value>يجوز تعدد المستخدمين</value>
+  </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>تعريفات العقود</value>
   </data>
@@ -1090,6 +1093,12 @@
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
   </data>
+  <data name="Field0Label" xml:space="preserve">
+    <value>اسم الحقل ({0})</value>
+  </data>
+  <data name="Field0Visibility" xml:space="preserve">
+    <value>مظهر الحقل ({0})</value>
+  </data>
   <data name="File" xml:space="preserve">
     <value>ملف</value>
   </data>
@@ -1573,9 +1582,6 @@
   <data name="PleaseConfirm" xml:space="preserve">
     <value>يرجى التأكيد</value>
   </data>
-  <data name="PluralName" xml:space="preserve">
-    <value>اسم الجمع</value>
-  </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
   </data>
@@ -1782,15 +1788,6 @@
   </data>
   <data name="ReportDefinition_Visibility" xml:space="preserve">
     <value>المظهر</value>
-  </data>
-  <data name="ReportDefinition_Visibility_None" xml:space="preserve">
-    <value>مخفي</value>
-  </data>
-  <data name="ReportDefinition_Visibility_Optional" xml:space="preserve">
-    <value>اختياري</value>
-  </data>
-  <data name="ReportDefinition_Visibility_Required" xml:space="preserve">
-    <value>مطلوب</value>
   </data>
   <data name="ReportDefinitions" xml:space="preserve">
     <value>تعاريف تقارير</value>
@@ -2188,6 +2185,9 @@
   <data name="Title" xml:space="preserve">
     <value>العنوان</value>
   </data>
+  <data name="TitlePlural" xml:space="preserve">
+    <value>اسم الجمع</value>
+  </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>الاسم المفرد</value>
   </data>
@@ -2325,6 +2325,15 @@
   </data>
   <data name="Views" xml:space="preserve">
     <value>واجهات</value>
+  </data>
+  <data name="Visibility_None" xml:space="preserve">
+    <value>مخفي</value>
+  </data>
+  <data name="Visibility_Optional" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="Visibility_Required" xml:space="preserve">
+    <value>مطلوب</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>نعم</value>

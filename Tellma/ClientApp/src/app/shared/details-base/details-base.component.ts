@@ -15,7 +15,7 @@ import { TenantWorkspace } from '~/app/data/workspace.service';
 export class DetailsBaseComponent implements ICanDeactivate, OnInit, OnDestroy {
 
   @Input()
-  public mode: 'screen' | 'popup' = 'screen';
+  public mode: 'screen' | 'popup' | 'preview' = 'screen';
 
   @Input()
   public idString: string | number;

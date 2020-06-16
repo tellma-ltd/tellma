@@ -66,11 +66,11 @@ namespace Tellma.Controllers
         }
 
         [HttpPut("invite")]
-        public async Task<ActionResult> ResendInvitationEmail(int userId)
+        public async Task<ActionResult> ResendInvitationEmail(int id)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await _service.ResentInvitationEmail(userId);
+                await _service.ResendInvitationEmail(id);
                 return Ok();
             },
             _logger);
@@ -155,14 +155,12 @@ namespace Tellma.Controllers
 
         protected override CrudServiceBase<UserForSave, User, int> GetCrudService()
         {
-            return _service;
+            return _service.SetUrlHelper(Url).SetScheme(Request.Scheme);
         }
     }
 
     public class UsersService : CrudServiceBase<UserForSave, User, int>
     {
-        private readonly IHttpContextAccessor _contextAccessor;
-        private readonly LinkGenerator _linkGenerator;
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
@@ -178,11 +176,24 @@ namespace Tellma.Controllers
         private TransactionScope _adminTrxScope;
         private TransactionScope _identityTrxScope;
 
+        private IUrlHelper _urlHelper = null;
+        private string _scheme = null;
+
+        public UsersService SetUrlHelper(IUrlHelper urlHelper)
+        {
+            _urlHelper = urlHelper;
+            return this;
+        }
+
+        public UsersService SetScheme(string scheme)
+        {
+            _scheme = scheme;
+            return this;
+        }
+
         private string View => UsersController.BASE_ADDRESS;
 
         public UsersService(
-            IHttpContextAccessor contextAccessor,
-            LinkGenerator linkGenerator,
             ApplicationRepository appRepo,
             AdminRepository adminRepo,
             IOptions<GlobalOptions> options,
@@ -194,8 +205,6 @@ namespace Tellma.Controllers
             IBlobService blobService,
             MetadataProvider metadataProvider) : base(serviceProvider)
         {
-            _contextAccessor = contextAccessor;
-            _linkGenerator = linkGenerator;
             _appRepo = appRepo;
             _adminRepo = adminRepo;
             _tenantIdAccessor = tenantIdAccessor;
@@ -267,7 +276,7 @@ namespace Tellma.Controllers
             return result;
         }
 
-        public async Task ResentInvitationEmail(int userId)
+        public async Task ResendInvitationEmail(int userId)
         {
             if (!_options.EmailEnabled)
             {
@@ -493,10 +502,10 @@ namespace Tellma.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var email = nameof(Entities.User.Email);
-                var name = nameof(Entities.User.Name);
-                var name2 = nameof(Entities.User.Name2);
-                var name3 = nameof(Entities.User.Name3);
+                var email = nameof(User.Email);
+                var name = nameof(User.Name);
+                var name2 = nameof(User.Name2);
+                var name3 = nameof(User.Name3);
                 var cs = Ops.contains;
 
                 query = query.Filter($"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'");
@@ -800,15 +809,16 @@ namespace Tellma.Controllers
                 info.TernaryLanguageId == name ? name3 ?? name :
                 name;
 
-            string callbackUrl = _linkGenerator.GetUriByPage(
-                    httpContext: _contextAccessor.HttpContext ?? throw new InvalidOperationException("Unable to access the HttpContext to generate invitation links"),
-                    page: "/Account/ConfirmEmail");
+            if (_urlHelper == null || _scheme == null)
+            {
+                throw new InvalidOperationException("Bug: The UrlHelper and/or the request scheme were not set");
+            }
 
-            //string callbackUrl = Url.Page(
-            //        "/Account/ConfirmEmail",
-            //        pageHandler: null,
-            //        values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-            //        protocol: Request.Scheme);
+            string callbackUrl = _urlHelper.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
+                    protocol: _scheme);     
 
             // Prepare the email
             string emailSubject = _localizer["InvitationEmailSubject0", _localizer["AppName"]];

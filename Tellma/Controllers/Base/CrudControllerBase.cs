@@ -111,6 +111,8 @@ namespace Tellma.Controllers
                 var service = GetCrudService();
                 await service.Delete(ids);
 
+                await OnSuccessfulDelete(ids: ids);
+
                 return Ok();
             }, _logger);
         }
