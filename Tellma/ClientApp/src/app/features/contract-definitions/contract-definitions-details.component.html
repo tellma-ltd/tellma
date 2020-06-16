@@ -300,29 +300,34 @@
                         </ng-container>
                     </div>
 
-                    <!-- UserVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(uservisibility, model.serverErrors?.UserVisibility)">
-                        <label class="small"
-                            for="uservisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_User' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="uservisibility"
-                            [(ngModel)]="model.UserVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #uservisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: uservisibility, serverErrors: model.serverErrors?.UserVisibility }">
-                        </ng-container>
-                    </div>
+                    <!-- TODO -->
+                    <ng-container *ngIf="false">
 
-                    <!-- Allow Multiple Users -->
-                    <div class="custom-control custom-checkbox" *ngIf="isVisible(model.UserVisibility)">
-                        <input type="checkbox" class="custom-control-input" id="allowmultipleusers"
-                            [(ngModel)]="model.AllowMultipleUsers" (ngModelChange)="onDefinitionChange(model)">
-                        <label class="custom-control-label"
-                            for="allowmultipleusers">{{ 'ContractDefinition_AllowMultipleUsers' | translate }}</label>
-                    </div>
+                        <!-- UserVisibility -->
+                        <div class="form-group"
+                            [class.is-invalid]="invalid(uservisibility, model.serverErrors?.UserVisibility)">
+                            <label class="small"
+                                for="uservisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_User' | translate) } }}</label>
+                            <select class="form-control t-studio-input" id="uservisibility"
+                                [(ngModel)]="model.UserVisibility" (ngModelChange)="onDefinitionChange(model)"
+                                #uservisibility="ngModel">
+                                <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                                    {{ c.name() }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: uservisibility, serverErrors: model.serverErrors?.UserVisibility }">
+                            </ng-container>
+                        </div>
+
+                        <!-- AllowMultipleUsers -->
+                        <div class="custom-control custom-checkbox" *ngIf="isVisible(model.UserVisibility)">
+                            <input type="checkbox" class="custom-control-input" id="allowmultipleusers"
+                                [(ngModel)]="model.AllowMultipleUsers" (ngModelChange)="onDefinitionChange(model)">
+                            <label class="custom-control-label"
+                                for="allowmultipleusers">{{ 'ContractDefinition_AllowMultipleUsers' | translate }}</label>
+                        </div>
+
+                    </ng-container>
                 </div>
 
                 <!-- Menu Section -->
