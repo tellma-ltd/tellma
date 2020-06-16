@@ -232,6 +232,9 @@
   <data name="Button_DisableTwoFactorAuthentication" xml:space="preserve">
     <value>禁用2FA</value>
   </data>
+  <data name="Byte" xml:space="preserve">
+    <value>字节</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>

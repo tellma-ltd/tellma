@@ -232,6 +232,9 @@
   <data name="Button_DisableTwoFactorAuthentication" xml:space="preserve">
     <value>Disable 2FA</value>
   </data>
+  <data name="Byte" xml:space="preserve">
+    <value>Byte</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
