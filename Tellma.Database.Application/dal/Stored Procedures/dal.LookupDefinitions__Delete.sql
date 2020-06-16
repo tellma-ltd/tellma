@@ -2,3 +2,5 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 	DELETE [dbo].[LookupDefinitions] WHERE [Id] IN (SELECT [Id] FROM @Ids);
+
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();

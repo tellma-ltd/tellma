@@ -29,7 +29,7 @@ namespace Tellma.Entities
         [Display(Name = "Settings_PrimaryLanguage")]
         [Required]
         [StringLength(2)]
-        [Culture]
+        [CultureChoiceList]
         public string PrimaryLanguageId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguageSymbol")]
@@ -38,7 +38,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Settings_SecondaryLanguage")]
         [StringLength(2)]
-        [Culture]
+        [CultureChoiceList]
         public string SecondaryLanguageId { get; set; }
 
         [Display(Name = "Settings_SecondaryLanguageSymbol")]
@@ -47,7 +47,7 @@ namespace Tellma.Entities
 
         [Display(Name = "Settings_TernaryLanguage")]
         [StringLength(2)]
-        [Culture]
+        [CultureChoiceList]
         public string TernaryLanguageId { get; set; }
 
         [Display(Name = "Settings_TernaryLanguageSymbol")]

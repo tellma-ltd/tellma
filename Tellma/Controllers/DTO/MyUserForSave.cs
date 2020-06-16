@@ -26,7 +26,7 @@ namespace Tellma.Controllers.Dto
 
         [Display(Name = "User_PreferredLanguage")]
         [StringLength(2, ErrorMessage = Services.Utilities.Constants.Error_Field0LengthMaximumOf1)]
-        [Culture]
+        [CultureChoiceList]
         public string PreferredLanguage { get; set; }
     }
 }

@@ -17,9 +17,8 @@
     <div class="mb-4 mb-md-5 t-quickaccess" *ngIf="!search" [class.d-none]="!showSection(quickAccess)">
       <div class="t-menu-section">
         <span>{{ 'Menu_QuickAccess' | translate }}</span></div>
-      <a class="t-menu-item btn m-1" [id]="getId(0, i)" (focus)="onFocus(0, i)"
-        [class.d-none]="!showItem(item)" (blur)="onBlur()" *ngFor="let item of quickAccess; let i = index;"
-        [routerLink]="item.link">
+      <a class="t-menu-item btn m-1" [id]="getId(0, i)" (focus)="onFocus(0, i)" [class.d-none]="!showItem(item)"
+        (blur)="onBlur()" *ngFor="let item of quickAccess; let i = index;" [routerLink]="item.link">
         <div class="pt-4 pb-1 t-menu-item-icon">
           <fa-icon [icon]="item.icon"></fa-icon>
         </div>
@@ -38,7 +37,7 @@
     <ng-container *ngIf="initialized">
       <div class="mb-4 mb-md-5 {{ section.background }}" *ngFor="let section of mainMenu; let s = index;"
         [class.d-none]="!showSection(section?.items)">
-        <div class="t-menu-section">
+        <div class="t-menu-section" (dblclick)="onSectionDoubleClick(section)">
           <span>{{ section.label }}</span>
         </div>
         <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"

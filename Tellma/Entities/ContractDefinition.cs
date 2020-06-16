@@ -13,6 +13,7 @@ namespace Tellma.Entities
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
+        [Required]
         [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }
@@ -45,18 +46,59 @@ namespace Tellma.Entities
 
         // TODO: Add metadata
 
+        [VisibilityDisplay(Name = "Contract_Agent")]
+        [VisibilityChoiceList]
         public string AgentVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Contract_Currency")]
+        [VisibilityChoiceList]
         public string CurrencyVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Contract_TaxIdentificationNumber")]
+        [VisibilityChoiceList]
         public string TaxIdentificationNumberVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Image")]
+        [VisibilityChoiceList]
         public string ImageVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Contract_StartDate")]
+        [VisibilityChoiceList]
         public string StartDateVisibility { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Primary)]
         public string StartDateLabel { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Secondary)]
         public string StartDateLabel2 { get; set; }
+
+        [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Ternary)]
         public string StartDateLabel3 { get; set; }
+
+        // TEMP
+
+        public string Prefix { get; set; }
+
+        public byte? CodeWidth { get; set; }
+
+        public bool? IsActive { get; set; } = false;
+
+        // END TEMP
+
+        [VisibilityDisplay(Name = "Contract_Job")]
+        [VisibilityChoiceList]
         public string JobVisibility { get; set; }
+
+        [VisibilityDisplay(Name = "Contract_BankAccountNumber")]
+        [VisibilityChoiceList]
         public string BankAccountNumberVisibility { get; set; }
 
-        // ---------------
+        [VisibilityDisplay(Name = "Contract_User")]
+        [VisibilityChoiceList]
+        public string UserVisibility { get; set; }
+
+        [Display(Name = "ContractDefinition_AllowMultipleUsers")]
+        public bool? AllowMultipleUsers { get; set; }
 
         [Display(Name = "MainMenuIcon")]
         [StringLength(255)]

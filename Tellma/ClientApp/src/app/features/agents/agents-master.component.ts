@@ -33,11 +33,6 @@ export class AgentsMasterComponent extends MasterBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  public agentTypeLookup(value: string): string {
-    const descriptor = metadata_Agent(this.workspace, this.translate).properties.AgentType as ChoicePropDescriptor;
-    return descriptor.format(value);
-  }
-
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.agentsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))

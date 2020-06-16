@@ -34,7 +34,8 @@ namespace Tellma.Controllers
             try
             {
                 // Simply retrieves the cached definitions, which were refreshed by ApiController
-                var result = _definitionsCache.GetCurrentDefinitionsIfCached();
+                // We ask for the latest cached version, not the one at the beginning of the request which may have changed
+                var result = _definitionsCache.GetCurrentDefinitionsIfCached(forceFresh: true);
                 if (result == null)
                 {
                     throw new InvalidOperationException("The definitions were missing from the cache");
@@ -52,6 +53,32 @@ namespace Tellma.Controllers
 
     public class DefinitionsService : ServiceBase
     {
+        private const string _ManualLine = "ManualLine";
+        private const string _ManualJournalVoucher = "ManualJournalVoucher";
+        //private readonly IDefinitionsCache _definitionsCache;
+        //private readonly ApplicationRepository _repo;
+
+        //public DefinitionsService(IDefinitionsCache definitionsCache, ApplicationRepository repo)
+        //{
+        //    _definitionsCache = definitionsCache;
+        //    _repo = repo;
+        //}
+
+        //public async Task<Versioned<DefinitionsForClient>> DefinitionsForClient(bool forceRefresh, CancellationToken cancellation)
+        //{
+        //    var result = await LoadDefinitionsForClient(_repo, cancellation);
+        //    if (forceRefresh)
+        //    {
+
+        //        _definitionsCache.SetDefinitions();
+        //    }
+
+        //    else
+        //    {
+        //        return _definitionsCache.GetCurrentDefinitionsIfCached();
+        //    }
+        //}
+
         private static string MapVisibility(string visibility)
         {
             if (visibility == Visibility.None)
@@ -104,7 +131,8 @@ namespace Tellma.Controllers
                 StartDateLabel3 = def.StartDateLabel3,
                 JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
-
+                UserVisibility = MapVisibility(def.UserVisibility),
+                AllowMultipleUsers = def.AllowMultipleUsers ?? false,
             };
         }
 
@@ -348,9 +376,6 @@ namespace Tellma.Controllers
 
             return line;
         }
-
-        private const string _ManualLine = "ManualLine";
-        private const string _ManualJournalVoucher = "ManualJournalVoucher";
 
         private static DocumentDefinitionForClient MapDocumentDefinition(DocumentDefinition def, Dictionary<int, LineDefinitionForClient> lineDefsDic)
         {

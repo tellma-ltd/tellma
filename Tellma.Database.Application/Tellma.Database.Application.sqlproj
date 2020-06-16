@@ -588,6 +588,7 @@
     <None Include="Provisioning\100_105\07_Entries\b_cash-payment-vouchers.sql" />
     <None Include="Provisioning\100_105\07_Entries\e_revenue-templates.sql" />
     <None Include="Provisioning\100_105\07_Entries\f_revenue-recognition-vouchers.sql" />
+    <Build Include="map\map.ContractDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

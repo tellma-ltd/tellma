@@ -215,8 +215,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ReportDefinition_Visibility")]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { "None", "Optional", "Required" },
-            new string[] { "ReportDefinition_Visibility_None", "ReportDefinition_Visibility_Optional", "ReportDefinition_Visibility_Required" })]
+        [VisibilityChoiceList]
         public string Visibility { get; set; }
         
         //// TODO: This will come in handy once we upgrade the filter syntax

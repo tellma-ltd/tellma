@@ -111,5 +111,8 @@ WHEN NOT MATCHED BY TARGET THEN
 		[Index], s.[DocumentDefinitionId], s.[MarkupTemplateId]
 	);
 
+-- Signal clients to refresh their cache
+UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+
 IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

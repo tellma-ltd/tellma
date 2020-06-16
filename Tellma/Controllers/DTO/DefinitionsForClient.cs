@@ -463,6 +463,8 @@ namespace Tellma.Controllers.Dto
         public string StartDateLabel3 { get; set; }
         public string JobVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
+        public string UserVisibility { get; set; }
+        public bool AllowMultipleUsers { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient

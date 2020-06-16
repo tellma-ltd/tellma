@@ -1,6 +1,7 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
 import { LineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
+import { DefinitionVisibility as Visibility } from '../entities/base/definition-common';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -268,8 +269,6 @@ export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
     'MonetaryValue' | 'Quantity' | 'UnitId' | 'Time1' | 'Time2' | 'Value' |
     'ExternalReference' | 'AdditionalReference' | 'NotedContractId' |
     'NotedContractName' | 'NotedAmount' | 'NotedDate';
-
-export type Visibility = 'None' | 'Optional' | 'Required';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 

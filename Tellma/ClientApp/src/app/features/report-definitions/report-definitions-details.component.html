@@ -457,7 +457,7 @@
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
                     <!-- Code -->
                     <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
-                        <label class="small" for="code">{{ 'Code' }}</label>
+                        <label class="small" for="code">{{ 'Code' | translate }}</label>
                         <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
                             #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
                             [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
@@ -632,7 +632,6 @@
     </div>
 </ng-template>
 
-
 <ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
     <ng-container *ngIf="invalid(control, serverErrors)">
         <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
@@ -751,10 +750,10 @@
                 <select class="form-control t-studio-input" id="visibility" [(ngModel)]="itemToEdit['Visibility']"
                     (ngModelChange)="itemToEditHasChanged = true">
                     <option value="None" *ngIf="showNone(itemToEdit['Key'])">
-                        {{ 'ReportDefinition_Visibility_None' | translate }}</option>
+                        {{ 'Visibility_None' | translate }}</option>
                     <option value="Optional" *ngIf="showOptional(itemToEdit['Key'])">
-                        {{ 'ReportDefinition_Visibility_Optional' | translate }}</option>
-                    <option value="Required">{{ 'ReportDefinition_Visibility_Required' | translate }}</option>
+                        {{ 'Visibility_Optional' | translate }}</option>
+                    <option value="Required">{{ 'Visibility_Required' | translate }}</option>
                 </select>
             </div>
 

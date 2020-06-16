@@ -28,6 +28,7 @@ import { metadata_MarkupTemplate } from '../markup-template';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_Agent } from '../agent';
+import { metadata_ContractDefinition } from '../contract-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -59,6 +60,7 @@ export const metadata: {
     MarkupTemplate: metadata_MarkupTemplate,
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
+    ContractDefinition: metadata_ContractDefinition,
 
     // Admin
     AdminUser: metadata_AdminUser,

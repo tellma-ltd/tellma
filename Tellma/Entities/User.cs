@@ -39,7 +39,7 @@ namespace Tellma.Entities
 
         [Display(Name = "User_PreferredLanguage")]
         [StringLength(2)]
-        [Culture]
+        [CultureChoiceList]
         public string PreferredLanguage { get; set; }
 
         [Display(Name = "User_Roles")]

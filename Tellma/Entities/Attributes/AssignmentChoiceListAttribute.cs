@@ -8,9 +8,9 @@ namespace Tellma.Entities
     /// For all the "Assignment" fields in <see cref="AccountTypeForSave"/>
     /// </summary>
     [AttributeUsage(validOn: AttributeTargets.Property)]
-    public class AssignmentAttribute : ChoiceListAttribute
+    public class AssignmentChoiceListAttribute : ChoiceListAttribute
     {
-        public AssignmentAttribute(AssignmentType type = AssignmentType.Optional) : base(
+        public AssignmentChoiceListAttribute(AssignmentType type = AssignmentType.Optional) : base(
             type == AssignmentType.Optional ? new object[] { 'N', 'A', 'E' } :
             type == AssignmentType.Required ? new object[] { 'A', 'E' } :
             type == AssignmentType.EntryOnly ? new object[] { 'N', 'E' } : throw new Exception("Unknown AssignmentType"),
