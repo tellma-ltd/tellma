@@ -184,10 +184,10 @@ DECLARE @AT TABLE (
 	INSERT INTO @AT VALUES(176,'/2/15/', NULL,N'IncomeTaxExpenseContinuingOperations', N'Tax income (expense)',N'The aggregate amount included in the determination of profit (loss) for the period in respect of current tax and deferred tax. [Refer: Current tax expense (income); Deferred tax expense (income)]')
 	INSERT INTO @AT VALUES(177,'/3/', NULL,N'ControlAccountsExtension', N'',N'')
 	INSERT INTO @AT VALUES(178,'/3/1/', NULL,N'DocumentControlExtension', N'Document Control',N'')
-	INSERT INTO @AT VALUES(179,'/3/1/1/', NULL,N'CashPurchaseDocumentControlExtension', N'Cash purchase document control',N'')
-	INSERT INTO @AT VALUES(180,'/3/1/2/', NULL,N'CashSaleDocumentControlExtension', N'Cash sale document control',N'')
-	INSERT INTO @AT VALUES(181,'/3/1/3/', NULL,N'CashPayrollDocumentControlExtension', N'Cash payroll document control',N'')
-	INSERT INTO @AT VALUES(182,'/3/1/9/', NULL,N'OtherDocumentControlExtension', N'Other document control',N'')
+	INSERT INTO @AT VALUES(179,'/3/1/1/', NULL,N'CashControlExtension', N'Cash control',N'')
+	INSERT INTO @AT VALUES(180,'/3/1/2/', NULL,N'TradingControlExtension', N'Trading control',N'')
+	INSERT INTO @AT VALUES(181,'/3/1/3/', NULL,N'PayrollControlExtension', N'Payroll control',N'')
+	INSERT INTO @AT VALUES(182,'/3/1/9/', NULL,N'OtherControlExtension', N'Other document control',N'')
 	INSERT INTO @AT VALUES(183,'/3/2/', NULL,N'FinalAccountsControlExtension', N'',N'')
 
 	INSERT INTO @AccountTypes ([Index], [Code], [Name], [ParentIndex], 
@@ -278,7 +278,7 @@ BEGIN
 	DECLARE @CurrentTradeReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentTradeReceivables');
 	DECLARE @TradeAndOtherCurrentReceivablesDueFromRelatedParties INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradeAndOtherCurrentReceivablesDueFromRelatedParties');
 	DECLARE @CurrentPrepaymentsAndCurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPrepaymentsAndCurrentAccruedIncome');
-	DECLARE @CurrentPrepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPrepayments');
+	DECLARE @CurrentPrepayments INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentPrepayments');--<<<<< split into Advances (one time expense) and Prepaid Expenses (period expense like lease)
 	DECLARE @CurrentAccruedIncome INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentAccruedIncome');
 	DECLARE @CurrentReceivablesFromTaxesOtherThanIncomeTax INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentReceivablesFromTaxesOtherThanIncomeTax');
 	DECLARE @CurrentValueAddedTaxReceivables INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CurrentValueAddedTaxReceivables');
@@ -397,10 +397,10 @@ BEGIN
 	DECLARE @IncomeTaxExpenseContinuingOperations INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'IncomeTaxExpenseContinuingOperations');
 	DECLARE @ControlAccountsExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'ControlAccountsExtension');
 	DECLARE @DocumentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'DocumentControlExtension');
-	DECLARE @CashPurchaseDocumentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashPurchaseDocumentControlExtension');
-	DECLARE @CashSaleDocumentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashSaleDocumentControlExtension');
-	DECLARE @CashPayrollDocumentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashPayrollDocumentControlExtension');
-	DECLARE @OtherDocumentControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherDocumentControlExtension');
+	DECLARE @CashControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'CashControlExtension');
+	DECLARE @TradingControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'TradingControlExtension');
+	DECLARE @PayrollControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'PayrollControlExtension');
+	DECLARE @OtherControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'OtherControlExtension');
 	DECLARE @FinalAccountsControlExtension INT = (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] = N'FinalAccountsControlExtension');
 END
 
@@ -427,29 +427,27 @@ INSERT INTO dbo.[AccountTypeResourceDefinitions]
 
 INSERT INTO dbo.[AccountTypeContractDefinitions]
 ([AccountTypeId],								[ContractDefinitionId]) VALUES
-(@CashOnHand,									@cash_registersCD),
-(@CashOnHand,									@petty_cash_fundsCD),
-(@CashOnHand,									@vault_cash_fundsCD),
+(@CashOnHand,									@cashonhand_accountsCD),
 (@BalancesWithBanks	,							@bank_accountsCD),
 (@RawMaterials,									@warehousesCD),
 (@ProductionSupplies,							@warehousesCD),
 (@WorkInProgress,								@warehousesCD),
 (@FinishedGoods,								@warehousesCD),
-(@CurrentInventoriesInTransit,					@foreign_importsCD),
+(@CurrentInventoriesInTransit,					@foreign_importsCD), -- split into two
 (@CurrentInventoriesInTransit,					@foreign_exportsCD),
 (@CurrentPrepayments,							@suppliersCD),
-(@OtherCurrentFinancialAssets,					@debtorsCD), -- sundry debtor
+(@OtherCurrentFinancialAssets,					@debtorsCD), -- split it into 2 sundry debtor
 (@OtherCurrentFinancialAssets,					@employeesCD), -- staff debtor
 (@TradeAndOtherCurrentPayablesToTradeSuppliers,	@suppliersCD),
-(@AccrualsClassifiedAsCurrent,					@suppliersCD),
+(@AccrualsClassifiedAsCurrent,					@suppliersCD), -- split into two
 (@AccrualsClassifiedAsCurrent,					@employeesCD), -- last  5 days unpaid
-(@CashPurchaseDocumentControlExtension,			@suppliersCD),
 (@DeferredIncomeClassifiedAsCurrent,			@customersCD),
 (@CurrentTradeReceivables,						@customersCD),
 (@CurrentAccruedIncome,							@customersCD),
-(@CashSaleDocumentControlExtension,				@customersCD),
 (@OtherCurrentFinancialLiabilities,				@creditorsCD),
-(@OtherCurrentFinancialLiabilities,				@partnersCD);
+(@OtherCurrentFinancialLiabilities,				@partnersCD),
+(@CashControlExtension,							@suppliersCD),
+(@CashControlExtension,							@customersCD);
 
 INSERT INTO dbo.[AccountTypeNotedContractDefinitions]
 ([AccountTypeId],								[NotedContractDefinitionId]) VALUES

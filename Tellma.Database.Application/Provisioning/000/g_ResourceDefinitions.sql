@@ -1,5 +1,5 @@
 ﻿INSERT INTO @ResourceDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'property-plant-equipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'FixedAssets',60),
+(0, N'PropertyPlantAndEquipment', N'Property, Plant, Equipment', N'Property, plant, and equipment', N'industry', N'FixedAssets',60),
 (1, N'office-equipment', N'Office Equipment', N'Office Equipment', N'fax', N'FixedAssets',60),
 (2, N'computer-equipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',60),
 (3, N'machinery', N'Machinery', N'Machineries', N'cogs', N'FixedAssets',70),
@@ -18,7 +18,8 @@
 (16, N'medicines', N'Medicine', N'Medicines', N'pills', N'Purchasing',125),
 (17, N'construction-materials', N'Construction Material', N'Construction Materials', N'building', N'Purchasing',126),
 (18, N'employee-benefits', N'Employee Benefit', N'Employee Benefits', N'user-check', N'HumanCapital',127),
-(19, N'finished-services', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',128);
+(19, N'finished-services', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',128),
+(20, N'ChecksReceived', N'Check Received', N'Checks Received', N'money-check', N'Finance',129);
 
 
 	UPDATE @ResourceDefinitions
@@ -106,7 +107,7 @@ BEGIN
 END;
 
 --Declarations
-DECLARE @property_plant_equipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'property-plant-equipment');
+DECLARE @PropertyPlantAndEquipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'PropertyPlantAndEquipment');
 DECLARE @office_equipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'office-equipment');
 DECLARE @computer_equipmentRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'computer-equipment');
 DECLARE @machineryRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'machinery');
@@ -126,23 +127,4 @@ DECLARE @medicinesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code
 DECLARE @construction_materialsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'construction-materials');
 DECLARE @employee_benefitsRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'employee-benefits');
 DECLARE @finished_servicesRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'finished-services');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+DECLARE @ChecksReceivedRD INT = (SELECT [Id] FROM dbo.ResourceDefinitions WHERE [Code] = N'ChecksReceived');
