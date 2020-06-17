@@ -129,6 +129,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'user-minus',
             'trophy',
             'suitcase-rolling',
+            'tasks',
 
             'camera',
             'camera-retro',
