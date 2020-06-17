@@ -120,8 +120,8 @@ namespace Tellma.Entities
         public bool? ShowInMainMenu { get; set; }
 
         [Display(Name = "MainMenuSection")]
-        [ChoiceList(new object[] { "Financials", "Cash", "FixedAssets", "Inventory", "Production", "Purchasing", "Sales", "HumanCapital", "Investments", "Maintenance", "Administration", "Security", "Studio", "Help" },
-            new string[] { "Menu_Financials", "Menu_Cash", "Menu_FixedAssets", "Menu_Inventory", "Menu_Production", "Menu_Purchasing", "Menu_Sales", "Menu_HumanCapital", "Menu_Investments", "Menu_Maintenance", "Menu_Administration", "Menu_Security", "Menu_Studio", "Menu_Help" })]
+        [ChoiceList(new object[] { "Mail", "Financials", "Cash", "FixedAssets", "Inventory", "Production", "Purchasing", "Sales", "HumanCapital", "Investments", "Maintenance", "Administration", "Security", "Studio", "Help" },
+            new string[] { "Menu_Mail", "Menu_Financials", "Menu_Cash", "Menu_FixedAssets", "Menu_Inventory", "Menu_Production", "Menu_Purchasing", "Menu_Sales", "Menu_HumanCapital", "Menu_Investments", "Menu_Maintenance", "Menu_Administration", "Menu_Security", "Menu_Studio", "Menu_Help" })]
         [AlwaysAccessible]
         public string MainMenuSection { get; set; }
 

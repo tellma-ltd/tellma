@@ -43,8 +43,15 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   searchInput: ElementRef;
 
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
-    Financials: {
+    Mail: {
       background: 't-blue1',
+      items: [
+        { label: 'Inbox', icon: 'inbox', link: '../inbox', sortKey: 10 },
+        { label: 'Outbox', icon: 'share', link: '../outbox', sortKey: 20 },
+      ]
+    },
+    Financials: {
+      background: 't-green1',
       items: [
         {
           label: 'Accounts', icon: 'coins', link: '../accounts',
@@ -69,7 +76,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Cash: {
-      background: 't-green1',
+      background: 't-teal2',
       items: [
         {
           label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
@@ -78,39 +85,39 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     FixedAssets: {
-      background: 't-teal2',
-      items: []
-    },
-    Inventory: {
       background: 't-blue2',
       items: []
     },
-    Production: {
+    Inventory: {
       background: 't-green2',
       items: []
     },
-    Purchasing: {
+    Production: {
       background: 't-teal3',
       items: []
     },
-    Sales: {
+    Purchasing: {
       background: 't-blue3',
       items: []
     },
-    HumanCapital: {
+    Sales: {
       background: 't-green3',
       items: []
     },
-    Investments: {
+    HumanCapital: {
       background: 't-teal1',
       items: []
     },
-    Maintenance: {
+    Investments: {
       background: 't-blue1',
       items: []
     },
-    Administration: {
+    Maintenance: {
       background: 't-green1',
+      items: []
+    },
+    Administration: {
+      background: 't-teal2',
       items: [
         {
           label: 'Agents', icon: 'id-badge', link: '../agents',
@@ -135,7 +142,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     Security: {
-      background: 't-teal2',
+      background: 't-blue2',
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',

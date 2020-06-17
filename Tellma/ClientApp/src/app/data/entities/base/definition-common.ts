@@ -36,7 +36,7 @@ export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoiceProp
     return {
         control: 'choice',
         label: () => trx.instant('MainMenuSection'),
-        choices: ['Financials', 'Cash', 'FixedAssets', 'Inventory', 'Production', 'Purchasing', 'Sales', 'HumanCapital', 'Investments', 'Maintenance', 'Administration', 'Security', 'Studio', 'Help'],
+        choices: ['Mail', 'Financials', 'Cash', 'FixedAssets', 'Inventory', 'Production', 'Purchasing', 'Sales', 'HumanCapital', 'Investments', 'Maintenance', 'Administration', 'Security', 'Studio', 'Help'],
         format: (c: string) => trx.instant('Menu_' + c)
     };
 }
