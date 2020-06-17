@@ -919,10 +919,9 @@ namespace Tellma.Controllers
         /// In particular: the property display, whether it's visible or not, whether it's required or not, 
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
-
         private static DefinitionPropOverrides ContractPropertyOverrides(
             ContractDefinitionForClient def,
-            SettingsForClient _,
+            SettingsForClient settings,
             PropertyInfo propInfo,
             Func<string> display)
         {
@@ -945,7 +944,7 @@ namespace Tellma.Controllers
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.StartDate):
-                    display = PropertyDisplay(def.StartDateVisibility, display);
+                    display = PropertyDisplay(settings, def.StartDateVisibility, def.StartDateLabel, def.StartDateLabel2, def.StartDateLabel3, display);
                     isRequired = def.StartDateVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.JobId):
