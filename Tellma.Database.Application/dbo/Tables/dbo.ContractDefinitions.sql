@@ -11,7 +11,7 @@
 	[AgentVisibility]					NVARCHAR (50),
 	[CurrencyVisibility]				NVARCHAR (50),
 	[TaxIdentificationNumberVisibility] NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([TaxIdentificationNumberVisibility] IN (N'None', N'Optional', N'Required')),
-	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'Optional' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
+	[ImageVisibility]					NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[StartDateVisibility]				NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([StartDateVisibility] IN (N'None', N'Optional', N'Required')),
 	[StartDateLabel]					NVARCHAR (50),
 	[StartDateLabel2]					NVARCHAR (50),

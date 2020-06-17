@@ -12,7 +12,7 @@ BEGIN
 	(0, 1, @Hour,		1);
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = @employee_benefitsRD,
+		@DefinitionId = @EmployeeBenefitRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

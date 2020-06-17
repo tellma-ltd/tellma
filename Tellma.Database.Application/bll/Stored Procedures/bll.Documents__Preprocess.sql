@@ -315,11 +315,11 @@ END
 		UPDATE @PreprocessedEntries
 		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 	END
-	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1 AND [IsLeaf] = 1) = 1
+	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Common' AND [IsActive] = 1) = 1
 	BEGIN
 		DECLARE @SegmentId INT = (
 			SELECT [Id]	FROM dbo.[Centers]
-			WHERE [CenterType] = N'Segment'
+			WHERE [CenterType] = N'Common'
 			AND [IsActive] = 1 AND [IsLeaf] = 1
 		);
 		UPDATE @PreprocessedDocuments

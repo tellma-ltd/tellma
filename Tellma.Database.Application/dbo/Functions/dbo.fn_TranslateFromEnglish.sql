@@ -7,7 +7,13 @@
 )
 RETURNS NVARCHAR (100)
 AS BEGIN
-	IF @DestinationCultureId = N'en'
+	IF NOT EXISTS(
+		SELECT * FROM dbo.Translations
+		WHERE [TableName] = @TableName
+		AND [SourceEnglishWord] = @SourceEnglishWord
+		AND [DestinationCultureId] = @DestinationCultureId
+		AND [Form] = @Form
+	)
 		RETURN @SourceEnglishWord;
 	RETURN (
 		SELECT [DestinationWord] FROM

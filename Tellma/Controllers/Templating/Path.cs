@@ -7,7 +7,7 @@ namespace Tellma.Controllers.Templating
 {
     /// <summary>
     /// Represents a base <see cref="Templating.QueryInfo"/> and a select atom; a list of 0 or more steps from the root entity of the query.
-    /// For example base query QueryById('documents/manual-journal-vouchers', 44) and steps ['CreatedBy', 'Name'].
+    /// For example base query QueryById('documents/ManualJournalVoucher', 44) and steps ['CreatedBy', 'Name'].
     /// This data structure helps the algorithm that statically evaluates the SELECT list of the database queries
     /// that are needed to complete <see cref="TemplateBase.GenerateOutput(System.Text.StringBuilder, EvaluationContext)"/>;
     /// </summary>

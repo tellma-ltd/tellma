@@ -410,49 +410,49 @@ UPDATE dbo.[AccountTypes] SET IsSystem = 1 WHERE [Node].IsDescendantOf(@Services
 
 INSERT INTO dbo.[AccountTypeResourceDefinitions]
 ([AccountTypeId],		[ResourceDefinitionId]) VALUES
-(@RawMaterials,			@raw_grainsRD),
-(@RawMaterials,			@raw_vehiclesRD),
-(@RawMaterials,			@raw_oilsRD),
+(@RawMaterials,			@RawGrainRD),
+(@RawMaterials,			@RawVehicleRD),
+(@RawMaterials,			@RawOilRD),
 
-(@WorkInProgress,		@work_in_progressRD),
+(@WorkInProgress,		@WorkInProgressRD),
 
-(@FinishedGoods,		@finished_grainsRD),
-(@FinishedGoods,		@finished_vehiclesRD),
-(@FinishedGoods,		@finished_oilsRD),
-(@FinishedGoods,		@byproducts_grainsRD),
-(@FinishedGoods,		@byproducts_oilsRD),
+(@FinishedGoods,		@FinishedGrainRD),
+(@FinishedGoods,		@FinishedVehicleRD),
+(@FinishedGoods,		@FinishedOilRD),
+(@FinishedGoods,		@ByproductGrainRD),
+(@FinishedGoods,		@ByproductOilRD),
 
-(@Merchandise,			@medicinesRD),
-(@Merchandise,			@construction_materialsRD);
+(@Merchandise,			@MedicineRD),
+(@Merchandise,			@ConstructionMaterialRD);
 
 INSERT INTO dbo.[AccountTypeContractDefinitions]
 ([AccountTypeId],								[ContractDefinitionId]) VALUES
-(@CashOnHand,									@cashonhand_accountsCD),
-(@BalancesWithBanks	,							@bank_accountsCD),
-(@RawMaterials,									@warehousesCD),
-(@ProductionSupplies,							@warehousesCD),
-(@WorkInProgress,								@warehousesCD),
-(@FinishedGoods,								@warehousesCD),
-(@CurrentInventoriesInTransit,					@foreign_importsCD), -- split into two
-(@CurrentInventoriesInTransit,					@foreign_exportsCD),
-(@CurrentPrepayments,							@suppliersCD),
-(@OtherCurrentFinancialAssets,					@debtorsCD), -- split it into 2 sundry debtor
-(@OtherCurrentFinancialAssets,					@employeesCD), -- staff debtor
-(@TradeAndOtherCurrentPayablesToTradeSuppliers,	@suppliersCD),
-(@AccrualsClassifiedAsCurrent,					@suppliersCD), -- split into two
-(@AccrualsClassifiedAsCurrent,					@employeesCD), -- last  5 days unpaid
-(@DeferredIncomeClassifiedAsCurrent,			@customersCD),
-(@CurrentTradeReceivables,						@customersCD),
-(@CurrentAccruedIncome,							@customersCD),
-(@OtherCurrentFinancialLiabilities,				@creditorsCD),
-(@OtherCurrentFinancialLiabilities,				@partnersCD),
-(@CashControlExtension,							@suppliersCD),
-(@CashControlExtension,							@customersCD);
+(@CashOnHand,									@CashOnHandAccountCD),
+(@BalancesWithBanks	,							@BankAccountCD),
+(@RawMaterials,									@WarehouseCD),
+(@ProductionSupplies,							@WarehouseCD),
+(@WorkInProgress,								@WarehouseCD),
+(@FinishedGoods,								@WarehouseCD),
+(@CurrentInventoriesInTransit,					@ImportShipmentCD), -- split into two
+(@CurrentInventoriesInTransit,					@ExportShipmentCD),
+(@CurrentPrepayments,							@SupplierCD),
+(@OtherCurrentFinancialAssets,					@DebtorCD), -- split it into 2 sundry debtor
+(@OtherCurrentFinancialAssets,					@EmployeeCD), -- staff debtor
+(@TradeAndOtherCurrentPayablesToTradeSuppliers,	@SupplierCD),
+(@AccrualsClassifiedAsCurrent,					@SupplierCD), -- split into two
+(@AccrualsClassifiedAsCurrent,					@EmployeeCD), -- last  5 days unpaid
+(@DeferredIncomeClassifiedAsCurrent,			@CustomerCD),
+(@CurrentTradeReceivables,						@CustomerCD),
+(@CurrentAccruedIncome,							@CustomerCD),
+(@OtherCurrentFinancialLiabilities,				@CreditorCD),
+(@OtherCurrentFinancialLiabilities,				@PartnerCD),
+(@CashControlExtension,							@SupplierCD),
+(@CashControlExtension,							@CustomerCD);
 
 INSERT INTO dbo.[AccountTypeNotedContractDefinitions]
 ([AccountTypeId],								[NotedContractDefinitionId]) VALUES
-(@CurrentValueAddedTaxReceivables,				@suppliersCD),
-(@CurrentValueAddedTaxPayables,					@customersCD),
-(@CurrentEmployeeIncomeTaxPayablesExtension,	@employeesCD),
-(@CurrentSocialSecurityPayablesExtension,		@employeesCD),
-(@CurrentEmployeeStampTaxPayablesExtension,		@employeesCD);
+(@CurrentValueAddedTaxReceivables,				@SupplierCD),
+(@CurrentValueAddedTaxPayables,					@CustomerCD),
+(@CurrentEmployeeIncomeTaxPayablesExtension,	@EmployeeCD),
+(@CurrentSocialSecurityPayablesExtension,		@EmployeeCD),
+(@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD);

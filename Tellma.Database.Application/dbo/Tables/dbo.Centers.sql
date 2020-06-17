@@ -5,14 +5,15 @@
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
 	--CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
+	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
-													N'Segment', N'Profit', N'Revenue', N'Cost')
-												), -- Nullable to avoid using abstract. May add Parent, to represent a leaf acting on behalf of non-segment Ancestor
-	[IsLeaf]				BIT					NOT NULL,
+													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
+													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
+												),
+	[IsLeaf]				AS					IIF([CenterType] = N'Abstract', 0, 1) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[ExpenseEntryTypeId]	INT					CONSTRAINT [FK_Centers__ExpenseEntryTypeId] REFERENCES dbo.[EntryTypes]([Id]),
 	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Agents]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.

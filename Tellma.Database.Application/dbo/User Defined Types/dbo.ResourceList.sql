@@ -19,7 +19,6 @@
 	[LocationWkb]					VARBINARY(MAX),
 
 	-- For PPE
-	[ExpenseEntryTypeId]			INT,
 	[CenterId]						INT,
 	[ResidualMonetaryValue]			Decimal (19,4) DEFAULT 0,
 	[ResidualValue]					Decimal (19,4) DEFAULT 0,

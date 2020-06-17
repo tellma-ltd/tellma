@@ -168,24 +168,17 @@ INSERT INTO @ET VALUES(161, N'/8/6/', N'IncreaseDecreaseThroughChangeInDiscountR
 INSERT INTO @ET VALUES(162, N'/8/7/', N'IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions', N'Increase (decrease) through net exchange differences, other provisions', N'')
 INSERT INTO @ET VALUES(163, N'/8/8/', N'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions', N'Decrease through loss of control of subsidiary, other provisions', N'')
 INSERT INTO @ET VALUES(164, N'/8/9/', N'IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions', N'Increase (decrease) through transfers and other changes, other provisions', N'')
-INSERT INTO @ET VALUES(165, N'/9/', N'ExpenseByFunctionExtension', N'Expense, by function', N'')
-INSERT INTO @ET VALUES(166, N'/9/1/', N'CostOfSales', N'Cost of sales', N'')
-INSERT INTO @ET VALUES(167, N'/9/2/', N'ProductionExtension', N'Production Centers Expenses', N'')
-INSERT INTO @ET VALUES(168, N'/9/3/', N'ServiceExtension', N'Service Centers Expenses', N'')
-INSERT INTO @ET VALUES(169, N'/9/4/', N'DistributionCosts', N'Distribution costs', N'')
-INSERT INTO @ET VALUES(170, N'/9/5/', N'AdministrativeExpense', N'Administrative expenses', N'')
-INSERT INTO @ET VALUES(171, N'/9/6/', N'OtherExpenseByFunction', N'Other expense, by function', N'')
-INSERT INTO @ET VALUES(172, N'/10/', N'ChangesInInventories', N'Increase (decrease) in inventories', N'')
-INSERT INTO @ET VALUES(173, N'/10/1/', N'ReceiptsReturnsThroughPurchaseExtension', N'Receipts (returns) through purchase', N'')
-INSERT INTO @ET VALUES(174, N'/10/2/', N'IncreaseDecreaseThroughProductionExtension', N'Increase (decrease) through production', N'')
-INSERT INTO @ET VALUES(175, N'/10/3/', N'IncreaseDecreaseThroughMaintenanceExtension', N'Increase (decrease) through maintenance', N'')
-INSERT INTO @ET VALUES(176, N'/10/4/', N'IncreaseDecreaseThrougConsumptionExtension', N'Increase (decrease) through consumption', N'')
-INSERT INTO @ET VALUES(177, N'/10/5/', N'ReturnsIssuesThroughSaleExtension', N'Returns (Issues) through sales ', N'')
-INSERT INTO @ET VALUES(178, N'/10/6/', N'PropertyPlantAndEquipmentClassifiedDeclassifiedAsInventoryExtension', N'Property, plant and equipment classified (reclassified) as inventory', N'')
-INSERT INTO @ET VALUES(179, N'/10/7/', N'InventoryOverageShortageExtension', N'Inventory overage (shortage)', N'')
-INSERT INTO @ET VALUES(180, N'/10/8/', N'InventoryWritedown2011', N'Inventory write-down', N'The amount of expense recognised related to the write-down of inventories to net realisable value. [Refer: Inventories]')
-INSERT INTO @ET VALUES(181, N'/10/9/', N'ReversalOfInventoryWritedown', N'Reversal of inventory write-down', N'The amount recognised as a reduction in the amount of inventories recognised as an expense due to the reversal of any write-down of inventories resulting from an increase in net realisable value. [Refer: Inventories; Inventory write-down]')
-INSERT INTO @ET VALUES(182, N'/10/10/', N'InternalInventoryTransferExtension', N'Inventory transfer', N'')
+INSERT INTO @ET VALUES(172, N'/9/', N'ChangesInInventories', N'Increase (decrease) in inventories', N'')
+INSERT INTO @ET VALUES(173, N'/9/1/', N'ReceiptsReturnsThroughPurchaseExtension', N'Receipts (returns) through purchase', N'')
+INSERT INTO @ET VALUES(174, N'/9/2/', N'IncreaseDecreaseThroughProductionExtension', N'Increase (decrease) through production', N'')
+INSERT INTO @ET VALUES(175, N'/9/3/', N'IncreaseDecreaseThroughMaintenanceExtension', N'Increase (decrease) through maintenance', N'')
+INSERT INTO @ET VALUES(176, N'/9/4/', N'IncreaseDecreaseThrougConsumptionExtension', N'Increase (decrease) through consumption', N'')
+INSERT INTO @ET VALUES(177, N'/9/5/', N'ReturnsIssuesThroughSaleExtension', N'Returns (Issues) through sales ', N'')
+INSERT INTO @ET VALUES(178, N'/9/6/', N'PropertyPlantAndEquipmentClassifiedDeclassifiedAsInventoryExtension', N'Property, plant and equipment classified (reclassified) as inventory', N'')
+INSERT INTO @ET VALUES(179, N'/9/7/', N'InventoryOverageShortageExtension', N'Inventory overage (shortage)', N'')
+INSERT INTO @ET VALUES(180, N'/9/8/', N'InventoryWritedown2011', N'Inventory write-down', N'The amount of expense recognised related to the write-down of inventories to net realisable value. [Refer: Inventories]')
+INSERT INTO @ET VALUES(181, N'/9/9/', N'ReversalOfInventoryWritedown', N'Reversal of inventory write-down', N'The amount recognised as a reduction in the amount of inventories recognised as an expense due to the reversal of any write-down of inventories resulting from an increase in net realisable value. [Refer: Inventories; Inventory write-down]')
+INSERT INTO @ET VALUES(182, N'/9/10/', N'InternalInventoryTransferExtension', N'Inventory transfer', N'');
 
 
 INSERT INTO @EntryTypes ([Index], [Code], [Name], [ParentIndex], [Description])
@@ -383,13 +376,6 @@ DECLARE @IncreaseDecreaseThroughChangeInDiscountRateOtherProvisions INT = (SELEC
 DECLARE @IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions');
 DECLARE @DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions');
 DECLARE @IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'IncreaseDecreaseThroughTransfersAndOtherChangesOtherProvisions');
-DECLARE @ExpenseByFunctionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ExpenseByFunctionExtension');
-DECLARE @CostOfSales INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'CostOfSales');
-DECLARE @ProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ProductionExtension');
-DECLARE @ServiceExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ServiceExtension');
-DECLARE @DistributionCosts INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'DistributionCosts');
-DECLARE @AdministrativeExpense INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'AdministrativeExpense');
-DECLARE @OtherExpenseByFunction INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'OtherExpenseByFunction');
 DECLARE @ChangesInInventories INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ChangesInInventories');
 DECLARE @ReceiptsReturnsThroughPurchaseExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'ReceiptsReturnsThroughPurchaseExtension');
 DECLARE @IncreaseDecreaseThroughProductionExtension INT = (SELECT [Id] FROM dbo.EntryTypes WHERE [Code] = N'IncreaseDecreaseThroughProductionExtension');

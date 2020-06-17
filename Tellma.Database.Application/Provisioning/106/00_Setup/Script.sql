@@ -16,4 +16,3 @@ BEGIN
 	Print 'Currencies Activating: ' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
--- 

@@ -204,7 +204,7 @@ namespace Tellma.Controllers.Templating
                             {
                                 // Definition Id
                                 var defId = query.DefinitionId ??
-                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/manual-journal-vouchers'");
+                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/ManualJournalVoucher'");
 
                                 // Id
                                 if (!int.TryParse(queryById.Id, out int id))
@@ -224,7 +224,7 @@ namespace Tellma.Controllers.Templating
                             {
                                 // Definition Id
                                 var defId = query.DefinitionId ??
-                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/manual-journal-vouchers'");
+                                    throw new TemplateException("To query documents by Id, the source parameter must contain the definitionId. E.g. 'documents/ManualJournalVoucher'");
 
                                 // Id
                                 if (!int.TryParse(queryById.Id, out int id))

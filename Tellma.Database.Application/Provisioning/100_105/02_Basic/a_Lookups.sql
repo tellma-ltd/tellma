@@ -9,7 +9,7 @@ NOTE: DEFINITIONS ARE IN A DIFFERENT FILE. THIS IS THE FILE FOR RECORDS ONLY
 DECLARE @Lookups dbo.LookupList, @DefinitionId INT;
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 BEGIN
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'body-colors');
+	SET @DefinitionId = @BodyColorLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],			[Name2]) VALUES
 	(0,N'Black',		N'أسود'),
@@ -20,7 +20,7 @@ END
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
-	SET @DefinitionId = @it_equipment_manufacturersLKD
+	SET @DefinitionId = @ITEquipmentManufacturerLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Dell'),
@@ -42,7 +42,7 @@ BEGIN
 	END;						
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = @operating_systemsLKD
+	SET @DefinitionId = @OperatingSystemLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(1,	N'Windows 10'),
@@ -52,7 +52,7 @@ END
 
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
-	SET @DefinitionId = @it_equipment_manufacturersLKD
+	SET @DefinitionId = @ITEquipmentManufacturerLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Dell'),
@@ -72,7 +72,7 @@ BEGIN
 	END;						
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = @operating_systemsLKD
+	SET @DefinitionId = @OperatingSystemLKD
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'Windows XP'),
@@ -83,7 +83,7 @@ END
 
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 BEGIN
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = 'body-colors');
+	SET @DefinitionId = @BodyColorLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],			[Name2]) VALUES
 	(0,N'Black',		N'أزرق'),
@@ -97,7 +97,7 @@ BEGIN
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'vehicle-makes');
+	SET @DefinitionId = @VehicleMakeLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],			[Name2]) VALUES
 	(0,	N'Toyota',	N'تويوتا'),
@@ -108,7 +108,7 @@ END
 
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'steel-thicknesses');
+	SET @DefinitionId = @SteelThicknessLKD;
 	INSERT INTO @Lookups([Index],
 	[Name]) VALUES
 	(0,	N'0.3'),
@@ -124,7 +124,7 @@ BEGIN
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'vehicle-makes');
+	SET @DefinitionId = @VehicleMakeLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],			[Name2]) VALUES
 	(0,	N'Toyota',	N'تويوتا'),
@@ -140,10 +140,10 @@ BEGIN
 	(1,N'paper-groups',		N'Paper Group',		N'مجموعة الورق',	N'Paper Groups',	N'مجموعات الورق'),
 	(2,N'paper-types',		N'Paper Type',		N'نوع الورق',		N'Paper Types',		N'أنواع الورق');
 */
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'paper-origins');
+	SET @DefinitionId = @PapreOriginLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],				[Name2]) VALUES
-	(0,	N'Thai',		N'نايلاندي'),
+	(0,	N'Thai',		N'تايلاندي'),
 	(1,	N'Finnish',		N'فنلندي'),
 	(2, N'German',		N'ألماني');
 
@@ -153,7 +153,7 @@ BEGIN
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'paper-groups');
+	SET @DefinitionId = @PaperGroupLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],							[Name2]) VALUES
 	(0,	N'Carbonless Coated paper',	N'ورق مكربن صفائح'),
@@ -166,7 +166,7 @@ BEGIN
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	DELETE FROM @Lookups;
-	SET @DefinitionId = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'paper-types');
+	SET @DefinitionId = @PaperTypeLKD;
 	INSERT INTO @Lookups([Index],
 	[Name],						[Name2]) VALUES
 	(0,	N'Commercial',			N'ورق تجاري'),

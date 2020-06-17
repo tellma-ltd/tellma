@@ -27,8 +27,7 @@ CREATE TABLE [dbo].[Resources] (
 	[Location]						GEOGRAPHY,
 	[LocationJson]					NVARCHAR(MAX),
 
-	-- For PPE
-	[ExpenseEntryTypeId]			INT					CONSTRAINT [FK_Resources__ExpenseEntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	-- For PPE. Center Id is also cost entity Id for revenue account, when the resource is being sold, if the relation is 1 - many
 	[CenterId]						INT					CONSTRAINT [FK_Resources__CenterId] REFERENCES dbo.[Centers]([Id]),
 
 	[ResidualMonetaryValue]			Decimal (19,4),
@@ -41,7 +40,7 @@ CREATE TABLE [dbo].[Resources] (
 
 	-- Begin To verify
 	DefaultUnitId			INT,
-	BaseCount			INT,
+	BaseCount				INT,
 	ReferenceCountUnitId	INT,
 	ReferenceMass			DECIMAL,
 	ReferenceMassUnitId		INT,

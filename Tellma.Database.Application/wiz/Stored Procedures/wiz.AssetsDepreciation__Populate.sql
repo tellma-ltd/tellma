@@ -62,14 +62,14 @@ AS
 			Quantity1,
 			[MonetaryValue1],
 			[Value1],
-			UnitId1, EntryTypeId0,			Time11,	Time21,
+			UnitId1, Time11,	Time21,
 			CurrencyId1,	CenterId0)
 	SELECT	ROW_NUMBER() OVER(ORDER BY [Id]) - 1, @LineDefinitionId,
 			@DocumentIndex, R.[Id],
 			PB.[UsedCapacity],
 			PB.[DepreciableRemainingMonetaryValue] * PB.[UsedCapacity] / PB.[RemainingCapacity],
 			PB.[DepreciableRemainingValue] * PB.[UsedCapacity] / PB.[RemainingCapacity],
-			@UnitId, [ExpenseEntryTypeId],	@Time1,	@Time2, 
+			@UnitId, @Time1,	@Time2, 
 			[CurrencyId],	[CenterId]
 	FROM dbo.Resources R
 	JOIN PPEBalances PB ON R.[Id] = PB.[ResourceId];
@@ -79,7 +79,7 @@ AS
 			MonetaryValue1 As UsedMonetaryValue,
 			Value1 As UsedValue, 
 			ContractId0 AS [System],
-			(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
+			--(SELECT [Name] FROM dbo.EntryTypes WHERE [Id] = EntryTypeId0) AS Purpose,
 			Time11 AS FromDate,	Time21 AS ToDate,
 			CurrencyId1 AS Currency, CenterId0 AS ExpCenter
 	FROM @WideLines WL;

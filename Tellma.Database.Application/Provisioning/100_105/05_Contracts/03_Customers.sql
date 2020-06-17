@@ -22,7 +22,7 @@ BEGIN
 	(7,			N'Golden Earth', N'غولدن إيرث')
 	;
 	EXEC [api].[Contracts__Save]
-		@DefinitionId = @customersCD,
+		@DefinitionId = @CustomerCD,
 		@Entities = @Customers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 END

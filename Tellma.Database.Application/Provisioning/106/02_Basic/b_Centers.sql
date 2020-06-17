@@ -1,21 +1,21 @@
-﻿	INSERT INTO @Centers([Index], [Name],[Name2],[Code], [CenterType], [ParentIndex], [IsLeaf]) VALUES 
-	(0, N'Head Office Segment', N'ዋና መስሪያ ቤት ክፍል', N'101', N'Segment', NULL, 1),
-	(1, N'Trading Segment', N'የግብይት ክፍል', N'201', N'Segment', NULL, 1),
-	(2, N'Export', N'ወደ ውጭ ይላኩ', N'21', N'Profit', NULL, 0),
-	(3, N'Cereals', N'እህል', N'211', N'Profit', 2, 1),
-	(4, N'Pulses', N'ጥራጥሬዎች', N'212', N'Profit', 2, 1),
-	(5, N'Oilseeds', N'የቅባት እህሎች', N'213', N'Profit', 2, 1),
-	(6, N'Import', N'አስመጣ', N'22', N'Profit', NULL, 0),
-	(7, N'Spare Parts', N'መለዋወጫ አካላት', N'221', N'Profit', 6, 1),
-	(8, N'Medicine', N'መድሃኒት', N'222', N'Profit', 6, 1),
-	(9, N'Construction', N'ግንባታ', N'223', N'Profit', 6, 1),
-	(10, N'Food Items', N'የምግብ አይነቶች', N'224', N'Profit', 6, 1),
-	(11, N'Minidor', N'አነስተኛ', N'231', N'Profit', NULL, 1),
-	(12, N'Oil Mills', N'ዘይት ወፍጮዎች', N'241', N'Profit', NULL, 1),
-	(13, N'Real Estate Segment', N'የሪል እስቴት ክፍል', N'301', N'Segment', NULL, 1),
-	(14, N'Rental', N'ኪራይ', N'31', N'Profit', NULL, 0),
-	(15, N'Rental - Adama', N'ኪራይ - አዳማ', N'311', N'Profit', 14, 1),
-	(16, N'Rental - AA', N'ኪራይ - ኤኤ', N'312', N'Profit', 14, 1);
+﻿INSERT INTO @Centers([Index],[ParentIndex], [Name],[Name2],[Code], [CenterType]) VALUES 
+(0,NULL, N'Soreti - Unspecified', N'ሶሬቲ - ያልተገለጸ', N'000', N'Common'),
+(1,NULL, N'SGNA Centers', N'SG&A ማዕከላት', N'100', N'Abstract'),
+(2,1, N'Bole HQ - SGNA', N'ቦሌ ኤች ኤች - ኤስ.ጂ.ኤን.', N'101', N'AdministrativeExpense'),
+(3,NULL, N'Production Centers', N'የምርት ማዕከላት', N'200', N'Abstract'),
+(4,3, N'Adama Factory', N'አዳማ ፋብሪካ', N'201', N'ProductionExtension'),
+(6,3, N'Minidor Factory', N'አነስተኛ ፋብሪካ', N'203', N'ProductionExtension'),
+(7,NULL, N'Profit Centers', N'ትርፍ ማዕከላት', N'300', N'Abstract'),
+(8,7, N'Trading Profit Centers', N'የንግድ ትርፍ ማዕከሎች', N'310', N'Abstract'),
+(9,8, N'Exported Grains', N'ወደ ውጭ የተላኩ እህሎች', N'311', N'CostOfSales'),
+(10,8, N'Processed Oil ', N'የተቀቀለ ዘይት', N'312', N'CostOfSales'),
+(11,8, N'Assembled Minidor', N'የተሰበሰበ Minidor', N'313', N'CostOfSales'),
+(12,8, N'Imported Merchandise', N'ከውጭ የመጣው ንግድ', N'314', N'CostOfSales'),
+(13,8, N'Other Trading Centers', N'ሌሎች የንግድ ማዕከላት', N'319', N'CostOfSales'),
+(14,7, N'Rental Profit Centers', N'የኪራይ ትርፍ ማዕከላት', N'400', N'Abstract'),
+(15,14, N'Soreti Mall', N'ሶሬቲ ሜል', N'401', N'CostOfSales'),
+(16,14, N'Addis Ababa Building', N'አዲስ አበባ ብሩንዲ', N'402', N'CostOfSales');
+
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
@@ -28,20 +28,19 @@ BEGIN
 END;
 
 -- Declarations
-DECLARE @106C_HeadOfficeSegment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Head Office Segment');
-DECLARE @106C_TradingSegment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Trading Segment');
-DECLARE @106C_Export INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export');
-DECLARE @106C_Cereals INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Cereals');
-DECLARE @106C_Pulses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Pulses');
-DECLARE @106C_Oilseeds INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Oilseeds');
-DECLARE @106C_Import INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import');
-DECLARE @106C_SpareParts INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Spare Parts');
-DECLARE @106C_Medicine INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Medicine');
-DECLARE @106C_Construction INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Construction');
-DECLARE @106C_FoodItems INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'FoodItems');
-DECLARE @106C_Minidor INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Minidor');
-DECLARE @106C_OilMills INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Oil Mills');
-DECLARE @106C_RealEstateSegment INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Real Estate Segment');
-DECLARE @106C_Rental INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Rental');
-DECLARE @106C_RentalAdama INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Rental - Adama');
-DECLARE @106C_RentalAA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Rental - AA');
+DECLARE @106C_SoretiUnspecified INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti - Unspecified');
+DECLARE @106C_SGNACenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'SGNA Centers');
+DECLARE @106C_BoleHQSGNA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Bole HQ - SGNA');
+DECLARE @106C_ProductionCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Production Centers');
+DECLARE @106C_AdamaFactory INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Adama Factory');
+DECLARE @106C_MinidorFactory INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Minidor Factory');
+DECLARE @106C_ProfitCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Profit Centers');
+DECLARE @106C_TradingProfitCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Trading Profit Centers');
+DECLARE @106C_ExportedGrains INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Exported Grains');
+DECLARE @106C_ProcessedOil INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Processed Oil ');
+DECLARE @106C_AssembledMinidor INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Assembled Minidor');
+DECLARE @106C_ImportedMerchandise INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Imported Merchandise');
+DECLARE @106C_OtherTradingCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Other Trading Centers');
+DECLARE @106C_RentalProfitCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Rental Profit Centers');
+DECLARE @106C_SoretiMall INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti Mall');
+DECLARE @106C_AddisAbabaBuilding INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Addis Ababa Building');

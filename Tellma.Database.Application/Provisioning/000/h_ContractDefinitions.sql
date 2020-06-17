@@ -1,18 +1,32 @@
 ﻿INSERT INTO @ContractDefinitions([Index], [Code], [TitleSingular], [TitlePlural], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
-(0, N'creditors', N'Creditor', N'Creditors', N'hands', N'Financials',10),
-(1, N'debtors', N'Debtor', N'Debtors', N'hand-holding-usd', N'Financials',60),
-(2, N'owners', N'Owner', N'Owners', N'power-off', N'Financials',70),
-(3, N'partners', N'Partner', N'Partners', N'user-tie', N'Financials',40),
-(4, N'suppliers', N'Supplier', N'Suppliers', N'truck', N'Purchasing',50),
-(5, N'customers', N'Customer', N'Customers', N'balance-scale', N'Sales',80),
-(6, N'employees', N'Employee', N'Employees', N'user-friends', N'HumanCapital',80),
-(7, N'bank-accounts', N'Bank Account', N'Bank Accounts', N'book', N'Cash',90),
-(8, N'cashonhand-accounts', N'Cash On Account', N'Cash On Accounts', N'funnel-dollar', N'Cash',95),
-(9, N'warehouses', N'Warehouse', N'Warehouses', N'warehouse', N'Financials',60),
-(10, N'foreign-imports', N'Foreign Import', N'Foreign Imports', N'file-import', N'Purchasing',120),
-(11, N'foreign-exports', N'Foreign Export', N'Foreign Exports', N'file-export', N'Sales',120);
+(0, N'Creditor', N'Creditor', N'Creditors', N'hands', N'Financials',100),
+(1, N'Debtor', N'Debtor', N'Debtors', N'hand-holding-usd', N'Financials',105),
+(2, N'Owner', N'Owner', N'Owners', N'power-off', N'Financials',110),
+(3, N'Partner', N'Partner', N'Partners', N'user-tie', N'Financials',115),
+(4, N'Supplier', N'Supplier', N'Suppliers', N'truck', N'Purchasing',120),
+(5, N'Customer', N'Customer', N'Customers', N'balance-scale', N'Sales',125),
+(6, N'Employee', N'Employee', N'Employees', N'user-friends', N'HumanCapital',130),
+(7, N'BankAccount', N'Bank Account', N'Bank Accounts', N'book', N'Cash',135),
+(8, N'CashOnHandAccount', N'Cash On Account', N'Cash On Accounts', N'funnel-dollar', N'Cash',140),
+(9, N'Warehouse', N'Warehouse', N'Warehouses', N'warehouse', N'Inventory',145),
+(10, N'ImportShipment', N'Foreign Import', N'Foreign Imports', N'file-import', N'Purchasing',150),
+(11, N'ExportShipment', N'Foreign Export', N'Foreign Exports', N'file-export', N'Sales',155);
 
+UPDATE @ContractDefinitions
+SET [BankAccountNumberVisibility] = N'Optional'
+WHERE [Code] IN (N'Employee', N'BankAccount')
 
+UPDATE @ContractDefinitions
+SET [TaxIdentificationNumberVisibility] = N'Optional'
+WHERE [Code] IN (N'Employee', N'Supplier', N'Customer')
+
+UPDATE @ContractDefinitions
+SET [ImageVisibility] = N'Optional'
+WHERE [Code] IN (N'Employee')
+
+UPDATE @ContractDefinitions
+SET [UserVisibility] = N'Optional'
+WHERE [Code] IN (N'Employee', N'Partner')
 
 EXEC [api].[ContractDefinitions__Save]
 	@Entities = @ContractDefinitions,
@@ -24,15 +38,15 @@ BEGIN
 	GOTO Err_Label;
 END;
 --Declarations
-DECLARE @creditorsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'creditors');
-DECLARE @debtorsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'debtors');
-DECLARE @ownersCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'owners');
-DECLARE @partnersCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'partners');
-DECLARE @suppliersCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'suppliers');
-DECLARE @customersCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'customers');
-DECLARE @employeesCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'employees');
-DECLARE @bank_accountsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'bank-accounts');
-DECLARE @cashonhand_accountsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'cashonhand-accounts');
-DECLARE @warehousesCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'warehouses');
-DECLARE @foreign_importsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'foreign-imports');
-DECLARE @foreign_exportsCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'foreign-exports');
+DECLARE @CreditorCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Creditor');
+DECLARE @DebtorCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Debtor');
+DECLARE @OwnerCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Owner');
+DECLARE @PartnerCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Partner');
+DECLARE @SupplierCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Supplier');
+DECLARE @CustomerCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Customer');
+DECLARE @EmployeeCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Employee');
+DECLARE @BankAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'BankAccount');
+DECLARE @CashOnHandAccountCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'CashOnHandAccount');
+DECLARE @WarehouseCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'Warehouse');
+DECLARE @ImportShipmentCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'ImportShipment');
+DECLARE @ExportShipmentCD INT = (SELECT [Id] FROM dbo.ContractDefinitions WHERE [Code] = N'ExportShipment');
