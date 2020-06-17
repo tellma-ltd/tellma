@@ -247,17 +247,26 @@
   <data name="Center_CenterType" xml:space="preserve">
     <value>ኃላፊነት አይነት</value>
   </data>
-  <data name="Center_CenterType_Cost" xml:space="preserve">
-    <value>ዋጋ</value>
+  <data name="Center_CenterType_Abstract" xml:space="preserve">
+    <value>ረቂቅ</value>
   </data>
-  <data name="Center_CenterType_Profit" xml:space="preserve">
-    <value>ትርፍ</value>
+  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
+    <value>አስተዳደራዊ የወጪ</value>
   </data>
-  <data name="Center_CenterType_Revenue" xml:space="preserve">
-    <value>ገቢ</value>
+  <data name="Center_CenterType_Common" xml:space="preserve">
+    <value>ያልተገለፀ</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>ክፍል</value>
+  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
+    <value>የሽያጭ ወጪ</value>
+  </data>
+  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
+    <value>የስርጭት ወጪዎች</value>
+  </data>
+  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
+    <value>ፕሮዳክሽን</value>
+  </data>
+  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
+    <value>አገልግሎት</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>አስተዳዳሪ</value>

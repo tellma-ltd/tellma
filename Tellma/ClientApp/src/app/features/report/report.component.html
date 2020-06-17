@@ -134,6 +134,10 @@
                                 [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
                             </t-contract-definitions-picker>
 
+                            <t-resource-definitions-picker *ngSwitchCase="'ResourceDefinition'" [(ngModel)]="arguments[p.key]"
+                                [required]="p.isRequired" (ngModelChange)="onArgumentChange()" [showCreate]="false">
+                            </t-resource-definitions-picker>
+
                             <div class="text-danger font-weight-bold" *ngSwitchDefault>
                                 TODO: control for '{{ p.desc['type'] || p.desc['collection'] }}''
                             </div>

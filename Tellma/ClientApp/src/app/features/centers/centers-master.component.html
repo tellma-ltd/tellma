@@ -9,10 +9,13 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'CenterType' : [
-                { template: segment, expression: 'CenterType eq \'Segment\''},
-                { template: profit, expression: 'CenterType eq \'Profit\''},
-                { template: revenue, expression: 'CenterType eq \'Revenue\''},
-                { template: cost, expression: 'CenterType eq \'Cost\''}
+                { template: abstract, expression: 'CenterType eq \'Abstract\''},
+                { template: common, expression: 'CenterType eq \'Common\''},
+                { template: service, expression: 'CenterType eq \'ServiceExtension\''},
+                { template: production, expression: 'CenterType eq \'ProductionExtension\''},
+                { template: distCosts, expression: 'CenterType eq \'DistributionCosts\''},
+                { template: adminExpense, expression: 'CenterType eq \'AdministrativeExpense\''},
+                { template: costOfSale, expression: 'CenterType eq \'CostOfSales\''}
             ]
           }">
 </t-master>
@@ -44,7 +47,10 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #segment> {{ 'Center_CenterType_Segment' | translate }} </ng-template>
-<ng-template #profit> {{ 'Center_CenterType_Profit' | translate }} </ng-template>
-<ng-template #revenue> {{ 'Center_CenterType_Revenue' | translate }} </ng-template>
-<ng-template #cost> {{ 'Center_CenterType_Cost' | translate }} </ng-template>
+<ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
+<ng-template #common> {{ 'Center_CenterType_Common' | translate }} </ng-template>
+<ng-template #service> {{ 'Center_CenterType_ServiceExtension' | translate }} </ng-template>
+<ng-template #production> {{ 'Center_CenterType_ProductionExtension' | translate }} </ng-template>
+<ng-template #distCosts> {{ 'Center_CenterType_DistributionCosts' | translate }} </ng-template>
+<ng-template #adminExpense> {{ 'Center_CenterType_AdministrativeExpense' | translate }} </ng-template>
+<ng-template #costOfSale> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>

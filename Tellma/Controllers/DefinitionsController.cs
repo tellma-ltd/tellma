@@ -54,7 +54,7 @@ namespace Tellma.Controllers
     public class DefinitionsService : ServiceBase
     {
         private static string ManualLine => nameof(ManualLine);
-        private static string ManualJournal => nameof(ManualJournal);
+        private static string ManualJournalVoucher => nameof(ManualJournalVoucher);
 
         private static string MapVisibility(string visibility)
         {
@@ -685,10 +685,10 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
-            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == ManualJournal).Key;
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == ManualJournalVoucher).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{ManualJournal}' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{ManualJournalVoucher}' could not be found");
             }
 
             result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == ManualLine).Key;

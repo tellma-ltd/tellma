@@ -153,8 +153,6 @@ namespace Tellma.Entities
 
         public Geography Location { get; set; }
 
-        public EntryType ExpenseEntryType { get; set; }
-
         [Display(Name = "Resource_Center")]
         [ForeignKey(nameof(CenterId))]
         public Center Center { get; set; }

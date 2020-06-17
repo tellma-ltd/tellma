@@ -18,12 +18,16 @@ namespace Tellma.Entities
         [Display(Name = "Center_CenterType")]
         [Required]
         [StringLength(255)]
-        [ChoiceList(new object[] { "Segment", "Profit", "Revenue", "Cost" },
+        [ChoiceList(new object[] { "Abstract", "Common", "ServiceExtension", "ProductionExtension", "DistributionCosts", "AdministrativeExpense", "CostOfSales" },
             new string[] {
-                "Center_CenterType_Segment",
-                "Center_CenterType_Profit",
-                "Center_CenterType_Revenue",
-                "Center_CenterType_Cost" })]
+                "Center_CenterType_Abstract",
+                "Center_CenterType_Common",
+                "Center_CenterType_ServiceExtension",
+                "Center_CenterType_ProductionExtension",
+                "Center_CenterType_DistributionCosts",
+                "Center_CenterType_AdministrativeExpense",
+                "Center_CenterType_CostOfSales",
+            })]
         public string CenterType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]

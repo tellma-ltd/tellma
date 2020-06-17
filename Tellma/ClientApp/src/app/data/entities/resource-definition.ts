@@ -200,6 +200,10 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text2') }) + ws.ternaryPostfix },
                 Text2Visibility: visibilityPropDescriptor('Resource_Text2', trx),
 
+                MainMenuSection: mainMenuSectionPropDescriptor(trx),
+                MainMenuIcon: mainMenuIconPropDescriptor(trx),
+                MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
+
                 // IsActive & Audit info
                 SavedById: { control: 'number', label: () => `${trx.instant('ModifiedBy')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 SavedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'SavedById' }

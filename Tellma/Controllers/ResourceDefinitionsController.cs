@@ -75,12 +75,16 @@ namespace Tellma.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var title = nameof(ResourceDefinition.TitleSingular);
-                var title2 = nameof(ResourceDefinition.TitleSingular2);
-                var title3 = nameof(ResourceDefinition.TitlePlural3);
+                var titleP = nameof(ResourceDefinition.TitlePlural);
+                var titleP2 = nameof(ResourceDefinition.TitlePlural2);
+                var titleP3 = nameof(ResourceDefinition.TitlePlural3);
+
+                var titleS = nameof(ResourceDefinition.TitleSingular);
+                var titleS2 = nameof(ResourceDefinition.TitleSingular2);
+                var titleS3 = nameof(ResourceDefinition.TitleSingular3);
                 var code = nameof(ResourceDefinition.Code);
 
-                query = query.Filter($"{title} {Ops.contains} '{search}' or {title2} {Ops.contains} '{search}' or {title3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{titleS} {Ops.contains} '{search}' or {titleS2} {Ops.contains} '{search}' or {titleS3} {Ops.contains} '{search}' or {titleP} {Ops.contains} '{search}' or {titleP2} {Ops.contains} '{search}' or {titleP3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
 
             return query;

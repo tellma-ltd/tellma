@@ -247,17 +247,26 @@
   <data name="Center_CenterType" xml:space="preserve">
     <value>Center Type</value>
   </data>
-  <data name="Center_CenterType_Cost" xml:space="preserve">
-    <value>Cost</value>
+  <data name="Center_CenterType_Abstract" xml:space="preserve">
+    <value>Abstract</value>
   </data>
-  <data name="Center_CenterType_Profit" xml:space="preserve">
-    <value>Profit</value>
+  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
+    <value>Administrative Expense</value>
   </data>
-  <data name="Center_CenterType_Revenue" xml:space="preserve">
-    <value>Revenue</value>
+  <data name="Center_CenterType_Common" xml:space="preserve">
+    <value>Unspecified</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>Segment</value>
+  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
+    <value>Cost of Sales</value>
+  </data>
+  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
+    <value>Distribution Costs</value>
+  </data>
+  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
+    <value>Service</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>

@@ -3,7 +3,8 @@
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
     [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
-            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: editDefinition, action: onEditDefinition, showAction: showEditDefinition }
            ]">
 
 </t-details>
@@ -478,3 +479,4 @@
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+<ng-template #editDefinition> {{ 'EditDefinition' | translate }} </ng-template>

@@ -10,7 +10,7 @@
 													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),
-	[IsLeaf]				AS					IIF([CenterType] = N'Abstract', 0, 1) PERSISTED,
+	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),

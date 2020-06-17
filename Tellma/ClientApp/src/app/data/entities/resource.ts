@@ -191,7 +191,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'ExpenseEntryType', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
+            for (const propName of ['Currency', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

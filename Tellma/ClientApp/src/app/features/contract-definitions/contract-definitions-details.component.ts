@@ -109,7 +109,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public savePreprocessing(entity: ContractDefinition) {
-    // Server validation on hidden collections will be confusing to the user
+    // Server validation on hidden properties will be confusing to the user
     if (entity.StartDateVisibility === 'None') {
       delete entity.StartDateLabel;
       delete entity.StartDateLabel2;

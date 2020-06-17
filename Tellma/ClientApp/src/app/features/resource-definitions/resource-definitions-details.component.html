@@ -1,1 +1,372 @@
-<p>resource-definitions-details works!</p>
+<t-details collection="ResourceDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'ResourceDefinitions' | translate"
+    [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
+    [actions]="[]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
+</t-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ getMultilingualValue(model, 'TitleSingular', ws) || ('Untitled' | translate) }}</span>
+</ng-template>
+
+<ng-template #document let-model="model" let-isEdit="isEdit">
+    <div class="h-100 d-flex flex-drop-row" *ngIf="watchIsEdit(isEdit)">
+
+        <!-- Collapsed Definition Editor -->
+        <div class="p-2 t-dark t-text-whitish t-collapsed-studio-pane t-pointer" *ngIf="isEdit && collapseDefinition"
+            (click)="onToggleDefinition()">
+            <div class="text-center mb-3">
+                <fa-icon icon="angle-right" [flip]="flipIcon(false)"></fa-icon>
+            </div>
+            <span>{{ 'Definition' | translate }}</span>
+        </div>
+
+        <!-- Definition Pane -->
+        <div class="t-less-dark h-100 flex-column t-studio-pane" [class.d-flex]="isEdit && !collapseDefinition"
+            [class.d-none]="!isEdit || collapseDefinition">
+
+            <!-- Header -->
+            <div class="py-2 px-3 t-dark t-text-whitish d-flex justify-content-between t-pointer"
+                (click)="onToggleDefinition()">
+                <span>{{ 'Definition' | translate }}</span>
+                <div class="text-center">
+                    <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
+                </div>
+            </div>
+
+            <!-- Definition -->
+            <div class="flex-grow-1 overflow-auto">
+                <!-- Title Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Title')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Title'))"
+                        [rotate]="rotateIcon(showSection('Title'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Title' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="sectionErrors('Title', model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Title')">
+                    <!-- Code -->
+                    <div class="form-group" [class.is-invalid]="invalid(code, model.serverErrors?.Code)">
+                        <label class="small" for="code">{{ 'Code' | translate }}</label>
+                        <input class="form-control t-studio-input" id="code" type="text" [(ngModel)]="model.Code"
+                            #code="ngModel" (ngModelChange)="onDefinitionChange(model, 'Code')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: code, serverErrors: model.serverErrors?.Code }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(titlesingular, model.serverErrors?.TitleSingular)">
+                        <label class="small"
+                            for="titlesingular">{{ ('TitleSingular' | translate) + ws.primaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titlesingular" type="text"
+                            [(ngModel)]="model.TitleSingular"
+                            (ngModelChange)="onDefinitionChange(model, 'TitleSingular')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular, serverErrors: model.serverErrors?.TitleSingular }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular2 -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(titlesingular2, model.serverErrors?.TitleSingular2)"
+                        *ngIf="ws.settings?.SecondaryLanguageId">
+                        <label class="small"
+                            for="titlesingular2">{{ ('TitleSingular' | translate) + ws.secondaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titlesingular2" type="text"
+                            [(ngModel)]="model.TitleSingular2"
+                            (ngModelChange)="onDefinitionChange(model, 'TitleSingular2')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular2="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular2, serverErrors: model.serverErrors?.TitleSingular2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitleSingular3 -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(titlesingular3, model.serverErrors?.TitleSingular3)"
+                        *ngIf="ws.settings?.TernaryLanguageId">
+                        <label class="small"
+                            for="titlesingular3">{{ ('TitleSingular' | translate) + ws.ternaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titlesingular3" type="text"
+                            [(ngModel)]="model.TitleSingular3"
+                            (ngModelChange)="onDefinitionChange(model, 'TitleSingular3')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titlesingular3="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titlesingular3, serverErrors: model.serverErrors?.TitleSingular3 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitlePlural -->
+                    <div class="form-group" [class.is-invalid]="invalid(titleplural, model.serverErrors?.TitlePlural)">
+                        <label class="small"
+                            for="titleplural">{{ ('TitlePlural' | translate) + ws.primaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titleplural" type="text"
+                            [(ngModel)]="model.TitlePlural" (ngModelChange)="onDefinitionChange(model, 'TitlePlural')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural, serverErrors: model.serverErrors?.TitlePlural }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitlePlural2 -->
+                    <div class="form-group" [class.is-invalid]="invalid(titleplural2, model.serverErrors?.TitlePlural2)"
+                        *ngIf="ws.settings?.SecondaryLanguageId">
+                        <label class="small"
+                            for="titleplural2">{{ ('TitlePlural' | translate) + ws.secondaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titleplural2" type="text"
+                            [(ngModel)]="model.TitlePlural2" (ngModelChange)="onDefinitionChange(model, 'TitlePlural2')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural2="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural2, serverErrors: model.serverErrors?.TitlePlural2 }">
+                        </ng-container>
+                    </div>
+
+                    <!-- TitlePlural3 -->
+                    <div class="form-group" [class.is-invalid]="invalid(titleplural3, model.serverErrors?.TitlePlural3)"
+                        *ngIf="ws.settings?.TernaryLanguageId">
+                        <label class="small"
+                            for="titleplural3">{{ ('TitlePlural' | translate) + ws.ternaryPostfix }}</label>
+                        <input class="form-control t-studio-input" id="titleplural3" type="text"
+                            [(ngModel)]="model.TitlePlural3" (ngModelChange)="onDefinitionChange(model, 'TitlePlural3')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #titleplural3="ngModel" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: titleplural3, serverErrors: model.serverErrors?.TitlePlural3 }">
+                        </ng-container>
+                    </div>
+                </div>
+
+                <!-- Fields Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Fields')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Fields'))"
+                        [rotate]="rotateIcon(showSection('Fields'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Fields' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="sectionErrors('Fields', model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Fields')">
+
+                    <!-- DescriptionVisibility -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(descriptionvisibility, model.serverErrors?.DescriptionVisibility)">
+                        <label class="small"
+                            for="descriptionvisibility">{{ 'Field0Visibility' | translate: { '0': ('Description' | translate) } }}</label>
+                        <select class="form-control t-studio-input" id="descriptionvisibility"
+                            [(ngModel)]="model.DescriptionVisibility" (ngModelChange)="onDefinitionChange(model)"
+                            #descriptionvisibility="ngModel">
+                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: descriptionvisibility, serverErrors: model.serverErrors?.DescriptionVisibility }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Other visibilities and Labels -->
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Identifier', propLower: 'identifier' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Currency', propLower: 'currency' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Location', propLower: 'location' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Center', propLower: 'center' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualMonetaryValue', propLower: 'residualmonetaryvalue' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualValue', propLower: 'residualvalue' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'ReorderLevel', propLower: 'reorderlevel' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'EconomicOrderQuantity', propLower: 'economicorderquantity' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'AvailableSince', propLower: 'availablesince' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'AvailableTill', propLower: 'availabletill' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal1', propLower: 'decimal1' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal2', propLower: 'decimal2' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int1', propLower: 'int1' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int2', propLower: 'int2' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Lookup1', propLower: 'lookup1' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Lookup2', propLower: 'lookup2' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Lookup3', propLower: 'lookup3' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Lookup4', propLower: 'lookup4' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text1', propLower: 'text1' }"></ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }"></ng-container>
+
+                    <!-- Visibility Field Template -->
+                    <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower">
+
+                        <div class="form-group"
+                            [class.is-invalid]="invalid(visibility, serverErrors(model, prop + 'Visibility'))">
+                            <label class="small"
+                                for="{{propLower}}visibility">{{ 'Field0Visibility' | translate: { '0': (('Resource_' + prop) | translate) } }}</label>
+                            <select class="form-control t-studio-input" id="{{propLower}}visibility"
+                                [(ngModel)]="model[prop + 'Visibility']" (ngModelChange)="onDefinitionChange(model)"
+                                #visibility="ngModel">
+                                <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                                    {{ c.name() }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: visibility, serverErrors: serverErrors(model, prop + 'Visibility') }">
+                            </ng-container>
+                        </div>
+                    </ng-template>
+
+                    <!-- Visibility + Labels Fields Template -->
+                    <ng-template #labeledProp let-prop="prop" let-propLower="propLower">
+
+                        <!-- Visibility -->
+                        <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower }">
+                        </ng-container>
+
+                        <!-- Labels -->
+                        <ng-container *ngIf="isVisible(model[prop + 'Visibility'])">
+
+                            <!-- Label -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label, serverErrors(model, prop + 'Label'))">
+                                <label class="small"
+                                    for="{{propLower}}label">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.primaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label" type="text"
+                                    [(ngModel)]="model[prop + 'Label']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label, serverErrors: serverErrors(model, prop + 'Label') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label2 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label2, serverErrors(model, prop + 'Label2'))"
+                                *ngIf="ws.settings?.SecondaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label2">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.secondaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label2" type="text"
+                                    [(ngModel)]="model[prop + 'Label2']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label2')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label2="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label2, serverErrors: serverErrors(model, prop + 'Label2') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label3 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label3, serverErrors(model, prop + 'Label3'))"
+                                *ngIf="ws.settings?.TernaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label3">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.ternaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label3" type="text"
+                                    [(ngModel)]="model[prop + 'Label3']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label3')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label3="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label3, serverErrors: serverErrors(model, prop + 'Label3') }">
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </ng-template>
+                </div>
+
+                <!-- Menu Section -->
+                <div class="text-truncate t-studio-section-header t-pointer" (click)="onToggleSection('Menu')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Menu'))"
+                        [rotate]="rotateIcon(showSection('Menu'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Menu' | translate }}
+                    <fa-icon class="t-light-danger mx-1" icon="exclamation-triangle"
+                        *ngIf="sectionErrors('Menu', model)">
+                    </fa-icon>
+                </div>
+                <div class="p-2 t-studio-section" [class.d-none]="!showSection('Menu')">
+
+                    <!-- Show In Main Menu -->
+                    <!-- <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="showInMainMenu"
+                            [(ngModel)]="model.ShowInMainMenu"
+                            (ngModelChange)="onDefinitionChange(model, 'ShowInMainMenu')">
+                        <label class="custom-control-label"
+                            for="showInMainMenu">{{ 'ReportDefinition_ShowInMainMenu' | translate }}</label>
+                    </div> -->
+
+                    <!-- Main Menu Section -->
+                    <!-- <ng-container *ngIf="model.ShowInMainMenu"> -->
+                    <div class="form-group">
+                        <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
+                        <select class="form-control t-studio-input" id="mainMenuSection"
+                            [(ngModel)]="model.MainMenuSection" #mainMenuSection="ngModel"
+                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSection')">
+                            <option value=""></option>
+                            <option *ngFor="let mainMenuSection of allMainMenuSections"
+                                value="{{mainMenuSection.value}}">
+                                {{ mainMenuSection.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSection, serverErrors: model.serverErrors?.MainMenuSection }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Main Menu Icon -->
+                    <div class="form-group">
+                        <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
+                        <div class="t-icon-selector d-flex align-content-start flex-wrap p-1">
+                            <div class="py-1 text-center t-pointer t-icon-selector-icon"
+                                (click)="onIconClick(model, icon)"
+                                [class.t-highlighted]="icon.value === model.MainMenuIcon"
+                                *ngFor="let icon of allMainMenuIcons; let i = index;" [title]="icon.value">
+                                <fa-icon [icon]="icon.value" style="font-size: 1.1rem"></fa-icon>
+                            </div>
+                        </div>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: null, serverErrors: model.serverErrors?.MainMenuIcon }">
+                        </ng-container>
+                    </div>
+
+                    <!-- Main Menu Sort Key -->
+                    <div class="form-group">
+                        <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
+                        <input class="form-control t-studio-input" id="sortKey" type="number"
+                            [(ngModel)]="model.MainMenuSortKey" #mainMenuSortKey="ngModel"
+                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSortKey')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: mainMenuSortKey, serverErrors: model.serverErrors?.MainMenuSortKey }">
+                        </ng-container>
+                    </div>
+                    <!-- </ng-container> -->
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Pane -->
+        <div class="d-flex flex-column flex-grow-1">
+            <!-- Header -->
+            <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
+                <div class="p-2 px-3">
+                    <span>{{ 'Preview' | translate }}</span>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="flex-grow-1 col">
+                <t-resources-details mode="preview" [previewDefinition]="getForClient(model)" idString="new">
+                </t-resources-details>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
+    <ng-container *ngIf="invalid(control, serverErrors)">
+        <span class="small t-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+            {{ e() }}
+        </span>
+    </ng-container>
+</ng-template>
