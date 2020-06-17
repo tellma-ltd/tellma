@@ -246,18 +246,15 @@
     <!-- Segment -->
     <t-form-group class="t-form-group" [label]="labelDocumentSegment(model)"
         [serverErrors]="model?.serverErrors?.SegmentId" *ngIf="showDocumentSegment(model)">
-        <ng-container *ngIf="model?.SegmentIsCommon; else perLine">
-            <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.SegmentId">
-                <t-view-link link="../../../centers" [itemId]="model?.SegmentId">
-                    {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
-                </t-view-link>
-            </t-restricted>
-            <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
-                filter="CenterType eq 'Segment' and IsLeaf = true and IsActive = true"
-                [required]="requireDocumentSegment(model)" [disabled]="readonlyDocumentSegment(model)">
-            </t-centers-picker>
-        </ng-container>
-        <ng-container *ngTemplateOutlet="lock; context:{ prop: 'SegmentIsCommon' }"></ng-container>
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.SegmentId">
+            <t-view-link link="../../../centers" [itemId]="model?.SegmentId">
+                {{ ws.getMultilingualValue('Center', model?.SegmentId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
+            filter="CenterType eq 'Segment' and IsLeaf eq true"
+            [required]="true" [disabled]="readonlyDocumentSegment(model)">
+        </t-centers-picker>
     </t-form-group>
 
     <!-- Time1 -->
@@ -555,8 +552,7 @@
                             <t-centers-picker *ngSwitchCase="'CenterId'"
                                 [disabled]="isReadOnly(lineDefId, columnIndex, line)"
                                 [required]="!line.PH && isRequired(lineDefId, columnIndex, line)"
-                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)"
-                                filter="IsLeaf eq true"
+                                [ngModel]="getFieldValue(lineDefId, columnIndex, line)" filter="IsLeaf eq true"
                                 (ngModelChange)="setFieldValue(lineDefId, columnIndex, line, $event); onSmartLineUpdated(update, line, model);">
                             </t-centers-picker>
                             <t-entry-types-picker *ngSwitchCase="'EntryTypeId'"
@@ -1016,7 +1012,7 @@
                     [ngModelOptions]="{ updateOn: 'blur' }">
                 </t-date-picker>
             </t-form-group>
-            
+
             <!-- Memo -->
             <t-form-group class="t-form-group" [label]="'Memo' | translate"
                 [serverErrors]="manualLine(model)?.serverErrors?.Memo">

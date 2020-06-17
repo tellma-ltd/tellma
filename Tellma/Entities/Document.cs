@@ -76,9 +76,6 @@ namespace Tellma.Entities
         [Display(Name = "Document_Segment")]
         public int? SegmentId { get; set; }
 
-        [Display(Name = "Document_SegmentIsCommon")]
-        public bool? SegmentIsCommon { get; set; }
-
         [Display(Name = "Document_Time1")]
         public DateTime? Time1 { get; set; }
 

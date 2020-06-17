@@ -323,7 +323,7 @@ namespace Tellma.Controllers
 
         public static async Task<Versioned<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo, CancellationToken cancellation)
         {
-            var (isMultiCenter, settings) = await repo.Settings__Load(cancellation);
+            var (isMultiCenter, isMultiSegment, settings) = await repo.Settings__Load(cancellation);
             if (settings == null)
             {
                 // This should never happen
@@ -342,8 +342,9 @@ namespace Tellma.Controllers
                 }
             }
 
-            // Is Multi Center
+            // Is Multi Center/Segment
             settingsForClient.IsMultiCenter = isMultiCenter;
+            settingsForClient.IsMultiSegment = isMultiSegment;
 
             // Functional currency
             settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;

@@ -550,9 +550,6 @@
   <data name="Document_Segment" xml:space="preserve">
     <value>分割</value>
   </data>
-  <data name="Document_SegmentIsCommon" xml:space="preserve">
-    <value>段是常见</value>
-  </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>p.p.</value>
   </data>

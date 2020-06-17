@@ -773,11 +773,6 @@ namespace Tellma.Controllers
             // Set default values
             docs.ForEach(doc =>
             {
-                if (!settings.IsMultiCenter)
-                {
-                    doc.SegmentIsCommon = false;
-                }
-
                 // Document defaults
                 if (isJV)
                 {
@@ -794,7 +789,6 @@ namespace Tellma.Controllers
                 doc.DebitContractIsCommon = docDef.DebitContractVisibility && (doc.DebitContractIsCommon ?? false);
                 doc.CreditContractIsCommon = docDef.CreditContractVisibility && (doc.CreditContractIsCommon ?? false);
                 doc.NotedContractIsCommon = docDef.NotedContractVisibility && (doc.NotedContractIsCommon ?? false);
-                doc.SegmentIsCommon = docDef.SegmentVisibility && (doc.SegmentIsCommon ?? false);
                 doc.Time1IsCommon = docDef.Time1Visibility && (doc.Time1IsCommon ?? false);
                 doc.Time2IsCommon = docDef.Time2Visibility && (doc.Time2IsCommon ?? false);
                 doc.QuantityIsCommon = docDef.QuantityVisibility && (doc.QuantityIsCommon ?? false);
@@ -823,7 +817,6 @@ namespace Tellma.Controllers
                 doc.DebitContractId = doc.DebitContractIsCommon.Value ? doc.DebitContractId : null;
                 doc.CreditContractId = doc.CreditContractIsCommon.Value ? doc.CreditContractId : null;
                 doc.NotedContractId = doc.NotedContractIsCommon.Value ? doc.NotedContractId : null;
-                doc.SegmentId = doc.SegmentIsCommon.Value ? doc.SegmentId : null;
                 doc.Time1 = doc.Time1IsCommon.Value ? doc.Time1 : null;
                 doc.Time2 = doc.Time2IsCommon.Value ? doc.Time2 : null;
                 doc.Quantity = doc.QuantityIsCommon.Value ? doc.Quantity : null;
@@ -926,14 +919,6 @@ namespace Tellma.Controllers
                                         if (doc.NotedContractIsCommon.Value)
                                         {
                                             entry.NotedContractId = doc.NotedContractId;
-                                        }
-
-                                        break;
-
-                                    case nameof(Entry.CenterId):
-                                        if (doc.SegmentIsCommon.Value)
-                                        {
-                                            entry.CenterId = doc.SegmentId;
                                         }
 
                                         break;
@@ -1258,18 +1243,6 @@ namespace Tellma.Controllers
                                         if (entry.NotedContractId != doc.NotedContractId)
                                         {
                                             AddReadOnlyError(docIndex, nameof(Document.NotedContractId));
-                                        }
-                                    }
-
-                                    break;
-
-                                case nameof(Entry.CenterId):
-                                    if (doc.SegmentIsCommon.Value)
-                                    {
-                                        errorKeyMap.Add(EntryPath(docIndex, lineIndex, entryIndex, nameof(Entry.CenterId)), $"[{docIndex}].{nameof(Document.SegmentId)}");
-                                        if (entry.CenterId != doc.SegmentId)
-                                        {
-                                            AddReadOnlyError(docIndex, nameof(Document.SegmentId));
                                         }
                                     }
 

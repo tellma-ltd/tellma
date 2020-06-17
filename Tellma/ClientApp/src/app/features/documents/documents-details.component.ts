@@ -290,7 +290,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DebitContractIsCommon = false;
       result.CreditContractIsCommon = false;
       result.NotedContractIsCommon = false;
-      result.SegmentIsCommon = false;
       result.Time1IsCommon = false;
       result.Time2IsCommon = false;
       result.QuantityIsCommon = false;
@@ -309,7 +308,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       result.DebitContractIsCommon = !!def.DebitContractVisibility;
       result.CreditContractIsCommon = !!def.CreditContractVisibility;
       result.NotedContractIsCommon = !!def.NotedContractVisibility;
-      result.SegmentIsCommon = !!def.SegmentVisibility && this.ws.settings.IsMultiCenter;
       result.Time1IsCommon = !!def.Time1Visibility;
       result.Time2IsCommon = !!def.Time2Visibility;
       result.QuantityIsCommon = !!def.QuantityVisibility;
@@ -774,23 +772,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Segment
 
   public showDocumentSegment(_: DocumentForSave) {
-    return this.definition.SegmentVisibility && this.ws.settings.IsMultiCenter;
-  }
-
-  public requireDocumentSegment(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._requireSegment;
-  }
-
-  public readonlyDocumentSegment(doc: Document): boolean {
-    this.computeDocumentSettings(doc);
-    return this._readonlySegment;
+    return this.ws.settings.IsMultiSegment;
   }
 
   public labelDocumentSegment(_: Document): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'SegmentLabel') ||
       this.translate.instant('Document_Segment');
   }
+
+  public readonlyDocumentSegment(doc: Document): boolean {
+    this.computeDocumentSettings(doc);
+    return false; // TODO
+  }
+
+  // Time 1
 
   public showDocumentTime1(_: DocumentForSave) {
     return this.definition.Time1Visibility;
@@ -908,8 +903,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _readonlyCreditContract: boolean;
   private _requireNotedContract: boolean;
   private _readonlyNotedContract: boolean;
-  private _requireSegment: boolean;
-  private _readonlySegment: boolean;
   private _requireDocumentTime1: boolean;
   private _readonlyDocumentTime1: boolean;
   private _requireDocumentTime2: boolean;
@@ -932,8 +925,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyCreditContract = false;
       this._requireNotedContract = false;
       this._readonlyNotedContract = false;
-      this._requireSegment = false;
-      this._readonlySegment = false;
       this._requireDocumentTime1 = false;
       this._readonlyDocumentTime1 = false;
       this._requireDocumentTime2 = false;
@@ -964,8 +955,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._readonlyCreditContract = def.CreditContractReadOnlyState === 0;
       this._requireNotedContract = def.NotedContractRequiredState === 0;
       this._readonlyNotedContract = def.NotedContractReadOnlyState === 0;
-      this._requireSegment = def.SegmentRequiredState === 0;
-      this._readonlySegment = def.SegmentReadOnlyState === 0;
       this._requireDocumentTime1 = def.Time1RequiredState === 0;
       this._readonlyDocumentTime1 = def.Time1ReadOnlyState === 0;
       this._requireDocumentTime2 = def.Time2RequiredState === 0;
@@ -1030,17 +1019,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               if (!this._readonlyNotedContract &&
                 this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
                 this._readonlyNotedContract = true;
-              }
-              break;
-
-            case 'CenterId':
-              if (!this._requireSegment &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.RequiredState)) {
-                this._requireSegment = true;
-              }
-              if (!this._readonlySegment &&
-                this.lines(lineDefId, doc).some(line => (line.State || 0) >= colDef.ReadOnlyState || (line.State || 0) < 0)) {
-                this._readonlySegment = true;
               }
               break;
 
@@ -2405,7 +2383,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
               (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
               (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
-              (doc.SegmentIsCommon && col.ColumnName === 'CenterId') ||
               (doc.Time1IsCommon && col.ColumnName === 'Time1') ||
               (doc.Time2IsCommon && col.ColumnName === 'Time2') ||
               (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
