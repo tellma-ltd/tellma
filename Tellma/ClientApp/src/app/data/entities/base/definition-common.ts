@@ -2,6 +2,7 @@
 
 import { TranslateService } from '@ngx-translate/core';
 import { NumberPropDescriptor, ChoicePropDescriptor } from './metadata';
+import { TenantWorkspace } from '../../workspace.service';
 
 // tslint:disable:max-line-length
 export type DefinitionVisibility = 'None' | 'Optional' | 'Required';
@@ -16,9 +17,18 @@ export type MainMenuIcon = 'clipboard' | 'chart-pie'; // TODO
 export function visibilityPropDescriptor(name: string, trx: TranslateService): ChoicePropDescriptor {
     return {
         control: 'choice',
-        label: () => trx.instant('Field0Visibility', { 0: trx.instant(name) }) ,
+        label: () => trx.instant('Field0Visibility', { 0: trx.instant(name) }),
         choices: ['None', 'Optional', 'Required'],
         format: (c: string) => trx.instant('Visibility_' + c)
+    };
+}
+
+export function lookupDefinitionIdPropDescriptor(name: string, ws: TenantWorkspace, trx: TranslateService): ChoicePropDescriptor {
+    return {
+        control: 'choice',
+        label: () => trx.instant('Field0Definition', { 0: trx.instant(name) }),
+        choices: Object.keys(ws.definitions.Lookups).map(stringDefId => +stringDefId),
+        format: (defId: string) => ws.getMultilingualValueImmediate(ws.definitions.Lookups[defId], 'TitlePlural')
     };
 }
 

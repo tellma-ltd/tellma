@@ -53,31 +53,8 @@ namespace Tellma.Controllers
 
     public class DefinitionsService : ServiceBase
     {
-        private const string _ManualLine = "ManualLine";
-        private const string _ManualJournalVoucher = "ManualJournalVoucher";
-        //private readonly IDefinitionsCache _definitionsCache;
-        //private readonly ApplicationRepository _repo;
-
-        //public DefinitionsService(IDefinitionsCache definitionsCache, ApplicationRepository repo)
-        //{
-        //    _definitionsCache = definitionsCache;
-        //    _repo = repo;
-        //}
-
-        //public async Task<Versioned<DefinitionsForClient>> DefinitionsForClient(bool forceRefresh, CancellationToken cancellation)
-        //{
-        //    var result = await LoadDefinitionsForClient(_repo, cancellation);
-        //    if (forceRefresh)
-        //    {
-
-        //        _definitionsCache.SetDefinitions();
-        //    }
-
-        //    else
-        //    {
-        //        return _definitionsCache.GetCurrentDefinitionsIfCached();
-        //    }
-        //}
+        private static string ManualLine => nameof(ManualLine);
+        private static string ManualJournal => nameof(ManualJournal);
 
         private static string MapVisibility(string visibility)
         {
@@ -158,7 +135,6 @@ namespace Tellma.Controllers
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),
                 LocationVisibility = MapVisibility(def.LocationVisibility),
-                ExpenseEntryTypeVisibility = MapVisibility(def.ExpenseEntryTypeVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
                 ResidualMonetaryValueVisibility = MapVisibility(def.ResidualMonetaryValueVisibility),
                 ResidualValueVisibility = MapVisibility(def.ResidualValueVisibility),
@@ -368,7 +344,7 @@ namespace Tellma.Controllers
             };
 
             // For consistency, Manual lines do not have columns or entries
-            if (line.Code == _ManualLine)
+            if (line.Code == ManualLine)
             {
                 line.Entries.Clear();
                 line.Columns.Clear();
@@ -709,13 +685,13 @@ namespace Tellma.Controllers
             result.Documents = docDefs.ToDictionary(def => def.Id, def => MapDocumentDefinition(def, result.Lines));
 
             // Set built in Ids for ease of access
-            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == _ManualJournalVoucher).Key;
+            result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == ManualJournal).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{_ManualJournalVoucher}' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{ManualJournal}' could not be found");
             }
 
-            result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == _ManualLine).Key;
+            result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == ManualLine).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
                 throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");

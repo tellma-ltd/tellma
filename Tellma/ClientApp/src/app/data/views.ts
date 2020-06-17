@@ -199,6 +199,13 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         delete: true,
         actions: []
     },
+    'resource-definitions': {
+        name: 'ResourceDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: []
+    },
     'settings': {
         name: 'Settings',
         actions: [

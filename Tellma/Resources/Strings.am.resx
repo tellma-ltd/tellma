@@ -259,9 +259,6 @@
   <data name="Center_CenterType_Segment" xml:space="preserve">
     <value>ክፍል</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>የሚመዘገብ አይነት የወጪ</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>አስተዳዳሪ</value>
   </data>
@@ -1096,6 +1093,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>facebook</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>{0} ትርጓሜ</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} ሰይም</value>
   </data>
@@ -1854,9 +1854,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>ዓላማ</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>መለያ</value>

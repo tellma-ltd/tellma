@@ -220,14 +220,6 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
     return this.definition.DescriptionVisibility === 'Required';
   }
 
-  public get ExpenseEntryType_isVisible(): boolean {
-    return !!this.definition.ExpenseEntryTypeVisibility;
-  }
-
-  public get ExpenseEntryType_isRequired(): boolean {
-    return this.definition.ExpenseEntryTypeVisibility === 'Required';
-  }
-
   public get Center_isVisible(): boolean {
     return !!this.definition.CenterVisibility && this.ws.settings.IsMultiCenter;
   }

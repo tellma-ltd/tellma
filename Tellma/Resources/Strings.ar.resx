@@ -259,9 +259,6 @@
   <data name="Center_CenterType_Segment" xml:space="preserve">
     <value>قطاع</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>نوع سطر المصروف</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
   </data>
@@ -1096,6 +1093,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>تعريف الحقل ({0})</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>اسم الحقل ({0})</value>
   </data>
@@ -1854,9 +1854,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>الغرض</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>رقم التعريف</value>

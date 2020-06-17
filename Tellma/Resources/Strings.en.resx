@@ -259,9 +259,6 @@
   <data name="Center_CenterType_Segment" xml:space="preserve">
     <value>Segment</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>Expense Entry Type</value>
-  </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>
   </data>
@@ -1096,6 +1093,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>{0} Definition</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} Label</value>
   </data>
@@ -1854,9 +1854,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>Purpose</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>

@@ -107,19 +107,6 @@
         </t-decimal-editor>
     </t-form-group>
 
-    <!-- Expense Entry Type -->
-    <t-form-group *ngIf="ExpenseEntryType_isVisible" class="t-form-group"
-        [label]="'Resource_ExpenseEntryType' | translate" [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ExpenseEntryType">
-            <t-view-link link="../../../entry-types" [itemId]="model?.ExpenseEntryTypeId">
-                {{ ws.getMultilingualValue('EntryType', model.ExpenseEntryTypeId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseEntryTypeId"
-            filter="Parent/Code eq 'ExpenseByFunctionExtension'" [required]="ExpenseEntryType_isRequired">
-        </t-entry-types-picker>
-    </t-form-group>
-
     <!-- Center -->
     <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="'Resource_Center' | translate"
         [serverErrors]="model?.serverErrors?.CenterId">

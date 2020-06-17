@@ -21,7 +21,7 @@ export class CentersDetailsComponent extends DetailsBaseComponent {
 
   private centersApi = this.api.centersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent,Manager,ExpenseEntryType';
+  public expand = 'Parent,Manager';
 
   create = () => {
     const result: CenterForSave = { };
@@ -32,8 +32,6 @@ export class CentersDetailsComponent extends DetailsBaseComponent {
     } else if (this.ws.isTernaryLanguage) {
       result.Name3 = this.initialText;
     }
-
-    result.IsLeaf = true;
 
     return result;
   }

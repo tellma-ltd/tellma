@@ -179,7 +179,7 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // e.g. "Currency Field Label"
+                    // e.g. "Decimal 1 Label"
                     var labelAtt = propInfo.GetCustomAttribute<DefinitionLabelDisplayAttribute>();
                     if (labelAtt != null)
                     {
@@ -201,12 +201,21 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // e.g. "Currency Field Visibility"
+                    // e.g. "Currency Visibility"
                     var visibilityDisplayAtt = propInfo.GetCustomAttribute<VisibilityDisplayAttribute>();
                     if (visibilityDisplayAtt != null)
                     {
                         string name = visibilityDisplayAtt.Name;
                         display = () => _localizer["Field0Visibility", _localizer[name]];
+                    }
+
+
+                    // e.g. "Lookup 1 Definition"
+                    var ddDisplayAtt = propInfo.GetCustomAttribute<DefinitionDefinitionDisplayAttribute>();
+                    if (ddDisplayAtt != null)
+                    {
+                        string name = ddDisplayAtt.Name;
+                        display = () => _localizer["Field0Definition", _localizer[name]];
                     }
 
                     #endregion
@@ -837,14 +846,6 @@ namespace Tellma.Controllers
                 case nameof(Resource.CurrencyId):
                     display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ExpenseEntryType):
-                    display = PropertyDisplay(def.ExpenseEntryTypeVisibility, display);
-                    isRequired = def.ExpenseEntryTypeVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ExpenseEntryTypeId):
-                    display = PropertyDisplay(def.ExpenseEntryTypeVisibility, display);
-                    isRequired = def.ExpenseEntryTypeVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Center):
                     display = PropertyDisplay(def.CenterVisibility, display);
