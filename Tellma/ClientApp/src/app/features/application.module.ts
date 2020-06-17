@@ -85,7 +85,8 @@ import {
   faTrophy,
   faSuitcaseRolling,
   faTasks,
-  faShip
+  faShip,
+  faPallet
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -571,7 +572,7 @@ export class ApplicationModule {
       faWarehouse, faPowerOff, faCarSide, faTint, faTintSlash, faFileImport, faFileExport, faPills, faUserCheck, faFax,
       faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
       faRecycle, faIdBadge, faFunnelDollar, faCashRegister, faMapMarkerAlt, faNewspaper, faUserClock, faAnchor, faDollyFlatbed,
-      faEdit, faFolderMinus, faFolderPlus, faUmbrellaBeach, faSpa, faUserMinus, faTrophy, faSuitcaseRolling, faTasks, faShip
+      faEdit, faFolderMinus, faFolderPlus, faUmbrellaBeach, faSpa, faUserMinus, faTrophy, faSuitcaseRolling, faTasks, faShip, faPallet
     );
   }
 }
