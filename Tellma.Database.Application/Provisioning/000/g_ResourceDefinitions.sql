@@ -3,23 +3,23 @@
 (1, N'OfficeEquipment', N'Office Equipment', N'Office Equipment', N'fax', N'FixedAssets',14),
 (2, N'ComputerEquipment', N'Computer Equipment', N'Computer Equipment', N'laptop', N'FixedAssets',18),
 (3, N'Machinery', N'Machinery', N'Machineries', N'cogs', N'FixedAssets',22),
-(4, N'Vehicle', N'Vehicles', N'Vehicles', N'car', N'FixedAssets',26),
+(4, N'Vehicle', N'Vehicle', N'Vehicles', N'car', N'FixedAssets',26),
 (5, N'Building', N'Building', N'Buildings', N'building', N'FixedAssets',30),
 (6, N'InvestmentProperty', N'Investment Property', N'Investment Properties', N'city', N'FixedAssets',34),
 (7, N'RawGrain', N'Raw Grain', N'Raw Grains', N'tractor', N'Purchasing',38),
 (8, N'FinishedGrain', N'Cleaned Grain', N'Cleaned Grains', N'boxes', N'Production',42),
 (9, N'ByproductGrain', N'Reject Grain', N'Reject Grains', N'recycle', N'Production',46),
-(10, N'RawVehicle', N'Vehicles Component', N'Vehicles Components', N'cogs', N'Purchasing',50),
+(10, N'RawVehicle', N'Vehicle Component', N'Vehicles Components', N'cogs', N'Purchasing',50),
 (11, N'FinishedVehicle', N'Assembled Vehicle', N'Assembled Vehicles', N'car-side', N'Production',54),
 (12, N'RawOil', N'Raw Material (Oil Milling)', N'Raw Materials (Oil Milling)', N'file-export', N'Purchasing',58),
-(13, N'FinishedOil', N'Processed Oil (Milling)', N'Processed Oil (Milling)', N'tint', N'Production',62),
-(14, N'ByproductOil', N'Oil Byproduct', N'Oil Byproducts', N'tint-slash', N'Production',66),
-(15, N'WorkInProgress', N'Work in Progress', N'Work In Progress', N'spinner', N'Production',70),
+(13, N'FinishedOil', N'Processed Oil (Milling)', N'Processed Oils (Milling)', N'tint', N'Production',62),
+(14, N'ByproductOil', N'Oil Byproduct', N'Oils Byproducts', N'tint-slash', N'Production',66),
+(15, N'WorkInProgress', N'Work in Progress', N'Works In Progress', N'spinner', N'Production',70),
 (16, N'Medicine', N'Medicine', N'Medicines', N'pills', N'Purchasing',74),
 (17, N'ConstructionMaterial', N'Construction Material', N'Construction Materials', N'building', N'Purchasing',78),
-(18, N'EmployeeBenefit', N'Employee Benefit', N'Employee Benefits', N'user-check', N'HumanCapital',82),
+(18, N'EmployeeBenefit', N'Employee Benefit', N'Employees Benefits', N'user-check', N'HumanCapital',82),
 (19, N'FinishedService', N'Revenue Service', N'Revenue Services', N'hands-helping', N'Sales',86),
-(20, N'CheckReceived', N'Check Received', N'Checks Received', N'money-check', N'Finance',90);
+(20, N'CheckReceived', N'Check Received', N'Checks Received', N'money-check', N'Financials',90);
 
 
 	UPDATE @ResourceDefinitions
