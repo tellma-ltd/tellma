@@ -13,7 +13,7 @@ BEGIN
 	(1,NULL,N'Departments',		N'الإدارات',				N'10',	N'Abstract'),
 	(2,1,	N'Exec. Office',	N'المكتب التنفيذي',	N'11',	N'AdministrativeExpense'),
 	(3,1,	N'Sales Unit',		N'التسويق والمبيعات',	N'12',	N'DistributionCosts'),
-	(4,1,	N'Services Unit',	N'وحدة الخدمات',		N'13',	N'ServicesExtension'), -- Rent, Power, and IT support
+	(4,1,	N'Services Unit',	N'وحدة الخدمات',		N'13',	N'ServiceExtension'), -- Rent, Power, and IT support
 	(5,NULL,N'Profit Centers',	N'مراكز الإيرادات',		N'20',	N'Abstract'),
 	(6,5,	N'B10/HCM',			N'بابل',				N'21',	N'CostOfSales'),
 	(7,5,	N'BSmart',			N'بيسمارت',				N'22',	N'CostOfSales'),
@@ -26,7 +26,7 @@ BEGIN
 	INSERT INTO @Centers([Index],[ParentIndex],
 			[Name],						[Code],[CenterType]) VALUES
 	(1,NULL,N'Unallocated',				N'000',	N'Common'),
-	(2,NULL,N'Support Servies',			N'001',	N'ServicesExtension'),
+	(2,NULL,N'Support Servies',			N'001',	N'ServiceExtension'),
 	(3,NULL,N'Selling and Gen. Admin',	N'100',	N'Abstract'),
 	(4,3,	N'Shared Admin',			N'101',	N'AdministrativeExpense'),
 	(5,3,	N'Shared S&D',				N'102',	N'DistributionCosts'),	
@@ -52,10 +52,10 @@ BEGIN
 	(5,4,	N'AG Branch',				N'201',	N'DistributionCosts'), -- Ashenafi
 	(6,4,	N'Bole Sales Office',		N'202',	N'DistributionCosts'), -- Ashenafi
 	(7,NULL,N'Service Centers',			N'300',	N'Abstract'), -- reallocate to O/H of depts based on cited basis
-	(8,7,	N'HR Dept',					N'301',	N'ServicesExtension'), -- Belay, by number of employees
-	(9,7,	N'Cafeteria',				N'302',	N'ServicesExtension'), -- Belay, by number of employees
-	(10,7,	N'Maintenance Dept',		N'303',	N'ServicesExtension'), -- Girma, by number of maintenance requests or by Direct Hours
-	(11,7,	N'Materials',				N'304',	N'ServicesExtension'), -- Ayelech, by number of Purchase Orders
+	(8,7,	N'HR Dept',					N'301',	N'ServiceExtension'), -- Belay, by number of employees
+	(9,7,	N'Cafeteria',				N'302',	N'ServiceExtension'), -- Belay, by number of employees
+	(10,7,	N'Maintenance Dept',		N'303',	N'ServiceExtension'), -- Girma, by number of maintenance requests or by Direct Hours
+	(11,7,	N'Materials',				N'304',	N'ServiceExtension'), -- Ayelech, by number of Purchase Orders
 	(12,NULL,N'Production',				N'400',	N'Abstract'), -- Mesfin
 	(13,12,	N'Slitting Dept',			N'401',	N'ProductionExtension'),
 	(14,12,	N'HSP Dept',				N'402',	N'ProductionExtension'),
@@ -82,8 +82,8 @@ BEGIN
 	(7,5,		N'Riyadh Branch',			N'فرع الرياض',				N'22',	N'DistributionCosts'),
 	(8,5,		N'Dammam Branch',			N'فرع الدمام',				N'23',	N'DistributionCosts'),
 	(10,NULL,	N'Departments',				N'المراكز الخدمية',		N'30',	N'Abstract'),
-	(11,10,		N'Human Resources',			N'الموارد البشرية',		N'31',	N'ServicesExtension'),
-	(12,10,		N'IT',						N'تقنية المعلومات',		N'32',	N'ServicesExtension'),
+	(11,10,		N'Human Resources',			N'الموارد البشرية',		N'31',	N'ServiceExtension'),
+	(12,10,		N'IT',						N'تقنية المعلومات',		N'32',	N'ServiceExtension'),
 	(20,NULL,	N'Profit Centers',			N'مراكز الإيرادات',			N'40',	N'Abstract'),
 	(21,5,		N'Jeddah Sales',			N'مبيعات جدة',				N'41',	N'CostOfSales'),
 	(22,5,		N'Riyadh Sales',			N'مبيعات الرياض',			N'42',	N'CostOfSales'),

@@ -7,7 +7,7 @@
 	--CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
-													N'Abstract', N'Common', N'ServicesExtension', N'ProductionExtension',
+													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),
 	[IsLeaf]				AS					IIF([CenterType] = N'Abstract', 0, 1) PERSISTED,

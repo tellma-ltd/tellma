@@ -3,8 +3,7 @@
 (1,NULL, N'SGNA Centers', N'SG&A ማዕከላት', N'100', N'Abstract'),
 (2,1, N'Bole HQ - SGNA', N'ቦሌ ኤች ኤች - ኤስ.ጂ.ኤን.', N'101', N'AdministrativeExpense'),
 (3,NULL, N'Production Centers', N'የምርት ማዕከላት', N'200', N'Abstract'),
-(4,3, N'Site 1 - Oil - Grains', N'ጣቢያ 1 - ዘይት - እህሎች', N'201', N'ProductionExtension'),
-(5,3, N'Site 2 - Grains', N'ጣቢያ 2 - እህሎች', N'202', N'ProductionExtension'),
+(4,3, N'Adama Factory', N'አዳማ ፋብሪካ', N'201', N'ProductionExtension'),
 (6,3, N'Minidor Factory', N'አነስተኛ ፋብሪካ', N'203', N'ProductionExtension'),
 (7,NULL, N'Profit Centers', N'ትርፍ ማዕከላት', N'300', N'Abstract'),
 (8,7, N'Trading Profit Centers', N'የንግድ ትርፍ ማዕከሎች', N'310', N'Abstract'),
@@ -16,6 +15,7 @@
 (14,7, N'Rental Profit Centers', N'የኪራይ ትርፍ ማዕከላት', N'400', N'Abstract'),
 (15,14, N'Soreti Mall', N'ሶሬቲ ሜል', N'401', N'CostOfSales'),
 (16,14, N'Addis Ababa Building', N'አዲስ አበባ ብሩንዲ', N'402', N'CostOfSales');
+
 
 EXEC [api].[Centers__Save]
 	@Entities = @Centers,
@@ -32,8 +32,7 @@ DECLARE @106C_SoretiUnspecified INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Nam
 DECLARE @106C_SGNACenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'SGNA Centers');
 DECLARE @106C_BoleHQSGNA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Bole HQ - SGNA');
 DECLARE @106C_ProductionCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Production Centers');
-DECLARE @106C_Site1OilGrains INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Site 1 - Oil - Grains');
-DECLARE @106C_Site2Grains INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Site 2 - Grains');
+DECLARE @106C_AdamaFactory INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Adama Factory');
 DECLARE @106C_MinidorFactory INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Minidor Factory');
 DECLARE @106C_ProfitCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Profit Centers');
 DECLARE @106C_TradingProfitCenters INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Trading Profit Centers');

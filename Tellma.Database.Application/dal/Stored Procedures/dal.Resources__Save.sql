@@ -30,7 +30,6 @@ SET NOCOUNT ON;
 				[Description3],
 				geography::STGeomFromWKB([LocationWkb], 4326) AS [Location], -- 4326 = World Geodetic System, used by Google Maps
 				[LocationJson],
-				[ExpenseEntryTypeId],
 				[CenterId],
 				[ResidualMonetaryValue],
 				[ResidualValue],
@@ -84,7 +83,6 @@ SET NOCOUNT ON;
 				t.[Description3]			= s.[Description3],
 				t.[Location]				= s.[Location],
 				t.[LocationJson]			= s.[LocationJson],
-				t.[ExpenseEntryTypeId]		= s.[ExpenseEntryTypeId],
 				t.[CenterId]				= s.[CenterId],
 				t.[ResidualMonetaryValue]	= s.[ResidualMonetaryValue],
 				t.[ResidualValue]			= s.[ResidualValue],
@@ -131,7 +129,6 @@ SET NOCOUNT ON;
 				[Location],
 				[LocationJson],
 
-				[ExpenseEntryTypeId],
 				[CenterId],
 				[ResidualMonetaryValue],
 				[ResidualValue],
@@ -175,7 +172,6 @@ SET NOCOUNT ON;
 				s.[Description3],
 				s.[Location],
 				s.[LocationJson],
-				s.[ExpenseEntryTypeId],
 				s.[CenterId],
 				s.[ResidualMonetaryValue],
 				s.[ResidualValue],

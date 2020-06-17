@@ -4,7 +4,7 @@
 	[Id]				INT					NOT NULL DEFAULT 0,
 	[ParentId]			INT,  
 	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (
-													N'Abstract', N'Common', N'ServicesExtension', N'ProductionExtension',
+													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),
 	[Name]				NVARCHAR (255)		NOT NULL,
