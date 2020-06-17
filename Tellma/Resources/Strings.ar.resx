@@ -232,6 +232,9 @@
   <data name="Button_DisableTwoFactorAuthentication" xml:space="preserve">
     <value>تعطيل التوثيق مزدوج العوامل</value>
   </data>
+  <data name="Byte" xml:space="preserve">
+    <value>قيمة بايت</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
