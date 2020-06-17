@@ -3,7 +3,7 @@
 	[ParentIndex]		INT,
 	[Id]				INT					NOT NULL DEFAULT 0,
 	[ParentId]			INT,  
-	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (
+	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (N'Segment',
 													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),

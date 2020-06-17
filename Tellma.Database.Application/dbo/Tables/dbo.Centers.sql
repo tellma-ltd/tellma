@@ -4,13 +4,13 @@
 	--[SegmentId]				INT					NOT NULL CONSTRAINT [FK_Centers__SegmentId] REFERENCES dbo.[Segments]([Id]),
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
-	--CONSTRAINT [FK_Centers__SegmentId_ParentId] FOREIGN KEY ([SegmentId], [ParentId]) REFERENCES [dbo].[Centers] ([SegmentId], [Id]),
 	-- Common, Service, Production, SellingAndDistribution
-	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (
+	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (N'Segment',
 													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),
-	[IsLeaf]				AS					IIF([CenterType] = N'Abstract', 0, 1) PERSISTED,
+	--CONSTRAINT [Centers__ParentId_CenterType] CHECK([ParentId] IS NULL AND [CenterType] = N'Segment' OR [ParentId] IS NOT NULL AND [CenterType] <> N'Segment'),
+	[IsLeaf]				AS					IIF([CenterType] IN(N'Segment', N'Abstract'), 0, 1) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
@@ -26,7 +26,7 @@
 	
 	-- Pure SQL properties and computed properties
 	[Node]					HIERARCHYID			NOT NULL CONSTRAINT [IX_Centers__Node] UNIQUE, -- CLUSTERED,
-	[ParentNode]			AS [Node].GetAncestor(1),	
+	[ParentNode]			AS [Node].GetAncestor(1)--,	[SegmentNode]			AS [Node].GetAncestor([Node].GetLeveL() - 1)
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name]
