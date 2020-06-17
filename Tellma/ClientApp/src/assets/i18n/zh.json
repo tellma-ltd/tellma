@@ -81,6 +81,7 @@
   "Center_CenterType_CostOfSales": "销售成本",
   "Center_CenterType_DistributionCosts": "配送成本",
   "Center_CenterType_ProductionExtension": "生产",
+  "Center_CenterType_Segment": "分割",
   "Center_CenterType_ServiceExtension": "服务",
   "Center_Manager": "经理",
   "Centers": "责任中心",

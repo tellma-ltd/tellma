@@ -265,6 +265,9 @@
   <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
     <value>Production</value>
   </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>Segment</value>
+  </data>
   <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
     <value>Service</value>
   </data>
