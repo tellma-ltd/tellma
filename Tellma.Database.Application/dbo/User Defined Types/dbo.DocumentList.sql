@@ -19,7 +19,6 @@
 	[NotedContractId]				INT,
 	[NotedContractIsCommon]			BIT				NOT NULL DEFAULT 0,
 	[SegmentId]						INT,
-	[SegmentIsCommon]				BIT				NOT NULL DEFAULT 1,
 	[Time1]							DATETIME2 (2),
 	[Time1IsCommon]					BIT				NOT NULL DEFAULT 0,
 	[Time2]							DATETIME2 (2),

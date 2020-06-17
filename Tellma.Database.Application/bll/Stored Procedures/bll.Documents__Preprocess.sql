@@ -315,34 +315,15 @@ END
 		UPDATE @PreprocessedEntries
 		SET [CenterId] = (SELECT [Id] FROM dbo.[Centers] WHERE [IsActive] = 1 AND [IsLeaf] = 1);
 	END
-	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Common' AND [IsActive] = 1) = 1
+	ELSE IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1) = 1
 	BEGIN
 		DECLARE @SegmentId INT = (
 			SELECT [Id]	FROM dbo.[Centers]
-			WHERE [CenterType] = N'Common'
-			AND [IsActive] = 1 AND [IsLeaf] = 1
+			WHERE [CenterType] = N'Segment'
+			AND [IsActive] = 1
 		);
 		UPDATE @PreprocessedDocuments
 		SET [SegmentId] = @SegmentId
-		WHERE SegmentIsCommon = 1;
-		-- Manual Lines
-		UPDATE PE 
-		SET PE.CenterId = @SegmentId
-		FROM @PreprocessedEntries PE
-		JOIN dbo.Accounts A ON PE.AccountId = A.[Id]
-		JOIN dbo.AccountTypes AC ON AC.[Id] = A.[AccountTypeId]
-		WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
-		AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0;
-		-- Smart Lines
-		--UPDATE PE 
-		--SET PE.CenterId = @SegmentId
-		--FROM @PreprocessedEntries PE
-		--JOIN @PreprocessedLines L ON PE.LineIndex = L.[Index] AND PE.[DocumentIndex] = L.[DocumentIndex]
-		--JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND PE.[Index] = LDE.[Index]
-		--JOIN dbo.AccountTypes AC ON AC.[Id] = LDE.AccountTypeParentId
-		--WHERE AC.[Node].IsDescendantOf(@BalanceSheetRoot) = 1
-		--AND AC.[Node].IsDescendantOf(@PropertyPlantAndEquipment) = 0
-		--AND L.DefinitionId <> @ManualLineLD;
 	END
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
