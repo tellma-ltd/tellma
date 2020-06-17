@@ -18,12 +18,13 @@
 (16, N'Eyob Getachew', N'እዮብ ጌታቸዉ', N'eyobgetachew6077@gmail.com'),
 (17, N'Tesfaye Bisewer', N'ተስፋየ ቢሰዉር', N'tesfaye.bisewer@gmail.com'),
 (18, N'Getaneh Aseb', N'ጌታነህ አሰበ', N'asabegetaneh@gmail.com'),
-(19, N'Abu Bakr elHadi', N'Abu Bakr elHadi', N'abubakr.elhadi@banan-it.com'),
-(20, N'Abraham Tenker', N'Abraham Tenker', N'abrham.Tenker@banan-it.com'),
-(21, N'Mosab elHafiz', N'Mosab elHafiz', N'mosab.elhafiz@banan-it.com'),
-(22, N'Yisak Fikadu', N'Yisak Fikadu', N'yisak.fikadu@banan-it.com'),
+(19, N'Abu Bakr elHadi', N'አቡበከር ኢልሃዲ', N'abubakr.elhadi@banan-it.com'),
+(20, N'Abraham Tenker', N'አብርሃም ጠንክር', N'abrham.Tenker@banan-it.com'),
+(21, N'Mosab elHafiz', N'ሞሳብ ኤልሃፊዝ', N'mosab.elhafiz@banan-it.com'),
+(22, N'Yisak Fikadu', N'ይሳቅ ፍቃዱ', N'yisak.fikadu@banan-it.com'),
 (23, N'Mohamad Akra', N'Mohamad Akra', N'mohamad.akra@tellma.com'),
-(24, N'Ahmad Akra', N'Ahmad Akra', N'ahmad.akra@tellma.com');
+(24, N'Ahmad Akra', N'አህመድ አክራ', N'ahmad.akra@tellma.com');
+
 
 DELETE FROM @Users WHERE [Email] IN (SELECT [Email] FROM dbo.Users); -- in case admin is also in the list
 
@@ -56,7 +57,6 @@ DECLARE @106MosabelHafiz INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mos
 DECLARE @106YisakFikadu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'yisak.fikadu@banan-it.com');
 DECLARE @106MohamadAkra INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mohamad.akra@tellma.com');
 DECLARE @106AhmadAkra INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'ahmad.akra@tellma.com');
-
 
 --UPDATE dbo.Users SET [ImageId] = N'' WHERE [Id] = @106BulbulaTulle
 --UPDATE dbo.Users SET [ImageId] = N'' WHERE [Id] = @106DammaSheko

@@ -2,18 +2,15 @@
 	[Index]				INT					PRIMARY KEY,
 	[ParentIndex]		INT,
 	[Id]				INT					NOT NULL DEFAULT 0,
-	--[SegmentId]			INT,
 	[ParentId]			INT,  
-	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (N'Segment', N'Profit', N'Revenue', N'Cost')),
+	[CenterType]		NVARCHAR (50) CHECK ([CenterType] IN (
+													N'Abstract', N'Common', N'ServicesExtension', N'ProductionExtension',
+													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
+												),
 	[Name]				NVARCHAR (255)		NOT NULL,
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),
-	[ExpenseEntryTypeId]INT,
 	[ManagerId]			INT,
--- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
-	--[IsOperatingSegment]	BIT					NOT NULL DEFAULT 0, -- on each path from root to leaf, at most one O/S
-
-	[Code]				NVARCHAR (255),
-	[IsLeaf]			BIT DEFAULT 1
+	[Code]				NVARCHAR (255)
 	INDEX IX_CenterList__Code ([Code])
 );

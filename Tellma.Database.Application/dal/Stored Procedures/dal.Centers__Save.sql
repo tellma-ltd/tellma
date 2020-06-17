@@ -16,8 +16,8 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Centers] AS t
 		USING (
 			SELECT
-				E.[Index], E.[Id], --[SegmentId], 
-				E.[ParentId], [CenterType], [ExpenseEntryTypeId], [ManagerId], E.[IsLeaf],
+				E.[Index], E.[Id],
+				E.[ParentId], [CenterType], [ManagerId],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code]
 			FROM @Entities E
@@ -25,12 +25,9 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				--t.[SegmentId]			= s.[SegmentId],
 				t.[ParentId]			= s.[ParentId],
 				t.[CenterType]			= s.[CenterType],
-				t.[ExpenseEntryTypeId]	= s.[ExpenseEntryTypeId],
 				t.[ManagerId]			= s.[ManagerId],
-				t.[IsLeaf]				= s.[IsLeaf],
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
@@ -38,10 +35,10 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT (--[SegmentId],	
-			[ParentId],	[CenterType],	[IsLeaf], [Node], [Name],	[Name2],	[Name3], [Code], [ExpenseEntryTypeId], [ManagerId])
-			VALUES (--s.[SegmentId],
-			s.[ParentId],s.[CenterType],s.[IsLeaf],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ExpenseEntryTypeId],s.[ManagerId])
+			INSERT (
+			[ParentId],	[CenterType],	[Node], [Name],	[Name2],	[Name3], [Code], [ManagerId])
+			VALUES (
+			s.[ParentId],s.[CenterType],s.[Node],s.[Name],s.[Name2],s.[Name3],s.[Code],s.[ManagerId])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
