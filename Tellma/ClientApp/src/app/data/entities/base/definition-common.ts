@@ -120,6 +120,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'newspaper',
             'user-clock',
             'anchor',
+            'dolly-flatbed',
 
             'camera',
             'camera-retro',
