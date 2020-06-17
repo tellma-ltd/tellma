@@ -41,7 +41,7 @@
           <span>{{ section.label }}</span>
         </div>
         <a class="t-menu-item btn m-1" [id]="getId(s+1, i)" (focus)="onFocus(s+1, i)" (blur)="onBlur()"
-          [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;" [routerLink]="item.link">
+          [class.d-none]="!showItem(item)" *ngFor="let item of section.items; let i = index;" [routerLink]="item.link" (click)="onMenuItemClick(item)">
           <div class="pt-4 pb-1 t-menu-item-icon">
             <fa-icon [icon]="item.icon"></fa-icon>
           </div>
