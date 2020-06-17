@@ -67,12 +67,15 @@ namespace Tellma.Entities
         public string StartDateVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Primary)]
+        [StringLength(50)]
         public string StartDateLabel { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Secondary)]
+        [StringLength(50)]
         public string StartDateLabel2 { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Ternary)]
+        [StringLength(50)]
         public string StartDateLabel3 { get; set; }
 
         // TEMP

@@ -16,23 +16,23 @@ namespace Tellma.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationController]
-    public class ContractDefinitionsController : CrudControllerBase<ContractDefinitionForSave, ContractDefinition, int>
+    public class ResourceDefinitionsController : CrudControllerBase<ResourceDefinitionForSave, ResourceDefinition, int>
     {
-        public const string BASE_ADDRESS = "contract-definitions";
+        public const string BASE_ADDRESS = "resource-definitions";
 
-        private readonly ContractDefinitionsService _service;
+        private readonly ResourceDefinitionsService _service;
 
-        public ContractDefinitionsController(ILogger<ContractDefinitionsController> logger, ContractDefinitionsService service, DefinitionsService defService) : base(logger)
+        public ResourceDefinitionsController(ILogger<ResourceDefinitionsController> logger, ResourceDefinitionsService service, DefinitionsService defService) : base(logger)
         {
             _service = service;
         }
 
-        protected override CrudServiceBase<ContractDefinitionForSave, ContractDefinition, int> GetCrudService()
+        protected override CrudServiceBase<ResourceDefinitionForSave, ResourceDefinition, int> GetCrudService()
         {
             return _service;
         }
 
-        protected override Task OnSuccessfulSave(List<ContractDefinition> data, Extras extras)
+        protected override Task OnSuccessfulSave(List<ResourceDefinition> data, Extras extras)
         {
             Response.Headers.Set("x-definitions-version", Constants.Stale);
             return base.OnSuccessfulSave(data, extras);
@@ -45,14 +45,14 @@ namespace Tellma.Controllers
         }
     }
 
-    public class ContractDefinitionsService : CrudServiceBase<ContractDefinitionForSave, ContractDefinition, int>
+    public class ResourceDefinitionsService : CrudServiceBase<ResourceDefinitionForSave, ResourceDefinition, int>
     {
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string View => ContractDefinitionsController.BASE_ADDRESS;
+        private string View => ResourceDefinitionsController.BASE_ADDRESS;
 
-        public ContractDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public ResourceDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _localizer = localizer;
             _repo = repo;
@@ -68,21 +68,21 @@ namespace Tellma.Controllers
             return _repo;
         }
 
-        protected override Query<ContractDefinition> Search(Query<ContractDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<ResourceDefinition> Search(Query<ResourceDefinition> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var titleP = nameof(ContractDefinition.TitlePlural);
-                var titleP2 = nameof(ContractDefinition.TitlePlural2);
-                var titleP3 = nameof(ContractDefinition.TitlePlural3);
+                var titleP = nameof(ResourceDefinition.TitlePlural);
+                var titleP2 = nameof(ResourceDefinition.TitlePlural2);
+                var titleP3 = nameof(ResourceDefinition.TitlePlural3);
 
-                var titleS = nameof(ContractDefinition.TitleSingular);
-                var titleS2 = nameof(ContractDefinition.TitleSingular2);
-                var titleS3 = nameof(ContractDefinition.TitleSingular3);
-                var code = nameof(ContractDefinition.Code);
+                var titleS = nameof(ResourceDefinition.TitleSingular);
+                var titleS2 = nameof(ResourceDefinition.TitleSingular2);
+                var titleS3 = nameof(ResourceDefinition.TitleSingular3);
+                var code = nameof(ResourceDefinition.Code);
 
                 query = query.Filter($"{titleS} {Ops.contains} '{search}' or {titleS2} {Ops.contains} '{search}' or {titleS3} {Ops.contains} '{search}' or {titleP} {Ops.contains} '{search}' or {titleP2} {Ops.contains} '{search}' or {titleP3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
@@ -90,26 +90,26 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<ContractDefinitionForSave> entities)
+        protected override async Task SaveValidateAsync(List<ResourceDefinitionForSave> entities)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ContractDefinitions_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceDefinitions_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ContractDefinitionForSave> entities, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceDefinitionForSave> entities, bool returnIds)
         {
-            return await _repo.ContractDefinitions__Save(entities, returnIds: returnIds);
+            return await _repo.ResourceDefinitions__Save(entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ContractDefinitions_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceDefinitions_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -119,11 +119,11 @@ namespace Tellma.Controllers
         {
             try
             {
-                await _repo.ContractDefinitions__Delete(ids);
+                await _repo.ResourceDefinitions__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ContractDefinition"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResourceDefinition"]]);
             }
         }
     }

@@ -9,8 +9,7 @@
 													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
 													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
 												),
-	--CONSTRAINT [Centers__ParentId_CenterType] CHECK([ParentId] IS NULL AND [CenterType] = N'Segment' OR [ParentId] IS NOT NULL AND [CenterType] <> N'Segment'),
-	[IsLeaf]				AS					IIF([CenterType] IN(N'Segment', N'Abstract'), 0, 1) PERSISTED,
+	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),

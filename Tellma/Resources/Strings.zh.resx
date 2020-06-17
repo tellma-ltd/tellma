@@ -247,20 +247,26 @@
   <data name="Center_CenterType" xml:space="preserve">
     <value>责任类型</value>
   </data>
-  <data name="Center_CenterType_Cost" xml:space="preserve">
-    <value>成本</value>
+  <data name="Center_CenterType_Abstract" xml:space="preserve">
+    <value>抽象</value>
   </data>
-  <data name="Center_CenterType_Profit" xml:space="preserve">
-    <value>利润</value>
+  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
+    <value>管理费用</value>
   </data>
-  <data name="Center_CenterType_Revenue" xml:space="preserve">
-    <value>收入</value>
+  <data name="Center_CenterType_Common" xml:space="preserve">
+    <value>不明</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>分割</value>
+  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
+    <value>销售成本</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>费用条目类型</value>
+  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
+    <value>配送成本</value>
+  </data>
+  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
+    <value>生产</value>
+  </data>
+  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
+    <value>服务</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>经理</value>
@@ -1096,6 +1102,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>{0}定义</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0}标签</value>
   </data>
@@ -1854,9 +1863,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>费用条目类型</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>识别码</value>

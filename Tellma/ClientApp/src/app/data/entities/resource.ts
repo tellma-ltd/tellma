@@ -21,7 +21,6 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     Description2?: string;
     Description3?: string;
     LocationJson?: string;
-    ExpenseEntryTypeId?: number;
     CenterId?: number;
     ResidualMonetaryValue?: number;
     ResidualValue?: number;
@@ -107,8 +106,6 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 LocationJson: { control: 'text', label: () => trx.instant('Resource_LocationJson') },
-                ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Resource_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Resource_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Resource_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Resource_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 ResidualMonetaryValue: { control: 'number', label: () => trx.instant('Entry_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
@@ -194,7 +191,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'ExpenseEntryType', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
+            for (const propName of ['Currency', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

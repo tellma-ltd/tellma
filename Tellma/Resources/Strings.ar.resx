@@ -247,20 +247,26 @@
   <data name="Center_CenterType" xml:space="preserve">
     <value>نوع المركز</value>
   </data>
-  <data name="Center_CenterType_Cost" xml:space="preserve">
-    <value>تكلفة</value>
+  <data name="Center_CenterType_Abstract" xml:space="preserve">
+    <value>تجميعي</value>
   </data>
-  <data name="Center_CenterType_Profit" xml:space="preserve">
-    <value>ربح</value>
+  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
+    <value>إداري</value>
   </data>
-  <data name="Center_CenterType_Revenue" xml:space="preserve">
-    <value>إيراد</value>
+  <data name="Center_CenterType_Common" xml:space="preserve">
+    <value>غير مخصص</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>قطاع</value>
+  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
+    <value>مباشر</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>نوع سطر المصروف</value>
+  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
+    <value>تسويقي</value>
+  </data>
+  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
+    <value>إنتاجي</value>
+  </data>
+  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
+    <value>خدمي</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
@@ -1096,6 +1102,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>الفيسبوك</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>تعريف الحقل ({0})</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>اسم الحقل ({0})</value>
   </data>
@@ -1854,9 +1863,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>الكمية الاقتصادية</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>الغرض</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>رقم التعريف</value>

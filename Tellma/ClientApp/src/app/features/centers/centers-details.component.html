@@ -73,16 +73,6 @@
         <t-selector *ngIf="isEdit" [(ngModel)]="model.CenterType" [choices]="centerTypeChoices" required></t-selector>
     </t-form-group>
 
-    <!-- Expense Entry Type -->
-    <t-form-group class="t-form-group" [label]="'Center_ExpenseEntryType' | translate"
-        [serverErrors]="model?.serverErrors?.ExpenseEntryTypeId">
-        <t-restricted [metadata]="model?.EntityMetadata?.ExpenseEntryTypeId">
-            <t-view-link *ngIf="!isEdit" link="../../entry-types/" [itemId]="model?.ExpenseEntryTypeId">{{
-                    ws.getMultilingualValue('EntryType', model?.ExpenseEntryTypeId, 'Name') }}</t-view-link>
-        </t-restricted>
-        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.ExpenseEntryTypeId"></t-entry-types-picker>
-    </t-form-group>
-
     <!-- Manager -->
     <t-form-group class="t-form-group" [label]="'Center_Manager' | translate"
         [serverErrors]="model?.serverErrors?.ManagerId">
@@ -103,12 +93,8 @@
     </t-form-group>
 
     <!-- Is Leaf -->
-    <t-form-group class="t-form-group" [label]="'IsLeaf' | translate">
-        <div *ngIf="!isEdit">{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>
-        <div *ngIf="isEdit" class="custom-control custom-checkbox t-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsLeaf" id="isLeaf">
-            <label class="custom-control-label t-pointer" for="isLeaf">&zwnj;</label>
-        </div>
+    <t-form-group class="t-form-group" [label]="'IsLeaf' | translate" *ngIf="!isEdit">
+        <div>{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>
     </t-form-group>
 
     <!-- Is Active -->

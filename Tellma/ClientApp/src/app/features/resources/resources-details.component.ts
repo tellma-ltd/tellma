@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';
@@ -39,12 +39,14 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `Currency,ExpenseEntryType,
-Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
+  @Input()
+  previewDefinition: ResourceDefinitionForClient; // Used in preview mode
+
+  public expand = `Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
-    private translate: TranslateService, private route: ActivatedRoute) {
+    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
   }
 
@@ -70,7 +72,7 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
   // UI Binding
 
   private get definition(): ResourceDefinitionForClient {
-    return !!this.definitionId ? this.ws.definitions.Resources[this.definitionId] : null;
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Resources[this.definitionId] : null);
   }
 
   public get found(): boolean {
@@ -153,8 +155,21 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
     }
   }
 
+  public onEditDefinition = (_: Resource) => {
+    const ws = this.workspace;
+    ws.isEdit = true;
+    this.router.navigate(['../../../resource-definitions', this.definitionId], { relativeTo: this.route })
+      .then(success => {
+        if (!success) {
+          delete ws.isEdit;
+        }
+      })
+      .catch(() => delete ws.isEdit);
+  }
+
   public showActivate = (model: Resource) => !!model && !model.IsActive;
   public showDeactivate = (model: Resource) => !!model && model.IsActive;
+  public showEditDefinition = (_: Resource) => this.ws.canDo('resource-definitions', 'Update', null);
 
   public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
@@ -218,14 +233,6 @@ Center,Lookup1,Lookup2,Lookup3,Lookup4,Units/Unit`;
 
   public get Description_isRequired(): boolean {
     return this.definition.DescriptionVisibility === 'Required';
-  }
-
-  public get ExpenseEntryType_isVisible(): boolean {
-    return !!this.definition.ExpenseEntryTypeVisibility;
-  }
-
-  public get ExpenseEntryType_isRequired(): boolean {
-    return this.definition.ExpenseEntryTypeVisibility === 'Required';
   }
 
   public get Center_isVisible(): boolean {

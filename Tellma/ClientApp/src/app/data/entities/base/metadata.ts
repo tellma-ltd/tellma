@@ -29,6 +29,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_Agent } from '../agent';
 import { metadata_ContractDefinition } from '../contract-definition';
+import { metadata_ResourceDefinition } from '../resource-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -61,6 +62,7 @@ export const metadata: {
     InboxRecord: metadata_InboxRecord,
     OutboxRecord: metadata_OutboxRecord,
     ContractDefinition: metadata_ContractDefinition,
+    ResourceDefinition: metadata_ResourceDefinition,
 
     // Admin
     AdminUser: metadata_AdminUser,

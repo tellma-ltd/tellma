@@ -63,6 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<SummaryEntriesService>()
                 .AddScoped<UnitsService>()
                 .AddScoped<ContractDefinitionsService>()
+                .AddScoped<ResourceDefinitionsService>()
                 .AddScoped<UsersService>();
         }
     }
@@ -105,6 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(MarkupTemplate) => sp.GetRequiredService<MarkupTemplatesService>(),
                 nameof(OutboxRecord) => sp.GetRequiredService<OutboxService>(),
                 nameof(ReportDefinition) => sp.GetRequiredService<ReportDefinitionsService>(),
+                nameof(ResourceDefinition) => sp.GetRequiredService<ResourceDefinitionsService>(),
                 nameof(Resource) => definitionId == null ? sp.GetRequiredService<ResourcesGenericService>() : (IFactServiceBase)sp.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
                 nameof(Role) => sp.GetRequiredService<RolesService>(),
                 nameof(SummaryEntry) => sp.GetRequiredService<SummaryEntriesService>(),
@@ -149,6 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(MarkupTemplate) => sp.GetRequiredService<MarkupTemplatesService>(),
                 nameof(OutboxRecord) => sp.GetRequiredService<OutboxService>(),
                 nameof(ReportDefinition) => sp.GetRequiredService<ReportDefinitionsService>(),
+                nameof(ResourceDefinition) => sp.GetRequiredService<ResourceDefinitionsService>(),
                 nameof(Resource) => definitionId == null ? sp.GetRequiredService<ResourcesGenericService>() : (IFactWithIdService)sp.GetRequiredService<ResourcesService>().SetDefinitionId(definitionId.Value),
                 nameof(Role) => sp.GetRequiredService<RolesService>(),
                 nameof(Unit) => sp.GetRequiredService<UnitsService>(),

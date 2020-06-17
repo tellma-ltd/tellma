@@ -62,9 +62,6 @@ namespace Tellma.Entities
         // Auto computed from the GeoJSON property, not visible to clients
         public byte[] LocationWkb { get; set; } 
 
-        [Display(Name = "Resource_ExpenseEntryType")]
-        public int? ExpenseEntryTypeId { get; set; }
-
         [Display(Name = "Resource_Center")]
         public int? CenterId { get; set; }
 
@@ -155,10 +152,6 @@ namespace Tellma.Entities
         // For Query
 
         public Geography Location { get; set; }
-
-        [Display(Name = "Resource_ExpenseEntryType")]
-        [ForeignKey(nameof(ExpenseEntryTypeId))]
-        public EntryType ExpenseEntryType { get; set; }
 
         [Display(Name = "Resource_Center")]
         [ForeignKey(nameof(CenterId))]

@@ -126,6 +126,9 @@ import { AgmCoreModule } from '@agm/core';
 import { ContractDefinitionsDetailsComponent } from './contract-definitions/contract-definitions-details.component';
 import { ContractDefinitionsMasterComponent } from './contract-definitions/contract-definitions-master.component';
 import { ContractDefinitionsPickerComponent } from './contract-definitions/contract-definitions-picker.component';
+import { ResourceDefinitionsDetailsComponent } from './resource-definitions/resource-definitions-details.component';
+import { ResourceDefinitionsMasterComponent } from './resource-definitions/resource-definitions-master.component';
+import { ResourceDefinitionsPickerComponent } from './resource-definitions/resource-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -404,6 +407,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Resource Definitions
+      {
+        path: 'resource-definitions',
+        component: ResourceDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'resource-definitions/:id',
+        component: ResourceDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -503,6 +518,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     ContractDefinitionsDetailsComponent,
     ContractDefinitionsMasterComponent,
     ContractDefinitionsPickerComponent,
+    ResourceDefinitionsDetailsComponent,
+    ResourceDefinitionsMasterComponent,
+    ResourceDefinitionsPickerComponent,
   ],
   imports: [
     SharedModule,

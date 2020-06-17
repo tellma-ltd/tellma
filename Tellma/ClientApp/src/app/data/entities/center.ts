@@ -15,13 +15,13 @@ export interface CenterForSave extends EntityForSave {
     Name3?: string;
     ManagerId?: number;
     Code?: string;
-    IsLeaf?: boolean;
 }
 
 export interface Center extends CenterForSave {
     Level?: number;
     ActiveChildCount?: number;
     ChildCount?: number;
+    IsLeaf?: boolean;
     IsActive?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
@@ -62,18 +62,15 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                 CenterType: {
                     control: 'choice',
                     label: () => trx.instant('Center_CenterType'),
-                    choices: ['Segment', 'Profit', 'Revenue', 'Cost'],
+                    choices: ['Abstract', 'Common', 'ServiceExtension', 'ProductionExtension', 'DistributionCosts', 'AdministrativeExpense', 'CostOfSales'],
                     format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                ExpenseEntryTypeId: { control: 'number', label: () => `${trx.instant('Center_ExpenseEntryType')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ExpenseEntryType: { control: 'navigation', label: () => trx.instant('Center_ExpenseEntryType'), type: 'EntryType', foreignKeyName: 'ExpenseEntryTypeId' },
                 ManagerId: { control: 'number', label: () => `${trx.instant('Center_Manager')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Manager: { control: 'navigation', label: () => trx.instant('Center_Manager'), type: 'Agent', foreignKeyName: 'ManagerId' },
                 Code: { control: 'text', label: () => trx.instant('Code') },
-                IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
                 // Tree stuff
                 Level: {
@@ -92,6 +89,7 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     control: 'navigation', label: () => trx.instant('TreeParent'), type: 'Center',
                     foreignKeyName: 'ParentId'
                 },
+                IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
                 // IsActive & Audit info
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },

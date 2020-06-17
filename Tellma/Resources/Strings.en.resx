@@ -247,20 +247,26 @@
   <data name="Center_CenterType" xml:space="preserve">
     <value>Center Type</value>
   </data>
-  <data name="Center_CenterType_Cost" xml:space="preserve">
-    <value>Cost</value>
+  <data name="Center_CenterType_Abstract" xml:space="preserve">
+    <value>Abstract</value>
   </data>
-  <data name="Center_CenterType_Profit" xml:space="preserve">
-    <value>Profit</value>
+  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
+    <value>Administrative Expense</value>
   </data>
-  <data name="Center_CenterType_Revenue" xml:space="preserve">
-    <value>Revenue</value>
+  <data name="Center_CenterType_Common" xml:space="preserve">
+    <value>Unspecified</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>Segment</value>
+  <data name="Center_CenterType_CostOfSales" xml:space="preserve">
+    <value>Cost of Sales</value>
   </data>
-  <data name="Center_ExpenseEntryType" xml:space="preserve">
-    <value>Expense Entry Type</value>
+  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
+    <value>Distribution Costs</value>
+  </data>
+  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
+    <value>Service</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>Manager</value>
@@ -1096,6 +1102,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
   </data>
+  <data name="Field0Definition" xml:space="preserve">
+    <value>{0} Definition</value>
+  </data>
   <data name="Field0Label" xml:space="preserve">
     <value>{0} Label</value>
   </data>
@@ -1854,9 +1863,6 @@
   </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>Economic Order Quantity</value>
-  </data>
-  <data name="Resource_ExpenseEntryType" xml:space="preserve">
-    <value>Purpose</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>Identifier</value>

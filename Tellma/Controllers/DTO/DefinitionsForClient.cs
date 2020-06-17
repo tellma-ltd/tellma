@@ -343,7 +343,6 @@ namespace Tellma.Controllers.Dto
 
         public string DescriptionVisibility { get; set; } // Yes
         public string LocationVisibility { get; set; } // Yes
-        public string ExpenseEntryTypeVisibility { get; set; } // Yes
         public string CenterVisibility { get; set; } // Yes
         public string ResidualMonetaryValueVisibility { get; set; } // Yes
         public string ResidualValueVisibility { get; set; } // Yes

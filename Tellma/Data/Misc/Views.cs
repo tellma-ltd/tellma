@@ -210,6 +210,17 @@
                         {
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "resource-definitions",
+                        Name = "ResourceDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",

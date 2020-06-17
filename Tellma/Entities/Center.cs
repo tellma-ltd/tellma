@@ -18,12 +18,16 @@ namespace Tellma.Entities
         [Display(Name = "Center_CenterType")]
         [Required]
         [StringLength(255)]
-        [ChoiceList(new object[] { "Segment", "Profit", "Revenue", "Cost" },
+        [ChoiceList(new object[] { "Abstract", "Common", "ServiceExtension", "ProductionExtension", "DistributionCosts", "AdministrativeExpense", "CostOfSales" },
             new string[] {
-                "Center_CenterType_Segment",
-                "Center_CenterType_Profit",
-                "Center_CenterType_Revenue",
-                "Center_CenterType_Cost" })]
+                "Center_CenterType_Abstract",
+                "Center_CenterType_Common",
+                "Center_CenterType_ServiceExtension",
+                "Center_CenterType_ProductionExtension",
+                "Center_CenterType_DistributionCosts",
+                "Center_CenterType_AdministrativeExpense",
+                "Center_CenterType_CostOfSales",
+            })]
         public string CenterType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
@@ -42,9 +46,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
-        [Display(Name = "Center_ExpenseEntryType")]
-        public int? ExpenseEntryTypeId { get; set; }
-
         [Display(Name = "Center_Manager")]
         public int? ManagerId { get; set; }
 
@@ -52,11 +53,6 @@ namespace Tellma.Entities
         [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; }
-
-        [Display(Name = "IsLeaf")]
-        [Required]
-        [AlwaysAccessible]
-        public bool? IsLeaf { get; set; } = true;
     }
 
     public class Center : CenterForSave, ITreeEntity<int>
@@ -69,6 +65,10 @@ namespace Tellma.Entities
 
         [AlwaysAccessible]
         public int? ChildCount { get; set; }
+
+        [Display(Name = "IsLeaf")]
+        [AlwaysAccessible]
+        public bool? IsLeaf { get; set; }
 
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
@@ -87,10 +87,6 @@ namespace Tellma.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "Center_ExpenseEntryType")]
-        [ForeignKey(nameof(ExpenseEntryTypeId))]
-        public EntryType ExpenseEntryType { get; set; }
 
         [Display(Name = "Center_Manager")]
         [ForeignKey(nameof(ManagerId))]
