@@ -265,6 +265,9 @@
   <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
     <value>إنتاجي</value>
   </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>قطاع</value>
+  </data>
   <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
     <value>خدمي</value>
   </data>

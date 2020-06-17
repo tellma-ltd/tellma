@@ -18,8 +18,9 @@ namespace Tellma.Entities
         [Display(Name = "Center_CenterType")]
         [Required]
         [StringLength(255)]
-        [ChoiceList(new object[] { "Abstract", "Common", "ServiceExtension", "ProductionExtension", "DistributionCosts", "AdministrativeExpense", "CostOfSales" },
+        [ChoiceList(new object[] { "Segment", "Abstract", "Common", "ServiceExtension", "ProductionExtension", "DistributionCosts", "AdministrativeExpense", "CostOfSales" },
             new string[] {
+                "Center_CenterType_Segment",
                 "Center_CenterType_Abstract",
                 "Center_CenterType_Common",
                 "Center_CenterType_ServiceExtension",

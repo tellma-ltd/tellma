@@ -265,6 +265,9 @@
   <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
     <value>生产</value>
   </data>
+  <data name="Center_CenterType_Segment" xml:space="preserve">
+    <value>分割</value>
+  </data>
   <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
     <value>服务</value>
   </data>
