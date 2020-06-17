@@ -535,27 +535,6 @@ namespace Tellma.Controllers
                         }
                     }
 
-                    // Segment
-                    if (colDef.ColumnName == nameof(Entry.CenterId))
-                    {
-                        result.SegmentVisibility = true;
-                        if (string.IsNullOrWhiteSpace(result.SegmentLabel))
-                        {
-                            result.SegmentLabel = colDef.Label;
-                            result.SegmentLabel2 = colDef.Label2;
-                            result.SegmentLabel3 = colDef.Label3;
-                        }
-                        if (colDef.RequiredState < (result.SegmentRequiredState ?? 5))
-                        {
-                            result.SegmentRequiredState = colDef.RequiredState;
-                        }
-
-                        if (colDef.ReadOnlyState < (result.SegmentReadOnlyState ?? 5))
-                        {
-                            result.SegmentReadOnlyState = colDef.ReadOnlyState;
-                        }
-                    }
-
                     // Time1
                     if (colDef.ColumnName == nameof(Entry.Time1))
                     {

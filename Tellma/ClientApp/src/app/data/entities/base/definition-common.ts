@@ -117,6 +117,9 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'funnel-dollar',
             'cash-register',
             'map-marker-alt',
+            'newspaper',
+            'user-clock',
+            'anchor',
 
             'camera',
             'camera-retro',

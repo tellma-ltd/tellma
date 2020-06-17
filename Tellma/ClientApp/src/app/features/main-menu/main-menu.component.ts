@@ -9,7 +9,9 @@ import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/defini
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 import { metadata } from '~/app/data/entities/base/metadata';
-import { MainMenuSection } from '~/app/data/entities/base/definition-common';
+import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
+import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
+import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
 
 interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
 interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
@@ -40,16 +42,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchInput', { static: true })
   searchInput: ElementRef;
 
-  // TODO: replace below with a dynamically constructed mainMenu
-  quickAccess: MenuItemInfo[] = [
-    { label: 'Inbox', icon: 'inbox', link: '../inbox', sortKey: 10 },
-    { label: 'Outbox', icon: 'share', link: '../outbox', sortKey: 20 },
-    { label: 'Accounts', icon: 'coins', link: '../accounts',  view: 'accounts', sortKey: 30 },
-    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
-    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
-    { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
-  ];
-
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
     Financials: {
       background: 't-blue1',
@@ -79,7 +71,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     Cash: {
       background: 't-green1',
       items: [
-        { label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
+        {
+          label: 'ExchangeRates', icon: 'exchange-alt', link: '../exchange-rates',
           view: 'exchange-rates', sortKey: 100
         }
       ]
@@ -127,7 +120,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'Units', icon: 'ruler', link: '../units',
           view: 'units', sortKey: 100
         },
-        { label: 'Currencies', icon: 'euro-sign', link: '../currencies',
+        {
+          label: 'Currencies', icon: 'euro-sign', link: '../currencies',
           view: 'currencies', sortKey: 200
         },
         {
@@ -189,24 +183,43 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  get mainMenu(): MenuSectionInfo[] {
+  public get mainMenu(): MenuSectionInfo[] {
     this.initializeMainMenu();
     return this._mainMenu;
   }
+
+  public get quickAccess(): MenuItemInfo[] {
+    this.initializeMainMenu();
+    return this._quickAccess;
+  }
+
+  // // TODO: replace below with a dynamically constructed mainMenu
+  // quickAccess: MenuItemInfo[] = [
+  //   { label: 'Inbox', icon: 'inbox', link: '../inbox', sortKey: 10 },
+  //   { label: 'Outbox', icon: 'share', link: '../outbox', sortKey: 20 },
+  //   { label: 'Accounts', icon: 'coins', link: '../accounts', view: 'accounts', sortKey: 30 },
+  //   { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
+  //   { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
+  //   { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
+  // ];
 
   _permissions: PermissionsForClient = null;
   _definitions: DefinitionsForClient = null;
   _settings: SettingsForClient = null;
   _mainMenu: MenuSectionInfo[];
+  _quickAccess: MenuItemInfo[];
   _currentCulture: string;
+  _userSettings: UserSettingsForClient | AdminUserSettingsForClient;
 
-  public initializeMainMenu(): MenuSectionInfo[] {
+  public initializeMainMenu(): void {
     const ws = this.workspace.currentTenant;
+    let menuUpdated = false;
     if (this._definitions !== ws.definitions ||
       this._settings !== ws.settings ||
       this._currentCulture !== this.workspace.ws.culture ||
       this._permissions !== ws.permissions) {
 
+      menuUpdated = true;
       this._definitions = ws.definitions;
       this._settings = ws.settings;
       this._currentCulture = this.workspace.ws.culture;
@@ -230,7 +243,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addReportDefinitions(menu);
 
-
       this._mainMenu = Object.keys(menu).map(e => ({
         label: this.translate.instant('Menu_' + e),
         items: menu[e].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
@@ -243,7 +255,33 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       // console.log(Object.keys(this.mainMenuBase).map(e => 'Menu_' + e).join(`", "`)); // XyzDefinition.cs
     }
 
-    return this._mainMenu;
+    if (menuUpdated || this._userSettings !== this.workspace.current.userSettings) {
+      this._userSettings = this.workspace.current.userSettings;
+
+      const settingsQuickAccessLinks = this.userSettings.get<string[]>('main-menu/quick-access');
+      if (!!settingsQuickAccessLinks && !!settingsQuickAccessLinks.length) {
+        // First hash the links in a dictionary
+        const settingsQuickAccessLinksDic: { [link: string]: true } = {};
+        for (const link of settingsQuickAccessLinks) {
+          settingsQuickAccessLinksDic[link] = true;
+        }
+
+        // Then loop over the main menu, to verify that the links exist (in case a link is no longer present/valid)
+        const validQuickAccessLinksDic: { [link: string]: MenuItemInfo } = {};
+        for (const section of this._mainMenu) {
+          for (const item of section.items) {
+            if (settingsQuickAccessLinksDic[item.link]) { // It's one of the quick access items
+              validQuickAccessLinksDic[item.link] = item; // Add the item to quick access
+            }
+          }
+        }
+
+        this._quickAccess = settingsQuickAccessLinks.map(e => validQuickAccessLinksDic[e]).filter(e => !!e);
+
+      } else {
+        this._quickAccess = [];
+      }
+    }
   }
 
   private addReportDefinitions(menu: { [section: string]: MenuSectionInfo }) {
@@ -348,7 +386,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // constructor
   constructor(
     private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
-    private translate: TranslateService, private workspace: WorkspaceService) { }
+    private translate: TranslateService, private workspace: WorkspaceService, private userSettings: CustomUserSettingsService) { }
 
   // Angular lifecycle hooks
   ngOnInit() {
@@ -691,12 +729,28 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
    * This is to help the business analyst choose the right sort key for a new screen
    */
   public onSectionDoubleClick(section: MenuSectionInfo) {
-    if (!section || !section.items)  {
+    if (!section || !section.items) {
       return;
     }
     console.log(`------- Section: ${section.label} -------`);
     for (const item of section.items) {
       console.log(`${item.sortKey} ${item.label}`);
     }
+  }
+
+  public onMenuItemClick(item: MenuItemInfo) {
+
+    // Get the array of quick access links (excluding with the new link created or moved to first position)
+    const newLinks = this.quickAccess.filter(e => e.link !== item.link).map(e => e.link);
+    newLinks.unshift(item.link);
+
+    // Keep the array of quick access list at 6 tiles
+    while (newLinks.length > 6) {
+      newLinks.pop();
+    }
+
+    // Save the in the user settings
+    const newLinksString = JSON.stringify(newLinks);
+    this.userSettings.save('main-menu/quick-access', newLinksString);
   }
 }

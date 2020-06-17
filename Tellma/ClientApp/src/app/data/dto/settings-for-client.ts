@@ -23,4 +23,5 @@ export interface SettingsForClient {
     BrandColor: string;
     CreatedAt: string;
     IsMultiCenter: boolean;
+    IsMultiSegment: boolean;
 }

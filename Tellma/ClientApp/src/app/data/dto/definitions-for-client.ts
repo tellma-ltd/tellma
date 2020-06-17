@@ -145,14 +145,6 @@ export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForC
     // Clearance
     ClearanceVisibility: Visibility;
 
-    // Segment
-    SegmentVisibility: boolean;
-    SegmentRequiredState: LineState;
-    SegmentReadOnlyState: LineState;
-    SegmentLabel: string;
-    SegmentLabel2: string;
-    SegmentLabel3: string;
-
     // Time1
     Time1Visibility: boolean;
     Time1RequiredState: LineState;

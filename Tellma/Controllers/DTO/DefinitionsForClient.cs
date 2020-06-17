@@ -192,14 +192,6 @@ namespace Tellma.Controllers.Dto
         // Clearance
         public string ClearanceVisibility { get; set; }
 
-        // Segment
-        public bool SegmentVisibility { get; set; }
-        public short? SegmentRequiredState { get; set; }
-        public short? SegmentReadOnlyState { get; set; }
-        public string SegmentLabel { get; set; }
-        public string SegmentLabel2 { get; set; }
-        public string SegmentLabel3 { get; set; }
-
         // Time 1
         public bool Time1Visibility { get; set; }
         public short? Time1RequiredState { get; set; }
