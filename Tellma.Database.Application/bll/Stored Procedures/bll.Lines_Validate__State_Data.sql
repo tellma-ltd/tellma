@@ -14,7 +14,7 @@ DECLARE @ManualLineLD INT = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] =
 	SELECT TOP (@Top)
 		N'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + N'].Lines[' +
 			CAST(E.[LineIndex] AS NVARCHAR (255)) + N'].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + N'].' + FL.[Id],
-		N'Error_TheField0IsRequired',
+		N'Error_Field0IsRequired',
 		dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [FieldName]
 	FROM @Entries E
 	CROSS JOIN (VALUES
@@ -108,7 +108,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].ResourceId',
-		N'Error_TheField0IsRequired',
+		N'Error_Field0IsRequired',
 		N'localize:Entry_Resource'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -121,7 +121,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].ContractId',
-		N'Error_TheField0IsRequired',
+		N'Error_Field0IsRequired',
 		N'localize:Entry_Contract'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -134,7 +134,7 @@ BEGIN
 		'[' + CAST(L.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(L.[Index] AS NVARCHAR (255)) + '].Entries[' +
 			CAST(E.[Index] AS NVARCHAR (255)) + '].EntryTypeId',
-		N'Error_TheField0IsRequired',
+		N'Error_Field0IsRequired',
 		N'localize:Entry_EntryType'
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
@@ -212,7 +212,7 @@ IF @State > 0
 	--SELECT TOP (@Top)
 	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
 	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryTypeId',
-	--	N'Error_TheField0IsRequired',
+	--	N'Error_Field0IsRequired',
 	--	dbo.fn_Localize(LDC.[Label], LDC.[Label2], LDC.[Label3]) AS [EntryTypeFieldName]
 	--FROM @Entries E
 	--JOIN @Lines L ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]

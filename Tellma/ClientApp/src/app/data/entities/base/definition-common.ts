@@ -36,7 +36,7 @@ export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoiceProp
     return {
         control: 'choice',
         label: () => trx.instant('MainMenuSection'),
-        choices: ['Financials', 'Cash', 'FixedAssets', 'Inventory', 'Production', 'Purchasing', 'Sales', 'HumanCapital', 'Investments', 'Maintenance', 'Administration', 'Security', 'Studio', 'Help'],
+        choices: ['Mail', 'Financials', 'Cash', 'FixedAssets', 'Inventory', 'Production', 'Purchasing', 'Sales', 'HumanCapital', 'Investments', 'Maintenance', 'Administration', 'Security', 'Studio', 'Help'],
         format: (c: string) => trx.instant('Menu_' + c)
     };
 }
@@ -120,6 +120,18 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
             'newspaper',
             'user-clock',
             'anchor',
+            'dolly-flatbed',
+            'edit',
+            'folder-minus',
+            'folder-plus',
+            'umbrella-beach',
+            'spa',
+            'user-minus',
+            'trophy',
+            'suitcase-rolling',
+            'tasks',
+            'ship',
+            'pallet',
 
             'camera',
             'camera-retro',
