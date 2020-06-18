@@ -1,6 +1,6 @@
 ﻿INSERT INTO @DocumentDefinitions([Index], [Code], [DocumentType], [Description], [TitleSingular], [TitlePlural],[Prefix], [MainMenuIcon], [MainMenuSection], [MainMenuSortKey]) VALUES
 (0, N'ManualJournalVoucher',2, N'Manual lines only',N'Manual Journal Voucher', N'Manual Journal Vouchers', N'JV',N'newspaper', N'Financials', 1040),
-(8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'CPV',N'user-clock', N'Financials', 1050),
+(8, N'ClosingPeriodVoucher',2, N'PPE Depreciation, Intangible Amortization, Exchange Variance, Settling trade accounts',N'Closing Month Voucher', N'Closing Month Vouchers', N'CPV',N'history', N'Financials', 1050),
 (9, N'ClosingYearVoucher',2, N'Fiscal Close, Manual',N'Closing Year Voucher', N'Closing Year Vouchers', N'CYV',N'anchor', N'Financials', 1060),
 
 (10, N'PaymentIssueToNonTradingAgents',2, N'payment to partner, debtor, creditor, to other cash, to bank, to exchange, to other',N'Cash Payment Voucher', N'Cash Payment Vouchers', N'PIO',N'money-check-alt', N'Cash', 1080),
@@ -19,7 +19,7 @@
 (34, N'GoodReceiptFromImport',2, N'goods receipt from import (PPE treated as stock till mise in use)',N'Good Receipt (Import)', N'Goods Receipts (Import)', N'GRI',NULL, N'Purchasing', 1210),
 (35, N'GoodServiceReceiptFromTradePayable',2, N'PPE/consumables/services/rental receipt from supplier, purchase invoice, debit note (supplier)',N'Good/Service Receipt (Purchase)', N'Goods/Services Receipts (Purchase)', N'GSRS',NULL, N'Purchasing', 1220),
 
-(40, N'PaymentReceiptFromTradeReceivable',2, N'payment from customer, sales invoice, Goods/Service issue to customer',N'Cash Receipt (Customer)', N'Cash Receipts (Customers)', N'PRC',NULL, N'Sales', 1240),
+(40, N'PaymentReceiptFromTradeReceivable',2, N'payment from customer, sales invoice, Goods/Service issue to customer',N'Cash Receipt (Customer)', N'Cash Receipts (Customers)', N'PRC',N'grin-hearts', N'Sales', 1240),
 (41, N'RefundToTradeReceivable',2, N'payment to customer, credit note (customer), stock receipt from customer',N'Customer Refund', N'Customer Refunds', N'PIC',NULL, N'Sales', 1250),
 (42, N'WithholdingTaxByTradeReceivable',2, N'Witholding tax by customers/lessees',N'WT (Customer)', N'WT (Customers)', N'WTC',N'folder-plus', N'Sales', 1260),
 (43, N'GoodIssueToExport',2, N'goods issue to export, payment, sales invoice, FOB destination',N'Export Shipment', N'Goods Issues (Exports)', N'GIE',NULL, N'Sales', 1270),
@@ -33,7 +33,7 @@
 (54, N'GrainProcessing',2, N'',N'Grain Processing Voucher', N'Grain Processing Vouchers', N'PV5',NULL, N'Production', 1350),
 (55, N'OilMilling',2, N'',N'Oil Milling Voucher', N'Oil Milling Vouchers', N'PV6',NULL, N'Production', 1360),
 
-(69, N'Maintenance',2, N'DM/DL/OH to Job, then total allocated to machine',N'Internal Maintenance Job', N'Internal Maintenance Jobs', N'IMJ',NULL, N'Production', 1380),
+(69, N'Maintenance',2, N'DM/DL/OH to Job, then total allocated to machine',N'Internal Maintenance Job', N'Internal Maintenance Jobs', N'IMJ',N'user-cog', N'Production', 1380),
 
 (70, N'PaymentIssueToEmployee',2, N'payment - employee benefits, payment - employee loan, salary, overtime, absence, deduction, due installments, Bonus',N'Cash Payment', N'Cash Payments', N'PIE',N'hand-holding-usd', N'HumanCapital', 1400),
 (71, N'EmployeeLoan',2, N'salary advance, long term loan, loan installments',N'Employee Loan Voucher', N'', N'ELN',N'tasks', N'HumanCapital', 1410),

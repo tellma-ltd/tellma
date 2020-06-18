@@ -66,11 +66,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'account-types', sortKey: 300
         },
         {
-          label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
+          label: 'AccountClassifications', icon: 'indent', link: '../account-classifications',
           view: 'account-classifications', sortKey: 500
         },
         {
-          label: 'Centers', icon: 'sitemap', link: '../centers',
+          label: 'Centers', icon: 'object-group', link: '../centers',
           view: 'centers', sortKey: 600
         },
       ]
@@ -132,7 +132,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'currencies', sortKey: 200
         },
         {
-          label: 'IfrsConcepts', icon: 'list', link: '../ifrs-concepts',
+          label: 'IfrsConcepts', icon: 'stream', link: '../ifrs-concepts',
           view: 'ifrs-concepts', sortKey: 400
         },
         {
