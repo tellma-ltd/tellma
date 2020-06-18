@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 	DECLARE @LineDefinitionsIndexedIds [dbo].[IndexedIdList], @LineDefinitionEntriesIndexIds [dbo].[IndexIdWithHeaderList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @WorkflowIndexedIds [dbo].[IndexIdWithStringHeaderList];
+	DECLARE @WorkflowIndexedIds [dbo].[IndexIdWithHeaderList];
 
 	INSERT INTO @LineDefinitionsIndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -355,17 +355,17 @@ SET NOCOUNT ON;
 			)
 		OUTPUT s.[Index], inserted.[LineDefinitionId], inserted.[Id]
 	) AS x;
+
 	WITH BWS AS (
-		SELECT * FROM dbo.[WorkflowSignatures]
+		SELECT * FROM dbo.[WorkflowSignatures] -- check if there are already signatures for the transition
 		WHERE [WorkflowId] IN (SELECT [Id] FROM @WorkflowIndexedIds)
 	)
 	MERGE [dbo].[WorkflowSignatures] AS t
 	USING (
 		SELECT
 			WS.[Index],
-			WS.[Id],
+			WS.[Id], -- when 0 then it is inserted
 			WI.[Id] AS WorkflowId,
-			II.[Id] AS [LineDefinitionId],
 			WS.[RuleType],
 			WS.[RuleTypeEntryIndex],
 			WS.[RoleId],
@@ -375,11 +375,9 @@ SET NOCOUNT ON;
 			WS.[Value],
 			WS.[ProxyRoleId]
 		FROM @WorkflowSignatures WS
-		JOIN @WorkflowIndexedIds WI ON WS.[WorkflowIndex] = WI.[Index]
-		JOIN @Entities LD ON 
-			WI.[HeaderId] = LD.[Id]
-		AND WS.[LineDefinitionIndex] = LD.[Index]
-		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
+		JOIN @Workflows W ON  WS.[WorkflowIndex] = W.[Index] AND WS.[LineDefinitionIndex] = W.[LineDefinitionIndex]
+		JOIN @LineDefinitionsIndexedIds LDI ON LDI.[Index] =  W.[LineDefinitionIndex]
+		JOIN @WorkflowIndexedIds WI ON W.[Index] = WI.[Index] AND WI.[HeaderId] = LDI.[Id]
 	) AS s ON s.[Id] = t.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET
@@ -391,7 +389,7 @@ SET NOCOUNT ON;
 			t.[PredicateTypeEntryIndex]	= s.[PredicateTypeEntryIndex],
 			t.[Value]					= s.[Value],
 			t.[ProxyRoleId]				= s.[ProxyRoleId],
-			t.[SavedById]	= @UserId
+			t.[SavedById]				= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN

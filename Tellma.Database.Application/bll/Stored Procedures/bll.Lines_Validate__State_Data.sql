@@ -113,8 +113,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypeResourceDefinitions] AD ON A.[AccountTypeId] = AD.[AccountTypeId]
-	WHERE (E.[ResourceId] IS NULL);
+	WHERE (A.[ResourceDefinitionId] IS NOT NULL) AND (E.[ResourceId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -126,8 +125,7 @@ BEGIN
 	FROM @Lines L
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
-	JOIN dbo.[AccountTypeContractDefinitions] AD ON A.[AccountTypeId] = AD.[AccountTypeId]
-	WHERE (E.[ContractId] IS NULL);
+	WHERE (A.[ContractDefinitionId] IS NOT NULL) AND (E.[ContractId] IS NULL);
 	
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
@@ -142,7 +140,7 @@ BEGIN
 	JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
 	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
 	JOIN dbo.[EntryTypes] ETC ON E.[EntryTypeId] = ETC.[Id]
-	WHERE ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
+	WHERE ETP.IsActive = 1 AND ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
 END
 	-- No deprecated account, for any positive state
 IF @State > 0
