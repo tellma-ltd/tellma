@@ -26,7 +26,16 @@ INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [State],	[Name]) VALUES
 (0,0,-4,	N'Duplicate Line'),
 (1,0,-4,	N'Incorrect Analysis'),
-(2,0,-4,	N'Other reasons');
+(2,0,-4,	N'Other reasons'); -- @
+INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+[ToState]) Values
+(0,0,+3),
+(1,0,+4);
+INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+[RuleType],			[RoleId]) VALUES
+(0,0,0,N'ByRole',	@ComptrollerRL),
+(0,1,0,N'ByRole',	@FinanceManagerRL);
+
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [Script] = N'

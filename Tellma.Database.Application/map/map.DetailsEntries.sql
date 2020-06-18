@@ -13,9 +13,9 @@ FROM
 			(RUR.[UnitAmount]) / (RUR.[BaseAmount]) As [StandardAmount],-- Quantity in Standard Unit of all compatible unit types
 		U2.[UnitType]
 	FROM dbo.Entries E
-	JOIN dbo.Units UE ON E.UnitId = UE.[Id]
-	JOIN dbo.ResourceUnitRates RUR ON RUR.[ResourceId] = E.[ResourceId]
-	JOIN dbo.Units U2 ON RUR.[UnitId] = U2.[Id]
+	LEFT JOIN dbo.Units UE ON E.UnitId = UE.[Id]
+	LEFT JOIN dbo.ResourceUnitRates RUR ON RUR.[ResourceId] = E.[ResourceId]
+	LEFT JOIN dbo.Units U2 ON RUR.[UnitId] = U2.[Id]
 ) AS SourceTable
 PIVOT
 (

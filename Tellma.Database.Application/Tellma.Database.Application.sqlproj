@@ -477,7 +477,6 @@
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ExchangeRates_Validate__Delete.sql" />
     <Build Include="dbo\Functions\dbo.fn_DateAdd.sql" />
-    <Build Include="dbo\User Defined Types\dbo.IndexIdWithStringHeaderList.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__State_Data.sql" />
     <Build Include="bll\Stored Procedures\bll.LineSignatures_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.LineSignatures__DeleteAndRefresh.sql" />
@@ -609,7 +608,7 @@
     <None Include="105.Simpex.publish.xml" />
     <None Include="Tellma.Database.Application.publish.xml" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
-    <None Include="101.AzureBananSDTraining.publish.xml" />
+    <None Include="Azure.101.BananSD.publish.xml" />
     <None Include="106.Soreti.publish.xml" />
     <None Include="Provisioning\106\06_Accounts\a_AccountClassifications.sql" />
     <None Include="Provisioning\106\05_Contracts\00_Agents.sql" />
@@ -633,7 +632,7 @@
     <None Include="Provisioning\106\02_Basic\b_Centers.sql" />
     <None Include="Provisioning\000\m_Units.sql" />
     <None Include="Provisioning\100_105\00_Setup\Script.sql" />
-    <None Include="106.AzureSoretiTraining.publish.xml" />
+    <None Include="Azure.106.Soreti.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
