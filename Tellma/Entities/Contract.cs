@@ -88,6 +88,10 @@ namespace Tellma.Entities
 
         // For Query
 
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public ContractDefinition Definition { get; set; }
+
         [Display(Name = "Contract_Agent")]
         [ForeignKey(nameof(AgentId))]
         public Agent Agent { get; set; }
