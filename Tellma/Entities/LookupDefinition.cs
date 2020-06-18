@@ -15,6 +15,7 @@ namespace Tellma.Entities
         public string Code { get; set; }
 
         [MultilingualDisplay(Name = "TitleSingular", Language = Language.Primary)]
+        [Required]
         [StringLength(255)]
         [AlwaysAccessible]
         public string TitleSingular { get; set; }

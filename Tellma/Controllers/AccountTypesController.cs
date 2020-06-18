@@ -101,11 +101,6 @@ namespace Tellma.Controllers
             return query;
         }
 
-        protected override Query<AccountType> GetAsQuery(List<AccountTypeForSave> entities)
-        {
-            throw new System.NotImplementedException();
-        }
-
         protected override Task<List<AccountTypeForSave>> SavePreprocessAsync(List<AccountTypeForSave> entities)
         {
             // Set defaults

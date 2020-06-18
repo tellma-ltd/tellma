@@ -130,7 +130,7 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>外部参考标签</value>
   </data>
-  <data name="AccountType_NotedِAgentNameLabel" xml:space="preserve">
+  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>注意代理名称标签</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">

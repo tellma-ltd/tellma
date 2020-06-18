@@ -1337,7 +1337,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public showEntryType_Manual(entry: Entry): boolean {
     // Show entry type when the account's type has an entry type parent Id
     const at = this.accountType(entry);
-    return !!at && !!at.EntryTypeParentId;
+    if (!!at) {
+      const entryTypeParent = this.ws.get('EntryType', at.EntryTypeParentId);
+      return !!entryTypeParent && entryTypeParent.IsActive;
+    }
+
+    return false;
   }
 
   public readonlyEntryType_Manual(entry: Entry): boolean {

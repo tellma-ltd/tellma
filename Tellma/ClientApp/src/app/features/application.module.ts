@@ -86,7 +86,8 @@ import {
   faSuitcaseRolling,
   faTasks,
   faShip,
-  faPallet,
+  faPallet,
+
   faObjectGroup,
   faUserPlus,
   faIndent,
@@ -151,6 +152,9 @@ import { ContractDefinitionsPickerComponent } from './contract-definitions/contr
 import { ResourceDefinitionsDetailsComponent } from './resource-definitions/resource-definitions-details.component';
 import { ResourceDefinitionsMasterComponent } from './resource-definitions/resource-definitions-master.component';
 import { ResourceDefinitionsPickerComponent } from './resource-definitions/resource-definitions-picker.component';
+import { LookupDefinitionsMasterComponent } from './lookup-definitions/lookup-definitions-master.component';
+import { LookupDefinitionsDetailsComponent } from './lookup-definitions/lookup-definitions-details.component';
+import { LookupDefinitionsPickerComponent } from './lookup-definitions/lookup-definitions-picker.component';
 
 const routes: Routes = [
   {
@@ -441,6 +445,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Lookup Definitions
+      {
+        path: 'lookup-definitions',
+        component: LookupDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'lookup-definitions/:id',
+        component: LookupDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -543,6 +559,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     ResourceDefinitionsDetailsComponent,
     ResourceDefinitionsMasterComponent,
     ResourceDefinitionsPickerComponent,
+    LookupDefinitionsMasterComponent,
+    LookupDefinitionsDetailsComponent,
+    LookupDefinitionsPickerComponent,
   ],
   imports: [
     SharedModule,

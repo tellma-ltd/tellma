@@ -170,8 +170,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           view: 'resource-definitions', sortKey: 300
         },
         {
+          label: 'LookupDefinitions', icon: 'tools', link: '../lookup-definitions',
+          view: 'lookup-definitions', sortKey: 400
+        },
+        {
           label: 'MarkupTemplates', icon: 'file-code', link: '../markup-templates',
-          view: 'markup-templates', sortKey: 400
+          view: 'markup-templates', sortKey: 500
         },
       ]
     },

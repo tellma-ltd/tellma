@@ -30,6 +30,7 @@ import { Entity } from './entity';
 import { metadata_Agent } from '../agent';
 import { metadata_ContractDefinition } from '../contract-definition';
 import { metadata_ResourceDefinition } from '../resource-definition';
+import { metadata_LookupDefinition } from '../lookup-definition';
 
 export const metadata: {
     [collection: string]: (
@@ -63,6 +64,7 @@ export const metadata: {
     OutboxRecord: metadata_OutboxRecord,
     ContractDefinition: metadata_ContractDefinition,
     ResourceDefinition: metadata_ResourceDefinition,
+    LookupDefinition: metadata_LookupDefinition,
 
     // Admin
     AdminUser: metadata_AdminUser,

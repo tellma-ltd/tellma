@@ -56,6 +56,10 @@ namespace Tellma.Entities
 
         // For Query
 
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public LookupDefinition Definition { get; set; }
+
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }

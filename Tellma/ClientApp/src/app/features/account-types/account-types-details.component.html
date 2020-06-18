@@ -71,6 +71,18 @@
     </t-account-types-picker>
   </t-form-group>
 
+
+  <!-- Entry Type Parent -->
+  <t-form-group class="t-form-group" *ngIf="showEntryTypeParent(model)"
+    [label]="'AccountType_EntryTypeParent' | translate" [serverErrors]="model?.serverErrors?.EntryTypeParentId">
+    <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EntryTypeParent">
+      <t-view-link link="../../entry-types" [itemId]="model?.EntryTypeParentId">{{
+        ws.getMultilingualValue('EntryType', model?.EntryTypeParentId, 'Name') }}</t-view-link>
+    </t-restricted>
+    <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeParentId" required>
+    </t-entry-types-picker>
+  </t-form-group>
+
   <!-- Description -->
   <t-form-group class="t-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
     [serverErrors]="model?.serverErrors?.Description">
@@ -116,7 +128,7 @@
   </t-form-group>
 
   <ul ngbNav #tabs="ngbNav" class="w-100 pt-3 pt-sm-4 nav-tabs" [destroyOnHide]="true">
-   
+
     <!-- Labels -->
     <li ngbNavItem="labels">
       <a ngbNavLink>

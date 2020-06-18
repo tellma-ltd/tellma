@@ -41,6 +41,7 @@ import { MarkupTemplate } from './entities/markup-template';
 import { Agent } from './entities/agent';
 import { ContractDefinition } from './entities/contract-definition';
 import { ResourceDefinition } from './entities/resource-definition';
+import { LookupDefinition } from './entities/lookup-definition';
 
 enum WhichWorkspace {
   /**
@@ -361,6 +362,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   MarkupTemplate: EntityWorkspace<MarkupTemplate>;
   ContractDefinition: EntityWorkspace<ContractDefinition>;
   ResourceDefinition: EntityWorkspace<ResourceDefinition>;
+  LookupDefinition: EntityWorkspace<LookupDefinition>;
 
   constructor(private workspaceService: WorkspaceService) {
     super();
@@ -396,6 +398,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.OutboxRecord = {};
     this.ContractDefinition = {};
     this.ResourceDefinition = {};
+    this.LookupDefinition = {};
 
     this.notifyStateChanged();
   }
