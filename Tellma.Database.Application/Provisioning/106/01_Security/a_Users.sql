@@ -18,7 +18,7 @@
 (16, N'Eyob Getachew', N'እዮብ ጌታቸዉ', N'eyobgetachew6077@gmail.com'),
 (17, N'Tesfaye Bisewer', N'ተስፋየ ቢሰዉር', N'tesfaye.bisewer@gmail.com'),
 (18, N'Getaneh Aseb', N'ጌታነህ አሰበ', N'asabegetaneh@gmail.com'),
-(19, N'Abu Bakr elHadi', N'አቡበከር ኢልሃዲ', N'abubakr.elhadi@banan-it.com'),
+(19, N'Abu Bakr elHadi', N'አቡበከር ኢልሃዲ', N'abubaker.elhadi@banan-it.com'),
 (20, N'Abraham Tenker', N'አብርሃም ጠንክር', N'abrham.Tenker@banan-it.com'),
 (21, N'Mosab elHafiz', N'ሞሳብ ኤልሃፊዝ', N'mosab.elhafiz@banan-it.com'),
 (22, N'Yisak Fikadu', N'ይሳቅ ፍቃዱ', N'yisak.fikadu@banan-it.com'),

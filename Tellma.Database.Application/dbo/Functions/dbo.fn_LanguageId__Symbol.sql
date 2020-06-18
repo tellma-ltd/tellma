@@ -7,7 +7,7 @@ AS
 BEGIN
 	RETURN 
 		CASE
-			WHEN @LanguageId =N'am' THEN N'ኣ'
+			WHEN @LanguageId =N'am' THEN N'አ'
 			WHEN @LanguageId =N'ar' THEN N'ع'
 			WHEN @LanguageId =N'bs' THEN N'Б'
 			WHEN @LanguageId =N'en' THEN N'E'
