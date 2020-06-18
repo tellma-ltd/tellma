@@ -221,6 +221,17 @@
                         {
                         }
                     },
+                    new ViewInfo
+                    {
+                        Id = "lookup-definitions",
+                        Name = "LookupDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                        }
+                    },
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",

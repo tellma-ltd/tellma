@@ -64,6 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<UnitsService>()
                 .AddScoped<ContractDefinitionsService>()
                 .AddScoped<ResourceDefinitionsService>()
+                .AddScoped<LookupDefinitionsService>()
                 .AddScoped<UsersService>();
         }
     }
@@ -102,6 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(IdentityServerUser) => sp.GetRequiredService<IdentityServerUsersService>(),
                 nameof(IfrsConcept) => sp.GetRequiredService<IfrsConceptsService>(),
                 nameof(InboxRecord) => sp.GetRequiredService<InboxService>(),
+                nameof(LookupDefinition) => sp.GetRequiredService<LookupDefinitionsService>(),
                 nameof(Lookup) => definitionId == null ? sp.GetRequiredService<LookupsGenericService>() : (IFactServiceBase)sp.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
                 nameof(MarkupTemplate) => sp.GetRequiredService<MarkupTemplatesService>(),
                 nameof(OutboxRecord) => sp.GetRequiredService<OutboxService>(),
@@ -147,6 +149,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 nameof(IdentityServerUser) => sp.GetRequiredService<IdentityServerUsersService>(),
                 nameof(IfrsConcept) => sp.GetRequiredService<IfrsConceptsService>(),
                 nameof(InboxRecord) => sp.GetRequiredService<InboxService>(),
+                nameof(LookupDefinition) => sp.GetRequiredService<LookupDefinitionsService>(),
                 nameof(Lookup) => definitionId == null ? sp.GetRequiredService<LookupsGenericService>() : (IFactWithIdService)sp.GetRequiredService<LookupsService>().SetDefinitionId(definitionId.Value),
                 nameof(MarkupTemplate) => sp.GetRequiredService<MarkupTemplatesService>(),
                 nameof(OutboxRecord) => sp.GetRequiredService<OutboxService>(),

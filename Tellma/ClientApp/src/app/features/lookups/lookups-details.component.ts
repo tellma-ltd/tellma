@@ -7,6 +7,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 't-lookups-details',
@@ -29,6 +30,9 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   public get definitionId(): number {
     return this._definitionId;
   }
+
+  @Input()
+  previewDefinition: LookupDefinitionForClient; // Used in preview mode
 
   public expand = '';
 
@@ -59,6 +63,10 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
 
   get view(): string {
     return `lookups/${this.definitionId}`;
+  }
+
+  private get definition(): LookupDefinitionForClient {
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null);
   }
 
   // UI Binding
@@ -104,12 +112,6 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const definitionId = this.definitionId;
-    const definition = this.ws.definitions.Lookups[definitionId];
-    if (!definition) {
-      this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-    }
-
-    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+    return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 }

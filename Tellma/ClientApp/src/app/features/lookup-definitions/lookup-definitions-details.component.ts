@@ -8,25 +8,25 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { ContractDefinitionForSave, metadata_ContractDefinition, ContractDefinition } from '~/app/data/entities/contract-definition';
+import { LookupDefinitionForSave, metadata_LookupDefinition, LookupDefinition } from '~/app/data/entities/lookup-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 
 @Component({
-  selector: 't-contract-definitions-details',
-  templateUrl: './contract-definitions-details.component.html',
+  selector: 't-lookup-definitions-details',
+  templateUrl: './lookup-definitions-details.component.html',
   styles: []
 })
-export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
+export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  // private contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
+  // private lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   create = () => {
-    const result: ContractDefinitionForSave = {};
+    const result: LookupDefinitionForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.TitleSingular = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -35,19 +35,11 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
       result.TitleSingular3 = this.initialText;
     }
 
-    // Set all visibility properties to 'None' by default
-    const none: DefinitionVisibility = 'None';
-    for (const propName of this.allVisibilityProps()) {
-      result[propName] = none;
-    }
-
-    result.AllowMultipleUsers = false;
-
     return result;
   }
 
   private allVisibilityProps(): string[] {
-    const props = metadata_ContractDefinition(this.workspace, this.translate).properties;
+    const props = metadata_LookupDefinition(this.workspace, this.translate).properties;
     const result = [];
     for (const propName of Object.keys(props)) {
       if (propName.endsWith('Visibility')) {
@@ -58,9 +50,9 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  clone: (item: ContractDefinition) => ContractDefinition = (item: ContractDefinition) => {
+  clone: (item: LookupDefinition) => LookupDefinition = (item: LookupDefinition) => {
     if (!!item) {
-      const clone = JSON.parse(JSON.stringify(item)) as ContractDefinition;
+      const clone = JSON.parse(JSON.stringify(item)) as LookupDefinition;
       clone.Id = null;
 
       // if (!!clone.Rows) {
@@ -86,7 +78,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    // this.contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
+    // this.lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$);
   }
 
   // get centerTypeChoices(): SelectorChoice[] {
@@ -108,15 +100,6 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  public savePreprocessing(entity: ContractDefinition) {
-    // Server validation on hidden properties will be confusing to the user
-    if (entity.StartDateVisibility === 'None') {
-      delete entity.StartDateLabel;
-      delete entity.StartDateLabel2;
-      delete entity.StartDateLabel3;
-    }
-  }
-
   public collapseDefinition = false;
   public onToggleDefinition(): void {
     this.collapseDefinition = !this.collapseDefinition;
@@ -132,7 +115,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return true;
   }
 
-  public isInactive: (model: ContractDefinition) => string = (_: ContractDefinition) => null;
+  public isInactive: (model: LookupDefinition) => string = (_: LookupDefinition) => null;
 
   public flipIcon(isExpanded: boolean): string {
     return this.workspace.ws.isRtl && !isExpanded ? 'horizontal' : null;
@@ -144,7 +127,6 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   private _sections: { [key: string]: boolean } = {
     Title: true,
-    Fields: false,
     MainMenu: false
   };
 
@@ -156,7 +138,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return this._sections[key];
   }
 
-  public sectionErrors(section: string, model: ContractDefinition) {
+  public sectionErrors(section: string, model: LookupDefinition) {
     if (section === 'Title') {
       return (!!model.serverErrors && (
         areServerErrors(model.serverErrors.Code) ||
@@ -166,19 +148,6 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.TitlePlural) ||
         areServerErrors(model.serverErrors.TitlePlural2) ||
         areServerErrors(model.serverErrors.TitlePlural3)
-      ));
-    } else if (section === 'Fields') {
-      return (!!model.serverErrors && (
-        areServerErrors(model.serverErrors.AgentVisibility) ||
-        areServerErrors(model.serverErrors.CurrencyVisibility) ||
-        areServerErrors(model.serverErrors.TaxIdentificationNumberVisibility) ||
-        areServerErrors(model.serverErrors.ImageVisibility) ||
-        areServerErrors(model.serverErrors.StartDateVisibility) ||
-        areServerErrors(model.serverErrors.StartDateLabel) ||
-        areServerErrors(model.serverErrors.StartDateLabel2) ||
-        areServerErrors(model.serverErrors.StartDateLabel3) ||
-        areServerErrors(model.serverErrors.JobVisibility) ||
-        areServerErrors(model.serverErrors.BankAccountNumberVisibility)
       ));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
@@ -199,7 +168,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     return validationErrors(control, serverErrors, this.translate);
   }
 
-  public onDefinitionChange(model: ContractDefinition, prop?: string) {
+  public onDefinitionChange(model: LookupDefinition, prop?: string) {
     if (!!prop) {
       // Non-critical change, no need to refresh
       this.getForClient(model)[prop] = model[prop];
@@ -209,11 +178,11 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  private _currentModel: ContractDefinition;
+  private _currentModel: LookupDefinition;
   private _currentModelModified = false;
-  private _getForClientResult: ContractDefinitionForClient;
+  private _getForClientResult: LookupDefinitionForClient;
 
-  public getForClient(model: ContractDefinition): ContractDefinitionForClient {
+  public getForClient(model: LookupDefinition): LookupDefinitionForClient {
     if (!model) {
       return null;
     }
@@ -223,51 +192,26 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
       this._currentModel = model;
 
       // The mapping is trivial since the two data structures are identical
-      this._getForClientResult = { ...model } as ContractDefinitionForClient;
-
-      // In definitions for client, a null visibility becomes undefined
-      for (const propName of this.allVisibilityProps()) {
-        const value = this._getForClientResult[propName] as DefinitionVisibility;
-        if (value === 'None') {
-          delete this._getForClientResult[propName];
-        }
-      }
+      this._getForClientResult = { ...model } as LookupDefinitionForClient;
     }
 
     return this._getForClientResult;
   }
 
-  private _visibilityChoices: SelectorChoice[];
-  public get visibilityChoices(): SelectorChoice[] {
-    if (!this._visibilityChoices) {
-      this._visibilityChoices = [
-        { value: 'None', name: () => this.translate.instant('Visibility_None') },
-        { value: 'Optional', name: () => this.translate.instant('Visibility_Optional') },
-        { value: 'Required', name: () => this.translate.instant('Visibility_Required') }
-      ];
-    }
-
-    return this._visibilityChoices;
-  }
-
-  public isVisible(visibility: DefinitionVisibility) {
-    return visibility === 'Optional' || visibility === 'Required';
-  }
-
   // Menu stuff
 
   public get allMainMenuSections(): SelectorChoice[] {
-    const desc = metadata_ContractDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
+    const desc = metadata_LookupDefinition(this.workspace, this.translate).properties.MainMenuSection as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
   public get allMainMenuIcons(): SelectorChoice[] {
-    const desc = metadata_ContractDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
+    const desc = metadata_LookupDefinition(this.workspace, this.translate).properties.MainMenuIcon as ChoicePropDescriptor;
     return getChoices(desc);
   }
 
 
-  public onIconClick(model: ContractDefinition, icon: SelectorChoice): void {
+  public onIconClick(model: LookupDefinition, icon: SelectorChoice): void {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }

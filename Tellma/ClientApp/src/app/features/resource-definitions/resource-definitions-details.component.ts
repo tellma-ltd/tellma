@@ -10,7 +10,7 @@ import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metad
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ResourceDefinitionForSave, metadata_ResourceDefinition, ResourceDefinition } from '~/app/data/entities/resource-definition';
 import { DefinitionVisibility } from '~/app/data/entities/base/definition-common';
-import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { ResourceDefinitionForClient, DefinitionForClient, DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
 import { areServerErrors, highlightInvalid, validationErrors } from '~/app/shared/form-group-base/form-group-base.component';
 import { NgControl } from '@angular/forms';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
@@ -124,7 +124,6 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
   public collapseDefinition = false;
   public onToggleDefinition(): void {
     this.collapseDefinition = !this.collapseDefinition;
-    window.dispatchEvent(new Event('resize')); // So the chart would resize
   }
 
   private _isEdit = false;
@@ -316,6 +315,26 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this._visibilityChoices;
+  }
+
+  private _lookupDefinitionChoicesDef: DefinitionsForClient;
+  private _lookupDefinitionChoices: SelectorChoice[];
+  public get lookupDefinitionChoices(): SelectorChoice[] {
+    if (this._lookupDefinitionChoicesDef !== this.ws.definitions) {
+      this._lookupDefinitionChoicesDef = this.ws.definitions;
+      this._lookupDefinitionChoices = [];
+      const lookups = this.ws.definitions.Lookups;
+      for (const key of Object.keys(lookups)) {
+        const id = +key;
+        const lookupDef = lookups[id];
+        this._lookupDefinitionChoices.push({
+          value: id,
+          name: () => this.ws.getMultilingualValueImmediate(lookupDef, 'TitleSingular')
+        });
+      }
+    }
+
+    return this._lookupDefinitionChoices;
   }
 
   public isVisible(visibility: DefinitionVisibility) {
