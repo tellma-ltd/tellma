@@ -130,7 +130,7 @@
   <data name="AccountType_ExternalReferenceLabel" xml:space="preserve">
     <value>External Reference Label</value>
   </data>
-  <data name="AccountType_NotedِAgentNameLabel" xml:space="preserve">
+  <data name="AccountType_NotedAgentNameLabel" xml:space="preserve">
     <value>Noted Agent Name Label</value>
   </data>
   <data name="AccountType_NotedAmountLabel" xml:space="preserve">

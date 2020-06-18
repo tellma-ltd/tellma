@@ -1652,6 +1652,8 @@ namespace Tellma.Controllers
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryTypePaths(string path = null) => EntryTypeProps
             .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryTypeParentPaths(string path = null) => EntryTypeParentProps
+            .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountPaths(string path = null) => AccountProps
             .Concat(AccountTypePaths(nameof(Account.AccountType)))
             .Concat(CenterPaths(nameof(Account.Center)))
@@ -1661,6 +1663,7 @@ namespace Tellma.Controllers
             .Concat(ResourcePaths(nameof(Account.Resource)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> AccountTypePaths(string path = null) => AccountTypeProps
+            .Concat(EntryTypeParentPaths(nameof(AccountType.EntryTypeParent)))
             .Select(p => path == null ? p : $"{path}/{p}");
 
         // -------------------------------------------------------------
@@ -1692,7 +1695,8 @@ namespace Tellma.Controllers
             nameof(Account.NotedContractDefinitionId),
             nameof(Account.ResourceDefinitionId)
         );
-        private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3));
+        private static IEnumerable<string> EntryTypeProps => Enum(nameof(EntryType.Name), nameof(EntryType.Name2), nameof(EntryType.Name3), nameof(EntryType.IsActive));
+        private static IEnumerable<string> EntryTypeParentProps => Enum(nameof(EntryType.IsActive));
         private static IEnumerable<string> AccountTypeProps => Enum(
             // Names
             nameof(AccountType.Name),
@@ -1711,11 +1715,6 @@ namespace Tellma.Controllers
             nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel), nameof(AccountType.NotedAgentNameLabel),
             nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel), nameof(AccountType.NotedAmountLabel),
             nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel), nameof(AccountType.NotedDateLabel)
-
-            //// Definitions
-            //$"{nameof(AccountType.ContractDefinitions)}/{nameof(AccountTypeContractDefinition.ContractDefinitionId)}",
-            //$"{nameof(AccountType.NotedContractDefinitions)}/{nameof(AccountTypeNotedContractDefinition.NotedContractDefinitionId)}",
-            //$"{nameof(AccountType.ResourceDefinitions)}/{nameof(AccountTypeResourceDefinition.ResourceDefinitionId)}"
          );
 
         // Helper method

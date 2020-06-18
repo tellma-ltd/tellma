@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[LookupDefinitions_Validate__Delete]
-	@Ids [dbo].[IndexedStringList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

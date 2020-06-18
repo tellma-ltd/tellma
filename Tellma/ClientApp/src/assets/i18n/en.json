@@ -21,7 +21,7 @@
   "AccountType_DueDateLabel": "Due Date Label",
   "AccountType_EntryTypeParent": "Purpose Parent",
   "AccountType_ExternalReferenceLabel": "External Reference Label",
-  "AccountType_NotedِAgentNameLabel": "Noted Agent Name Label",
+  "AccountType_NotedAgentNameLabel": "Noted Agent Name Label",
   "AccountType_NotedAmountLabel": "Noted Amount Label",
   "AccountType_NotedContractDefinitions": "Noted Contract Definitions",
   "AccountType_NotedDateLabel": "Noted Date Label",
