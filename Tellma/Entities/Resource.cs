@@ -151,6 +151,10 @@ namespace Tellma.Entities
 
         // For Query
 
+        [Display(Name = "Definition")]
+        [ForeignKey(nameof(DefinitionId))]
+        public ResourceDefinition Definition { get; set; }
+
         public Geography Location { get; set; }
 
         [Display(Name = "Resource_Center")]

@@ -983,7 +983,7 @@
                 <div class="py-2 px-3 col-12 d-flex align-items-center justify-content-end" *ngIf="isEdit">
                     <button class="btn btn-sm btn-primary text-primary2 btn-light2 t-white-button2"
                         (click)="fileInput.click()">
-                        <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ 'Upload' | translate }}
+                        <fa-icon icon="upload"></fa-icon>&nbsp;&nbsp;{{ (model?.Attachments?.length > 0 ? 'UploadMore' : 'Upload') | translate }}
                     </button>
                 </div>
             </ng-template>
