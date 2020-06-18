@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, SecurityContext } from '@angular/core';
+// tslint:disable:member-ordering
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -610,19 +611,26 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return model.Usage === 'QueryById' || model.Usage === 'QueryByFilter';
   }
 
+  private _currentModel: MarkupTemplateForSave;
   public watch(model: MarkupTemplateForSave): boolean {
     // If it's a different model thant last time, reset the params and refetch
     const s = this.state.detailsState;
     if (s.modelId !== model.Id) {
       s.modelId = model.Id;
+
       this.resetState();
       this.fetch(model);
 
       // If it's the same model, but we just returned to the screen, just fetch
     } else if (!this.loading && !this.error && !this.message && !this.blob) {
       this.fetch(model);
+
+      // If it's the same model but refreshed from the backend, fetch again (in case in changed)
+    } else if (this._currentModel !== model) {
+      this.fetch(model);
     }
 
+    this._currentModel = model;
     return true;
   }
 
