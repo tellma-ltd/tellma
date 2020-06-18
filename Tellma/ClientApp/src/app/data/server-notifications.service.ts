@@ -11,7 +11,6 @@ import { WorkspaceService } from './workspace.service';
  * 1 - Number of assigned documents (inbox) has changed (red badge)
  * 2 - Number of notifications has changed (2nd red badge, to be implemented)
  * 3 - The cache has been invalidated
- * Also we rely on this service to detect when the client is offline, since it
  */
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,6 @@ import { WorkspaceService } from './workspace.service';
 export class ServerNotificationsService {
 
   private _connection: HubConnection;
-  // private _offline = false;
   private _signedin = false;
   private _tenantId: number; // The current tenantId
   private _inboxChanged$ = new Subject<InboxNotification>();
@@ -30,7 +28,7 @@ export class ServerNotificationsService {
     [tenantId: number]: TenantState;
   } = {};
 
-  constructor(private authStorage: OAuthStorage, private workspace: WorkspaceService) { }
+  constructor(private authStorage: OAuthStorage) { }
 
   private initConnection() {
     if (!this._connection) {
@@ -61,9 +59,9 @@ export class ServerNotificationsService {
 
     try {
       await this._connection.start();
-      this.workspace.offline = false;
+      // this.workspace.offline = false;
     } catch (err) {
-      this.workspace.offline = true;
+      // this.workspace.offline = true;
       // console.error('Error starting SignalR connection...');
 
       // Keep trying every second while the user is sigend in
@@ -100,8 +98,8 @@ export class ServerNotificationsService {
     if (!!err) {
       // console.error('SignalR connection closed unexpectedly...');
 
-      // Set offline
-      this.workspace.offline = true;
+      // // Set offline
+      // this.workspace.offline = true;
 
       // Mark all states as stale
       for (const tenantId of Object.keys(this.state)) {
@@ -111,7 +109,7 @@ export class ServerNotificationsService {
       // Try again
       this.start();
     } else {
-      this.workspace.offline = false; // Offline is no longer tracked
+      // this.workspace.offline = false; // Offline is no longer tracked
     }
   }
 
