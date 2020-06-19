@@ -106,6 +106,9 @@
   <data name="AccountClassification" xml:space="preserve">
     <value>تصنيف حساب</value>
   </data>
+  <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
+    <value>نوع الحسابات</value>
+  </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>تصنيفات حسابات</value>
   </data>

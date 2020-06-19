@@ -13,6 +13,7 @@
   "Account_ResourceDefinition": "تعريف المورد",
   "Account_Type": "النوع",
   "AccountClassification": "تصنيف حساب",
+  "AccountClassification_AccountTypeParent": "نوع الحسابات",
   "AccountClassifications": "تصنيفات حسابات",
   "Accounts": "حسابات",
   "AccountType": "نوع حساب",

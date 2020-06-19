@@ -106,6 +106,9 @@
   <data name="AccountClassification" xml:space="preserve">
     <value>帐户分类</value>
   </data>
+  <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
+    <value>帐户类型父</value>
+  </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>帐户分类</value>
   </data>

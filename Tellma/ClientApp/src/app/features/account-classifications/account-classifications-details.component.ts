@@ -16,7 +16,7 @@ export class AccountClassificationsDetailsComponent extends DetailsBaseComponent
 
   private accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent';
+  public expand = 'Parent,AccountTypeParent';
 
   create = () => {
     const result: AccountClassificationForSave = {};

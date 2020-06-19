@@ -1,4 +1,5 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
@@ -12,6 +13,7 @@ export interface AccountClassificationForSave extends EntityForSave {
   Name2?: string;
   Name3?: string;
   Code?: string;
+  AccountTypeParentId?: number;
 }
 
 export interface AccountClassification extends AccountClassificationForSave {
@@ -57,6 +59,8 @@ export function metadata_AccountClassification(wss: WorkspaceService, trx: Trans
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
+        AccountTypeParentId: { control: 'number', label: () => `${trx.instant('AccountClassification_AccountTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        AccountTypeParent: { control: 'navigation', label: () => trx.instant('AccountClassification_AccountTypeParent'), type: 'AccountType', foreignKeyName: 'AccountTypeParentId' },
 
         // tree stuff
         Parent: {

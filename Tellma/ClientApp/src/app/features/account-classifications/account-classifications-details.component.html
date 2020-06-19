@@ -73,6 +73,16 @@
         </t-account-classifications-picker>
     </t-form-group>
 
+    <!-- AccountTypeParent -->
+    <t-form-group class="t-form-group" [label]="'AccountClassification_AccountTypeParent' | translate" [serverErrors]="model?.serverErrors?.AccountTypeParentId">
+        <t-restricted [metadata]="model?.EntityMetadata?.AccountTypeParentId">
+            <t-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.AccountTypeParentId">{{
+        ws.getMultilingualValue('AccountType', model?.AccountTypeParentId, 'Name') }}</t-view-link>
+        </t-restricted>
+        <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeParentId">
+        </t-account-types-picker>
+    </t-form-group>
+
     <!-- Is Active -->
     <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
         <t-auto-cell collection="AccountClassification" [entity]="model" path="IsActive"></t-auto-cell>

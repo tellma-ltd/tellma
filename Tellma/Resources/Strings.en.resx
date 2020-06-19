@@ -106,6 +106,9 @@
   <data name="AccountClassification" xml:space="preserve">
     <value>Account Classification</value>
   </data>
+  <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
+    <value>Account Type Parent</value>
+  </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>Account Classifications</value>
   </data>

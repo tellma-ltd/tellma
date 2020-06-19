@@ -106,6 +106,9 @@
   <data name="AccountClassification" xml:space="preserve">
     <value>ምደባ</value>
   </data>
+  <data name="AccountClassification_AccountTypeParent" xml:space="preserve">
+    <value>የመለያ አይነት ወላጅ</value>
+  </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>ምደባዎች</value>
   </data>
@@ -1394,7 +1397,7 @@
     <value>አባላት</value>
   </data>
   <data name="Memo" xml:space="preserve">
-    <value>Memo</value>
+    <value>ማስታወሻ</value>
   </data>
   <data name="Menu_Administration" xml:space="preserve">
     <value>ማስተዳደር</value>

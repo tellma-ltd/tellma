@@ -36,6 +36,9 @@ namespace Tellma.Entities
         [StringLength(255)]
         [AlwaysAccessible]
         public string Code { get; set; } // The basis of the tree structure
+
+        [Display(Name = "AccountClassification_AccountTypeParent")]
+        public int? AccountTypeParentId { get; set; }
     }
 
     public class AccountClassification : AccountClassificationForSave, ITreeEntity<int>
@@ -72,6 +75,10 @@ namespace Tellma.Entities
 
         [AlwaysAccessible]
         public HierarchyId ParentNode { get; set; }
+
+        [Display(Name = "AccountClassification_AccountTypeParent")]
+        [ForeignKey(nameof(AccountTypeParentId))]
+        public AccountType AccountTypeParent { get; set; }
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
