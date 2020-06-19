@@ -265,13 +265,18 @@ namespace Tellma.Controllers
             foreach (var p in meta.CollectionProperties)
             {
                 var valueMeta = p.CollectionTargetTypeMetadata;
-                if (p.Descriptor.GetValue(entity) is IList list)
+                var value = p.Descriptor.GetValue(entity);
+                if (value is IList list)
                 {
                     var listMeta = p.CollectionTargetTypeMetadata;
                     foreach (var (key, msg) in ValidateListInner(list, listMeta, validated))
                     {
                         yield return ($"{p.Descriptor.Name}{key}", msg);
                     }
+                }
+                else if (value is null)
+                {
+                    // Nothing to do
                 }
                 else
                 {
