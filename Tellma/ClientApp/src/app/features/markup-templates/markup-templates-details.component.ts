@@ -1,5 +1,5 @@
 // tslint:disable:member-ordering
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService, MasterDetailsStore } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -58,7 +58,6 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
   public fileDownloadName: string; // For downloading
   public blob: Blob; // For downloading/printing
   public url: string; // For revoking
-  public safeUrl: SafeResourceUrl; // For rich preview
   public contenType: string; // For rich preview
   public fileSizeDisplay: string;
   public error: string;
@@ -87,10 +86,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
     return result;
   }
 
-  constructor(
-    // private route: ActivatedRoute,
-    private sanitizer: DomSanitizer, private workspace: WorkspaceService,
-    private api: ApiService, private translate: TranslateService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.markupTemplatesApi = this.api.markupTemplatesApi(this.notifyDestruct$);
@@ -340,7 +336,7 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       window.URL.revokeObjectURL(this.url);
     }
     this.url = undefined;
-    this.safeUrl = undefined;
+    (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(undefined);
     this.contenType = undefined;
     this.fileSizeDisplay = undefined;
     this.error = undefined;
@@ -483,9 +479,6 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       tap((res: MarkupPreviewResponse) => {
         this.fileDownloadName = res.DownloadName;
 
-        // const safeBody = this.sanitizer.sanitize(SecurityContext.HTML, res.Body);
-        // console.log(safeBody);
-
         const blob = new Blob([res.Body], { type: template.MarkupLanguage });
         this.blob = blob;
 
@@ -493,7 +486,9 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
           window.URL.revokeObjectURL(this.url);
         }
         this.url = window.URL.createObjectURL(blob) + '#toolbar=0&navpanes=0&scrollbar=0';
-        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.url); // We just made it and it's definitely safe
+
+        // We just made it so it's definitely safe
+        (this.iframe.nativeElement as HTMLIFrameElement).contentWindow.location.replace(this.url);
         this.contenType = template.MarkupLanguage;
         this.fileSizeDisplay = fileSizeDisplay(blob.size);
         this.loading = false;
@@ -505,6 +500,8 @@ export class MarkupTemplatesDetailsComponent extends DetailsBaseComponent implem
       })
     );
   }
+
+  @ViewChild('iframe') iframe: ElementRef;
 
   public showDefinitionIdSelector(model: MarkupTemplateForSave): boolean {
     return !!model && !!model.Collection && !!metadata[model.Collection](this.workspace, this.translate, null).definitionIds;
