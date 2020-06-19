@@ -728,10 +728,15 @@ const defaultBody = `<!DOCTYPE html>
         
         * {
             font-family: sans-serif;
+            box-sizing: border-box;
         }
         
         body {
             margin: 0;
+        }
+        
+        body.rtl {
+            direction: rtl;
         }
         
         /* More CSS Here */

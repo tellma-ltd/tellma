@@ -1,5 +1,4 @@
 // tslint:disable:variable-name
-
 import { TranslateService } from '@ngx-translate/core';
 import { NumberPropDescriptor, ChoicePropDescriptor } from './metadata';
 import { TenantWorkspace } from '../../workspace.service';
@@ -42,7 +41,7 @@ export function mainMenuSectionPropDescriptor(trx: TranslateService): ChoiceProp
 }
 
 export function mainMenuSortKeyPropDescriptor(trx: TranslateService): NumberPropDescriptor {
-    return { control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 };
+    return { control: 'number', label: () => trx.instant('MainMenuSortKey'), minDecimalPlaces: 0, maxDecimalPlaces: 0 };
 }
 
 export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDescriptor {
