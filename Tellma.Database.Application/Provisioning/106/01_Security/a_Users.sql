@@ -51,7 +51,7 @@ DECLARE @106DinkuAbera INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'dinku
 DECLARE @106EyobGetachew INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'eyobgetachew6077@gmail.com');
 DECLARE @106TesfayeBisewer INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'tesfaye.bisewer@gmail.com');
 DECLARE @106GetanehAseb INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'asabegetaneh@gmail.com');
-DECLARE @106AbuBakrelHadi INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abubakr.elhadi@banan-it.com');
+DECLARE @106AbuBakerelHadi INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abubaker.elhadi@banan-it.com');
 DECLARE @106AbrahamTenker INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abrham.Tenker@banan-it.com');
 DECLARE @106MosabelHafiz INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mosab.elhafiz@banan-it.com');
 DECLARE @106YisakFikadu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'yisak.fikadu@banan-it.com');

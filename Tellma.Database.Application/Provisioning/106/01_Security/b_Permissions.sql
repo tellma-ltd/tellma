@@ -6,7 +6,7 @@ INSERT INTO @Members
 ([Index],	[HeaderIndex],		[UserId]) VALUES
 (0,			@AdministratorRL,	@AdminUserId),
 (1,			@AdministratorRL,	@106DerejeMulat),
-(2,			@AdministratorRL,	@106AbuBakrelHadi),
+(2,			@AdministratorRL,	@106AbuBakerelHadi),
 (3,			@AdministratorRL,	@106AbrahamTenker),
 (4,			@AdministratorRL,	@106MosabelHafiz),
 (5,			@AdministratorRL,	@106YisakFikadu),
@@ -62,7 +62,7 @@ DECLARE @106GaddisaDemise INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'ga
 DECLARE @106GetanehAseb INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'asabegetaneh@gmail.com');
 DECLARE @106LalisoGemechu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'lelisogem2017@gmail.com');
 DECLARE @106KeliliKoreso INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'kelilkorso2004@gmail.com');
-DECLARE @106AbuBakrelHadi INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abubakr.elhadi@banan-it.com');
+DECLARE @106AbuBakerelHadi INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abubakr.elhadi@banan-it.com');
 DECLARE @106AbrahamTenker INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'abrham.Tenker@banan-it.com');
 DECLARE @106MosabelHafiz INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'mosab.elhafiz@banan-it.com');
 DECLARE @106YisakFikadu INT = (SELECT [Id] FROM dbo.Users WHERE [Email] = N'yisak.fikadu@banan-it.com');

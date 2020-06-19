@@ -5,6 +5,7 @@
 	[Name2]								NVARCHAR (255),
 	[Name3]								NVARCHAR (255),
 	[Code]								NVARCHAR (50)		NOT NULL CONSTRAINT [IX_AccountClassifications__Code] UNIQUE CLUSTERED,
+	[AccountTypeParentId]				INT					CONSTRAINT [FK_AccountClassifications__AccountTypeParentId] REFERENCES dbo.AccountTypes([Id]),
 	-- Inactive means, it does not appear to the user when classifying an account
 	[IsActive]							BIT					NOT NULL DEFAULT 1,
 	-- Audit details
