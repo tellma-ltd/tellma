@@ -5,7 +5,7 @@
 
 EXEC [api].[Contracts__Save]
 	@DefinitionId = @CashOnHandAccountCD,
-	@Entities = @cashiers,
+	@Entities = @CashOnHandContracts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
