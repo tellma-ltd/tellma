@@ -313,7 +313,7 @@ namespace Tellma.Controllers
                 {
                     Direction = e.Direction.Value,
                     EntryTypeId = e.EntryTypeId,
-                    EntryTypeParentId = e.AccountTypes.FirstOrDefault()?.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
+                    EntryTypeParentId = e.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
                     ContractDefinitionIds = e.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList(),
                     NotedContractDefinitionIds = e.NotedContractDefinitions.Select(e => e.NotedContractDefinitionId.Value).ToList(),
                     ResourceDefinitionIds = e.ResourceDefinitions.Select(e => e.ResourceDefinitionId.Value).ToList(),
@@ -667,13 +667,13 @@ namespace Tellma.Controllers
             result.ManualJournalVouchersDefinitionId = result.Documents.FirstOrDefault(e => e.Value.Code == ManualJournalVoucher).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in document definition: '{ManualJournalVoucher}' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built-in document definition: '{ManualJournalVoucher}' could not be found");
             }
 
             result.ManualLinesDefinitionId = result.Lines.FirstOrDefault(e => e.Value.Code == ManualLine).Key;
             if (result.ManualJournalVouchersDefinitionId == default)
             {
-                throw new BadRequestException($"The database is in an inconsistent state, the built in line definition: 'ManualLine' could not be found");
+                throw new BadRequestException($"The database is in an inconsistent state, the built-in line definition: 'ManualLine' could not be found");
             }
 
             // Return result

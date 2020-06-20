@@ -5,10 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tellma.Entities
 {
     [EntityDisplay(Singular = "LineDefinitionEntry", Plural = "LineDefinitionEntries")]
-    public class LineDefinitionEntryForSave<TContractDef, TNotedContractDef, TResourceDef, TAccountType> : EntityWithKey<int>
+    public class LineDefinitionEntryForSave<TContractDef, TNotedContractDef, TResourceDef> : EntityWithKey<int>
     {
         public short? Direction { get; set; }
 
+        [Display(Name = "LineDefinitionEntry_AccountType")]
+        public int? AccountTypeId { get; set; }
+
+        [Display(Name = "LineDefinitionEntry_EntryType")]
         public int? EntryTypeId { get; set; }
 
         [ForeignKey(nameof(LineDefinitionEntryContractDefinition.LineDefinitionEntryId))]
@@ -19,16 +23,13 @@ namespace Tellma.Entities
 
         [ForeignKey(nameof(LineDefinitionEntryResourceDefinition.LineDefinitionEntryId))]
         public List<TResourceDef> ResourceDefinitions { get; set; }
-
-        [ForeignKey(nameof(LineDefinitionEntryAccountType.LineDefinitionEntryId))]
-        public List<TAccountType> AccountTypes { get; set; }
     }
 
-    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinitionForSave, LineDefinitionEntryNotedContractDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave, LineDefinitionEntryAccountTypeForSave>
+    public class LineDefinitionEntryForSave : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinitionForSave, LineDefinitionEntryNotedContractDefinitionForSave, LineDefinitionEntryResourceDefinitionForSave>
     {
     }
 
-    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinition, LineDefinitionEntryNotedContractDefinition, LineDefinitionEntryResourceDefinition, LineDefinitionEntryAccountType>
+    public class LineDefinitionEntry : LineDefinitionEntryForSave<LineDefinitionEntryContractDefinition, LineDefinitionEntryNotedContractDefinition, LineDefinitionEntryResourceDefinition>
     {
         [AlwaysAccessible]
         public int? Index { get; set; }
@@ -39,6 +40,14 @@ namespace Tellma.Entities
         public int? SavedById { get; set; }
 
         // For Query
+
+        [Display(Name = "LineDefinitionEntry_AccountType")]
+        [ForeignKey(nameof(AccountTypeId))]
+        public AccountType AccountType { get; set; }
+
+        [Display(Name = "LineDefinitionEntry_EntryType")]
+        [ForeignKey(nameof(EntryTypeId))]
+        public EntryType EntryType { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

@@ -5,13 +5,13 @@ AS
 SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 
 -- Get the lookup definitions
-SELECT * FROM [dbo].[LookupDefinitions];
+SELECT * FROM [map].[LookupDefinitions]();
 
 -- Get the agent definitions
-SELECT * FROM [dbo].[ContractDefinitions];
+SELECT * FROM [map].[ContractDefinitions]();
 
 -- Get the resource definitions
-SELECT * FROM [dbo].[ResourceDefinitions];
+SELECT * FROM [map].[ResourceDefinitions]();
 
 -- Get the report definitions
 SELECT * FROM [map].[ReportDefinitions]()
@@ -27,16 +27,16 @@ SELECT * FROM [dbo].[DocumentDefinitionLineDefinitions] ORDER BY [Index];
 SELECT * FROM [dbo].[MarkupTemplates] WHERE [Id] IN (SELECT [MarkupTemplateId] FROM [dbo].[DocumentDefinitionMarkupTemplates])
 SELECT * FROM [dbo].[DocumentDefinitionMarkupTemplates] ORDER BY [Index];
 
+-- Load relevant information from Account Types
+SELECT T.[Id], T.[EntryTypeParentId] FROM [map].[AccountTypes]() T 
+WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [map].[LineDefinitionEntries]())
+
 -- Get the line definitions
 SELECT * FROM [map].[LineDefinitions]();
 
 SELECT * FROM [map].[LineDefinitionEntries]() ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionColumns] ORDER BY [Index];
 SELECT * FROM [dbo].[LineDefinitionStateReasons] WHERE [IsActive] = 1;
-
--- Load relevant information from Account Types
-SELECT T.[Id], T.[EntryTypeParentId] FROM [dbo].[AccountTypes] T 
-WHERE T.[Id] IN (SELECT [AccountTypeId] FROM [dbo].[LineDefinitionEntryAccountTypes])
 	
 -- Get the contract definitions of the line definition entries
 SELECT [Id], [LineDefinitionEntryId], [ContractDefinitionId] FROM [dbo].[LineDefinitionEntryContractDefinitions];
@@ -46,6 +46,3 @@ SELECT [Id], [LineDefinitionEntryId], [NotedContractDefinitionId] FROM [dbo].[Li
 	
 -- Get the resource definitions of the line definition entries
 SELECT [Id], [LineDefinitionEntryId], [ResourceDefinitionId] FROM [dbo].[LineDefinitionEntryResourceDefinitions];
-
--- Get the account types of the line definition entries
-SELECT [Id], [LineDefinitionEntryId], [AccountTypeId] FROM [dbo].[LineDefinitionEntryAccountTypes];

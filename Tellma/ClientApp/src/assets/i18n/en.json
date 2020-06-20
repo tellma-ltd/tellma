@@ -391,6 +391,8 @@
   "LineDefinitionColumns": "Line Definition Columns",
   "LineDefinitionEntries": "Line Definition Entries",
   "LineDefinitionEntry": "Line Definition Entry",
+  "LineDefinitionEntry_AccountType": "Account Type",
+  "LineDefinitionEntry_EntryType": "Entry Type",
   "LineDefinitions": "Line Definitions",
   "LineDefinitionStateReason": "Line Definition State Reason",
   "LineDefinitionStateReasons": "Line Definition State Reasons",

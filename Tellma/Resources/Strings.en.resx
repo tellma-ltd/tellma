@@ -1318,6 +1318,12 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>Line Definition Entry</value>
   </data>
+  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
+    <value>Account Type</value>
+  </data>
+  <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
+    <value>Entry Type</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>Line Definitions</value>
   </data>

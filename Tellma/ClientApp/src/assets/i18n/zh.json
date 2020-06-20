@@ -391,6 +391,8 @@
   "LineDefinitionColumns": "行定义列",
   "LineDefinitionEntries": "行定义条目",
   "LineDefinitionEntry": "行定义条目",
+  "LineDefinitionEntry_AccountType": "帐户类型",
+  "LineDefinitionEntry_EntryType": "条目类型",
   "LineDefinitions": "行定义",
   "LineDefinitionStateReason": "行定义说明原因",
   "LineDefinitionStateReasons": "行定义说明理由",

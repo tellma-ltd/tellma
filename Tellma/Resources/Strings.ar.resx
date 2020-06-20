@@ -1318,6 +1318,12 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>تعريف حركة سطر</value>
   </data>
+  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
+    <value>نوع الحساب</value>
+  </data>
+  <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
+    <value>نوع السطر</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>تعريفات أسطر</value>
   </data>

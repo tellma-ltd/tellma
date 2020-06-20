@@ -1318,6 +1318,12 @@
   <data name="LineDefinitionEntry" xml:space="preserve">
     <value>የመስመር ፍቺ Entry</value>
   </data>
+  <data name="LineDefinitionEntry_AccountType" xml:space="preserve">
+    <value>የመለያ አይነት</value>
+  </data>
+  <data name="LineDefinitionEntry_EntryType" xml:space="preserve">
+    <value>ምዝግብ አይነት</value>
+  </data>
   <data name="LineDefinitions" xml:space="preserve">
     <value>የመስመር ፍቺዎች</value>
   </data>
