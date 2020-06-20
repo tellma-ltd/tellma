@@ -211,6 +211,29 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedDate';
 END
+IF (SELECT COUNT(*) FROM dbo.Centers WHERE [CenterType] = N'Common' AND [IsActive] = 1) = 1 -- for single segment case
+BEGIN
+	DECLARE @CommonCenterId INT = (SELECT [Id] FROM dbo.Centers WHERE [CenterType] = N'Common' AND [IsActive] = 1);
+	WITH UnspecifiedCenterEntries AS
+	(
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex]
+		FROM @E E
+		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[Id]
+		WHERE LDE.[AccountTypeId] IN (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] IN (
+				N'CashOnHand', N'BalancesWithBank', N'CashControlExtension'
+			)
+		)
+		
+	)
+	UPDATE E
+	SET CenterId = @CommonCenterId
+	FROM @E E
+	JOIN UnspecifiedCenterEntries UCE
+	ON  E.[Index] = UCE.[Index] 
+	AND E.[LineIndex] = UCE.[LineIndex]
+	AND E.[DocumentIndex] = UCE.[DocumentIndex]
+END
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
 	SELECT DISTINCT DefinitionId FROM @L
@@ -337,8 +360,7 @@ END
 		FROM @PreprocessedEntries E
 		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
-		JOIN dbo.[LineDefinitionEntryAccountTypes] LDEAT ON LDE.[Id] = LDEAT.[LineDefinitionEntryId]
-		JOIN dbo.AccountTypes ATP ON LDEAT.[AccountTypeId] = ATP.[Id]
+		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]

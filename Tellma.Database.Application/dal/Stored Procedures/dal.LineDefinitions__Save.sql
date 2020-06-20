@@ -120,6 +120,7 @@ SET NOCOUNT ON;
 				II.[Id] AS [LineDefinitionId],
 				LDE.[Index],
 				LDE.[Direction],
+				LDE.[AccountTypeId],
 				LDE.[EntryTypeId]
 			FROM @LineDefinitionEntries LDE
 			JOIN @Entities LD ON LDE.HeaderIndex = LD.[Index]
@@ -129,12 +130,14 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		AND (
 				t.[Direction]						<> s.[Direction] OR
+				t.[AccountTypeId]					<> s.[AccountTypeId] OR
 				ISNULL(t.[EntryTypeId],0)			<> ISNULL(s.[EntryTypeId],0)
 		)
 		THEN
 			UPDATE SET
 				t.[Index]					= s.[Index],
 				t.[Direction]				= s.[Direction],
+				t.[AccountTypeId]			= s.[AccountTypeId],
 				t.[EntryTypeId]				= s.[EntryTypeId],
 				t.[SavedById]				= @UserId
 		WHEN NOT MATCHED BY TARGET THEN
@@ -142,12 +145,14 @@ SET NOCOUNT ON;
 				[LineDefinitionId],
 				[Index],
 				[Direction],
+				[AccountTypeId],
 				[EntryTypeId]
 			)
 			VALUES (
 				s.[LineDefinitionId],
 				s.[Index],
 				s.[Direction],
+				s.[AccountTypeId],
 				s.[EntryTypeId]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
@@ -155,29 +160,6 @@ SET NOCOUNT ON;
 		OUTPUT s.[Index], inserted.[Id], inserted.[LineDefinitionId]
 	) AS x
 	WHERE [Index] IS NOT NULL;
-
-	WITH BLDEACT AS (
-		SELECT * FROM dbo.[LineDefinitionEntryAccountTypes]
-		WHERE [LineDefinitionEntryId] IN (SELECT [Id] FROM @LineDefinitionEntriesIndexIds)
-	)
-	MERGE INTO BLDEACT AS t
-	USING (
-		SELECT
-			E.[Id], LI.Id AS [LineDefinitionEntryId], E.[AccountTypeId]
-		FROM @LineDefinitionEntryAccountTypes E
-		JOIN @LineDefinitionsIndexedIds DI ON E.[LineDefinitionIndex] = DI.[Index]
-		JOIN @LineDefinitionEntriesIndexIds LI ON E.[LineDefinitionEntryIndex] = LI.[Index] AND LI.[HeaderId] = DI.[Id]
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[AccountTypeId]	= s.[AccountTypeId]) THEN
-		UPDATE SET
-			t.[AccountTypeId]			= s.[AccountTypeId],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([LineDefinitionEntryId], [AccountTypeId])
-		VALUES (s.[LineDefinitionEntryId], s.[AccountTypeId])
-	WHEN NOT MATCHED BY SOURCE THEN
-		DELETE;
 
 	WITH BLDERD AS (
 		SELECT * FROM dbo.[LineDefinitionEntryResourceDefinitions]

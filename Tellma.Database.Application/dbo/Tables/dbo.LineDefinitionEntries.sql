@@ -4,7 +4,7 @@
 	[Index]						INT					NOT NULL CONSTRAINT [CK_LineDefinitionEntries_Index]	CHECK([Index] >= 0),
 	CONSTRAINT [IX_LineDefinitionEntries] UNIQUE CLUSTERED ([LineDefinitionId], [Index]),
 	[Direction]					SMALLINT			NOT NULL CHECK([Direction] IN (-1, +1)),
---	[AccountTypeId]				INT NOT NULL CONSTRAINT [FK_LineDefinitionEntryOptions__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
+	[AccountTypeId]				INT NOT NULL CONSTRAINT [FK_LineDefinitionEntryOptions__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	--[ResourceDefinitionId]		INT CONSTRAINT [FK_LineDefinitionEntryOptions__ResourceDefinitionId] REFERENCES dbo.ResourceDefinitions([Id]),
 	--[ContractDefinitionId]		INT CONSTRAINT [FK_LineDefinitionEntryOptions__ContractDefinitionId] REFERENCES dbo.ContractDefinitions([Id]),
 	--[NotedContractDefinitionId]	INT CONSTRAINT [FK_LineDefinitionEntryOptions__NotedContractDefinitionId] REFERENCES dbo.ContractDefinitions([Id]),
