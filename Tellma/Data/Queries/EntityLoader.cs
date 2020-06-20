@@ -639,16 +639,21 @@ namespace Tellma.Data.Queries
             /// <summary>
             /// To optimize loading entities, this method grabs the appropriate <see cref="EntitiesOfType"/>
             /// for this trie level and stores it in the trie level, it creates it if it can't finds it.
+            /// This method ignores levels without an Id
             /// </summary>
             public void InitializeEntitiesOfTypeDictionaries(IndexedEntities allIdEntities)
             {
-                var type = Descriptor.Type;
-                if (!allIdEntities.TryGetValue(type, out IndexedEntitiesOfType entities))
+                if (Descriptor.HasId)
                 {
-                    entities = allIdEntities[type] = new IndexedEntitiesOfType();
+                    var type = Descriptor.Type;
+                    if (!allIdEntities.TryGetValue(type, out IndexedEntitiesOfType entities))
+                    {
+                        entities = allIdEntities[type] = new IndexedEntitiesOfType();
+                    }
+
+                    EntitiesOfType = entities;
                 }
 
-                EntitiesOfType = entities;
                 foreach (var child in Children)
                 {
                     child.InitializeEntitiesOfTypeDictionaries(allIdEntities);

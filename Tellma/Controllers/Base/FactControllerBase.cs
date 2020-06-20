@@ -65,7 +65,7 @@ namespace Tellma.Controllers
                     Result = data,
                     RelatedEntities = relatedEntities,
                     CollectionName = GetCollectionName(typeof(TEntity)),
-                    Extras = extras,
+                    Extras = TransformExtras(extras, cancellation),
                     ServerTime = serverTime
                 };
 
@@ -143,6 +143,11 @@ namespace Tellma.Controllers
         protected static string GetCollectionName(Type entityType)
         {
             return entityType.GetRootType().Name;
+        }
+
+        protected virtual Extras TransformExtras(Extras extras, CancellationToken cancellation)
+        {
+            return extras;
         }
     }
 

@@ -53,7 +53,7 @@ namespace Tellma.Controllers
                     Result = entity,
                     RelatedEntities = relatedEntities,
                     CollectionName = GetCollectionName(typeof(TEntity)),
-                    Extras = extras,
+                    Extras = TransformExtras(extras, cancellation),
                     ServerTime = serverTime,
                 };
                 return Ok(result);
@@ -84,11 +84,6 @@ namespace Tellma.Controllers
                 Extras = TransformExtras(extras, cancellation),
                 ServerTime = serverTime,
             };
-        }
-
-        protected virtual Extras TransformExtras(Extras extras, CancellationToken cancellation)
-        {
-            return extras;
         }
     }
 

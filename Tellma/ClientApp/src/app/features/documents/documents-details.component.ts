@@ -1733,7 +1733,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _requiredSignaturesSummary: RequiredSignature[];
   private _requiredSignaturesLineIdsHash: HashTable;
   private _requiredSignatureProps = [
-    'ToState', 'RuleType', 'RoleId', 'AgentId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
+    'ToState', 'RuleType', 'RoleId', 'ContractId', 'UserId', 'SignedById', 'SignedAt', 'OnBehalfOfUserId',
     'LastUnsignedState', 'LastNegativeState', 'CanSign', 'ProxyRoleId', 'CanSignOnBehalf',
     'ReasonId', 'ReasonDetails'];
 
