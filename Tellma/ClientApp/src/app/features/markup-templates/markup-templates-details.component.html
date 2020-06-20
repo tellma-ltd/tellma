@@ -375,7 +375,7 @@
                         </div>
                         <!-- Paper -->
                         <!-- <object *ngIf="!!url" class="p-0 w-100 h-100 d-block" [type]="contenType" [data]="safeUrl"></object> -->
-                        <iframe *ngIf="!!url" class="p-0 border-0 w-100 h-100 d-block" [src]="safeUrl" sandbox></iframe>
+                        <iframe #iframe class="p-0 border-0 w-100 h-100 d-block" sandbox></iframe>
                     </div>
                     <ng-template #messageTemplate>
                         <div class="w-100 p-3 px-4">
