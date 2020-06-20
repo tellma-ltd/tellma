@@ -16,6 +16,7 @@
   "AccountClassification_AccountTypeParent": "نوع الحسابات",
   "AccountClassifications": "تصنيفات حسابات",
   "Accounts": "حسابات",
+  "AccountStatement": "كشف حساب",
   "AccountType": "نوع حساب",
   "AccountType_AdditionalReferenceLabel": "اسم المرجع الإضافي",
   "AccountType_ContractDefinitions": "تعريفات العقود",

@@ -466,14 +466,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this.state.total;
   }
 
-  onFirstPage() {
-    this.state.skip = 0;
-  }
-
-  get canFirstPage(): boolean {
-    return this.canPreviousPage;
-  }
-
   onPreviousPage() {
     const s = this.state;
     s.skip = Math.max(s.skip - DEFAULT_PAGE_SIZE, 0);

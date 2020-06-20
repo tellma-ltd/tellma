@@ -40,13 +40,13 @@ export interface LineFlags {
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_Line(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
+export function metadata_LineForQuery(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings) {
         _settings = ws.settings;
         const entityDesc: EntityDescriptor = {
-            collection: 'Line',
+            collection: 'LineForQuery',
             titleSingular: () => trx.instant('Line'),
             titlePlural: () => trx.instant('Lines'),
             select: [],
@@ -61,7 +61,7 @@ export function metadata_Line(wss: WorkspaceService, trx: TranslateService): Ent
                 DefinitionId: { control: 'number', label: () => trx.instant('Line_Definition'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 PostingDate: { control: 'date', label: () => trx.instant('Line_PostingDate') },
                 TemplateLineId: { control: 'number', label: () => `${trx.instant('Line_TemplateLine')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'Line', foreignKeyName: 'TemplateLineId' },
+                TemplateLine: { control: 'navigation', label: () => trx.instant('Line_TemplateLine'), type: 'LineForQuery', foreignKeyName: 'TemplateLineId' },
                 Multiplier: { control: 'number', label: () => trx.instant('Line_Multiplier'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
 
                 Memo: { control: 'text', label: () => trx.instant('Memo') },

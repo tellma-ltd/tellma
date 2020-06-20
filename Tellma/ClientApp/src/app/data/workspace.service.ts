@@ -354,7 +354,7 @@ export class TenantWorkspace extends SpecificWorkspace {
   Center: EntityWorkspace<Center>;
   EntryType: EntityWorkspace<EntryType>;
   Document: EntityWorkspace<Document>;
-  Line: EntityWorkspace<Line>;
+  LineForQuery: EntityWorkspace<Line>;
   ExchangeRate: EntityWorkspace<ExchangeRate>;
   DetailsEntry: EntityWorkspace<DetailsEntry>;
   InboxRecord: EntityWorkspace<InboxRecord>;
@@ -390,7 +390,7 @@ export class TenantWorkspace extends SpecificWorkspace {
     this.Center = {};
     this.EntryType = {};
     this.Document = {};
-    this.Line = {};
+    this.LineForQuery = {};
     this.ExchangeRate = {};
     this.DetailsEntry = {};
     this.MarkupTemplate = {};

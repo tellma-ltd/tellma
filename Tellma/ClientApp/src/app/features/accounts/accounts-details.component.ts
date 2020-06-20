@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { addToWorkspace } from '~/app/data/util';
@@ -123,6 +124,29 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   // Noted Contract Definition
+  private _choicesNotedContractDefinitionIdAccountType: AccountType;
+  private _choicesNotedContractDefinitionIdResult: SelectorChoice[] = [];
+  public choicesNotedContractDefinitionId(model: Account): SelectorChoice[] {
+
+    const at = this.accountType(model);
+    if (this._choicesNotedContractDefinitionIdAccountType !== at) {
+      this._choicesNotedContractDefinitionIdAccountType = at;
+
+      if (!at || !at.NotedContractDefinitions) {
+        this._choicesNotedContractDefinitionIdResult = [];
+      } else {
+        const ws = this.ws;
+        const defs = ws.definitions;
+        this._choicesNotedContractDefinitionIdResult = at.NotedContractDefinitions.map(d =>
+          ({
+            value: d.NotedContractDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Contracts[d.NotedContractDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesNotedContractDefinitionIdResult;
+  }
 
   public showNotedContractDefinitionId(model: Account): boolean {
     const at = this.accountType(model);
@@ -130,8 +154,28 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   // Contract Definition
-  public get choicesContractDefinitionId(): SelectorChoice[] {
-    return getChoices(this.p.ContractDefinitionId as ChoicePropDescriptor);
+  private _choicesContractDefinitionIdAccountType: AccountType;
+  private _choicesContractDefinitionIdResult: SelectorChoice[] = [];
+  public choicesContractDefinitionId(model: Account): SelectorChoice[] {
+
+    const at = this.accountType(model);
+    if (this._choicesContractDefinitionIdAccountType !== at) {
+      this._choicesContractDefinitionIdAccountType = at;
+
+      if (!at || !at.ContractDefinitions) {
+        this._choicesContractDefinitionIdResult = [];
+      } else {
+        const ws = this.ws;
+        const defs = ws.definitions;
+        this._choicesContractDefinitionIdResult = at.ContractDefinitions.map(d =>
+          ({
+            value: d.ContractDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Contracts[d.ContractDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesContractDefinitionIdResult;
   }
 
   public showContractDefinitionId(model: Account): boolean {
@@ -186,8 +230,28 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   // Resource Definition
-  public get choicesResourceDefinitionId(): SelectorChoice[] {
-    return getChoices(this.p.ResourceDefinitionId as ChoicePropDescriptor);
+  private _choicesResourceDefinitionIdAccountType: AccountType;
+  private _choicesResourceDefinitionIdResult: SelectorChoice[] = [];
+  public choicesResourceDefinitionId(model: Account): SelectorChoice[] {
+
+    const at = this.accountType(model);
+    if (this._choicesResourceDefinitionIdAccountType !== at) {
+      this._choicesResourceDefinitionIdAccountType = at;
+
+      if (!at || !at.ResourceDefinitions) {
+        this._choicesResourceDefinitionIdResult = [];
+      } else {
+        const ws = this.ws;
+        const defs = ws.definitions;
+        this._choicesResourceDefinitionIdResult = at.ResourceDefinitions.map(d =>
+          ({
+            value: d.ResourceDefinitionId,
+            name: () => ws.getMultilingualValueImmediate(defs.Resources[d.ResourceDefinitionId], 'TitleSingular')
+          }));
+      }
+    }
+
+    return this._choicesResourceDefinitionIdResult;
   }
 
   public showResourceDefinitionId(model: Account): boolean {

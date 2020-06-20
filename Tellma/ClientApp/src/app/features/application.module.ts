@@ -155,6 +155,9 @@ import { ResourceDefinitionsPickerComponent } from './resource-definitions/resou
 import { LookupDefinitionsMasterComponent } from './lookup-definitions/lookup-definitions-master.component';
 import { LookupDefinitionsDetailsComponent } from './lookup-definitions/lookup-definitions-details.component';
 import { LookupDefinitionsPickerComponent } from './lookup-definitions/lookup-definitions-picker.component';
+import { StatementComponent } from './statement/statement.component';
+import { AccountStatementComponent } from './statement/account-statement.component';
+import { ContractStatementComponent } from './statement/contract-statement.component';
 
 const routes: Routes = [
   {
@@ -464,6 +467,18 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard]
       },
 
+      // Account Statement
+      {
+        path: 'account-statement',
+        component: AccountStatementComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'contract-statement/:definitionId',
+        component: ContractStatementComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -562,6 +577,9 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     LookupDefinitionsMasterComponent,
     LookupDefinitionsDetailsComponent,
     LookupDefinitionsPickerComponent,
+    StatementComponent,
+    AccountStatementComponent,
+    ContractStatementComponent,
   ],
   imports: [
     SharedModule,

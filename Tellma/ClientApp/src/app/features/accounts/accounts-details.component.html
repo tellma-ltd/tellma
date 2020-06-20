@@ -103,7 +103,7 @@
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
         [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
         <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId"
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId(model)"
             (ngModelChange)="onResourceDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
@@ -144,7 +144,7 @@
     <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
         [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
         <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId"
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId(model)"
             (ngModelChange)="onContractDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
@@ -179,7 +179,7 @@
         [serverErrors]="model?.serverErrors?.NotedContractDefinitionId">
         <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.NotedContractDefinitionId) }}</div>
         <t-selector *ngIf="isEdit" [(ngModel)]="model.NotedContractDefinitionId"
-            [choices]="choicesContractDefinitionId">
+            [choices]="choicesNotedContractDefinitionId(model)">
         </t-selector>
     </t-form-group>
 

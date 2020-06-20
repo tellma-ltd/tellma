@@ -17,7 +17,7 @@ import { metadata_EntryType } from '../entry-type';
 import { metadata_Document } from '../document';
 import { metadata_SummaryEntry } from '../summary-entry';
 import { metadata_DetailsEntry } from '../details-entry';
-import { metadata_Line } from '../line';
+import { metadata_LineForQuery } from '../line';
 import { metadata_AdminUser } from '../admin-user';
 import { metadata_IdentityServerUser } from '../identity-server-user';
 import { metadata_ExchangeRate } from '../exchange-rate';
@@ -55,7 +55,7 @@ export const metadata: {
     Center: metadata_Center,
     EntryType: metadata_EntryType,
     Document: metadata_Document,
-    Line: metadata_Line,
+    LineForQuery: metadata_LineForQuery,
     ExchangeRate: metadata_ExchangeRate,
     DetailsEntry: metadata_DetailsEntry,
     SummaryEntry: metadata_SummaryEntry,

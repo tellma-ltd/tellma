@@ -13,8 +13,20 @@ import { CustomUserSettingsService } from '~/app/data/custom-user-settings.servi
 import { UserSettingsForClient } from '~/app/data/dto/user-settings-for-client';
 import { AdminUserSettingsForClient } from '~/app/data/dto/admin-user-settings-for-client';
 
-interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
-interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
+interface MenuSectionInfo {
+  label?: string;
+  background: string;
+  items: MenuItemInfo[];
+}
+
+interface MenuItemInfo {
+  icon: string;
+  label: string;
+  link: string;
+  view?: string;
+  canView?: () => boolean;
+  sortKey: number;
+}
 
 @Component({
   selector: 't-main-menu',
@@ -56,6 +68,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           label: 'Accounts', icon: 'coins', link: '../accounts',
           view: 'accounts', sortKey: 100
+        },
+        {
+          label: 'AccountStatement', icon: 'file-alt', link: '../account-statement',
+          canView: () => this.canView('accounts') && this.canView('details-entries'),
+          sortKey: 101
         },
         {
           label: 'EntryTypes', icon: 'sitemap', link: '../entry-types',
@@ -407,8 +424,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     this.document.body.classList.add('t-banner');
 
     // if the main menu is enormous, it causes an uncomfortable lag before navigation
-    // we eliminate this lag by not rendering the menu items immediately if  they are too many
-    if (count < 100) {
+    // we eliminate this lag by not rendering the menu items immediately if they are too many
+    if (count < 60) {
       this.initialize();
     }
   }
@@ -714,7 +731,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showItem(item: MenuItemInfo): boolean {
     const term = this.search;
-    return (!item.view || this.canView(item.view)) &&
+    return (!item.view || this.canView(item.view)) && (!item.canView || item.canView()) &&
       (!term || this.translate.instant(item.label).toLowerCase().indexOf(term.toLowerCase()) !== -1);
   }
 

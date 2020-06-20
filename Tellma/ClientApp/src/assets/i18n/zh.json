@@ -16,6 +16,7 @@
   "AccountClassification_AccountTypeParent": "帐户类型父",
   "AccountClassifications": "帐户分类",
   "Accounts": "帐号",
+  "AccountStatement": "帐户对帐单",
   "AccountType": "帐户类型",
   "AccountType_AdditionalReferenceLabel": "其他参考标签",
   "AccountType_ContractDefinitions": "合同定义",

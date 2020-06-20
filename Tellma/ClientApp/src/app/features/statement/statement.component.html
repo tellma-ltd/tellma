@@ -1,0 +1,82 @@
+<div class="h-100 d-flex flex-column">
+
+    <!-- Title and Parameters -->
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Parameters -->
+        <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+            <div class="row m-0 px-0 px-lg-1 py-1">
+                Params!
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between t-toolbar">
+
+            <!-- Left Buttons -->
+            <div class="d-flex">
+
+                <!-- Refresh -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()"
+                    [disabled]="!canRefresh">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
+                </button>
+
+                <!-- Data dropdown -->
+                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                    <button type="button"
+                        class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
+                        ngbDropdownToggle>
+                        {{ 'Data' | translate }}
+                    </button>
+                    <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+                        <button type="button" class="dropdown-item btn-light" ngbDropdownItem (click)="onExport()"
+                            [disabled]="!canExport">
+                            {{ 'Export' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <!-- Paging -->
+                <div class="d-inline small mx-2">
+                    <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
+                        <span>{{ to | number }}</span>
+                    </span>
+                    <span class="t-vertical-align-middle"> / {{ total | number }}</span>
+                </div>
+                <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                    title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                    <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                </button>
+                <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
+                    title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                    <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Results -->
+    <div class="p-4">
+        <p>This screen will be implemented soon, stay tuned!</p>
+    </div>
+
+    <!-- Ending Balance -->
+    <div>
+
+    </div>
+</div>

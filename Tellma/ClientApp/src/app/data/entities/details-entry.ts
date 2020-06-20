@@ -63,7 +63,7 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 LineId: { control: 'number', label: () => `${trx.instant('Entry_Line')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Line: { control: 'navigation', label: () => trx.instant('Entry_Line'), type: 'Line', foreignKeyName: 'LineId' },
+                Line: { control: 'navigation', label: () => trx.instant('Entry_Line'), type: 'LineForQuery', foreignKeyName: 'LineId' },
                 CenterId: { control: 'number', label: () => `${trx.instant('Entry_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Center: { control: 'navigation', label: () => trx.instant('Entry_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 Direction: {
