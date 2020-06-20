@@ -304,6 +304,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       // Is Common
+
+      result.PostingDateIsCommon = !!def.PostingDateVisibility;
       result.MemoIsCommon = !!def.MemoIsCommonVisibility;
       result.DebitContractIsCommon = !!def.DebitContractVisibility;
       result.CreditContractIsCommon = !!def.CreditContractVisibility;
@@ -2385,6 +2387,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
           && (!col.InheritsFromHeader ||
             !(
               (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
+              (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
               (doc.DebitContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === 1) ||
               (doc.CreditContractIsCommon && col.ColumnName === 'ContractId' && lineDef.Entries[col.EntryIndex].Direction === -1) ||
               (doc.NotedContractIsCommon && col.ColumnName === 'NotedContractId') ||
@@ -2481,7 +2484,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private entity(def: LineDefinitionColumnForClient, line: LineForSave): LineForSave | EntryForSave {
     let entity: LineForSave | EntryForSave;
     if (!!def) {
-      if (def.ColumnName === 'Memo') {
+      if (def.ColumnName === 'Memo' || def.ColumnName === 'PostingDate') {
         entity = line;
       } else {
         entity = !!line.Entries ? line.Entries[def.EntryIndex] : null;
@@ -2493,7 +2496,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public entry(lineDefId: number, columnIndex: number, line: LineForSave): EntryForSave {
     const colDef = this.columnDefinition(lineDefId, columnIndex);
-    if (!!colDef && colDef.ColumnName !== 'Memo') {
+    if (!!colDef && colDef.ColumnName !== 'Memo' && colDef.ColumnName !== 'PostingDate') {
       return !!line.Entries ? line.Entries[colDef.EntryIndex] : null;
     }
 

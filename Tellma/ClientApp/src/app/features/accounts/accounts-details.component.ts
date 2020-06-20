@@ -149,8 +149,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showNotedContractDefinitionId(model: Account): boolean {
-    const at = this.accountType(model);
-    return !!at && !!at.NotedContractDefinitions && at.NotedContractDefinitions.length > 0;
+    return this.choicesNotedContractDefinitionId(model).length > 0;
   }
 
   // Contract Definition
@@ -179,8 +178,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showContractDefinitionId(model: Account): boolean {
-    const at = this.accountType(model);
-    return !!at && !!at.ContractDefinitions && at.ContractDefinitions.length > 0;
+    return this.choicesContractDefinitionId(model).length > 0;
   }
 
   public formatContractDefinitionId(defId: number): string {
@@ -255,8 +253,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showResourceDefinitionId(model: Account): boolean {
-    const at = this.accountType(model);
-    return !!at && !!at.ResourceDefinitions && at.ResourceDefinitions.length > 0;
+    return this.choicesResourceDefinitionId(model).length > 0;
   }
 
   public formatResourceDefinitionId(defId: number): string {
