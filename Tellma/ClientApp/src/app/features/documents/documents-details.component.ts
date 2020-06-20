@@ -1117,11 +1117,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public readonlyCenter_Manual(entry: Entry): boolean {
     const at = this.account(entry);
-    return !!at && !!at.CenterId; // It's either A or E
+    return !!at && !!at.CenterId;
   }
 
   public readonlyValueCenterId_Manual(entry: Entry): number {
-    // When CenterAssignment === A, then account.CenterId is required
     const account = this.account(entry);
     return !!account ? account.CenterId : null;
   }

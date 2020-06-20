@@ -72,7 +72,7 @@ SET NOCOUNT ON;
 		N'Error_TheField0IsIncompatible',
 		N'localize:Account_Contract'
 	FROM @Entities FE
-	JOIN dbo.[Documents] R ON FE.[ContractId] = R.[Id]
+	JOIN dbo.[Contracts] R ON FE.[ContractId] = R.[Id]
 	LEFT JOIN dbo.[AccountTypeContractDefinitions] AD
 		ON FE.[AccountTypeId] = AD.[AccountTypeId] AND R.[DefinitionId] = AD.[ContractDefinitionId]
 	WHERE (AD.[ContractDefinitionId] IS NULL);

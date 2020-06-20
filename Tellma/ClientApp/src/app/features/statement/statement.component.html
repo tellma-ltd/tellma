@@ -13,9 +13,80 @@
         </div>
 
         <!-- Parameters -->
-        <div class="mx-auto mb-3 w-100" style="max-width: 700px">
+        <div class="mx-auto mb-3 w-100" style="max-width: 900px">
             <div class="row m-0 px-0 px-lg-1 py-1">
-                Params!
+                <!-- From Date -->
+                <t-form-group class="t-form-group" [label]="('FromDate' | translate) + ' *'">
+                    <t-date-picker [(ngModel)]="fromDate"></t-date-picker>
+                </t-form-group>
+
+                <!-- To Date -->
+                <t-form-group class="t-form-group" [label]="('ToDate' | translate) + ' *'">
+                    <t-date-picker [(ngModel)]="toDate"></t-date-picker>
+                </t-form-group>
+
+                <!-- Segment -->
+                <t-form-group class="t-form-group" [label]="('Document_Segment' | translate) + ' *'"
+                    *ngIf="showSegmentParameter">
+                    <t-centers-picker [(ngModel)]="segmentId" filter="CenterType eq 'Segment'"></t-centers-picker>
+                </t-form-group>
+
+                <!-- Account -->
+                <t-form-group class="t-form-group" [label]="('Entry_Account' | translate) + ' *'">
+                    <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect">
+                    </t-accounts-picker>
+                </t-form-group>
+
+                <!-- Currency -->
+                <t-form-group class="t-form-group" [label]="'Entry_Currency' | translate" *ngIf="showCurrencyParameter">
+                    <t-currencies-picker [(ngModel)]="currencyId"></t-currencies-picker>
+                </t-form-group>
+
+                <!-- Contract -->
+                <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContract_Manual">
+                    <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
+                        [definitionIds]="definitionIdsContract_Manual">
+                    </t-contracts-picker>
+                    <t-view-link *ngIf="readonlyContract_Manual"
+                        [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"
+                        [itemId]="readonlyValueContractId_Manual">
+                        {{ ws.getMultilingualValue('Contract', readonlyValueContractId_Manual, 'Name') }}
+                    </t-view-link>
+                </t-form-group>
+
+                <!-- Resource -->
+                <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResource_Manual">
+                    <t-resources-picker *ngIf="!readonlyResource_Manual" [(ngModel)]="resourceId"
+                        [definitionIds]="definitionIdsResource_Manual">
+                    </t-resources-picker>
+                    <t-view-link *ngIf="readonlyResource_Manual"
+                        [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
+                        [itemId]="readonlyValueResourceId_Manual">
+                        {{ ws.getMultilingualValue('Resource', readonlyValueResourceId_Manual, 'Name') }}
+                    </t-view-link>
+                </t-form-group>
+
+                <!-- Entry Type -->
+                <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate" *ngIf="showEntryType_Manual">
+                    <t-entry-types-picker *ngIf="!readonlyEntryType_Manual" [(ngModel)]="entryTypeId"
+                        [filter]="filterEntryType_Manual">
+                    </t-entry-types-picker>
+                    <t-view-link *ngIf="readonlyEntryType_Manual" [link]="link('entry-types')"
+                        [itemId]="readonlyValueEntryTypeId_Manual">
+                        {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId_Manual, 'Name') }}
+                    </t-view-link>
+                </t-form-group>                
+
+                <!-- Center -->
+                <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenter_Manual">
+                    <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true">
+                    </t-centers-picker>
+                    <t-view-link *ngIf="readonlyCenter_Manual"
+                        [link]="link('centers/') + ws.get('Center', readonlyValueCenterId_Manual)?.DefinitionId"
+                        [itemId]="readonlyValueCenterId_Manual">
+                        {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
+                    </t-view-link>
+                </t-form-group>
             </div>
         </div>
 
@@ -26,8 +97,7 @@
             <div class="d-flex">
 
                 <!-- Refresh -->
-                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()"
-                    [disabled]="!canRefresh">
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()" [disabled]="!canRefresh">
                     <fa-icon icon="sync-alt"></fa-icon>
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
                 </button>
@@ -69,10 +139,9 @@
         </div>
     </div>
 
-
     <!-- Results -->
     <div class="p-4">
-        <p>This screen will be implemented soon, stay tuned!</p>
+        <p>This screen is still a work in progress, stay tuned!</p>
     </div>
 
     <!-- Ending Balance -->

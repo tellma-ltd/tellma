@@ -364,7 +364,7 @@ namespace Tellma.Data.Queries
                 var resultRootType = result.First().GetType().GetRootType();
                 if (!allEntities.ContainsKey(resultRootType))
                 {
-                    // this indicates that the main result is a fact table, we add the fact lines
+                    // this indicates that the main result is a fact table (no Ids), we add the fact lines
                     // here in order to have their weak nav properties hydrated
                     allEntities[resultRootType] = result;
                 }

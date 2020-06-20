@@ -33,6 +33,12 @@ namespace Tellma.Entities
         [Display(Name = "Entry_DueDate")]
         public DateTime? DueDate { get; set; }
 
+        [Display(Name = "Entry_Quantity")]
+        public decimal? Quantity { get; set; }
+
+        [Display(Name = "Entry_Unit")]
+        public int? UnitId { get; set; }
+
         [Display(Name = "Entry_MonetaryValue")]
         public decimal? MonetaryValue { get; set; }
 
@@ -127,5 +133,9 @@ namespace Tellma.Entities
         [Display(Name = "Entry_NotedContract")]
         [ForeignKey(nameof(NotedContractId))]
         public Contract NotedContract { get; set; }
+
+        [Display(Name = "Entry_Unit")]
+        [ForeignKey(nameof(UnitId))]
+        public Unit Unit { get; set; }
     }
 }

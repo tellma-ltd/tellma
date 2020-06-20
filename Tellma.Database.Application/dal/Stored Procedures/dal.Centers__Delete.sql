@@ -2,7 +2,8 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
+	DECLARE @BeforeCenterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsLeaf] = 1 AND [IsActive] = 1);
+	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
 	DELETE [dbo].[Centers] WHERE [Id] IN (SELECT [Id] FROM @Ids);
 		
 	-- reorganize the nodes
@@ -26,7 +27,10 @@ SET NOCOUNT ON;
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 	
-	-- Whether there are multiple centers is an important settings value
-	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
-	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
+	-- Whether there are multiple centers/segments is an important cached value of the settings
+	DECLARE @AfterCenterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsLeaf] = 1 AND [IsActive] = 1);
+	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
+
+	IF (@BeforeCenterCount <= 1 AND @AfterCenterCount > 1) OR (@BeforeCenterCount > 1 AND @AfterCenterCount <= 1) OR 
+		(@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

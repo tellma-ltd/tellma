@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -23,6 +23,8 @@ interface MenuItemInfo {
   icon: string;
   label: string;
   link: string;
+  paramsFunc?: () => Params;
+  linkArray?: (string | Params)[];
   view?: string;
   canView?: () => boolean;
   sortKey: number;
@@ -72,6 +74,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           label: 'AccountStatement', icon: 'file-alt', link: '../account-statement',
           canView: () => this.canView('accounts') && this.canView('details-entries'),
+          paramsFunc: () => this.userSettings.get<Params>('account-statement/arguments'),
           sortKey: 101
         },
         {
@@ -221,16 +224,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._quickAccess;
   }
 
-  // // TODO: replace below with a dynamically constructed mainMenu
-  // quickAccess: MenuItemInfo[] = [
-  //   { label: 'Inbox', icon: 'inbox', link: '../inbox', sortKey: 10 },
-  //   { label: 'Outbox', icon: 'share', link: '../outbox', sortKey: 20 },
-  //   { label: 'Accounts', icon: 'coins', link: '../accounts', view: 'accounts', sortKey: 30 },
-  //   { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
-  //   { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
-  //   { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
-  // ];
-
   _permissions: PermissionsForClient = null;
   _definitions: DefinitionsForClient = null;
   _settings: SettingsForClient = null;
@@ -241,27 +234,37 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public initializeMainMenu(): void {
     const ws = this.workspace.currentTenant;
-    let menuUpdated = false;
     if (this._definitions !== ws.definitions ||
       this._settings !== ws.settings ||
+      this._userSettings !== ws.userSettings ||
       this._currentCulture !== this.workspace.ws.culture ||
       this._permissions !== ws.permissions) {
 
-      menuUpdated = true;
       this._definitions = ws.definitions;
       this._settings = ws.settings;
+      this._userSettings = this.workspace.current.userSettings;
       this._currentCulture = this.workspace.ws.culture;
       this._permissions = ws.permissions;
 
       // Clone the main menu base and add to the clone
-      const menu = JSON.parse(JSON.stringify(this.mainMenuBase)) as { [section: string]: MenuSectionInfo };
+      // const menu = JSON.parse(JSON.stringify(this.mainMenuBase)) as { [section: string]: MenuSectionInfo };
+      const menu: { [section: string]: MenuSectionInfo } = { ... this.mainMenuBase };
+      for (const sectionKey of Object.keys(this.mainMenuBase)) {
+        menu[sectionKey] = { ...menu[sectionKey] }; // clone section
+        menu[sectionKey].items = menu[sectionKey].items.map(e => ({ ...e })); // clone items array
 
-      // translate all the labels to the current language
-      for (const sectionKey of Object.keys(menu)) {
+        // Localize the labels
         for (const item of menu[sectionKey].items) {
           item.label = this.translate.instant(item.label);
         }
       }
+
+      // // translate all the labels to the current language
+      // for (const sectionKey of Object.keys(menu)) {
+      //   for (const item of menu[sectionKey].items) {
+      //     item.label = this.translate.instant(item.label);
+      //   }
+      // }
 
       // add custom screens from definitions
       this.addDefinitions(menu, ws.definitions.Lookups, 'lookups');
@@ -271,21 +274,13 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.addReportDefinitions(menu);
 
-      this._mainMenu = Object.keys(menu).map(e => ({
-        label: this.translate.instant('Menu_' + e),
-        items: menu[e].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
-        background: menu[e].background
+      this._mainMenu = Object.keys(menu).map(sectionKey => ({
+        label: this.translate.instant('Menu_' + sectionKey),
+        items: menu[sectionKey].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
+        background: menu[sectionKey].background
       }));
 
-      // Useful for keeping all occurrences of menu sections in sync
-      // console.log(Object.keys(this.mainMenuBase).join(`', '`)); // xyz-definition.ts
-      // console.log(Object.keys(this.mainMenuBase).join(`", "`)); // XyzDefinition.cs
-      // console.log(Object.keys(this.mainMenuBase).map(e => 'Menu_' + e).join(`", "`)); // XyzDefinition.cs
-    }
-
-    if (menuUpdated || this._userSettings !== this.workspace.current.userSettings) {
-      this._userSettings = this.workspace.current.userSettings;
-
+      // Quick access menu
       const settingsQuickAccessLinks = this.userSettings.get<string[]>('main-menu/quick-access');
       if (!!settingsQuickAccessLinks && !!settingsQuickAccessLinks.length) {
         // First hash the links in a dictionary
@@ -309,6 +304,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this._quickAccess = [];
       }
+
+      // Useful for keeping all occurrences of menu sections in sync
+      // console.log(Object.keys(this.mainMenuBase).join(`', '`)); // xyz-definition.ts
+      // console.log(Object.keys(this.mainMenuBase).join(`", "`)); // XyzDefinition.cs
+      // console.log(Object.keys(this.mainMenuBase).map(e => 'Menu_' + e).join(`", "`)); // XyzDefinition.cs
     }
   }
 
@@ -377,6 +377,22 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     }
+  }
+
+  public linkArray(item: MenuItemInfo): (string | Params)[] {
+    if (!item.linkArray) {
+      item.linkArray = [item.link];
+
+      // Additional parameters are added to some screens
+      if (!!item.paramsFunc) {
+        const params = item.paramsFunc();
+        if (!!params) {
+          item.linkArray.push(params);
+        }
+      }
+    }
+
+    return item.linkArray;
   }
 
   private addDefinitions(
