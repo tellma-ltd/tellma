@@ -391,6 +391,8 @@
   "LineDefinitionColumns": "تعريفات أعمدة أسطر",
   "LineDefinitionEntries": "تعريفات حركات أسطر",
   "LineDefinitionEntry": "تعريف حركة سطر",
+  "LineDefinitionEntry_AccountType": "نوع الحساب",
+  "LineDefinitionEntry_EntryType": "نوع السطر",
   "LineDefinitions": "تعريفات أسطر",
   "LineDefinitionStateReason": "تعريف سبب حالة سطر",
   "LineDefinitionStateReasons": "تعريفات أسباب حالات أسطر",

@@ -226,8 +226,7 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 
 export interface LineDefinitionEntryForClient {
     Direction: 1 | -1;
-    AccountTypeId?: number;
-    EntryTypeId: number;
+    EntryTypeId?: number;
     EntryTypeParentId?: number; // Comes from the Account Types
     ContractDefinitionIds: number[];
     NotedContractDefinitionIds: number[];

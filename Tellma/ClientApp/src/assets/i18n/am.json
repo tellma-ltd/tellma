@@ -391,6 +391,8 @@
   "LineDefinitionColumns": "የመስመር ፍቺ አምዶች",
   "LineDefinitionEntries": "የመስመር ፍቺ ምዝግቦችን",
   "LineDefinitionEntry": "የመስመር ፍቺ Entry",
+  "LineDefinitionEntry_AccountType": "የመለያ አይነት",
+  "LineDefinitionEntry_EntryType": "ምዝግብ አይነት",
   "LineDefinitions": "የመስመር ፍቺዎች",
   "LineDefinitionStateReason": "መስመር ፍቺ ስቴት ምክንያት",
   "LineDefinitionStateReasons": "መስመር ፍቺ መንግስት ምክንያቶች",

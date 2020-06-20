@@ -909,6 +909,21 @@ namespace Tellma.Data
 
                 documentDefinitions = documentDefinitionsDic.Values.ToList();
 
+                // Next load account types
+                var accountTypesDic = new Dictionary<int, AccountType>();
+                await reader.NextResultAsync(cancellation);
+                while (await reader.ReadAsync(cancellation))
+                {
+                    int i = 0;
+                    var entity = new AccountType
+                    {
+                        Id = reader.GetInt32(i++),
+                        EntryTypeParentId = reader.Int32(i++),
+                    };
+
+                    accountTypesDic.Add(entity.Id, entity);
+                }
+
                 // Next load line definitions
                 await reader.NextResultAsync(cancellation);
 
@@ -940,7 +955,6 @@ namespace Tellma.Data
                         ContractDefinitions = new List<LineDefinitionEntryContractDefinition>(),
                         NotedContractDefinitions = new List<LineDefinitionEntryNotedContractDefinition>(),
                         ResourceDefinitions = new List<LineDefinitionEntryResourceDefinition>(),
-                        AccountTypes = new List<LineDefinitionEntryAccountType>()
                     };
 
                     foreach (var prop in lineDefinitionEntryProps)
@@ -950,6 +964,11 @@ namespace Tellma.Data
                         propValue = propValue == DBNull.Value ? null : propValue;
 
                         prop.SetValue(entity, propValue);
+                    }
+
+                    if (entity.AccountTypeId != null)
+                    {
+                        entity.AccountType = accountTypesDic.GetValueOrDefault(entity.AccountTypeId.Value);
                     }
 
                     var lineDefinition = lineDefinitionsDic[entity.LineDefinitionId.Value];
@@ -1001,21 +1020,6 @@ namespace Tellma.Data
 
                 lineDefinitions = lineDefinitionsDic.Values.ToList();
 
-                // Next load account types
-                var accountTypesDic = new Dictionary<int, AccountType>();
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    var entity = new AccountType
-                    {
-                        Id = reader.GetInt32(i++),
-                        EntryTypeParentId = reader.Int32(i++),
-                    };
-
-                    accountTypesDic.Add(entity.Id, entity);
-                }
-
                 // Line Definition Entry Contract Definitions
                 await reader.NextResultAsync(cancellation);
                 while (await reader.ReadAsync(cancellation))
@@ -1062,25 +1066,6 @@ namespace Tellma.Data
 
                     var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
                     lineDefEntry.ResourceDefinitions.Add(entity);
-                }
-
-                // Line Definition Entry Account Type
-                await reader.NextResultAsync(cancellation);
-                while (await reader.ReadAsync(cancellation))
-                {
-                    int i = 0;
-                    var entity = new LineDefinitionEntryAccountType
-                    {
-                        Id = reader.GetInt32(i++),
-                        LineDefinitionEntryId = reader.GetInt32(i++),
-                        AccountTypeId = reader.GetInt32(i++),
-                    };
-
-                    // Set the Account Type navigation property
-                    entity.AccountType = accountTypesDic[entity.AccountTypeId.Value];
-
-                    var lineDefEntry = lineDefinitionEntrisDic[entity.LineDefinitionEntryId.Value];
-                    lineDefEntry.AccountTypes.Add(entity);
                 }
             }
 
