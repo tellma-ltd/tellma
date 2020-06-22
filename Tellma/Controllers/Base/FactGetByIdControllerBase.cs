@@ -66,25 +66,6 @@ namespace Tellma.Controllers
         }
 
         protected abstract FactGetByIdServiceBase<TEntity, TKey> GetFactGetByIdService();
-
-        /// <summary>
-        /// Transforms the data and the other data into an <see cref="EntitiesResponse{TEntity}"/> ready to be served by a web handler, after verifying the user's permissions
-        /// </summary>
-        protected EntitiesResponse<TEntity> TransformToEntitiesResponse(List<TEntity> data, Extras extras, DateTimeOffset serverTime, CancellationToken cancellation)
-        {
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(data, cancellation);
-
-            // Prepare the result in a response object
-            return new EntitiesResponse<TEntity>
-            {
-                Result = data,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity)),
-                Extras = TransformExtras(extras, cancellation),
-                ServerTime = serverTime,
-            };
-        }
     }
 
     public abstract class FactGetByIdServiceBase<TEntity, TKey> : FactWithIdServiceBase<TEntity, TKey>, IFactGetByIdServiceBase

@@ -341,7 +341,7 @@ export class ApplicationShellComponent implements OnInit, OnDestroy {
           s.skip = response.Skip;
           s.total = response.TotalCount;
           s.masterStatus = MasterStatus.loaded;
-          s.extras = response.Extras;
+          // s.extras = response.Extras;
           s.collectionName = response.CollectionName;
           s.flatIds = addToWorkspace(response, this.workspace);
 

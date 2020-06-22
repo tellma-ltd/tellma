@@ -175,6 +175,9 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>账户类型</value>
   </data>
+  <data name="Accumulation" xml:space="preserve">
+    <value>加。</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>活性</value>
   </data>
@@ -206,7 +209,7 @@
     <value>从账户</value>
   </data>
   <data name="Assignment_Document" xml:space="preserve">
-    <value>文献</value>
+    <value>文件</value>
   </data>
   <data name="Assignment_E" xml:space="preserve">
     <value>从入门</value>
@@ -378,6 +381,9 @@
   </data>
   <data name="Currency_DecimalPlaces" xml:space="preserve">
     <value>小数位数</value>
+  </data>
+  <data name="Currency_NumericCode" xml:space="preserve">
+    <value>数字代码</value>
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>当前密码</value>
@@ -747,6 +753,9 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>发生意外错误添加外部登录与电子邮件用户“{0}”。</value>
+  </data>
+  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
+    <value>指定至少一个测量单元</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>与电子邮件的用户“{0}”未能找到。</value>

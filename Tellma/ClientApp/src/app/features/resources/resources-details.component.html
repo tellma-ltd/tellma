@@ -370,60 +370,6 @@
 
     <!-- Tabs -->
     <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
-        <!-- Map -->
-        <li ngbNavItem="location" *ngIf="Location_isVisible">
-            <a ngbNavLink>
-                <span *ngIf="Map_showError(model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'Resource_Location' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"
-                    [class.p-4]="model?.EntityMetadata?.LocationJson === 1">
-                    <div style="height: 500px;">
-                        <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
-                            [class.t-hidden-cursor]="!isEdit">
-                            <ace [config]="locationJsonAceConfig(isEdit)" [value]="model.LocationJson"
-                                (valueChange)="onLocationJsonValueChange($event, model)">
-                            </ace>
-                        </div>
-                        <agm-map class="h-100" [class.d-none]="!isView('map')" (centerChange)="onCenterChange($event)"
-                            [latitude]="latitude" [longitude]="longitude" [zoom]="6" [mapTypeControl]="true"
-                            [panControl]="true" [streetViewControl]="false" [fitBounds]="!!model?.Id" [fitBoundsPadding]="100">
-                            <t-map-bounds-fitter [agmFitBounds]="true" type="max"
-                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
-                            <t-map-bounds-fitter [agmFitBounds]="true" type="min"
-                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
-                            <agm-data-layer *ngIf="!!parseJson(model?.LocationJson)"
-                                [geoJson]="parseJson(model?.LocationJson)" [style]="styleFunc"></agm-data-layer>
-                        </agm-map>
-                        <!-- <div class="h-100 p-4 border-bottom border-left border-right" *ngIf="isView('map') && !parseJson(model?.LocationJson)">
-                            <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;Enter valid GeoJSON
-                        </div> -->
-                    </div>
-                    <!-- Map/GeoJSON Toggle -->
-                    <div class="btn-group btn-group-toggle pt-1">
-                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('map')"
-                            title="{{ 'Map' | translate }}" (click)="onView('map')">
-                            <input type="radio" name="locationView">
-                            <fa-icon icon="map-marker-alt"></fa-icon>
-                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Map' | translate }}</span>
-                        </label>
-                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('json')"
-                            title="{{ 'GeoJSON' | translate }}" (click)="onView('json')">
-                            <input type="radio" name="locationView">
-                            <fa-icon icon="code"></fa-icon>
-                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'GeoJSON' | translate }}</span>
-                        </label>
-                    </div>
-                    <t-error-message style="margin-top: -40px" *ngIf="!!parseJsonError">
-                        {{ parseJsonError }}
-                    </t-error-message>
-                </t-restricted>
-            </ng-template>
-        </li>
 
         <!-- Units -->
         <li ngbNavItem="units">
@@ -470,6 +416,62 @@
                         </t-decimal-editor>
                     </t-form-group-cell>
                 </ng-template>
+            </ng-template>
+        </li>
+        
+        <!-- Map -->
+        <li ngbNavItem="location" *ngIf="Location_isVisible">
+            <a ngbNavLink>
+                <span *ngIf="Map_showError(model)" class="text-danger">
+                    <fa-icon icon="exclamation-triangle">
+                    </fa-icon>&nbsp;
+                </span>
+                <span class="small t-slightly-bold">{{ 'Resource_Location' | translate }}</span>
+            </a>
+            <ng-template ngbNavContent>
+                <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"
+                    [class.p-4]="model?.EntityMetadata?.LocationJson === 1">
+                    <div style="height: 500px;">
+                        <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
+                            [class.t-hidden-cursor]="!isEdit">
+                            <textarea class="form-control t-input p-1 h-100" spellcheck="false" style="resize: none;"
+                                [readonly]="!isEdit" [placeholder]="('GeoJSON' | translate) + '...'"
+                                [(ngModel)]="model.LocationJson"></textarea>
+                        </div>
+                        <agm-map class="h-100" [class.d-none]="!isView('map')" (centerChange)="onCenterChange($event)"
+                            [latitude]="latitude" [longitude]="longitude" [zoom]="6" [mapTypeControl]="true"
+                            [panControl]="true" [streetViewControl]="false" [fitBounds]="!!model?.Id"
+                            [fitBoundsPadding]="100">
+                            <t-map-bounds-fitter [agmFitBounds]="true" type="max"
+                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
+                            <t-map-bounds-fitter [agmFitBounds]="true" type="min"
+                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
+                            <agm-data-layer *ngIf="!!parseJson(model?.LocationJson)"
+                                [geoJson]="parseJson(model?.LocationJson)" [style]="styleFunc"></agm-data-layer>
+                        </agm-map>
+                        <!-- <div class="h-100 p-4 border-bottom border-left border-right" *ngIf="isView('map') && !parseJson(model?.LocationJson)">
+                            <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;Enter valid GeoJSON
+                        </div> -->
+                    </div>
+                    <!-- Map/GeoJSON Toggle -->
+                    <div class="btn-group btn-group-toggle pt-1">
+                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('map')"
+                            title="{{ 'Map' | translate }}" (click)="onView('map')">
+                            <input type="radio" name="locationView">
+                            <fa-icon icon="map-marker-alt"></fa-icon>
+                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Map' | translate }}</span>
+                        </label>
+                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('json')"
+                            title="{{ 'GeoJSON' | translate }}" (click)="onView('json')">
+                            <input type="radio" name="locationView">
+                            <fa-icon icon="code"></fa-icon>
+                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'GeoJSON' | translate }}</span>
+                        </label>
+                    </div>
+                    <t-error-message style="margin-top: -40px" *ngIf="!!parseJsonError">
+                        {{ parseJsonError }}
+                    </t-error-message>
+                </t-restricted>
             </ng-template>
         </li>
     </ul>

@@ -13,11 +13,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics;
+using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
+using Azure.Storage.Blobs;
+using Azure.Core.Extensions;
 
 namespace Tellma
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         // The UI cultures currently supported by the system
         public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh", "am" };
 
@@ -189,6 +194,12 @@ namespace Tellma
                 // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
                 ConfigurationError = ex.Message;
             }
+
+            //services.AddAzureClients(builder =>
+            //{
+            //    builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:ConnectionString:blob"], preferMsi: true);
+            //    builder.AddQueueServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:ConnectionString:queue"], preferMsi: true);
+            //});
         }
 
         public void Configure(IApplicationBuilder app)
@@ -366,4 +377,30 @@ namespace Tellma
     /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k
     /// </summary>
     public class Strings { }
+
+    internal static class StartupExtensions
+    {
+        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddBlobServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
+            }
+        }
+        public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddQueueServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddQueueServiceClient(serviceUriOrConnectionString);
+            }
+        }
+    }
 }

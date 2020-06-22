@@ -649,6 +649,7 @@ export class ReportStore {
   information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
+  extras: { [key: string]: any };
   filter: string; // the one used to retrieve the result
   disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
 

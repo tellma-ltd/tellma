@@ -3,6 +3,18 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "EmbeddedIdentityServer/ConnectionString"
+    },
+    "signalr1": {
+      "type": "signalr",
+      "connectionId": "Azure__SignalR__ConnectionString"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "AzureBlobStorage:ConnectionString"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "AdminConnection"
     }
   }
 }

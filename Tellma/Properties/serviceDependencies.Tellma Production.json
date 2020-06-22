@@ -5,6 +5,24 @@
       "type": "mssql.azure",
       "connectionId": "EmbeddedIdentityServer/ConnectionString",
       "secretStore": "AzureAppSettings"
+    },
+    "signalr1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.SignalRService/SignalR/tellma-prod-signalr",
+      "type": "signalr.azure",
+      "connectionId": "Azure__SignalR__ConnectionString",
+      "secretStore": "AzureAppSettings"
+    },
+    "storage1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Storage/storageAccounts/tellmaprod",
+      "type": "storage.azure",
+      "connectionId": "AzureBlobStorage:ConnectionString",
+      "secretStore": "AzureAppSettings"
+    },
+    "mssql2": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Sql/servers/ss-we-tellma-prod/databases/Tellma",
+      "type": "mssql.azure",
+      "connectionId": "AdminConnection",
+      "secretStore": "AzureAppSettings"
     }
   }
 }

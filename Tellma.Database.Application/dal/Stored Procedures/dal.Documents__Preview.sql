@@ -15,9 +15,10 @@ BEGIN
 		AND AssigneeId = (
 			SELECT [AssigneeId]
 			FROM [dbo].[DocumentAssignments]
-			WHERE [Id] = @DocumentId
+			WHERE [DocumentId] = @DocumentId
 		)
 	)
+
 	-- Create a singleton containing the current user
 	DECLARE @AffectedUsers [dbo].[IdList];
 	INSERT INTO @AffectedUsers (Id) VALUES (CONVERT(INT, SESSION_CONTEXT(N'UserId')))

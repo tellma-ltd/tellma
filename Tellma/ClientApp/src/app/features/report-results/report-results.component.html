@@ -12,6 +12,7 @@
                                 [definitionId]="definitionId" [useAlignment]="true">
                             </t-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
                         </th>
+                        <th style="width:10px"></th>
                     </tr>
                 </thead>
                 <!-- Rows -->
@@ -23,6 +24,7 @@
                                 [entity]="entity">
                             </t-auto-cell>
                         </td>
+                        <td>&zwnj;</td>
                     </tr>
                 </tbody>
             </table>

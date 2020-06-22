@@ -11,11 +11,11 @@ import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';
 import { LatLngLiteral } from '@agm/core';
-import { AceConfigInterface } from 'ngx-ace-wrapper';
+// import { AceConfigInterface } from 'ngx-ace-wrapper';
 
-import 'brace';
-import 'brace/mode/json';
-import 'brace/theme/clouds';
+// import 'brace';
+// import 'brace/mode/json';
+// import 'brace/theme/clouds';
 
 @Component({
   selector: 't-resources-details',
@@ -495,7 +495,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public Map_showError(model: ResourceForSave): boolean {
-    return !!model && !!model.serverErrors;
+    return !!model && !!model.serverErrors && !!model.serverErrors.LocationJson;
   }
 
   public get zoom(): number {
@@ -551,49 +551,49 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return styleOptions;
   }
 
-  private locationJsonAceConfigBase: AceConfigInterface = {
-    mode: 'json',
-    theme: 'clouds',
-    useWorker: false,
-    showPrintMargin: false,
-  };
+  // private locationJsonAceConfigBase: AceConfigInterface = {
+  //   mode: 'json',
+  //   theme: 'clouds',
+  //   useWorker: false,
+  //   showPrintMargin: false,
+  // };
 
-  private locationJsonAceConfigEditable: AceConfigInterface;
-  private locationJsonAceConfigReadonly: AceConfigInterface;
+  // private locationJsonAceConfigEditable: AceConfigInterface;
+  // private locationJsonAceConfigReadonly: AceConfigInterface;
 
-  public locationJsonAceConfig(isEdit: boolean): AceConfigInterface {
-    if (isEdit) {
-      if (!this.locationJsonAceConfigEditable) {
-        const clone = { ... this.locationJsonAceConfigBase };
-        clone.readOnly = false;
-        clone.highlightActiveLine = true;
-        clone.highlightGutterLine = true;
+  // public locationJsonAceConfig(isEdit: boolean): AceConfigInterface {
+  //   if (isEdit) {
+  //     if (!this.locationJsonAceConfigEditable) {
+  //       const clone = { ... this.locationJsonAceConfigBase };
+  //       clone.readOnly = false;
+  //       clone.highlightActiveLine = true;
+  //       clone.highlightGutterLine = true;
 
-        this.locationJsonAceConfigEditable = clone;
-      }
+  //       this.locationJsonAceConfigEditable = clone;
+  //     }
 
-      return this.locationJsonAceConfigEditable;
-    } else {
-      if (!this.locationJsonAceConfigReadonly) {
-        const clone = { ... this.locationJsonAceConfigBase };
-        clone.readOnly = true;
-        clone.highlightActiveLine = false;
-        clone.highlightGutterLine = false;
+  //     return this.locationJsonAceConfigEditable;
+  //   } else {
+  //     if (!this.locationJsonAceConfigReadonly) {
+  //       const clone = { ... this.locationJsonAceConfigBase };
+  //       clone.readOnly = true;
+  //       clone.highlightActiveLine = false;
+  //       clone.highlightGutterLine = false;
 
-        this.locationJsonAceConfigReadonly = clone;
-      }
+  //       this.locationJsonAceConfigReadonly = clone;
+  //     }
 
-      return this.locationJsonAceConfigReadonly;
-    }
-  }
+  //     return this.locationJsonAceConfigReadonly;
+  //   }
+  // }
 
-  public onLocationJsonValueChange(value: string, model: ResourceForSave) {
-    // The ace component triggers value change on init
-    value = value || undefined;
-    if (model.LocationJson !== value) {
-      model.LocationJson = value;
-    }
-  }
+  // public onLocationJsonValueChange(value: string, model: ResourceForSave) {
+  //   // The ace component triggers value change on init
+  //   value = value || undefined;
+  //   if (model.LocationJson !== value) {
+  //     model.LocationJson = value;
+  //   }
+  // }
 
   private parseJsonString: string;
   private parseJsonResult: any;

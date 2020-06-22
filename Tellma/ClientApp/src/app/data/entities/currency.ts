@@ -13,6 +13,7 @@ export interface CurrencyForSave extends EntityForSave {
   Description?: string;
   Description2?: string;
   Description3?: string;
+  NumericCode?: number;
   E?: number;
 }
 
@@ -51,6 +52,7 @@ export function metadata_Currency(wss: WorkspaceService, trx: TranslateService):
         Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
         Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
+        NumericCode: { control: 'number', label: () => trx.instant('Currency_NumericCode'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         E: {
           control: 'choice',
           label: () => trx.instant('Currency_DecimalPlaces'),

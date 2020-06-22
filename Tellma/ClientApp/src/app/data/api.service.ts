@@ -61,6 +61,8 @@ import { ExportSelectedArguments } from './dto/export-selected-arguments';
 import { SelectExpandArguments } from './dto/select-expand-arguments';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
 import { Agent } from './entities/agent';
+import { StatementArguments } from './dto/statement-arguments';
+import { StatementResponse } from './dto/statement-response';
 
 
 @Injectable({
@@ -543,6 +545,30 @@ export class ApiService {
           }),
           takeUntil(cancellationToken$),
         );
+        return obs$;
+      }
+    };
+  }
+
+  public detailsEntriesApi(cancellationToken$: Observable<void>) {
+    return {
+      statement: (args: StatementArguments) => {
+        const paramsArray = [];
+        for (const key of Object.keys(args)) {
+          paramsArray.push(`${key}=${encodeURIComponent(args[key])}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/details-entries/statement?${params}`;
+
+        const obs$ = this.http.get<StatementResponse>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+
         return obs$;
       }
     };

@@ -271,7 +271,6 @@ namespace Tellma.Controllers
             _contextAccessor = contextAccessor;
         }
 
-
         #region Context Params
 
         private bool? _includeRequiredSignaturesOverride;

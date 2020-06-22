@@ -128,7 +128,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheResource0HasNoUnits'
+		N'Error_AtLeastOneUnitIsRequired'
 	FROM @Entities FE 
 	WHERE ([Index] NOT IN (SELECT HeaderIndex FROM @ResourceUnits));
 

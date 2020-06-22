@@ -37,6 +37,8 @@ export interface DetailsEntry extends EntityWithKey {
     NotedAgentName?: string;
     NotedAmount?: number;
     NotedDate?: string;
+
+    Accumulation?: number; // Used by account statement
 }
 
 let _settings: SettingsForClient;

@@ -784,6 +784,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public onMenuItemClick(item: MenuItemInfo) {
 
+    if (!!this.quickAccess[0] && item.link === this.quickAccess[0].link) {
+      // Clicked the first item in quick access, nothing to do
+      return;
+    }
+
     // Get the array of quick access links (excluding with the new link created or moved to first position)
     const newLinks = this.quickAccess.filter(e => e.link !== item.link).map(e => e.link);
     newLinks.unshift(item.link);

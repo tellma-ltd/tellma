@@ -17,12 +17,12 @@
             <div class="row m-0 px-0 px-lg-1 py-1">
                 <!-- From Date -->
                 <t-form-group class="t-form-group" [label]="('FromDate' | translate) + ' *'">
-                    <t-date-picker [(ngModel)]="fromDate"></t-date-picker>
+                    <t-date-picker [(ngModel)]="fromDate" [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
                 </t-form-group>
 
                 <!-- To Date -->
                 <t-form-group class="t-form-group" [label]="('ToDate' | translate) + ' *'">
-                    <t-date-picker [(ngModel)]="toDate"></t-date-picker>
+                    <t-date-picker [(ngModel)]="toDate" [ngModelOptions]="{ updateOn: 'blur' }"></t-date-picker>
                 </t-form-group>
 
                 <!-- Segment -->
@@ -75,7 +75,7 @@
                         [itemId]="readonlyValueEntryTypeId_Manual">
                         {{ ws.getMultilingualValue('EntryType', readonlyValueEntryTypeId_Manual, 'Name') }}
                     </t-view-link>
-                </t-form-group>                
+                </t-form-group>
 
                 <!-- Center -->
                 <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenter_Manual">
@@ -97,13 +97,19 @@
             <div class="d-flex">
 
                 <!-- Refresh -->
-                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()" [disabled]="!canRefresh">
+                <!-- <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()" [disabled]="!canRefresh">
                     <fa-icon icon="sync-alt"></fa-icon>
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
+                </button> -->
+                
+                <!-- Export -->
+                <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
+                    <fa-icon icon="download"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
                 </button>
 
                 <!-- Data dropdown -->
-                <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                <!-- <div class="btn-group t-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
                     <button type="button"
                         class="btn btn-light btn-sm text-primary t-white-button t-toolbar-button dropdown-toggle"
                         ngbDropdownToggle>
@@ -115,11 +121,17 @@
                             {{ 'Export' | translate }}
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Right Buttons -->
             <div>
+                <!-- Refresh -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </button>
+
                 <!-- Paging -->
                 <div class="d-inline small mx-2">
                     <span class="t-vertical-align-middle"> <span>{{ from | number }}</span> -
@@ -140,12 +152,88 @@
     </div>
 
     <!-- Results -->
-    <div class="p-4">
-        <p>This screen is still a work in progress, stay tuned!</p>
+    <div class="row t-rest-of-screen">
+        <div class="w-100 p-3 px-4" *ngIf="showInformation">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ information() }}
+        </div>
+
+        <!-- No items found -->
+        <!-- <div class="w-100 pl-3 pr-3 mt-3" *ngIf="showNoItemsFound">
+            {{ 'NoItemsFound' | translate }}
+        </div> -->
+
+        <div class="table-responsive" *ngIf="!showInformation">
+            <!-- Details (Flat Table) -->
+            <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
+                <table
+                    class="table table-hover table-striped table-sm border-bottom bg-white t-master-table text-nowrap">
+                    <!-- Column Header -->
+                    <thead>
+                        <tr>
+                            <th style="width:10px"></th>
+                            <th *ngFor="let col of columns" [style.width]="fromWeight(col.weight)"
+                                [class.text-right]="col.isRightAligned">
+                                {{ col.label() }}
+                            </th>
+                            <th style="width:10px"></th>
+                        </tr>
+                    </thead>
+                    <!-- Rows -->
+                    <tbody>
+                        <!-- Opening Balance -->
+                        <tr *ngIf="showOpeningBalance">
+                            <td>&zwnj;</td>
+                            <td>{{ fromDate | date:'yyyy-MM-dd' }}</td>
+                            <td class="font-italic" [colSpan]="columns.length - 2">*** Opening Balance ***</td>
+                            <td class="text-right"> {{ openingDisplay }}</td>
+                            <td>&zwnj;</td>
+                        </tr>
+                        <!-- Transactions -->
+                        <tr class="t-pointer" *cdkVirtualFor="let entity of entities" (click)="onSelectRow(entity)">
+                            <td>&zwnj;</td>
+                            <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
+                                {{ col.display(entity) }}
+                            </td>
+                            <td>&zwnj;</td>
+                        </tr>
+                        <!-- Closing Balance -->
+                        <!-- <tr *ngIf="showClosingBalance"> 
+                            <td>&zwnj;</td>
+                            <td>{{ toDate | date:'yyyy-MM-dd' }}</td>
+                            <td class="font-italic" [colSpan]="columns.length - 2"y>Closing Balance</td>
+                            <td class="text-right"> {{ closingDisplay }}</td>
+                            <td>&zwnj;</td>
+                        </tr> -->
+                        <!-- <tr class="t-transparent-background" *ngIf="!showSpinner">
+                            <td class="p-2 pt-3 t-transparent-background text-center" [colSpan]="columns.length + 2">
+                                <t-spinner [scale]="2"></t-spinner>
+                            </td>
+                        </tr> -->
+                    </tbody>
+                </table>
+
+                <!-- Spinner -->
+                <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
+                    <t-spinner [scale]="2"></t-spinner>
+                </div>
+
+                <!-- Error message -->
+                <div class="w-100 mt-3" *ngIf="showErrorMessage">
+                    <t-error-message>
+                        {{ errorMessage }}
+                    </t-error-message>
+                </div>
+            </cdk-virtual-scroll-viewport>
+        </div>
     </div>
 
-    <!-- Ending Balance -->
-    <div>
-
-    </div>
+    <!-- Ending Balances -->
+    <!-- <div class="border-top bg-white row" *ngIf="!showClosingBalance">
+        <div class="col-12 d-flex justify-content-end align-items-baseline" style="padding: 0.3rem">
+            <span class="small font-weight-bold">Closing Balance (Birr)</span><span>&nbsp;&nbsp;{{ closingDisplay }}</span>
+            <div class="d-inline" style="width:10px"></div>
+        </div>
+    </div> -->
 </div>

@@ -297,7 +297,7 @@ namespace Tellma.Controllers
     public abstract class FactServiceBase<TEntity> : ServiceBase, IFactServiceBase
         where TEntity : Entity
     {
-        private readonly IStringLocalizer _localizer;
+        protected readonly IStringLocalizer _localizer;
 
         public FactServiceBase(IServiceProvider sp)
         {

@@ -3,7 +3,7 @@ import { HubConnectionBuilder, LogLevel, HubConnection, HubConnectionState } fro
 import { appsettings } from './global-resolver.guard';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { from, Observable, of, Subject } from 'rxjs';
-import { WorkspaceService } from './workspace.service';
+import { retry } from 'rxjs/operators';
 
 /**
  * This is a wrapper around the SignalR library for two way real time communication with the server

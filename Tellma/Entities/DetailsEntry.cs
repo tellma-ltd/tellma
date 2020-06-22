@@ -100,6 +100,10 @@ namespace Tellma.Entities
         [Display(Name = "Entry_NotedDate")]
         public DateTime? NotedDate { get; set; }
 
+        [NotMapped]
+        [Display(Name = "Accumulation")]
+        public decimal? Accumulation { get; set; }
+
         // For Query
 
         [Display(Name = "Entry_Line")]

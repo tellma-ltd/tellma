@@ -1,6 +1,6 @@
-<t-details collection="Currency" [createFunc]="create" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
-  [masterCrumb]="'Currencies' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
-  [documentTemplate]="document" [actions]="[
+<t-details collection="Currency" [createFunc]="create" [expand]="expand" [mode]="mode"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Currencies' | translate" [detailsCrumb]="detailsCrumb"
+  [idString]="idString" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -36,7 +36,8 @@
   <!-- Id -->
   <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
     <div *ngIf="!isEdit">{{ model?.Id }}</div>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Id" [ngModelOptions]="{ updateOn: 'blur' }" required [disabled]="!isNew"></t-text-editor>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Id" [ngModelOptions]="{ updateOn: 'blur' }" required
+      [disabled]="!isNew"></t-text-editor>
   </t-form-group>
 
   <!-- Name -->
@@ -85,11 +86,18 @@
     </t-text-editor>
   </t-form-group>
 
+  <!-- Numeric Code -->
+  <t-form-group class="t-form-group" [label]="'Currency_NumericCode' | translate"
+    [serverErrors]="model?.serverErrors?.E">
+    <t-auto-cell *ngIf="!isEdit" collection="Currency" [entity]="model" path="NumericCode"></t-auto-cell>
+    <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.NumericCode" [minDecimalPlaces]="0" [maxDecimalPlaces]="0">
+    </t-decimal-editor>
+  </t-form-group>
+
   <!-- Decimal Places -->
   <t-form-group class="t-form-group" [label]="'Currency_DecimalPlaces' | translate"
     [serverErrors]="model?.serverErrors?.E">
     <t-auto-cell *ngIf="!isEdit" collection="Currency" [entity]="model" path="E"></t-auto-cell>
-
     <t-selector *ngIf="isEdit" [(ngModel)]="model.E" [choices]="decimalPlacesChoices" required></t-selector>
   </t-form-group>
 

@@ -5,10 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
-using Tellma.Data.Queries;
-using Tellma.Entities;
 using Tellma.Services.ApiAuthentication;
-using Tellma.Services.Sharding;
 
 namespace Tellma.Controllers
 {

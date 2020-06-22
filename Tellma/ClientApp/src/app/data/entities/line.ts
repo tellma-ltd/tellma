@@ -32,6 +32,10 @@ export interface Line extends LineForSave<Entry> {
     SortKey?: number;
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface LineForQuery extends Line {
+}
+
 export interface LineFlags {
     isModified?: boolean;
     isHighlighted?: boolean;

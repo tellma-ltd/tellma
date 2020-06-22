@@ -36,6 +36,7 @@ namespace Tellma.Entities
 
     public class Line : LineForSave<Entry>
     {
+        [Display(Name = "Line_Document")]
         public int? DocumentId { get; set; }
 
         [Display(Name = "State")]

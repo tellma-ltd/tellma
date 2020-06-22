@@ -515,6 +515,10 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this.isScreenMode;
   }
 
+  public get showDataDropdown(): boolean {
+    return !!this.description || this.showEditDefinition;
+  }
+
   public onEdit(): void {
     const ws = this.workspace;
     ws.isEdit = true;

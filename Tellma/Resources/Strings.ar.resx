@@ -175,6 +175,9 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
   </data>
+  <data name="Accumulation" xml:space="preserve">
+    <value>إجمالي</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>منشط</value>
   </data>
@@ -378,6 +381,9 @@
   </data>
   <data name="Currency_DecimalPlaces" xml:space="preserve">
     <value>عدد المنازل العشرية</value>
+  </data>
+  <data name="Currency_NumericCode" xml:space="preserve">
+    <value>الكود الرقمي</value>
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>كلمة المرور الحالية</value>
@@ -747,6 +753,9 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})</value>
+  </data>
+  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
+    <value>حدد وحدة قياس واحدة على الأقل</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})</value>

@@ -175,6 +175,9 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>የመለያ አይነቶች</value>
   </data>
+  <data name="Accumulation" xml:space="preserve">
+    <value>Acc.</value>
+  </data>
   <data name="Active" xml:space="preserve">
     <value>ገቢር</value>
   </data>
@@ -378,6 +381,9 @@
   </data>
   <data name="Currency_DecimalPlaces" xml:space="preserve">
     <value>የአስርዮሽ ቦታዎች</value>
+  </data>
+  <data name="Currency_NumericCode" xml:space="preserve">
+    <value>ቁጥራዊ ኮድ</value>
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>የአሁኑ ሚስጥራዊ ማለፊያ ቁልፍ</value>
@@ -747,6 +753,9 @@
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>ያልተጠበቀ ስህተት «{0}» ኢሜይል ጋር ተጠቃሚ ውጫዊ የመግቢያ በማከል ተከስቷል.</value>
+  </data>
+  <data name="Error_AtLeastOneUnitIsRequired" xml:space="preserve">
+    <value>ቢያንስ አንድ የመለኪያ አሃድ ይግለጹ</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
     <value>ኢሜይል ጋር አንድ ተጠቃሚ «{0} 'ሊገኝ አልቻለም.</value>

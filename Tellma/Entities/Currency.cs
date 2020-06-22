@@ -40,9 +40,12 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+        [Display(Name = "Currency_NumericCode")]
+        public short? NumericCode { get; set; }
+
         [Display(Name = "Currency_DecimalPlaces")]
         [Required]
-        [ChoiceList(new object[] { (byte)0, (byte)2, (byte)3 })]
+        [ChoiceList(new object[] { (short)0, (short)2, (short)3 })]
         public short? E { get; set; }
     }
 
