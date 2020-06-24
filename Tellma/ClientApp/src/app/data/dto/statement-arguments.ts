@@ -11,4 +11,5 @@ export interface StatementArguments {
     entryTypeId?: number;
     centerId?: number;
     currencyId?: string;
+    includeCompleted?: boolean;
 }

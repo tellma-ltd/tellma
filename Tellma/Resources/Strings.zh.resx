@@ -175,9 +175,6 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>账户类型</value>
   </data>
-  <data name="Accumulation" xml:space="preserve">
-    <value>加。</value>
-  </data>
   <data name="Active" xml:space="preserve">
     <value>活性</value>
   </data>
@@ -427,6 +424,9 @@
   <data name="DetailsEntry" xml:space="preserve">
     <value>详情进入</value>
   </data>
+  <data name="DetailsEntry_Accumulation" xml:space="preserve">
+    <value>加。</value>
+  </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
     <value>代数计数</value>
   </data>
@@ -435,6 +435,9 @@
   </data>
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
     <value>代数货币价值</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
+    <value>代数量</value>
   </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
     <value>代数时间</value>
@@ -450,6 +453,12 @@
   </data>
   <data name="DetailsEntry_Mass" xml:space="preserve">
     <value>块</value>
+  </data>
+  <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
+    <value>量ACC。</value>
+  </data>
+  <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
+    <value>数量加速。</value>
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>时间</value>

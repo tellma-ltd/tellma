@@ -479,7 +479,7 @@ namespace Tellma.Controllers
 
         public static SelectExpression ParseSelect(string select, Func<string, SelectExpression> baseFunc)
         {
-            string shorthand = "$DocumentDetailsForEntry";
+            string shorthand = "$DocumentDetails";
             if (select == null)
             {
                 return null;

@@ -66,7 +66,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   }
 
   private get definition(): LookupDefinitionForClient {
-    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Contracts[this.definitionId] : null);
+    return this.previewDefinition || (!!this.definitionId ? this.ws.definitions.Lookups[this.definitionId] : null);
   }
 
   // UI Binding

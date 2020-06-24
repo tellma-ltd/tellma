@@ -1,4 +1,5 @@
-<t-details-picker [filter]="filter" [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null"
+<t-details-picker [filter]="filter" [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
+    [ensureAdditionalSelect]="ensureAdditionalSelect" [detailsTemplate]="showCreate ? details : null"
     collection="Currency" [additionalSelect]="additionalSelect">
 </t-details-picker>
 

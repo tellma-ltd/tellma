@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef, OnChanges, SimpleChanges, OnInit
+  Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef, OnChanges, SimpleChanges, OnInit, Output, EventEmitter
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -36,6 +36,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   @Input()
   additionalSelect: string = null;
 
+  /**
+   * By default, if the details picker wants to display some ID, if it finds it in the workspace
+   * it will not verify that it has all the additionalSelect properties loaded.
+   * Setting this input to true would correct this, especially useful in report parameters
+   */
+  @Input()
+  ensureAdditionalSelect = false;
+
   @Input()
   selectTemplate: string;
 
@@ -58,6 +66,13 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   @Input()
   detailsTemplate: TemplateRef<any>;
+
+  /**
+   * If the details picker is started off with an Id that doesn't exist in the workspace it automatically loads that entity
+   * when that entity is loaded the details picker fires this event
+   */
+  @Output()
+  entityLoaded = new EventEmitter<void>();
 
   @ViewChild('input', { static: true })
   input: ElementRef;
@@ -97,6 +112,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   // private _cacheMode = false;
   private _idString = 'new';
   private api = this.apiService.crudFactory('', null); // for intellisense
+
+  private get additionalSelectKey(): string {
+    if (!!this.additionalSelect) {
+      return `__${this.additionalSelect}`;
+    } else {
+      return null;
+    }
+  }
 
   @Input()
   formatter: (item: any) => string = (item: any) => {
@@ -197,6 +220,17 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     ).subscribe((results: GetResponse) => {
       // Populate the dropdown with the results
       if (!!results) {
+
+        // First, stamp all the loaded entities as adhering to additionalSelect
+        // This stamp is used to check when ensureAdditionalSelect = true
+        const stamp = this.additionalSelectKey;
+        if (!!stamp) {
+          for (const entity of results.Result) {
+            entity.EntityMetadata[stamp] = 2;
+          }
+        }
+
+        // Add the result to the workspace
         this._searchResults = addToWorkspace(results, this.workspace);
         // if (results.TotalCount > 500) {
         //   // Next call will retrieve the entire table and search it in memory
@@ -261,10 +295,21 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     return this.api.getById(id, args).pipe(
       tap((response: GetByIdResponse) => {
+
+        // Stamp the loaded entity as adhering to additionalSelect
+        // This stamp is used to ensureAdditionalSelect
+        const stamp = this.additionalSelectKey;
+        if (!!stamp) {
+          response.Result.EntityMetadata[stamp] = 2;
+        }
+
         addSingleToWorkspace(response, this.workspace);
         if (this.chosenItem === id) {
           this.updateUI(id);
         }
+
+        // Notify the outside world
+        this.entityLoaded.emit();
       }),
       catchError(_ => {
         this.chooseItem(null);
@@ -462,7 +507,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   public formatterInner: (id: number | string) => string = (id: number | string) => {
     // all this does is fetch the entity from the server in case it wasn't found in the workspace
     const item = this.workspace.current.get(this.collection, id);
-    if (!!id && !item) {
+    if (!!id && (!item || (this.ensureAdditionalSelect && !!this.additionalSelectKey && !item.EntityMetadata[this.additionalSelectKey]))) {
       this.fetchUnloadedItem(id);
       return '';
     } else {

@@ -1,5 +1,5 @@
-<t-details-picker [filter]="filter" collection="IfrsConcept" [masterTemplate]="master"
-    [additionalSelect]="additionalSelect">
+<t-details-picker [filter]="filter" collection="IfrsConcept" [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
+    [ensureAdditionalSelect]="ensureAdditionalSelect" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Master Modal -->

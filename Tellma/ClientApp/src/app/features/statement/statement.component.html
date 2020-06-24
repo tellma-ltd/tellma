@@ -13,7 +13,7 @@
         </div>
 
         <!-- Parameters -->
-        <div class="mx-auto mb-3 w-100" style="max-width: 900px">
+        <div class="mx-auto mb-3 w-100" style="max-width: 900px" [class.d-none]="collapseParameters">
             <div class="row m-0 px-0 px-lg-1 py-1">
                 <!-- From Date -->
                 <t-form-group class="t-form-group" [label]="('FromDate' | translate) + ' *'">
@@ -33,17 +33,20 @@
 
                 <!-- Account -->
                 <t-form-group class="t-form-group" [label]="('Entry_Account' | translate) + ' *'">
-                    <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect">
+                    <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect"
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()">
                     </t-accounts-picker>
                 </t-form-group>
 
                 <!-- Currency -->
                 <t-form-group class="t-form-group" [label]="'Entry_Currency' | translate" *ngIf="showCurrencyParameter">
-                    <t-currencies-picker [(ngModel)]="currencyId"></t-currencies-picker>
+                    <t-currencies-picker [(ngModel)]="currencyId" [additionalSelect]="currencyAdditionalSelect"
+                        [ensureAdditionalSelect]="true">
+                    </t-currencies-picker>
                 </t-form-group>
 
                 <!-- Contract -->
-                <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContract_Manual">
+                <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
                     <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
                         [definitionIds]="definitionIdsContract_Manual">
                     </t-contracts-picker>
@@ -55,9 +58,10 @@
                 </t-form-group>
 
                 <!-- Resource -->
-                <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResource_Manual">
+                <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResourceParameter">
                     <t-resources-picker *ngIf="!readonlyResource_Manual" [(ngModel)]="resourceId"
-                        [definitionIds]="definitionIdsResource_Manual">
+                        [definitionIds]="definitionIdsResource_Manual" [additionalSelect]="resourceAdditionalSelect"
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()">
                     </t-resources-picker>
                     <t-view-link *ngIf="readonlyResource_Manual"
                         [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
@@ -67,7 +71,8 @@
                 </t-form-group>
 
                 <!-- Entry Type -->
-                <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate" *ngIf="showEntryType_Manual">
+                <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate"
+                    *ngIf="showEntryTypeParameter">
                     <t-entry-types-picker *ngIf="!readonlyEntryType_Manual" [(ngModel)]="entryTypeId"
                         [filter]="filterEntryType_Manual">
                     </t-entry-types-picker>
@@ -78,7 +83,7 @@
                 </t-form-group>
 
                 <!-- Center -->
-                <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenter_Manual">
+                <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
                     <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true">
                     </t-centers-picker>
                     <t-view-link *ngIf="readonlyCenter_Manual"
@@ -86,6 +91,15 @@
                         [itemId]="readonlyValueCenterId_Manual">
                         {{ ws.getMultilingualValue('Center', readonlyValueCenterId_Manual, 'Name') }}
                     </t-view-link>
+                </t-form-group>
+
+                <!-- IncludeCompleted -->
+                <t-form-group class="t-form-group" [label]="'IncludeCompleted' | translate">
+                    <div class="custom-control custom-checkbox t-labelless-checkbox">
+                        <input type="checkbox" class="custom-control-input" [(ngModel)]="includeCompleted"
+                            id="includecompleted">
+                        <label class="custom-control-label t-pointer" for="includecompleted">&zwnj;</label>
+                    </div>
                 </t-form-group>
             </div>
         </div>
@@ -96,12 +110,6 @@
             <!-- Left Buttons -->
             <div class="d-flex">
 
-                <!-- Refresh -->
-                <!-- <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onRefresh()" [disabled]="!canRefresh">
-                    <fa-icon icon="sync-alt"></fa-icon>
-                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
-                </button> -->
-                
                 <!-- Export -->
                 <button class="btn btn-primary btn-sm t-toolbar-button" (click)="onExport()" [disabled]="!canExport">
                     <fa-icon icon="download"></fa-icon>
@@ -122,6 +130,9 @@
                         </button>
                     </div>
                 </div> -->
+
+                <t-spinner class="align-self-center mx-1" *ngIf="showExportSpinner">
+                </t-spinner>
             </div>
 
             <!-- Right Buttons -->
@@ -146,6 +157,15 @@
                 <button class="btn btn-light btn-sm t-white-button t-toolbar-button" type="button"
                     title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
                     <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                </button>
+
+                <!-- Expand/Collapse -->
+                <button class="btn btn-sm t-toolbar-button btn-light t-white-button" type="button"
+                    title="{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}"
+                    (click)="onToggleCollapseParameters()">
+                    <fa-icon [icon]="collapseParameters ? 'angle-down' : 'angle-up'"></fa-icon>
+                    <span
+                        class="d-none d-md-inline">&nbsp;&nbsp;{{ (collapseParameters ? 'Expand' : 'Collapse') | translate }}</span>
                 </button>
             </div>
         </div>
@@ -183,34 +203,68 @@
                     <!-- Rows -->
                     <tbody>
                         <!-- Opening Balance -->
-                        <tr *ngIf="showOpeningBalance">
+                        <tr class="t-highlight2 font-weight-bold2" *ngIf="showOpeningBalance">
                             <td>&zwnj;</td>
-                            <td>{{ fromDate | date:'yyyy-MM-dd' }}</td>
-                            <td class="font-italic" [colSpan]="columns.length - 2">*** Opening Balance ***</td>
-                            <td class="text-right"> {{ openingDisplay }}</td>
+                            <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
+                                <ng-container *ngIf="col.id === 'PostingDate'">
+                                    {{ fromDate | date:'yyyy-MM-dd' }}
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'SerialNumber'">
+                                    {{ 'OpeningBalance' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'QuantityAccumulation'">
+                                    &zwnj;{{ openingQuantityDisplay }}&zwnj;
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'MonetaryValueAccumulation'">
+                                    &zwnj;{{ openingMonetaryValueDisplay }}&zwnj;
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'Accumulation'">
+                                    &zwnj;{{ openingDisplay }}&zwnj;
+                                </ng-container>
+                            </td>
                             <td>&zwnj;</td>
                         </tr>
+
+                        <tr class="t-pointer" (click)="onPreviousPage()" *ngIf="canPreviousPage">
+                            <td class="text-center font-italic text-muted" [colSpan]="columns.length + 2">...</td>
+                        </tr>
+
                         <!-- Transactions -->
                         <tr class="t-pointer" *cdkVirtualFor="let entity of entities" (click)="onSelectRow(entity)">
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
-                                {{ col.display(entity) }}
+                                {{ col.display(entity) }}&zwnj;
                             </td>
                             <td>&zwnj;</td>
                         </tr>
+
+                        <tr class="t-pointer" (click)="onNextPage()" *ngIf="canNextPage">
+                            <td class="text-center font-italic text-muted" [colSpan]="columns.length + 2">...</td>
+                        </tr>
+
                         <!-- Closing Balance -->
-                        <!-- <tr *ngIf="showClosingBalance"> 
+                        <tr class="t-highlight2 font-weight-bold2" *ngIf="showClosingBalance">
                             <td>&zwnj;</td>
-                            <td>{{ toDate | date:'yyyy-MM-dd' }}</td>
-                            <td class="font-italic" [colSpan]="columns.length - 2"y>Closing Balance</td>
-                            <td class="text-right"> {{ closingDisplay }}</td>
-                            <td>&zwnj;</td>
-                        </tr> -->
-                        <!-- <tr class="t-transparent-background" *ngIf="!showSpinner">
-                            <td class="p-2 pt-3 t-transparent-background text-center" [colSpan]="columns.length + 2">
-                                <t-spinner [scale]="2"></t-spinner>
+                            <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
+                                <ng-container *ngIf="col.id === 'PostingDate'">
+                                    <span>{{ toDate | date:'yyyy-MM-dd' }}</span>
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'SerialNumber'">
+                                    <span>{{ 'ClosingBalance' | translate }}</span>
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'Accumulation'">
+                                    <span class="border-bottom t-dark-border">&zwnj;{{ closingDisplay }}&zwnj;</span>
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'QuantityAccumulation'">
+                                    <span class="border-bottom t-dark-border">&zwnj;{{ closingQuantityDisplay }}&zwnj;</span>
+                                </ng-container>
+                                <ng-container *ngIf="col.id === 'MonetaryValueAccumulation'">
+                                    <span
+                                        class="border-bottom t-dark-border">&zwnj;{{ closingMonetaryValueDisplay }}&zwnj;</span>
+                                </ng-container>
                             </td>
-                        </tr> -->
+                            <td>&zwnj;</td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -230,10 +284,38 @@
     </div>
 
     <!-- Ending Balances -->
-    <!-- <div class="border-top bg-white row" *ngIf="!showClosingBalance">
+    <!-- <div class="border-top bg-white row" *ngIf="showClosingBalance">
         <div class="col-12 d-flex justify-content-end align-items-baseline" style="padding: 0.3rem">
             <span class="small font-weight-bold">Closing Balance (Birr)</span><span>&nbsp;&nbsp;{{ closingDisplay }}</span>
             <div class="d-inline" style="width:10px"></div>
         </div>
     </div> -->
 </div>
+
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ actionErrorMessage }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Dismiss' | translate }}
+        </button>
+    </div>
+</ng-template>

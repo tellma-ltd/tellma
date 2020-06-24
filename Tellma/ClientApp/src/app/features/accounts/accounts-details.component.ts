@@ -7,7 +7,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountForSave, Account, metadata_Account } from '~/app/data/entities/account';
-import { PropDescriptor, ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
+import { PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
@@ -316,5 +316,30 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     return result;
+  }
+
+  public get accountTypeAdditionalSelect(): string {
+    const defaultSelect = `ContractDefinitions/ContractDefinitionId,
+    NotedContractDefinitions/NotedContractDefinitionId,
+    ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId`;
+
+    if (this.additionalSelect === '$DocumentDetails') {
+      // Popup from document screen, get everything the document screen needs
+      return '$DocumentDetails,' + defaultSelect;
+    } else {
+      // Just the account screen, get what the account screen needs
+      return defaultSelect;
+    }
+  }
+
+  public get resourceAdditionalSelect(): string {
+    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3`;
+    if (this.additionalSelect === '$DocumentDetails') {
+      // Popup from document screen, get everything the document screen needs
+      return '$DocumentDetails,' + defaultSelect;
+    } else {
+      // Just the account screen, get what the account screen needs
+      return defaultSelect;
+    }
   }
 }

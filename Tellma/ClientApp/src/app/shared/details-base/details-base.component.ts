@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output, OnInit } from '@angular/core';
 import { DetailsComponent } from '~/app/shared/details/details.component';
 import { Observable, Subscription, Subject } from 'rxjs';
@@ -116,5 +117,38 @@ export class DetailsBaseComponent implements ICanDeactivate, OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  private _additionalSelectForNavAdditionalSelect: string;
+  private _additionalSelectForNav: { [nav: string]: string } = {};
+
+  public additionalSelectForNav(nav: string, vanilla?: string): string {
+    // IF there is an additional select, we need to make sure it is propagated to all details pickers
+    // in the details screen. E.g. if account details screen additional select = 'AccountType/DueDateLabel',
+    // then the details picker of account type should have an additional select of 'DueDateLabel'
+    if (!this.additionalSelect || !nav) {
+      return null;
+    } else {
+      if (this._additionalSelectForNavAdditionalSelect !== this.additionalSelect) {
+        this._additionalSelectForNavAdditionalSelect = this.additionalSelect;
+        this._additionalSelectForNav = {};
+      }
+
+      if (!this._additionalSelectForNav[nav]) {
+        this._additionalSelectForNav[nav] = this.additionalSelect
+          .split(',')
+          .filter(a => !!a && a.startsWith(nav))
+          .map(a => a.substring(nav.length))
+          .join(',');
+      }
+
+      let result = this._additionalSelectForNav[nav];
+      if (!!vanilla) {
+        // Some built in additional select required by the details screen itself
+        result = `${result},${vanilla}`;
+      }
+
+      return result;
+    }
   }
 }

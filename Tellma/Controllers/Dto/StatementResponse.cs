@@ -10,9 +10,29 @@ namespace Tellma.Controllers.Dto
         public decimal? Opening { get; set; }
 
         /// <summary>
+        /// Opening Quantity Balance of the result
+        /// </summary>
+        public decimal? OpeningQuantity { get; set; }
+
+        /// <summary>
+        /// Opening Monetary Value Balance of the result
+        /// </summary>
+        public decimal? OpeningMonetaryValue { get; set; }
+
+        /// <summary>
         /// Closing Balance of the result
         /// </summary>
         public decimal? Closing { get; set; }
+
+        /// <summary>
+        /// Closing Quantity Balance of the result
+        /// </summary>
+        public decimal? ClosingQuantity { get; set; }
+
+        /// <summary>
+        /// Closing Monetary Value Balance of the result
+        /// </summary>
+        public decimal? ClosingMonetaryValue { get; set; }
 
         public int Skip { get; set; }
 

@@ -36,7 +36,7 @@ namespace Tellma.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var serverTime = DateTimeOffset.UtcNow;
-                var (data, opening, closing, count) = await _service.GetStatement(args, cancellation);
+                var (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count) = await _service.GetStatement(args, cancellation);
 
                 // Flatten and Trim
                 var relatedEntities = FlattenAndTrim(data, cancellation);
@@ -44,7 +44,11 @@ namespace Tellma.Controllers
                 var response = new StatementResponse
                 {
                     Closing = closing,
+                    ClosingQuantity = closingQuantity,
+                    ClosingMonetaryValue = closingMonetaryValue,
                     Opening = opening,
+                    OpeningQuantity = openingQuantity,
+                    OpeningMonetaryValue = openingMonetaryValue,
                     TotalCount = count,
                     CollectionName = GetCollectionName(typeof(DetailsEntry)),
                     RelatedEntities = relatedEntities,
@@ -68,92 +72,12 @@ namespace Tellma.Controllers
     public class DetailsEntriesService : FactWithIdServiceBase<DetailsEntry, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly IHttpContextAccessor _contextAccessor;
 
         private string View => DetailsEntriesController.BASE_ADDRESS;
 
-        //#region Custom Params
-
-        //private DateTime? _openingDateOverride;
-        //private DateTime? _closingDateOverride;
-
-        //private DateTime? OpeningDate
-        //{
-        //    get
-        //    {
-        //        if (_openingDateOverride != null)
-        //        {
-        //            return _openingDateOverride;
-        //        }
-        //        else
-        //        {
-        //            string openingDateString = GetQueryParameter("opening");
-        //            if (!string.IsNullOrWhiteSpace(openingDateString))
-        //            {
-        //                if (DateTime.TryParse(openingDateString, out DateTime result))
-        //                {
-        //                    return result;
-        //                }
-        //            }
-        //        }
-
-        //        return null;
-        //    }
-        //}
-
-        //private DateTime? ClosingDate
-        //{
-        //    get
-        //    {
-        //        if (_closingDateOverride != null)
-        //        {
-        //            return _closingDateOverride;
-        //        }
-        //        else
-        //        {
-        //            string closingDateString = GetQueryParameter("closing");
-        //            if (!string.IsNullOrWhiteSpace(closingDateString))
-        //            {
-        //                if (DateTime.TryParse(closingDateString, out DateTime result))
-        //                {
-        //                    return result;
-        //                }
-        //            }
-        //        }
-
-        //        return null;
-        //    }
-        //}
-
-        //private string GetQueryParameter(string name)
-        //{
-        //    var query = _contextAccessor.HttpContext?.Request?.Query;
-        //    if (query != null && query.TryGetValue(name, out StringValues value))
-        //    {
-        //        return value.FirstOrDefault();
-        //    }
-
-        //    return null;
-        //}
-
-        //public DetailsEntriesService SetIncludeOpening(DateTime val)
-        //{
-        //    _openingDateOverride = val;
-        //    return this;
-        //}
-
-        //public DetailsEntriesService SetIncludeClosing(DateTime val)
-        //{
-        //    _closingDateOverride = val;
-        //    return this;
-        //}
-
-        //#endregion
-
-        public DetailsEntriesService(IServiceProvider sp, ApplicationRepository repo, IHttpContextAccessor contextAccessor) : base(sp)
+        public DetailsEntriesService(IServiceProvider sp, ApplicationRepository repo) : base(sp)
         {
             _repo = repo;
-            _contextAccessor = contextAccessor;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -176,53 +100,27 @@ namespace Tellma.Controllers
             return OrderByExpression.Parse(nameof(DetailsEntry.AccountId));
         }
 
-        //public override Task<(List<DetailsEntry> Data, Extras Extras, bool IsPartial, int? Count)> GetFact(GetArguments args, CancellationToken cancellation)
-        //{
-        //    _filter = args.Filter;
-        //    return base.GetFact(args, cancellation);
-        //}
-
-        //private string _filter;
-
-        //protected override async Task<Extras> GetExtras(IEnumerable<DetailsEntry> result, CancellationToken cancellation)
-        //{
-        //    var extras = new Extras();
-
-        //    if (OpeningDate != null || ClosingDate != null)
-        //    {
-        //        string exp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
-        //        var select = AggregateSelectExpression.Parse(exp);
-
-        //        // Grab the opening
-        //        if (OpeningDate != null)
-        //        {
-        //            var dateFilter = FilterExpression.Parse($"Line/PostingDate lt {OpeningDate.Value:yyyy-MM-dd}");
-        //            var q = _repo.AggregateQuery<DetailsEntry>().Select(select).Filter(dateFilter);
-        //            var qResult = (await q.ToListAsync(cancellation))[0];
-
-        //            qResult.TryGetValue(exp, out object value);
-        //            extras["Opening"] = value ?? 0;
-        //        }
-
-        //        // Grab the closing
-        //        if (ClosingDate != null)
-        //        {
-        //            var filter = FilterExpression.Parse($"Line/PostingDate le {ClosingDate.Value:yyyy-MM-dd}");
-        //            var q = _repo.AggregateQuery<DetailsEntry>().Select(select).Filter(filter);
-        //            var qResult = (await q.ToListAsync(cancellation))[0];
-
-        //            qResult.TryGetValue(exp, out object value);
-        //            extras["Closing"] = value ?? 0;
-        //        }
-        //    }
-
-        //    return extras;
-        //}
-
-        public async Task<(List<DetailsEntry> Data, decimal opening, decimal closing, int Count)> GetStatement(StatementArguments args, CancellationToken cancellation)
+        public async Task<(
+            List<DetailsEntry> Data,
+            decimal opening,
+            decimal openingQuantity,
+            decimal openingMonetaryValue,
+            decimal closing,
+            decimal closingQuantity,
+            decimal closingMonetaryValue,
+            int Count
+            )> GetStatement(StatementArguments args, CancellationToken cancellation)
         {
             // Step 1: Prepare the filters
-            StringBuilder undatedFilterBldr = new StringBuilder($"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Finalized}");
+            // State == Finalized
+            string stateFilter = $"{nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Finalized}";
+            if (!(args.IncludeCompleted ?? false))
+            {
+                // OR State == Completed
+                stateFilter = $"({stateFilter} or {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.State)} {Ops.eq} {LineState.Completed})";
+            }
+            
+            StringBuilder undatedFilterBldr = new StringBuilder(stateFilter);
 
             if (args.AccountId != null)
             {
@@ -267,14 +165,14 @@ namespace Tellma.Controllers
 
             if (args.FromDate != null)
             {
-                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}");
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}");
+                beforeOpeningFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.lt} {args.FromDate.Value:yyyy-MM-dd}"); // <
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.ge} {args.FromDate.Value:yyyy-MM-dd}"); // >=
             }
 
             if (args.ToDate != null)
             {
-                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}");
-                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}");
+                betweenFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
+                beforeClosingFilterBldr.Append($" and {nameof(DetailsEntry.Line)}/{nameof(LineForQuery.PostingDate)} {Ops.le} {args.ToDate.Value:yyyy-MM-dd}"); // <=
             }
 
             string beforeOpeningFilter = beforeOpeningFilterBldr.ToString();
@@ -295,41 +193,76 @@ namespace Tellma.Controllers
 
             var (data, _, _, count) = await GetFact(factArgs, cancellation);
 
-
-            // Step 3: Load the opening, and closing balances
-            string exp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
+            // Step 3: Load the opening balances
+            string valueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicValue)})";
+            string quantityExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicQuantity)})";
+            string monetaryValueExp = $"{nameof(Aggregations.sum)}({nameof(DetailsEntry.AlgebraicMonetaryValue)})";
             var openingArgs = new GetAggregateArguments
             {
                 Filter = beforeOpeningFilter,
-                Select = exp
+                Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
             };
 
             var (openingData, _) = await GetAggregate(openingArgs, cancellation);
-            openingData[0].TryGetValue(exp, out object openingObj);
+            openingData[0].TryGetValue(valueExp, out object openingObj);
             decimal opening = (decimal)(openingObj ?? 0m);
 
-            var closingArgs = new GetAggregateArguments
-            {
-                Filter = beforeClosingFilter,
-                Select = exp
-            };
+            openingData[0].TryGetValue(quantityExp, out object openingQuantityObj);
+            decimal openingQuantity = (decimal)(openingQuantityObj ?? 0m);
 
-            var (closingData, _) = await GetAggregate(closingArgs, cancellation);
-            closingData[0].TryGetValue(exp, out object closingObj);
-            decimal closing = (decimal)(closingObj ?? 0m);
+            openingData[0].TryGetValue(monetaryValueExp, out object openingMonetaryValueObj);
+            decimal openingMonetaryValue = (decimal)(openingMonetaryValueObj ?? 0m);
 
-
-            // Add the Acc. column
+            // step (4) Add the Acc. column
             decimal acc = opening;
+            decimal accQuantity = openingQuantity;
+            decimal accMonetaryValue = openingMonetaryValue;
             foreach (var entry in data)
             {
                 acc += (entry.Value ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
                 entry.Accumulation = acc;
                 entry.EntityMetadata[nameof(entry.Accumulation)] = FieldMetadata.Loaded;
+
+                accQuantity += (entry.Quantity ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+                entry.QuantityAccumulation = accQuantity;
+                entry.EntityMetadata[nameof(entry.QuantityAccumulation)] = FieldMetadata.Loaded;
+
+                accMonetaryValue += (entry.MonetaryValue ?? 0m) * entry.Direction ?? throw new InvalidOperationException("Bug: Missing Direction");
+                entry.MonetaryValueAccumulation = accMonetaryValue;
+                entry.EntityMetadata[nameof(entry.MonetaryValueAccumulation)] = FieldMetadata.Loaded;
+            }
+
+            // Step (5) Load closing (if the data page is not the complete result)
+            decimal closing;
+            decimal closingQuantity;
+            decimal closingMonetaryValue;
+            if (args.Skip + args.Top >= count.Value)
+            {
+                var closingArgs = new GetAggregateArguments
+                {
+                    Filter = beforeClosingFilter,
+                    Select = $"{valueExp},{quantityExp},{monetaryValueExp}"
+                };
+
+                var (closingData, _) = await GetAggregate(closingArgs, cancellation);
+                closingData[0].TryGetValue(valueExp, out object closingObj);
+                closing = (decimal)(closingObj ?? 0m);
+
+                closingData[0].TryGetValue(quantityExp, out object closingQuantityObj);
+                closingQuantity = (decimal)(closingQuantityObj ?? 0m);
+
+                closingData[0].TryGetValue(monetaryValueExp, out object closingMonetaryValueObj);
+                closingMonetaryValue = (decimal)(closingMonetaryValueObj ?? 0m);
+            }
+            else
+            {
+                closing = acc;
+                closingQuantity = accQuantity;
+                closingMonetaryValue = accMonetaryValue;
             }
 
             data = data.Skip(args.Skip).ToList(); // Skip in memory
-            return (data, opening, closing, count.Value);
+            return (data, opening, openingQuantity, openingMonetaryValue, closing, closingQuantity, closingMonetaryValue, count.Value);
         }
     }
 }

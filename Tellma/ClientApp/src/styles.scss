@@ -1616,7 +1616,6 @@ h1.t-report-measure {
 
 h1.t-report-measure:hover {
   color: $dark-primary;
-  // text-decoration: underline;
 }
 
 .t-light-danger {
@@ -1753,4 +1752,8 @@ button:focus {
 
 .t-hidden-cursor .ace_cursor-layer .ace_cursor {
 	display: none;
+}
+
+.t-underline {
+  text-decoration: underline;
 }
