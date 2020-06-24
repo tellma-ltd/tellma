@@ -89,7 +89,7 @@ a {
   background-color: #edf2fa;
 }
 
-.table-hover tbody tr:hover,
+.table-hover tbody tr:not(.t-no-highlight):hover,
 .t-inbox-item:hover {
   background-color: rgba(0, 0, 0, 0.075);
 }

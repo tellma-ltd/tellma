@@ -205,7 +205,7 @@
                     <!-- Rows -->
                     <tbody>
                         <!-- Opening Balance -->
-                        <tr class="t-highlight2 font-weight-bold2" *ngIf="showOpeningBalance">
+                        <tr class="t-no-highlight" *ngIf="showOpeningBalance">
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
@@ -245,7 +245,7 @@
                         </tr>
 
                         <!-- Closing Balance -->
-                        <tr class="t-highlight2 font-weight-bold2" *ngIf="showClosingBalance">
+                        <tr class="t-no-highlight" *ngIf="showClosingBalance">
                             <td>&zwnj;</td>
                             <td *ngFor="let col of columns" [class.text-right]="col.isRightAligned">
                                 <ng-container *ngIf="col.id === 'PostingDate'">
