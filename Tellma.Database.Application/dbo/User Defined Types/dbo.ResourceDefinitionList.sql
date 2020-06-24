@@ -90,7 +90,9 @@
 	[ReorderLevelVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
 	[EconomicOrderQuantityVisibility]	NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
 	[UnitCardinality]					NVARCHAR (50)	NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
-	--
+	-- Financial instruments
+	[MonetaryValueVisibility]			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([MonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
+
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4)

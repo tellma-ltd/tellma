@@ -101,7 +101,9 @@ SET NOCOUNT ON;
 				-- Inventory
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
-				[UnitCardinality],		
+				[UnitCardinality],
+				-- financial instruments
+				[MonetaryValueVisibility],
 
 				[MainMenuIcon],
 				[MainMenuSection],
@@ -201,7 +203,8 @@ SET NOCOUNT ON;
 				t.[EconomicOrderQuantityVisibility]
 										= s.[EconomicOrderQuantityVisibility],
 				t.[UnitCardinality]		= s.[UnitCardinality],
-
+				t.[MonetaryValueVisibility]
+										= s.[MonetaryValueVisibility],
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
 				t.[MainMenuSortKey]		= s.[MainMenuSortKey],
@@ -287,6 +290,7 @@ SET NOCOUNT ON;
 				[ReorderLevelVisibility],
 				[EconomicOrderQuantityVisibility],
 				[UnitCardinality],
+				[MonetaryValueVisibility],
 
 				[MainMenuIcon],
 				[MainMenuSection],
@@ -373,6 +377,8 @@ SET NOCOUNT ON;
 				s.[ReorderLevelVisibility],
 				s.[EconomicOrderQuantityVisibility],
 				s.[UnitCardinality],
+				-- Financial
+				s.[MonetaryValueVisibility],
 
 				s.[MainMenuIcon],
 				s.[MainMenuSection],

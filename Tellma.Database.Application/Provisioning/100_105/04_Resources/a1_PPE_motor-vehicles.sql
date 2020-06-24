@@ -36,7 +36,7 @@ BEGIN
 
 	DELETE FROM @Resources; DELETE FROM @ResourceUnits;
 	INSERT INTO @Resources ([Index],
-		[Name],			[AvailableSince],	[Lookup1Id],									[Identifier]) VALUES
+		[Name],			[FromDate],			[Lookup1Id],									[Identifier]) VALUES
 	(0, N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172'),--1
 	(1, N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662'),--1
 	(2, N'Minivan 2019',N'2018.12.01' ,		dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000'),

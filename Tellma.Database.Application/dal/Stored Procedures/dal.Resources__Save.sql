@@ -2,6 +2,7 @@
 	@DefinitionId INT,
 	@Entities [dbo].[ResourceList] READONLY,
 	@ResourceUnits dbo.ResourceUnitList READONLY,
+	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -15,45 +16,22 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
-			SELECT 	
+			SELECT 
 				[Index], [Id],
 				@DefinitionId AS [DefinitionId],
 				[Name], 
 				[Name2], 
 				[Name3],
-				[Identifier],
-				[Code], 
+				[Code],
 				[CurrencyId],
-				[MonetaryValue],
+				[CenterId],
 				[Description],
 				[Description2],
 				[Description3],
 				geography::STGeomFromWKB([LocationWkb], 4326) AS [Location], -- 4326 = World Geodetic System, used by Google Maps
 				[LocationJson],
-				[CenterId],
-				[ResidualMonetaryValue],
-				[ResidualValue],
-				[ReorderLevel],
-				[EconomicOrderQuantity],
-				--[AttachmentsFolderURL],		
-
-				--[CustomsReference], -- how it is referred to by Customs
-				--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
-
-				[AvailableSince],			
-				[AvailableTill],			
-				--[UniqueReference1],			
-	
-				--[AssetAccountId],			
-				--[LiabilityAccountId],		
-				--[EquityAccountId],			
-				--[RevenueAccountId],			
-				--[ExpensesAccountId],		
-
-				--[Agent1Id],					
-				--[Agent2Id],					
-				--[Date1]	,					
-				--[Date2],					
+				[FromDate],
+				[ToDate],
 				[Decimal1],
 				[Decimal2],
 				[Int1],
@@ -62,9 +40,15 @@ SET NOCOUNT ON;
 				[Lookup2Id],
 				[Lookup3Id],
 				[Lookup4Id],
-				--[Lookup5Id],				
 				[Text1],					
-				[Text2]						
+				[Text2],
+-- Specific to resources
+				[Identifier],
+				[ResidualMonetaryValue],
+				[ResidualValue],
+				[ReorderLevel],
+				[EconomicOrderQuantity],	
+				[MonetaryValue]				
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -74,36 +58,17 @@ SET NOCOUNT ON;
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[Identifier]				= s.[Identifier],
+				
 				t.[Code]					= s.[Code],
 				t.[CurrencyId]				= s.[CurrencyId],
-				t.[MonetaryValue]			= s.[MonetaryValue],
+				t.[CenterId]				= s.[CenterId],
 				t.[Description]				= s.[Description],
 				t.[Description2]			= s.[Description2],
 				t.[Description3]			= s.[Description3],
 				t.[Location]				= s.[Location],
 				t.[LocationJson]			= s.[LocationJson],
-				t.[CenterId]				= s.[CenterId],
-				t.[ResidualMonetaryValue]	= s.[ResidualMonetaryValue],
-				t.[ResidualValue]			= s.[ResidualValue],
-				t.[ReorderLevel]			= s.[ReorderLevel],
-				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
-				--t.[AttachmentsFolderURL]	= s.[AttachmentsFolderURL],
-				--t.[CustomsReference]		= s.[CustomsReference],
-				t.[AvailableSince]			= s.[AvailableSince],			
-				t.[AvailableTill]			= s.[AvailableTill],
-
-				--t.[UniqueReference1]		= s.[UniqueReference1],
-				--t.[AssetAccountId]			= s.[AssetAccountId],			
-				--t.[LiabilityAccountId]		= s.[LiabilityAccountId],		
-				--t.[EquityAccountId]			= s.[EquityAccountId],			
-				--t.[RevenueAccountId]		= s.[RevenueAccountId],			
-				--t.[ExpensesAccountId]		= s.[ExpensesAccountId],	
-
-				--t.[Agent1Id]				= s.[Agent1Id],					
-				--t.[Agent2Id]				= s.[Agent2Id],					
-				--t.[Date1]					= s.[Date1],					
-				--t.[Date2]					= s.[Date2],
+				t.[FromDate]				= s.[FromDate],
+				t.[ToDate]					= s.[ToDate],
 				t.[Decimal1]				= s.[Decimal1],
 				t.[Decimal2]				= s.[Decimal2],
 				t.[Int1]					= s.[Int1],
@@ -112,45 +77,33 @@ SET NOCOUNT ON;
 				t.[Lookup2Id]				= s.[Lookup2Id],
 				t.[Lookup3Id]				= s.[Lookup3Id],
 				t.[Lookup4Id]				= s.[Lookup4Id],
-				--t.[Lookup5Id]				= s.[Lookup5Id],
-				t.[Text1]					= s.[Text1],					
-				t.[Text2]					= s.[Text2],	
+				t.[Text1]					= s.[Text1],	
+				t.[Text2]					= s.[Text2],
 
+				t.[Identifier]				= s.[Identifier],
+				t.[ResidualMonetaryValue]	= s.[ResidualMonetaryValue],
+				t.[ResidualValue]			= s.[ResidualValue],
+				t.[ReorderLevel]			= s.[ReorderLevel],
+				t.[EconomicOrderQuantity]	= s.[EconomicOrderQuantity],
+				t.[MonetaryValue]			= s.[MonetaryValue],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[DefinitionId],
-				[Name], [Name2], [Name3], [Identifier], [Code], [CurrencyId],
-				[MonetaryValue],
+				[Name], 
+				[Name2], 
+				[Name3],
+				[Code],
+				[CurrencyId],
+				[CenterId],
 				[Description],
 				[Description2],
 				[Description3],
-				[Location],
+				[Location], -- 4326 = World Geodetic System, used by Google Maps
 				[LocationJson],
-
-				[CenterId],
-				[ResidualMonetaryValue],
-				[ResidualValue],
-				[ReorderLevel],
-				[EconomicOrderQuantity],
-				--[AttachmentsFolderURL],		
-				--[CustomsReference], -- how it is referred to by Customs
-				--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
-				[AvailableSince],			
-				[AvailableTill],			
-				--[UniqueReference1],			
-	
-				--[AssetAccountId],			
-				--[LiabilityAccountId],		
-				--[EquityAccountId],			
-				--[RevenueAccountId],			
-				--[ExpensesAccountId],		
-
-				--[Agent1Id],					
-				--[Agent2Id],					
-				--[Date1]	,					
-				--[Date2],					
+				[FromDate],
+				[ToDate],
 				[Decimal1],
 				[Decimal2],
 				[Int1],
@@ -159,42 +112,31 @@ SET NOCOUNT ON;
 				[Lookup2Id],
 				[Lookup3Id],
 				[Lookup4Id],
-				--[Lookup5Id],				
 				[Text1],					
-				[Text2]			
+				[Text2],
+-- Specific to resources
+				[Identifier],
+				[ResidualMonetaryValue],
+				[ResidualValue],
+				[ReorderLevel],
+				[EconomicOrderQuantity],	
+				[MonetaryValue]				
 				)
 			VALUES (
-				s.[DefinitionId],			
-				s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code], s.[CurrencyId],
-				s.[MonetaryValue],
+				s.[DefinitionId],
+				s.[Name], 
+				s.[Name2], 
+				s.[Name3],
+				s.[Code],
+				s.[CurrencyId],
+				s.[CenterId],
 				s.[Description],
 				s.[Description2],
 				s.[Description3],
-				s.[Location],
+				s.[Location], -- 4326 = World Geodetic System, used by Google Maps
 				s.[LocationJson],
-				s.[CenterId],
-				s.[ResidualMonetaryValue],
-				s.[ResidualValue],
-				s.[ReorderLevel],
-				s.[EconomicOrderQuantity],
-				--s.[AttachmentsFolderURL],		
-				--s.[CustomsReference], -- how it is referred to by Customs
-				--s.[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
-
-				s.[AvailableSince],			
-				s.[AvailableTill],			
-				--s.[UniqueReference1],			
-	
-				--s.[AssetAccountId],			
-				--s.[LiabilityAccountId],		
-				--s.[EquityAccountId],			
-				--s.[RevenueAccountId],			
-				--s.[ExpensesAccountId],		
-
-				--s.[Agent1Id],					
-				--s.[Agent2Id],					
-				--s.[Date1]	,					
-				--s.[Date2],					
+				s.[FromDate],
+				s.[ToDate],
 				s.[Decimal1],
 				s.[Decimal2],
 				s.[Int1],
@@ -203,9 +145,15 @@ SET NOCOUNT ON;
 				s.[Lookup2Id],
 				s.[Lookup3Id],
 				s.[Lookup4Id],
-				--s.[Lookup5Id],				
 				s.[Text1],					
-				s.[Text2]			
+				s.[Text2],
+-- Specific to resources
+				s.[Identifier],
+				s.[ResidualMonetaryValue],
+				s.[ResidualValue],
+				s.[ReorderLevel],
+				s.[EconomicOrderQuantity],	
+				s.[MonetaryValue]			
 				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
@@ -243,6 +191,13 @@ SET NOCOUNT ON;
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
+
+	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
+	UPDATE A --dbo.Resources
+	SET A.ImageId = L.ImageId
+	FROM dbo.[Resources] A
+	JOIN @IndexedIds II ON A.Id = II.[Id]
+	JOIN @ImageIds L ON II.[Index] = L.[Index]
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

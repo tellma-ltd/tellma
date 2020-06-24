@@ -10,7 +10,7 @@ RETURN (
 			WS.RoleId,
 			COALESCE(
 				WS.UserId,
-				(SELECT UserId FROM dbo.[Contracts] WHERE [Id] IN (
+				(SELECT MIN(UserId) FROM dbo.[ContractUsers] WHERE [ContractId] IN (
 					SELECT [ContractId] FROM dbo.Entries WHERE LineId = L.Id AND [Index] = WS.[RuleTypeEntryIndex]
 					)
 				)

@@ -135,8 +135,9 @@ SET NOCOUNT ON;
 	JOIN dbo.[Contracts] AG ON AG.[Id] = E.[ContractId]
 	JOIN dbo.Workflows W ON W.LineDefinitionId = L.DefinitionId AND W.ToState = @ToState
 	JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
+	LEFT JOIN dbo.[ContractUsers] CU ON AG.[Id] = CU.[ContractId]
 	WHERE WS.RuleType = N'ByContract' AND WS.[RuleTypeEntryIndex]  = E.[Index]
-	AND AG.UserId IS NULL
+	AND CU.UserId IS NULL
 
 	-- Cannot sign a line with no Entries
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

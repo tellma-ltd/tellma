@@ -18,116 +18,134 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Contracts] AS t
 		USING (
 			SELECT [Index], [Id], --[OperatingSegmentId],
-				@DefinitionId AS [DefinitionId], [Name], [Name2], [Name3], [Code],
-				[AgentId],
+				@DefinitionId AS [DefinitionId],
+				[Name], 
+				[Name2], 
+				[Name3],
+				[Code],
 				[CurrencyId],
-				[TaxIdentificationNumber], --[ImageId], -- imageId is handled separately in the code below.
-				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
-				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				--[PreferredLanguage]
-				--[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
-				--[Religion], [Race],  [TribeId], [RegionId],  
-				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
-				--[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
-				[StartDate],
-				--[CreditLine],
+				[CenterId],
+				[Description],
+				[Description2],
+				[Description3],
+				geography::STGeomFromWKB([LocationWkb], 4326) AS [Location], -- 4326 = World Geodetic System, used by Google Maps
+				[LocationJson],
+				[FromDate],
+				[ToDate],
+				[Decimal1],
+				[Decimal2],
+				[Int1],
+				[Int2],
+				[Lookup1Id],
+				[Lookup2Id],
+				[Lookup3Id],
+				[Lookup4Id],
+				[Text1],					
+				[Text2],
+				[AgentId],
+				[TaxIdentificationNumber],
 				[JobId],
-				[BankAccountNumber],
-				[UserId]
+				[BankAccountNumber]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
 		THEN
 			UPDATE SET
-				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[DefinitionId]			= s.[DefinitionId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
+				
 				t.[Code]					= s.[Code],
-				t.[AgentId]					= s.[AgentId],
 				t.[CurrencyId]				= s.[CurrencyId],
+				t.[CenterId]				= s.[CenterId],
+				t.[Description]				= s.[Description],
+				t.[Description2]			= s.[Description2],
+				t.[Description3]			= s.[Description3],
+				t.[Location]				= s.[Location],
+				t.[LocationJson]			= s.[LocationJson],
+				t.[FromDate]				= s.[FromDate],
+				t.[ToDate]					= s.[ToDate],
+				t.[Decimal1]				= s.[Decimal1],
+				t.[Decimal2]				= s.[Decimal2],
+				t.[Int1]					= s.[Int1],
+				t.[Int2]					= s.[Int2],
+				t.[Lookup1Id]				= s.[Lookup1Id],
+				t.[Lookup2Id]				= s.[Lookup2Id],
+				t.[Lookup3Id]				= s.[Lookup3Id],
+				t.[Lookup4Id]				= s.[Lookup4Id],
+				t.[Text1]					= s.[Text1],	
+				t.[Text2]					= s.[Text2],
+
+				t.[AgentId]					= s.[AgentId],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
-			--	t.[ImageId]					= s.[ImageId],
-				--t.[IsLocal]					= s.[IsLocal],
-				--t.[Citizenship]				= s.[Citizenship],
-				--t.[Facebook]				= s.[Facebook],
-				--t.[Instagram]				= s.[Instagram],
-				--t.[Twitter]					= s.[Twitter],
-				--t.[PreferredContactChannel1] = s.[PreferredContactChannel1],
-				--t.[PreferredContactAddress1] = s.[PreferredContactAddress1],
-				--t.[PreferredContactChannel2] = s.[PreferredContactChannel2],
-				--t.[PreferredContactAddress2] = s.[PreferredContactAddress2],
-				--t.[PreferredLanguage] = s.[PreferredLanguage],
-
-				--t.[BirthDate]				= s.[BirthDate],
-				--t.[Title]					= s.[Title],
-				--t.[TitleId]					= s.[TitleId],
-				--t.[Gender]					= s.[Gender],
-				--t.[ResidentialAddress]		= s.[ResidentialAddress],
-
-				--t.[MaritalStatus]			= s.[MaritalStatus],
-				--t.[NumberOfChildren]		= s.[NumberOfChildren],
-				--t.[Religion]				= s.[Religion],
-				--t.[Race]					= s.[Race],
-				--t.[TribeId]					= s.[TribeId],
-				--t.[RegionId]				= s.[RegionId],
-
-				--t.[EducationLevelId]		= s.[EducationLevelId],
-				--t.[EducationSublevelId]		= s.[EducationSublevelId],
-				--t.[BankId]					= s.[BankId],
-				--t.[BankAccountNumber]		= s.[BankAccountNumber],
-
-				--t.[OrganizationType]		= s.[OrganizationType],
-				--t.[WebSite]					= s.[WebSite],
-				--t.[ContactPerson]			= s.[ContactPerson],
-				--t.[RegisteredAddress]		= s.[RegisteredAddress],
-				--t.[OwnershipType]			= s.[OwnershipType],
-				--t.[OwnershipPercent]		= s.[OwnershipPercent],
-
-				t.[StartDate]				= s.[StartDate],
-				--[CreditLine],
 				t.[JobId]					= s.[JobId],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
-				t.[UserId]					= s.[UserId],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT (--[OperatingSegmentId],
-				[DefinitionId], [Name], [Name2], [Name3], [Code],
-				[AgentId],
+			INSERT (
+				[DefinitionId],
+				[Name], 
+				[Name2], 
+				[Name3],
+				[Code],
 				[CurrencyId],
-				[TaxIdentificationNumber],--,[ImageId]
-				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
-				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				--[PreferredLanguage]
-				--[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
-				--[Religion], [Race],  [TribeId], [RegionId],  
-				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
-				--[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
-				[StartDate],
-				--[CreditLine],
+				[CenterId],
+				[Description],
+				[Description2],
+				[Description3],
+				[Location], -- 4326 = World Geodetic System, used by Google Maps
+				[LocationJson],
+				[FromDate],
+				[ToDate],
+				[Decimal1],
+				[Decimal2],
+				[Int1],
+				[Int2],
+				[Lookup1Id],
+				[Lookup2Id],
+				[Lookup3Id],
+				[Lookup4Id],
+				[Text1],					
+				[Text2],
+
+				[AgentId],
+				[TaxIdentificationNumber],
 				[JobId],
-				[BankAccountNumber],
-				[UserId]
+				[BankAccountNumber]
 				)
-			VALUES (--s.[OperatingSegmentId],
-				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code],
-				s.[AgentId],
+			VALUES (
+				s.[DefinitionId],
+				s.[Name], 
+				s.[Name2], 
+				s.[Name3],
+				s.[Code],
 				s.[CurrencyId],
-				s.[TaxIdentificationNumber],--, s[ImageId]
-				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
-				--s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],
-				--s.[PreferredLanguage]
-				--s.[BirthDate], s.[Title], s.[TitleId], s.[Gender], s.[ResidentialAddress], s.[MaritalStatus], s.[NumberOfChildren], s.[Religion], s.[Race], s.[TribeId], s.[RegionId], 
-				--s.[EducationLevelId], s.[EducationSublevelId], s.[BankId], s.[BankAccountNumber],
-				--s.[OrganizationType], s.[WebSite], s.[ContactPerson], s.[RegisteredAddress], s.[OwnershipType], s.[OwnershipPercent]
-				s.[StartDate],
-				--[CreditLine],
+				s.[CenterId],
+				s.[Description],
+				s.[Description2],
+				s.[Description3],
+				s.[Location], -- 4326 = World Geodetic System, used by Google Maps
+				s.[LocationJson],
+				s.[FromDate],
+				s.[ToDate],
+				s.[Decimal1],
+				s.[Decimal2],
+				s.[Int1],
+				s.[Int2],
+				s.[Lookup1Id],
+				s.[Lookup2Id],
+				s.[Lookup3Id],
+				s.[Lookup4Id],
+				s.[Text1],					
+				s.[Text2],
+
+				s.[AgentId],
+				s.[TaxIdentificationNumber],
 				s.[JobId],
-				s.[BankAccountNumber],
-				s.[UserId]
+				s.[BankAccountNumber]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

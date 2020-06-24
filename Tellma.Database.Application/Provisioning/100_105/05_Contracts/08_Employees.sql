@@ -3,7 +3,7 @@
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1'),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
@@ -27,7 +27,7 @@ END
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Mohamad Akra',	'2017.10.01',	N'E01'),
 	(1,			N'Ahmad Akra',		'2017.10.01',	N'E02'),
 	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E04'),
@@ -50,12 +50,12 @@ BEGIN
 END
 ELSE IF @DB = N'103' -- Lifan Cars, ETB, en/zh
 INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(0,			N'Salman',			'2017.10.01',	N'E1');
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],				[StartDate],	[Code]) VALUES
+	([Index],	[Name],				[FromDate],	[Code]) VALUES
 	(1,			N'Badege Kebede',	'2019.09.01',	N'E1'),
 	(2,			N'Tizita Nigussie',	'2019.09.01',	N'E2'),
 	(3,			N'Ashenafi Fantahun','2019.09.01',	N'E3'),
@@ -83,16 +83,19 @@ END
 ELSE IF @DB = N'105' -- Simpex, SAR, en/ar
 BEGIN
 	INSERT INTO @employees
-	([Index],	[Name],		[Name2],	[StartDate],	[Code]) VALUES
+	([Index],	[Name],		[Name2],	[FromDate],	[Code]) VALUES
 	(0,			N'Salman',	N'سلمان',	'2017.10.01',	N'E1'),
 	(1,			N'Tareq',	N'طارق',	'2017.10.01',	N'E2'),
 	(2,			N'Hisham',	N'هشام',	'2019.09.01',	N'E3');
 
 	END
-	UPDATE @employees SET UserId = @AdminUserId WHERE [Index] = 0;
+	INSERT INTO @ContractUsers([Index],[HeaderIndex], [UserId])
+	VALUES(0,0,@AdminUserId)
+
 	EXEC [api].[Contracts__Save]
 		@DefinitionId = @EmployeeCD,
 		@Entities = @employees,
+		@ContractUsers = @ContractUsers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
