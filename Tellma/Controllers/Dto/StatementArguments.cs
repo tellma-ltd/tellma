@@ -31,5 +31,7 @@ namespace Tellma.Controllers.Dto
         public int? CenterId { get; set; }
 
         public string CurrencyId { get; set; }
+
+        public bool? IncludeCompleted { get; set; }
     }
 }

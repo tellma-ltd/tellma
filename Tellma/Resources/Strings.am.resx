@@ -175,9 +175,6 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>የመለያ አይነቶች</value>
   </data>
-  <data name="Accumulation" xml:space="preserve">
-    <value>Acc.</value>
-  </data>
   <data name="Active" xml:space="preserve">
     <value>ገቢር</value>
   </data>
@@ -427,6 +424,9 @@
   <data name="DetailsEntry" xml:space="preserve">
     <value>ዝርዝሮች የገባበት</value>
   </data>
+  <data name="DetailsEntry_Accumulation" xml:space="preserve">
+    <value>Acc.</value>
+  </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
     <value>አልጀብራዊ ቆጠራ</value>
   </data>
@@ -435,6 +435,9 @@
   </data>
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
     <value>በአልጀብራዊ መጠን</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
+    <value>አልጀብራዊ ብዛት</value>
   </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
     <value>በአልጀብራዊ ሰዓት</value>
@@ -450,6 +453,12 @@
   </data>
   <data name="DetailsEntry_Mass" xml:space="preserve">
     <value>ጅምላ</value>
+  </data>
+  <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
+    <value>መጠን Acc.</value>
+  </data>
+  <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
+    <value>ብዛት Acc.</value>
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>ጊዜ</value>
@@ -1088,7 +1097,7 @@
     <value>እሴት «{0}» በ {1} መስክ ትክክል አይደለም, የሚደገፉ እሴቶች ናቸው: {2}.</value>
   </data>
   <data name="ExchangeRate" xml:space="preserve">
-    <value>የምንዛሬ ዋጋ</value>
+    <value>የመለወጫ ተመን</value>
   </data>
   <data name="ExchangeRate_AmountInCurrency" xml:space="preserve">
     <value>መጠን</value>

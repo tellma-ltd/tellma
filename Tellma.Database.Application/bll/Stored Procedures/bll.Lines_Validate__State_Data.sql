@@ -138,9 +138,8 @@ BEGIN
 	JOIN @Entries E ON L.[Index] = E.[LineIndex] AND L.[DocumentIndex] = E.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.[AccountId] = A.[Id]
 	JOIN dbo.[AccountTypes] AC ON A.[AccountTypeId] = AC.[Id]
-	JOIN dbo.[EntryTypes] ETP ON AC.[EntryTypeParentId] = ETP.[Id]
-	JOIN dbo.[EntryTypes] ETC ON E.[EntryTypeId] = ETC.[Id]
-	WHERE ETP.IsActive = 1 AND ETC.[Node].IsDescendantOf(ETP.[Node]) = 0;
+	JOIN dbo.[EntryTypes] ET ON AC.[EntryTypeParentId] = ET.[Id]
+	WHERE ET.IsActive = 1 AND E.[EntryTypeId] IS NULL;
 END
 	-- No deprecated account, for any positive state
 IF @State > 0

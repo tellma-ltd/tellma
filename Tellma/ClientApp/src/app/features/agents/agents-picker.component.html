@@ -1,12 +1,13 @@
-<t-details-picker [filter]="filter" [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null"
-    collection="Agent" [additionalSelect]="additionalSelect">
+<t-details-picker [filter]="filter" [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
+    [ensureAdditionalSelect]="ensureAdditionalSelect" [detailsTemplate]="showCreate ? details : null" collection="Agent"
+    [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- Details Modal -->
 <ng-template #details let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
-        <t-agents-details mode="popup" [initialText]="initialText" [idString]="idString"
-            (cancel)="modal.close(false);" (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
+        <t-agents-details mode="popup" [initialText]="initialText" [idString]="idString" (cancel)="modal.close(false);"
+            (saved)="modal.close(true); update.call(null, $event);" [additionalSelect]="additionalSelect">
         </t-agents-details>
     </div>
 </ng-template>

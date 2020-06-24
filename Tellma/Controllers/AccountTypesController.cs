@@ -203,5 +203,21 @@ namespace Tellma.Controllers
                 return (null, null);
             }
         }
+
+        protected override SelectExpression ParseSelect(string select)
+        {
+            string shorthand = "$DocumentDetails";
+            if (select == null)
+            {
+                return null;
+            }
+            else
+            {
+                select = select.Replace(shorthand, _documentDetailsSelect);
+                return base.ParseSelect(select);
+            }
+        }
+
+        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountTypePaths());
     }
 }

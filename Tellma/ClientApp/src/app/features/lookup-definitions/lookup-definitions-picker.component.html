@@ -1,4 +1,5 @@
 <t-details-picker [filter]="filter" collection="LookupDefinition" [masterTemplate]="master"
+    (entityLoaded)="onEntityLoaded()" [ensureAdditionalSelect]="ensureAdditionalSelect"
     [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
@@ -15,9 +16,9 @@
 <!-- The Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
-        <t-lookup-definitions-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
-            (choose)="modal.close(true); update.call(null, $event); " (create)="modal.close(false); create.call()"
-            [additionalSelect]="additionalSelect">
+        <t-lookup-definitions-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate"
+            [filter]="filter" (choose)="modal.close(true); update.call(null, $event); "
+            (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
         </t-lookup-definitions-master>
     </div>
 </ng-template>

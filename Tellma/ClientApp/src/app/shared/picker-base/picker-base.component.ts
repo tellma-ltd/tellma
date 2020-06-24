@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostBinding, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, HostBinding, ViewChild, Output, EventEmitter } from '@angular/core';
 import { DetailsPickerComponent } from '../details-picker/details-picker.component';
 
 @Component({
@@ -14,6 +14,12 @@ export class PickerBaseComponent {
 
   @Input()
   additionalSelect: string;
+
+  @Input()
+  ensureAdditionalSelect = false;
+
+  @Output()
+  entityLoaded = new EventEmitter<void>();
 
   @HostBinding('class.w-100')
   w100 = true;
@@ -32,6 +38,10 @@ export class PickerBaseComponent {
   }
   setDisabledState?(isDisabled: boolean): void {
     this.picker.setDisabledState(isDisabled);
+  }
+
+  onEntityLoaded() {
+    this.entityLoaded.emit();
   }
 
 }

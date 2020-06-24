@@ -36,6 +36,9 @@ namespace Tellma.Entities
         [Display(Name = "Entry_Quantity")]
         public decimal? Quantity { get; set; }
 
+        [Display(Name = "DetailsEntry_AlgebraicQuantity")]
+        public decimal? AlgebraicQuantity { get; set; }
+
         [Display(Name = "Entry_Unit")]
         public int? UnitId { get; set; }
 
@@ -79,6 +82,12 @@ namespace Tellma.Entities
         [Display(Name = "Entry_AlgebraicValue")]
         public decimal? AlgebraicValue { get; set; }
 
+        [Display(Name = "Entry_Time1")]
+        public DateTime? Time1 { get; set; }
+
+        [Display(Name = "Entry_Time2")]
+        public DateTime? Time2 { get; set; }
+
         [Display(Name = "Entry_ExternalReference")]
         [StringLength(255)]
         public string ExternalReference { get; set; }
@@ -101,8 +110,16 @@ namespace Tellma.Entities
         public DateTime? NotedDate { get; set; }
 
         [NotMapped]
-        [Display(Name = "Accumulation")]
+        [Display(Name = "DetailsEntry_Accumulation")]
         public decimal? Accumulation { get; set; }
+
+        [NotMapped]
+        [Display(Name = "DetailsEntry_QuantityAccumulation")]
+        public decimal? QuantityAccumulation { get; set; }
+
+        [NotMapped]
+        [Display(Name = "DetailsEntry_MonetaryValueAccumulation")]
+        public decimal? MonetaryValueAccumulation { get; set; }
 
         // For Query
 

@@ -1,5 +1,6 @@
-<t-details-picker [masterTemplate]="master" collection="Document"
-    [definitionIds]="definitionIds" [filter]="filter" [additionalSelect]="additionalSelect">
+<t-details-picker [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
+    [ensureAdditionalSelect]="ensureAdditionalSelect" collection="Document" [definitionIds]="definitionIds"
+    [filter]="filter" [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Master Modal -->

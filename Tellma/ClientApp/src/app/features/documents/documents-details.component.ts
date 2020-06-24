@@ -138,7 +138,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
   public additionalSelectAccount = '$DocumentDetails';
-  public additionalSelectResource = '$DocumentDetailsForEntry';
+  public additionalSelectResource = '$DocumentDetails';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,

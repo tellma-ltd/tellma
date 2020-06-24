@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
 import { EntityDescriptor } from './entities/base/metadata';
+import { formatNumber } from '@angular/common';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -403,4 +404,13 @@ function processFieldForCsv(field: string) {
 
   // Return the processed field
   return field;
+}
+
+export function formatAccounting(amount: number, digitsInfo: string): string {
+  const result = formatNumber(Math.abs(amount), 'en-GB', digitsInfo);
+  if (amount >= 0) {
+    return ` ${result} `;
+  } else {
+    return `(${result})`;
+  }
 }

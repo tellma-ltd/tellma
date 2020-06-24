@@ -1,6 +1,6 @@
 // tslint:disable:member-ordering
 // tslint:disable:max-line-length
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild, TemplateRef, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { Subscription, Subject, Observable, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,16 +18,19 @@ import { LineForQuery } from '~/app/data/entities/line';
 import { Document, metadata_Document } from '~/app/data/entities/document';
 import { SerialPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ApiService } from '~/app/data/api.service';
-import { FriendlyError, mergeEntitiesInWorkspace, isSpecified } from '~/app/data/util';
-import { GetArguments } from '~/app/data/dto/get-arguments';
+import { FriendlyError, mergeEntitiesInWorkspace, isSpecified, formatAccounting, csvPackage, downloadBlob } from '~/app/data/util';
 import { StatementArguments } from '~/app/data/dto/statement-arguments';
+import { Currency } from '~/app/data/entities/currency';
+import { StatementResponse } from '~/app/data/dto/statement-response';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 
 @Component({
   selector: 't-statement',
   templateUrl: './statement.component.html',
   styles: []
 })
-export class StatementComponent implements OnInit, OnDestroy {
+export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   private _subscriptions: Subscription;
   private notifyFetch$ = new Subject<void>();
@@ -36,13 +39,20 @@ export class StatementComponent implements OnInit, OnDestroy {
 
   private numericKeys = ['account_id', 'segment_id', 'contract_id', 'resource_id', 'entry_type_id', 'center_id'];
   private stringKeys = ['from_date', 'to_date', 'currency_id'];
+  private booleanKeys = ['include_completed'];
+
+  public actionErrorMessage: string;
 
   @Input()
   type: 'account' | 'contract';
 
+  @ViewChild('errorModal', { static: true })
+  public errorModal: TemplateRef<any>;
+
   constructor(
     private route: ActivatedRoute, private router: Router, private customUserSettings: CustomUserSettingsService,
-    private translate: TranslateService, private workspace: WorkspaceService, private apiService: ApiService) { }
+    private translate: TranslateService, private workspace: WorkspaceService, private apiService: ApiService,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
 
@@ -82,6 +92,14 @@ export class StatementComponent implements OnInit, OnDestroy {
             fetchIsNeeded = true;
           }
         }
+
+        for (const key of this.booleanKeys) {
+          const paramValue: boolean = (params.get(key) || false).toString() === 'true';
+          if (args[key] !== paramValue) {
+            args[key] = paramValue;
+            fetchIsNeeded = true;
+          }
+        }
       }
 
       if (this.isContract) {
@@ -89,9 +107,17 @@ export class StatementComponent implements OnInit, OnDestroy {
       }
 
       // Other screen parameters
+      // Skip
       const skipParam = +params.get('skip') || 0;
       if (s.skip !== skipParam) {
         s.skip = skipParam;
+        fetchIsNeeded = true;
+      }
+
+      // Collapse Parameters
+      const collapseParamsValue = (params.get('collapse_params') || false).toString() === 'true';
+      if (this._collapseParameters !== collapseParamsValue) {
+        this._collapseParameters = collapseParamsValue;
       }
 
       if (fetchIsNeeded) {
@@ -105,6 +131,16 @@ export class StatementComponent implements OnInit, OnDestroy {
     this._subscriptions.unsubscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // Using our famous pattern
+    const screenDefProperties = [changes.type];
+    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    if (screenDefChanges) {
+      this.ngOnDestroy();
+      this.ngOnInit();
+    }
+  }
+
   private urlStateChanged(): void {
     // We wish to store part of the page state in the URL
     // This method is called whenever that part of the state has changed
@@ -115,7 +151,7 @@ export class StatementComponent implements OnInit, OnDestroy {
     const params: Params = {};
 
     // Add the arguments
-    for (const key of this.stringKeys.concat(this.numericKeys)) {
+    for (const key of this.stringKeys.concat(this.numericKeys).concat(this.booleanKeys)) {
       const value = args[key] || undefined;
       if (!!value) {
         params[key] = value;
@@ -127,6 +163,10 @@ export class StatementComponent implements OnInit, OnDestroy {
       params.skip = s.skip;
     }
 
+    if (!!this._collapseParameters) {
+      params.collapse_params = true;
+    }
+
     // navigate to the new url
     this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
   }
@@ -135,6 +175,9 @@ export class StatementComponent implements OnInit, OnDestroy {
 
     // Update the URL
     this.urlStateChanged();
+
+    // Force refresh the columns
+    this._columnsParametersHaveChanged = true;
 
     // Save the arguments in user settings
     const argsString = JSON.stringify(this.state.arguments);
@@ -160,6 +203,69 @@ export class StatementComponent implements OnInit, OnDestroy {
     this.notifyFetch$.next();
   }
 
+  /**
+   * Computes select from all columns, without repetition of select atoms
+   */
+  private computeSelect(): string {
+    const resultHash: { [key: string]: true } = {};
+    const resultArray: string[] = [];
+    for (const column of this.columns) {
+      for (const atom of column.select) {
+        if (!resultHash[atom]) {
+          resultHash[atom] = true;
+          resultArray.push(atom);
+        }
+      }
+    }
+
+    return resultArray.join(',');
+  }
+
+  private computeStatementArguments(s?: ReportStore): StatementArguments {
+    s = s || this.state;
+    const select = this.computeSelect();
+    const top = this.DEFAULT_PAGE_SIZE;
+    const skip = s.skip;
+
+    // Prepare the query filter
+    const args: StatementArguments = {
+      select, top, skip,
+      fromDate: formatDate(this.fromDate, 'yyyy-MM-dd', 'en-GB'),
+      toDate: formatDate(this.toDate, 'yyyy-MM-dd', 'en-GB'),
+      accountId: this.accountId
+    };
+
+    if (!!this.segmentId && this.showSegmentParameter) {
+      args.segmentId = this.segmentId;
+    }
+
+    if (!!this.contractId && this.showContractParameter) {
+      args.contractId = this.contractId;
+    }
+
+    if (!!this.resourceId && this.showResourceParameter) {
+      args.resourceId = this.resourceId;
+    }
+
+    if (!!this.entryTypeId && this.showEntryTypeParameter) {
+      args.entryTypeId = this.entryTypeId;
+    }
+
+    if (!!this.centerId && this.showCenterParameter) {
+      args.centerId = this.centerId;
+    }
+
+    if (!!this.currencyId && this.showCurrencyParameter) {
+      args.currencyId = this.currencyId;
+    }
+
+    if (!!this.includeCompleted) {
+      args.includeCompleted = true;
+    }
+
+    return args;
+  }
+
   private doFetch(): Observable<void> {
     const s = this.state;
 
@@ -167,58 +273,37 @@ export class StatementComponent implements OnInit, OnDestroy {
       s.reportStatus = ReportStatus.information;
       s.information = () => this.translate.instant('FillRequiredFields');
       return of();
+    } else if (this.loadingRequiredParameters) {
+      // Wait until required parameters have loaded
+      // They will call fetch again once they load
+      s.reportStatus = ReportStatus.loading;
+      s.result = [];
+      return of();
     } else {
       // For robustness grab a reference to the state object, in case it changes later
       s.reportStatus = ReportStatus.loading;
       s.result = [];
 
       // Prepare the query params
-      const select = this.columns.map(arr => arr.select.join(',')).join(',');
-      const top = this.DEFAULT_PAGE_SIZE;
-      const skip = s.skip;
-
-      // Prepare the query filter
-      const filter = null; // = 'Line/State eq 4'; // TODO
-      const args: StatementArguments = {
-        select, top, skip,
-        fromDate: formatDate(this.fromDate, 'yyyy-MM-dd', 'en-GB'),
-        toDate: formatDate(this.toDate, 'yyyy-MM-dd', 'en-GB'),
-        accountId: this.accountId
-      };
-
-      if (!!this.segmentId) {
-        args.segmentId = this.segmentId;
-      }
-
-      if (!!this.contractId) {
-        args.contractId = this.contractId;
-      }
-
-      if (!!this.resourceId) {
-        args.resourceId = this.resourceId;
-      }
-
-      if (!!this.entryTypeId) {
-        args.entryTypeId = this.entryTypeId;
-      }
-
-      if (!!this.centerId) {
-        args.centerId = this.centerId;
-      }
-
-      if (!!this.currencyId) {
-        args.currencyId = this.currencyId;
-      }
-
+      const args = this.computeStatementArguments();
       return this.api.statement(args).pipe(
         tap(response => {
           // Result is loaded
           s.reportStatus = ReportStatus.loaded;
 
           // Add the result to the state
-          s.filter = filter;
           s.result = response.Result;
-          s.extras = { opening: response.Opening, closing: response.Closing };
+          s.top = response.Top;
+          s.skip = response.Skip;
+          s.total = response.TotalCount;
+          s.extras = {
+            opening: response.Opening,
+            openingQuantity: response.OpeningQuantity,
+            openingMonetaryValue: response.OpeningMonetaryValue,
+            closing: response.Closing,
+            closingQuantity: response.ClosingQuantity,
+            closingMonetaryValue: response.ClosingMonetaryValue
+          };
 
           // Merge the related entities and Notify everyone
           mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
@@ -244,6 +329,29 @@ export class StatementComponent implements OnInit, OnDestroy {
     }
   }
 
+  private get loadingRequiredParameters(): boolean {
+    // Some times the account Id or resource Id from the Url refer to entities that are not loaded
+    // Given that computing the statement query requires knowledge of these entities (not just their Ids)
+    // We have to wait until the details pickers have loaded the entities for us, until then this
+    // property returns true, and the statement query is not executed
+    if (!!this.accountId && !this.account()) {
+      return true;
+    }
+
+    if (this.showResourceParameter && !this.readonlyResource_Manual && !!this.resourceId && !this.ws.get('Resource', this.resourceId)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public onParameterLoaded(): void {
+    if (this.state.reportStatus === ReportStatus.loading) {
+      this._columnsParametersHaveChanged = true;
+      this.fetch(); // ???
+    }
+  }
+
   // UI Bindings
 
   public get title() {
@@ -265,12 +373,144 @@ export class StatementComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
+  public showExportSpinner = false;
+
+  private normalize(arr: string[], length: number): string[] {
+    while (arr.length < length) {
+      arr.push('');
+    }
+
+    return arr;
+  }
+
+  private displayErrorModal(error: string) {
+    this.actionErrorMessage = error;
+    this.modalService.open(this.errorModal);
+  }
+
   public onExport(): void {
-    // TODO
+
+    const columns = this.columns;
+    const args = this.computeStatementArguments();
+    delete args.top; // we export everything
+
+    this.showExportSpinner = true;
+
+    this.api.statement(args).pipe(
+      tap((response: StatementResponse) => {
+        this.showExportSpinner = false;
+
+        if (response.Result.length !== response.TotalCount) {
+          this.displayErrorModal('Too many rows');
+          return;
+        }
+
+        // Merge the related entities and Notify everyone
+        mergeEntitiesInWorkspace(response.RelatedEntities, this.workspace);
+        this.workspace.notifyStateChanged();
+
+        const data: string[][] = [];
+
+        // (1) Add the parameters
+        data.push(this.normalize([this.translate.instant('FromDate'), formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
+        data.push(this.normalize([this.translate.instant('ToDate'), formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB')], columns.length));
+        if (!!args.segmentId) {
+          data.push(this.normalize([this.translate.instant('Document_Segment'), this.ws.getMultilingualValue('Center', args.segmentId, 'Name')], columns.length));
+        }
+        data.push(this.normalize([this.translate.instant('Entry_Account'), this.ws.getMultilingualValue('Account', args.accountId, 'Name')], columns.length));
+        if (!!args.currencyId) {
+          data.push(this.normalize([this.translate.instant('Entry_Currency'), this.ws.getMultilingualValue('Currency', args.currencyId, 'Name')], columns.length));
+        }
+        if (!!args.contractId) {
+          data.push(this.normalize([this.labelContract_Manual, this.ws.getMultilingualValue('Contract', args.contractId, 'Name')], columns.length));
+        }
+        if (!!args.resourceId) {
+          data.push(this.normalize([this.labelResource_Manual, this.ws.getMultilingualValue('Resource', args.resourceId, 'Name')], columns.length));
+        }
+        if (!!args.entryTypeId) {
+          data.push(this.normalize([this.translate.instant('Entry_EntryType'), this.ws.getMultilingualValue('EntryType', args.entryTypeId, 'Name')], columns.length));
+        }
+        if (!!args.centerId) {
+          data.push(this.normalize([this.translate.instant('Entry_Center'), this.ws.getMultilingualValue('Center', args.centerId, 'Name')], columns.length));
+        }
+        if (!!args.includeCompleted) {
+          data.push(this.normalize([this.translate.instant('IncludeCompleted'), this.translate.instant('Yes')], columns.length));
+        }
+
+        // Gap between parameters and grid
+        data.push(this.normalize([], columns.length));
+
+        // (2) Add column headers
+        const headersRow: string[] = [];
+        for (const col of columns) {
+          headersRow.push(col.label());
+        }
+        data.push(headersRow);
+
+        // (3) Add the opening row and prepare the closing row
+        const openingRow: string[] = [];
+        const closingRow: string[] = [];
+        for (const col of columns) {
+          switch (col.id) {
+            case 'PostingDate':
+              openingRow.push(formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB'));
+              closingRow.push(formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB'));
+              break;
+            case 'SerialNumber':
+              openingRow.push(this.translate.instant('OpeningBalance'));
+              closingRow.push(this.translate.instant('ClosingBalance'));
+              break;
+            case 'QuantityAccumulation':
+              openingRow.push(this.openingQuantityDisplay);
+              closingRow.push(this.closingQuantityDisplay);
+              break;
+            case 'MonetaryValueAccumulation':
+              openingRow.push(this.openingMonetaryValueDisplay);
+              closingRow.push(this.closingMonetaryValueDisplay);
+              break;
+            case 'Accumulation':
+              openingRow.push(this.openingDisplay);
+              closingRow.push(this.closingDisplay);
+              break;
+            default:
+              openingRow.push('');
+              closingRow.push('');
+          }
+        }
+        data.push(openingRow);
+
+        // (4) Add the movements
+        for (const entry of response.Result) {
+          const dataRow: string[] = [];
+          for (const col of columns) {
+            dataRow.push(col.display(entry));
+          }
+          data.push(dataRow);
+        }
+
+        // (5) Add the closing row
+        data.push(closingRow);
+
+        // Prepare a friendly file name
+        const reportName = this.translate.instant('AccountStatement');
+        // const fromDate = formatDate(args.fromDate, 'yyyy-MM-dd', 'en-GB');
+        // const toDate = formatDate(args.toDate, 'yyyy-MM-dd', 'en-GB');
+        const fileName = `${reportName}.csv`;
+
+        // Download the blob
+        const blob = csvPackage(data);
+        downloadBlob(blob, fileName);
+      }),
+      catchError((friendlyError: FriendlyError) => {
+        this.showExportSpinner = false;
+        this.displayErrorModal(friendlyError.error || friendlyError);
+        return of();
+      })
+    ).subscribe();
   }
 
   public get canExport(): boolean {
-    return true; // TODO
+    return this.isLoaded;
   }
 
   public onRefresh(): void {
@@ -278,10 +518,6 @@ export class StatementComponent implements OnInit, OnDestroy {
     if (this.state.reportStatus !== ReportStatus.loading) {
       this.fetch();
     }
-  }
-
-  public get canRefresh(): boolean {
-    return true; // TODO
   }
 
   DEFAULT_PAGE_SIZE = 60;
@@ -350,14 +586,30 @@ export class StatementComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Include Completed
+  public get includeCompleted(): boolean {
+    return this.state.arguments.include_completed;
+  }
+
+  public set includeCompleted(v: boolean) {
+    const args = this.state.arguments;
+    if (args.include_completed !== v) {
+      args.include_completed = v;
+      this.parametersChanged();
+    }
+  }
+
   // From Date
   public get fromDate(): string {
     return this.state.arguments.from_date;
   }
 
   public set fromDate(v: string) {
-    this.state.arguments.from_date = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.from_date !== v) {
+      args.from_date = v;
+      this.parametersChanged();
+    }
   }
 
   // To Date
@@ -366,8 +618,11 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set toDate(v: string) {
-    this.state.arguments.to_date = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.to_date !== v) {
+      args.to_date = v;
+      this.parametersChanged();
+    }
   }
 
   // Account
@@ -378,8 +633,11 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set accountId(v: number) {
-    this.state.arguments.account_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.account_id !== v) {
+      args.account_id = v;
+      this.parametersChanged();
+    }
   }
 
   private account(id?: number): Account {
@@ -402,34 +660,41 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set segmentId(v: number) {
-    this.state.arguments.segment_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.segment_id !== v) {
+      args.segment_id = v;
+      this.parametersChanged();
+    }
   }
 
   /**
-   * Whether or not to show th segment parameter
+   * Whether or not to show the segment parameter
    */
   public get showSegmentParameter(): boolean {
     return this.ws.settings.IsMultiSegment;
   }
 
   // Currency
+  public currencyAdditionalSelect = 'E';
+
   public get currencyId(): string {
     return this.state.arguments.currency_id;
   }
 
   public set currencyId(v: string) {
-    this.state.arguments.currency_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.currency_id !== v) {
+      args.currency_id = v;
+      this.parametersChanged();
+    }
   }
 
   /**
    * Returns the currency Id from the selected account or from the selected resource if any
    */
   private getAccountResourceCurrencyId(): string {
-    // IMOPORTANT: Keep consistent with documents-details.component.ts
     const account = this.account();
-    const resource = this.resource();
+    const resource = this.ws.get('Resource', this.resourceId) as Resource;
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
@@ -444,13 +709,6 @@ export class StatementComponent implements OnInit, OnDestroy {
     // Show the editable currency parameter
     const account = this.account();
     return !!account && !this.getAccountResourceCurrencyId();
-  }
-
-  /**
-   * Whether or not to show the currency parameter
-   */
-  public get showCurrencyColumn(): boolean {
-    return this.showCurrencyParameter && !this.currencyId;
   }
 
   /**
@@ -474,11 +732,14 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set contractId(v: number) {
-    this.state.arguments.contract_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.contract_id !== v) {
+      args.contract_id = v;
+      this.parametersChanged();
+    }
   }
 
-  public get showContract_Manual(): boolean {
+  public get showContractParameter(): boolean {
     const account = this.account();
     return !!account && !!account.ContractDefinitionId;
   }
@@ -506,23 +767,49 @@ export class StatementComponent implements OnInit, OnDestroy {
     // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
   }
 
+  // Noted Contract
+
+  public get showNotedContract_Manual(): boolean {
+    const account = this.account();
+    return !!account && !!account.NotedContractDefinitionId;
+  }
+
+  public get labelNotedContract_Manual(): string {
+    const account = this.account();
+    const defId = !!account ? account.NotedContractDefinitionId : null;
+
+    return metadata_Contract(this.workspace, this.translate, defId).titleSingular();
+  }
+
   // Resource
+  public resourceAdditionalSelect = '$DocumentDetails';
 
   public get resourceId(): number {
     return this.state.arguments.resource_id;
   }
 
   public set resourceId(v: number) {
-    this.state.arguments.resource_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.resource_id !== v) {
+      args.resource_id = v;
+      this.parametersChanged();
+    }
   }
 
-  private resource(id?: number): Resource {
-    id = id || this.resourceId;
-    return this.ws.get('Resource', id);
+  /**
+   * Returns the resource specified in the parameter
+   */
+  private resource(): Resource {
+    // id = id || this.resourceId;
+    // return this.ws.get('Resource', id);
+
+    const account = this.account();
+    const accountResourceId = !!account ? account.ResourceId : null;
+    const resourceId = accountResourceId || this.resourceId;
+    return this.ws.get('Resource', resourceId) as Resource;
   }
 
-  public get showResource_Manual(): boolean {
+  public get showResourceParameter(): boolean {
     const account = this.account();
     return !!account && !!account.ResourceDefinitionId;
   }
@@ -556,11 +843,14 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set entryTypeId(v: number) {
-    this.state.arguments.entry_type_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.entry_type_id !== v) {
+      args.entry_type_id = v;
+      this.parametersChanged();
+    }
   }
 
-  public get showEntryType_Manual(): boolean {
+  public get showEntryTypeParameter(): boolean {
     // Show entry type when the account's type has an entry type parent Id
     const at = this.accountType();
     if (!!at) {
@@ -593,11 +883,14 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public set centerId(v: number) {
-    this.state.arguments.center_id = v;
-    this.parametersChanged();
+    const args = this.state.arguments;
+    if (args.center_id !== v) {
+      args.center_id = v;
+      this.parametersChanged();
+    }
   }
 
-  public get showCenter_Manual(): boolean {
+  public get showCenterParameter(): boolean {
     const account = this.account();
     return !!account && this.ws.settings.IsMultiCenter;
   }
@@ -645,8 +938,9 @@ export class StatementComponent implements OnInit, OnDestroy {
   }
 
   public get showOpeningBalance(): boolean {
-    return this.isLoaded && this.from === 0;
+    return this.isLoaded && !this.state.skip;
   }
+
   public get showClosingBalance(): boolean {
     return this.isLoaded && this.to === this.total;
   }
@@ -655,7 +949,29 @@ export class StatementComponent implements OnInit, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const opening = s.extras.opening || 0;
-      return formatNumber(opening, 'en-GB', this.functionalDigitsInfo);
+      return formatAccounting(opening, this.functionalDigitsInfo);
+    }
+
+    return '';
+  }
+
+  public get openingQuantityDisplay(): string {
+    const s = this.state;
+    if (s.extras) {
+      const opening = s.extras.openingQuantity || 0;
+      return formatAccounting(opening, '1.0-4');
+    }
+
+    return '';
+  }
+
+  public get openingMonetaryValueDisplay(): string {
+    const s = this.state;
+    if (s.extras) {
+      const opening = s.extras.openingMonetaryValue || 0;
+      const currencyId = this.getAccountResourceCurrencyId() || this.currencyId || this.functionalId;
+      const digitsInfo = this.digitsInfo(currencyId);
+      return formatAccounting(opening, digitsInfo);
     }
 
     return '';
@@ -665,7 +981,29 @@ export class StatementComponent implements OnInit, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const closing = s.extras.closing || 0;
-      return formatNumber(closing, 'en-GB', this.functionalDigitsInfo);
+      return formatAccounting(closing, this.functionalDigitsInfo);
+    }
+
+    return '';
+  }
+
+  public get closingQuantityDisplay(): string {
+    const s = this.state;
+    if (s.extras) {
+      const closing = s.extras.closingQuantity || 0;
+      return formatAccounting(closing, '1.0-4');
+    }
+
+    return '';
+  }
+
+  public get closingMonetaryValueDisplay(): string {
+    const s = this.state;
+    if (s.extras) {
+      const closing = s.extras.closingMonetaryValue || 0;
+      const currencyId = this.getAccountResourceCurrencyId() || this.currencyId || this.functionalId;
+      const digitsInfo = this.digitsInfo(currencyId);
+      return formatAccounting(closing, digitsInfo);
     }
 
     return '';
@@ -681,16 +1019,63 @@ export class StatementComponent implements OnInit, OnDestroy {
     return `1.${functionalDecimals}-${functionalDecimals}`;
   }
 
+  private digitsInfo(currencyId: string): string {
+    const currency = this.ws.get('Currency', currencyId) as Currency;
+    if (!currency) {
+      return this.functionalDigitsInfo;
+    } else {
+      const e = currency.E || 0;
+      return `1.${e}-${e}`;
+    }
+  }
+
+  private _columnsAccount: Account;
+  private _columnsAccountType: AccountType;
+  private _columnsResource: Resource;
+  private _columnsSettings: SettingsForClient;
+  private _columnsParametersHaveChanged = false;
   private _columns: ColumnInfo[];
   public get columns(): ColumnInfo[] {
+    const account = this.account();
+    const accountType = this.accountType();
+    const resource = this.resource();
+    const settings = this.ws.settings;
+    if (this._columnsAccount !== account ||
+      this._columnsAccountType !== accountType ||
+      this._columnsResource !== resource ||
+      this._columnsSettings !== settings ||
+      this._columnsParametersHaveChanged) {
 
-    if (!this._columns) {
-      const settings = this.ws.settings;
+      // console.log('------- Column Refresh -------');
+      // if (this._columnsAccount !== account) {
+      //   console.log('New Account!', account);
+      // }
+      // if (this._columnsAccountType !== accountType) {
+      //   console.log('New Account Type!', accountType);
+      // }
+      // if (this._columnsResource !== resource) {
+      //   console.log('New Resource!', resource);
+      // }
+      // if (this._columnsSettings !== settings) {
+      //   console.log('New Settings!', settings);
+      // }
+      // if (this._columnsParametersHaveChanged) {
+      //   console.log('Params Have Changed!');
+      // }
+
+      this._columnsAccount = account;
+      this._columnsAccountType = accountType;
+      this._columnsResource = resource;
+      this._columnsSettings = settings;
+      this._columnsParametersHaveChanged = false;
+
+
       const locale = 'en-GB';
 
       this._columns = [
-        // Posting Date
+        // PostingDate
         {
+          id: 'PostingDate',
           select: ['Line/PostingDate'],
           label: () => this.translate.instant('Line_PostingDate'),
           display: (entry: DetailsEntry) => {
@@ -700,8 +1085,9 @@ export class StatementComponent implements OnInit, OnDestroy {
           weight: 1
         },
 
-        // Serial Number
+        // SerialNumber
         {
+          id: 'SerialNumber',
           select: ['Line/Document/SerialNumber', 'Line/Document/DefinitionId'],
           label: () => this.translate.instant('Document_SerialNumber'),
           display: (entry: DetailsEntry) => {
@@ -715,64 +1101,305 @@ export class StatementComponent implements OnInit, OnDestroy {
         }];
 
       // Memo
-      this._columns.push(
-        {
-          select: ['Line/Memo'],
-          label: () => this.translate.instant('Memo'),
+      this._columns.push({
+        id: 'Memo',
+        select: ['Line/Memo'],
+        label: () => this.translate.instant('Memo'),
+        display: (entry: DetailsEntry) => {
+          const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
+          return line.Memo;
+        },
+        weight: 1
+      });
+
+      // Contract
+      if (this.showContractParameter && !this.readonlyContract_Manual && !this.contractId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['Contract/Name,Contract/Name2,Contract/Name3'],
+          label: () => this.labelContract_Manual,
           display: (entry: DetailsEntry) => {
-            const line = this.ws.get('LineForQuery', entry.LineId) as LineForQuery;
-            return line.Memo;
+            return this.ws.getMultilingualValue('Contract', entry.ContractId, 'Name');
           },
-          weight: 2
+          weight: 1
         });
+      }
+
+      // NotedContract
+      if (this.showNotedContract_Manual) {
+        this._columns.push({
+          select: ['NotedContract/Name,NotedContract/Name2,NotedContract/Name3'],
+          label: () => this.labelNotedContract_Manual,
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Contract', entry.NotedContractId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
+      // EntryType
+      if (this.showEntryTypeParameter && !this.readonlyEntryType_Manual && !this.entryTypeId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['EntryType/Name,EntryType/Name2,EntryType/Name3'],
+          label: () => this.translate.instant('Entry_EntryType'),
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('EntryType', entry.EntryTypeId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
+      // Center
+      if (this.showCenterParameter && !this.readonlyCenter_Manual && !this.centerId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['Center/Name,Center/Name2,Center/Name3'],
+          label: () => this.translate.instant('Entry_Center'),
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Center', entry.CenterId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
+      // All dynamic properties from account type label
+      if (!!accountType) {
+        // DueDate
+        if (!!accountType.DueDateLabel) {
+          this._columns.push({
+            select: ['DueDate'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'DueDateLabel'),
+            display: (entry: DetailsEntry) => !!entry.DueDate ? formatDate(entry.DueDate, 'yyyy-MM-dd', locale) : '',
+            weight: 1
+          });
+        }
+
+        // Time1
+        if (!!accountType.Time1Label) {
+          this._columns.push({
+            select: ['Time1'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time1Label'),
+            display: (entry: DetailsEntry) => !!entry.Time1 ? formatDate(entry.Time1, 'yyyy-MM-dd HH:mm', locale) : '',
+            weight: 1
+          });
+        }
+
+        // Time2
+        if (!!accountType.Time2Label) {
+          this._columns.push({
+            select: ['Time2'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'Time2Label'),
+            display: (entry: DetailsEntry) => !!entry.Time2 ? formatDate(entry.Time2, 'yyyy-MM-dd HH:mm', locale) : '',
+            weight: 1
+          });
+        }
+
+        // ExternalReference
+        if (!!accountType.ExternalReferenceLabel) {
+          this._columns.push({
+            select: ['ExternalReference'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'ExternalReferenceLabel'),
+            display: (entry: DetailsEntry) => entry.ExternalReference,
+            weight: 1
+          });
+        }
+
+        // AdditionalReference
+        if (!!accountType.AdditionalReferenceLabel) {
+          this._columns.push({
+            select: ['AdditionalReference'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'AdditionalReferenceLabel'),
+            display: (entry: DetailsEntry) => entry.AdditionalReference,
+            weight: 1
+          });
+        }
+
+        // NotedAgentName
+        if (!!accountType.NotedAgentNameLabel) {
+          this._columns.push({
+            select: ['NotedAgentName'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedAgentNameLabel'),
+            display: (entry: DetailsEntry) => entry.NotedAgentName,
+            weight: 1
+          });
+        }
+
+        // NotedDate
+        if (!!accountType.NotedDateLabel) {
+          this._columns.push({
+            select: ['NotedDate'],
+            label: () => this.ws.getMultilingualValueImmediate(accountType, 'NotedDateLabel'),
+            display: (entry: DetailsEntry) => !!entry.NotedDate ? formatDate(entry.NotedDate, 'yyyy-MM-dd', locale) : '',
+            weight: 1
+          });
+        }
+      }
+
+      // Resource
+      if (this.showResourceParameter && !this.readonlyResource_Manual && !this.resourceId) {
+        // If a parameter is visible, editable and not selected yet, show it as a column below
+        this._columns.push({
+          select: ['Resource/Name,Resource/Name2,Resource/Name3'],
+          label: () => this.labelResource_Manual,
+          display: (entry: DetailsEntry) => {
+            return this.ws.getMultilingualValue('Resource', entry.ResourceId, 'Name');
+          },
+          weight: 1
+        });
+      }
+
+      // Quantity + Unit
+      if (this.showResourceParameter) {
+        // Determine whether the resource specifies a single well defined unit
+        const singleUnitDefined = !!resource && !!resource.Units && resource.Units.length === 1;
+
+        this._columns.push({
+          select: ['Direction', 'Quantity'],
+          label: () => {
+            let label = this.translate.instant('Entry_Quantity');
+            if (singleUnitDefined) {
+              const unitId = resource.Units[0].UnitId;
+              label = `${label} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
+            }
+            return label;
+          },
+          display: (entry: DetailsEntry) => {
+            return formatAccounting(entry.Direction * entry.Quantity, '1.0-4');
+          },
+          isRightAligned: true,
+          weight: 1
+        });
+
+        if (singleUnitDefined) {
+
+          // Quantity Acc.
+          this._columns.push({
+            id: 'QuantityAccumulation',
+            select: ['Quantity', 'Direction'],
+            label: () => {
+              const unitId = resource.Units[0].UnitId;
+              return `${this.translate.instant('DetailsEntry_QuantityAccumulation')} (${this.ws.getMultilingualValue('Unit', unitId, 'Name')})`;
+            },
+            display: (entry: DetailsEntry) => {
+              if (isSpecified(entry.QuantityAccumulation)) {
+                return formatAccounting(entry.QuantityAccumulation, '1.0-4');
+              } else {
+                return '';
+              }
+            },
+            isRightAligned: true,
+            weight: 1
+          });
+        }
+
+        if (!singleUnitDefined) {
+          this._columns.push({
+            select: ['Unit/Name', 'Unit/Name2', 'Unit/Name3'],
+            label: () => this.translate.instant('Entry_Unit'),
+            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Unit', entry.UnitId, 'Name'),
+            weight: 1
+          });
+        }
+      }
+
+      const definedCurrencyId = this.getAccountResourceCurrencyId() || this.currencyId;
+      if (!!this.account() && definedCurrencyId !== this.functionalId) {
+
+        // Monetary Value
+        this._columns.push({
+          select: ['MonetaryValue', 'Direction'],
+          label: () => {
+            let label = this.translate.instant('Entry_MonetaryValue');
+            if (!!definedCurrencyId) {
+              label = `${label} (${this.ws.getMultilingualValue('Currency', definedCurrencyId, 'Name')})`;
+            }
+            return label;
+          },
+          display: (entry: DetailsEntry) => {
+            const currencyId = definedCurrencyId || entry.CurrencyId;
+            return formatAccounting(entry.Direction * entry.MonetaryValue, this.digitsInfo(currencyId));
+          },
+          isRightAligned: true,
+          weight: 1
+        });
+
+        if (!!definedCurrencyId) {
+          // MonetaryValue Acc.
+          this._columns.push({
+            id: 'MonetaryValueAccumulation',
+            select: ['MonetaryValue', 'Direction'],
+            label: () => {
+              return `${this.translate.instant('DetailsEntry_MonetaryValueAccumulation')} (${this.ws.getMultilingualValue('Currency', definedCurrencyId, 'Name')})`;
+            },
+            display: (entry: DetailsEntry) => {
+              if (isSpecified(entry.MonetaryValueAccumulation)) {
+                return formatAccounting(entry.MonetaryValueAccumulation, this.digitsInfo(definedCurrencyId));
+              } else {
+                return '';
+              }
+            },
+            isRightAligned: true,
+            weight: 1
+          });
+
+        } else {
+          // Currency
+          this._columns.push({
+            select: ['Currency/Name', 'Currency/Name2', 'Currency/Name3', 'Currency/E'], // The E is to format the values correctly
+            label: () => this.translate.instant('Entry_Currency'),
+            display: (entry: DetailsEntry) => this.ws.getMultilingualValue('Currency', entry.CurrencyId, 'Name'),
+            weight: 1
+          });
+        }
+      }
 
       // Debit
-      this._columns.push(
-        {
-          select: ['Value', 'Direction'],
-          label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
-          display: (entry: DetailsEntry) => {
-            if (entry.Direction > 0 && isSpecified(entry.Value)) {
-              return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
-            } else {
-              return '';
-            }
-          },
-          isRightAligned: true,
-          weight: 1
-        });
+      this._columns.push({
+        select: ['Value', 'Direction'],
+        label: () => `${this.translate.instant('Debit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
+        display: (entry: DetailsEntry) => {
+          if (entry.Direction > 0 && isSpecified(entry.Value)) {
+            return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
+          } else {
+            return '';
+          }
+        },
+        isRightAligned: true,
+        weight: 1
+      });
 
       // Credit
-      this._columns.push(
-        {
-          select: ['Value', 'Direction'],
-          label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
-          display: (entry: DetailsEntry) => {
-            if (entry.Direction < 0 && isSpecified(entry.Value)) {
-              return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
-            } else {
-              return '';
-            }
-          },
-          isRightAligned: true,
-          weight: 1
-        });
+      this._columns.push({
+        select: ['Value', 'Direction'],
+        label: () => `${this.translate.instant('Credit')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
+        display: (entry: DetailsEntry) => {
+          if (entry.Direction < 0 && isSpecified(entry.Value)) {
+            return formatNumber(entry.Value, locale, this.functionalDigitsInfo);
+          } else {
+            return '';
+          }
+        },
+        isRightAligned: true,
+        weight: 1
+      });
 
       // Acc.
-      this._columns.push(
-        {
-          select: ['Value', 'Direction'],
-          label: () => `${this.translate.instant('Accumulation')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
-          display: (entry: DetailsEntry) => {
-            if (isSpecified(entry.Accumulation)) {
-              return formatNumber(entry.Accumulation, locale, this.functionalDigitsInfo);
-            } else {
-              return '';
-            }
-          },
-          isRightAligned: true,
-          weight: 1
-        });
+      this._columns.push({
+        id: 'Accumulation',
+        select: ['Value', 'Direction'],
+        label: () => `${this.translate.instant('DetailsEntry_Accumulation')} (${this.ws.getMultilingualValueImmediate(settings, 'FunctionalCurrencyName')})`,
+        display: (entry: DetailsEntry) => {
+          if (isSpecified(entry.Accumulation)) {
+            return formatAccounting(entry.Accumulation, this.functionalDigitsInfo);
+            // return formatNumber(entry.Accumulation, locale, this.functionalDigitsInfo);
+          } else {
+            return '';
+          }
+        },
+        isRightAligned: true,
+        weight: 1
+      });
     }
 
     return this._columns;
@@ -795,12 +1422,31 @@ export class StatementComponent implements OnInit, OnDestroy {
     const params = { state_key: 'from_statement', tab: -10 }; // fake state key to hide forward and backward navigation in details screen
     this.router.navigate(['../documents', definitionId, docId, params], { relativeTo: this.route });
   }
+
+  // Collapse parameters
+  private _collapseParameters = false;
+
+  public get collapseParameters(): boolean {
+    return this._collapseParameters;
+  }
+
+  public set collapseParameters(v: boolean) {
+    if (this._collapseParameters !== v) {
+      this._collapseParameters = v;
+      this.urlStateChanged();
+    }
+  }
+
+  onToggleCollapseParameters() {
+    this.collapseParameters = !this.collapseParameters;
+  }
 }
 
 interface ColumnInfo {
+  id?: string;
   select: string[];
   label: () => string;
   display: (entry: DetailsEntry) => string;
+  weight: number;
   isRightAligned?: boolean;
-  weight?: number;
 }

@@ -63,15 +63,13 @@ namespace Tellma.Controllers
     {
         private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountPaths());
 
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
         private string View => AccountsController.BASE_ADDRESS;
 
-        public AccountsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, ISettingsCache settingsCache, IServiceProvider sp) : base(sp)
+        public AccountsService(ApplicationRepository repo, ISettingsCache settingsCache, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
             _settingsCache = settingsCache;
         }

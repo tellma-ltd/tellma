@@ -1,5 +1,6 @@
-<t-details-picker [filter]="filter" collection="Role" [masterTemplate]="master"
-    [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
+<t-details-picker [filter]="filter" collection="Role" [masterTemplate]="master" (entityLoaded)="onEntityLoaded()"
+    [ensureAdditionalSelect]="ensureAdditionalSelect" [detailsTemplate]="showCreate ? details : null"
+    [additionalSelect]="additionalSelect">
 </t-details-picker>
 
 <!-- The Details Modal -->

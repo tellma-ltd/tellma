@@ -27,6 +27,7 @@ PIVOT
 SELECT
 		EA.*,
 		EA.[Direction] * EA.[MonetaryValue]	AS [AlgebraicMonetaryValue],
+		EA.[Direction] * EA.[Quantity]		AS [AlgebraicQuantity],
 		EA.[Direction] * EA.[Count] 		AS [AlgebraicCount],
 		EA.[Direction] * EA.[Mass]			AS [AlgebraicMass],
 		EA.[Direction] * EA.[Volume]		AS [AlgebraicVolume],

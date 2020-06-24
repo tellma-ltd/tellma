@@ -73,7 +73,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
-            additionalSelect="ContractDefinitions/ContractDefinitionId,NotedContractDefinitions/NotedContractDefinitionId,ResourceDefinitions/ResourceDefinitionId,EntryTypeParentId">
+            [additionalSelect]="accountTypeAdditionalSelect">
         </t-account-types-picker>
     </t-form-group>
 
@@ -117,7 +117,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId" [definitionIds]="definitionIdsResource(model)"
-            additionalSelect="DefinitionId,Currency/Name,Currency/Name2,Currency/Name3">
+            [additionalSelect]="resourceAdditionalSelect">
         </t-resources-picker>
     </t-form-group>
 

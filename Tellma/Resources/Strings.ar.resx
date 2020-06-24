@@ -175,9 +175,6 @@
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
   </data>
-  <data name="Accumulation" xml:space="preserve">
-    <value>إجمالي</value>
-  </data>
   <data name="Active" xml:space="preserve">
     <value>منشط</value>
   </data>
@@ -427,6 +424,9 @@
   <data name="DetailsEntry" xml:space="preserve">
     <value>سطر مفصل</value>
   </data>
+  <data name="DetailsEntry_Accumulation" xml:space="preserve">
+    <value>إجمالي</value>
+  </data>
   <data name="DetailsEntry_AlgebraicCount" xml:space="preserve">
     <value>العدد الجبري</value>
   </data>
@@ -435,6 +435,9 @@
   </data>
   <data name="DetailsEntry_AlgebraicMonetaryValue" xml:space="preserve">
     <value>المبلغ الجبري</value>
+  </data>
+  <data name="DetailsEntry_AlgebraicQuantity" xml:space="preserve">
+    <value>الكمية الجبرية</value>
   </data>
   <data name="DetailsEntry_AlgebraicTime" xml:space="preserve">
     <value>الزمن الجبري</value>
@@ -450,6 +453,12 @@
   </data>
   <data name="DetailsEntry_Mass" xml:space="preserve">
     <value>الوزن</value>
+  </data>
+  <data name="DetailsEntry_MonetaryValueAccumulation" xml:space="preserve">
+    <value>إجمالي المبلغ</value>
+  </data>
+  <data name="DetailsEntry_QuantityAccumulation" xml:space="preserve">
+    <value>إجمالي الكمية</value>
   </data>
   <data name="DetailsEntry_Time" xml:space="preserve">
     <value>الزمن</value>
