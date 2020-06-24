@@ -1759,4 +1759,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[NotedContractDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="0504e5f6-5fd5-40a6-a49f-a20aedcbf049" ChangeDateTime="06/24/2020 13:58:56">
+    <Property Name="ElementName" Value="[dbo].[ContractDefinitions].[StartDateVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9785d924-0341-41d1-8291-f9bc99042901" ChangeDateTime="06/24/2020 13:59:10">
+    <Property Name="ElementName" Value="[dbo].[ContractDefinitions].[StartDateLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4d488d92-d88f-4905-86a4-9c5887f36666" ChangeDateTime="06/24/2020 13:59:26">
+    <Property Name="ElementName" Value="[dbo].[ContractDefinitions].[StartDateLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="aff68557-2ebe-4b1a-8b0a-bf9c4a47fe3c" ChangeDateTime="06/24/2020 13:59:41">
+    <Property Name="ElementName" Value="[dbo].[ContractDefinitions].[StartDateLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ContractDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c3295d5a-0e14-4d30-b215-6dfb7771aa29" ChangeDateTime="06/24/2020 14:00:21">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableSinceLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8d4a0682-7c5e-4ba7-9c37-90c55c72de3e" ChangeDateTime="06/24/2020 14:00:43">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableSinceLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d2ad6c55-c1c4-43c7-8a43-b44ce96fe164" ChangeDateTime="06/24/2020 14:01:04">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableSinceLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="018c9555-201e-433d-b9fd-ff130508290b" ChangeDateTime="06/24/2020 14:01:23">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableSinceVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FromDateVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7fa2fa11-38fb-47c6-a8e4-f0622689decc" ChangeDateTime="06/24/2020 14:02:25">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableTillLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ToDateLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="792cd38d-806b-426b-b1d3-13201cdab88f" ChangeDateTime="06/24/2020 14:03:05">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableTillLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ToDateLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="09010c79-6e15-4172-839f-30c0843d8e45" ChangeDateTime="06/24/2020 14:04:14">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableTillLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ToDateLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f2e78f6d-773b-4fb4-898d-8ae1815db91d" ChangeDateTime="06/24/2020 14:04:51">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[AvailableTillVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ToDateVisibility]" />
+  </Operation>
 </Operations>
