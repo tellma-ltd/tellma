@@ -98,8 +98,9 @@ import {
   faChevronUp,
   faChevronDown,
   faAngleDown,
-  faAngleUp
-  faStream, faTree, faSeedling
+  faAngleUp,
+  faTree,
+  faSeedling
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -622,8 +623,7 @@ export class ApplicationModule {
       faBalanceScale, faHandsHelping, faMap, faPalette, faCopy, faScroll, faIndustry, faCity, faTractor, faBoxes, faCar,
       faRecycle, faIdBadge, faFunnelDollar, faCashRegister, faMapMarkerAlt, faNewspaper, faUserClock, faAnchor, faDollyFlatbed,
       faEdit, faFolderMinus, faFolderPlus, faUmbrellaBeach, faSpa, faUserMinus, faUserPlus, faTrophy, faSuitcaseRolling, faTasks,
-      faShip, faPallet, faObjectGroup, faIndent, faHistory, faGrinHearts, faUserCog, faStream, faChevronUp, faChevronDown,
-      faAngleDown, faAngleUp
+      faChevronUp, faChevronDown,faAngleDown, faAngleUp,
       faShip, faPallet, faObjectGroup, faIndent, faHistory, faGrinHearts, faUserCog, faStream, faTree, faSeedling
     );
   }
