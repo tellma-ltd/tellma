@@ -28,27 +28,28 @@
                 <!-- Segment -->
                 <t-form-group class="t-form-group" [label]="('Document_Segment' | translate) + ' *'"
                     *ngIf="showSegmentParameter">
-                    <t-centers-picker [(ngModel)]="segmentId" filter="CenterType eq 'Segment'"></t-centers-picker>
+                    <t-centers-picker [(ngModel)]="segmentId" filter="CenterType eq 'Segment'" [showCreate]="false">
+                    </t-centers-picker>
                 </t-form-group>
 
                 <!-- Account -->
                 <t-form-group class="t-form-group" [label]="('Entry_Account' | translate) + ' *'">
                     <t-accounts-picker [(ngModel)]="accountId" [additionalSelect]="accountAdditionalSelect"
-                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()">
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                     </t-accounts-picker>
                 </t-form-group>
 
                 <!-- Currency -->
                 <t-form-group class="t-form-group" [label]="'Entry_Currency' | translate" *ngIf="showCurrencyParameter">
                     <t-currencies-picker [(ngModel)]="currencyId" [additionalSelect]="currencyAdditionalSelect"
-                        [ensureAdditionalSelect]="true">
+                        [ensureAdditionalSelect]="true" [showCreate]="false">
                     </t-currencies-picker>
                 </t-form-group>
 
                 <!-- Contract -->
                 <t-form-group class="t-form-group" [label]="labelContract_Manual" *ngIf="showContractParameter">
                     <t-contracts-picker *ngIf="!readonlyContract_Manual" [(ngModel)]="contractId"
-                        [definitionIds]="definitionIdsContract_Manual">
+                        [definitionIds]="definitionIdsContract_Manual" [showCreate]="false">
                     </t-contracts-picker>
                     <t-view-link *ngIf="readonlyContract_Manual"
                         [link]="link('contracts/') + ws.get('Contract', readonlyValueContractId_Manual)?.DefinitionId"
@@ -61,7 +62,7 @@
                 <t-form-group class="t-form-group" [label]="labelResource_Manual" *ngIf="showResourceParameter">
                     <t-resources-picker *ngIf="!readonlyResource_Manual" [(ngModel)]="resourceId"
                         [definitionIds]="definitionIdsResource_Manual" [additionalSelect]="resourceAdditionalSelect"
-                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()">
+                        [ensureAdditionalSelect]="true" (entityLoaded)="onParameterLoaded()" [showCreate]="false">
                     </t-resources-picker>
                     <t-view-link *ngIf="readonlyResource_Manual"
                         [link]="link('resources/') + ws.get('Resource', readonlyValueResourceId_Manual)?.DefinitionId"
@@ -74,7 +75,7 @@
                 <t-form-group class="t-form-group" [label]="'Entry_EntryType' | translate"
                     *ngIf="showEntryTypeParameter">
                     <t-entry-types-picker *ngIf="!readonlyEntryType_Manual" [(ngModel)]="entryTypeId"
-                        [filter]="filterEntryType_Manual">
+                        [filter]="filterEntryType_Manual" [showCreate]="false">
                     </t-entry-types-picker>
                     <t-view-link *ngIf="readonlyEntryType_Manual" [link]="link('entry-types')"
                         [itemId]="readonlyValueEntryTypeId_Manual">
@@ -84,7 +85,8 @@
 
                 <!-- Center -->
                 <t-form-group class="t-form-group" [label]="'Entry_Center' | translate" *ngIf="showCenterParameter">
-                    <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true">
+                    <t-centers-picker *ngIf="!readonlyCenter_Manual" [(ngModel)]="centerId" filter="IsLeaf eq true"
+                        [showCreate]="false">
                     </t-centers-picker>
                     <t-view-link *ngIf="readonlyCenter_Manual"
                         [link]="link('centers/') + ws.get('Center', readonlyValueCenterId_Manual)?.DefinitionId"
@@ -256,7 +258,8 @@
                                     <span class="border-bottom t-dark-border">&zwnj;{{ closingDisplay }}&zwnj;</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'QuantityAccumulation'">
-                                    <span class="border-bottom t-dark-border">&zwnj;{{ closingQuantityDisplay }}&zwnj;</span>
+                                    <span
+                                        class="border-bottom t-dark-border">&zwnj;{{ closingQuantityDisplay }}&zwnj;</span>
                                 </ng-container>
                                 <ng-container *ngIf="col.id === 'MonetaryValueAccumulation'">
                                     <span
