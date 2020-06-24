@@ -382,7 +382,7 @@ END
 		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
 		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
 		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
-		AND (A.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
+		AND (A.[ContractDefinitionId] IS NULL AND LE.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
 		AND (A.[ContractId] IS NULL OR A.[ContractId] = LE.[ContractId])
 		GROUP BY LE.[Index], LE.[LineIndex], LE.[DocumentIndex]
 	)

@@ -17,6 +17,8 @@
 
 :r .\000\p_DocumentDefinitions.sql
 :r .\000\q_ReportDefinitions.sql
+:r .\000\r_AccountClassifications.sql
+
 :r .\000\z_Translations.sql
 
 IF @DB = N'ZZZ'
@@ -61,6 +63,7 @@ BEGIN
 
 	:r .\100_105\06_Accounts\a_AccountClassifications.sql
 	:r .\100_105\06_Accounts\b_Accounts.sql
+
 	--IF @DB = N'101'
 	--BEGIN
 	--:r .\100_105\07_Entries\101\a_manual-journal-vouchers.sql
@@ -77,7 +80,8 @@ BEGIN
 
 	:r .\106\02_Basic\a_Lookups.sql
 	:r .\106\02_Basic\b_Centers.sql
-
+	:r .\106\02_Basic\c_Units.sql
+	
 	:r .\106\05_Contracts\00_Agents.sql
 	:r .\106\05_Contracts\01_CashCustodians.sql
 	:r .\106\05_Contracts\02_InventoryCustodians.sql
@@ -88,8 +92,49 @@ BEGIN
 	:r .\106\05_Contracts\07_Creditors.sql
 	:r .\106\05_Contracts\08_Employees.sql
 
-	:r .\106\06_Accounts\a_AccountClassifications.sql
 	:r .\106\06_Accounts\b_Accounts.sql
+END
+IF @DB = N'107' -- SSIA, SDG, en/ar
+BEGIN
+	:r .\107\00_Setup\Script.sql
+	:r .\107\01_Security\a_Users.sql
+	:r .\107\01_Security\b_Permissions.sql
+
+	:r .\107\02_Basic\a_Lookups.sql
+	:r .\107\02_Basic\b_Centers.sql
+	:r .\107\02_Basic\c_Units.sql
+	
+	:r .\107\05_Contracts\00_Agents.sql
+	:r .\107\05_Contracts\01_CashCustodians.sql
+	:r .\107\05_Contracts\02_InventoryCustodians.sql
+	:r .\107\05_Contracts\03_Customers.sql
+	:r .\107\05_Contracts\04_Debtors.sql
+	:r .\107\05_Contracts\05_Partners.sql
+	:r .\107\05_Contracts\06_Suppliers.sql
+	:r .\107\05_Contracts\07_Creditors.sql
+	:r .\107\05_Contracts\08_Employees.sql
+	:r .\107\06_Accounts\b_Accounts.sql
+END
+IF @DB = N'108' -- SSIA - HG, SDG, en/ar
+BEGIN
+	:r .\108\00_Setup\Script.sql
+	--:r .\108\01_Security\a_Users.sql
+	--:r .\108\01_Security\b_Permissions.sql
+
+	--:r .\108\02_Basic\a_Lookups.sql
+	--:r .\108\02_Basic\b_Centers.sql
+	--:r .\108\02_Basic\c_Units.sql
+	
+	--:r .\108\05_Contracts\00_Agents.sql
+	--:r .\108\05_Contracts\01_CashCustodians.sql
+	--:r .\108\05_Contracts\02_InventoryCustodians.sql
+	--:r .\108\05_Contracts\03_Customers.sql
+	--:r .\108\05_Contracts\04_Debtors.sql
+	--:r .\108\05_Contracts\05_Partners.sql
+	--:r .\108\05_Contracts\06_Suppliers.sql
+	--:r .\108\05_Contracts\07_Creditors.sql
+	--:r .\108\05_Contracts\08_Employees.sql
+	--:r .\108\06_Accounts\b_Accounts.sql
 END
 
 --UPDATE Settings SET DefinitionsVersion = NewId()

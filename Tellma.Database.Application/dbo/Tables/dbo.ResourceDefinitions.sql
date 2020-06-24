@@ -8,26 +8,14 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
-	--[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
-	--[NameRegEx]							NVARCHAR (255), -- Null means manually defined
-	-- Resource properties
-	[IdentifierLabel]					NVARCHAR (50),
-	[IdentifierLabel2]					NVARCHAR (50),
-	[IdentifierLabel3]					NVARCHAR (50),		
-	[IdentifierVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([IdentifierVisibility] IN (N'None', N'Optional', N'Required')),
+	-----Resource Properties Common with Contracts
 	[CurrencyVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Optional', N'Required')),
-	-- [CustomsReferenceVisibility]		NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CustomsReferenceVisibility] IN (N'None', N'Optional', N'Required')),
-	-- [PreferredSupplierVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([PreferredSupplierVisibility] IN (N'None', N'Optional', N'Required')),
+	[CenterVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
+	[ImageVisibility]	/*New*/			NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ImageVisibility] IN (N'None', N'Optional', N'Required')),
 	[DescriptionVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([DescriptionVisibility] IN (N'None', N'Optional', N'Required')),
 	[LocationVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([LocationVisibility] IN (N'None', N'Optional', N'Required')),
 
-	[CenterVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([CenterVisibility] IN (N'None', N'Optional', N'Required')),
-	[ResidualMonetaryValueVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
-	[ResidualValueVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualValueVisibility] IN (N'None', N'Optional', N'Required')),
-
-	[ReorderLevelVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
-	[EconomicOrderQuantityVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
+	-- need to refactor to fromDate and toDate
 	[AvailableSinceLabel]				NVARCHAR (50),
 	[AvailableSinceLabel2]				NVARCHAR (50),
 	[AvailableSinceLabel3]				NVARCHAR (50),		
@@ -77,28 +65,35 @@
 	[Lookup4Label]						NVARCHAR (50),
 	[Lookup4Label2]						NVARCHAR (50),
 	[Lookup4Label3]						NVARCHAR (50),
-	--[Lookup5Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup5Visibility] IN (N'None', N'Optional', N'Required')),
-	--[Lookup5DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup5DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
-	--[Lookup5Label]						NVARCHAR (50),
-	--[Lookup5Label2]						NVARCHAR (50),
-	--[Lookup5Label3]						NVARCHAR (50),
-	--[DueDateLabel]						NVARCHAR (50),
-	--[DueDateLabel2]						NVARCHAR (50),
-	--[DueDateLabel3]						NVARCHAR (50),
-	--[DueDateVisibility]					NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([DueDateVisibility] IN (N'None', N'Optional', N'Required')),
-	-- more properties from Resource Instances to come..
+
 	[Text1Label]						NVARCHAR (50),
 	[Text1Label2]						NVARCHAR (50),
 	[Text1Label3]						NVARCHAR (50),		
 	[Text1Visibility]					NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([Text1Visibility] IN (N'None', N'Optional', N'Required')),
 
-	[Text2Label]							NVARCHAR (50),
+	[Text2Label]						NVARCHAR (50),
 	[Text2Label2]						NVARCHAR (50),
 	[Text2Label3]						NVARCHAR (50),		
 	[Text2Visibility]					NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([Text2Visibility] IN (N'None', N'Optional', N'Required')),
 
+	[Script]			/*New*/			NVARCHAR (MAX),
 
-	[State]								NVARCHAR (50)				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	-----Properties applicable to resources only
+	-- Resource properties
+	[IdentifierLabel]					NVARCHAR (50), -- searchable, unique index
+	[IdentifierLabel2]					NVARCHAR (50),
+	[IdentifierLabel3]					NVARCHAR (50),
+	[IdentifierVisibility]				NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([IdentifierVisibility] IN (N'None', N'Optional', N'Required')),
+
+	-- PPE
+	[ResidualMonetaryValueVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualMonetaryValueVisibility] IN (N'None', N'Optional', N'Required')),
+	[ResidualValueVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ResidualValueVisibility] IN (N'None', N'Optional', N'Required')),
+	-- Inventory
+	[ReorderLevelVisibility]			NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([ReorderLevelVisibility] IN (N'None', N'Optional', N'Required')),
+	[EconomicOrderQuantityVisibility]	NVARCHAR (50) NOT NULL DEFAULT N'None' CHECK ([EconomicOrderQuantityVisibility] IN (N'None', N'Optional', N'Required')),
+	[UnitCardinality]					NVARCHAR (50) NOT NULL DEFAULT N'Single' CHECK ([UnitCardinality] IN (N'None', N'Single', N'Multiple')),
+	--
+	[State]								NVARCHAR (50) NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]						NVARCHAR (50),
 	[MainMenuSection]					NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]					DECIMAL (9,4),

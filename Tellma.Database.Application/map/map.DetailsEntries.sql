@@ -1,4 +1,4 @@
-﻿	CREATE FUNCTION [map].[DetailsEntries] ()
+﻿CREATE FUNCTION [map].[DetailsEntries] ()
 	RETURNS TABLE
 	AS
 	RETURN
@@ -8,13 +8,14 @@ FROM
 (
 	SELECT
 		E.*,
-		E.[Quantity] * -- Quantity in E.UnitId
-			UE.[BaseAmount] / UE.[UnitAmount] * -- Quantity in Standard Unit of that type
-			(RUR.[UnitAmount]) / (RUR.[BaseAmount]) As [StandardAmount],-- Quantity in Standard Unit of all compatible unit types
+		CAST(E.[Quantity] * -- Quantity in E.UnitId
+			UE.[BaseAmount] / UE.[UnitAmount] -- Quantity in Standard Unit of that type
+		 --*	(RUR.[UnitAmount]) / (RUR.[BaseAmount]) As [StandardAmount],-- Quantity in Standard Unit of all compatible unit types
+		 / (RUR.[Multiplier]) AS DECIMAL (19, 4)) As [StandardAmount],
 		U2.[UnitType]
 	FROM dbo.Entries E
 	LEFT JOIN dbo.Units UE ON E.UnitId = UE.[Id]
-	LEFT JOIN dbo.ResourceUnitRates RUR ON RUR.[ResourceId] = E.[ResourceId]
+	LEFT JOIN dbo.ResourceUnits RUR ON RUR.[ResourceId] = E.[ResourceId]
 	LEFT JOIN dbo.Units U2 ON RUR.[UnitId] = U2.[Id]
 ) AS SourceTable
 PIVOT

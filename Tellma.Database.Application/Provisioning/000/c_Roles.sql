@@ -14,6 +14,10 @@
 (12, N'InventoryCustodian', N'Inventory Custodian', 0),
 (99, N'Public', N'Public', 1);
 
+INSERT INTO @Members
+([Index],	[HeaderIndex],	[UserId]) VALUES
+(0,			0,				@AdminUserId);
+
 INSERT INTO @Permissions([Index], [HeaderIndex],
 --Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
 	[Action],	[Criteria],			[View]) VALUES

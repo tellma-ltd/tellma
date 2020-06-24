@@ -1,34 +1,4 @@
-﻿INSERT INTO @Roles([Index],[Id], [Code],[Name],[Name2],[Name3],[IsPublic])
-SELECT [Id], [Id], [Code],[Name],[Name2],[Name3],[IsPublic]
-FROM dbo.Roles;
-
-INSERT INTO @Members
-([Index],	[HeaderIndex],		[UserId]) VALUES
-(0,			@AdministratorRL,	@AdminUserId),
---(1,			@AdministratorRL,	@106DerejeMulat),
-(2,			@AdministratorRL,	@106AbuBakerelHadi),
-(3,			@AdministratorRL,	@106AbrahamTenker),
-(4,			@AdministratorRL,	@106MosabelHafiz),
-(5,			@AdministratorRL,	@106YisakFikadu);
---(0,			@FinanceManagerRL,	@106BirhanuTakele),
---(0,			@ReaderRL,			@106BulbulaTulle);
-
-IF @106MohamadAkra <> @AdminUserId
-	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
-	VALUES(10,@AdministratorRL,@106MohamadAkra);
-IF @106AhmadAkra <> @AdminUserId
-	INSERT INTO @Members([Index],[HeaderIndex],	[UserId])
-	VALUES(11,@AdministratorRL,@106AhmadAkra);
-
-INSERT INTO @Permissions([Index], [HeaderIndex], [Id], [View], [Action], [Criteria], [Mask], [Memo])
-SELECT [Id], [RoleId], [Id], [View], [Action], [Criteria], [Mask], [Memo]
-FROM dbo.[Permissions];
-
-EXEC api.Roles__Save
-	@Entities = @Roles,
-	@Members = @Members,
-	@Permissions = @Permissions,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+﻿
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

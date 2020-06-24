@@ -104,6 +104,17 @@
     <Folder Include="Provisioning\100_105\04_Resources" />
     <Folder Include="Provisioning\100_105\07_Entries" />
     <Folder Include="Provisioning\106\07_Entries" />
+    <Folder Include="Provisioning\106\03_Resources" />
+    <Folder Include="Provisioning\107" />
+    <Folder Include="Provisioning\107\06_Accounts" />
+    <Folder Include="Provisioning\107\00_Setup" />
+    <Folder Include="Provisioning\107\01_Security" />
+    <Folder Include="Provisioning\107\02_Basic" />
+    <Folder Include="Provisioning\107\03_Resources" />
+    <Folder Include="Provisioning\107\05_Contracts" />
+    <Folder Include="Provisioning\107\07_Entries" />
+    <Folder Include="Provisioning\108" />
+    <Folder Include="Provisioning\108\00_Setup" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -588,6 +599,20 @@
     <None Include="Provisioning\100_105\07_Entries\f_revenue-recognition-vouchers.sql" />
     <Build Include="map\map.ContractDefinitions.sql" />
     <Build Include="map\map.ResourceDefinitions.sql" />
+    <None Include="Provisioning\107\02_Basic\b_Centers.sql" />
+    <None Include="Provisioning\107\02_Basic\c_Units.sql" />
+    <None Include="Provisioning\107\05_Contracts\01_CashCustodians.sql" />
+    <None Include="Provisioning\107\05_Contracts\02_InventoryCustodians.sql" />
+    <None Include="Provisioning\107\05_Contracts\03_Customers.sql" />
+    <None Include="Provisioning\107\05_Contracts\04_Debtors.sql" />
+    <None Include="Provisioning\107\05_Contracts\05_Partners.sql" />
+    <None Include="Provisioning\107\05_Contracts\06_Suppliers.sql" />
+    <None Include="Provisioning\107\05_Contracts\07_Creditors.sql" />
+    <None Include="Provisioning\107\05_Contracts\08_Employees.sql" />
+    <None Include="Provisioning\107\06_Accounts\b_Accounts.sql" />
+    <None Include="Provisioning\107\05_Contracts\00_Agents.sql" />
+    <None Include="Provisioning\000\r_AccountClassifications.sql" />
+    <None Include="Provisioning\108\00_Setup\Script.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -609,7 +634,6 @@
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <None Include="Azure.101.BananSD.publish.xml" />
     <None Include="106.Soreti.publish.xml" />
-    <None Include="Provisioning\106\06_Accounts\a_AccountClassifications.sql" />
     <None Include="Provisioning\106\05_Contracts\00_Agents.sql" />
     <None Include="Provisioning\106\05_Contracts\07_Creditors.sql" />
     <None Include="Provisioning\106\05_Contracts\03_Customers.sql" />
@@ -632,6 +656,13 @@
     <None Include="Provisioning\000\m_Units.sql" />
     <None Include="Provisioning\100_105\00_Setup\Script.sql" />
     <None Include="Azure.106.Soreti.publish.xml" />
+    <None Include="Provisioning\106\02_Basic\c_Units.sql" />
+    <None Include="Provisioning\107\00_Setup\Script.sql" />
+    <None Include="107.SSIA.publish.xml" />
+    <None Include="Provisioning\107\01_Security\a_Users.sql" />
+    <None Include="Provisioning\107\01_Security\b_Permissions.sql" />
+    <None Include="Provisioning\107\02_Basic\a_Lookups.sql" />
+    <None Include="108.SSIAHolding.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

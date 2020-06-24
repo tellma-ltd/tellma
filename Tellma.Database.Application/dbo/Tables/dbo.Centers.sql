@@ -5,9 +5,12 @@
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
 	-- Common, Service, Production, SellingAndDistribution
-	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK ([CenterType] IN (N'Segment',
-													N'Abstract', N'Common', N'ServiceExtension', N'ProductionExtension',
-													N'DistributionCosts', N'AdministrativeExpense', N'CostOfSales')
+	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK (
+													[CenterType] IN (
+														N'Segment', N'Abstract', N'Common', N'Unallocated', N'Revenue', N'CostOfSales',
+														N'DistributionCosts', N'AdministrativeExpense',N'ProductionExtension', N'Inventories',
+														N'CurrentInventoriesInTransit', N'ConstructionInProgress', N'ServiceExtension'
+													)
 												),
 	[IsLeaf]				AS					CAST(IIF([CenterType] = N'Abstract', 0, 1) AS BIT) PERSISTED,
 	[Name]					NVARCHAR (255)		NOT NULL,

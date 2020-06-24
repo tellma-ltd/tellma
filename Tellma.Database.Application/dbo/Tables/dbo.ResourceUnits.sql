@@ -3,7 +3,7 @@
 	[Id]						INT					CONSTRAINT [PK_ResourceUnits] PRIMARY KEY IDENTITY,
 	[ResourceId]				INT					NOT NULL CONSTRAINT [FK_ResourceUnits__ResourceId] REFERENCES [dbo].[Resources] ([Id]) ON DELETE CASCADE,
 
-	EntryTypeId					INT,				-- Added
+	[EntryTypeId]				INT,				-- Added
 	[UnitId]					INT					NOT NULL CONSTRAINT [FK_ResourceUnits__UnitId] REFERENCES [dbo].[Units] ([Id]),
 	[IsDefault]					BIT					DEFAULT 0, -- Added
 

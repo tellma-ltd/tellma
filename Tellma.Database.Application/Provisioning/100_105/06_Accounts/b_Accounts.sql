@@ -39,7 +39,7 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	(41,N'11111',@CashOnHand,					@BankAndCash_AC,		@CashOnHandAccountCD,	NULL,					N'GM Fund',						NULL,			@C101_INV,		NULL,				@GMSafe),
 	(43,N'11112',@CashOnHand,					@BankAndCash_AC,		@CashOnHandAccountCD,	NULL,					N'Admin Fund - SDG',			@SDG,			@C101_INV,		NULL,				@AdminPettyCash),
 	(44,N'11113',@CashOnHand,					@BankAndCash_AC,		@CashOnHandAccountCD,	NULL,					N'KSA Fund',					NULL,			@C101_INV,		NULL,				@KSASafe),
-	(45,N'11121',@BalancesWithBanks,			@BankAndCash_AC,		@BankAccountCD,		NULL,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,				@KRTBank),
+	(45,N'11121',@BalancesWithBanks,			@BankAndCash_AC,		@BankAccountCD,			NULL,					N'Bank Of Khartoum - SDG',		@SDG,			@C101_INV,		NULL,				@KRTBank),
 
 	-- Equity and Liabilities accounts
 	(50,N'30001',@IssuedCapital,				@Equity_AC,				NULL,					NULL,					N'Issued Capital',				@USD,			@C101_INV,		NULL,				NULL),

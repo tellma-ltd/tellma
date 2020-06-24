@@ -286,27 +286,27 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 		[ColumnName],[EntryIndex],	[Label],			[RequiredState],
 														[ReadOnlyState],
 														[InheritsFromHeader]) VALUES
-(0,1,	N'Memo',				1,	N'Memo',			1,4,1),
-(1,1,	N'ContractId',			0,	N'Supplier',		3,4,1),
-(2,1,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
-(3,1,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
-(4,1,	N'ContractId',			1,	N'Bank/Cashier',	3,4,0),
-(5,1,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
-(6,1,	N'NotedDate',			1,	N'Check Date',		5,4,0),
-(7,1,	N'PostingDate',			1,	N'Paid On',			1,4,1);
---(8,1,	N'CenterId',			1,	N'Segment',			4,4,1);
+(0,300,	N'Memo',				1,	N'Memo',			1,4,1),
+(1,300,	N'ContractId',			0,	N'Supplier',		3,4,1),
+(2,300,	N'CurrencyId',			0,	N'Invoice Currency',1,2,1),
+(3,300,	N'MonetaryValue',		0,	N'Invoice Amount',	1,2,0),
+(4,300,	N'ContractId',			1,	N'Bank/Cashier',	3,4,0),
+(5,300,	N'ExternalReference',	1,	N'Check/Receipt #',	3,4,0),
+(6,300,	N'NotedDate',			1,	N'Check Date',		5,4,0),
+(7,300,	N'PostingDate',			1,	N'Paid On',			1,4,1);
+--(8,300,	N'CenterId',			1,	N'Segment',			4,4,1);
 INSERT INTO @Workflows([Index],[LineDefinitionIndex],
 [ToState]) Values
-(0,1,+1),
-(1,1,+2),
-(2,1,+3),
-(3,1,+4);
+(0,300,+1),
+(1,300,+2),
+(2,300,+3),
+(3,300,+4);
 INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
 [RuleType],				[RoleId],	[RuleTypeEntryIndex], [ProxyRoleId]) VALUES
-(0,0,1,N'Public',		NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
-(0,1,1,N'ByRole',		@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
-(0,2,1,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
-(0,3,1,N'ByRole',		@ComptrollerRL,		NULL,			NULL);
+(0,0,300,N'Public',		NULL,				NULL,			NULL), -- anyone can request. At this stage, we can print the requisition
+(0,1,300,N'ByRole',		@GeneralManagerRL,	NULL,			NULL), -- GM only can approve. At this state, we can print the payment order (check, LT, LC, ...)
+(0,2,300,N'ByContract',	NULL,				2,				NULL), -- custodian only can complete, or comptroller (convenient in case of Bank not having access)
+(0,3,300,N'ByRole',		@ComptrollerRL,		NULL,			NULL);
 GOTO DONE_LD
 --3:PaymentToEmployee (used in a payroll voucher)
 UPDATE @LineDefinitions

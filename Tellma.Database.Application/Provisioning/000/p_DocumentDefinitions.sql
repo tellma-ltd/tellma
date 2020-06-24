@@ -47,7 +47,8 @@
 INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 (0,0, @ManualLineLD, 1),
 (0,10, @CashPaymentToOtherLD, 1),
-(4,10, @CashTransferExchangeLD, 1),
+(1,10, @ManualLineLD, 1),
+--(4,10, @CashTransferExchangeLD, 1),
 (0,11, @DepositCashToBankLD, 1),
 (1,11, @DepositCheckToBankLD, 1),
 (0,12, @CashReceiptFromOtherLD, 1),

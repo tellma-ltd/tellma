@@ -4,8 +4,9 @@
 -- Activate Currencies in Use
 INSERT INTO @IndexedCurrencyIds
 ([Index],	[Id]) VALUES
-(0,			@ETB),
+(0,			@SDG),
 (1,			@USD);
+
 EXEC [api].[Currencies__Activate]
 	@IndexedIds = @IndexedCurrencyIds,
 	@IsActive = 1,
