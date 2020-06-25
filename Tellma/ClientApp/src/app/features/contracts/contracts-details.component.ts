@@ -34,7 +34,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: ContractDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'User,Agent,Currency';
+  public expand = 'Agent,Currency';
 
   create = () => {
     const result: ContractForSave = {};

@@ -89,6 +89,13 @@ namespace Tellma.Entities
 
     public class DocumentDefinition : DocumentDefinitionForSave<DocumentDefinitionLineDefinition, DocumentDefinitionMarkupTemplate>
     {
+
+        [Display(Name = "Definition_State")]
+        [ChoiceList(new object[] { "Hidden", "Visible", "Archived" },
+            new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
+        [AlwaysAccessible]
+        public string State { get; set; }
+
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 

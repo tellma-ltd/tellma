@@ -4,21 +4,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tellma.Entities
 {
-    [EntityDisplay(Singular = "ResourceUnit", Plural = "ResourceUnits")]
-    public class ResourceUnitForSave : EntityWithKey<int>
+    [EntityDisplay(Singular = "ContractUser", Plural = "ContractUsers")]
+    public class ContractUserForSave : EntityWithKey<int>
     {
-        [Display(Name = "ResourceUnit_Unit")]
+        [Display(Name = "ContractUser_User")]
         [Required]
-        public int? UnitId { get; set; }
-
-        [Display(Name = "ResourceUnit_Multiplier")]
-        [Required]
-        public double? Multiplier { get; set; }
+        public int? UserId { get; set; }
     }
 
-    public class ResourceUnit : ResourceUnitForSave
+    public class ContractUser : ContractUserForSave
     {
-        public int? ResourceId { get; set; }
+        public int? ContractId { get; set; }
 
         // For Query
 
@@ -36,9 +32,9 @@ namespace Tellma.Entities
 
         // For Query
 
-        [Display(Name = "ResourceUnit_Unit")]
-        [ForeignKey(nameof(UnitId))]
-        public Unit Unit { get; set; }
+        [Display(Name = "ContractUser_User")]
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

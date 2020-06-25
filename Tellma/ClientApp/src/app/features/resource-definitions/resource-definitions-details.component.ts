@@ -42,6 +42,8 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
       result[propName] = none;
     }
 
+    result.UnitCardinality = none;
+
     return result;
   }
 

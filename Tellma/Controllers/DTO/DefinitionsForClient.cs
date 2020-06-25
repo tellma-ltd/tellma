@@ -420,18 +420,101 @@ namespace Tellma.Controllers.Dto
 
     public class ContractDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string AgentVisibility { get; set; }
         public string CurrencyVisibility { get; set; }
-        public string TaxIdentificationNumberVisibility { get; set; }
+        public string CenterVisibility { get; set; }
         public string ImageVisibility { get; set; }
-        public string StartDateVisibility { get; set; }
-        public string StartDateLabel { get; set; }
-        public string StartDateLabel2 { get; set; }
-        public string StartDateLabel3 { get; set; }
+        public string DescriptionVisibility { get; set; }
+        public string LocationVisibility { get; set; }
+
+        public string FromDateLabel { get; set; }
+        public string FromDateLabel2 { get; set; }
+        public string FromDateLabel3 { get; set; }
+        public string FromDateVisibility { get; set; }
+
+        public string ToDateLabel { get; set; }
+        public string ToDateLabel2 { get; set; }
+        public string ToDateLabel3 { get; set; }
+        public string ToDateVisibility { get; set; }
+
+        // Decimal 1
+        public string Decimal1Label { get; set; }
+        public string Decimal1Label2 { get; set; }
+        public string Decimal1Label3 { get; set; }
+        public string Decimal1Visibility { get; set; }
+
+        // Decimal 2
+        public string Decimal2Label { get; set; }
+        public string Decimal2Label2 { get; set; }
+        public string Decimal2Label3 { get; set; }
+        public string Decimal2Visibility { get; set; }
+
+        // Int 1
+        public string Int1Label { get; set; }
+        public string Int1Label2 { get; set; }
+        public string Int1Label3 { get; set; }
+        public string Int1Visibility { get; set; }
+
+        // Int 2
+        public string Int2Label { get; set; }
+        public string Int2Label2 { get; set; }
+        public string Int2Label3 { get; set; }
+        public string Int2Visibility { get; set; }
+
+        // Lookup 1
+        public string Lookup1Label { get; set; }
+        public string Lookup1Label2 { get; set; }
+        public string Lookup1Label3 { get; set; }
+        public string Lookup1Visibility { get; set; }
+        public int? Lookup1DefinitionId { get; set; }
+
+        // Lookup 2
+        public string Lookup2Label { get; set; }
+        public string Lookup2Label2 { get; set; }
+        public string Lookup2Label3 { get; set; }
+        public string Lookup2Visibility { get; set; }
+        public int? Lookup2DefinitionId { get; set; }
+
+        // Lookup 3
+        public string Lookup3Label { get; set; }
+        public string Lookup3Label2 { get; set; }
+        public string Lookup3Label3 { get; set; }
+        public string Lookup3Visibility { get; set; }
+        public int? Lookup3DefinitionId { get; set; }
+
+        // Lookup 4
+        public string Lookup4Label { get; set; }
+        public string Lookup4Label2 { get; set; }
+        public string Lookup4Label3 { get; set; }
+        public string Lookup4Visibility { get; set; }
+        public int? Lookup4DefinitionId { get; set; }
+
+        //// Lookup 5
+        //public string Lookup5Label { get; set; }
+        //public string Lookup5Label2 { get; set; }
+        //public string Lookup5Label3 { get; set; }
+        //public string Lookup5Visibility { get; set; }
+        //public int? Lookup5DefaultValue { get; set; }
+        //public int? Lookup5DefinitionId { get; set; }
+
+        // Text 1
+        public string Text1Label { get; set; }
+        public string Text1Label2 { get; set; }
+        public string Text1Label3 { get; set; }
+        public string Text1Visibility { get; set; }
+
+        // Text 2
+        public string Text2Label { get; set; }
+        public string Text2Label2 { get; set; }
+        public string Text2Label3 { get; set; }
+        public string Text2Visibility { get; set; }
+
+
+
+        public string AgentVisibility { get; set; }
+        public string TaxIdentificationNumberVisibility { get; set; }
         public string JobVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
-        public string UserVisibility { get; set; }
-        public bool AllowMultipleUsers { get; set; }
+        public string UserCardinality { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient

@@ -241,6 +241,15 @@
   <data name="Cancel" xml:space="preserve">
     <value>ሰርዝ</value>
   </data>
+  <data name="Cardinality_Multiple" xml:space="preserve">
+    <value>ብዙ</value>
+  </data>
+  <data name="Cardinality_None" xml:space="preserve">
+    <value>አንድም</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>ያላገባ</value>
+  </data>
   <data name="Cell0" xml:space="preserve">
     <value>ሕዋስ {0}</value>
   </data>
@@ -331,14 +340,8 @@
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>የባንክ ሂሳብ ቁጥር</value>
   </data>
-  <data name="Contract_Currency" xml:space="preserve">
-    <value>ገንዘብ</value>
-  </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>ሥራ</value>
-  </data>
-  <data name="Contract_StartDate" xml:space="preserve">
-    <value>መጀመሪያ ቀን</value>
   </data>
   <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
     <value>የግብር መለያ ቁጥር</value>
@@ -346,17 +349,29 @@
   <data name="Contract_User" xml:space="preserve">
     <value>ተጠቃሚ</value>
   </data>
+  <data name="Contract_Users" xml:space="preserve">
+    <value>ተጠቃሚዎች</value>
+  </data>
   <data name="ContractDefinition" xml:space="preserve">
     <value>የኮንትራት ፍቺ</value>
   </data>
-  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
-    <value>በርካታ ተጠቃሚዎችን ፍቀድ</value>
+  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
+    <value>የተጠቃሚ የቁጥሮች</value>
   </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>የኮንትራት ፍቺዎች</value>
   </data>
   <data name="Contracts" xml:space="preserve">
     <value>ወኪሎች</value>
+  </data>
+  <data name="ContractUser" xml:space="preserve">
+    <value>የኮንትራት ተጠቃሚ</value>
+  </data>
+  <data name="ContractUser_User" xml:space="preserve">
+    <value>ተጠቃሚ</value>
+  </data>
+  <data name="ContractUsers" xml:space="preserve">
+    <value>ውሌ ተጠቃሚዎች</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>የቅጂ መብት © {0} ተልማ, ኃላፊነቱ የተወሰነ ሁሉም መብቶች የተጠበቁ ናቸው.</value>
@@ -403,17 +418,20 @@
   <data name="DefaultError" xml:space="preserve">
     <value>ያልታወቀ አለመሳካት ተከስቷል.</value>
   </data>
+  <data name="Definition_Script" xml:space="preserve">
+    <value>ስክሪፕት</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>ሁኔታ</value>
   </data>
   <data name="Definition_State_Archived" xml:space="preserve">
     <value>በማህደር</value>
   </data>
-  <data name="Definition_State_Deployed" xml:space="preserve">
-    <value>የተተገበሩ</value>
+  <data name="Definition_State_Hidden" xml:space="preserve">
+    <value>ተደብቋል</value>
   </data>
-  <data name="Definition_State_Draft" xml:space="preserve">
-    <value>ረቂቅ</value>
+  <data name="Definition_State_Visible" xml:space="preserve">
+    <value>የሚታይ</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>መግለጫ</value>
@@ -2298,15 +2316,6 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>ድምጽ</value>
-  </data>
-  <data name="UnitCardinality_Multiple" xml:space="preserve">
-    <value>ብዙ</value>
-  </data>
-  <data name="UnitCardinality_None" xml:space="preserve">
-    <value>አንድም</value>
-  </data>
-  <data name="UnitCardinality_Single" xml:space="preserve">
-    <value>ያላገባ</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>

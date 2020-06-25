@@ -64,8 +64,8 @@ namespace Tellma.Entities
     public class LookupDefinition : LookupDefinitionForSave
     {
         [Display(Name = "Definition_State")]
-        [ChoiceList(new object[] { "Draft", "Deployed", "Archived" },
-            new string[] { "Definition_State_Draft", "Definition_State_Deployed", "Definition_State_Archived" })]
+        [ChoiceList(new object[] { "Hidden", "Visible", "Archived" },
+            new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
         [AlwaysAccessible]
         public string State { get; set; }
 

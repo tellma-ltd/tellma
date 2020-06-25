@@ -2,5 +2,5 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[Contracts]
+	SELECT *, [Location].STAsBinary() AS [LocationWkb] FROM [dbo].[Contracts]
 );

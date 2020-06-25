@@ -26,7 +26,7 @@ SET [ImageVisibility] = N'Optional'
 WHERE [Code] IN (N'Employee')
 
 UPDATE @ContractDefinitions
-SET [UserVisibility] = N'Optional'
+SET [UserCardinality] = N'Single'
 WHERE [Code] IN (N'Employee', N'Partner')
 
 EXEC [api].[ContractDefinitions__Save]

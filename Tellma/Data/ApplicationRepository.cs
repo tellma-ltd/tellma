@@ -219,6 +219,7 @@ namespace Tellma.Data
                 nameof(Entities.Settings) => "[dbo].[Settings]",
                 nameof(User) => "[map].[Users]()",
                 nameof(Contract) => "[map].[Contracts]()",
+                nameof(ContractUser) => "[map].[ContractUsers]()",
                 nameof(ContractDefinition) => "[map].[ContractDefinitions]()",
                 nameof(Agent) => "[map].[Agents]()",
                 nameof(Unit) => "[map].[Units]()",

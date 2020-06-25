@@ -241,6 +241,15 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Cardinality_Multiple" xml:space="preserve">
+    <value>Multiple</value>
+  </data>
+  <data name="Cardinality_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>Single</value>
+  </data>
   <data name="Cell0" xml:space="preserve">
     <value>Cell {0}</value>
   </data>
@@ -331,14 +340,8 @@
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>Bank Account Number</value>
   </data>
-  <data name="Contract_Currency" xml:space="preserve">
-    <value>Currency</value>
-  </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>Job</value>
-  </data>
-  <data name="Contract_StartDate" xml:space="preserve">
-    <value>Start Date</value>
   </data>
   <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
     <value>Tax Identification Number</value>
@@ -346,17 +349,29 @@
   <data name="Contract_User" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="Contract_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
   <data name="ContractDefinition" xml:space="preserve">
     <value>Contract Definition</value>
   </data>
-  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
-    <value>Allow Multiple Users</value>
+  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
+    <value>User Cardinality</value>
   </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>Contract Definitions</value>
   </data>
   <data name="Contracts" xml:space="preserve">
     <value>Contracts</value>
+  </data>
+  <data name="ContractUser" xml:space="preserve">
+    <value>Contract User</value>
+  </data>
+  <data name="ContractUser_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ContractUsers" xml:space="preserve">
+    <value>Contract Users</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>Copyright © {0} Tellma, Ltd. All rights reserved.</value>
@@ -403,17 +418,20 @@
   <data name="DefaultError" xml:space="preserve">
     <value>An unknown failure has occurred.</value>
   </data>
+  <data name="Definition_Script" xml:space="preserve">
+    <value>Script</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
   </data>
   <data name="Definition_State_Archived" xml:space="preserve">
     <value>Archived</value>
   </data>
-  <data name="Definition_State_Deployed" xml:space="preserve">
-    <value>Deployed</value>
+  <data name="Definition_State_Hidden" xml:space="preserve">
+    <value>Hidden</value>
   </data>
-  <data name="Definition_State_Draft" xml:space="preserve">
-    <value>Draft</value>
+  <data name="Definition_State_Visible" xml:space="preserve">
+    <value>Visible</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
@@ -683,7 +701,7 @@
     <value>Decimal Attribute 2</value>
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
-    <value>Available Since</value>
+    <value>From Date</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>Integer Attribute 1</value>
@@ -719,7 +737,7 @@
     <value>Text Attribute 2</value>
   </data>
   <data name="Entity_ToDate" xml:space="preserve">
-    <value>Available Till</value>
+    <value>To Date</value>
   </data>
   <data name="Entry" xml:space="preserve">
     <value>Entry</value>
@@ -2298,15 +2316,6 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>Volume</value>
-  </data>
-  <data name="UnitCardinality_Multiple" xml:space="preserve">
-    <value>Multiple</value>
-  </data>
-  <data name="UnitCardinality_None" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="UnitCardinality_Single" xml:space="preserve">
-    <value>Single</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>Units</value>

@@ -96,8 +96,7 @@ SET NOCOUNT ON;
 				[JobVisibility],
 				[BankAccountNumberVisibility],
 
-				[UserVisibility],
-				[AllowMultipleUsers],
+				[UserCardinality],
 
 				[MainMenuIcon],
 				[MainMenuSection],
@@ -189,8 +188,7 @@ SET NOCOUNT ON;
 				t.[JobVisibility]		= s.[JobVisibility],
 				t.[BankAccountNumberVisibility]
 										= s.[BankAccountNumberVisibility],
-				t.[UserVisibility]		= s.[UserVisibility],
-				t.[AllowMultipleUsers]	= s.[AllowMultipleUsers],
+				t.[UserCardinality]		= s.[UserCardinality],
 		
 				t.[MainMenuIcon]		= s.[MainMenuIcon],
 				t.[MainMenuSection]		= s.[MainMenuSection],
@@ -272,8 +270,7 @@ SET NOCOUNT ON;
 				[JobVisibility],
 				[BankAccountNumberVisibility],
 
-				[UserVisibility],
-				[AllowMultipleUsers],
+				[UserCardinality],
 				[MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
 				s.[CurrencyVisibility],
@@ -350,8 +347,7 @@ SET NOCOUNT ON;
 				s.[JobVisibility],
 				s.[BankAccountNumberVisibility],
 
-				s.[UserVisibility],
-				s.[AllowMultipleUsers],
+				s.[UserCardinality],
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
