@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[Centers] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[Centers] BE ON FE.[Name] = BE.[Name] AND FE.[CenterType] = BE.[CenterType]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -63,7 +63,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE
-	JOIN [dbo].[Centers] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[Centers] BE ON FE.[Name2] = BE.[Name2] AND FE.[CenterType] = BE.[CenterType]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -73,7 +73,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE
-	JOIN [dbo].[Centers] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[Centers] BE ON FE.[Name3] = BE.[Name3] AND FE.[CenterType] = BE.[CenterType]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list
@@ -86,7 +86,7 @@ SET NOCOUNT ON;
 	WHERE [Name] IN (
 		SELECT [Name]
 		FROM @Entities
-		GROUP BY [Name]
+		GROUP BY [Name], [CenterType]
 		HAVING COUNT(*) > 1
 	);
 
@@ -101,7 +101,7 @@ SET NOCOUNT ON;
 		SELECT [Name2]
 		FROM @Entities
 		WHERE [Name2] IS NOT NULL
-		GROUP BY [Name2]
+		GROUP BY [Name2], [CenterType]
 		HAVING COUNT(*) > 1
 	);
 
