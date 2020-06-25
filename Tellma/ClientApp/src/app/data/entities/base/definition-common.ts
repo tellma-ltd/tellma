@@ -6,7 +6,7 @@ import { TenantWorkspace } from '../../workspace.service';
 // tslint:disable:max-line-length
 export type DefinitionVisibility = 'None' | 'Optional' | 'Required';
 export type DefinitionCardinality = 'None' | 'Single' | 'Multiple';
-export type DefinitionState = 'Draft' | 'Deployed' | 'Archived';
+export type DefinitionState = 'Hidden' | 'Visible' | 'Archived';
 export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie'; // TODO
 
@@ -20,6 +20,19 @@ export function visibilityPropDescriptor(name: string, trx: TranslateService): C
         label: () => trx.instant('Field0Visibility', { 0: trx.instant(name) }),
         choices: ['None', 'Optional', 'Required'],
         format: (c: string) => trx.instant('Visibility_' + c)
+    };
+}
+
+/**
+ * Returns the PropDescriptor of a definition cardinality property, many definition
+ * cardinality properties (e.g Unit Cardinality) have very similar descriptions
+ */
+export function cardinalityPropDescriptor(name: string, trx: TranslateService): ChoicePropDescriptor {
+    return {
+        control: 'choice',
+        label: () => trx.instant(name),
+        choices: ['None', 'Single', 'Multiple'],
+        format: (c: string) => trx.instant('Cardinality_' + c)
     };
 }
 

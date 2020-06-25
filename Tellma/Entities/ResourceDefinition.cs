@@ -262,6 +262,9 @@ namespace Tellma.Entities
         [VisibilityDisplay(Name = "Entity_Text2"), VisibilityChoiceList]
         public string Text2Visibility { get; set; }
 
+        [Display(Name = "Definition_Script")]
+        public string Script { get; set; }
+
         #endregion
 
         #region Resources Only
@@ -301,7 +304,7 @@ namespace Tellma.Entities
 
         [Display(Name = "ResourceDefinition_UnitCardinality")]
         [ChoiceList(new object[] { "None", "Single", "Multiple" }, 
-            new string[] { "UnitCardinality_None", "UnitCardinality_Single", "UnitCardinality_Multiple" })]
+            new string[] { "Cardinality_None", "Cardinality_Single", "Cardinality_Multiple" })]
         [StringLength(50)]
         public string UnitCardinality { get; set; }
 
@@ -334,8 +337,8 @@ namespace Tellma.Entities
     public class ResourceDefinition : ResourceDefinitionForSave
     {
         [Display(Name = "Definition_State")]
-        [ChoiceList(new object[] { "Draft", "Deployed", "Archived" },
-            new string[] { "Definition_State_Draft", "Definition_State_Deployed", "Definition_State_Archived" })]
+        [ChoiceList(new object[] { "Hidden", "Visible", "Archived" },
+            new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
         [AlwaysAccessible]
         public string State { get; set; }
 

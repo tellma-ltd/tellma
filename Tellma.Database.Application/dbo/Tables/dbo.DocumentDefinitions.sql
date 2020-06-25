@@ -25,7 +25,7 @@
 	--[CreditContractDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__CreditAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	--[NotedContractDefinitionId]	NVARCHAR (50)	CONSTRAINT [FK_DocumentDefinitions__NotedAgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[ClearanceVisibility]		NVARCHAR (50)	NOT NULL DEFAULT N'None' CHECK ([ClearanceVisibility] IN (N'None', N'Optional', N'Required')),
-	[State]						NVARCHAR (50)	DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu
 	[MainMenuSortKey]			DECIMAL (9,4),

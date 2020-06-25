@@ -928,32 +928,129 @@ namespace Tellma.Controllers
         /// and - if it's a navigation property - the target definitionId
         /// </summary>
         private static DefinitionPropOverrides ContractPropertyOverrides(
-            ContractDefinitionForClient def,
-            SettingsForClient settings,
-            PropertyInfo propInfo,
-            Func<string> display)
+    ContractDefinitionForClient def,
+    SettingsForClient settings,
+    PropertyInfo propInfo,
+    Func<string> display)
         {
             bool isRequired = false;
 
             switch (propInfo.Name)
             {
+                // Common with Resources
+
+                case nameof(Contract.Description):
+                case nameof(Contract.Description2):
+                case nameof(Contract.Description3):
+                    display = PropertyDisplay(def.DescriptionVisibility, display);
+                    isRequired = def.DescriptionVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Location):
+                case nameof(Contract.LocationJson):
+                case nameof(Contract.LocationWkb):
+                    display = PropertyDisplay(def.LocationVisibility, display);
+                    isRequired = def.LocationVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.FromDate):
+                    display = PropertyDisplay(settings, def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
+                    isRequired = def.FromDateVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.ToDate):
+                    display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
+                    isRequired = def.ToDateVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Decimal1):
+                    display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
+                    isRequired = def.Decimal1Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Decimal2):
+                    display = PropertyDisplay(settings, def.Decimal2Visibility, def.Decimal2Label, def.Decimal2Label2, def.Decimal2Label3, display);
+                    isRequired = def.Decimal2Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Int1):
+                    display = PropertyDisplay(settings, def.Int1Visibility, def.Int1Label, def.Int1Label2, def.Int1Label3, display);
+                    isRequired = def.Int1Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Int2):
+                    display = PropertyDisplay(settings, def.Int2Visibility, def.Int2Label, def.Int2Label2, def.Int2Label3, display);
+                    isRequired = def.Int2Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Text1):
+                    display = PropertyDisplay(settings, def.Text1Visibility, def.Text1Label, def.Text1Label2, def.Text1Label3, display);
+                    isRequired = def.Text1Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Text2):
+                    display = PropertyDisplay(settings, def.Text2Visibility, def.Text2Label, def.Text2Label2, def.Text2Label3, display);
+                    isRequired = def.Text2Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Currency):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                    isRequired = def.CurrencyVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.CurrencyId):
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
+                    isRequired = def.CurrencyVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Center):
+                    display = PropertyDisplay(def.CenterVisibility, display);
+                    isRequired = def.CenterVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.CenterId):
+                    display = PropertyDisplay(def.CenterVisibility, display);
+                    isRequired = def.CenterVisibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup1):
+                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
+                    isRequired = def.Lookup1Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup1Id):
+                    display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
+                    isRequired = def.Lookup1Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup2):
+                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
+                    isRequired = def.Lookup2Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup2Id):
+                    display = PropertyDisplay(settings, def.Lookup2Visibility, def.Lookup2Label, def.Lookup2Label2, def.Lookup2Label3, display);
+                    isRequired = def.Lookup2Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup3):
+                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
+                    isRequired = def.Lookup3Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup3Id):
+                    display = PropertyDisplay(settings, def.Lookup3Visibility, def.Lookup3Label, def.Lookup3Label2, def.Lookup3Label3, display);
+                    isRequired = def.Lookup3Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup4):
+                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
+                    isRequired = def.Lookup4Visibility == Visibility.Required;
+                    break;
+                case nameof(Contract.Lookup4Id):
+                    display = PropertyDisplay(settings, def.Lookup4Visibility, def.Lookup4Label, def.Lookup4Label2, def.Lookup4Label3, display);
+                    isRequired = def.Lookup4Visibility == Visibility.Required;
+                    break;
+
+                //case nameof(Contract.Lookup5):
+                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
+                //    isRequired = def.Lookup5Visibility == Visibility.Required;
+                //    break;
+                //case nameof(Contract.Lookup5Id):
+                //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
+                //    isRequired = def.Lookup5Visibility == Visibility.Required;
+                //    break;
+
+                // Contracts Only
+
                 case nameof(Contract.AgentId):
                 case nameof(Contract.Agent):
                     display = PropertyDisplay(def.AgentVisibility, display);
                     isRequired = def.AgentVisibility == Visibility.Required;
                     break;
-                case nameof(Contract.CurrencyId):
-                case nameof(Contract.Currency):
-                    display = PropertyDisplay(def.CurrencyVisibility, display);
-                    isRequired = def.CurrencyVisibility == Visibility.Required;
-                    break;
                 case nameof(Contract.TaxIdentificationNumber):
                     display = PropertyDisplay(def.TaxIdentificationNumberVisibility, display);
                     isRequired = def.TaxIdentificationNumberVisibility == Visibility.Required;
-                    break;
-                case nameof(Contract.StartDate):
-                    display = PropertyDisplay(settings, def.StartDateVisibility, def.StartDateLabel, def.StartDateLabel2, def.StartDateLabel3, display);
-                    isRequired = def.StartDateVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.JobId):
                     display = PropertyDisplay(def.JobVisibility, display);
@@ -963,24 +1060,29 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.BankAccountNumberVisibility, display);
                     isRequired = def.BankAccountNumberVisibility == Visibility.Required;
                     break;
-                case nameof(Contract.User):
-                    if (def.UserVisibility != null && def.AllowMultipleUsers)
+                case nameof(Contract.Users):
+                    if (def.UserCardinality == null)
                     {
                         display = null;
-                        isRequired = false;
-                    }
-                    else
-                    {
-                        display = PropertyDisplay(def.UserVisibility, display);
-                        isRequired = def.UserVisibility == Visibility.Required;
                     }
                     break;
             }
 
+            int? targetDefId = propInfo.Name switch
+            {
+                nameof(Contract.Lookup1) => def.Lookup1DefinitionId,
+                nameof(Contract.Lookup2) => def.Lookup2DefinitionId,
+                nameof(Contract.Lookup3) => def.Lookup3DefinitionId,
+                nameof(Contract.Lookup4) => def.Lookup4DefinitionId,
+                //nameof(Contract.Lookup5) =>  def.Lookup5DefinitionId,
+                _ => null,
+            };
+
             return new DefinitionPropOverrides
             {
                 Display = display,
-                IsRequired = isRequired
+                IsRequired = isRequired,
+                DefinitionId = targetDefId,
             };
         }
 

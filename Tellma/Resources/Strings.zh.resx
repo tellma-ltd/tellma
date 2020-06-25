@@ -241,6 +241,15 @@
   <data name="Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
+  <data name="Cardinality_Multiple" xml:space="preserve">
+    <value>多</value>
+  </data>
+  <data name="Cardinality_None" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>单</value>
+  </data>
   <data name="Cell0" xml:space="preserve">
     <value>细胞{0}</value>
   </data>
@@ -331,14 +340,8 @@
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>银行帐号</value>
   </data>
-  <data name="Contract_Currency" xml:space="preserve">
-    <value>货币</value>
-  </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>工作</value>
-  </data>
-  <data name="Contract_StartDate" xml:space="preserve">
-    <value>开始日期</value>
   </data>
   <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
@@ -346,17 +349,29 @@
   <data name="Contract_User" xml:space="preserve">
     <value>用户</value>
   </data>
+  <data name="Contract_Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
   <data name="ContractDefinition" xml:space="preserve">
     <value>契约定义</value>
   </data>
-  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
-    <value>允许多个用户</value>
+  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
+    <value>用户基数</value>
   </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>合同定义</value>
   </data>
   <data name="Contracts" xml:space="preserve">
     <value>代理</value>
+  </data>
+  <data name="ContractUser" xml:space="preserve">
+    <value>合同用户</value>
+  </data>
+  <data name="ContractUser_User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="ContractUsers" xml:space="preserve">
+    <value>合约用户</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>版权所有©{0}巴南IT，Ltd.保留所有权利。</value>
@@ -403,17 +418,20 @@
   <data name="DefaultError" xml:space="preserve">
     <value>发生未知故障。</value>
   </data>
+  <data name="Definition_Script" xml:space="preserve">
+    <value>脚本</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
   </data>
   <data name="Definition_State_Archived" xml:space="preserve">
     <value>存档</value>
   </data>
-  <data name="Definition_State_Deployed" xml:space="preserve">
-    <value>部署</value>
+  <data name="Definition_State_Hidden" xml:space="preserve">
+    <value>隐</value>
   </data>
-  <data name="Definition_State_Draft" xml:space="preserve">
-    <value>草案</value>
+  <data name="Definition_State_Visible" xml:space="preserve">
+    <value>可见</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>描述</value>
@@ -2298,15 +2316,6 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>体积</value>
-  </data>
-  <data name="UnitCardinality_Multiple" xml:space="preserve">
-    <value>多</value>
-  </data>
-  <data name="UnitCardinality_None" xml:space="preserve">
-    <value>没有</value>
-  </data>
-  <data name="UnitCardinality_Single" xml:space="preserve">
-    <value>单</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>测量单位</value>

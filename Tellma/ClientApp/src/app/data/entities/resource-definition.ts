@@ -6,7 +6,7 @@ import { EntityDescriptor, ChoicePropDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor, DefinitionCardinality, cardinalityPropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 
 export interface ResourceDefinitionForSave extends EntityForSave {
@@ -84,6 +84,8 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     Text2Label3?: string;
     Text2Visibility?: Visibility;
 
+    Script?: string;
+
     // Resources Only
 
     IdentifierLabel?: string;
@@ -95,6 +97,7 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     ResidualValueVisibility?: Visibility;
     ReorderLevelVisibility?: Visibility;
     EconomicOrderQuantityVisibility?: Visibility;
+    UnitCardinality?: DefinitionCardinality;
     MonetaryValueVisibility?: Visibility;
 
     // Main Menu
@@ -206,6 +209,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 Text2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.secondaryPostfix },
                 Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.ternaryPostfix },
                 Text2Visibility: visibilityPropDescriptor('Entity_Text2', trx),
+                Script: { control: 'text', label: () => trx.instant('Definition_Script') },
 
                 // Resource Only
 
@@ -218,6 +222,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 ResidualValueVisibility: visibilityPropDescriptor('Resource_ResidualValue', trx),
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),
+                UnitCardinality: cardinalityPropDescriptor('ResourceDefinition_UnitCardinality', trx),
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),

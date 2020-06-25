@@ -241,6 +241,15 @@
   <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
+  <data name="Cardinality_Multiple" xml:space="preserve">
+    <value>متعدد</value>
+  </data>
+  <data name="Cardinality_None" xml:space="preserve">
+    <value>بدون</value>
+  </data>
+  <data name="Cardinality_Single" xml:space="preserve">
+    <value>مفرد</value>
+  </data>
   <data name="Cell0" xml:space="preserve">
     <value>الخانة {0}</value>
   </data>
@@ -331,14 +340,8 @@
   <data name="Contract_BankAccountNumber" xml:space="preserve">
     <value>رقم حساب البنك</value>
   </data>
-  <data name="Contract_Currency" xml:space="preserve">
-    <value>العملة</value>
-  </data>
   <data name="Contract_Job" xml:space="preserve">
     <value>الوظيفة</value>
-  </data>
-  <data name="Contract_StartDate" xml:space="preserve">
-    <value>تاريخ البدأ</value>
   </data>
   <data name="Contract_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم التعريف الضريبي</value>
@@ -346,17 +349,29 @@
   <data name="Contract_User" xml:space="preserve">
     <value>المستخدم</value>
   </data>
+  <data name="Contract_Users" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
   <data name="ContractDefinition" xml:space="preserve">
     <value>تعريف عقد</value>
   </data>
-  <data name="ContractDefinition_AllowMultipleUsers" xml:space="preserve">
-    <value>يجوز تعدد المستخدمين</value>
+  <data name="ContractDefinition_UserCardinality" xml:space="preserve">
+    <value>عدد المستخدمين</value>
   </data>
   <data name="ContractDefinitions" xml:space="preserve">
     <value>تعريفات العقود</value>
   </data>
   <data name="Contracts" xml:space="preserve">
     <value>عقود</value>
+  </data>
+  <data name="ContractUser" xml:space="preserve">
+    <value>مستخدم عقد</value>
+  </data>
+  <data name="ContractUser_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="ContractUsers" xml:space="preserve">
+    <value>مستخدمو عقد</value>
   </data>
   <data name="CopyrightNotice0" xml:space="preserve">
     <value>تلما لتقنية المعلومات © {0} جميع الحقوق محفوظة</value>
@@ -403,17 +418,20 @@
   <data name="DefaultError" xml:space="preserve">
     <value>حدث خطأ غير معروف.</value>
   </data>
+  <data name="Definition_Script" xml:space="preserve">
+    <value>كود</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>الحالة</value>
   </data>
   <data name="Definition_State_Archived" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
-  <data name="Definition_State_Deployed" xml:space="preserve">
-    <value>مفعل</value>
+  <data name="Definition_State_Hidden" xml:space="preserve">
+    <value>مخفى</value>
   </data>
-  <data name="Definition_State_Draft" xml:space="preserve">
-    <value>جديد</value>
+  <data name="Definition_State_Visible" xml:space="preserve">
+    <value>ظاهر</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>البيان</value>
@@ -683,7 +701,7 @@
     <value>الصفة العشرية 2</value>
   </data>
   <data name="Entity_FromDate" xml:space="preserve">
-    <value>متاح من</value>
+    <value>من تاريخ</value>
   </data>
   <data name="Entity_Int1" xml:space="preserve">
     <value>الصفة العددية 1</value>
@@ -719,7 +737,7 @@
     <value>الصفة النصية 2</value>
   </data>
   <data name="Entity_ToDate" xml:space="preserve">
-    <value>متاح إلى</value>
+    <value>إلى تاريخ</value>
   </data>
   <data name="Entry" xml:space="preserve">
     <value>حركة</value>
@@ -2298,15 +2316,6 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>حجم</value>
-  </data>
-  <data name="UnitCardinality_Multiple" xml:space="preserve">
-    <value>متعدد</value>
-  </data>
-  <data name="UnitCardinality_None" xml:space="preserve">
-    <value>بدون</value>
-  </data>
-  <data name="UnitCardinality_Single" xml:space="preserve">
-    <value>مفرد</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>وحدات</value>

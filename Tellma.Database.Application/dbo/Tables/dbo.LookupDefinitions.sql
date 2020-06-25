@@ -8,7 +8,7 @@
 	[TitlePlural]				NVARCHAR (255),
 	[TitlePlural2]				NVARCHAR (255),
 	[TitlePlural3]				NVARCHAR (255),
-	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	[State]						NVARCHAR (50)	NOT NULL DEFAULT N'Hidden' CHECK([State] IN (N'Hidden', N'Visible', N'Archived')),	-- Visible, Readonly (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
 	[MainMenuSection]			NVARCHAR (50),			-- Required when the state is "Deployed"
 	[MainMenuSortKey]			DECIMAL (9,4),
