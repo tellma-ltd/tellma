@@ -32,13 +32,13 @@
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name]
-  ON [dbo].[Centers]([Name]);
+  ON [dbo].[Centers]([CenterType], [Name]);
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name2]
-  ON [dbo].[Centers]([Name2]) WHERE [Name2] IS NOT NULL;
+  ON [dbo].[Centers]([CenterType], [Name2]) WHERE [Name2] IS NOT NULL;
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name3]
-  ON [dbo].[Centers]([Name3]) WHERE [Name3] IS NOT NULL;
+  ON [dbo].[Centers]([CenterType], [Name3]) WHERE [Name3] IS NOT NULL;
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Code]
   ON [dbo].[Centers]([Code]) WHERE [Code] IS NOT NULL;

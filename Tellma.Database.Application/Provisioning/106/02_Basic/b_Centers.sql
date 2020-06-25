@@ -76,49 +76,66 @@ BEGIN
 END;
 
 -- Declarations
-DECLARE @106C_Soreti INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti');
-DECLARE @106C_General INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'General');
-DECLARE @106C_Management INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Management');
-DECLARE @106C_Finance INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Finance');
-DECLARE @106C_IT INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'IT');
-DECLARE @106C_SoretiAdminSharedExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti Admin - Shared Expenses');
-DECLARE @106C_Trading INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Trading');
-DECLARE @106C_GrainsFactoriesSite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Grains Factories - Site 1');
-DECLARE @106C_GrainsFactoriesSite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Grains Factories - Site 2');
-DECLARE @106C_Export INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export');
-DECLARE @106C_ExportCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export - Cost of Sales');
-DECLARE @106C_ExportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export - SGA');
-DECLARE @106C_ExportFactorySite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export Factory - Site 1');
-DECLARE @106C_ExportFactorySite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Export Factory - Site 2');
-DECLARE @106C_Import INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import');
-DECLARE @106C_ImportCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import - Cost of sales');
-DECLARE @106C_ImportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import - SGA');
-DECLARE @106C_ImportLC#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import - LC #1');
-DECLARE @106C_ImportLC#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import - LC #2');
-DECLARE @106C_ImportLC#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Import - LC #3');
-DECLARE @106C_AgroProcessing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Agro Processing');
-DECLARE @106C_AgroProcessingCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Agro Processing - Cost of Sales');
-DECLARE @106C_AgroProcessingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Agro Processing - SGA');
-DECLARE @106C_AgroProcessingProduction INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Agro Processing - Production');
-DECLARE @106C_Manufacturing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing');
-DECLARE @106C_ManufacturingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - Cost of sales');
-DECLARE @106C_ManufacturingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - SGA');
-DECLARE @106C_ManufacturingLC#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - LC #1');
-DECLARE @106C_ManufacturingLC#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - LC #2');
-DECLARE @106C_ManufacturingLC#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - LC #3');
-DECLARE @106C_ManufacturingJO#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - JO #1');
-DECLARE @106C_ManufacturingJO#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - JO #2');
-DECLARE @106C_ManufacturingJO#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Manufacturing - JO #3');
-DECLARE @106C_LocalTrade INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Local Trade');
-DECLARE @106C_LocalTradeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Local Trade - Cost of Sales');
-DECLARE @106C_LocalTradeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Local Trade - SGA');
-DECLARE @106C_LocalTradeFactorySite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Local Trade Factory - Site 1');
-DECLARE @106C_LocalTradeFactorySite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Local Trade Factory - Site 2');
-DECLARE @106C_RealEstate INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Real Estate');
-DECLARE @106C_SoretiMall INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti Mall');
-DECLARE @106C_SoretiMallCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti Mall - Cost of sales');
-DECLARE @106C_SoretiMallSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'Soreti Mall - SGA');
-DECLARE @106C_AABuilding INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'AA Building');
-DECLARE @106C_AABuildingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'AA Building - Cost of sales');
-DECLARE @106C_AABuildingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'AA Building - SGA');
-DECLARE @106C_AABuildingUnderConstruction INT = (SELECT [Id] FROM dbo.[Centers] WHERE [Name] = N'AA Building - Under Construction');
+DECLARE @106C_Soreti INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Soreti');
+
+DECLARE @106C_General INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'General');
+DECLARE @106C_Management INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Management');
+DECLARE @106C_Finance INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Finance');
+DECLARE @106C_IT INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'IT');
+DECLARE @106C_SoretiAdminSharedExpenses INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Soreti Admin - Shared Expenses');
+
+
+DECLARE @106C_Trading INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Trading');
+
+DECLARE @106C_GrainsFactoriesSite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Grains Factories - Site 1');
+DECLARE @106C_GrainsFactoriesSite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Grains Factories - Site 2');
+
+DECLARE @106C_Export INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Export');
+DECLARE @106C_ExportCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Export - Cost of Sales');
+DECLARE @106C_ExportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Export - SGA');
+
+DECLARE @106C_ExportFactorySite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Export Factory - Site 1');
+DECLARE @106C_ExportFactorySite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Export Factory - Site 2');
+
+DECLARE @106C_Import INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import');
+DECLARE @106C_ImportCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import - Cost of sales');
+DECLARE @106C_ImportSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import - SGA');
+
+DECLARE @106C_ImportLC#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import - LC #1');
+DECLARE @106C_ImportLC#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import - LC #2');
+DECLARE @106C_ImportLC#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Import - LC #3');
+
+DECLARE @106C_AgroProcessing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Agro Processing');
+DECLARE @106C_AgroProcessingCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Agro Processing - Cost of Sales');
+DECLARE @106C_AgroProcessingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Agro Processing - SGA');
+DECLARE @106C_AgroProcessingProduction INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Agro Processing - Production');
+
+DECLARE @106C_Manufacturing INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing');
+DECLARE @106C_ManufacturingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - Cost of sales');
+DECLARE @106C_ManufacturingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - SGA');
+
+DECLARE @106C_ManufacturingLC#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - LC #1');
+DECLARE @106C_ManufacturingLC#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - LC #2');
+DECLARE @106C_ManufacturingLC#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - LC #3');
+
+DECLARE @106C_ManufacturingJO#1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - JO #1');
+DECLARE @106C_ManufacturingJO#2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - JO #2');
+DECLARE @106C_ManufacturingJO#3 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Manufacturing - JO #3');
+
+DECLARE @106C_LocalTrade INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Local Trade');
+DECLARE @106C_LocalTradeCostofSales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Local Trade - Cost of Sales');
+DECLARE @106C_LocalTradeSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Local Trade - SGA');
+
+DECLARE @106C_LocalTradeFactorySite1 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Local Trade Factory - Site 1');
+DECLARE @106C_LocalTradeFactorySite2 INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Local Trade Factory - Site 2');
+
+DECLARE @106C_RealEstate INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Real Estate');
+
+DECLARE @106C_SoretiMall INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Soreti Mall');
+DECLARE @106C_SoretiMallCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Soreti Mall - Cost of sales');
+DECLARE @106C_SoretiMallSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'Soreti Mall - SGA');
+
+DECLARE @106C_AABuilding INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'AA Building');
+DECLARE @106C_AABuildingCostofsales INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'AA Building - Cost of sales');
+DECLARE @106C_AABuildingSGA INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'AA Building - SGA');
+DECLARE @106C_AABuildingUnderConstruction INT = (SELECT [Id] FROM dbo.[Centers] WHERE [CenterType] NOT IN (N'Segment',N'Abstract') AND [Name] = N'AA Building - Under Construction');
