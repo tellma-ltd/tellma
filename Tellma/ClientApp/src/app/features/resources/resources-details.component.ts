@@ -180,6 +180,40 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 
+  public get Image_isVisible(): boolean {
+    return !!this.definition.ImageVisibility;
+  }
+
+  public get Unit_isVisible(): boolean {
+    return this.definition.UnitCardinality === 'Single';
+  }
+
+  public getUnitId(model: ResourceForSave): number {
+    if (!!model && !!model.Units && !!model.Units[0]) {
+      return model.Units[0].UnitId;
+    }
+
+    return undefined;
+  }
+
+  public setUnitId(model: ResourceForSave, unitId: number): void {
+    if (!!model) {
+      if (!!unitId) {
+        model.Units = [{ UnitId: unitId, Multiplier: 1 }];
+      } else {
+        model.Units = [];
+      }
+    }
+  }
+
+  public get Units_isVisible(): boolean {
+    return this.definition.UnitCardinality === 'Multiple';
+  }
+
+  public get showTabs(): boolean {
+    return this.Units_isVisible || this.Location_isVisible;
+  }
+
   public get Identifier_isVisible(): boolean {
     return !!this.definition.IdentifierVisibility;
   }
@@ -237,6 +271,10 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public get Center_isRequired(): boolean {
     return this.definition.CenterVisibility === 'Required';
+  }
+
+  public get Center_label(): string {
+    return this.translate.instant('Entity_Center');
   }
 
   public ResidualMonetaryValue_isVisible(_: ResourceForSave): boolean {

@@ -41,7 +41,7 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
       result[propName] = none;
     }
 
-    result.AllowMultipleUsers = false;
+    result.UserCardinality = 'None';
 
     return result;
   }
@@ -110,10 +110,15 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
 
   public savePreprocessing(entity: ContractDefinition) {
     // Server validation on hidden properties will be confusing to the user
-    if (entity.StartDateVisibility === 'None') {
-      delete entity.StartDateLabel;
-      delete entity.StartDateLabel2;
-      delete entity.StartDateLabel3;
+    for (const prop of this.allVisibilityProps()) {
+      const value: DefinitionVisibility = entity[prop];
+      if (value === 'None') {
+        const woLabel = prop.substr(0, prop.length - 'Visibility'.length);
+        delete entity[woLabel + 'Label'];
+        delete entity[woLabel + 'Label2'];
+        delete entity[woLabel + 'Label3'];
+        delete entity[woLabel + 'DefinitionId'];
+      }
     }
   }
 

@@ -18,6 +18,9 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Services.BlobStorage;
+using Tellma.Services.MultiTenancy;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -35,6 +38,18 @@ namespace Tellma.Controllers
         {
             _service = service;
             _logger = logger;
+        }
+
+        [HttpGet("{id}/image")]
+        public async Task<ActionResult> GetImage(int id, CancellationToken cancellation)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var (imageId, imageBytes) = await _service.GetImage(id, cancellation);
+                Response.Headers.Add("x-image-id", imageId);
+                return File(imageBytes, "image/jpeg");
+
+            }, _logger);
         }
 
         [HttpPut("activate")]
@@ -74,6 +89,8 @@ namespace Tellma.Controllers
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
+        private readonly IBlobService _blobService;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly ISettingsCache _settingsCache;
         private readonly IHttpContextAccessor _contextAccessor;
 
@@ -123,6 +140,8 @@ namespace Tellma.Controllers
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
+            IBlobService blobService,
+            ITenantIdAccessor tenantIdAccessor,
             ISettingsCache settingsCache,
             IHttpContextAccessor contextAccessor,
             IServiceProvider sp) : base(sp)
@@ -130,8 +149,37 @@ namespace Tellma.Controllers
             _localizer = localizer;
             _repo = repo;
             _definitionsCache = definitionsCache;
+            _blobService = blobService;
+            _tenantIdAccessor = tenantIdAccessor;
             _settingsCache = settingsCache;
             _contextAccessor = contextAccessor;
+        }
+
+        public async Task<(string ImageId, byte[] ImageBytes)> GetImage(int id, CancellationToken cancellation)
+        {
+            // This enforces read permissions
+            var (resource, _) = await GetById(id, new GetByIdArguments { Select = nameof(Resource.ImageId) }, cancellation);
+            string imageId = resource.ImageId;
+
+            // Get the blob name
+            if (imageId != null)
+            {
+                // Get the bytes
+                string blobName = BlobName(imageId);
+                var imageBytes = await _blobService.LoadBlob(blobName, cancellation);
+
+                return (imageId, imageBytes);
+            }
+            else
+            {
+                throw new NotFoundException<int>(id);
+            }
+        }
+
+        private string BlobName(string guid)
+        {
+            int tenantId = _tenantIdAccessor.GetTenantId();
+            return $"{tenantId}/Resources/{guid}";
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)
@@ -176,6 +224,34 @@ namespace Tellma.Controllers
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
             //SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
             //SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
+
+            entities.ForEach(e =>
+            {
+                // Makes everything that follows easier
+                e.Units ??= new List<ResourceUnitForSave>();
+            });
+
+
+            // Units
+            if (def.UnitCardinality == Cardinality.None)
+            {
+                // Remove all units
+                entities.ForEach(entity =>
+                {
+                    entity.Units.Clear();
+                });
+            }
+            else if (def.UnitCardinality == Cardinality.Single)
+            {
+                // Remove all but the first unit
+                entities.ForEach(entity =>
+                {
+                    if (entity.Units.Count > 1)
+                    {
+                        entity.Units = entity.Units.Take(1).ToList();
+                    }
+                });
+            }
 
             var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
             var functionalId = settings.FunctionalCurrencyId;
@@ -256,7 +332,7 @@ namespace Tellma.Controllers
                         return;
                     }
                 });
-            } 
+            }
             else
             {
                 entities.ForEach(entity =>
@@ -287,11 +363,33 @@ namespace Tellma.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
+            var def = Definition();
+            var unitIsRequired = def.UnitCardinality != null; // "None" is mapped to null
+
             foreach (var (e, i) in entities.Select((e, i) => (e, i)))
             {
                 if (e.EntityMetadata.LocationJsonParseError != null)
                 {
                     ModelState.AddModelError($"[{i}].{nameof(e.LocationJson)}", e.EntityMetadata.LocationJsonParseError);
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        return;
+                    }
+                }
+
+                if (unitIsRequired && e.Units.Count == 0)
+                {
+                    string errorMsg;
+                    if (def.UnitCardinality == Cardinality.Single)
+                    {
+                        errorMsg = _localizer[Constants.Error_Field0IsRequired, _localizer["Resource_Unit"]];
+                    }
+                    else
+                    {
+                        errorMsg = _localizer["Error_AtLeastOneUnitIsRequired"];
+                    }
+
+                    ModelState.AddModelError($"[{i}].{nameof(e.Units)}", errorMsg);
                     if (ModelState.HasReachedMaxErrors)
                     {
                         return;
@@ -326,7 +424,28 @@ namespace Tellma.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, bool returnIds)
         {
-            return await _repo.Resources__Save(DefinitionId.Value, entities, returnIds: returnIds);
+            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Resource, ResourceForSave>(_repo, entities, BlobName);
+
+            // Save the Resources
+            var ids = await _repo.Resources__Save(
+                DefinitionId.Value,
+                entities,
+                imageIds: imageIds,
+                returnIds: returnIds);
+
+            // Delete the blobs retrieved earlier
+            if (blobsToDelete.Any())
+            {
+                await _blobService.DeleteBlobsAsync(blobsToDelete);
+            }
+
+            // Save new blobs if any
+            if (blobsToSave.Any())
+            {
+                await _blobService.SaveBlobsAsync(blobsToSave);
+            }
+
+            return ids;
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
@@ -341,9 +460,28 @@ namespace Tellma.Controllers
 
         protected override async Task DeleteExecuteAsync(List<int> ids)
         {
+            // For the entities we're about to delete retrieve their imageIds (if any) to delete from the blob storage
+            var dbEntitiesWithImageIds = await _repo.Resources
+                .Select(nameof(Resource.ImageId))
+                .Filter($"{nameof(Resource.ImageId)} ne null")
+                .FilterByIds(ids.ToArray())
+                .ToListAsync(cancellation: default);
+
+            var blobsToDelete = dbEntitiesWithImageIds
+                .Select(e => BlobName(e.ImageId))
+                .ToList();
+
             try
             {
+                using var trx = ControllerUtilities.CreateTransaction();
                 await _repo.Resources__Delete(ids);
+
+                if (blobsToDelete.Any())
+                {
+                    await _blobService.DeleteBlobsAsync(blobsToDelete);
+                }
+
+                trx.Complete();
             }
             catch (ForeignKeyViolationException)
             {

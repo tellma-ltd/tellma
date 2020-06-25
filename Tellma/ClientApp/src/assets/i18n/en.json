@@ -631,6 +631,7 @@
   "Resource_ReorderLevel": "Reorder Level",
   "Resource_ResidualMonetaryValue": "Residual Amount",
   "Resource_ResidualValue": "Residual Value",
+  "Resource_Unit": "Measurement Unit",
   "Resource_Units": "Measurement Units",
   "ResourceDefinition": "Resource Definition",
   "ResourceDefinition_UnitCardinality": "Unit Cardinality",

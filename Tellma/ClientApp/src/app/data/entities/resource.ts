@@ -10,22 +10,17 @@ import { ResourceUnitForSave, ResourceUnit } from './resource-unit';
 import { EntityForSave } from './base/entity-for-save';
 
 export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends EntityForSave {
+    // Common with Contract
     Name?: string;
     Name2?: string;
     Name3?: string;
-    Identifier?: string;
     Code?: string;
     CurrencyId?: string;
-    MonetaryValue?: number;
+    CenterId?: number;
     Description?: string;
     Description2?: string;
     Description3?: string;
     LocationJson?: string;
-    CenterId?: number;
-    ResidualMonetaryValue?: number;
-    ResidualValue?: number;
-    ReorderLevel?: number;
-    EconomicOrderQuantity?: number;
     FromDate?: string;
     ToDate?: string;
     Decimal1?: number;
@@ -39,18 +34,27 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     // Lookup5Id?: number;
     Text1?: string;
     Text2?: string;
+    Image?: string;
+
+    // Resource Only
+    Identifier?: string;
+    ResidualMonetaryValue?: number;
+    ResidualValue?: number;
+    ReorderLevel?: number;
+    EconomicOrderQuantity?: number;
+    MonetaryValue?: number;
     Units?: TResourceUnit[];
 }
 
 export interface Resource extends ResourceForSave<ResourceUnit> {
     DefinitionId?: number;
+    ImageId?: string;
     IsActive?: boolean;
     CreatedAt?: string;
     CreatedById?: number | string;
     ModifiedAt?: string;
     ModifiedById?: number | string;
 }
-
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
@@ -97,23 +101,15 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-                Identifier: { control: 'text', label: () => trx.instant('Resource_Identifier') },
-
                 Code: { control: 'text', label: () => trx.instant('Code') },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Entity_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Entity_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
+                CenterId: { control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Center: { control: 'navigation', label: () => trx.instant('Entity_Center'), type: 'Center', foreignKeyName: 'CenterId' },
                 Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
                 Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
                 Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
                 LocationJson: { control: 'text', label: () => trx.instant('Entity_LocationJson') },
-                CenterId: { control: 'number', label: () => `${trx.instant('Entity_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Center: { control: 'navigation', label: () => trx.instant('Entity_Center'), type: 'Center', foreignKeyName: 'CenterId' },
-
-                ResidualMonetaryValue: { control: 'number', label: () => trx.instant('Resource_ResidualMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                ResidualValue: { control: 'number', label: () => `${trx.instant('Resource_ResidualValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})` , minDecimalPlaces: functionalE, maxDecimalPlaces: functionalE, alignment: 'right' },
-                ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
 
                 FromDate: { control: 'date', label: () => trx.instant('Entity_FromDate') },
                 ToDate: { control: 'date', label: () => trx.instant('Entity_ToDate') },
@@ -133,6 +129,15 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 // Lookup5: { control: 'navigation', label: () => trx.instant('Entity_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
                 Text1: { control: 'text', label: () => trx.instant('Entity_Text1') },
                 Text2: { control: 'text', label: () => trx.instant('Entity_Text2') },
+
+                // Resource Only
+                Identifier: { control: 'text', label: () => trx.instant('Resource_Identifier') },
+                ResidualMonetaryValue: { control: 'number', label: () => trx.instant('Resource_ResidualMonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
+                ResidualValue: { control: 'number', label: () => `${trx.instant('Resource_ResidualValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`, minDecimalPlaces: functionalE, maxDecimalPlaces: functionalE, alignment: 'right' },
+                ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+                MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
+
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
@@ -176,14 +181,14 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility
-            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'ResidualMonetaryValue', 'ResidualValue']) {
+            for (const propName of ['ReorderLevel', 'EconomicOrderQuantity', 'ResidualMonetaryValue', 'ResidualValue', 'MonetaryValue']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 }
             }
 
             // Simple properties Visibility + Label
-            for (const propName of ['Identifier', 'MonetaryValue', 'FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
+            for (const propName of ['FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2', 'Identifier']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {
@@ -194,7 +199,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties
-            for (const propName of ['Currency', 'Center', 'AssetType', 'RevenueType', 'ExpenseType']) {
+            for (const propName of ['Currency', 'Center']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];
@@ -209,7 +214,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Navigation properties with definition Id
-            for (const propName of ['1', '2' , '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
+            for (const propName of ['1', '2', '3', '4', /*'5' */].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

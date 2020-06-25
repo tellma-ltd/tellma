@@ -7,51 +7,51 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Resource", Plural = "Resources")]
-    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave
+    public class ResourceForSaveBase<TResourceUnit> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name { get; set; }
+        public string Name { get; set; } // Check
 
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name2 { get; set; }
+        public string Name2 { get; set; } // Check
 
         [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Name3 { get; set; }
+        public string Name3 { get; set; } // Check
 
         [Display(Name = "Code")]
         [StringLength(255)]
         [AlwaysAccessible]
-        public string Code { get; set; }
+        public string Code { get; set; } // Check
 
         #region Common with Contract
 
         [Display(Name = "Entity_Currency")]
-        public string CurrencyId { get; set; }
+        public string CurrencyId { get; set; } // Check
 
         [Display(Name = "Entity_Center")]
-        public int? CenterId { get; set; }
+        public int? CenterId { get; set; } // Check
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description { get; set; }
+        public string Description { get; set; } // Check
 
         [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description2 { get; set; }
+        public string Description2 { get; set; } // Check
 
         [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
         [StringLength(2048)]
         [AlwaysAccessible]
-        public string Description3 { get; set; }
+        public string Description3 { get; set; } // Check
 
         [Display(Name = "Entity_LocationJson")]
         public string LocationJson { get; set; }
@@ -60,45 +60,49 @@ namespace Tellma.Entities
         public byte[] LocationWkb { get; set; } 
 
         [Display(Name = "Entity_FromDate")]
-        public DateTime? FromDate { get; set; }
+        public DateTime? FromDate { get; set; } // Check
 
         [Display(Name = "Entity_ToDate")]
-        public DateTime? ToDate { get; set; }
+        public DateTime? ToDate { get; set; } // Check
 
         [Display(Name = "Entity_Decimal1")]
-        public decimal? Decimal1 { get; set; }
+        public decimal? Decimal1 { get; set; } // Check
 
         [Display(Name = "Entity_Decimal2")]
-        public decimal? Decimal2 { get; set; }
+        public decimal? Decimal2 { get; set; } // Check
 
         [Display(Name = "Entity_Int1")]
-        public int? Int1 { get; set; }
+        public int? Int1 { get; set; } // Check
 
         [Display(Name = "Entity_Int2")]
-        public int? Int2 { get; set; }
+        public int? Int2 { get; set; } // Check
 
         [Display(Name = "Entity_Lookup1")]
-        public int? Lookup1Id { get; set; }
+        public int? Lookup1Id { get; set; } // Check
 
         [Display(Name = "Entity_Lookup2")]
-        public int? Lookup2Id { get; set; }
+        public int? Lookup2Id { get; set; } // Check
 
         [Display(Name = "Entity_Lookup3")]
-        public int? Lookup3Id { get; set; }
+        public int? Lookup3Id { get; set; } // Check
 
         [Display(Name = "Entity_Lookup4")]
-        public int? Lookup4Id { get; set; }
+        public int? Lookup4Id { get; set; } // Check
 
         //[Display(Name = "Entity_Lookup5")]
         //public int? Lookup5Id { get; set; }
-        
+
         [Display(Name = "Entity_Text1")]
         [StringLength(255)]
-        public string Text1 { get; set; }
+        public string Text1 { get; set; } // Check
 
         [Display(Name = "Entity_Text2")]
         [StringLength(255)]
-        public string Text2 { get; set; }
+        public string Text2 { get; set; } // Check
+
+        [NotMapped]
+        [Display(Name = "Image")]
+        public byte[] Image { get; set; }
 
         #endregion
 
@@ -107,22 +111,22 @@ namespace Tellma.Entities
         [Display(Name = "Resource_Identifier")]
         [StringLength(10)]
         [AlwaysAccessible]
-        public string Identifier { get; set; }
+        public string Identifier { get; set; } // Check
 
         [Display(Name = "Resource_ResidualMonetaryValue")]
-        public decimal? ResidualMonetaryValue { get; set; }
+        public decimal? ResidualMonetaryValue { get; set; } // Check
 
         [Display(Name = "Resource_ResidualValue")]
-        public decimal? ResidualValue { get; set; }
+        public decimal? ResidualValue { get; set; } // Check
 
         [Display(Name = "Resource_ReorderLevel")]
-        public decimal? ReorderLevel { get; set; }
+        public decimal? ReorderLevel { get; set; } // Check
 
         [Display(Name = "Resource_EconomicOrderQuantity")]
-        public decimal? EconomicOrderQuantity { get; set; }
+        public decimal? EconomicOrderQuantity { get; set; } // Check
 
         [Display(Name = "Resource_MonetaryValue")]
-        public decimal? MonetaryValue { get; set; }
+        public decimal? MonetaryValue { get; set; } // Check
 
         [Display(Name = "Resource_Units")]
         [ForeignKey(nameof(ResourceUnit.ResourceId))]
@@ -136,7 +140,7 @@ namespace Tellma.Entities
 
     }
 
-    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity
+    public class Resource : ResourceForSaveBase<ResourceUnit>, ILocationEntity, IEntityWithImage
     {
         [Display(Name = "Definition")]
         public int? DefinitionId { get; set; }

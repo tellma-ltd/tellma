@@ -1957,6 +1957,9 @@
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>ትራፊ እሴት</value>
   </data>
+  <data name="Resource_Unit" xml:space="preserve">
+    <value>የመለኪያ አሃድ</value>
+  </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>
   </data>

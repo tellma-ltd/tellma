@@ -25,7 +25,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <t-form-group class="col-12 mb-2 mb-sm-4 t-h2"
+    <t-form-group class="col-12 col-md-8 mb-2 mb-sm-4 t-h2"
         [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
@@ -42,6 +42,17 @@
             [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
         </t-text-editor>
     </t-form-group>
+
+    <!-- Image -->
+    <div class="col-12 col-md-4 t-details-image-container" *ngIf="Image_isVisible">
+        <t-restricted [metadata]="model?.EntityMetadata?.ImageId">
+            <div class="border">
+                <t-image *ngIf="!!model"
+                    [src]="model.Id ? 'resources/' + definitionId + '/' + model.Id + '/image' : null"
+                    [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit" icon="camera"></t-image>
+            </div>
+        </t-restricted>
+    </div>
 
     <!-- Name -->
     <t-form-group class="t-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
@@ -71,17 +82,6 @@
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
     </t-form-group>
 
-    <!-- Identifier -->
-    <t-form-group *ngIf="Identifier_isVisible" class="t-form-group" [label]="Identifier_label"
-        [serverErrors]="model?.serverErrors?.Identifier">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Identifier">
-            <div>{{ model?.Identifier }}</div>
-        </t-restricted>
-        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Identifier_isRequired">
-        </t-text-editor>
-    </t-form-group>
-
     <!-- Currency -->
     <t-form-group *ngIf="Currency_isVisible" class="t-form-group" [label]="Currency_label"
         [serverErrors]="model?.serverErrors?.CurrencyId">
@@ -94,61 +94,30 @@
         </t-currencies-picker>
     </t-form-group>
 
-    <!-- MonetaryValue -->
-    <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
-        [serverErrors]="model?.serverErrors?.MonetaryValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
-            <div>
-                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
-            </div>
+
+    <!-- Unit -->
+    <t-form-group *ngIf="Unit_isVisible" class="t-form-group" [label]="'Resource_Unit' | translate"
+        [serverErrors]="model?.serverErrors?.Units">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Units">
+            <t-view-link link="../../../units" [itemId]="getUnitId(model)">
+                {{ ws.getMultilingualValue('Unit', getUnitId(model), 'Name') }}
+            </t-view-link>
         </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
-            [maxDecimalPlaces]="MonetaryValue_decimals(model)">
-        </t-decimal-editor>
+        <t-units-picker *ngIf="isEdit" [ngModel]="getUnitId(model)" (ngModelChange)="setUnitId(model, $event)"
+            [required]="true">
+        </t-units-picker>
     </t-form-group>
 
     <!-- Center -->
-    <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="'Entity_Center' | translate"
+    <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="Center_label"
         [serverErrors]="model?.serverErrors?.CenterId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Center">
             <t-view-link link="../../../centers" [itemId]="model?.CenterId">
                 {{ ws.getMultilingualValue('Center', model.CenterId, 'Name') }}
             </t-view-link>
         </t-restricted>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true"
-            [required]="Center_isRequired">
+        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" [required]="Center_isRequired">
         </t-centers-picker>
-    </t-form-group>
-
-    <!-- ResidualMonetaryValue -->
-    <t-form-group *ngIf="ResidualMonetaryValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualMonetaryValue' | translate) + currencyPostfix(model)"
-        [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualMonetaryValue">
-            <div>
-                {{ model?.ResidualMonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
-            </div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualMonetaryValue"
-            [ngModelOptions]="{ updateOn: 'blur' }" [required]="ResidualMonetaryValue_isRequired"
-            [minDecimalPlaces]="MonetaryValue_decimals(model)" [maxDecimalPlaces]="MonetaryValue_decimals(model)">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- ResidualValue -->
-    <t-form-group *ngIf="ResidualValue_isVisible(model)" class="t-form-group"
-        [label]="('Resource_ResidualValue' | translate) + functionalPostfix"
-        [serverErrors]="model?.serverErrors?.ResidualValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
-            <div>
-                {{ model?.ResidualValue | number:'1.' + functionalDecimals + '-' + functionalDecimals }}
-            </div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="ResidualValue_isRequired" [minDecimalPlaces]="functionalDecimals"
-            [maxDecimalPlaces]="functionalDecimals">
-        </t-decimal-editor>
     </t-form-group>
 
     <!-- Lookup 1 -->
@@ -219,30 +188,6 @@
             [required]="Lookup5_isRequired">
         </t-lookups-picker>
     </t-form-group> -->
-
-    <!-- Reorder Level -->
-    <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
-        [serverErrors]="model?.serverErrors?.ReorderLevel">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReorderLevel">
-            <div *ngIf="!isEdit">{{ model?.ReorderLevel | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="ReorderLevel_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- Economic Order Quantity -->
-    <t-form-group *ngIf="EconomicOrderQuantity_isVisible" class="t-form-group"
-        [label]="'Resource_EconomicOrderQuantity' | translate"
-        [serverErrors]="model?.serverErrors?.EconomicOrderQuantity">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
-            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | number:'1.0-4' }}</div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity"
-            [ngModelOptions]="{ updateOn: 'blur' }" [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0"
-            [maxDecimalPlaces]="4">
-        </t-decimal-editor>
-    </t-form-group>
 
     <!-- Decimal 1 -->
     <t-form-group *ngIf="Decimal1_isVisible" class="t-form-group" [label]="Decimal1_label"
@@ -321,7 +266,7 @@
         </t-date-picker>
     </t-form-group>
 
-    <!-- Available Till -->
+    <!-- ToDate -->
     <t-form-group *ngIf="ToDate_isVisible" class="t-form-group" [label]="ToDate_label"
         [serverErrors]="model?.serverErrors?.ToDate">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ToDate">
@@ -363,119 +308,201 @@
         </t-text-editor>
     </t-form-group>
 
+    <!-- Identifier -->
+    <t-form-group *ngIf="Identifier_isVisible" class="t-form-group" [label]="Identifier_label"
+        [serverErrors]="model?.serverErrors?.Identifier">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Identifier">
+            <div>{{ model?.Identifier }}</div>
+        </t-restricted>
+        <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Identifier_isRequired">
+        </t-text-editor>
+    </t-form-group>
+
+    <!-- ResidualMonetaryValue -->
+    <t-form-group *ngIf="ResidualMonetaryValue_isVisible(model)" class="t-form-group"
+        [label]="('Resource_ResidualMonetaryValue' | translate) + currencyPostfix(model)"
+        [serverErrors]="model?.serverErrors?.ResidualMonetaryValue">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualMonetaryValue">
+            <div>
+                {{ model?.ResidualMonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+            </div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualMonetaryValue"
+            [ngModelOptions]="{ updateOn: 'blur' }" [required]="ResidualMonetaryValue_isRequired"
+            [minDecimalPlaces]="MonetaryValue_decimals(model)" [maxDecimalPlaces]="MonetaryValue_decimals(model)">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- ResidualValue -->
+    <t-form-group *ngIf="ResidualValue_isVisible(model)" class="t-form-group"
+        [label]="('Resource_ResidualValue' | translate) + functionalPostfix"
+        [serverErrors]="model?.serverErrors?.ResidualValue">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResidualValue">
+            <div>
+                {{ model?.ResidualValue | number:'1.' + functionalDecimals + '-' + functionalDecimals }}
+            </div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ResidualValue_isRequired" [minDecimalPlaces]="functionalDecimals"
+            [maxDecimalPlaces]="functionalDecimals">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- MonetaryValue -->
+    <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
+        [serverErrors]="model?.serverErrors?.MonetaryValue">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
+            <div>
+                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+            </div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
+            [maxDecimalPlaces]="MonetaryValue_decimals(model)">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Reorder Level -->
+    <t-form-group *ngIf="ReorderLevel_isVisible" class="t-form-group" [label]="'Resource_ReorderLevel' | translate"
+        [serverErrors]="model?.serverErrors?.ReorderLevel">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ReorderLevel">
+            <div *ngIf="!isEdit">{{ model?.ReorderLevel | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ReorderLevel" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ReorderLevel_isRequired" [minDecimalPlaces]="0" [maxDecimalPlaces]="4">
+        </t-decimal-editor>
+    </t-form-group>
+
+    <!-- Economic Order Quantity -->
+    <t-form-group *ngIf="EconomicOrderQuantity_isVisible" class="t-form-group"
+        [label]="'Resource_EconomicOrderQuantity' | translate"
+        [serverErrors]="model?.serverErrors?.EconomicOrderQuantity">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.EconomicOrderQuantity">
+            <div *ngIf="!isEdit">{{ model?.EconomicOrderQuantity | number:'1.0-4' }}</div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.EconomicOrderQuantity"
+            [ngModelOptions]="{ updateOn: 'blur' }" [required]="EconomicOrderQuantity_isRequired" [minDecimalPlaces]="0"
+            [maxDecimalPlaces]="4">
+        </t-decimal-editor>
+    </t-form-group>
+
     <!-- Is Active -->
     <t-form-group class="t-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
         {{ (model?.IsActive ? 'Yes' : 'No') | translate }}
     </t-form-group>
 
     <!-- Tabs -->
-    <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
+    <ng-container *ngIf="showTabs">
+        <ul ngbNav #tabs="ngbNav" class="pt-3 pt-sm-4 w-100 nav-tabs" [destroyOnHide]="true">
 
-        <!-- Units -->
-        <li ngbNavItem="units">
-            <a ngbNavLink>
-                <span *ngIf="Units_showError(model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
-                </span>
-                <span
-                    class="small t-slightly-bold">{{ ('Resource_Units' | translate) + (!model.Id || model?.EntityMetadata?.Units === 2 ? ' (' + (Units_count(model) | number) + ')' : '') }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <t-restricted [metadata]="model?.EntityMetadata?.Units"
-                    [class.p-4]="model?.EntityMetadata?.Units === 1">
-                    <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit', 'Multiplier']"
-                        [columnTemplates]="{
-                                            'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
-                                            'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
-                                            }">
-                    </t-table>
-                </t-restricted>
+            <!-- Units -->
+            <li ngbNavItem="units" *ngIf="Units_isVisible">
+                <a ngbNavLink>
+                    <span *ngIf="Units_showError(model)" class="text-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span
+                        class="small t-slightly-bold">{{ ('Resource_Units' | translate) + (!model.Id || model?.EntityMetadata?.Units === 2 ? ' (' + (Units_count(model) | number) + ')' : '') }}</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <t-restricted [metadata]="model?.EntityMetadata?.Units"
+                        [class.p-4]="model?.EntityMetadata?.Units === 1">
+                        <t-table [dataSource]="model?.Units" [isEdit]="isEdit" [columnPaths]="['Unit', 'Multiplier']"
+                            [columnTemplates]="{
+                                                'Unit' : { headerTemplate : header_Unit, rowTemplate : row_Unit, weight : 1 },
+                                                'Multiplier' : { headerTemplate : header_Multiplier, rowTemplate : row_Multiplier, weight : 1 }
+                                                }">
+                        </t-table>
+                    </t-restricted>
 
-                <!-- Unit -->
-                <ng-template #header_Unit>{{ 'ResourceUnit_Unit' | translate }}</ng-template>
-                <ng-template #row_Unit let-item="item" let-index="index" let-update="update">
-                    <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
-                        <div *ngIf="!isEdit">
-                            {{ ws.getMultilingualValue('Unit', item.UnitId, 'Name') }}
-                        </div>
-                        <t-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
-                            (ngModelChange)="update.call(null, item);" [required]="!item.PH">
-                        </t-units-picker>
-                    </t-form-group-cell>
+                    <!-- Unit -->
+                    <ng-template #header_Unit>{{ 'ResourceUnit_Unit' | translate }}</ng-template>
+                    <ng-template #row_Unit let-item="item" let-index="index" let-update="update">
+                        <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.UnitId">
+                            <div *ngIf="!isEdit">
+                                {{ ws.getMultilingualValue('Unit', item.UnitId, 'Name') }}
+                            </div>
+                            <t-units-picker *ngIf="isEdit" [(ngModel)]="item.UnitId"
+                                (ngModelChange)="update.call(null, item);" [required]="!item.PH">
+                            </t-units-picker>
+                        </t-form-group-cell>
+                    </ng-template>
+
+                    <!-- Multiplier -->
+                    <ng-template #header_Multiplier>{{ 'ResourceUnit_Multiplier' | translate }}</ng-template>
+                    <ng-template #row_Multiplier let-item="item" let-index="index" let-update="update">
+                        <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Multiplier">
+                            <div *ngIf="!isEdit">{{ item.Multiplier | number }}</div>
+                            <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Multiplier"
+                                (ngModelChange)="update.call(null, item)" [ngModelOptions]="{ updateOn: 'blur' }"
+                                [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [required]="!item.PH">
+                            </t-decimal-editor>
+                        </t-form-group-cell>
+                    </ng-template>
                 </ng-template>
+            </li>
 
-                <!-- Multiplier -->
-                <ng-template #header_Multiplier>{{ 'ResourceUnit_Multiplier' | translate }}</ng-template>
-                <ng-template #row_Multiplier let-item="item" let-index="index" let-update="update">
-                    <t-form-group-cell class="t-form-group" [serverErrors]="item.serverErrors?.Multiplier">
-                        <div *ngIf="!isEdit">{{ item.Multiplier | number }}</div>
-                        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="item.Multiplier"
-                            (ngModelChange)="update.call(null, item)" [ngModelOptions]="{ updateOn: 'blur' }"
-                            [minDecimalPlaces]="0" [maxDecimalPlaces]="0" [required]="!item.PH">
-                        </t-decimal-editor>
-                    </t-form-group-cell>
-                </ng-template>
-            </ng-template>
-        </li>
-        
-        <!-- Map -->
-        <li ngbNavItem="location" *ngIf="Location_isVisible">
-            <a ngbNavLink>
-                <span *ngIf="Map_showError(model)" class="text-danger">
-                    <fa-icon icon="exclamation-triangle">
-                    </fa-icon>&nbsp;
-                </span>
-                <span class="small t-slightly-bold">{{ 'Entity_Location' | translate }}</span>
-            </a>
-            <ng-template ngbNavContent>
-                <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"
-                    [class.p-4]="model?.EntityMetadata?.LocationJson === 1">
-                    <div style="height: 500px;">
-                        <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
-                            [class.t-hidden-cursor]="!isEdit">
-                            <textarea class="form-control t-input p-1 h-100" spellcheck="false" style="resize: none;"
-                                [readonly]="!isEdit" [placeholder]="('GeoJSON' | translate) + '...'"
-                                [(ngModel)]="model.LocationJson"></textarea>
+            <!-- Map -->
+            <li ngbNavItem="location" *ngIf="Location_isVisible">
+                <a ngbNavLink>
+                    <span *ngIf="Map_showError(model)" class="text-danger">
+                        <fa-icon icon="exclamation-triangle">
+                        </fa-icon>&nbsp;
+                    </span>
+                    <span class="small t-slightly-bold">{{ 'Entity_Location' | translate }}</span>
+                </a>
+                <ng-template ngbNavContent>
+                    <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"
+                        [class.p-4]="model?.EntityMetadata?.LocationJson === 1">
+                        <div style="height: 500px;">
+                            <div class="h-100 border-bottom border-left border-right" [class.d-none]="!isView('json')"
+                                [class.t-hidden-cursor]="!isEdit">
+                                <textarea class="form-control t-input p-1 h-100" spellcheck="false"
+                                    style="resize: none;" [readonly]="!isEdit"
+                                    [placeholder]="('GeoJSON' | translate) + '...'"
+                                    [(ngModel)]="model.LocationJson"></textarea>
+                            </div>
+                            <agm-map class="h-100" [class.d-none]="!isView('map')"
+                                (centerChange)="onCenterChange($event)" [latitude]="latitude" [longitude]="longitude"
+                                [zoom]="6" [mapTypeControl]="true" [panControl]="true" [streetViewControl]="false"
+                                [fitBounds]="!!model?.Id" [fitBoundsPadding]="100">
+                                <t-map-bounds-fitter [agmFitBounds]="true" type="max"
+                                    [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
+                                <t-map-bounds-fitter [agmFitBounds]="true" type="min"
+                                    [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
+                                <agm-data-layer *ngIf="!!parseJson(model?.LocationJson)"
+                                    [geoJson]="parseJson(model?.LocationJson)" [style]="styleFunc"></agm-data-layer>
+                            </agm-map>
+                            <!-- <div class="h-100 p-4 border-bottom border-left border-right" *ngIf="isView('map') && !parseJson(model?.LocationJson)">
+                                <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;Enter valid GeoJSON
+                            </div> -->
                         </div>
-                        <agm-map class="h-100" [class.d-none]="!isView('map')" (centerChange)="onCenterChange($event)"
-                            [latitude]="latitude" [longitude]="longitude" [zoom]="6" [mapTypeControl]="true"
-                            [panControl]="true" [streetViewControl]="false" [fitBounds]="!!model?.Id"
-                            [fitBoundsPadding]="100">
-                            <t-map-bounds-fitter [agmFitBounds]="true" type="max"
-                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
-                            <t-map-bounds-fitter [agmFitBounds]="true" type="min"
-                                [geoJson]="parseJson(model?.LocationJson)"></t-map-bounds-fitter>
-                            <agm-data-layer *ngIf="!!parseJson(model?.LocationJson)"
-                                [geoJson]="parseJson(model?.LocationJson)" [style]="styleFunc"></agm-data-layer>
-                        </agm-map>
-                        <!-- <div class="h-100 p-4 border-bottom border-left border-right" *ngIf="isView('map') && !parseJson(model?.LocationJson)">
-                            <fa-icon icon="info-circle"></fa-icon>&nbsp;&nbsp;Enter valid GeoJSON
-                        </div> -->
-                    </div>
-                    <!-- Map/GeoJSON Toggle -->
-                    <div class="btn-group btn-group-toggle pt-1">
-                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('map')"
-                            title="{{ 'Map' | translate }}" (click)="onView('map')">
-                            <input type="radio" name="locationView">
-                            <fa-icon icon="map-marker-alt"></fa-icon>
-                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Map' | translate }}</span>
-                        </label>
-                        <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('json')"
-                            title="{{ 'GeoJSON' | translate }}" (click)="onView('json')">
-                            <input type="radio" name="locationView">
-                            <fa-icon icon="code"></fa-icon>
-                            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'GeoJSON' | translate }}</span>
-                        </label>
-                    </div>
-                    <t-error-message style="margin-top: -40px" *ngIf="!!parseJsonError">
-                        {{ parseJsonError }}
-                    </t-error-message>
-                </t-restricted>
-            </ng-template>
-        </li>
-    </ul>
-    <div class="w-100" [ngbNavOutlet]="tabs"></div>
+                        <!-- Map/GeoJSON Toggle -->
+                        <div class="btn-group btn-group-toggle pt-1">
+                            <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('map')"
+                                title="{{ 'Map' | translate }}" (click)="onView('map')">
+                                <input type="radio" name="locationView">
+                                <fa-icon icon="map-marker-alt"></fa-icon>
+                                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Map' | translate }}</span>
+                            </label>
+                            <label class="btn btn-sm btn-light t-pointer" [class.active]="isView('json')"
+                                title="{{ 'GeoJSON' | translate }}" (click)="onView('json')">
+                                <input type="radio" name="locationView">
+                                <fa-icon icon="code"></fa-icon>
+                                <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'GeoJSON' | translate }}</span>
+                            </label>
+                        </div>
+                        <t-error-message style="margin-top: -40px" *ngIf="!!parseJsonError">
+                            {{ parseJsonError }}
+                        </t-error-message>
+                    </t-restricted>
+                </ng-template>
+            </li>
+        </ul>
+        <div class="w-100" [ngbNavOutlet]="tabs"></div>
+    </ng-container>
 </ng-template>
 
 <!-- Actions -->

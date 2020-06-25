@@ -631,6 +631,7 @@
   "Resource_ReorderLevel": "订货点水平",
   "Resource_ResidualMonetaryValue": "剩余货币价值",
   "Resource_ResidualValue": "剩余价值",
+  "Resource_Unit": "计量单位",
   "Resource_Units": "测量单位",
   "ResourceDefinition": "资源定义",
   "ResourceDefinition_UnitCardinality": "单位基数",

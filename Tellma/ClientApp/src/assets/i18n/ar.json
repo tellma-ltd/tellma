@@ -631,6 +631,7 @@
   "Resource_ReorderLevel": "حد إعادة الطلب",
   "Resource_ResidualMonetaryValue": "مبلغ الخردة",
   "Resource_ResidualValue": "قيمة الخردة",
+  "Resource_Unit": "وحدة القياس",
   "Resource_Units": "وحدات القياس",
   "ResourceDefinition": "تعريف مورد",
   "ResourceDefinition_UnitCardinality": "عدد الوحدات",
