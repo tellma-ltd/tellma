@@ -176,6 +176,7 @@ namespace Tellma.Data
         public Query<Settings> Settings => Query<Settings>();
         public Query<User> Users => Query<User>();
         public Query<Contract> Contracts => Query<Contract>();
+        public Query<Resource> Resources => Query<Resource>();
         public Query<Currency> Currencies => Query<Currency>();
         public Query<ExchangeRate> ExchangeRates => Query<ExchangeRate>();
 
@@ -2452,7 +2453,7 @@ namespace Tellma.Data
             return await RepositoryUtilities.LoadErrors(cmd);
         }
 
-        public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, bool returnIds)
+        public async Task<List<int>> Resources__Save(int definitionId, List<ResourceForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -2473,9 +2474,17 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
+                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
+                {
+                    TypeName = $"[dbo].[IndexedImageIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(unitsTvp);
+                cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;

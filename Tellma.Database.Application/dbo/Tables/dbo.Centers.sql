@@ -19,7 +19,7 @@
 	[ManagerId]				INT					CONSTRAINT [FK_Centers__ManagerId] REFERENCES dbo.[Agents]([Id]),
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.
-	[Code]					NVARCHAR (255)		UNIQUE CLUSTERED,
+	[Code]					NVARCHAR (50)		NOT NULL UNIQUE CLUSTERED,
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Centers__CreatedById] REFERENCES [dbo].[Users] ([Id]),
@@ -39,7 +39,4 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name2]
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Name3]
   ON [dbo].[Centers]([Name3]) WHERE [Name3] IS NOT NULL;
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Centers__Code]
-  ON [dbo].[Centers]([Code]) WHERE [Code] IS NOT NULL;
 GO

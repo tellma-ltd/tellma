@@ -1957,6 +1957,9 @@
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>剩余价值</value>
   </data>
+  <data name="Resource_Unit" xml:space="preserve">
+    <value>计量单位</value>
+  </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>测量单位</value>
   </data>

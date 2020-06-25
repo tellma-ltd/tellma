@@ -370,14 +370,98 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 
 export interface ContractDefinitionForClient extends MasterDetailsDefinitionForClient {
 
-    AgentVisibility?: Visibility;
-    CurrencyVisibility?: Visibility;
-    TaxIdentificationNumberVisibility?: Visibility;
+    CurrencyVisibility: Visibility;
+    CenterVisibility: Visibility;
     ImageVisibility: Visibility;
-    StartDateVisibility?: Visibility;
-    StartDateLabel?: string;
-    StartDateLabel2?: string;
-    StartDateLabel3?: string;
+    DescriptionVisibility: Visibility;
+    LocationVisibility: Visibility;
+
+    FromDateLabel: string;
+    FromDateLabel2: string;
+    FromDateLabel3: string;
+    FromDateVisibility: Visibility;
+
+    ToDateLabel: string;
+    ToDateLabel2: string;
+    ToDateLabel3: string;
+    ToDateVisibility: Visibility;
+
+    // Decimal 1
+    Decimal1Label: string;
+    Decimal1Label2: string;
+    Decimal1Label3: string;
+    Decimal1Visibility: Visibility;
+
+    // Decimal 2
+    Decimal2Label: string;
+    Decimal2Label2: string;
+    Decimal2Label3: string;
+    Decimal2Visibility: Visibility;
+
+    // Int 1
+    Int1Label: string;
+    Int1Label2: string;
+    Int1Label3: string;
+    Int1Visibility: Visibility;
+
+    // Int 2
+    Int2Label: string;
+    Int2Label2: string;
+    Int2Label3: string;
+    Int2Visibility: Visibility;
+
+    // Lookup 1
+    Lookup1Label: string;
+    Lookup1Label2: string;
+    Lookup1Label3: string;
+    Lookup1Visibility: Visibility;
+    Lookup1DefinitionId: number;
+
+    // Lookup 2
+    Lookup2Label: string;
+    Lookup2Label2: string;
+    Lookup2Label3: string;
+    Lookup2Visibility: Visibility;
+    Lookup2DefinitionId: number;
+
+    // Lookup 3
+    Lookup3Label: string;
+    Lookup3Label2: string;
+    Lookup3Label3: string;
+    Lookup3Visibility: Visibility;
+    Lookup3DefinitionId: number;
+
+    // Lookup 4
+    Lookup4Label: string;
+    Lookup4Label2: string;
+    Lookup4Label3: string;
+    Lookup4Visibility: Visibility;
+    Lookup4DefinitionId: number;
+
+    //// Lookup 5
+    // Lookup5Label: string;
+    // Lookup5Label2: string;
+    // Lookup5Label3: string;
+    // Lookup5Visibility: Visibility;
+    // Lookup5DefinitionId: number;
+
+    // Text 1
+    Text1Label: string;
+    Text1Label2: string;
+    Text1Label3: string;
+    Text1Visibility: Visibility;
+
+    // Text 2
+    Text2Label: string;
+    Text2Label2: string;
+    Text2Label3: string;
+    Text2Visibility: Visibility;
+
+    // Contract Only
+
+    AgentVisibility?: Visibility;
+    TaxIdentificationNumberVisibility?: Visibility;
     JobVisibility?: Visibility;
     BankAccountNumberVisibility?: Visibility;
+    UserCardinality?: DefinitionCardinality;
 }

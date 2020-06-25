@@ -157,51 +157,23 @@
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Fields')">
 
-                    <!-- DescriptionVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(descriptionvisibility, model.serverErrors?.DescriptionVisibility)">
-                        <label class="small"
-                            for="descriptionvisibility">{{ 'Field0Visibility' | translate: { '0': ('Description' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="descriptionvisibility"
-                            [(ngModel)]="model.DescriptionVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #descriptionvisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: descriptionvisibility, serverErrors: model.serverErrors?.DescriptionVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <!-- Other visibilities and Labels -->
-                    <ng-container
-                        *ngTemplateOutlet="labeledProp; context: { prop: 'Identifier', propLower: 'identifier' }">
-                    </ng-container>
                     <ng-container
                         *ngTemplateOutlet="unlabeledProp; context: { prop: 'Currency', propLower: 'currency' }">
-                    </ng-container>
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Location', propLower: 'location' }">
                     </ng-container>
                     <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Center', propLower: 'center' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualMonetaryValue', propLower: 'residualmonetaryvalue' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Image', propLower: 'image', fieldName: 'Image' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualValue', propLower: 'residualvalue' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Description', propLower: 'description', fieldName: 'Description' }">
                     </ng-container>
                     <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ReorderLevel', propLower: 'reorderlevel' }">
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Location', propLower: 'location' }">
                     </ng-container>
-                    <ng-container
-                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'EconomicOrderQuantity', propLower: 'economicorderquantity' }">
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'FromDate', propLower: 'fromdate' }">
                     </ng-container>
-                    <ng-container
-                        *ngTemplateOutlet="labeledProp; context: { prop: 'FromDate', propLower: 'fromdate' }">
-                    </ng-container>
-                    <ng-container
-                        *ngTemplateOutlet="labeledProp; context: { prop: 'ToDate', propLower: 'todate' }">
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'ToDate', propLower: 'todate' }">
                     </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal1', propLower: 'decimal1' }">
                     </ng-container>
@@ -227,14 +199,49 @@
                     </ng-container>
                     <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }">
                     </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="labeledProp; context: { prop: 'Identifier', propLower: 'identifier', fieldName: 'Resource_Identifier' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualMonetaryValue', propLower: 'residualmonetaryvalue', fieldName: 'Resource_ResidualMonetaryValue' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ResidualValue', propLower: 'residualvalue', fieldName: 'Resource_ResidualValue' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'ReorderLevel', propLower: 'reorderlevel', fieldName: 'Resource_ReorderLevel' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'EconomicOrderQuantity', propLower: 'economicorderquantity', fieldName: 'Resource_EconomicOrderQuantity' }">
+                    </ng-container>
+
+                    <!-- Unit Cardinality -->
+                    <div class="form-group"
+                        [class.is-invalid]="invalid(unitcardinality, serverErrors(model, 'UnitCardinality'))">
+                        <label class="small"
+                            for="unitcardinality">{{ 'ResourceDefinition_UnitCardinality' | translate }}</label>
+                        <select class="form-control t-studio-input" id="unitcardinality"
+                            [(ngModel)]="model.UnitCardinality" (ngModelChange)="onDefinitionChange(model)"
+                            #unitcardinality="ngModel">
+                            <option *ngFor="let c of cardinalityChoices" value="{{c.value}}">
+                                {{ c.name() }}</option>
+                        </select>
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: unitcardinality, serverErrors: serverErrors(model, 'UnitVisibility') }">
+                        </ng-container>
+                    </div>
+
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'MonetaryValue', propLower: 'monetaryvalue', fieldName: 'Resource_MonetaryValue' }">
+                    </ng-container>
 
                     <!-- Visibility Field Template -->
-                    <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower">
+                    <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
                         <div class="form-group"
                             [class.is-invalid]="invalid(visibility, serverErrors(model, prop + 'Visibility'))">
                             <label class="small"
-                                for="{{propLower}}visibility">{{ 'Field0Visibility' | translate: { '0': (('Resource_' + prop) | translate) } }}</label>
+                                for="{{propLower}}visibility">{{ 'Field0Visibility' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) } }}</label>
                             <select class="form-control t-studio-input" id="{{propLower}}visibility"
                                 [(ngModel)]="model[prop + 'Visibility']" (ngModelChange)="onDefinitionChange(model)"
                                 #visibility="ngModel">
@@ -248,10 +255,10 @@
                     </ng-template>
 
                     <!-- Visibility + Labels Fields Template -->
-                    <ng-template #labeledProp let-prop="prop" let-propLower="propLower">
+                    <ng-template #labeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
                         <!-- Visibility -->
-                        <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower }">
+                        <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
                         </ng-container>
 
                         <!-- Labels -->
@@ -261,7 +268,7 @@
                             <div class="form-group"
                                 [class.is-invalid]="invalid(label, serverErrors(model, prop + 'Label'))">
                                 <label class="small"
-                                    for="{{propLower}}label">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.primaryPostfix }}</label>
+                                    for="{{propLower}}label">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
                                 <input class="form-control t-studio-input" id="{{propLower}}label" type="text"
                                     [(ngModel)]="model[prop + 'Label']"
                                     (ngModelChange)="onDefinitionChange(model, prop + 'Label')"
@@ -276,7 +283,7 @@
                                 [class.is-invalid]="invalid(label2, serverErrors(model, prop + 'Label2'))"
                                 *ngIf="ws.settings?.SecondaryLanguageId">
                                 <label class="small"
-                                    for="{{propLower}}label2">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.secondaryPostfix }}</label>
+                                    for="{{propLower}}label2">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.secondaryPostfix }}</label>
                                 <input class="form-control t-studio-input" id="{{propLower}}label2" type="text"
                                     [(ngModel)]="model[prop + 'Label2']"
                                     (ngModelChange)="onDefinitionChange(model, prop + 'Label2')"
@@ -291,7 +298,7 @@
                                 [class.is-invalid]="invalid(label3, serverErrors(model, prop + 'Label3'))"
                                 *ngIf="ws.settings?.TernaryLanguageId">
                                 <label class="small"
-                                    for="{{propLower}}label3">{{ ('Field0Label' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.ternaryPostfix }}</label>
+                                    for="{{propLower}}label3">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.ternaryPostfix }}</label>
                                 <input class="form-control t-studio-input" id="{{propLower}}label3" type="text"
                                     [(ngModel)]="model[prop + 'Label3']"
                                     (ngModelChange)="onDefinitionChange(model, prop + 'Label3')"
@@ -304,17 +311,17 @@
                     </ng-template>
 
                     <!-- Visibility + Labels + DefinitionId Fields Template -->
-                    <ng-template #definitionedProp let-prop="prop" let-propLower="propLower">
+                    <ng-template #definitionedProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
                         <!-- Visibility + Labels -->
-                        <ng-container *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower }">
+                        <ng-container *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
                         </ng-container>
 
                         <!-- DefinitionId -->
                         <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
                             [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
                             <label class="small"
-                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': (('Resource_' + prop) | translate) }) + ws.primaryPostfix }}</label>
+                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
 
                             <select class="form-control t-studio-input" id="{{propLower}}definitionId"
                                 [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"

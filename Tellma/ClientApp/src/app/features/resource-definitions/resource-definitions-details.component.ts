@@ -42,7 +42,7 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
       result[propName] = none;
     }
 
-    result.UnitCardinality = none;
+    result.UnitCardinality = 'None';
 
     return result;
   }
@@ -322,6 +322,19 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return this._visibilityChoices;
+  }
+
+  private _cardinalityChoices: SelectorChoice[];
+  public get cardinalityChoices(): SelectorChoice[] {
+    if (!this._cardinalityChoices) {
+      this._cardinalityChoices = [
+        { value: 'None', name: () => this.translate.instant('Cardinality_None') },
+        { value: 'Single', name: () => this.translate.instant('Cardinality_Single') },
+        { value: 'Multiple', name: () => this.translate.instant('Cardinality_Multiple') }
+      ];
+    }
+
+    return this._cardinalityChoices;
   }
 
   private _lookupDefinitionChoicesDef: DefinitionsForClient;

@@ -631,6 +631,7 @@
   "Resource_ReorderLevel": "አስይዝ ደረጃ",
   "Resource_ResidualMonetaryValue": "ቀሪ የገንዘብ ዋጋ",
   "Resource_ResidualValue": "ትራፊ እሴት",
+  "Resource_Unit": "የመለኪያ አሃድ",
   "Resource_Units": "የመለኪያ ዩኒት",
   "ResourceDefinition": "የመገልገያ ፍቺ",
   "ResourceDefinition_UnitCardinality": "ክፍል የቁጥሮች",

@@ -7,7 +7,7 @@ namespace Tellma.Entities
 {
     [StrongEntity]
     [EntityDisplay(Singular = "Contract", Plural = "Contracts")]
-    public class ContractForSaveBase<TContractUser> : EntityWithKey<int>, IEntityWithImageForSave
+    public class ContractForSaveBase<TContractUser> : EntityWithKey<int>, ILocationEntityForSave, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
@@ -134,7 +134,7 @@ namespace Tellma.Entities
 
     }
 
-    public class Contract : ContractForSaveBase<ContractUser>, IEntityWithImage
+    public class Contract : ContractForSaveBase<ContractUser>, ILocationEntity, IEntityWithImage
     {
         #region Common with Resource
 

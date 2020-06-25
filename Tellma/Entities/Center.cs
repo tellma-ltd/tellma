@@ -51,7 +51,8 @@ namespace Tellma.Entities
         public int? ManagerId { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(255)]
+        [Required]
+        [StringLength(50)]
         [AlwaysAccessible]
         public string Code { get; set; }
     }
