@@ -1,3 +1,4 @@
+// tslint:disable:member-ordering
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -8,6 +9,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ContractDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { LatLngLiteral } from '@agm/core';
 
 @Component({
   selector: 't-contracts-details',
@@ -34,7 +36,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
   previewDefinition: ContractDefinitionForClient; // Used in preview mode
 
   // public expand = 'User,Rates/Resource,Rates/Unit,Rates/Currency';
-  public expand = 'Agent,Currency';
+  public expand = 'Currency,Center,Lookup1,Lookup2,Lookup3,Lookup4,Agent,Users/User';
 
   create = () => {
     const result: ContractForSave = {};
@@ -48,6 +50,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
 
     // TODO Set defaults from definition
 
+    result.Users = [];
     return result;
   }
 
@@ -56,6 +59,17 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as Contract;
       clone.Id = null;
+
+      if (!!clone.Users) {
+        clone.Users.forEach(e => {
+          e.Id = null;
+          delete e.ContractId;
+          delete e.CreatedAt;
+          delete e.CreatedById;
+          delete e.ModifiedAt;
+          delete e.ModifiedById;
+        });
+      }
 
       return clone;
     } else {
@@ -146,13 +160,7 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 
-  public get Agent_isVisible(): boolean {
-    return !!this.definition.AgentVisibility;
-  }
-
-  public get Agent_isRequired(): boolean {
-    return this.definition.AgentVisibility === 'Required';
-  }
+  // Shared with Resource
 
   public get Currency_isVisible(): boolean {
     return !!this.definition.CurrencyVisibility;
@@ -162,30 +170,238 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.CurrencyVisibility === 'Required';
   }
 
-  public get TaxIdentificationNumber_isVisible(): boolean {
-    return !!this.definition.TaxIdentificationNumberVisibility;
+  public get Currency_label(): string {
+    return this.translate.instant('Entity_Currency');
   }
 
-  public get TaxIdentificationNumber_isRequired(): boolean {
-    return this.definition.TaxIdentificationNumberVisibility === 'Required';
+  public get Center_isVisible(): boolean {
+    return !!this.definition.CenterVisibility && this.ws.settings.IsMultiCenter;
+  }
+
+  public get Center_isRequired(): boolean {
+    return this.definition.CenterVisibility === 'Required';
+  }
+
+  public get Center_label(): string {
+    return this.translate.instant('Entity_Center');
   }
 
   public get Image_isVisible(): boolean {
     return !!this.definition.ImageVisibility;
   }
 
-  public get StartDate_isVisible(): boolean {
-    return !!this.definition.StartDateVisibility;
+  public get Description_isVisible(): boolean {
+    return !!this.definition.DescriptionVisibility;
   }
 
-  public get StartDate_isRequired(): boolean {
-    return this.definition.StartDateVisibility === 'Required';
+  public get Description_isRequired(): boolean {
+    return this.definition.DescriptionVisibility === 'Required';
   }
 
-  public get StartDate_label(): string {
-    return !!this.definition.StartDateLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'StartDateLabel') :
-      this.translate.instant('Contract_StartDate');
+  public get FromDate_isVisible(): boolean {
+    return !!this.definition.FromDateVisibility;
+  }
+
+  public get FromDate_isRequired(): boolean {
+    return this.definition.FromDateVisibility === 'Required';
+  }
+
+  public get FromDate_label(): string {
+    return !!this.definition.FromDateLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'FromDateLabel') :
+      this.translate.instant('Entity_FromDate');
+  }
+
+  public get ToDate_isVisible(): boolean {
+    return !!this.definition.ToDateVisibility;
+  }
+
+  public get ToDate_isRequired(): boolean {
+    return this.definition.ToDateVisibility === 'Required';
+  }
+
+  public get ToDate_label(): string {
+    return !!this.definition.ToDateLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'ToDateLabel') :
+      this.translate.instant('Entity_ToDate');
+  }
+
+  public get Decimal1_isVisible(): boolean {
+    return !!this.definition.Decimal1Visibility;
+  }
+
+  public get Decimal1_isRequired(): boolean {
+    return this.definition.Decimal1Visibility === 'Required';
+  }
+
+  public get Decimal1_label(): string {
+    return !!this.definition.Decimal1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal1Label') :
+      this.translate.instant('Entity_Decimal1');
+  }
+
+  public get Decimal2_isVisible(): boolean {
+    return !!this.definition.Decimal2Visibility;
+  }
+
+  public get Decimal2_isRequired(): boolean {
+    return this.definition.Decimal2Visibility === 'Required';
+  }
+
+  public get Decimal2_label(): string {
+    return !!this.definition.Decimal2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Decimal2Label') :
+      this.translate.instant('Entity_Decimal2');
+  }
+
+  public get Int1_isVisible(): boolean {
+    return !!this.definition.Int1Visibility;
+  }
+
+  public get Int1_isRequired(): boolean {
+    return this.definition.Int1Visibility === 'Required';
+  }
+
+  public get Int1_label(): string {
+    return !!this.definition.Int1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Int1Label') :
+      this.translate.instant('Entity_Int1');
+  }
+
+  public get Int2_isVisible(): boolean {
+    return !!this.definition.Int2Visibility;
+  }
+
+  public get Int2_isRequired(): boolean {
+    return this.definition.Int2Visibility === 'Required';
+  }
+
+  public get Int2_label(): string {
+    return !!this.definition.Int2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Int2Label') :
+      this.translate.instant('Entity_Int2');
+  }
+
+  public get Lookup1_isVisible(): boolean {
+    return !!this.definition.Lookup1Visibility;
+  }
+
+  public get Lookup1_isRequired(): boolean {
+    return this.definition.Lookup1Visibility === 'Required';
+  }
+
+  public get Lookup1_label(): string {
+    return !!this.definition.Lookup1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup1Label') :
+      this.translate.instant('Entity_Lookup1');
+  }
+
+  public get Lookup1_DefinitionId(): number {
+    return this.definition.Lookup1DefinitionId;
+  }
+
+  public get Lookup2_isVisible(): boolean {
+    return !!this.definition.Lookup2Visibility;
+  }
+
+  public get Lookup2_isRequired(): boolean {
+    return this.definition.Lookup2Visibility === 'Required';
+  }
+
+  public get Lookup2_label(): string {
+    return !!this.definition.Lookup2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup2Label') :
+      this.translate.instant('Entity_Lookup2');
+  }
+
+  public get Lookup2_DefinitionId(): number {
+    return this.definition.Lookup2DefinitionId;
+  }
+
+  public get Lookup3_isVisible(): boolean {
+    return !!this.definition.Lookup3Visibility;
+  }
+
+  public get Lookup3_isRequired(): boolean {
+    return this.definition.Lookup3Visibility === 'Required';
+  }
+
+  public get Lookup3_label(): string {
+    return !!this.definition.Lookup3Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup3Label') :
+      this.translate.instant('Entity_Lookup3');
+  }
+
+  public get Lookup3_DefinitionId(): number {
+    return this.definition.Lookup3DefinitionId;
+  }
+
+  public get Lookup4_isVisible(): boolean {
+    return !!this.definition.Lookup4Visibility;
+  }
+
+  public get Lookup4_isRequired(): boolean {
+    return this.definition.Lookup4Visibility === 'Required';
+  }
+
+  public get Lookup4_label(): string {
+    return !!this.definition.Lookup4Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup4Label') :
+      this.translate.instant('Entity_Lookup4');
+  }
+
+  public get Lookup4_DefinitionId(): number {
+    return this.definition.Lookup4DefinitionId;
+  }
+
+  // public get Lookup5_DefinitionId(): number {
+  //   return this.definition.Lookup5DefinitionId;
+  // }
+
+  public get Text1_isVisible(): boolean {
+    return !!this.definition.Text1Visibility;
+  }
+
+  public get Text1_isRequired(): boolean {
+    return this.definition.Text1Visibility === 'Required';
+  }
+
+  public get Text1_label(): string {
+    return !!this.definition.Text1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text1Label') :
+      this.translate.instant('Entity_Text1');
+  }
+
+  public get Text2_isVisible(): boolean {
+    return !!this.definition.Text2Visibility;
+  }
+
+  public get Text2_isRequired(): boolean {
+    return this.definition.Text2Visibility === 'Required';
+  }
+
+  public get Text2_label(): string {
+    return !!this.definition.Text2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Text2Label') :
+      this.translate.instant('Entity_Text2');
+  }
+
+  // Contract Only
+
+  public get Agent_isVisible(): boolean {
+    return !!this.definition.AgentVisibility;
+  }
+
+  public get Agent_isRequired(): boolean {
+    return this.definition.AgentVisibility === 'Required';
+  }
+
+  public get TaxIdentificationNumber_isVisible(): boolean {
+    return !!this.definition.TaxIdentificationNumberVisibility;
+  }
+
+  public get TaxIdentificationNumber_isRequired(): boolean {
+    return this.definition.TaxIdentificationNumberVisibility === 'Required';
   }
 
   public get Job_isVisible(): boolean {
@@ -204,8 +420,140 @@ export class ContractsDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.BankAccountNumberVisibility === 'Required';
   }
 
-  public get Tabs_isVisible(): boolean {
-    return false; // More tabs may be added
+  public get User_isVisible(): boolean {
+    return this.definition.UserCardinality === 'Single';
+  }
+
+  public getUserId(model: ContractForSave): number {
+    if (!!model && !!model.Users && !!model.Users[0]) {
+      return model.Users[0].UserId;
+    }
+
+    return undefined;
+  }
+
+  public setUserId(model: ContractForSave, userId: number): void {
+    if (!!model) {
+      if (!!userId) {
+        model.Users = [{ UserId: userId }];
+      } else {
+        model.Users = [];
+      }
+    }
+  }
+
+  public get Users_isVisible(): boolean {
+    return this.definition.UserCardinality === 'Multiple';
+  }
+
+  public Users_count(model: ContractForSave): number {
+    return !!model && !!model.Users ? model.Users.length : 0;
+  }
+
+  public Users_showError(model: ContractForSave): boolean {
+    return !!model && !!model.Users && model.Users.some(e => !!e.serverErrors);
+  }
+
+  public get showTabs(): boolean {
+    return this.Users_isVisible; // TODO: Add the location
+  }
+
+  // Location + Map stuff
+
+  public get Location_isVisible(): boolean {
+    return !!this.definition.LocationVisibility;
+  }
+
+  public Map_showError(model: ContractForSave): boolean {
+    return !!model && !!model.serverErrors && !!model.serverErrors.LocationJson;
+  }
+
+  public get zoom(): number {
+    // console.log(+localStorage.map_zoom);
+    return +localStorage.map_zoom || 2;
+  }
+
+  public set zoom(v: number) {
+    localStorage.map_zoom = v;
+  }
+
+  private _lat: number;
+  private _lng: number;
+
+  public get latitude(): number {
+    if (this._lat === undefined) {
+      this._lat = +localStorage.map_latitude || 0;
+    }
+    return this._lat;
+  }
+
+  public get longitude(): number {
+    if (this._lng === undefined) {
+      this._lng = +localStorage.map_longitude || 0;
+    }
+    return this._lng;
+  }
+
+  public onCenterChange(event: LatLngLiteral) {
+    localStorage.map_latitude = event.lat;
+    localStorage.map_longitude = event.lng;
+  }
+
+  public styleFunc = (feature: any) => {
+
+    // This is the result object
+    const styleOptions = {
+      clickable: false,
+    };
+
+    // https://developers.google.com/maps/documentation/javascript/reference/data#Data.StyleOptions
+    const propNames = ['fillColor', 'fillOpacity', 'icon', 'strokeColor', 'shape', 'strokeOpacity', 'strokeWeight', 'visible'];
+
+    // Go over the properties and copy them across
+    for (const propName of propNames) {
+      const propValue = feature.getProperty(propName);
+      if (propValue !== undefined && propValue !== null) {
+        styleOptions[propName] = propValue;
+      }
+    }
+
+    // Return the style options
+    return styleOptions;
+  }
+
+  private parseJsonString: string;
+  private parseJsonResult: any;
+  public parseJsonError: string;
+
+  public parseJson(json: string) {
+    json = json || undefined;
+    if (this.parseJsonString !== json) {
+      this.parseJsonString = json;
+      if (!json) {
+        delete this.parseJsonResult;
+        delete this.parseJsonError;
+      } else {
+        try {
+          this.parseJsonResult = JSON.parse(json);
+          delete this.parseJsonError;
+        } catch (err) {
+          this.parseJsonError = err;
+          delete this.parseJsonResult;
+        }
+      }
+    }
+
+    return this.parseJsonResult;
+  }
+
+  public locationView: 'map' | 'json' = 'map';
+
+  public onView(view: 'map' | 'json'): void {
+    this.locationView = view;
+  }
+
+  public isView(view: 'map' | 'json'): boolean {
+    return this.locationView === view;
   }
 
 }

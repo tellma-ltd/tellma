@@ -108,7 +108,7 @@ namespace Tellma.Controllers
             }
         }
 
-        private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
+        private ContractDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Contracts?
             .GetValueOrDefault(DefinitionId.Value) ?? throw new InvalidOperationException($"Contract Definition with Id = {DefinitionId} is missing from the cache");
 
         /// <summary>
@@ -179,13 +179,72 @@ namespace Tellma.Controllers
 
         protected override Task<List<ContractForSave>> SavePreprocessAsync(List<ContractForSave> entities)
         {
-            // TODO: Add definition defaults here
+            var def = Definition();
+
+            // ... Any definition defaults will go here
+
+            entities.ForEach(e =>
+            {
+                // Makes everything that follows easier
+                e.Users ??= new List<ContractUserForSave>();
+            });
+
+            // Users
+            if (def.UserCardinality == Cardinality.None)
+            {
+                // Remove all users
+                entities.ForEach(entity =>
+                {
+                    entity.Users.Clear();
+                });
+            }
+            else if (def.UserCardinality == Cardinality.Single)
+            {
+                // Remove all but the first user
+                entities.ForEach(entity =>
+                {
+                    if (entity.Users.Count > 1)
+                    {
+                        entity.Users = entity.Users.Take(1).ToList();
+                    }
+                });
+            }
+
+            // No location means no location
+            if (!IsVisible(def.LocationVisibility))
+            {
+                entities.ForEach(entity =>
+                {
+                    entity.LocationJson = null;
+                });
+            }
+
+            entities.ForEach(ControllerUtilities.SynchronizeWkbWithJson);
+
             return base.SavePreprocessAsync(entities);
+        }
+
+        private bool IsVisible(string visibility)
+        {
+            return visibility == Visibility.Optional || visibility == Visibility.Required;
         }
 
         protected override async Task SaveValidateAsync(List<ContractForSave> entities)
         {
-            // TODO: Add definition validation here
+            var def = Definition();
+            var userIsRequired = def.UserCardinality != null; // "None" is mapped to null
+
+            foreach (var (e, i) in entities.Select((e, i) => (e, i)))
+            {
+                if (e.EntityMetadata.LocationJsonParseError != null)
+                {
+                    ModelState.AddModelError($"[{i}].{nameof(e.LocationJson)}", e.EntityMetadata.LocationJsonParseError);
+                    if (ModelState.HasReachedMaxErrors)
+                    {
+                        return;
+                    }
+                }
+            }
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)

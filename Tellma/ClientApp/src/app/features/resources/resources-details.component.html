@@ -82,20 +82,7 @@
         <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></t-text-editor>
     </t-form-group>
 
-    <!-- Currency -->
-    <t-form-group *ngIf="Currency_isVisible" class="t-form-group" [label]="Currency_label"
-        [serverErrors]="model?.serverErrors?.CurrencyId">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <t-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
-                {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
-            </t-view-link>
-        </t-restricted>
-        <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
-        </t-currencies-picker>
-    </t-form-group>
-
-
-    <!-- Unit -->
+    <!-- Unit (Cardinality Single) -->
     <t-form-group *ngIf="Unit_isVisible" class="t-form-group" [label]="'Resource_Unit' | translate"
         [serverErrors]="model?.serverErrors?.Units">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Units">
@@ -106,6 +93,18 @@
         <t-units-picker *ngIf="isEdit" [ngModel]="getUnitId(model)" (ngModelChange)="setUnitId(model, $event)"
             [required]="true">
         </t-units-picker>
+    </t-form-group>
+
+    <!-- Currency -->
+    <t-form-group *ngIf="Currency_isVisible" class="t-form-group" [label]="Currency_label"
+        [serverErrors]="model?.serverErrors?.CurrencyId">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+            <t-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
+                {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
+            </t-view-link>
+        </t-restricted>
+        <t-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
+        </t-currencies-picker>
     </t-form-group>
 
     <!-- Center -->

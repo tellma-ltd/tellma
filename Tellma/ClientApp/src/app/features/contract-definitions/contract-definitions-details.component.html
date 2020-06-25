@@ -156,178 +156,179 @@
                     </fa-icon>
                 </div>
                 <div class="p-2 t-studio-section" [class.d-none]="!showSection('Fields')">
-
-                    <!-- AgentVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(agentvisibility, model.serverErrors?.AgentVisibility)">
-                        <label class="small"
-                            for="agentvisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_Agent' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="agentvisibility"
-                            [(ngModel)]="model.AgentVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #agentvisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: agentvisibility, serverErrors: model.serverErrors?.AgentVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <!-- CurrencyVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(currencyvisibility, model.serverErrors?.CurrencyVisibility)">
-                        <label class="small"
-                            for="currencyvisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_Currency' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="currencyvisibility"
-                            [(ngModel)]="model.CurrencyVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #currencyvisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: currencyvisibility, serverErrors: model.serverErrors?.CurrencyVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <!-- TaxIdentificationNumberVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(taxidentificationnumbervisibility, model.serverErrors?.TaxIdentificationNumberVisibility)">
-                        <label class="small"
-                            for="taxidentificationnumbervisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_TaxIdentificationNumber' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="taxidentificationnumbervisibility"
-                            [(ngModel)]="model.TaxIdentificationNumberVisibility"
-                            (ngModelChange)="onDefinitionChange(model)" #taxidentificationnumbervisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: taxidentificationnumbervisibility, serverErrors: model.serverErrors?.TaxIdentificationNumberVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <!-- ImageVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(imagevisibility, model.serverErrors?.ImageVisibility)">
-                        <label class="small"
-                            for="imagevisibility">{{ 'Field0Visibility' | translate: { '0': ('Image' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="imagevisibility"
-                            [(ngModel)]="model.ImageVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #imagevisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: imagevisibility, serverErrors: model.serverErrors?.ImageVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <!-- StartDateVisibility -->
-                    <div class="form-group"
-                        [class.is-invalid]="invalid(startdatevisibility, model.serverErrors?.StartDateVisibility)">
-                        <label class="small"
-                            for="startdatevisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_StartDate' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="startdatevisibility"
-                            [(ngModel)]="model.StartDateVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #startdatevisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
-                                {{ c.name() }}</option>
-                        </select>
-                        <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: startdatevisibility, serverErrors: model.serverErrors?.StartDateVisibility }">
-                        </ng-container>
-                    </div>
-
-                    <ng-container *ngIf="isVisible(model.StartDateVisibility)">
-
-                        <!-- StartDateLabel -->
-                        <div class="form-group"
-                            [class.is-invalid]="invalid(startdatelabel, model.serverErrors?.StartDateLabel)">
-                            <label class="small"
-                                for="startdatelabel">{{ ('Field0Label' | translate: { '0': ('Contract_StartDate' | translate) }) + ws.primaryPostfix }}</label>
-                            <input class="form-control t-studio-input" id="startdatelabel" type="text"
-                                [(ngModel)]="model.StartDateLabel"
-                                (ngModelChange)="onDefinitionChange(model, 'StartDateLabel')"
-                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #startdatelabel="ngModel" />
-                            <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: startdatelabel, serverErrors: model.serverErrors?.StartDateLabel }">
-                            </ng-container>
-                        </div>
-
-                        <!-- StartDateLabel2 -->
-                        <div class="form-group"
-                            [class.is-invalid]="invalid(startdatelabel2, model.serverErrors?.StartDateLabel2)"
-                            *ngIf="ws.settings?.SecondaryLanguageId">
-                            <label class="small"
-                                for="startdatelabel2">{{ ('Field0Label' | translate: { '0': ('Contract_StartDate' | translate) }) + ws.secondaryPostfix }}</label>
-                            <input class="form-control t-studio-input" id="startdatelabel2" type="text"
-                                [(ngModel)]="model.StartDateLabel2"
-                                (ngModelChange)="onDefinitionChange(model, 'StartDateLabel2')"
-                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #startdatelabel2="ngModel" />
-                            <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: startdatelabel2, serverErrors: model.serverErrors?.StartDateLabel2 }">
-                            </ng-container>
-                        </div>
-
-                        <!-- StartDateLabel3 -->
-                        <div class="form-group"
-                            [class.is-invalid]="invalid(startdatelabel3, model.serverErrors?.StartDateLabel3)"
-                            *ngIf="ws.settings?.TernaryLanguageId">
-                            <label class="small"
-                                for="startdatelabel3">{{ ('Field0Label' | translate: { '0': ('Contract_StartDate' | translate) }) + ws.ternaryPostfix }}</label>
-                            <input class="form-control t-studio-input" id="startdatelabel3" type="text"
-                                [(ngModel)]="model.StartDateLabel3"
-                                (ngModelChange)="onDefinitionChange(model, 'StartDateLabel3')"
-                                [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #startdatelabel3="ngModel" />
-                            <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: startdatelabel3, serverErrors: model.serverErrors?.StartDateLabel3 }">
-                            </ng-container>
-                        </div>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Currency', propLower: 'currency' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="unlabeledProp; context: { prop: 'Center', propLower: 'center' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Image', propLower: 'image', fieldName: 'Image' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Description', propLower: 'description', fieldName: 'Description' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Location', propLower: 'location' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'FromDate', propLower: 'fromdate' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'ToDate', propLower: 'todate' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal1', propLower: 'decimal1' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Decimal2', propLower: 'decimal2' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int1', propLower: 'int1' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Int2', propLower: 'int2' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup1', propLower: 'lookup1' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup2', propLower: 'lookup2' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup3', propLower: 'lookup3' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="definitionedProp; context: { prop: 'Lookup4', propLower: 'lookup4' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text1', propLower: 'text1' }">
+                    </ng-container>
+                    <ng-container *ngTemplateOutlet="labeledProp; context: { prop: 'Text2', propLower: 'text2' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Agent', propLower: 'agent', fieldName: 'Contract_Agent' }">
+                    </ng-container>
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'TaxIdentificationNumber', propLower: 'taxidentificationnumber', fieldName: 'Contract_TaxIdentificationNumber' }">
+                    </ng-container>
+                    <!-- <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'Job', propLower: 'job', fieldName: 'Contract_Job' }">
+                    </ng-container> -->
+                    <ng-container
+                        *ngTemplateOutlet="unlabeledProp; context: { prop: 'BankAccountNumber', propLower: 'bankaccountnumber', fieldName: 'Contract_BankAccountNumber' }">
                     </ng-container>
 
-                    <!-- BankAccountNumberVisibility -->
+                    <!-- User Cardinality -->
                     <div class="form-group"
-                        [class.is-invalid]="invalid(bankaccountnumbervisibility, model.serverErrors?.BankAccountNumberVisibility)">
+                        [class.is-invalid]="invalid(usercardinality, serverErrors(model, 'UserCardinality'))">
                         <label class="small"
-                            for="bankaccountnumbervisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_BankAccountNumber' | translate) } }}</label>
-                        <select class="form-control t-studio-input" id="bankaccountnumbervisibility"
-                            [(ngModel)]="model.BankAccountNumberVisibility" (ngModelChange)="onDefinitionChange(model)"
-                            #bankaccountnumbervisibility="ngModel">
-                            <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
+                            for="usercardinality">{{ 'ContractDefinition_UserCardinality' | translate }}</label>
+                        <select class="form-control t-studio-input" id="usercardinality"
+                            [(ngModel)]="model.UserCardinality" (ngModelChange)="onDefinitionChange(model)"
+                            #usercardinality="ngModel">
+                            <option *ngFor="let c of cardinalityChoices" value="{{c.value}}">
                                 {{ c.name() }}</option>
                         </select>
                         <ng-container
-                            *ngTemplateOutlet="errorsTemplate;context: { control: bankaccountnumbervisibility, serverErrors: model.serverErrors?.BankAccountNumberVisibility }">
+                            *ngTemplateOutlet="errorsTemplate;context: { control: usercardinality, serverErrors: serverErrors(model, 'UserCardinality') }">
                         </ng-container>
                     </div>
 
-                    <!-- TODO -->
-                    <ng-container *ngIf="false">
+                    <!-- Visibility Field Template -->
+                    <ng-template #unlabeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
 
-                        <!-- UserVisibility -->
                         <div class="form-group"
-                            [class.is-invalid]="invalid(uservisibility, model.serverErrors?.UserVisibility)">
+                            [class.is-invalid]="invalid(visibility, serverErrors(model, prop + 'Visibility'))">
                             <label class="small"
-                                for="uservisibility">{{ 'Field0Visibility' | translate: { '0': ('Contract_User' | translate) } }}</label>
-                            <select class="form-control t-studio-input" id="uservisibility"
-                                [(ngModel)]="model.UserVisibility" (ngModelChange)="onDefinitionChange(model)"
-                                #uservisibility="ngModel">
+                                for="{{propLower}}visibility">{{ 'Field0Visibility' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) } }}</label>
+                            <select class="form-control t-studio-input" id="{{propLower}}visibility"
+                                [(ngModel)]="model[prop + 'Visibility']" (ngModelChange)="onDefinitionChange(model)"
+                                #visibility="ngModel">
                                 <option *ngFor="let c of visibilityChoices" value="{{c.value}}">
                                     {{ c.name() }}</option>
                             </select>
                             <ng-container
-                                *ngTemplateOutlet="errorsTemplate;context: { control: uservisibility, serverErrors: model.serverErrors?.UserVisibility }">
+                                *ngTemplateOutlet="errorsTemplate;context: { control: visibility, serverErrors: serverErrors(model, prop + 'Visibility') }">
+                            </ng-container>
+                        </div>
+                    </ng-template>
+
+                    <!-- Visibility + Labels Fields Template -->
+                    <ng-template #labeledProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
+
+                        <!-- Visibility -->
+                        <ng-container
+                            *ngTemplateOutlet="unlabeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        </ng-container>
+
+                        <!-- Labels -->
+                        <ng-container *ngIf="isVisible(model[prop + 'Visibility'])">
+
+                            <!-- Label -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label, serverErrors(model, prop + 'Label'))">
+                                <label class="small"
+                                    for="{{propLower}}label">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label" type="text"
+                                    [(ngModel)]="model[prop + 'Label']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label, serverErrors: serverErrors(model, prop + 'Label') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label2 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label2, serverErrors(model, prop + 'Label2'))"
+                                *ngIf="ws.settings?.SecondaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label2">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.secondaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label2" type="text"
+                                    [(ngModel)]="model[prop + 'Label2']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label2')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label2="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label2, serverErrors: serverErrors(model, prop + 'Label2') }">
+                                </ng-container>
+                            </div>
+
+                            <!-- Label3 -->
+                            <div class="form-group"
+                                [class.is-invalid]="invalid(label3, serverErrors(model, prop + 'Label3'))"
+                                *ngIf="ws.settings?.TernaryLanguageId">
+                                <label class="small"
+                                    for="{{propLower}}label3">{{ ('Field0Label' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.ternaryPostfix }}</label>
+                                <input class="form-control t-studio-input" id="{{propLower}}label3" type="text"
+                                    [(ngModel)]="model[prop + 'Label3']"
+                                    (ngModelChange)="onDefinitionChange(model, prop + 'Label3')"
+                                    [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" #label3="ngModel" />
+                                <ng-container
+                                    *ngTemplateOutlet="errorsTemplate;context: { control: label3, serverErrors: serverErrors(model, prop + 'Label3') }">
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </ng-template>
+
+                    <!-- Visibility + Labels + DefinitionId Fields Template -->
+                    <ng-template #definitionedProp let-prop="prop" let-propLower="propLower" let-fieldName="fieldName">
+
+                        <!-- Visibility + Labels -->
+                        <ng-container
+                            *ngTemplateOutlet="labeledProp; context: { prop: prop, propLower: propLower, fieldName: fieldName }">
+                        </ng-container>
+
+                        <!-- DefinitionId -->
+                        <div class="form-group" *ngIf="isVisible(model[prop + 'Visibility'])"
+                            [class.is-invalid]="invalid(defId, serverErrors(model, prop + 'DefinitionId'))">
+                            <label class="small"
+                                for="{{propLower}}definition">{{ ('Field0Definition' | translate: { '0': ((fieldName || ('Entity_' + prop)) | translate) }) + ws.primaryPostfix }}</label>
+
+                            <select class="form-control t-studio-input" id="{{propLower}}definitionId"
+                                [(ngModel)]="model[prop + 'DefinitionId']" (ngModelChange)="onDefinitionChange(model)"
+                                #defId="ngModel">
+                                <option *ngFor="let c of lookupDefinitionChoices" value="{{c.value}}">
+                                    {{ c.name() }}</option>
+                            </select>
+                            <ng-container
+                                *ngTemplateOutlet="errorsTemplate;context: { control: defId, serverErrors: serverErrors(model, prop + 'DefinitionId') }">
                             </ng-container>
                         </div>
 
-                        <!-- AllowMultipleUsers -->
-                        <div class="custom-control custom-checkbox" *ngIf="isVisible(model.UserVisibility)">
-                            <input type="checkbox" class="custom-control-input" id="allowmultipleusers"
-                                [(ngModel)]="model.AllowMultipleUsers" (ngModelChange)="onDefinitionChange(model)">
-                            <label class="custom-control-label"
-                                for="allowmultipleusers">{{ 'ContractDefinition_AllowMultipleUsers' | translate }}</label>
-                        </div>
-
-                    </ng-container>
+                    </ng-template>
                 </div>
 
                 <!-- Menu Section -->

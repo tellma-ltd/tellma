@@ -1,22 +1,25 @@
-﻿using Tellma.Data;
-using Tellma.Entities;
-using Tellma.Services.Utilities;
+﻿using GeoJSON.Net;
+using GeoJSON.Net.Contrib.Wkb;
+using GeoJSON.Net.Feature;
+using GeoJSON.Net.Geometry;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
-using System.Threading;
-using System.Reflection;
+using Tellma.Data;
+using Tellma.Entities;
 using Tellma.Entities.Descriptors;
-using System.Runtime.InteropServices.ComTypes;
-using System.Collections;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers.Utilities
 {
@@ -353,5 +356,70 @@ namespace Tellma.Controllers.Utilities
                 .GroupBy(e => e.GetType().GetRootType().Name)
                 .ToDictionary(g => g.Key, g => g.AsEnumerable());
         }
+
+        /// <summary>
+        /// Sets the value of <see cref="ILocationEntityForSave.LocationWkb"/> according to to the value of <see cref="ILocationEntityForSave.LocationJson"/>
+        /// </summary>
+        public static void SynchronizeWkbWithJson<T>(T entity) where T : EntityWithKey, ILocationEntityForSave
+        {
+            // Here we convert the GeoJson to Well-Known Binary
+            var json = entity.LocationJson;
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                entity.LocationWkb = null;
+                return;
+            }
+
+            try
+            {
+                var spy = JsonConvert.DeserializeObject<GeoJsonSpy>(json);
+                if (spy.Type == GeoJSONObjectType.Feature)
+                {
+                    // A simple feature can be turned in to a simple WKB
+                    var feature = JsonConvert.DeserializeObject<Feature>(json);
+
+                    var geometry = feature?.Geometry;
+                    entity.LocationWkb = geometry?.ToWkb();
+                }
+                else if (spy.Type == GeoJSONObjectType.FeatureCollection)
+                {
+                    // A feature collection must be converted to a geometry collection and then turned to WKB
+                    var coll = JsonConvert.DeserializeObject<FeatureCollection>(json);
+                    var geometries = coll?.Features?.Select(feat => feat.Geometry)?.Where(e => e != null) ?? new List<IGeometryObject>();
+
+                    if (geometries.Count() == 1)
+                    {
+                        // If it's just a single geometry, no need to wrap it in a geometry collection
+                        var geometry = geometries.Single();
+                        entity.LocationWkb = geometry?.ToWkb();
+                    }
+                    else
+                    {
+                        // If it's zero or multiple geometries, wrap in a geometry collection
+                        var geomCollection = new GeometryCollection(geometries);
+                        entity.LocationWkb = geomCollection?.ToWkb();
+                    }
+                }
+                else
+                {
+                    // I don't know what'd be the point of localizing this message
+                    throw new InvalidOperationException("Root GeoJSON element must be a feature or a feature collection");
+                }
+            }
+            catch (Exception ex)
+            {
+                entity.EntityMetadata.LocationJsonParseError = ex.Message;
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Used to peek at the root element of a GeoJson string using JSON.NET
+    /// </summary>
+    public class GeoJsonSpy : IGeometryObject
+    {
+        [JsonProperty(PropertyName = "type")]
+        public GeoJSONObjectType Type { get; set; }
     }
 }

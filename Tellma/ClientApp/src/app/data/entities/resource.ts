@@ -138,6 +138,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 MonetaryValue: { control: 'number', label: () => trx.instant('Resource_MonetaryValue'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
 
+                // Standard
+
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

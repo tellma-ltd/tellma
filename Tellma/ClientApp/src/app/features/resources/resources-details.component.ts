@@ -89,7 +89,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
       result.Name3 = this.initialText;
     }
 
-    const defs = this.definition;
+    // const defs = this.definition;
 
     // result.Identifier = defs.IdentifierDefaultValue;
     // result.CurrencyId = defs.CurrencyDefaultValue;
@@ -124,6 +124,10 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
         clone.Units.forEach(e => {
           e.Id = null;
           delete e.ResourceId;
+          delete e.CreatedAt;
+          delete e.CreatedById;
+          delete e.ModifiedAt;
+          delete e.ModifiedById;
         });
       }
 
@@ -180,53 +184,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
 
-  public get Image_isVisible(): boolean {
-    return !!this.definition.ImageVisibility;
-  }
-
-  public get Unit_isVisible(): boolean {
-    return this.definition.UnitCardinality === 'Single';
-  }
-
-  public getUnitId(model: ResourceForSave): number {
-    if (!!model && !!model.Units && !!model.Units[0]) {
-      return model.Units[0].UnitId;
-    }
-
-    return undefined;
-  }
-
-  public setUnitId(model: ResourceForSave, unitId: number): void {
-    if (!!model) {
-      if (!!unitId) {
-        model.Units = [{ UnitId: unitId, Multiplier: 1 }];
-      } else {
-        model.Units = [];
-      }
-    }
-  }
-
-  public get Units_isVisible(): boolean {
-    return this.definition.UnitCardinality === 'Multiple';
-  }
-
-  public get showTabs(): boolean {
-    return this.Units_isVisible || this.Location_isVisible;
-  }
-
-  public get Identifier_isVisible(): boolean {
-    return !!this.definition.IdentifierVisibility;
-  }
-
-  public get Identifier_isRequired(): boolean {
-    return this.definition.IdentifierVisibility === 'Required';
-  }
-
-  public get Identifier_label(): string {
-    return !!this.definition.IdentifierLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
-      this.translate.instant('Resource_Identifier');
-  }
+  // Shared with Contract
 
   public get Currency_isVisible(): boolean {
     return !!this.definition.CurrencyVisibility;
@@ -238,31 +196,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public get Currency_label(): string {
     return this.translate.instant('Entity_Currency');
-  }
-
-  public get MonetaryValue_isVisible(): boolean {
-    return !!this.definition.MonetaryValueVisibility;
-  }
-
-  public get MonetaryValue_isRequired(): boolean {
-    return this.definition.MonetaryValueVisibility === 'Required';
-  }
-
-  public get MonetaryValue_label(): string {
-    return this.translate.instant('Resource_MonetaryValue');
-  }
-
-  public MonetaryValue_decimals(model: Resource): number {
-    const currency = this.ws.get('Currency', model.CurrencyId) as Currency;
-    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
-  }
-
-  public get Description_isVisible(): boolean {
-    return !!this.definition.DescriptionVisibility;
-  }
-
-  public get Description_isRequired(): boolean {
-    return this.definition.DescriptionVisibility === 'Required';
   }
 
   public get Center_isVisible(): boolean {
@@ -277,53 +210,16 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.translate.instant('Entity_Center');
   }
 
-  public ResidualMonetaryValue_isVisible(_: ResourceForSave): boolean {
-    return !!this.definition.ResidualMonetaryValueVisibility;
+  public get Image_isVisible(): boolean {
+    return !!this.definition.ImageVisibility;
   }
 
-  public get ResidualMonetaryValue_isRequired(): boolean {
-    return this.definition.ResidualMonetaryValueVisibility === 'Required';
+  public get Description_isVisible(): boolean {
+    return !!this.definition.DescriptionVisibility;
   }
 
-  public currencyPostfix(model: ResourceForSave): string {
-    return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` :
-      ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
-  }
-
-  public ResidualValue_isVisible(model: ResourceForSave): boolean {
-    // If the residual monetary value is visible: appears only when the currency is not functional
-    // If the residual monetary value is invisible: appears anyway
-    return !!this.definition.ResidualValueVisibility && ((!!model &&
-      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId) ||
-      !this.ResidualMonetaryValue_isVisible(model));
-  }
-
-  public get functionalDecimals(): number {
-    return this.ws.settings.FunctionalCurrencyDecimals;
-  }
-
-  public get functionalPostfix(): string {
-    return ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
-  }
-
-  public get ResidualValue_isRequired(): boolean {
-    return this.definition.ResidualValueVisibility === 'Required';
-  }
-
-  public get ReorderLevel_isVisible(): boolean {
-    return !!this.definition.ReorderLevelVisibility;
-  }
-
-  public get ReorderLevel_isRequired(): boolean {
-    return this.definition.ReorderLevelVisibility === 'Required';
-  }
-
-  public get EconomicOrderQuantity_isVisible(): boolean {
-    return !!this.definition.EconomicOrderQuantityVisibility;
-  }
-
-  public get EconomicOrderQuantity_isRequired(): boolean {
-    return this.definition.EconomicOrderQuantityVisibility === 'Required';
+  public get Description_isRequired(): boolean {
+    return this.definition.DescriptionVisibility === 'Required';
   }
 
   public get FromDate_isVisible(): boolean {
@@ -514,12 +410,124 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
       this.translate.instant('Entity_Text2');
   }
 
+  // Resource Only
+
+  public get showTabs(): boolean {
+    return this.Units_isVisible || this.Location_isVisible;
+  }
+
+  public get Unit_isVisible(): boolean {
+    return this.definition.UnitCardinality === 'Single';
+  }
+
+  public getUnitId(model: ResourceForSave): number {
+    if (!!model && !!model.Units && !!model.Units[0]) {
+      return model.Units[0].UnitId;
+    }
+
+    return undefined;
+  }
+
+  public setUnitId(model: ResourceForSave, unitId: number): void {
+    if (!!model) {
+      if (!!unitId) {
+        model.Units = [{ UnitId: unitId, Multiplier: 1 }];
+      } else {
+        model.Units = [];
+      }
+    }
+  }
+
+  public get Units_isVisible(): boolean {
+    return this.definition.UnitCardinality === 'Multiple';
+  }
+
   public Units_count(model: ResourceForSave): number {
     return !!model && !!model.Units ? model.Units.length : 0;
   }
 
   public Units_showError(model: ResourceForSave): boolean {
     return !!model && !!model.Units && model.Units.some(e => !!e.serverErrors);
+  }
+
+  public get Identifier_isVisible(): boolean {
+    return !!this.definition.IdentifierVisibility;
+  }
+
+  public get Identifier_isRequired(): boolean {
+    return this.definition.IdentifierVisibility === 'Required';
+  }
+
+  public get Identifier_label(): string {
+    return !!this.definition.IdentifierLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
+      this.translate.instant('Resource_Identifier');
+  }
+
+  public ResidualMonetaryValue_isVisible(_: ResourceForSave): boolean {
+    return !!this.definition.ResidualMonetaryValueVisibility;
+  }
+
+  public get ResidualMonetaryValue_isRequired(): boolean {
+    return this.definition.ResidualMonetaryValueVisibility === 'Required';
+  }
+
+  public currencyPostfix(model: ResourceForSave): string {
+    return !!model && !!model.CurrencyId ? ` (${this.ws.getMultilingualValue('Currency', model.CurrencyId, 'Name')})` :
+      ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
+  }
+
+  public ResidualValue_isVisible(model: ResourceForSave): boolean {
+    // If the residual monetary value is visible: appears only when the currency is not functional
+    // If the residual monetary value is invisible: appears anyway
+    return !!this.definition.ResidualValueVisibility && ((!!model &&
+      !!model.CurrencyId && model.CurrencyId !== this.ws.settings.FunctionalCurrencyId) ||
+      !this.ResidualMonetaryValue_isVisible(model));
+  }
+
+  public get functionalDecimals(): number {
+    return this.ws.settings.FunctionalCurrencyDecimals;
+  }
+
+  public get functionalPostfix(): string {
+    return ` (${this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName')})`;
+  }
+
+  public get ResidualValue_isRequired(): boolean {
+    return this.definition.ResidualValueVisibility === 'Required';
+  }
+
+  public get ReorderLevel_isVisible(): boolean {
+    return !!this.definition.ReorderLevelVisibility;
+  }
+
+  public get ReorderLevel_isRequired(): boolean {
+    return this.definition.ReorderLevelVisibility === 'Required';
+  }
+
+  public get EconomicOrderQuantity_isVisible(): boolean {
+    return !!this.definition.EconomicOrderQuantityVisibility;
+  }
+
+  public get EconomicOrderQuantity_isRequired(): boolean {
+    return this.definition.EconomicOrderQuantityVisibility === 'Required';
+  }
+
+  public get MonetaryValue_isVisible(): boolean {
+    return !!this.definition.MonetaryValueVisibility;
+  }
+
+  public get MonetaryValue_isRequired(): boolean {
+    return this.definition.MonetaryValueVisibility === 'Required';
+  }
+
+  public get MonetaryValue_label(): string {
+    return this.translate.instant('Resource_MonetaryValue');
+  }
+
+  public MonetaryValue_decimals(model: Resource): number {
+    const currency = this.ws.get('Currency', model.CurrencyId) as Currency;
+    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
 
   // Location + Map stuff
@@ -584,50 +592,6 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     // Return the style options
     return styleOptions;
   }
-
-  // private locationJsonAceConfigBase: AceConfigInterface = {
-  //   mode: 'json',
-  //   theme: 'clouds',
-  //   useWorker: false,
-  //   showPrintMargin: false,
-  // };
-
-  // private locationJsonAceConfigEditable: AceConfigInterface;
-  // private locationJsonAceConfigReadonly: AceConfigInterface;
-
-  // public locationJsonAceConfig(isEdit: boolean): AceConfigInterface {
-  //   if (isEdit) {
-  //     if (!this.locationJsonAceConfigEditable) {
-  //       const clone = { ... this.locationJsonAceConfigBase };
-  //       clone.readOnly = false;
-  //       clone.highlightActiveLine = true;
-  //       clone.highlightGutterLine = true;
-
-  //       this.locationJsonAceConfigEditable = clone;
-  //     }
-
-  //     return this.locationJsonAceConfigEditable;
-  //   } else {
-  //     if (!this.locationJsonAceConfigReadonly) {
-  //       const clone = { ... this.locationJsonAceConfigBase };
-  //       clone.readOnly = true;
-  //       clone.highlightActiveLine = false;
-  //       clone.highlightGutterLine = false;
-
-  //       this.locationJsonAceConfigReadonly = clone;
-  //     }
-
-  //     return this.locationJsonAceConfigReadonly;
-  //   }
-  // }
-
-  // public onLocationJsonValueChange(value: string, model: ResourceForSave) {
-  //   // The ace component triggers value change on init
-  //   value = value || undefined;
-  //   if (model.LocationJson !== value) {
-  //     model.LocationJson = value;
-  //   }
-  // }
 
   private parseJsonString: string;
   private parseJsonResult: any;

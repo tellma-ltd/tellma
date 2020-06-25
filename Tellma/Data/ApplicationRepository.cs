@@ -1242,8 +1242,16 @@ namespace Tellma.Data
                 SqlDbType = SqlDbType.Structured
             };
 
+            DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
+            var usersTvp = new SqlParameter("@ContractUsers", usersTable)
+            {
+                TypeName = $"[dbo].[{nameof(ContractUser)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
             cmd.Parameters.Add("@DefinitionId", definitionId);
             cmd.Parameters.Add(entitiesTvp);
+            cmd.Parameters.Add(usersTvp);
             cmd.Parameters.Add("@Top", top);
 
             // Command
@@ -1269,6 +1277,13 @@ namespace Tellma.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable usersTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Users);
+                var usersTvp = new SqlParameter("@ContractUsers", usersTable)
+                {
+                    TypeName = $"[dbo].[{nameof(ContractUser)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
                 var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
                 {
@@ -1278,6 +1293,7 @@ namespace Tellma.Data
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(usersTvp);
                 cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 

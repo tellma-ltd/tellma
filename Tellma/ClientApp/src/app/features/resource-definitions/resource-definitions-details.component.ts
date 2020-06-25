@@ -175,18 +175,11 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
       ));
     } else if (section === 'Fields') {
       return (!!model.serverErrors && (
-        areServerErrors(model.serverErrors.IdentifierLabel) ||
-        areServerErrors(model.serverErrors.IdentifierLabel2) ||
-        areServerErrors(model.serverErrors.IdentifierLabel3) ||
-        areServerErrors(model.serverErrors.IdentifierVisibility) ||
         areServerErrors(model.serverErrors.CurrencyVisibility) ||
+        areServerErrors(model.serverErrors.CenterVisibility) ||
+        areServerErrors(model.serverErrors.ImageVisibility) ||
         areServerErrors(model.serverErrors.DescriptionVisibility) ||
         areServerErrors(model.serverErrors.LocationVisibility) ||
-        areServerErrors(model.serverErrors.CenterVisibility) ||
-        areServerErrors(model.serverErrors.ResidualMonetaryValueVisibility) ||
-        areServerErrors(model.serverErrors.ResidualValueVisibility) ||
-        areServerErrors(model.serverErrors.ReorderLevelVisibility) ||
-        areServerErrors(model.serverErrors.EconomicOrderQuantityVisibility) ||
         areServerErrors(model.serverErrors.FromDateLabel) ||
         areServerErrors(model.serverErrors.FromDateLabel2) ||
         areServerErrors(model.serverErrors.FromDateLabel3) ||
@@ -231,7 +224,6 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Lookup4Label3) ||
         areServerErrors(model.serverErrors.Lookup4Visibility) ||
         areServerErrors(model.serverErrors.Lookup4DefinitionId) ||
-        areServerErrors(model.serverErrors.Lookup5DefinitionId) ||
         areServerErrors(model.serverErrors.Text1Label) ||
         areServerErrors(model.serverErrors.Text1Label2) ||
         areServerErrors(model.serverErrors.Text1Label3) ||
@@ -239,7 +231,20 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.Text2Label) ||
         areServerErrors(model.serverErrors.Text2Label2) ||
         areServerErrors(model.serverErrors.Text2Label3) ||
-        areServerErrors(model.serverErrors.Text2Visibility)
+        areServerErrors(model.serverErrors.Text2Visibility) ||
+
+        // Resource Only
+        areServerErrors(model.serverErrors.IdentifierLabel) ||
+        areServerErrors(model.serverErrors.IdentifierLabel2) ||
+        areServerErrors(model.serverErrors.IdentifierLabel3) ||
+        areServerErrors(model.serverErrors.IdentifierVisibility) ||
+        areServerErrors(model.serverErrors.ResidualMonetaryValueVisibility) ||
+        areServerErrors(model.serverErrors.ResidualValueVisibility) ||
+        areServerErrors(model.serverErrors.ReorderLevelVisibility) ||
+        areServerErrors(model.serverErrors.EconomicOrderQuantityVisibility) ||
+        areServerErrors(model.serverErrors.UnitCardinality) ||
+        areServerErrors(model.serverErrors.MonetaryValueVisibility) ||
+        false
       ));
     } else if (section === 'MainMenu') {
       return (!!model.serverErrors && (
