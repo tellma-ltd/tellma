@@ -77,11 +77,11 @@ namespace Tellma.Entities
         [Display(Name = "Resource_EconomicOrderQuantity")]
         public decimal? EconomicOrderQuantity { get; set; }
 
-        [Display(Name = "Resource_AvailableSince")]
-        public DateTime? AvailableSince { get; set; }
+        [Display(Name = "Resource_FromDate")]
+        public DateTime? FromDate { get; set; }
 
-        [Display(Name = "Resource_AvailableTill")]
-        public DateTime? AvailableTill { get; set; }
+        [Display(Name = "Resource_ToDate")]
+        public DateTime? ToDate { get; set; }
 
         [Display(Name = "Resource_Decimal1")]
         public decimal? Decimal1 { get; set; }

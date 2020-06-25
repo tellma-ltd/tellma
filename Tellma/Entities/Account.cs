@@ -40,7 +40,6 @@ namespace Tellma.Entities
         [Display(Name = "Account_Classification")]
         public int? ClassificationId { get; set; }
 
-
         [Display(Name = "Account_ContractDefinition")]
         public int? ContractDefinitionId { get; set; }
 

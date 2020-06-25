@@ -26,8 +26,8 @@ export interface ResourceForSave<TResourceUnit = ResourceUnitForSave> extends En
     ResidualValue?: number;
     ReorderLevel?: number;
     EconomicOrderQuantity?: number;
-    AvailableSince?: string;
-    AvailableTill?: string;
+    FromDate?: string;
+    ToDate?: string;
     Decimal1?: number;
     Decimal2?: number;
     Int1?: number;
@@ -112,8 +112,8 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
                 ResidualValue: { control: 'number', label: () => `${trx.instant('Resource_ResidualValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})` , minDecimalPlaces: functionalE, maxDecimalPlaces: functionalE, alignment: 'right' },
                 ReorderLevel: { control: 'number', label: () => trx.instant('Resource_ReorderLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 EconomicOrderQuantity: { control: 'number', label: () => trx.instant('Resource_EconomicOrderQuantity'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
-                AvailableSince: { control: 'date', label: () => trx.instant('Resource_AvailableSince') },
-                AvailableTill: { control: 'date', label: () => trx.instant('Resource_AvailableTill') },
+                FromDate: { control: 'date', label: () => trx.instant('Resource_FromDate') },
+                ToDate: { control: 'date', label: () => trx.instant('Resource_ToDate') },
                 Decimal1: { control: 'number', label: () => trx.instant('Resource_Decimal1'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Decimal2: { control: 'number', label: () => trx.instant('Resource_Decimal2'), minDecimalPlaces: 0, maxDecimalPlaces: 4 },
                 Int1: { control: 'number', label: () => trx.instant('Resource_Int1'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -180,7 +180,7 @@ export function metadata_Resource(wss: WorkspaceService, trx: TranslateService, 
             }
 
             // Simple properties Visibility + Label
-            for (const propName of ['Identifier', 'MonetaryValue', 'AvailableSince', 'AvailableTill', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
+            for (const propName of ['Identifier', 'MonetaryValue', 'FromDate', 'ToDate', 'Decimal1', 'Decimal2', 'Int1', 'Int2', 'Text1', 'Text2']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {

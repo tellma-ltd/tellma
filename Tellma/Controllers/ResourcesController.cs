@@ -155,27 +155,27 @@ namespace Tellma.Controllers
             var def = Definition();
 
             // Set default values
-            SetDefaultValue(entities, e => e.Identifier, def.IdentifierDefaultValue);
-            SetDefaultValue(entities, e => e.CurrencyId, def.CurrencyDefaultValue);
-            SetDefaultValue(entities, e => e.MonetaryValue, def.MonetaryValueDefaultValue);
+            //SetDefaultValue(entities, e => e.Identifier, def.IdentifierDefaultValue);
+            //SetDefaultValue(entities, e => e.CurrencyId, def.CurrencyDefaultValue);
+            //SetDefaultValue(entities, e => e.MonetaryValue, def.MonetaryValueDefaultValue);
             //SetDefaultValue(entities, e => e.Description, definition.DescriptionDefaultValue);
             //SetDefaultValue(entities, e => e.Description2, definition.Description2DefaultValue);
             //SetDefaultValue(entities, e => e.Description3, definition.Description3DefaultValue);
-            SetDefaultValue(entities, e => e.ReorderLevel, def.ReorderLevelDefaultValue);
-            SetDefaultValue(entities, e => e.EconomicOrderQuantity, def.EconomicOrderQuantityDefaultValue);
-            SetDefaultValue(entities, e => e.AvailableSince, def.AvailableSinceDefaultValue);
-            SetDefaultValue(entities, e => e.AvailableTill, def.AvailableTillDefaultValue);
-            SetDefaultValue(entities, e => e.Decimal1, def.Decimal1DefaultValue);
-            SetDefaultValue(entities, e => e.Decimal2, def.Decimal2DefaultValue);
-            SetDefaultValue(entities, e => e.Int1, def.Int1DefaultValue);
-            SetDefaultValue(entities, e => e.Int2, def.Int2DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup1Id, def.Lookup1DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup2Id, def.Lookup2DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup3Id, def.Lookup3DefaultValue);
-            SetDefaultValue(entities, e => e.Lookup4Id, def.Lookup4DefaultValue);
+            //SetDefaultValue(entities, e => e.ReorderLevel, def.ReorderLevelDefaultValue);
+            //SetDefaultValue(entities, e => e.EconomicOrderQuantity, def.EconomicOrderQuantityDefaultValue);
+            //SetDefaultValue(entities, e => e.FromDate, def.FromDateDefaultValue);
+            //SetDefaultValue(entities, e => e.ToDate, def.ToDateDefaultValue);
+            //SetDefaultValue(entities, e => e.Decimal1, def.Decimal1DefaultValue);
+            //SetDefaultValue(entities, e => e.Decimal2, def.Decimal2DefaultValue);
+            //SetDefaultValue(entities, e => e.Int1, def.Int1DefaultValue);
+            //SetDefaultValue(entities, e => e.Int2, def.Int2DefaultValue);
+            //SetDefaultValue(entities, e => e.Lookup1Id, def.Lookup1DefaultValue);
+            //SetDefaultValue(entities, e => e.Lookup2Id, def.Lookup2DefaultValue);
+            //SetDefaultValue(entities, e => e.Lookup3Id, def.Lookup3DefaultValue);
+            //SetDefaultValue(entities, e => e.Lookup4Id, def.Lookup4DefaultValue);
             //SetDefaultValue(entities, e => e.Lookup5Id, definition.Lookup5DefaultValue);
-            SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
-            SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
+            //SetDefaultValue(entities, e => e.Text1, def.Text1DefaultValue);
+            //SetDefaultValue(entities, e => e.Text2, def.Text2DefaultValue);
 
             var settings = _settingsCache.GetCurrentSettingsIfCached()?.Data;
             var functionalId = settings.FunctionalCurrencyId;
@@ -201,60 +201,70 @@ namespace Tellma.Controllers
                 });
             }
 
-            // TODO: Check if location is visible from definitions
             // TODO: Move the logic to a more central place so other entities can be locationed
-            entities.ForEach(entity =>
+            if (IsVisible(def.LocationVisibility))
             {
-                // Here we convert the GeoJson to Well-Known Binary
-                var json = entity.LocationJson;
-                if (string.IsNullOrWhiteSpace(json))
+                entities.ForEach(entity =>
                 {
-                    entity.LocationWkb = null;
-                    return;
-                }
-
-                try
-                {
-                    var spy = JsonConvert.DeserializeObject<GeoJsonSpy>(json);
-                    if (spy.Type == GeoJSONObjectType.Feature)
+                    // Here we convert the GeoJson to Well-Known Binary
+                    var json = entity.LocationJson;
+                    if (string.IsNullOrWhiteSpace(json))
                     {
-                        // A simple feature can be turned in to a simple WKB
-                        var feature = JsonConvert.DeserializeObject<Feature>(json);
-
-                        var geometry = feature?.Geometry;
-                        entity.LocationWkb = geometry?.ToWkb();
+                        entity.LocationWkb = null;
+                        return;
                     }
-                    else if (spy.Type == GeoJSONObjectType.FeatureCollection)
-                    {
-                        // A feature collection must be converted to a geometry collection and then turned to WKB
-                        var coll = JsonConvert.DeserializeObject<FeatureCollection>(json);
-                        var geometries = coll?.Features?.Select(feat => feat.Geometry)?.Where(e => e != null) ?? new List<IGeometryObject>();
 
-                        if (geometries.Count() == 1)
+                    try
+                    {
+                        var spy = JsonConvert.DeserializeObject<GeoJsonSpy>(json);
+                        if (spy.Type == GeoJSONObjectType.Feature)
                         {
-                            // If it's just a single geometry, no need to wrap it in a geometry collection
-                            var geometry = geometries.Single();
+                            // A simple feature can be turned in to a simple WKB
+                            var feature = JsonConvert.DeserializeObject<Feature>(json);
+
+                            var geometry = feature?.Geometry;
                             entity.LocationWkb = geometry?.ToWkb();
+                        }
+                        else if (spy.Type == GeoJSONObjectType.FeatureCollection)
+                        {
+                            // A feature collection must be converted to a geometry collection and then turned to WKB
+                            var coll = JsonConvert.DeserializeObject<FeatureCollection>(json);
+                            var geometries = coll?.Features?.Select(feat => feat.Geometry)?.Where(e => e != null) ?? new List<IGeometryObject>();
+
+                            if (geometries.Count() == 1)
+                            {
+                                // If it's just a single geometry, no need to wrap it in a geometry collection
+                                var geometry = geometries.Single();
+                                entity.LocationWkb = geometry?.ToWkb();
+                            }
+                            else
+                            {
+                                // If it's zero or multiple geometries, wrap in a geometry collection
+                                var geomCollection = new GeometryCollection(geometries);
+                                entity.LocationWkb = geomCollection?.ToWkb();
+                            }
                         }
                         else
                         {
-                            // If it's zero or multiple geometries, wrap in a geometry collection
-                            var geomCollection = new GeometryCollection(geometries);
-                            entity.LocationWkb = geomCollection?.ToWkb();
+                            // I don't know what'd be the point of localizing this message
+                            throw new InvalidOperationException("Root GeoJSON element must be a feature or a feature collection");
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // I don't know what'd be the point of localizing this message
-                        throw new InvalidOperationException("Root GeoJSON element must be a feature or a feature collection");
+                        entity.EntityMetadata.LocationJsonParseError = ex.Message;
+                        return;
                     }
-                }
-                catch (Exception ex)
+                });
+            } 
+            else
+            {
+                entities.ForEach(entity =>
                 {
-                    entity.EntityMetadata.LocationJsonParseError = ex.Message;
-                    return;
-                }
-            });
+                    entity.LocationJson = null;
+                    entity.LocationWkb = null;
+                });
+            }
 
             // SQL Preprocessing
             await _repo.Resources__Preprocess(DefinitionId.Value, entities);

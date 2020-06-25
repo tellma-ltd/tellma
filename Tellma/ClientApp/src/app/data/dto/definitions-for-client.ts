@@ -1,7 +1,7 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
 import { LineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
-import { DefinitionVisibility as Visibility } from '../entities/base/definition-common';
+import { DefinitionVisibility as Visibility, DefinitionCardinality } from '../entities/base/definition-common';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -263,83 +263,51 @@ export type EntryColumnName = 'Memo' | 'PostingDate' | 'TemplateLineId' |
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
 
-    IdentifierLabel: string;
-    IdentifierLabel2: string;
-    IdentifierLabel3: string;
-    IdentifierVisibility: Visibility;
-    IdentifierDefaultValue: string;
-
-    CurrencyLabel: string;
-    CurrencyLabel2: string;
-    CurrencyLabel3: string;
     CurrencyVisibility: Visibility;
-    CurrencyDefaultValue: string;
-
-    MonetaryValueLabel: string;
-    MonetaryValueLabel2: string;
-    MonetaryValueLabel3: string;
-    MonetaryValueVisibility: Visibility;
-    MonetaryValueDefaultValue: number;
-
+    CenterVisibility: Visibility;
+    ImageVisibility: Visibility;
     DescriptionVisibility: Visibility;
     LocationVisibility: Visibility;
 
-    CenterVisibility: Visibility;
-    ResidualMonetaryValueVisibility: Visibility;
-    ResidualValueVisibility: Visibility;
+    FromDateLabel: string;
+    FromDateLabel2: string;
+    FromDateLabel3: string;
+    FromDateVisibility: Visibility;
 
-    ReorderLevelVisibility: Visibility;
-    ReorderLevelDefaultValue: number;
-
-    EconomicOrderQuantityVisibility: Visibility;
-    EconomicOrderQuantityDefaultValue: number;
-
-    AvailableSinceLabel: string;
-    AvailableSinceLabel2: string;
-    AvailableSinceLabel3: string;
-    AvailableSinceVisibility: Visibility;
-    AvailableSinceDefaultValue: string;
-
-    AvailableTillLabel: string;
-    AvailableTillLabel2: string;
-    AvailableTillLabel3: string;
-    AvailableTillVisibility: Visibility;
-    AvailableTillDefaultValue: string;
+    ToDateLabel: string;
+    ToDateLabel2: string;
+    ToDateLabel3: string;
+    ToDateVisibility: Visibility;
 
     // Decimal 1
     Decimal1Label: string;
     Decimal1Label2: string;
     Decimal1Label3: string;
     Decimal1Visibility: Visibility;
-    Decimal1DefaultValue: number;
 
     // Decimal 2
     Decimal2Label: string;
     Decimal2Label2: string;
     Decimal2Label3: string;
     Decimal2Visibility: Visibility;
-    Decimal2DefaultValue: number;
 
     // Int 1
     Int1Label: string;
     Int1Label2: string;
     Int1Label3: string;
     Int1Visibility: Visibility;
-    Int1DefaultValue: number;
 
     // Int 2
     Int2Label: string;
     Int2Label2: string;
     Int2Label3: string;
     Int2Visibility: Visibility;
-    Int2DefaultValue: number;
 
     // Lookup 1
     Lookup1Label: string;
     Lookup1Label2: string;
     Lookup1Label3: string;
     Lookup1Visibility: Visibility;
-    Lookup1DefaultValue: number;
     Lookup1DefinitionId: number;
 
     // Lookup 2
@@ -347,7 +315,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup2Label2: string;
     Lookup2Label3: string;
     Lookup2Visibility: Visibility;
-    Lookup2DefaultValue: number;
     Lookup2DefinitionId: number;
 
     // Lookup 3
@@ -355,7 +322,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup3Label2: string;
     Lookup3Label3: string;
     Lookup3Visibility: Visibility;
-    Lookup3DefaultValue: number;
     Lookup3DefinitionId: number;
 
     // Lookup 4
@@ -363,7 +329,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Lookup4Label2: string;
     Lookup4Label3: string;
     Lookup4Visibility: Visibility;
-    Lookup4DefaultValue: number;
     Lookup4DefinitionId: number;
 
     //// Lookup 5
@@ -371,7 +336,6 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     // Lookup5Label2: string;
     // Lookup5Label3: string;
     // Lookup5Visibility: Visibility;
-    // Lookup5DefaultValue: number;
     // Lookup5DefinitionId: number;
 
     // Text 1
@@ -379,14 +343,25 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     Text1Label2: string;
     Text1Label3: string;
     Text1Visibility: Visibility;
-    Text1DefaultValue: string;
 
     // Text 2
     Text2Label: string;
     Text2Label2: string;
     Text2Label3: string;
     Text2Visibility: Visibility;
-    Text2DefaultValue: string;
+
+    // Resource Only
+
+    IdentifierLabel: string;
+    IdentifierLabel2: string;
+    IdentifierLabel3: string;
+    IdentifierVisibility: Visibility;
+    ResidualMonetaryValueVisibility: Visibility;
+    ResidualValueVisibility: Visibility;
+    ReorderLevelVisibility: Visibility;
+    EconomicOrderQuantityVisibility: Visibility;
+    UnitCardinality: DefinitionCardinality;
+    MonetaryValueVisibility: Visibility;
 }
 
 // tslint:disable-next-line:no-empty-interface

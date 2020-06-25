@@ -91,24 +91,24 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
     const defs = this.definition;
 
-    result.Identifier = defs.IdentifierDefaultValue;
-    result.CurrencyId = defs.CurrencyDefaultValue;
-    result.MonetaryValue = defs.MonetaryValueDefaultValue;
-    result.ReorderLevel = defs.ReorderLevelDefaultValue;
-    result.EconomicOrderQuantity = defs.EconomicOrderQuantityDefaultValue;
-    result.AvailableSince = defs.AvailableSinceDefaultValue;
-    result.AvailableTill = defs.AvailableTillDefaultValue;
-    result.Decimal1 = defs.Decimal1DefaultValue;
-    result.Decimal2 = defs.Decimal2DefaultValue;
-    result.Int1 = defs.Int1DefaultValue;
-    result.Int2 = defs.Int2DefaultValue;
-    result.Lookup1Id = defs.Lookup1DefaultValue;
-    result.Lookup2Id = defs.Lookup2DefaultValue;
-    result.Lookup3Id = defs.Lookup3DefaultValue;
-    result.Lookup4Id = defs.Lookup4DefaultValue;
+    // result.Identifier = defs.IdentifierDefaultValue;
+    // result.CurrencyId = defs.CurrencyDefaultValue;
+    // result.MonetaryValue = defs.MonetaryValueDefaultValue;
+    // result.ReorderLevel = defs.ReorderLevelDefaultValue;
+    // result.EconomicOrderQuantity = defs.EconomicOrderQuantityDefaultValue;
+    // result.FromDate = defs.FromDateDefaultValue;
+    // result.ToDate = defs.ToDateDefaultValue;
+    // result.Decimal1 = defs.Decimal1DefaultValue;
+    // result.Decimal2 = defs.Decimal2DefaultValue;
+    // result.Int1 = defs.Int1DefaultValue;
+    // result.Int2 = defs.Int2DefaultValue;
+    // result.Lookup1Id = defs.Lookup1DefaultValue;
+    // result.Lookup2Id = defs.Lookup2DefaultValue;
+    // result.Lookup3Id = defs.Lookup3DefaultValue;
+    // result.Lookup4Id = defs.Lookup4DefaultValue;
     // result.Lookup5Id = defs.Lookup5DefaultValue;
-    result.Text1 = defs.Text1DefaultValue;
-    result.Text2 = defs.Text2DefaultValue;
+    // result.Text1 = defs.Text1DefaultValue;
+    // result.Text2 = defs.Text2DefaultValue;
     result.Units = [];
 
     return result;
@@ -203,9 +203,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Currency_label(): string {
-    return !!this.definition.CurrencyLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') :
-      this.translate.instant('Resource_Currency');
+    return this.translate.instant('Entity_Currency');
   }
 
   public get MonetaryValue_isVisible(): boolean {
@@ -217,9 +215,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get MonetaryValue_label(): string {
-    return !!this.definition.MonetaryValueLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'MonetaryValueLabel') :
-      this.translate.instant('Resource_MonetaryValue');
+    return this.translate.instant('Resource_MonetaryValue');
   }
 
   public MonetaryValue_decimals(model: Resource): number {
@@ -292,32 +288,32 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this.definition.EconomicOrderQuantityVisibility === 'Required';
   }
 
-  public get AvailableSince_isVisible(): boolean {
-    return !!this.definition.AvailableSinceVisibility;
+  public get FromDate_isVisible(): boolean {
+    return !!this.definition.FromDateVisibility;
   }
 
-  public get AvailableSince_isRequired(): boolean {
-    return this.definition.AvailableSinceVisibility === 'Required';
+  public get FromDate_isRequired(): boolean {
+    return this.definition.FromDateVisibility === 'Required';
   }
 
-  public get AvailableSince_label(): string {
-    return !!this.definition.AvailableSinceLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'AvailableSinceLabel') :
-      this.translate.instant('Resource_AvailableSince');
+  public get FromDate_label(): string {
+    return !!this.definition.FromDateLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'FromDateLabel') :
+      this.translate.instant('Entity_FromDate');
   }
 
-  public get AvailableTill_isVisible(): boolean {
-    return !!this.definition.AvailableTillVisibility;
+  public get ToDate_isVisible(): boolean {
+    return !!this.definition.ToDateVisibility;
   }
 
-  public get AvailableTill_isRequired(): boolean {
-    return this.definition.AvailableTillVisibility === 'Required';
+  public get ToDate_isRequired(): boolean {
+    return this.definition.ToDateVisibility === 'Required';
   }
 
-  public get AvailableTill_label(): string {
-    return !!this.definition.AvailableTillLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'AvailableTillLabel') :
-      this.translate.instant('Resource_AvailableTill');
+  public get ToDate_label(): string {
+    return !!this.definition.ToDateLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'ToDateLabel') :
+      this.translate.instant('Entity_ToDate');
   }
 
   public get Decimal1_isVisible(): boolean {
@@ -331,7 +327,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Decimal1_label(): string {
     return !!this.definition.Decimal1Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Decimal1Label') :
-      this.translate.instant('Resource_Decimal1');
+      this.translate.instant('Entity_Decimal1');
   }
 
   public get Decimal2_isVisible(): boolean {
@@ -345,7 +341,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Decimal2_label(): string {
     return !!this.definition.Decimal2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Decimal2Label') :
-      this.translate.instant('Resource_Decimal2');
+      this.translate.instant('Entity_Decimal2');
   }
 
   public get Int1_isVisible(): boolean {
@@ -359,7 +355,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Int1_label(): string {
     return !!this.definition.Int1Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Int1Label') :
-      this.translate.instant('Resource_Int1');
+      this.translate.instant('Entity_Int1');
   }
 
   public get Int2_isVisible(): boolean {
@@ -373,7 +369,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Int2_label(): string {
     return !!this.definition.Int2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Int2Label') :
-      this.translate.instant('Resource_Int2');
+      this.translate.instant('Entity_Int2');
   }
 
   public get Lookup1_isVisible(): boolean {
@@ -387,7 +383,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Lookup1_label(): string {
     return !!this.definition.Lookup1Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Lookup1Label') :
-      this.translate.instant('Resource_Lookup1');
+      this.translate.instant('Entity_Lookup1');
   }
 
   public get Lookup1_DefinitionId(): number {
@@ -405,7 +401,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Lookup2_label(): string {
     return !!this.definition.Lookup2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Lookup2Label') :
-      this.translate.instant('Resource_Lookup2');
+      this.translate.instant('Entity_Lookup2');
   }
 
   public get Lookup2_DefinitionId(): number {
@@ -423,7 +419,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Lookup3_label(): string {
     return !!this.definition.Lookup3Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Lookup3Label') :
-      this.translate.instant('Resource_Lookup3');
+      this.translate.instant('Entity_Lookup3');
   }
 
   public get Lookup3_DefinitionId(): number {
@@ -441,7 +437,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Lookup4_label(): string {
     return !!this.definition.Lookup4Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Lookup4Label') :
-      this.translate.instant('Resource_Lookup4');
+      this.translate.instant('Entity_Lookup4');
   }
 
   public get Lookup4_DefinitionId(): number {
@@ -463,7 +459,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Text1_label(): string {
     return !!this.definition.Text1Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Text1Label') :
-      this.translate.instant('Resource_Text1');
+      this.translate.instant('Entity_Text1');
   }
 
   public get Text2_isVisible(): boolean {
@@ -477,7 +473,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public get Text2_label(): string {
     return !!this.definition.Text2Label ?
       this.ws.getMultilingualValueImmediate(this.definition, 'Text2Label') :
-      this.translate.instant('Resource_Text2');
+      this.translate.instant('Entity_Text2');
   }
 
   public Units_count(model: ResourceForSave): number {

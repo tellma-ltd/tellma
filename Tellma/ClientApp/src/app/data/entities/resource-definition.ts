@@ -18,26 +18,22 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     TitlePlural2?: string;
     TitlePlural3?: string;
 
-    IdentifierLabel?: string;
-    IdentifierLabel2?: string;
-    IdentifierLabel3?: string;
-    IdentifierVisibility?: Visibility;
+    // Common with Contract
     CurrencyVisibility?: Visibility;
+    CenterVisibility?: Visibility;
+    ImageVisibility?: Visibility;
     DescriptionVisibility?: Visibility;
     LocationVisibility?: Visibility;
-    CenterVisibility?: Visibility;
-    ResidualMonetaryValueVisibility?: Visibility;
-    ResidualValueVisibility?: Visibility;
-    ReorderLevelVisibility?: Visibility;
-    EconomicOrderQuantityVisibility?: Visibility;
-    AvailableSinceLabel?: string;
-    AvailableSinceLabel2?: string;
-    AvailableSinceLabel3?: string;
-    AvailableSinceVisibility?: Visibility;
-    AvailableTillLabel?: string;
-    AvailableTillLabel2?: string;
-    AvailableTillLabel3?: string;
-    AvailableTillVisibility?: Visibility;
+
+    FromDateLabel?: string;
+    FromDateLabel2?: string;
+    FromDateLabel3?: string;
+    FromDateVisibility?: Visibility;
+    ToDateLabel?: string;
+    ToDateLabel2?: string;
+    ToDateLabel3?: string;
+    ToDateVisibility?: Visibility;
+
     Decimal1Label?: string;
     Decimal1Label2?: string;
     Decimal1Label3?: string;
@@ -88,6 +84,21 @@ export interface ResourceDefinitionForSave extends EntityForSave {
     Text2Label3?: string;
     Text2Visibility?: Visibility;
 
+    // Resources Only
+
+    IdentifierLabel?: string;
+    IdentifierLabel2?: string;
+    IdentifierLabel3?: string;
+    IdentifierVisibility?: Visibility;
+
+    ResidualMonetaryValueVisibility?: Visibility;
+    ResidualValueVisibility?: Visibility;
+    ReorderLevelVisibility?: Visibility;
+    EconomicOrderQuantityVisibility?: Visibility;
+    MonetaryValueVisibility?: Visibility;
+
+    // Main Menu
+
     MainMenuIcon?: string;
     MainMenuSection?: string;
     MainMenuSortKey?: number;
@@ -135,70 +146,79 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
 
+                // Common with Contract
+
+                CurrencyVisibility: visibilityPropDescriptor('Entity_Currency', trx),
+                CenterVisibility: visibilityPropDescriptor('Entity_Center', trx),
+                ImageVisibility: visibilityPropDescriptor('Image', trx),
+                DescriptionVisibility: visibilityPropDescriptor('Description', trx),
+                LocationVisibility: visibilityPropDescriptor('Entity_Location', trx),
+
+                FromDateLabel: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_FromDate') }) + ws.primaryPostfix },
+                FromDateLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_FromDate') }) + ws.secondaryPostfix },
+                FromDateLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_FromDate') }) + ws.ternaryPostfix },
+                FromDateVisibility: visibilityPropDescriptor('Entity_FromDate', trx),
+                ToDateLabel: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ToDate') }) + ws.primaryPostfix },
+                ToDateLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ToDate') }) + ws.secondaryPostfix },
+                ToDateLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_ToDate') }) + ws.ternaryPostfix },
+                ToDateVisibility: visibilityPropDescriptor('Entity_ToDate', trx),
+                Decimal1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.primaryPostfix },
+                Decimal1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.secondaryPostfix },
+                Decimal1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal1') }) + ws.ternaryPostfix },
+                Decimal1Visibility: visibilityPropDescriptor('Entity_Decimal1', trx),
+                Decimal2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal2') }) + ws.primaryPostfix },
+                Decimal2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal2') }) + ws.secondaryPostfix },
+                Decimal2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Decimal2') }) + ws.ternaryPostfix },
+                Decimal2Visibility: visibilityPropDescriptor('Entity_Decimal2', trx),
+                Int1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.primaryPostfix },
+                Int1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.secondaryPostfix },
+                Int1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int1') }) + ws.ternaryPostfix },
+                Int1Visibility: visibilityPropDescriptor('Entity_Int1', trx),
+                Int2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int2') }) + ws.primaryPostfix },
+                Int2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int2') }) + ws.secondaryPostfix },
+                Int2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Int2') }) + ws.ternaryPostfix },
+                Int2Visibility: visibilityPropDescriptor('Entity_Int2', trx),
+                Lookup1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.primaryPostfix },
+                Lookup1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.secondaryPostfix },
+                Lookup1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup1') }) + ws.ternaryPostfix },
+                Lookup1Visibility: visibilityPropDescriptor('Entity_Lookup1', trx),
+                Lookup1DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup1', ws, trx),
+                Lookup2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.primaryPostfix },
+                Lookup2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.secondaryPostfix },
+                Lookup2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup2') }) + ws.ternaryPostfix },
+                Lookup2Visibility: visibilityPropDescriptor('Entity_Lookup2', trx),
+                Lookup2DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup2', ws, trx),
+                Lookup3Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.primaryPostfix },
+                Lookup3Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.secondaryPostfix },
+                Lookup3Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup3') }) + ws.ternaryPostfix },
+                Lookup3Visibility: visibilityPropDescriptor('Entity_Lookup3', trx),
+                Lookup3DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup3', ws, trx),
+                Lookup4Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.primaryPostfix },
+                Lookup4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.secondaryPostfix },
+                Lookup4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Lookup4') }) + ws.ternaryPostfix },
+                Lookup4Visibility: visibilityPropDescriptor('Entity_Lookup4', trx),
+                Lookup4DefinitionId: lookupDefinitionIdPropDescriptor('Entity_Lookup4', ws, trx),
+                Text1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.primaryPostfix },
+                Text1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.secondaryPostfix },
+                Text1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text1') }) + ws.ternaryPostfix },
+                Text1Visibility: visibilityPropDescriptor('Entity_Text1', trx),
+                Text2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.primaryPostfix },
+                Text2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.secondaryPostfix },
+                Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Entity_Text2') }) + ws.ternaryPostfix },
+                Text2Visibility: visibilityPropDescriptor('Entity_Text2', trx),
+
+                // Resource Only
+
                 IdentifierLabel: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.primaryPostfix },
                 IdentifierLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.secondaryPostfix },
                 IdentifierLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Identifier') }) + ws.ternaryPostfix },
                 IdentifierVisibility: visibilityPropDescriptor('Resource_Identifier', trx),
-                CurrencyVisibility: visibilityPropDescriptor('Resource_Currency', trx),
-                DescriptionVisibility: visibilityPropDescriptor('Description', trx),
-                LocationVisibility: visibilityPropDescriptor('Resource_Location', trx),
-                CenterVisibility: visibilityPropDescriptor('Resource_Center', trx),
+
                 ResidualMonetaryValueVisibility: visibilityPropDescriptor('Resource_ResidualMonetaryValue', trx),
                 ResidualValueVisibility: visibilityPropDescriptor('Resource_ResidualValue', trx),
                 ReorderLevelVisibility: visibilityPropDescriptor('Resource_ReorderLevel', trx),
                 EconomicOrderQuantityVisibility: visibilityPropDescriptor('Resource_EconomicOrderQuantity', trx),
-                AvailableSinceLabel: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableSince') }) + ws.primaryPostfix },
-                AvailableSinceLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableSince') }) + ws.secondaryPostfix },
-                AvailableSinceLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableSince') }) + ws.ternaryPostfix },
-                AvailableSinceVisibility: visibilityPropDescriptor('Resource_AvailableSince', trx),
-                AvailableTillLabel: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableTill') }) + ws.primaryPostfix },
-                AvailableTillLabel2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableTill') }) + ws.secondaryPostfix },
-                AvailableTillLabel3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_AvailableTill') }) + ws.ternaryPostfix },
-                AvailableTillVisibility: visibilityPropDescriptor('Resource_AvailableTill', trx),
-                Decimal1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal1') }) + ws.primaryPostfix },
-                Decimal1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal1') }) + ws.secondaryPostfix },
-                Decimal1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal1') }) + ws.ternaryPostfix },
-                Decimal1Visibility: visibilityPropDescriptor('Resource_Decimal1', trx),
-                Decimal2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal2') }) + ws.primaryPostfix },
-                Decimal2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal2') }) + ws.secondaryPostfix },
-                Decimal2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Decimal2') }) + ws.ternaryPostfix },
-                Decimal2Visibility: visibilityPropDescriptor('Resource_Decimal2', trx),
-                Int1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int1') }) + ws.primaryPostfix },
-                Int1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int1') }) + ws.secondaryPostfix },
-                Int1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int1') }) + ws.ternaryPostfix },
-                Int1Visibility: visibilityPropDescriptor('Resource_Int1', trx),
-                Int2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int2') }) + ws.primaryPostfix },
-                Int2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int2') }) + ws.secondaryPostfix },
-                Int2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Int2') }) + ws.ternaryPostfix },
-                Int2Visibility: visibilityPropDescriptor('Resource_Int2', trx),
-                Lookup1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup1') }) + ws.primaryPostfix },
-                Lookup1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup1') }) + ws.secondaryPostfix },
-                Lookup1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup1') }) + ws.ternaryPostfix },
-                Lookup1Visibility: visibilityPropDescriptor('Resource_Lookup1', trx),
-                Lookup1DefinitionId: lookupDefinitionIdPropDescriptor('Resource_Lookup1', ws, trx),
-                Lookup2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup2') }) + ws.primaryPostfix },
-                Lookup2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup2') }) + ws.secondaryPostfix },
-                Lookup2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup2') }) + ws.ternaryPostfix },
-                Lookup2Visibility: visibilityPropDescriptor('Resource_Lookup2', trx),
-                Lookup2DefinitionId: lookupDefinitionIdPropDescriptor('Resource_Lookup2', ws, trx),
-                Lookup3Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup3') }) + ws.primaryPostfix },
-                Lookup3Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup3') }) + ws.secondaryPostfix },
-                Lookup3Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup3') }) + ws.ternaryPostfix },
-                Lookup3Visibility: visibilityPropDescriptor('Resource_Lookup3', trx),
-                Lookup3DefinitionId: lookupDefinitionIdPropDescriptor('Resource_Lookup3', ws, trx),
-                Lookup4Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup4') }) + ws.primaryPostfix },
-                Lookup4Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup4') }) + ws.secondaryPostfix },
-                Lookup4Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Lookup4') }) + ws.ternaryPostfix },
-                Lookup4Visibility: visibilityPropDescriptor('Resource_Lookup4', trx),
-                Lookup4DefinitionId: lookupDefinitionIdPropDescriptor('Resource_Lookup4', ws, trx),
-                Text1Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text1') }) + ws.primaryPostfix },
-                Text1Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text1') }) + ws.secondaryPostfix },
-                Text1Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text1') }) + ws.ternaryPostfix },
-                Text1Visibility: visibilityPropDescriptor('Resource_Text1', trx),
-                Text2Label: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text2') }) + ws.primaryPostfix },
-                Text2Label2: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text2') }) + ws.secondaryPostfix },
-                Text2Label3: { control: 'text', label: () => trx.instant('Field0Label', { 0: trx.instant('Resource_Text2') }) + ws.ternaryPostfix },
-                Text2Visibility: visibilityPropDescriptor('Resource_Text2', trx),
+                MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
@@ -212,7 +232,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
 
         // Remove multi-lingual properties if the tenant doesn't define the language
         const multiLangProps = ['TitleSingular', 'TitlePlural', 'IdentifierLabel',
-            'AvailableSinceLabel', 'AvailableTillLabel', 'Decimal1Label', 'Decimal2Label',
+            'FromDateLabel', 'ToDateLabel', 'Decimal1Label', 'Decimal2Label',
             'Int1Label', 'Int2Label', 'Lookup1Label', 'Lookup2Label', 'Lookup3Label', 'Lookup4Label',
             'Text1Label', 'Text2Label'];
 

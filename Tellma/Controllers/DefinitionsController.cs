@@ -66,6 +66,16 @@ namespace Tellma.Controllers
             return visibility;
         }
 
+        private static string MapCardinality(string cardinality)
+        {
+            if (cardinality == Cardinality.None)
+            {
+                return null;
+            }
+
+            return cardinality;
+        }
+
         private static LookupDefinitionForClient MapLookupDefinition(LookupDefinition def)
         {
             return new LookupDefinitionForClient
@@ -102,10 +112,10 @@ namespace Tellma.Controllers
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 TaxIdentificationNumberVisibility = MapVisibility(def.TaxIdentificationNumberVisibility),
                 ImageVisibility = MapVisibility(def.ImageVisibility),
-                StartDateVisibility = MapVisibility(def.StartDateVisibility),
-                StartDateLabel = def.StartDateLabel,
-                StartDateLabel2 = def.StartDateLabel2,
-                StartDateLabel3 = def.StartDateLabel3,
+                StartDateVisibility = MapVisibility(def.FromDateVisibility),
+                StartDateLabel = def.FromDateLabel,
+                StartDateLabel2 = def.FromDateLabel2,
+                StartDateLabel3 = def.FromDateLabel3,
                 JobVisibility = MapVisibility(def.JobVisibility),
                 BankAccountNumberVisibility = MapVisibility(def.BankAccountNumberVisibility),
                 UserVisibility = MapVisibility(def.UserVisibility),
@@ -128,26 +138,20 @@ namespace Tellma.Controllers
                 TitleSingular2 = def.TitleSingular2,
                 TitleSingular3 = def.TitleSingular3,
 
-                IdentifierLabel = def.IdentifierLabel,
-                IdentifierLabel2 = def.IdentifierLabel2,
-                IdentifierLabel3 = def.IdentifierLabel3,
-                IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
                 CurrencyVisibility = MapVisibility(def.CurrencyVisibility),
                 DescriptionVisibility = MapVisibility(def.DescriptionVisibility),
-                LocationVisibility = MapVisibility(def.LocationVisibility),
+                LocationVisibility = MapVisibility(def.LocationVisibility), 
+                ImageVisibility = MapVisibility(def.ImageVisibility),
                 CenterVisibility = MapVisibility(def.CenterVisibility),
-                ResidualMonetaryValueVisibility = MapVisibility(def.ResidualMonetaryValueVisibility),
-                ResidualValueVisibility = MapVisibility(def.ResidualValueVisibility),
-                ReorderLevelVisibility = MapVisibility(def.ReorderLevelVisibility),
-                EconomicOrderQuantityVisibility = MapVisibility(def.EconomicOrderQuantityVisibility),
-                AvailableSinceLabel = def.AvailableSinceLabel,
-                AvailableSinceLabel2 = def.AvailableSinceLabel2,
-                AvailableSinceLabel3 = def.AvailableSinceLabel3,
-                AvailableSinceVisibility = MapVisibility(def.AvailableSinceVisibility),
-                AvailableTillLabel = def.AvailableTillLabel,
-                AvailableTillLabel2 = def.AvailableTillLabel2,
-                AvailableTillLabel3 = def.AvailableTillLabel3,
-                AvailableTillVisibility = MapVisibility(def.AvailableTillVisibility),
+
+                FromDateLabel = def.FromDateLabel,
+                FromDateLabel2 = def.FromDateLabel2,
+                FromDateLabel3 = def.FromDateLabel3,
+                FromDateVisibility = MapVisibility(def.FromDateVisibility),
+                ToDateLabel = def.ToDateLabel,
+                ToDateLabel2 = def.ToDateLabel2,
+                ToDateLabel3 = def.ToDateLabel3,
+                ToDateVisibility = MapVisibility(def.ToDateVisibility),
 
                 Decimal1Label = def.Decimal1Label,
                 Decimal1Label2 = def.Decimal1Label2,
@@ -202,6 +206,20 @@ namespace Tellma.Controllers
                 Text2Label2 = def.Text2Label2,
                 Text2Label3 = def.Text2Label3,
                 Text2Visibility = MapVisibility(def.Text2Visibility),
+
+                // Resource Only
+
+                IdentifierLabel = def.IdentifierLabel,
+                IdentifierLabel2 = def.IdentifierLabel2,
+                IdentifierLabel3 = def.IdentifierLabel3,
+                IdentifierVisibility = MapVisibility(def.IdentifierVisibility),
+
+                ResidualMonetaryValueVisibility = MapVisibility(def.ResidualMonetaryValueVisibility),
+                ResidualValueVisibility = MapVisibility(def.ResidualValueVisibility),
+                ReorderLevelVisibility = MapVisibility(def.ReorderLevelVisibility),
+                EconomicOrderQuantityVisibility = MapVisibility(def.EconomicOrderQuantityVisibility), 
+                UnitCardinality = MapCardinality(def.UnitCardinality),
+                MonetaryValueVisibility = MapVisibility(def.MonetaryValueVisibility),
             };
         }
 

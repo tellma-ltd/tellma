@@ -315,109 +315,73 @@ namespace Tellma.Controllers.Dto
     
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string IdentifierLabel { get; set; } // Yes
-        public string IdentifierLabel2 { get; set; } // Yes
-        public string IdentifierLabel3 { get; set; } // Yes
-        public string IdentifierVisibility { get; set; } // Yes
-        public string IdentifierDefaultValue { get; set; }
+        public string CurrencyVisibility { get; set; }
+        public string CenterVisibility { get; set; }
+        public string ImageVisibility { get; set; }
+        public string DescriptionVisibility { get; set; } 
+        public string LocationVisibility { get; set; } 
 
-        public string CurrencyLabel { get; set; }
-        public string CurrencyLabel2 { get; set; }
-        public string CurrencyLabel3 { get; set; }
-        public string CurrencyVisibility { get; set; } // Yes
-        public string CurrencyDefaultValue { get; set; }
+        public string FromDateLabel { get; set; } 
+        public string FromDateLabel2 { get; set; } 
+        public string FromDateLabel3 { get; set; } 
+        public string FromDateVisibility { get; set; } 
 
-        public string MonetaryValueLabel { get; set; }
-        public string MonetaryValueLabel2 { get; set; }
-        public string MonetaryValueLabel3 { get; set; }
-        public string MonetaryValueVisibility { get; set; }
-        public int? MonetaryValueDefaultValue { get; set; }
-
-        public string DescriptionVisibility { get; set; } // Yes
-        public string LocationVisibility { get; set; } // Yes
-        public string CenterVisibility { get; set; } // Yes
-        public string ResidualMonetaryValueVisibility { get; set; } // Yes
-        public string ResidualValueVisibility { get; set; } // Yes
-
-
-        public string ReorderLevelVisibility { get; set; } // Yes
-        public decimal? ReorderLevelDefaultValue { get; set; }
-
-        public string EconomicOrderQuantityVisibility { get; set; } // Yes
-        public decimal? EconomicOrderQuantityDefaultValue { get; set; }
-
-
-        public string AvailableSinceLabel { get; set; } // Yes
-        public string AvailableSinceLabel2 { get; set; } // Yes
-        public string AvailableSinceLabel3 { get; set; } // Yes
-        public string AvailableSinceVisibility { get; set; } // Yes
-        public DateTime? AvailableSinceDefaultValue { get; set; }
-
-        public string AvailableTillLabel { get; set; } // Yes
-        public string AvailableTillLabel2 { get; set; } // Yes
-        public string AvailableTillLabel3 { get; set; } // Yes
-        public string AvailableTillVisibility { get; set; } // Yes
-        public DateTime? AvailableTillDefaultValue { get; set; }
+        public string ToDateLabel { get; set; } 
+        public string ToDateLabel2 { get; set; } 
+        public string ToDateLabel3 { get; set; } 
+        public string ToDateVisibility { get; set; } 
 
         // Decimal 1
-        public string Decimal1Label { get; set; } // Yes
-        public string Decimal1Label2 { get; set; } // Yes
-        public string Decimal1Label3 { get; set; } // Yes
-        public string Decimal1Visibility { get; set; } // Yes
-        public decimal? Decimal1DefaultValue { get; set; }
+        public string Decimal1Label { get; set; } 
+        public string Decimal1Label2 { get; set; } 
+        public string Decimal1Label3 { get; set; } 
+        public string Decimal1Visibility { get; set; } 
 
         // Decimal 2
-        public string Decimal2Label { get; set; } // Yes
-        public string Decimal2Label2 { get; set; } // Yes
-        public string Decimal2Label3 { get; set; } // Yes
-        public string Decimal2Visibility { get; set; } // Yes
-        public decimal? Decimal2DefaultValue { get; set; }
+        public string Decimal2Label { get; set; } 
+        public string Decimal2Label2 { get; set; } 
+        public string Decimal2Label3 { get; set; } 
+        public string Decimal2Visibility { get; set; } 
 
         // Int 1
-        public string Int1Label { get; set; } // Yes
-        public string Int1Label2 { get; set; } // Yes
-        public string Int1Label3 { get; set; } // Yes
-        public string Int1Visibility { get; set; } // Yes
-        public int? Int1DefaultValue { get; set; }
+        public string Int1Label { get; set; } 
+        public string Int1Label2 { get; set; } 
+        public string Int1Label3 { get; set; } 
+        public string Int1Visibility { get; set; } 
 
         // Int 2
-        public string Int2Label { get; set; } // Yes
-        public string Int2Label2 { get; set; } // Yes
-        public string Int2Label3 { get; set; } // Yes
-        public string Int2Visibility { get; set; } // Yes
-        public int? Int2DefaultValue { get; set; }
+        public string Int2Label { get; set; } 
+        public string Int2Label2 { get; set; } 
+        public string Int2Label3 { get; set; } 
+        public string Int2Visibility { get; set; } 
 
         // Lookup 1
-        public string Lookup1Label { get; set; } // Yes
-        public string Lookup1Label2 { get; set; } // Yes
-        public string Lookup1Label3 { get; set; } // Yes
-        public string Lookup1Visibility { get; set; } // Yes
-        public int? Lookup1DefaultValue { get; set; }
-        public int? Lookup1DefinitionId { get; set; } // Yes
+        public string Lookup1Label { get; set; } 
+        public string Lookup1Label2 { get; set; } 
+        public string Lookup1Label3 { get; set; } 
+        public string Lookup1Visibility { get; set; } 
+        public int? Lookup1DefinitionId { get; set; } 
 
         // Lookup 2
-        public string Lookup2Label { get; set; } // Yes
-        public string Lookup2Label2 { get; set; } // Yes
-        public string Lookup2Label3 { get; set; } // Yes
-        public string Lookup2Visibility { get; set; } // Yes
-        public int? Lookup2DefaultValue { get; set; }
-        public int? Lookup2DefinitionId { get; set; } // Yes
+        public string Lookup2Label { get; set; } 
+        public string Lookup2Label2 { get; set; } 
+        public string Lookup2Label3 { get; set; } 
+        public string Lookup2Visibility { get; set; } 
+        public int? Lookup2DefinitionId { get; set; } 
 
         // Lookup 3
-        public string Lookup3Label { get; set; } // Yes
-        public string Lookup3Label2 { get; set; } // Yes
-        public string Lookup3Label3 { get; set; } // Yes
-        public string Lookup3Visibility { get; set; } // Yes
-        public int? Lookup3DefaultValue { get; set; }
-        public int? Lookup3DefinitionId { get; set; } // Yes
+        public string Lookup3Label { get; set; } 
+        public string Lookup3Label2 { get; set; } 
+        public string Lookup3Label3 { get; set; } 
+        public string Lookup3Visibility { get; set; } 
+        public int? Lookup3DefinitionId { get; set; } 
 
         // Lookup 4
-        public string Lookup4Label { get; set; } // Yes
-        public string Lookup4Label2 { get; set; } // Yes
-        public string Lookup4Label3 { get; set; } // Yes
-        public string Lookup4Visibility { get; set; } // Yes
-        public int? Lookup4DefaultValue { get; set; }
-        public int? Lookup4DefinitionId { get; set; } // Yes
+        public string Lookup4Label { get; set; } 
+        public string Lookup4Label2 { get; set; } 
+        public string Lookup4Label3 { get; set; } 
+        public string Lookup4Visibility { get; set; } 
+        public int? Lookup4DefinitionId { get; set; } 
 
         //// Lookup 5
         //public string Lookup5Label { get; set; }
@@ -428,18 +392,30 @@ namespace Tellma.Controllers.Dto
         //public int? Lookup5DefinitionId { get; set; }
 
         // Text 1
-        public string Text1Label { get; set; } // Yes
-        public string Text1Label2 { get; set; } // Yes
-        public string Text1Label3 { get; set; } // Yes
-        public string Text1Visibility { get; set; } // Yes
-        public string Text1DefaultValue { get; set; }
+        public string Text1Label { get; set; } 
+        public string Text1Label2 { get; set; } 
+        public string Text1Label3 { get; set; } 
+        public string Text1Visibility { get; set; } 
 
         // Text 2
-        public string Text2Label { get; set; } // Yes
-        public string Text2Label2 { get; set; } // Yes
-        public string Text2Label3 { get; set; } // Yes
-        public string Text2Visibility { get; set; } // Yes
-        public string Text2DefaultValue { get; set; }
+        public string Text2Label { get; set; } 
+        public string Text2Label2 { get; set; } 
+        public string Text2Label3 { get; set; } 
+        public string Text2Visibility { get; set; }
+
+        // Resource Only
+
+        public string IdentifierLabel { get; set; }
+        public string IdentifierLabel2 { get; set; }
+        public string IdentifierLabel3 { get; set; }
+        public string IdentifierVisibility { get; set; }
+
+        public string ResidualMonetaryValueVisibility { get; set; }
+        public string ResidualValueVisibility { get; set; }
+        public string ReorderLevelVisibility { get; set; }
+        public string EconomicOrderQuantityVisibility { get; set; }
+        public string UnitCardinality { get; set; }
+        public string MonetaryValueVisibility { get; set; }
     }
 
     public class ContractDefinitionForClient : MasterDetailDefinitionForClient
@@ -469,6 +445,13 @@ namespace Tellma.Controllers.Dto
     {
         public const string Optional = nameof(Optional);
         public const string Required = nameof(Required);
+        public const string None = nameof(None);
+    }
+
+    public static class Cardinality
+    {
+        public const string Single = nameof(Single);
+        public const string Multiple = nameof(Multiple);
         public const string None = nameof(None);
     }
 

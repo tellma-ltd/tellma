@@ -109,7 +109,7 @@
     </t-form-group>
 
     <!-- Center -->
-    <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="'Resource_Center' | translate"
+    <t-form-group *ngIf="Center_isVisible" class="t-form-group" [label]="'Entity_Center' | translate"
         [serverErrors]="model?.serverErrors?.CenterId">
         <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Center">
             <t-view-link link="../../../centers" [itemId]="model?.CenterId">
@@ -310,25 +310,25 @@
         </t-text-editor>
     </t-form-group>
 
-    <!-- Available Since -->
-    <t-form-group *ngIf="AvailableSince_isVisible" class="t-form-group" [label]="AvailableSince_label"
-        [serverErrors]="model?.serverErrors?.AvailableSince">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableSince">
-            <div>{{ model?.AvailableSince | date:'yyyy-MM-dd' }}</div>
+    <!-- FromDate -->
+    <t-form-group *ngIf="FromDate_isVisible" class="t-form-group" [label]="FromDate_label"
+        [serverErrors]="model?.serverErrors?.FromDate">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.FromDate">
+            <div>{{ model?.FromDate | date:'yyyy-MM-dd' }}</div>
         </t-restricted>
-        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableSince" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="AvailableSince_isRequired">
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.FromDate" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="FromDate_isRequired">
         </t-date-picker>
     </t-form-group>
 
     <!-- Available Till -->
-    <t-form-group *ngIf="AvailableTill_isVisible" class="t-form-group" [label]="AvailableTill_label"
-        [serverErrors]="model?.serverErrors?.AvailableTill">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableTill">
-            <div>{{ model?.AvailableTill | date:'yyyy-MM-dd' }}</div>
+    <t-form-group *ngIf="ToDate_isVisible" class="t-form-group" [label]="ToDate_label"
+        [serverErrors]="model?.serverErrors?.ToDate">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ToDate">
+            <div>{{ model?.ToDate | date:'yyyy-MM-dd' }}</div>
         </t-restricted>
-        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableTill" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="AvailableTill_isRequired">
+        <t-date-picker *ngIf="isEdit" [(ngModel)]="model.ToDate" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="ToDate_isRequired">
         </t-date-picker>
     </t-form-group>
 
@@ -426,7 +426,7 @@
                     <fa-icon icon="exclamation-triangle">
                     </fa-icon>&nbsp;
                 </span>
-                <span class="small t-slightly-bold">{{ 'Resource_Location' | translate }}</span>
+                <span class="small t-slightly-bold">{{ 'Entity_Location' | translate }}</span>
             </a>
             <ng-template ngbNavContent>
                 <t-restricted [metadata]="model?.EntityMetadata?.LocationJson"

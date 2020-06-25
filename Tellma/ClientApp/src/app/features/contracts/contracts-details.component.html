@@ -116,7 +116,7 @@
   <t-form-group class="t-form-group" *ngIf="StartDate_isVisible" [label]="StartDate_label"
     [serverErrors]="model?.serverErrors?.StartDate">
     <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.StartDate">
-      <div>{{ model?.AvailableSince | date:'yyyy-MM-dd' }}</div>
+      <div>{{ model?.StartDate | date:'yyyy-MM-dd' }}</div>
     </t-restricted>
     <t-date-picker *ngIf="isEdit" [(ngModel)]="model.StartDate" [ngModelOptions]="{ updateOn: 'blur' }"
       [required]="StartDate_isRequired">

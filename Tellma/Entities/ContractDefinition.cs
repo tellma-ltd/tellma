@@ -64,29 +64,19 @@ namespace Tellma.Entities
 
         [VisibilityDisplay(Name = "Contract_StartDate")]
         [VisibilityChoiceList]
-        public string StartDateVisibility { get; set; }
+        public string FromDateVisibility { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Primary)]
         [StringLength(50)]
-        public string StartDateLabel { get; set; }
+        public string FromDateLabel { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Secondary)]
         [StringLength(50)]
-        public string StartDateLabel2 { get; set; }
+        public string FromDateLabel2 { get; set; }
 
         [DefinitionLabelDisplay(Name = "Contract_StartDate", Language = Language.Ternary)]
         [StringLength(50)]
-        public string StartDateLabel3 { get; set; }
-
-        // TEMP
-
-        public string Prefix { get; set; }
-
-        public byte? CodeWidth { get; set; }
-
-        public bool? IsActive { get; set; } = false;
-
-        // END TEMP
+        public string FromDateLabel3 { get; set; }
 
         [VisibilityDisplay(Name = "Contract_Job")]
         [VisibilityChoiceList]

@@ -185,14 +185,14 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
         areServerErrors(model.serverErrors.ResidualValueVisibility) ||
         areServerErrors(model.serverErrors.ReorderLevelVisibility) ||
         areServerErrors(model.serverErrors.EconomicOrderQuantityVisibility) ||
-        areServerErrors(model.serverErrors.AvailableSinceLabel) ||
-        areServerErrors(model.serverErrors.AvailableSinceLabel2) ||
-        areServerErrors(model.serverErrors.AvailableSinceLabel3) ||
-        areServerErrors(model.serverErrors.AvailableSinceVisibility) ||
-        areServerErrors(model.serverErrors.AvailableTillLabel) ||
-        areServerErrors(model.serverErrors.AvailableTillLabel2) ||
-        areServerErrors(model.serverErrors.AvailableTillLabel3) ||
-        areServerErrors(model.serverErrors.AvailableTillVisibility) ||
+        areServerErrors(model.serverErrors.FromDateLabel) ||
+        areServerErrors(model.serverErrors.FromDateLabel2) ||
+        areServerErrors(model.serverErrors.FromDateLabel3) ||
+        areServerErrors(model.serverErrors.FromDateVisibility) ||
+        areServerErrors(model.serverErrors.ToDateTillLabel) ||
+        areServerErrors(model.serverErrors.ToDateTillLabel2) ||
+        areServerErrors(model.serverErrors.ToDateTillLabel3) ||
+        areServerErrors(model.serverErrors.ToDateTillVisibility) ||
         areServerErrors(model.serverErrors.Decimal1Label) ||
         areServerErrors(model.serverErrors.Decimal1Label2) ||
         areServerErrors(model.serverErrors.Decimal1Label3) ||
@@ -292,12 +292,17 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
       // The mapping is trivial since the two data structures are identical
       this._getForClientResult = { ...model } as ResourceDefinitionForClient;
 
-      // In definitions for client, a null visibility becomes undefined
+      // In definitions for client, a None visibility becomes undefined
       for (const propName of this.allVisibilityProps()) {
         const value = this._getForClientResult[propName] as DefinitionVisibility;
         if (value === 'None') {
           delete this._getForClientResult[propName];
         }
+      }
+
+      // In definitions for client, a None cardinality becomes undefined
+      if (this._getForClientResult.UnitCardinality === 'None') {
+        delete this._getForClientResult.UnitCardinality;
       }
     }
 

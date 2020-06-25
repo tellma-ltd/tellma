@@ -5,6 +5,7 @@ import { TenantWorkspace } from '../../workspace.service';
 
 // tslint:disable:max-line-length
 export type DefinitionVisibility = 'None' | 'Optional' | 'Required';
+export type DefinitionCardinality = 'None' | 'Single' | 'Multiple';
 export type DefinitionState = 'Draft' | 'Deployed' | 'Archived';
 export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie'; // TODO

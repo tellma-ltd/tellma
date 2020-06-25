@@ -670,6 +670,57 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>የእርስዎን ኢሜይል ያስገቡ</value>
   </data>
+  <data name="Entity_Center" xml:space="preserve">
+    <value>ማዕከል የወጪ</value>
+  </data>
+  <data name="Entity_Currency" xml:space="preserve">
+    <value>ገንዘብ</value>
+  </data>
+  <data name="Entity_Decimal1" xml:space="preserve">
+    <value>አስርዮሽ መገለጫ ባህሪ 1</value>
+  </data>
+  <data name="Entity_Decimal2" xml:space="preserve">
+    <value>አስርዮሽ መገለጫ ባህሪ 2</value>
+  </data>
+  <data name="Entity_FromDate" xml:space="preserve">
+    <value>የሚገኝ በመሆኑ</value>
+  </data>
+  <data name="Entity_Int1" xml:space="preserve">
+    <value>ኢንቲጀር መገለጫ ባህሪ 1</value>
+  </data>
+  <data name="Entity_Int2" xml:space="preserve">
+    <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
+  </data>
+  <data name="Entity_Location" xml:space="preserve">
+    <value>አካባቢ</value>
+  </data>
+  <data name="Entity_LocationJson" xml:space="preserve">
+    <value>አካባቢ (በ GeoJSON)</value>
+  </data>
+  <data name="Entity_Lookup1" xml:space="preserve">
+    <value>አይነታ 1</value>
+  </data>
+  <data name="Entity_Lookup2" xml:space="preserve">
+    <value>አይነታ 2</value>
+  </data>
+  <data name="Entity_Lookup3" xml:space="preserve">
+    <value>አይነታ 3</value>
+  </data>
+  <data name="Entity_Lookup4" xml:space="preserve">
+    <value>አይነታ 4</value>
+  </data>
+  <data name="Entity_Lookup5" xml:space="preserve">
+    <value>አይነታ 5</value>
+  </data>
+  <data name="Entity_Text1" xml:space="preserve">
+    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
+  </data>
+  <data name="Entity_Text2" xml:space="preserve">
+    <value>የጽሑፍ መገለጫ ባህሪ 2</value>
+  </data>
+  <data name="Entity_ToDate" xml:space="preserve">
+    <value>ድረስ ይገኛል</value>
+  </data>
   <data name="Entry" xml:space="preserve">
     <value>ግቤት</value>
   </data>
@@ -1870,56 +1921,11 @@
   <data name="Resource" xml:space="preserve">
     <value>ምንጭ</value>
   </data>
-  <data name="Resource_AvailableSince" xml:space="preserve">
-    <value>የሚገኝ በመሆኑ</value>
-  </data>
-  <data name="Resource_AvailableTill" xml:space="preserve">
-    <value>ድረስ ይገኛል</value>
-  </data>
-  <data name="Resource_Center" xml:space="preserve">
-    <value>ማዕከል የወጪ</value>
-  </data>
-  <data name="Resource_Currency" xml:space="preserve">
-    <value>ገንዘብ</value>
-  </data>
-  <data name="Resource_Decimal1" xml:space="preserve">
-    <value>አስርዮሽ መገለጫ ባህሪ 1</value>
-  </data>
-  <data name="Resource_Decimal2" xml:space="preserve">
-    <value>አስርዮሽ መገለጫ ባህሪ 2</value>
-  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>ኢኮኖሚ ትዕዛዝ ብዛት</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>መለያ</value>
-  </data>
-  <data name="Resource_Int1" xml:space="preserve">
-    <value>ኢንቲጀር መገለጫ ባህሪ 1</value>
-  </data>
-  <data name="Resource_Int2" xml:space="preserve">
-    <value>ኢንቲጀር መገለጫ ባህሪ 2</value>
-  </data>
-  <data name="Resource_Location" xml:space="preserve">
-    <value>አካባቢ</value>
-  </data>
-  <data name="Resource_LocationJson" xml:space="preserve">
-    <value>አካባቢ (በ GeoJSON)</value>
-  </data>
-  <data name="Resource_Lookup1" xml:space="preserve">
-    <value>አይነታ 1</value>
-  </data>
-  <data name="Resource_Lookup2" xml:space="preserve">
-    <value>አይነታ 2</value>
-  </data>
-  <data name="Resource_Lookup3" xml:space="preserve">
-    <value>አይነታ 3</value>
-  </data>
-  <data name="Resource_Lookup4" xml:space="preserve">
-    <value>አይነታ 4</value>
-  </data>
-  <data name="Resource_Lookup5" xml:space="preserve">
-    <value>አይነታ 5</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>መጠን</value>
@@ -1933,17 +1939,14 @@
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>ትራፊ እሴት</value>
   </data>
-  <data name="Resource_Text1" xml:space="preserve">
-    <value>የጽሑፍ መገለጫ ባህሪ 1</value>
-  </data>
-  <data name="Resource_Text2" xml:space="preserve">
-    <value>የጽሑፍ መገለጫ ባህሪ 2</value>
-  </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>የመገልገያ ፍቺ</value>
+  </data>
+  <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
+    <value>ክፍል የቁጥሮች</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>ሪሶርስ ፍቺዎች</value>
@@ -2295,6 +2298,15 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>ድምጽ</value>
+  </data>
+  <data name="UnitCardinality_Multiple" xml:space="preserve">
+    <value>ብዙ</value>
+  </data>
+  <data name="UnitCardinality_None" xml:space="preserve">
+    <value>አንድም</value>
+  </data>
+  <data name="UnitCardinality_Single" xml:space="preserve">
+    <value>ያላገባ</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>የመለኪያ ዩኒት</value>

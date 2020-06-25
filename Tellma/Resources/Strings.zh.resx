@@ -670,6 +670,57 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
   </data>
+  <data name="Entity_Center" xml:space="preserve">
+    <value>费用中心</value>
+  </data>
+  <data name="Entity_Currency" xml:space="preserve">
+    <value>货币</value>
+  </data>
+  <data name="Entity_Decimal1" xml:space="preserve">
+    <value>十进制属性1</value>
+  </data>
+  <data name="Entity_Decimal2" xml:space="preserve">
+    <value>十进制属性2</value>
+  </data>
+  <data name="Entity_FromDate" xml:space="preserve">
+    <value>由于可用</value>
+  </data>
+  <data name="Entity_Int1" xml:space="preserve">
+    <value>整数属性1</value>
+  </data>
+  <data name="Entity_Int2" xml:space="preserve">
+    <value>整数属性2</value>
+  </data>
+  <data name="Entity_Location" xml:space="preserve">
+    <value>位置</value>
+  </data>
+  <data name="Entity_LocationJson" xml:space="preserve">
+    <value>位置（以GeoJSON）</value>
+  </data>
+  <data name="Entity_Lookup1" xml:space="preserve">
+    <value>资源查找1</value>
+  </data>
+  <data name="Entity_Lookup2" xml:space="preserve">
+    <value>资源查找2</value>
+  </data>
+  <data name="Entity_Lookup3" xml:space="preserve">
+    <value>资源查找3</value>
+  </data>
+  <data name="Entity_Lookup4" xml:space="preserve">
+    <value>资源查找4</value>
+  </data>
+  <data name="Entity_Lookup5" xml:space="preserve">
+    <value>资源查找5</value>
+  </data>
+  <data name="Entity_Text1" xml:space="preserve">
+    <value>文本属性1</value>
+  </data>
+  <data name="Entity_Text2" xml:space="preserve">
+    <value>文本属性2</value>
+  </data>
+  <data name="Entity_ToDate" xml:space="preserve">
+    <value>可直到</value>
+  </data>
   <data name="Entry" xml:space="preserve">
     <value>条目</value>
   </data>
@@ -1870,56 +1921,11 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
-  <data name="Resource_AvailableSince" xml:space="preserve">
-    <value>由于可用</value>
-  </data>
-  <data name="Resource_AvailableTill" xml:space="preserve">
-    <value>可直到</value>
-  </data>
-  <data name="Resource_Center" xml:space="preserve">
-    <value>费用中心</value>
-  </data>
-  <data name="Resource_Currency" xml:space="preserve">
-    <value>货币</value>
-  </data>
-  <data name="Resource_Decimal1" xml:space="preserve">
-    <value>十进制属性1</value>
-  </data>
-  <data name="Resource_Decimal2" xml:space="preserve">
-    <value>十进制属性2</value>
-  </data>
   <data name="Resource_EconomicOrderQuantity" xml:space="preserve">
     <value>经济订货量</value>
   </data>
   <data name="Resource_Identifier" xml:space="preserve">
     <value>识别码</value>
-  </data>
-  <data name="Resource_Int1" xml:space="preserve">
-    <value>整数属性1</value>
-  </data>
-  <data name="Resource_Int2" xml:space="preserve">
-    <value>整数属性2</value>
-  </data>
-  <data name="Resource_Location" xml:space="preserve">
-    <value>位置</value>
-  </data>
-  <data name="Resource_LocationJson" xml:space="preserve">
-    <value>位置（以GeoJSON）</value>
-  </data>
-  <data name="Resource_Lookup1" xml:space="preserve">
-    <value>资源查找1</value>
-  </data>
-  <data name="Resource_Lookup2" xml:space="preserve">
-    <value>资源查找2</value>
-  </data>
-  <data name="Resource_Lookup3" xml:space="preserve">
-    <value>资源查找3</value>
-  </data>
-  <data name="Resource_Lookup4" xml:space="preserve">
-    <value>资源查找4</value>
-  </data>
-  <data name="Resource_Lookup5" xml:space="preserve">
-    <value>资源查找5</value>
   </data>
   <data name="Resource_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
@@ -1933,17 +1939,14 @@
   <data name="Resource_ResidualValue" xml:space="preserve">
     <value>剩余价值</value>
   </data>
-  <data name="Resource_Text1" xml:space="preserve">
-    <value>文本属性1</value>
-  </data>
-  <data name="Resource_Text2" xml:space="preserve">
-    <value>文本属性2</value>
-  </data>
   <data name="Resource_Units" xml:space="preserve">
     <value>测量单位</value>
   </data>
   <data name="ResourceDefinition" xml:space="preserve">
     <value>资源定义</value>
+  </data>
+  <data name="ResourceDefinition_UnitCardinality" xml:space="preserve">
+    <value>单位基数</value>
   </data>
   <data name="ResourceDefinitions" xml:space="preserve">
     <value>资源定义</value>
@@ -2295,6 +2298,15 @@
   </data>
   <data name="Unit_Volume" xml:space="preserve">
     <value>体积</value>
+  </data>
+  <data name="UnitCardinality_Multiple" xml:space="preserve">
+    <value>多</value>
+  </data>
+  <data name="UnitCardinality_None" xml:space="preserve">
+    <value>没有</value>
+  </data>
+  <data name="UnitCardinality_Single" xml:space="preserve">
+    <value>单</value>
   </data>
   <data name="Units" xml:space="preserve">
     <value>测量单位</value>

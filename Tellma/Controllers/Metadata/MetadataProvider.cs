@@ -783,37 +783,13 @@ namespace Tellma.Controllers
                     display = PropertyDisplay(def.LocationVisibility, display);
                     isRequired = def.LocationVisibility == Visibility.Required;
                     break;
-                case nameof(Resource.ReorderLevel):
-                    display = PropertyDisplay(def.ReorderLevelVisibility, display);
-                    isRequired = def.ReorderLevelVisibility == Visibility.Required;
+                case nameof(Resource.FromDate):
+                    display = PropertyDisplay(settings, def.FromDateVisibility, def.FromDateLabel, def.FromDateLabel2, def.FromDateLabel3, display);
+                    isRequired = def.FromDateVisibility == Visibility.Required;
                     break;
-                case nameof(Resource.EconomicOrderQuantity):
-                    display = PropertyDisplay(def.EconomicOrderQuantityVisibility, display);
-                    isRequired = def.EconomicOrderQuantityVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ResidualMonetaryValue):
-                    display = PropertyDisplay(def.ResidualMonetaryValueVisibility, display);
-                    isRequired = def.ResidualMonetaryValueVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.ResidualValue):
-                    display = PropertyDisplay(def.ResidualValueVisibility, display);
-                    isRequired = def.ResidualValueVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.Identifier):
-                    display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
-                    isRequired = def.IdentifierVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.MonetaryValue):
-                    display = PropertyDisplay(settings, def.MonetaryValueVisibility, def.MonetaryValueLabel, def.MonetaryValueLabel2, def.MonetaryValueLabel3, display);
-                    isRequired = def.MonetaryValueVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.AvailableSince):
-                    display = PropertyDisplay(settings, def.AvailableSinceVisibility, def.AvailableSinceLabel, def.AvailableSinceLabel2, def.AvailableSinceLabel3, display);
-                    isRequired = def.AvailableSinceVisibility == Visibility.Required;
-                    break;
-                case nameof(Resource.AvailableTill):
-                    display = PropertyDisplay(settings, def.AvailableTillVisibility, def.AvailableTillLabel, def.AvailableTillLabel2, def.AvailableTillLabel3, display);
-                    isRequired = def.AvailableTillVisibility == Visibility.Required;
+                case nameof(Resource.ToDate):
+                    display = PropertyDisplay(settings, def.ToDateVisibility, def.ToDateLabel, def.ToDateLabel2, def.ToDateLabel3, display);
+                    isRequired = def.ToDateVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Decimal1):
                     display = PropertyDisplay(settings, def.Decimal1Visibility, def.Decimal1Label, def.Decimal1Label2, def.Decimal1Label3, display);
@@ -840,11 +816,11 @@ namespace Tellma.Controllers
                     isRequired = def.Text2Visibility == Visibility.Required;
                     break;
                 case nameof(Resource.Currency):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.CurrencyId):
-                    display = PropertyDisplay(settings, def.CurrencyVisibility, def.CurrencyLabel, def.CurrencyLabel2, def.CurrencyLabel3, display);
+                    display = PropertyDisplay(def.CurrencyVisibility, display);
                     isRequired = def.CurrencyVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Center):
@@ -895,6 +871,37 @@ namespace Tellma.Controllers
                 //    display = PropertyDisplay(settings, def.Lookup5Visibility, def.Lookup5Label, def.Lookup5Label2, def.Lookup5Label3, display);
                 //    isRequired = def.Lookup5Visibility == Visibility.Required;
                 //    break;
+
+                case nameof(Resource.Identifier):
+                    display = PropertyDisplay(settings, def.IdentifierVisibility, def.IdentifierLabel, def.IdentifierLabel2, def.IdentifierLabel3, display);
+                    isRequired = def.IdentifierVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.Units):
+                    if (def.UnitCardinality == null)
+                    {
+                        display = null;
+                    }
+                    break;
+                case nameof(Resource.ReorderLevel):
+                    display = PropertyDisplay(def.ReorderLevelVisibility, display);
+                    isRequired = def.ReorderLevelVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.EconomicOrderQuantity):
+                    display = PropertyDisplay(def.EconomicOrderQuantityVisibility, display);
+                    isRequired = def.EconomicOrderQuantityVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.ResidualMonetaryValue):
+                    display = PropertyDisplay(def.ResidualMonetaryValueVisibility, display);
+                    isRequired = def.ResidualMonetaryValueVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.ResidualValue):
+                    display = PropertyDisplay(def.ResidualValueVisibility, display);
+                    isRequired = def.ResidualValueVisibility == Visibility.Required;
+                    break;
+                case nameof(Resource.MonetaryValue):
+                    display = PropertyDisplay(def.MonetaryValueVisibility, display);
+                    isRequired = def.MonetaryValueVisibility == Visibility.Required;
+                    break;
             }
 
             int? targetDefId = propInfo.Name switch
