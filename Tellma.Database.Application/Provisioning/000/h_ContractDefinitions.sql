@@ -14,6 +14,14 @@
 (12, N'Shipper', N'Shipper', N'Shippers', N'ship', N'Purchasing',160);
 
 UPDATE @ContractDefinitions
+SET [CenterVisibility] = N'Optional'
+WHERE [Code] IN (N'Supplier', N'Customer', N'Employee')
+
+UPDATE @ContractDefinitions
+SET [CenterVisibility] = N'Required'
+WHERE [Code] IN (N'CashOnHandAccount', N'BankAccount')
+
+UPDATE @ContractDefinitions
 SET [BankAccountNumberVisibility] = N'Optional'
 WHERE [Code] IN (N'Employee', N'BankAccount')
 
@@ -27,7 +35,12 @@ WHERE [Code] IN (N'Employee')
 
 UPDATE @ContractDefinitions
 SET [UserCardinality] = N'Single'
-WHERE [Code] IN (N'Employee', N'Partner')
+WHERE [Code] IN (N'Employee', N'Partner', N'CashOnHandAccount')
+
+UPDATE @ContractDefinitions
+SET [UserCardinality] = N'Multiple'
+WHERE [Code] IN ( N'BankAccount', N'Warehouse')
+
 
 EXEC [api].[ContractDefinitions__Save]
 	@Entities = @ContractDefinitions,

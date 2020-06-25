@@ -1843,4 +1843,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ToDateVisibility]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="70fbda3f-212d-4cc6-877e-45e49b50f150" ChangeDateTime="06/25/2020 16:52:46">
+    <Property Name="ElementName" Value="[dbo].[AccountTypesCenterTypes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypeCenterTypes]" />
+  </Operation>
 </Operations>
