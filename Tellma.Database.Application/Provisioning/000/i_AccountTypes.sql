@@ -521,3 +521,9 @@ INSERT INTO dbo.[AccountTypeNotedContractDefinitions]
 (@CurrentEmployeeIncomeTaxPayablesExtension,	@EmployeeCD),
 (@CurrentSocialSecurityPayablesExtension,		@EmployeeCD),
 (@CurrentEmployeeStampTaxPayablesExtension,		@EmployeeCD);
+
+
+INSERT INTO dbo.[AccountTypeCenterTypes]
+([AccountTypeId],			[CenterType]) VALUES
+(@CashControlExtension,		N'Parent'),
+(@CashAndCashEquivalents,	N'Parent');

@@ -71,8 +71,7 @@ BEGIN
 	JOIN dbo.Lines LS ON L.[TemplateLineId] = LS.[Id]
 	JOIN dbo.Entries ES ON ES.[LineId] = LS.[Id]
 	WHERE E.[Index] = ES.[Index]
- 
- --  Overwrite input with DB data that is read only
+  --  Overwrite input with DB data that is read only
 	-- TODO : Overwrite readonly Memo
 	UPDATE E
 	SET E.CurrencyId = BE.CurrencyId
@@ -211,29 +210,7 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedDate';
 END
-IF (SELECT COUNT(*) FROM dbo.Centers WHERE [CenterType] = N'Common' AND [IsActive] = 1) = 1 -- for single segment case
-BEGIN
-	DECLARE @CommonCenterId INT = (SELECT [Id] FROM dbo.Centers WHERE [CenterType] = N'Common' AND [IsActive] = 1);
-	WITH UnspecifiedCenterEntries AS
-	(
-		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex]
-		FROM @E E
-		JOIN @L L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-		JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[Id]
-		WHERE LDE.[AccountTypeId] IN (SELECT [Id] FROM dbo.AccountTypes WHERE [Code] IN (
-				N'CashOnHand', N'BalancesWithBank', N'CashControlExtension'
-			)
-		)
-		
-	)
-	UPDATE E
-	SET CenterId = @CommonCenterId
-	FROM @E E
-	JOIN UnspecifiedCenterEntries UCE
-	ON  E.[Index] = UCE.[Index] 
-	AND E.[LineIndex] = UCE.[LineIndex]
-	AND E.[DocumentIndex] = UCE.[DocumentIndex]
-END
+
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
 	SELECT DISTINCT DefinitionId FROM @L
@@ -301,9 +278,18 @@ END
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Accounts A ON E.AccountId = A.Id;
-	-- for all lines, Get currency from Resources if available.
+	-- for all lines, Get currency and center from Contracts if available.
 	UPDATE E 
 	SET
+		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
+		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
+	FROM @PreprocessedEntries E
+	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Contracts C ON E.ContractId = C.Id;
+	-- for all lines, Get currency and center from Resources if available.
+	UPDATE E 
+	SET
+		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
 		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
 		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
 	FROM @PreprocessedEntries E
@@ -321,32 +307,29 @@ END
 	FROM @PreprocessedEntries E
 	JOIN RU ON E.ResourceId = RU.ResourceId;
 
-	DECLARE @BalanceSheetRoot HIERARCHYID = (
-			SELECT [Node] FROM dbo.AccountTypes
-			WHERE [Code] = N'StatementOfFinancialPositionAbstract'
-	);
-	DECLARE @PropertyPlantAndEquipment HIERARCHYID = (
-			SELECT [Node] FROM dbo.AccountTypes
-			WHERE [Code] = N'PropertyPlantAndEquipment'
-	);
-	
-	-- When there is only one center, use it everywhere
-	IF (SELECT COUNT(*) FROM dbo.[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1) = 1
-	BEGIN
-		DECLARE @SegmentId INT = (
-			SELECT [Id]	FROM dbo.[Centers]
-			WHERE [CenterType] = N'Segment'
-			AND [IsActive] = 1
-		);
-		UPDATE @PreprocessedDocuments
-		SET [SegmentId] = @SegmentId
-	END
+	-- for each account type, if there is only one compatible center, use it
+	WITH SingleCenterEntries AS (
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], C.[CenterType]
+		FROM @PreprocessedEntries E
+		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+		JOIN dbo.[AccountTypeCenterTypes] ATCT ON LDE.AccountTypeId = ATCT.AccountTypeId
+		JOIN dbo.Centers C ON ATCT.CenterType = C.CenterType
+		WHERE C.[IsActive] = 1
+		GROUP BY E.[Index], E.[LineIndex], E.[DocumentIndex], C.[CenterType]
+		HAVING COUNT(*) = 1
+	)
+	UPDATE E
+	SET E.[CenterId] = C.[Id]
+	FROM @PreprocessedEntries E
+	JOIN SingleCenterEntries SCE ON E.[Index] = SCE.[Index] AND E.[LineIndex] = SCE.[LineIndex] AND E.[DocumentIndex] = SCE.[DocumentIndex]
+	JOIN dbo.Centers C ON SCE.[CenterType] = C.[CenterType]
+	WHERE C.[IsActive] = 1
 	-- For financial amounts in foreign currency, the rate is manually entered or read from a web service
 	UPDATE E 
 	SET E.[Value] = ROUND(ER.[Rate] * E.[MonetaryValue], C.[E])
 	FROM @PreprocessedEntries E
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
---	JOIN @Documents D ON L.DocumentIndex = D.[Index]
 	JOIN [map].[ExchangeRates]() ER ON E.CurrencyId = ER.CurrencyId
 	JOIN dbo.Currencies C ON E.CurrencyId = C.[Id]
 	WHERE
@@ -354,6 +337,7 @@ END
 	AND ER.ValidTill >	ISNULL(L.[PostingDate], @Today)
 	AND L.[DefinitionId] <> @ManualLineLD;
 
+	-- Set the Account based on provided info so far
 	With LineEntries AS (
 		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
 				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]

@@ -22,19 +22,19 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 (1,0,	N'Value',		0,			N'Debit',		4,4,0), -- see special case
 (2,0,	N'Value',		0,			N'Credit',		4,4,0),
 (3,0,	N'Memo',		0,			N'Memo',		5,4,1);
-INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
-[State],	[Name]) VALUES
-(0,0,-4,	N'Duplicate Line'),
-(1,0,-4,	N'Incorrect Analysis'),
-(2,0,-4,	N'Other reasons'); -- @
-INSERT INTO @Workflows([Index],[LineDefinitionIndex],
-[ToState]) Values
-(0,0,+3),
-(1,0,+4);
-INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
-[RuleType],			[RoleId]) VALUES
-(0,0,0,N'ByRole',	@ComptrollerRL),
-(0,1,0,N'ByRole',	@FinanceManagerRL);
+--INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
+--[State],	[Name]) VALUES
+--(0,0,-4,	N'Duplicate Line'),
+--(1,0,-4,	N'Incorrect Analysis'),
+--(2,0,-4,	N'Other reasons'); -- @
+--INSERT INTO @Workflows([Index],[LineDefinitionIndex],
+--[ToState]) Values
+--(0,0,+3),
+--(1,0,+4);
+--INSERT INTO @WorkflowSignatures([Index], [WorkflowIndex],[LineDefinitionIndex],
+--[RuleType],			[RoleId]) VALUES
+--(0,0,0,N'ByRole',	@ComptrollerRL),
+--(0,1,0,N'ByRole',	@FinanceManagerRL);
 --100:CashPaymentToOther
 UPDATE @LineDefinitions
 SET [Script] = N'

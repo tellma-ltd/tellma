@@ -614,6 +614,7 @@
     <None Include="Provisioning\000\r_AccountClassifications.sql" />
     <None Include="Provisioning\108\00_Setup\Script.sql" />
     <Build Include="map\map.ContractUsers.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypeCenterTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
