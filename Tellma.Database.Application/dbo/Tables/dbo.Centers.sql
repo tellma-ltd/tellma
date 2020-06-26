@@ -4,6 +4,7 @@
 	--[SegmentId]				INT					NOT NULL CONSTRAINT [FK_Centers__SegmentId] REFERENCES dbo.[Segments]([Id]),
 	--CONSTRAINT [UX_Centers__SegmentId_Id] UNIQUE ([SegmentId], [Id]),
 	[ParentId]				INT,
+	[SelfParentId]						AS					COALESCE([ParentId], [Id]) PERSISTED,
 	-- Common, Service, Production, SellingAndDistribution
 	[CenterType]			NVARCHAR (50)		NOT NULL CONSTRAINT [CK_Centers__CenterType] CHECK (
 													[CenterType] IN (

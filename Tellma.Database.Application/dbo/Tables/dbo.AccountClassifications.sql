@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[AccountClassifications] (
 	[Id]								INT					CONSTRAINT [PK_AccountClassifications] PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]							INT					CONSTRAINT [FK_AccountClassifications__ParentId] REFERENCES [dbo].[AccountClassifications] ([Id]),
+	[SelfParentId]						AS					COALESCE([ParentId], [Id]) PERSISTED,
 	[Name]								NVARCHAR (255),
 	[Name2]								NVARCHAR (255),
 	[Name3]								NVARCHAR (255),
@@ -17,4 +18,3 @@
 	[Node]								HIERARCHYID			NOT NULL CONSTRAINT [IX_AccountClassifications__Node] UNIQUE,
 	[ParentNode]						AS [Node].GetAncestor(1)
 );
-GO

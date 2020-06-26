@@ -108,6 +108,11 @@
 (7100004, N'Other document control', N'7100-004', @OtherControlExtension, @AC7100, @ETB,NULL,NULL,NULL)
 
 
+UPDATE @Accounts SET ContractId = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Cash 1') WHERE [Index] = 1111001;
+UPDATE @Accounts SET ContractId = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Bank - UTB') WHERE [Index] = 1112001;
+UPDATE @Accounts SET ContractId = (SELECT [Id] FROM dbo.Contracts WHERE [Name] = N'Bank - USD') WHERE [Index] = 1112002;
+
+
 EXEC [api].[Accounts__Save]
 	@Entities = @Accounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
