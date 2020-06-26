@@ -262,26 +262,29 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>تجميعي</value>
   </data>
-  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
-    <value>إداري</value>
-  </data>
-  <data name="Center_CenterType_Common" xml:space="preserve">
-    <value>غير مخصص</value>
+  <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
+    <value>تكاليف إنشاء</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
-    <value>مباشر</value>
+    <value>تكلفة مبيعات</value>
   </data>
-  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
-    <value>تسويقي</value>
+  <data name="Center_CenterType_Parent" xml:space="preserve">
+    <value>أصل</value>
   </data>
-  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
-    <value>إنتاجي</value>
+  <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
+    <value>تكاليف تصنيع</value>
   </data>
   <data name="Center_CenterType_Segment" xml:space="preserve">
     <value>قطاع</value>
   </data>
-  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
-    <value>خدمي</value>
+  <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
+    <value>بيع عام وإداري</value>
+  </data>
+  <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
+    <value>تكاليف مشتركة</value>
+  </data>
+  <data name="Center_CenterType_TransitExpenseControl" xml:space="preserve">
+    <value>تكاليف نقل</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
@@ -2271,6 +2274,9 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>المسار</value>
+  </data>
+  <data name="TreeSelfParent" xml:space="preserve">
+    <value>الأصل أو الذات</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>(القائمة مقتطعة)</value>

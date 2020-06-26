@@ -18,16 +18,27 @@ namespace Tellma.Entities
         [Display(Name = "Center_CenterType")]
         [Required]
         [StringLength(255)]
-        [ChoiceList(new object[] { "Segment", "Abstract", "Common", "ServiceExtension", "ProductionExtension", "DistributionCosts", "AdministrativeExpense", "CostOfSales" },
+        [ChoiceList(new object[] {
+            "Segment", 
+            "Abstract", 
+            "Parent", 
+            "CostOfSales",
+            "SellingGeneralAndAdministration", 
+            "SharedExpenseControl",
+            "TransitExpenseControl", 
+            "ConstructionExpenseControl", 
+            "ProductionExpenseControl"
+        },
             new string[] {
                 "Center_CenterType_Segment",
                 "Center_CenterType_Abstract",
-                "Center_CenterType_Common",
-                "Center_CenterType_ServiceExtension",
-                "Center_CenterType_ProductionExtension",
-                "Center_CenterType_DistributionCosts",
-                "Center_CenterType_AdministrativeExpense",
+                "Center_CenterType_Parent",
                 "Center_CenterType_CostOfSales",
+                "Center_CenterType_SellingGeneralAndAdministration",
+                "Center_CenterType_SharedExpenseControl",
+                "Center_CenterType_TransitExpenseControl",
+                "Center_CenterType_ConstructionExpenseControl",
+                "Center_CenterType_ProductionExpenseControl",
             })]
         public string CenterType { get; set; }
 
@@ -111,5 +122,14 @@ namespace Tellma.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        // Temp
+
+        [Display(Name = "TreeSelfParent")]
+        public int? SelfParentId { get; set; }
+
+        [Display(Name = "TreeSelfParent")]
+        [ForeignKey(nameof(SelfParentId))]
+        public Center SelfParent { get; set; }
     }
 }

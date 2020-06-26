@@ -262,26 +262,29 @@
   <data name="Center_CenterType_Abstract" xml:space="preserve">
     <value>ረቂቅ</value>
   </data>
-  <data name="Center_CenterType_AdministrativeExpense" xml:space="preserve">
-    <value>አስተዳደራዊ የወጪ</value>
-  </data>
-  <data name="Center_CenterType_Common" xml:space="preserve">
-    <value>ያልተገለፀ</value>
+  <data name="Center_CenterType_ConstructionExpenseControl" xml:space="preserve">
+    <value>ኮንስትራክሽን የወጪ</value>
   </data>
   <data name="Center_CenterType_CostOfSales" xml:space="preserve">
     <value>የሽያጭ ወጪ</value>
   </data>
-  <data name="Center_CenterType_DistributionCosts" xml:space="preserve">
-    <value>የስርጭት ወጪዎች</value>
+  <data name="Center_CenterType_Parent" xml:space="preserve">
+    <value>ወላጅ</value>
   </data>
-  <data name="Center_CenterType_ProductionExtension" xml:space="preserve">
-    <value>ፕሮዳክሽን</value>
+  <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
+    <value>የምርት የወጪ</value>
   </data>
   <data name="Center_CenterType_Segment" xml:space="preserve">
     <value>ክፍል</value>
   </data>
-  <data name="Center_CenterType_ServiceExtension" xml:space="preserve">
-    <value>አገልግሎት</value>
+  <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
+    <value>ሽያጭ አጠቃላይ እና አስተዳደር</value>
+  </data>
+  <data name="Center_CenterType_SharedExpenseControl" xml:space="preserve">
+    <value>የተጋራ የወጪ</value>
+  </data>
+  <data name="Center_CenterType_TransitExpenseControl" xml:space="preserve">
+    <value>የትራንዚት የወጪ</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>አስተዳዳሪ</value>
@@ -2271,6 +2274,9 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>ዱካ</value>
+  </data>
+  <data name="TreeSelfParent" xml:space="preserve">
+    <value>ራስን ወላጅ</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>(ዝርዝር ተጎርደዋል)</value>

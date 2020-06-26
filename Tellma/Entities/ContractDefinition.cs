@@ -171,7 +171,6 @@ namespace Tellma.Entities
         public string Lookup1Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup1")]
-        [StringLength(50)]
         public int? Lookup1DefinitionId { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Lookup2", Language = Language.Primary)]
@@ -190,7 +189,6 @@ namespace Tellma.Entities
         public string Lookup2Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup2")]
-        [StringLength(50)]
         public int? Lookup2DefinitionId { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Lookup3", Language = Language.Primary)]
@@ -209,7 +207,6 @@ namespace Tellma.Entities
         public string Lookup3Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup3")]
-        [StringLength(50)]
         public int? Lookup3DefinitionId { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Lookup4", Language = Language.Primary)]
@@ -228,7 +225,6 @@ namespace Tellma.Entities
         public string Lookup4Visibility { get; set; }
 
         [DefinitionDefinitionDisplay(Name = "Entity_Lookup4")]
-        [StringLength(50)]
         public int? Lookup4DefinitionId { get; set; }
 
         [DefinitionLabelDisplay(Name = "Entity_Text1", Language = Language.Primary)]

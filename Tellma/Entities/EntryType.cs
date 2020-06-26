@@ -108,5 +108,14 @@ namespace Tellma.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        // Temp
+
+        [Display(Name = "TreeSelfParent")]
+        public int? SelfParentId { get; set; }
+
+        [Display(Name = "TreeSelfParent")]
+        [ForeignKey(nameof(SelfParentId))]
+        public EntryType SelfParent { get; set; }
     }
 }
