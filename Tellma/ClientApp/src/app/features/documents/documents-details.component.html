@@ -252,7 +252,7 @@
             </t-view-link>
         </t-restricted>
         <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.SegmentId"
-            filter="CenterType eq 'Segment' and IsLeaf eq true" [required]="true"
+            filter="CenterType eq 'Segment'" [required]="true"
             [disabled]="readonlyDocumentSegment(model)">
         </t-centers-picker>
     </t-form-group>
