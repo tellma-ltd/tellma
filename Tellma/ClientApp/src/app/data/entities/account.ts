@@ -1,7 +1,7 @@
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
 import { EntityWithKey } from './base/entity-with-key';
-import { WorkspaceService } from '../workspace.service';
+import { WorkspaceService, TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
@@ -32,9 +32,18 @@ export interface Account extends AccountForSave {
     ModifiedById?: number | string;
 }
 
-const _select = ['', '2', '3'].map(pf => 'Name' + pf);
+const _select = ['', '2', '3'].map(pf => 'Name' + pf).concat(['Code']);
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
+
+function format(item: Account, ws: TenantWorkspace) {
+    let result = ws.getMultilingualValueImmediate(item, _select[0]);
+    if (!!item.Code) {
+        result = `${item.Code} - ${result}`;
+    }
+
+    return result;
+}
 
 export function metadata_Account(wss: WorkspaceService, trx: TranslateService): EntityDescriptor {
     const ws = wss.currentTenant;
@@ -48,10 +57,10 @@ export function metadata_Account(wss: WorkspaceService, trx: TranslateService): 
             select: _select,
             apiEndpoint: 'accounts',
             screenUrl: 'accounts',
-            orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+            orderby: () => ['Code'].concat(ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]]),
             inactiveFilter: 'IsDeprecated eq false',
             includeInactveLabel: () => trx.instant('IncludeDeprecated'),
-            format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            format: (item: Account) => format(item, ws),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterId: { control: 'number', label: () => `${trx.instant('Account_Center')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },

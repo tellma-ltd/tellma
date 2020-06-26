@@ -11,12 +11,13 @@
             'CenterType' : [
                 { template: segment, expression: 'CenterType eq \'Segment\''},
                 { template: abstract, expression: 'CenterType eq \'Abstract\''},
-                { template: common, expression: 'CenterType eq \'Common\''},
-                { template: service, expression: 'CenterType eq \'ServiceExtension\''},
-                { template: production, expression: 'CenterType eq \'ProductionExtension\''},
-                { template: distCosts, expression: 'CenterType eq \'DistributionCosts\''},
-                { template: adminExpense, expression: 'CenterType eq \'AdministrativeExpense\''},
-                { template: costOfSale, expression: 'CenterType eq \'CostOfSales\''}
+                { template: parent, expression: 'CenterType eq \'Parent\''},
+                { template: cos, expression: 'CenterType eq \'CostOfSales\''},
+                { template: selling, expression: 'CenterType eq \'SellingGeneralAndAdministration\''},
+                { template: shared, expression: 'CenterType eq \'SharedExpenseControl\''},
+                { template: transit, expression: 'CenterType eq \'TransitExpenseControl\''},
+                { template: construction, expression: 'CenterType eq \'ConstructionExpenseControl\''},
+                { template: production, expression: 'CenterType eq \'ProductionExpenseControl\''}
             ]
           }">
 </t-master>
@@ -50,9 +51,10 @@
 
 <ng-template #segment> {{ 'Center_CenterType_Segment' | translate }} </ng-template>
 <ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
-<ng-template #common> {{ 'Center_CenterType_Common' | translate }} </ng-template>
-<ng-template #service> {{ 'Center_CenterType_ServiceExtension' | translate }} </ng-template>
-<ng-template #production> {{ 'Center_CenterType_ProductionExtension' | translate }} </ng-template>
-<ng-template #distCosts> {{ 'Center_CenterType_DistributionCosts' | translate }} </ng-template>
-<ng-template #adminExpense> {{ 'Center_CenterType_AdministrativeExpense' | translate }} </ng-template>
-<ng-template #costOfSale> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
+<ng-template #parent> {{ 'Center_CenterType_Parent' | translate }} </ng-template>
+<ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>
+<ng-template #selling> {{ 'Center_CenterType_SellingGeneralAndAdministration' | translate }} </ng-template>
+<ng-template #shared> {{ 'Center_CenterType_SharedExpenseControl' | translate }} </ng-template>
+<ng-template #transit> {{ 'Center_CenterType_TransitExpenseControl' | translate }} </ng-template>
+<ng-template #construction> {{ 'Center_CenterType_ConstructionExpenseControl' | translate }} </ng-template>
+<ng-template #production> {{ 'Center_CenterType_ProductionExpenseControl' | translate }} </ng-template>

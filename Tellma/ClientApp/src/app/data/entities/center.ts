@@ -27,6 +27,9 @@ export interface Center extends CenterForSave {
     CreatedById?: number | string;
     ModifiedAt?: string;
     ModifiedById?: number | string;
+
+    // Temp
+    SelfParentId?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -58,11 +61,20 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ParentId: { control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CenterType: {
                     control: 'choice',
                     label: () => trx.instant('Center_CenterType'),
-                    choices: ['Segment', 'Abstract', 'Common', 'ServiceExtension', 'ProductionExtension', 'DistributionCosts', 'AdministrativeExpense', 'CostOfSales'],
+                    choices: [
+                        'Segment',
+                        'Abstract',
+                        'Parent',
+                        'CostOfSales',
+                        'SellingGeneralAndAdministration',
+                        'SharedExpenseControl',
+                        'TransitExpenseControl',
+                        'ConstructionExpenseControl',
+                        'ProductionExpenseControl'
+                    ],
                     format: (c: string) => !!c ? trx.instant(`Center_CenterType_${c}`) : ''
                 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
@@ -85,10 +97,14 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
                     alignment: 'right'
                 },
+                ParentId: { control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Parent: {
                     control: 'navigation', label: () => trx.instant('TreeParent'), type: 'Center',
                     foreignKeyName: 'ParentId'
                 },
+                // Temp
+                SelfParentId: { control: 'number', label: () => `${trx.instant('TreeSelfParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                SelfParent: { control: 'navigation', label: () => trx.instant('TreeSelfParent'), type: 'Center', foreignKeyName: 'SelfParentId' },
                 IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
                 // IsActive & Audit info
