@@ -8,7 +8,8 @@
 (6, N'PaperGroup', N'Paper Group', N'Paper Groups', N'copy', N'Administration',7),
 (7, N'PaperType', N'Paper Type', N'Paper Types', N'scroll', N'Administration',8),
 (8, N'GrainGroup', N'Grain Group', N'Grain Groups', N'tree', N'Administration',9),
-(9, N'GrainType', N'Grain Type', N'Grain Types', N'seedling', N'Administration',10);
+(9, N'GrainType', N'Grain Type', N'Grain Types', N'seedling', N'Administration',10),
+(10, N'BankAccountType', N'Bank Account Type', N'Bank Account Types', N'ellipsis-h', N'Administration',11);
 
 EXEC api.LookupDefinitions__Save
 	@Entities = @LookupDefinitions,
@@ -31,3 +32,4 @@ DECLARE @PaperGroupLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code
 DECLARE @PaperTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'PaperType');
 DECLARE @GrainGroupLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'GrainGroup');
 DECLARE @GrainTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'GrainType');
+DECLARE @BankAccountTypeLKD INT = (SELECT [Id] FROM dbo.LookupDefinitions WHERE [Code] = N'BankAccountType');
