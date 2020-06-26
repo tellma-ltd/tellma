@@ -132,14 +132,13 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
                 currentDefinition = this._propDescriptor.definition;
                 this._entityDescriptor = this.metadataFactory(currentCollection)(this.workspace, this.translate, currentDefinition);
 
-                if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
+                if (!!this._value && !!this._value.EntityMetadata) {
                   this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
 
                   const fkValue = this._value[this._propDescriptor.foreignKeyName];
                   this._value = this.workspace.current[currentCollection][fkValue];
-
                 } else {
-                  this._metavalue = 0;
+                  break; // null entity along the path
                 }
               } else {
                 // only allowed at the last step
@@ -148,13 +147,18 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
                 }
 
                 // set the property and control at the end
-                if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
+                if (this._value && this._value.EntityMetadata) {
                   this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
                   this._value = this._value[step];
                 } else {
-                  this._metavalue = 0;
+                  break; // null entity
                 }
               }
+            }
+
+            if (this._metavalue !== 2) {
+              // The remaining fields don't matter
+              break;
             }
           }
         }

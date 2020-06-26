@@ -23,7 +23,7 @@
   <span *ngSwitchCase="1" class="text-muted font-weight-bold" title="{{ 'Restricted' | translate }}">*******</span>
 
   <!-- Value Not Loaded -->
-  <span *ngSwitchCase="0" class="text-muted font-italic">(Not Loaded)</span>
+  <span *ngSwitchCase="0" class="text-muted font-italic">({{ 'NotLoaded' | translate }})</span>
 
   <!-- Invalid Path -->
   <span *ngSwitchCase="-1" class="text-danger font-italic" [title]="errorMessage">({{ 'Error' | translate }})</span>
