@@ -1,7 +1,7 @@
 ﻿DELETE FROM @CashOnHandContracts;
 DELETE FROM @ContractUsers;
 INSERT INTO @CashOnHandContracts([Index], [Name], [Name2], [CenterId]) VALUES
-(0,			N'Cash 1',	NULL, @106C_Soreti);
+(0,			N'Cash 1',	NULL, @106C_TradingHO);
 INSERT INTO @ContractUsers([Index], [HeaderIndex], [UserId]) VALUES
 (0,0,@AdminUserId)
 
@@ -19,8 +19,8 @@ END;
 DELETE FROM @CashOnHandContracts;
 DELETE FROM @ContractUsers;
 INSERT INTO @CashOnHandContracts([Index], [Name], [Name2], [CenterId], [CurrencyId]) VALUES
-(0,			N'Bank 1',	NULL, @106C_Trading, @ETB),
-(1,			N'Bank 2',	NULL, @106C_RealEstate, @USD);
+(0,			N'Bank 1',	NULL, @106C_RealEstate, @ETB),
+(1,			N'Bank 2',	NULL, @106C_TradingHO, @USD);
 INSERT INTO @ContractUsers([Index], [HeaderIndex], [UserId]) VALUES
 (0,0,@AdminUserId),
 (0,1,@AdminUserId)

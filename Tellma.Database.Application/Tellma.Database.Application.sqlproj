@@ -672,6 +672,7 @@
     <None Include="Provisioning\107\01_Security\b_Permissions.sql" />
     <None Include="Provisioning\107\02_Basic\a_Lookups.sql" />
     <None Include="108.SSIAHolding.publish.xml" />
+    <None Include="Azure.107.SSIA.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

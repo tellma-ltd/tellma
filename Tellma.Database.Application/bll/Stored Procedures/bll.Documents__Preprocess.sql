@@ -210,6 +210,45 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedDate';
 END
+	-- for all lines, Get currency and center from Contracts if available.
+	UPDATE E 
+	SET
+		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
+		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Contracts C ON E.ContractId = C.Id;
+	-- for all lines, Get currency and center from Resources if available.
+	UPDATE E 
+	SET
+		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
+		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
+		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Resources R ON E.ResourceId = R.Id;
+	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
+	WITH RU AS (
+		SELECT [ResourceId], MIN(UnitId) AS UnitId
+		FROM dbo.ResourceUnits
+		GROUP BY [ResourceId]
+		HAVING COUNT(*) = 1
+	)
+	UPDATE E
+	SET E.[UnitId] = RU.UnitId
+	FROM @E E
+	JOIN RU ON E.ResourceId = RU.ResourceId;
+	-- Copy information from Account to entries
+	UPDATE E 
+	SET
+		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
+		E.[ContractId]		= COALESCE(A.[ContractId], E.[ContractId]),
+		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
+		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
+		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Accounts A ON E.AccountId = A.Id;
 
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions
@@ -267,45 +306,6 @@ END
 	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
 	WHERE L.[DefinitionId] <> @ManualLineLD;
-	-- Copy information from Account to entries
-	UPDATE E 
-	SET
-		E.[CurrencyId]		= COALESCE(A.[CurrencyId], E.[CurrencyId]),
-		E.[ContractId]		= COALESCE(A.[ContractId], E.[ContractId]),
-		E.[ResourceId]		= COALESCE(A.[ResourceId], E.[ResourceId]),
-		E.[CenterId]		= COALESCE(A.[CenterId], E.[CenterId]),
-		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
-	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id;
-	-- for all lines, Get currency and center from Contracts if available.
-	UPDATE E 
-	SET
-		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
-		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
-	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Contracts C ON E.ContractId = C.Id;
-	-- for all lines, Get currency and center from Resources if available.
-	UPDATE E 
-	SET
-		E.[CenterId]		= COALESCE(R.[CenterId], E.[CenterId]),
-		E.[CurrencyId]		= COALESCE(R.[CurrencyId], E.[CurrencyId]),
-		E.[MonetaryValue]	= COALESCE(R.[MonetaryValue], E.[MonetaryValue])
-	FROM @PreprocessedEntries E
-	JOIN @PreprocessedLines L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Resources R ON E.ResourceId = R.Id;
-	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
-	WITH RU AS (
-		SELECT [ResourceId], MIN(UnitId) AS UnitId
-		FROM dbo.ResourceUnits
-		GROUP BY [ResourceId]
-		HAVING COUNT(*) = 1
-	)
-	UPDATE E
-	SET E.[UnitId] = RU.UnitId
-	FROM @PreprocessedEntries E
-	JOIN RU ON E.ResourceId = RU.ResourceId;
 
 	-- for each account type, if there is only one compatible center, use it
 	WITH SingleCenterEntries AS (
