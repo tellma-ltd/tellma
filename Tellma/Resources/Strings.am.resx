@@ -421,8 +421,17 @@
   <data name="DefaultError" xml:space="preserve">
     <value>ያልታወቀ አለመሳካት ተከስቷል.</value>
   </data>
+  <data name="Definition_Archive" xml:space="preserve">
+    <value>ማህደር</value>
+  </data>
+  <data name="Definition_Hide" xml:space="preserve">
+    <value>ደብቅ</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>ስክሪፕት</value>
+  </data>
+  <data name="Definition_Show" xml:space="preserve">
+    <value>አሳይ</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>ሁኔታ</value>
@@ -885,6 +894,9 @@
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
     <value>ቀን ወደፊት ላይ መሆን አይችልም</value>
+  </data>
+  <data name="Error_DefinitionInUse" xml:space="preserve">
+    <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>{0} መሰረዝ ይሂ ኤፒአይ አይደገፍም።</value>
@@ -1651,9 +1663,6 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>ሰርዝ</value>
   </data>
-  <data name="Permission_DocumentState" xml:space="preserve">
-    <value>ዝጋ/ ሰርዝ</value>
-  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>አንቃ / አቦዝንን</value>
   </data>
@@ -1674,6 +1683,9 @@
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>ምልክት</value>
+  </data>
+  <data name="Permission_State" xml:space="preserve">
+    <value>ዝጋ/ ሰርዝ</value>
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>አዘምን</value>

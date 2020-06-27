@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Entities
 {
@@ -91,7 +92,7 @@ namespace Tellma.Entities
     {
 
         [Display(Name = "Definition_State")]
-        [ChoiceList(new object[] { "Hidden", "Visible", "Archived" },
+        [ChoiceList(new object[] { DefStates.Hidden, DefStates.Visible, DefStates.Archived },
             new string[] { "Definition_State_Hidden", "Definition_State_Visible", "Definition_State_Archived" })]
         [AlwaysAccessible]
         public string State { get; set; }

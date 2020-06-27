@@ -65,13 +65,11 @@ namespace Tellma.Controllers
     public class EntryTypesService : CrudTreeServiceBase<EntryTypeForSave, EntryType, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly IStringLocalizer _localizer;
 
         private string View => EntryTypesController.BASE_ADDRESS;
 
-        public EntryTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public EntryTypesService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

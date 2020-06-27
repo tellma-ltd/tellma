@@ -615,6 +615,13 @@
     <None Include="Provisioning\108\00_Setup\Script.sql" />
     <Build Include="map\map.ContractUsers.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypeCenterTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__UpdateState.sql" />
+    <Build Include="dal\Stored Procedures\dal.ContractDefinitions__UpdateState.sql" />
+    <Build Include="dal\Stored Procedures\dal.DocumentDefinitions__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.ContractDefinitions_Validate__UpdateState.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentDefinitions_Validate__UpdateState.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

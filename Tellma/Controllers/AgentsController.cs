@@ -62,14 +62,12 @@ namespace Tellma.Controllers
 
     public class AgentsService : CrudServiceBase<AgentForSave, Agent, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => AgentsController.BASE_ADDRESS;
 
-        public AgentsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public AgentsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,5 +38,15 @@ namespace Tellma.Services.Utilities
 
         // Indicates a restricted
         public const string Restricted = "*******";
+    }
+
+    public static class DefStates
+    {
+        // Definition States
+        public const string Hidden = nameof(Hidden);
+        public const string Visible = nameof(Visible);
+        public const string Archived = nameof(Archived);
+
+        public static readonly string[] All = new string[] { Hidden, Visible, Archived };
     }
 }

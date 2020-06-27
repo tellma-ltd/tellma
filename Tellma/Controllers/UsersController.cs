@@ -169,7 +169,6 @@ namespace Tellma.Controllers
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
         private readonly GlobalOptions _options;
-        private readonly IStringLocalizer _localizer;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
 
         // This is created and disposed across multiple methods
@@ -200,7 +199,6 @@ namespace Tellma.Controllers
             IServiceProvider serviceProvider,
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
-            IStringLocalizer<Strings> localizer,
             ITenantIdAccessor tenantIdAccessor,
             IBlobService blobService,
             MetadataProvider metadataProvider) : base(serviceProvider)
@@ -213,7 +211,6 @@ namespace Tellma.Controllers
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
             _options = options.Value;
-            _localizer = localizer;
 
             // we use this trick since this is an optional dependency, it will resolve to null if 
             // the embedded identity server is not enabled

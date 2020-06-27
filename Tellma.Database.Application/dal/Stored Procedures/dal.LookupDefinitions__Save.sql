@@ -37,8 +37,10 @@ SET NOCOUNT ON;
 			VALUES (s.[Code], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
-
-	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+	
+	-- Signal clients to refresh their cache
+	IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[LookupDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
+		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

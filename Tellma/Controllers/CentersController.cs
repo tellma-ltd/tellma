@@ -64,14 +64,12 @@ namespace Tellma.Controllers
 
     public class CentersService : CrudTreeServiceBase<CenterForSave, Center, int>
     {
-        private readonly IStringLocalizer<Strings> _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => CentersController.BASE_ADDRESS;
 
-        public CentersService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public CentersService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

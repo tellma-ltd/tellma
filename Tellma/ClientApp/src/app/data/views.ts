@@ -26,7 +26,7 @@ export const ACTIONS: { [action: string]: string } = {
     'IsActive': 'Permission_IsActive',
     'IsDeprecated': 'Permission_IsDeprecated',
     'ResendInvitationEmail': 'ResendInvitationEmail',
-    'State': 'Permission_DocumentState',
+    'State': 'Permission_State',
     'ResetPassword': 'ResetPassword',
     'All': 'View_All',
 };
@@ -197,14 +197,27 @@ export const APPLICATION_VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
         read: true,
         update: true,
         delete: true,
-        actions: []
+        actions: [
+            li('State')
+        ]
     },
     'resource-definitions': {
         name: 'ResourceDefinitions',
         read: true,
         update: true,
         delete: true,
-        actions: []
+        actions: [
+            li('State')
+        ]
+    },
+    'lookup-definitions': {
+        name: 'LookupDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('State')
+        ]
     },
     'settings': {
         name: 'Settings',

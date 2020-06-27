@@ -50,19 +50,16 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "exchange-rates";
 
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
         private string View => BASE_ADDRESS;
 
         public ExchangeRatesService(
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             ISettingsCache settingsCache,
             IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
             _settingsCache = settingsCache;
         }
@@ -226,7 +223,7 @@ namespace Tellma.Controllers
                 if (DateTime.TryParse(search.Trim(), out DateTime searchDate))
                 {
                     var validAsOfProp = nameof(ExchangeRate.ValidAsOf);
-                    filterString = $"{filterString} or {validAsOfProp} {Ops.eq} {searchDate.ToString("yyyy-MM-dd")}";
+                    filterString = $"{filterString} or {validAsOfProp} {Ops.eq} {searchDate:yyyy-MM-dd}";
                 }
 
                 // Apply the filter

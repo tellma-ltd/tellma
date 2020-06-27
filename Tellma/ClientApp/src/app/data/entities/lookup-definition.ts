@@ -6,8 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor } from './base/definition-common';
-import { DefinitionVisibility as Visibility } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, statePropDescriptor } from './base/definition-common';
 
 export interface LookupDefinitionForSave extends EntityForSave {
     Code?: string;
@@ -64,6 +63,7 @@ export function metadata_LookupDefinition(wss: WorkspaceService, trx: TranslateS
                 TitlePlural2: { control: 'text', label: () => trx.instant('TitlePlural') + ws.secondaryPostfix },
                 TitlePlural3: { control: 'text', label: () => trx.instant('TitlePlural') + ws.ternaryPostfix },
 
+                State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),

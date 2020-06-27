@@ -65,14 +65,12 @@ namespace Tellma.Controllers
 
     public class RolesService : CrudServiceBase<RoleForSave, Role, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => RolesController.BASE_ADDRESS;
 
-        public RolesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public RolesService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

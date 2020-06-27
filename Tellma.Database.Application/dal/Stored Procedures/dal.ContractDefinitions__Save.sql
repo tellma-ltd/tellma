@@ -351,9 +351,10 @@ SET NOCOUNT ON;
 				s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
-
+	
 	-- Signal clients to refresh their cache
-	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+	IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[ContractDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
+		UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

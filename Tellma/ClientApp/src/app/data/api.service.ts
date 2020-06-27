@@ -57,12 +57,11 @@ import { ActionArguments } from './dto/action-arguments';
 import { GenerateMarkupByFilterArguments, GenerateMarkupByIdArguments, GenerateMarkupArguments } from './dto/generate-markup-arguments';
 import { MarkupPreviewResponse } from './dto/markup-preview-response';
 import { MarkupPreviewTemplate } from './dto/markup-preview-template';
-import { ExportSelectedArguments } from './dto/export-selected-arguments';
-import { SelectExpandArguments } from './dto/select-expand-arguments';
 import { GetByIdsArguments } from './dto/get-by-ids-arguments';
 import { Agent } from './entities/agent';
 import { StatementArguments } from './dto/statement-arguments';
 import { StatementResponse } from './dto/statement-response';
+import { UpdateStateArguments } from './dto/update-state-arguments';
 
 
 @Injectable({
@@ -858,6 +857,32 @@ export class ApiService {
     };
   }
 
+  // Definitions update state
+
+  public lookupDefinitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      updateState: this.updateDefinitionStateFactory('lookup-definitions', cancellationToken$)
+    };
+  }
+
+  public resourceDefinitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      updateState: this.updateDefinitionStateFactory('resource-definitions', cancellationToken$)
+    };
+  }
+
+  public contractDefinitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      updateState: this.updateDefinitionStateFactory('contract-definitions', cancellationToken$)
+    };
+  }
+
+  public documentDefinitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      updateState: this.updateDefinitionStateFactory('document-definitions', cancellationToken$)
+    };
+  }
+
   public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
@@ -1217,6 +1242,35 @@ export class ApiService {
 
       this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      }).pipe(
+        tap(() => this.showRotator = false),
+        catchError(error => {
+          this.showRotator = false;
+          const friendlyError = friendlify(error, this.trx);
+          return throwError(friendlyError);
+        }),
+        takeUntil(cancellationToken$),
+        finalize(() => this.showRotator = false)
+      );
+
+      return obs$;
+    };
+  }
+
+  private updateDefinitionStateFactory<TDefinition>(apiSegment: string, cancellationToken$: Observable<void>) {
+    return (ids: (string | number)[], args: UpdateStateArguments, extras?: { [key: string]: any }) => {
+
+      const paramsArray = this.stringifyActionArguments(args);
+      this.addExtras(paramsArray, extras);
+
+      paramsArray.push(`state=${encodeURIComponent(args.state)}`);
+
+      const params: string = paramsArray.join('&');
+      const url = appsettings.apiAddress + `api/${apiSegment}/update-state?${params}`;
+
+      this.showRotator = true;
+      const obs$ = this.http.put<EntitiesResponse<TDefinition>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.showRotator = false),

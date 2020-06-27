@@ -508,7 +508,7 @@
           <td class="pl-0 pr-0" *ngIf="isScreenMode">
             <div class="mx-2" *ngIf="showErrorHighlight(id)" [ngbPopover]="errorsPopover" popoverClass="t-error-popover"
               container="body" triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement">
-              <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>
+              <fa-icon class="text-danger" [class.t-light-danger]="isDark" icon="exclamation-triangle"></fa-icon>
             </div>
           </td>
 

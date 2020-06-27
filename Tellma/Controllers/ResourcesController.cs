@@ -86,7 +86,6 @@ namespace Tellma.Controllers
 
     public class ResourcesService : CrudServiceBase<ResourceForSave, Resource, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
         private readonly IBlobService _blobService;
@@ -137,7 +136,6 @@ namespace Tellma.Controllers
         private string View => $"{ResourcesController.BASE_ADDRESS}{DefinitionId}";
 
         public ResourcesService(
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
             IBlobService blobService,
@@ -146,7 +144,6 @@ namespace Tellma.Controllers
             IHttpContextAccessor contextAccessor,
             IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
             _definitionsCache = definitionsCache;
             _blobService = blobService;

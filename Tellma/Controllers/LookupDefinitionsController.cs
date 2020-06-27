@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Tellma.Services.Utilities;
+using System.Linq;
 
 namespace Tellma.Controllers
 {
@@ -20,11 +21,35 @@ namespace Tellma.Controllers
     {
         public const string BASE_ADDRESS = "lookup-definitions";
 
+        private readonly ILogger<LookupDefinitionsController> _logger;
         private readonly LookupDefinitionsService _service;
 
-        public LookupDefinitionsController(ILogger<LookupDefinitionsController> logger, LookupDefinitionsService service, DefinitionsService defService) : base(logger)
+        public LookupDefinitionsController(ILogger<LookupDefinitionsController> logger, LookupDefinitionsService service) : base(logger)
         {
+            _logger = logger;
             _service = service;
+        }
+
+        [HttpPut("update-state")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> Close([FromBody] List<int> ids, [FromQuery] UpdateStateArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var serverTime = DateTimeOffset.UtcNow;
+                var (data, extras) = await _service.UpdateState(ids, args);
+                var response = TransformToEntitiesResponse(data, extras, serverTime, cancellation: default);
+
+                Response.Headers.Set("x-definitions-version", Constants.Stale);
+                if (args.ReturnEntities ?? false)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }, 
+            _logger);
         }
 
         protected override CrudServiceBase<LookupDefinitionForSave, LookupDefinition, int> GetCrudService()
@@ -47,15 +72,56 @@ namespace Tellma.Controllers
 
     public class LookupDefinitionsService : CrudServiceBase<LookupDefinitionForSave, LookupDefinition, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => LookupDefinitionsController.BASE_ADDRESS;
 
-        public LookupDefinitionsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public LookupDefinitionsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
+        }
+
+        public async Task<(List<LookupDefinition>, Extras)> UpdateState(List<int> ids, UpdateStateArguments args)
+        {
+            // Check user permissions
+            await CheckActionPermissions("State", ids);
+
+            // C# Validation 
+            if (string.IsNullOrWhiteSpace(args.State))
+            {
+                throw new BadRequestException(_localizer[Constants.Error_Field0IsRequired, _localizer["State"]]);
+            }
+
+            if (!DefStates.All.Contains(args.State))
+            {
+                string validStates = string.Join(", ", DefStates.All);
+                throw new BadRequestException($"'{args.State}' is not a valid definition state, valid states are: {validStates}");
+            }
+
+            // Transaction
+            using var trx = ControllerUtilities.CreateTransaction();
+
+            // Validate
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var errors = await _repo.LookupDefinitions_Validate__UpdateState(ids, args.State, top: remainingErrorCount);
+            ControllerUtilities.AddLocalizedErrors(ModelState, errors, _localizer);
+            ModelState.ThrowIfInvalid();
+
+            // Execute
+            await _repo.LookupDefinitions__UpdateState(ids, args.State);
+
+            if (args.ReturnEntities ?? false)
+            {
+                var response = await GetByIds(ids, args, cancellation: default);
+
+                trx.Complete();
+                return response;
+            }
+            else
+            {
+                trx.Complete();
+                return default;
+            }
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)

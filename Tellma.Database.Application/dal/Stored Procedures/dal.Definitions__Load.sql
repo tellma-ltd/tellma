@@ -5,13 +5,13 @@ AS
 SELECT [DefinitionsVersion] FROM [dbo].[Settings];
 
 -- Get the lookup definitions
-SELECT * FROM [map].[LookupDefinitions]();
+SELECT * FROM [map].[LookupDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the agent definitions
-SELECT * FROM [map].[ContractDefinitions]();
+SELECT * FROM [map].[ContractDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the resource definitions
-SELECT * FROM [map].[ResourceDefinitions]();
+SELECT * FROM [map].[ResourceDefinitions]() WHERE [State] <> N'Hidden';
 
 -- Get the report definitions
 SELECT * FROM [map].[ReportDefinitions]()

@@ -6,7 +6,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { ResourceDefinition } from '~/app/data/entities/resource-definition';
 
 @Component({
   selector: 't-resource-definitions-master',
@@ -15,13 +15,13 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 })
 export class ResourceDefinitionsMasterComponent extends MasterBaseComponent {
 
-  // private resourcesDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private resourcesDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    // this.resourcesDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$);
+    this.resourcesDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$);
   }
 
   public get c() {
@@ -32,26 +32,58 @@ export class ResourceDefinitionsMasterComponent extends MasterBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  // public onActivate = (ids: (number | string)[]): Observable<any> => {
-  //   const obs$ = this.resourcesDefinitionsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
-  //     tap(res => addToWorkspace(res, this.workspace))
-  //   );
+  // State Update
 
-  //   // The master template handles any errors
-  //   return obs$;
-  // }
+  public onMakeHidden = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.resourcesDefinitionsApi.updateState(ids, { state: 'Hidden', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
 
-  // public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-  //   const obs$ = this.resourcesDefinitionsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
-  //     tap(res => addToWorkspace(res, this.workspace))
-  //   );
+    // The master template handles any errors
+    return obs$;
+  }
 
-  //   // The master template handles any errors
-  //   return obs$;
-  // }
+  public showMakeHidden = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ResourceDefinition', id) as ResourceDefinition;
+      return !!def && def.State !== 'Hidden';
+    });
+  }
 
-  // public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('resource-definitions', 'IsActive', null);
+  public onMakeVisible = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.resourcesDefinitionsApi.updateState(ids, { state: 'Visible', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
 
-  // public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
-  //   this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+    // The master template handles any errors
+    return obs$;
+  }
+
+  public showMakeVisible = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ResourceDefinition', id) as ResourceDefinition;
+      return !!def && def.State !== 'Visible';
+    });
+  }
+
+  public onMakeArchived = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.resourcesDefinitionsApi.updateState(ids, { state: 'Archived', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
+
+    // The master template handles any errors
+    return obs$;
+  }
+
+  public showMakeArchived = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ResourceDefinition', id) as ResourceDefinition;
+      return !!def && def.State !== 'Archived';
+    });
+  }
+
+  public hasStatePermission = (_: (number | string)[]) => this.ws.canDo('resource-definitions', 'State', null);
+
+  public stateTooltip = (ids: (number | string)[]) => this.hasStatePermission(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

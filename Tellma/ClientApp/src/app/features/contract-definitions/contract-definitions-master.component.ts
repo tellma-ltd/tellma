@@ -6,7 +6,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { ContractDefinition } from '~/app/data/entities/contract-definition';
 
 @Component({
   selector: 't-contract-definitions-master',
@@ -15,13 +15,13 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 })
 export class ContractDefinitionsMasterComponent extends MasterBaseComponent {
 
-  // private contractsDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private contractsDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-    // this.contractsDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
+    this.contractsDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
   }
 
   public get c() {
@@ -32,26 +32,58 @@ export class ContractDefinitionsMasterComponent extends MasterBaseComponent {
     return this.workspace.currentTenant;
   }
 
-  // public onActivate = (ids: (number | string)[]): Observable<any> => {
-  //   const obs$ = this.contractsDefinitionsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
-  //     tap(res => addToWorkspace(res, this.workspace))
-  //   );
+  // State Update
 
-  //   // The master template handles any errors
-  //   return obs$;
-  // }
+  public onMakeHidden = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.contractsDefinitionsApi.updateState(ids, { state: 'Hidden', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
 
-  // public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-  //   const obs$ = this.contractsDefinitionsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
-  //     tap(res => addToWorkspace(res, this.workspace))
-  //   );
+    // The master template handles any errors
+    return obs$;
+  }
 
-  //   // The master template handles any errors
-  //   return obs$;
-  // }
+  public showMakeHidden = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ContractDefinition', id) as ContractDefinition;
+      return !!def && def.State !== 'Hidden';
+    });
+  }
 
-  // public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('contract-definitions', 'IsActive', null);
+  public onMakeVisible = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.contractsDefinitionsApi.updateState(ids, { state: 'Visible', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
 
-  // public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
-  //   this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+    // The master template handles any errors
+    return obs$;
+  }
+
+  public showMakeVisible = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ContractDefinition', id) as ContractDefinition;
+      return !!def && def.State !== 'Visible';
+    });
+  }
+
+  public onMakeArchived = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.contractsDefinitionsApi.updateState(ids, { state: 'Archived', returnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
+
+    // The master template handles any errors
+    return obs$;
+  }
+
+  public showMakeArchived = (ids: (number | string)[]): boolean => {
+    return ids.some(id => {
+      const def = this.ws.get('ContractDefinition', id) as ContractDefinition;
+      return !!def && def.State !== 'Archived';
+    });
+  }
+
+  public hasStatePermission = (_: (number | string)[]) => this.ws.canDo('contract-definitions', 'State', null);
+
+  public stateTooltip = (ids: (number | string)[]) => this.hasStatePermission(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

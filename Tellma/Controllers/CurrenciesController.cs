@@ -65,14 +65,12 @@ namespace Tellma.Controllers
 
     public class CurrenciesService : CrudServiceBase<CurrencyForSave, Currency, string>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => CurrenciesController.BASE_ADDRESS;
 
-        public CurrenciesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public CurrenciesService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

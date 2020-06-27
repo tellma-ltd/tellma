@@ -110,9 +110,10 @@ WHEN NOT MATCHED BY TARGET THEN
 	) VALUES (
 		[Index], s.[DocumentDefinitionId], s.[MarkupTemplateId]
 	);
-
+	
 -- Signal clients to refresh their cache
-UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
+IF EXISTS (SELECT * FROM @IndexedIds I JOIN [dbo].[DocumentDefinitions] D ON I.[Id] = D.[Id] WHERE D.[State] <> N'Hidden')
+	UPDATE [dbo].[Settings] SET [DefinitionsVersion] = NEWID();
 
 IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;

@@ -62,14 +62,12 @@ namespace Tellma.Controllers
 
     public class UnitsService : CrudServiceBase<UnitForSave, Unit, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => UnitsController.BASE_ADDRESS;
 
-        public UnitsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public UnitsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

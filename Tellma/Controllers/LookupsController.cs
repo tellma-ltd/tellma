@@ -65,7 +65,6 @@ namespace Tellma.Controllers
     public class LookupsService : CrudServiceBase<LookupForSave, Lookup, int>
     {
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -104,14 +103,12 @@ namespace Tellma.Controllers
 
         public LookupsService(
             ILogger<LookupsController> logger,
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
             IHttpContextAccessor contextAccessor,
             IServiceProvider sp) : base(sp)
         {
             _logger = logger;
-            _localizer = localizer;
             _repo = repo;
             _definitionsCache = definitionsCache;
             _contextAccessor = contextAccessor;

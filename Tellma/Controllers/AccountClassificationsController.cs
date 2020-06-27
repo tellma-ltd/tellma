@@ -61,14 +61,12 @@ namespace Tellma.Controllers
 
     public class AccountClassificationsService : CrudTreeServiceBase<AccountClassificationForSave, AccountClassification, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => AccountClassificationsController.BASE_ADDRESS;
 
-        public AccountClassificationsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public AccountClassificationsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

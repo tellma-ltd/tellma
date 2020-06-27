@@ -40,13 +40,12 @@ namespace Tellma.Controllers
     public class SummaryEntriesService : FactServiceBase<SummaryEntry>
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ISettingsCache _settingsCache;
 
         private string View => SummaryEntriesController.BASE_ADDRESS;
 
-        private Dictionary<string, object> _parameterOverride = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _parameterOverride = new Dictionary<string, object>();
 
         public void SetParameter(string key, object value)
         {
@@ -60,13 +59,11 @@ namespace Tellma.Controllers
 
         public SummaryEntriesService(
             IHttpContextAccessor contextAccessor,
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             ISettingsCache settingsCache,
             IServiceProvider sp) : base(sp)
         {
             _contextAccessor = contextAccessor;
-            _localizer = localizer;
             _repo = repo;
             _settingsCache = settingsCache;
         }
@@ -91,9 +88,9 @@ namespace Tellma.Controllers
 
             if (_parameterOverride.TryGetValue(key, out object dateObj))
             {
-                if (dateObj is DateTime)
+                if (dateObj is DateTime castDate)
                 {
-                    date = (DateTime) dateObj;
+                    date = castDate;
                 }
                 else
                 {

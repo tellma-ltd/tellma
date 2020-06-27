@@ -6,7 +6,7 @@ import { EntityDescriptor, ChoicePropDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor, DefinitionCardinality, cardinalityPropDescriptor } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, lookupDefinitionIdPropDescriptor, DefinitionCardinality, cardinalityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 
 export interface ResourceDefinitionForSave extends EntityForSave {
@@ -225,6 +225,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
                 UnitCardinality: cardinalityPropDescriptor('ResourceDefinition_UnitCardinality', trx),
                 MonetaryValueVisibility: visibilityPropDescriptor('Resource_MonetaryValue', trx),
 
+                State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),

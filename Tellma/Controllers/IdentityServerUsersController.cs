@@ -52,7 +52,6 @@ namespace Tellma.Controllers
 
     public class IdentityServerUsersService : FactGetByIdServiceBase<IdentityServerUser, string>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly AdminRepository _adminRepo;
         private readonly IdentityRepository _idRepo;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
@@ -60,12 +59,10 @@ namespace Tellma.Controllers
         private string View => IdentityServerUsersController.BASE_ADDRESS;
 
         public IdentityServerUsersService(
-            IStringLocalizer<Strings> localizer,
             AdminRepository adminRepo,
             IdentityRepository idRepo,
             IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _localizer = localizer;
             _adminRepo = adminRepo;
             _idRepo = idRepo;
 

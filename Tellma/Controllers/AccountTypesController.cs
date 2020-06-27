@@ -62,14 +62,12 @@ namespace Tellma.Controllers
 
     public class AccountTypesService : CrudTreeServiceBase<AccountTypeForSave, AccountType, int>
     {
-        private readonly IStringLocalizer<Strings> _localizer;
         private readonly ApplicationRepository _repo;
 
         private string View => AccountTypesController.BASE_ADDRESS;
 
-        public AccountTypesService(IStringLocalizer<Strings> localizer, ApplicationRepository repo, IServiceProvider sp) : base(sp)
+        public AccountTypesService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
         }
 

@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { TranslateService } from '@ngx-translate/core';
-import { NumberPropDescriptor, ChoicePropDescriptor } from './metadata';
+import { NumberPropDescriptor, ChoicePropDescriptor, StatePropDescriptor } from './metadata';
 import { TenantWorkspace } from '../../workspace.service';
 
 // tslint:disable:max-line-length
@@ -33,6 +33,25 @@ export function cardinalityPropDescriptor(name: string, trx: TranslateService): 
         label: () => trx.instant(name),
         choices: ['None', 'Single', 'Multiple'],
         format: (c: string) => trx.instant('Cardinality_' + c)
+    };
+}
+/**
+ * Returns the PropDescriptor of a definition state property (Hidden, Visible or Archived)
+ */
+export function statePropDescriptor(trx: TranslateService): StatePropDescriptor {
+    return {
+        control: 'state',
+        label: () => trx.instant('Definition_State'),
+        choices: ['Hidden', 'Visible', 'Archived'],
+        format: (c: string) => trx.instant('Definition_State_' + c),
+        color: (c: string) => {
+            switch (c) {
+                case 'Hidden': return '#6c757d';
+                case 'Visible': return '#28a745';
+                case 'Archived': return '#dc3545';
+                default: return null;
+            }
+        }
     };
 }
 

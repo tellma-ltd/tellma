@@ -4981,6 +4981,57 @@ namespace Tellma.Data
             }
         }
 
+        public async Task<IEnumerable<ValidationError>> ContractDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ContractDefinitions_Validate__UpdateState)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task ContractDefinitions__UpdateState(List<int> ids, string state)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ContractDefinitions__UpdateState)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         #endregion
 
         #region ResourceDefinitions
@@ -5109,6 +5160,57 @@ namespace Tellma.Data
             }
         }
 
+        public async Task<IEnumerable<ValidationError>> ResourceDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(ResourceDefinitions_Validate__UpdateState)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task ResourceDefinitions__UpdateState(List<int> ids, string state)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(ResourceDefinitions__UpdateState)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         #endregion
 
         #region LookupDefinitions
@@ -5235,6 +5337,57 @@ namespace Tellma.Data
             {
                 throw new ForeignKeyViolationException();
             }
+        }
+
+        public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__UpdateState(List<int> ids, string state, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }), addIndex: true);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IndexedIdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+            cmd.Parameters.Add("@Top", top);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__UpdateState)}]";
+
+            // Execute
+            return await RepositoryUtilities.LoadErrors(cmd);
+        }
+
+        public async Task LookupDefinitions__UpdateState(List<int> ids, string state)
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using var cmd = conn.CreateCommand();
+
+            // Parameters
+            DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new IdListItem { Id = id }));
+            var idsTvp = new SqlParameter("@Ids", idsTable)
+            {
+                TypeName = $"[dbo].[IdList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            cmd.Parameters.Add(idsTvp);
+            cmd.Parameters.Add("@State", state);
+
+            // Command
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__UpdateState)}]";
+
+            // Execute
+            await cmd.ExecuteNonQueryAsync();
         }
 
         #endregion

@@ -239,7 +239,6 @@ namespace Tellma.Controllers
 
     public class DocumentsService : CrudServiceBase<DocumentForSave, Document, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly TemplateService _templateService;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
@@ -251,13 +250,12 @@ namespace Tellma.Controllers
         private readonly IHubContext<ServerNotificationsHub, INotifiedClient> _hubContext;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public DocumentsService(IStringLocalizer<Strings> localizer, TemplateService templateService,
+        public DocumentsService(TemplateService templateService,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
             IDefinitionsCache definitionsCache, ISettingsCache settingsCache, IClientInfoAccessor clientInfo,
             ITenantInfoAccessor tenantInfoAccessor, IServiceProvider sp,
             IHubContext<ServerNotificationsHub, INotifiedClient> hubContext, IHttpContextAccessor contextAccessor) : base(sp)
         {
-            _localizer = localizer;
             _templateService = templateService;
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
@@ -326,7 +324,7 @@ namespace Tellma.Controllers
 
         #region State & Workflow
 
-        public async Task<(List<Document>, Extras)> Assign(List<int> ids, [FromQuery] AssignArguments args)
+        public async Task<(List<Document>, Extras)> Assign(List<int> ids, AssignArguments args)
         {
             // User permissions
             // TODO: Check the user can read the document
@@ -469,27 +467,27 @@ namespace Tellma.Controllers
             }
         }
 
-        public async Task<(List<Document>, Extras)> Close(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Close(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Close));
         }
 
-        public async Task<(List<Document>, Extras)> Open(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Open(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Open));
         }
 
-        public async Task<(List<Document>, Extras)> Cancel(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Cancel(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Cancel));
         }
 
-        public async Task<(List<Document>, Extras)> Uncancel(List<int> ids, [FromQuery] ActionArguments args)
+        public async Task<(List<Document>, Extras)> Uncancel(List<int> ids, ActionArguments args)
         {
             return await UpdateDocumentState(ids, args, nameof(Uncancel));
         }
 
-        private async Task<(List<Document>, Extras)> UpdateDocumentState([FromBody] List<int> ids, [FromQuery] ActionArguments args, string transition)
+        private async Task<(List<Document>, Extras)> UpdateDocumentState(List<int> ids, ActionArguments args, string transition)
         {
             // Check user permissions
             await CheckActionPermissions("State", ids);
@@ -719,7 +717,7 @@ namespace Tellma.Controllers
             {
                 (prefix, DefinitionId.Value)
             };
-            return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, map);
+            return DocumentServiceUtil.SearchImpl(query, args, map);
         }
 
         protected override async Task<Extras> GetExtras(IEnumerable<Document> result, CancellationToken cancellation)
@@ -1806,7 +1804,7 @@ namespace Tellma.Controllers
                 .Select(e => (e.Value.Prefix, e.Key)) ?? // Select all (Prefix, DefinitionId)
                 new List<(string, int)>(); // Avoiding null reference exception at all cost
 
-            return DocumentServiceUtil.SearchImpl(query, args, filteredPermissions, prefixMap);
+            return DocumentServiceUtil.SearchImpl(query, args, prefixMap);
         }
 
         protected override OrderByExpression DefaultOrderBy()
@@ -1820,7 +1818,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions, IEnumerable<(string Prefix, int DefinitionId)> prefixMap)
+        internal static Query<Document> SearchImpl(Query<Document> query, GetArguments args, IEnumerable<(string Prefix, int DefinitionId)> prefixMap)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

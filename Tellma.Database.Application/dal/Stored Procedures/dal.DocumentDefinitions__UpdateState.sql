@@ -1,8 +1,8 @@
-﻿CREATE PROCEDURE [dal].[LookupDefinitions__UpdateState]
+﻿CREATE PROCEDURE [dal].[DocumentDefinitions__UpdateState]
 	@Ids [dbo].[IdList] READONLY,
 	@State NVARCHAR(50)
 AS
-	UPDATE [dbo].[LookupDefinitions]
+	UPDATE [dbo].[DocumentDefinitions]
 	SET [State] = @State
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 

@@ -98,19 +98,16 @@ namespace Tellma.Controllers
 
     public class MarkupTemplatesService : CrudServiceBase<MarkupTemplateForSave, MarkupTemplate, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly TemplateService _templateService;
 
         private string View => MarkupTemplatesController.BASE_ADDRESS;
 
         public MarkupTemplatesService(
-            IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             TemplateService templateService,
             IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
             _templateService = templateService;
         }

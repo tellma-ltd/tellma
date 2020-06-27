@@ -421,8 +421,17 @@
   <data name="DefaultError" xml:space="preserve">
     <value>发生未知故障。</value>
   </data>
+  <data name="Definition_Archive" xml:space="preserve">
+    <value>档案</value>
+  </data>
+  <data name="Definition_Hide" xml:space="preserve">
+    <value>隐藏</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>脚本</value>
+  </data>
+  <data name="Definition_Show" xml:space="preserve">
+    <value>表演</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>州</value>
@@ -885,6 +894,9 @@
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
     <value>该日期不能在未来</value>
+  </data>
+  <data name="Error_DefinitionInUse" xml:space="preserve">
+    <value>该定义已被使用，并且不能被隐藏</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>删除{0}不是从这个API的支持。</value>
@@ -1651,9 +1663,6 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>删除</value>
   </data>
-  <data name="Permission_DocumentState" xml:space="preserve">
-    <value>邮政/取消</value>
-  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>激活/停用</value>
   </data>
@@ -1674,6 +1683,9 @@
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>标志</value>
+  </data>
+  <data name="Permission_State" xml:space="preserve">
+    <value>邮政/取消</value>
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>更新</value>

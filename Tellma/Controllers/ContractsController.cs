@@ -73,7 +73,6 @@ namespace Tellma.Controllers
 
     public class ContractsService : CrudServiceBase<ContractForSave, Contract, int>
     {
-        private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
@@ -122,11 +121,10 @@ namespace Tellma.Controllers
 
         private string View => $"{ContractsController.BASE_ADDRESS}{DefinitionId}";
 
-        public ContractsService(IStringLocalizer<Strings> localizer, ApplicationRepository repo,
+        public ContractsService(ApplicationRepository repo,
             ITenantIdAccessor tenantIdAccessor, IBlobService blobService, IHttpContextAccessor contextAccessor,
             IDefinitionsCache definitionsCache, IServiceProvider sp) : base(sp)
         {
-            _localizer = localizer;
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
@@ -174,7 +172,7 @@ namespace Tellma.Controllers
 
         protected override Query<Contract> Search(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ContractServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ContractServiceUtil.SearchImpl(query, args);
         }
 
         protected override Task<List<ContractForSave>> SavePreprocessAsync(List<ContractForSave> entities)
@@ -427,7 +425,7 @@ namespace Tellma.Controllers
 
         protected override Query<Contract> Search(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ContractServiceUtil.SearchImpl(query, args, filteredPermissions);
+            return ContractServiceUtil.SearchImpl(query, args);
         }
     }
 
@@ -436,7 +434,7 @@ namespace Tellma.Controllers
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Contract> SearchImpl(Query<Contract> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        public static Query<Contract> SearchImpl(Query<Contract> query, GetArguments args)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))

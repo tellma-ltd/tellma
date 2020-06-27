@@ -421,8 +421,17 @@
   <data name="DefaultError" xml:space="preserve">
     <value>An unknown failure has occurred.</value>
   </data>
+  <data name="Definition_Archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="Definition_Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
   <data name="Definition_Script" xml:space="preserve">
     <value>Script</value>
+  </data>
+  <data name="Definition_Show" xml:space="preserve">
+    <value>Show</value>
   </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
@@ -885,6 +894,9 @@
   </data>
   <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
     <value>The date cannot be in the future.</value>
+  </data>
+  <data name="Error_DefinitionInUse" xml:space="preserve">
+    <value>The definition is already used and cannot be hidden</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>Deleting {0} is not supported from this API.</value>
@@ -1651,9 +1663,6 @@
   <data name="Permission_Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
-  <data name="Permission_DocumentState" xml:space="preserve">
-    <value>Close/Cancel</value>
-  </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>Activate/Deactivate</value>
   </data>
@@ -1674,6 +1683,9 @@
   </data>
   <data name="Permission_Sign" xml:space="preserve">
     <value>Sign</value>
+  </data>
+  <data name="Permission_State" xml:space="preserve">
+    <value>Update State</value>
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>Update</value>

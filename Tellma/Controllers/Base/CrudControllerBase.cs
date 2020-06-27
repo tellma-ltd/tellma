@@ -204,13 +204,11 @@ namespace Tellma.Controllers
         where TEntity : EntityWithKey<TKey>, new()
     {
         private readonly MetadataProvider _metadata;
-        private readonly IStringLocalizer _localizer;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IServiceProvider _sp;
 
         public CrudServiceBase(IServiceProvider sp) : base(sp)
         {
-            _localizer = sp.GetRequiredService<IStringLocalizer<Strings>>();
             _metadata = sp.GetRequiredService<MetadataProvider>();
             _tenantIdAccessor = sp.GetRequiredService<ITenantIdAccessor>();
             _sp = sp;
@@ -1205,7 +1203,7 @@ return the entities
 
         private class LabelPathTrie : Dictionary<string, LabelPathTrie>
         {
-            private HashSet<LabelPathProperty> _props = new HashSet<LabelPathProperty>();
+            private readonly HashSet<LabelPathProperty> _props = new HashSet<LabelPathProperty>();
 
             public void AddPath(IEnumerable<string> steps, string key, int index)
             {

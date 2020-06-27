@@ -108,17 +108,6 @@
                         }
                     },
                     new ViewInfo {
-                        Id = "lookup-definitions",
-                        Name = "LookupDefinitions",
-                        Read = true,
-                        Update = true,
-                        Delete = true,
-                        Actions = new ActionInfo[]
-                        {
-                            Li("UpdateState")
-                        }
-                    },
-                    new ViewInfo {
                         Id = "report-definitions",
                         Name = "ReportDefinitions",
                         Read = true,
@@ -126,7 +115,6 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
-                            Li("UpdateState")
                         }
                     },
                     new ViewInfo {
@@ -208,6 +196,7 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
+                            Li("State")
                         }
                     },
                     new ViewInfo
@@ -219,6 +208,7 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
+                            Li("State")
                         }
                     },
                     new ViewInfo
@@ -230,6 +220,7 @@
                         Delete = true,
                         Actions = new ActionInfo[]
                         {
+                            Li("State")
                         }
                     },
                     new ViewInfo {

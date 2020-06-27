@@ -6,7 +6,7 @@ import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor } from './base/definition-common';
+import { DefinitionState, mainMenuSectionPropDescriptor, mainMenuIconPropDescriptor, mainMenuSortKeyPropDescriptor, visibilityPropDescriptor, DefinitionCardinality, lookupDefinitionIdPropDescriptor, cardinalityPropDescriptor, statePropDescriptor } from './base/definition-common';
 import { DefinitionVisibility as Visibility } from './base/definition-common';
 
 export interface ContractDefinitionForSave extends EntityForSave {
@@ -211,6 +211,7 @@ export function metadata_ContractDefinition(wss: WorkspaceService, trx: Translat
                 BankAccountNumberVisibility: visibilityPropDescriptor('Contract_BankAccountNumber', trx),
                 UserCardinality: cardinalityPropDescriptor('ContractDefinition_UserCardinality', trx),
 
+                State: statePropDescriptor(trx),
                 MainMenuSection: mainMenuSectionPropDescriptor(trx),
                 MainMenuIcon: mainMenuIconPropDescriptor(trx),
                 MainMenuSortKey: mainMenuSortKeyPropDescriptor(trx),
