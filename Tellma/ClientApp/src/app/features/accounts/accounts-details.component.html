@@ -152,7 +152,7 @@
     <!-- Contract -->
     <t-form-group class="t-form-group" *ngIf="showContract(model)" [label]="labelContract(model)"
         [serverErrors]="model?.serverErrors?.ContractId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.Contract)?.DefinitionId"
+        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.ContractId)?.DefinitionId"
             [itemId]="model?.ContractId">
             <t-auto-cell collection="Account" path="Contract" [entity]="model">
             </t-auto-cell>

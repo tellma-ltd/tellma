@@ -3,7 +3,16 @@ import { HubConnectionBuilder, LogLevel, HubConnection, HubConnectionState } fro
 import { appsettings } from './global-resolver.guard';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { from, Observable, of, Subject } from 'rxjs';
-import { retry } from 'rxjs/operators';
+import { ApiService } from './api.service';
+import { WorkspaceService } from './workspace.service';
+import {
+  InboxNotification,
+  NotificationsNotification,
+  CacheNotification,
+  ServerNotificationSummary
+} from './dto/server-notification-summary';
+import { tap, catchError } from 'rxjs/operators';
+import { FriendlyError } from './util';
 
 /**
  * This is a wrapper around the SignalR library for two way real time communication with the server
@@ -19,17 +28,34 @@ export class ServerNotificationsService {
 
   private _connection: HubConnection;
   private _signedin = false;
-  private _tenantId: number; // The current tenantId
   private _inboxChanged$ = new Subject<InboxNotification>();
   private _notificationsChanged$ = new Subject<NotificationsNotification>();
   private _cacheInvalidated$ = new Subject<CacheNotification>();
+
+  private _currentTenantId;
 
   private state: {
     [tenantId: number]: TenantState;
   } = {};
 
-  constructor(private authStorage: OAuthStorage) { }
 
+  constructor(private authStorage: OAuthStorage, private api: ApiService, private ws: WorkspaceService) {
+    // Listen to workspace changes, if the tenantId changes, recap summary of the new tenant (if it isn't already fresh)
+    ws.stateChanged$.subscribe(() => {
+      if (ws.isApp && this._currentTenantId !== ws.ws.tenantId) {
+        this._currentTenantId = ws.ws.tenantId;
+
+        const tenantState = this.state[ws.ws.tenantId];
+        if (!tenantState || !tenantState.isFresh) {
+          this.recap();
+        }
+      }
+    });
+  }
+
+  /**
+   * Creates and configures the _connection object
+   */
   private initConnection() {
     if (!this._connection) {
       const url = appsettings.apiAddress + 'api/hubs/notifications';
@@ -50,6 +76,9 @@ export class ServerNotificationsService {
     }
   }
 
+  /**
+   * If the user is signed in this establishes the SignalR connection, or keeps trying relentlessly
+   */
   private async start(): Promise<void> {
     if (!this._signedin) {
       return;
@@ -59,11 +88,8 @@ export class ServerNotificationsService {
 
     try {
       await this._connection.start();
-      // this.workspace.offline = false;
+      // console.log('SignalR connection established');
     } catch (err) {
-      // this.workspace.offline = true;
-      // console.error('Error starting SignalR connection...');
-
       // Keep trying every second while the user is sigend in
       setTimeout(_ => this.start(), 1000);
     }
@@ -71,45 +97,50 @@ export class ServerNotificationsService {
     this.recap();
   }
 
+  private onclose = (err: Error): void => {
+    // console.error('SignalR connection closed unexpectedly: ', err);
+
+    // Mark all states as stale
+    for (const tenantId of Object.keys(this.state)) {
+      this.state[tenantId].isFresh = false;
+    }
+
+    // Try again
+    this.start();
+  }
+
   private async closeAndCleanup(): Promise<void> {
+    // console.log('SignalR: closeAndCleanup');
     try {
       await this._connection.stop();
     } finally {
       // Cleanup the state
-      delete this._tenantId;
       this.state = {};
     }
   }
 
   private recap = async () => {
+    if (!!this.ws.isApp && this._connection.state === HubConnectionState.Connected) {
+      this.api.notificationsRecap().pipe(
+        tap((summary: ServerNotificationSummary) => {
+          this.handleFreshInboxCountsAndNotify(summary.Inbox);
+          this.handleFreshNotificationsAndNotify(summary.Notifications);
 
-    if (!!this._tenantId && this._connection.state === HubConnectionState.Connected) {
-      try {
-        const summary: ServerNotificationSummary = await this._connection.invoke(MethodNames.RecapOf, { TenantId: this._tenantId });
-        this.handleFreshInboxCountsAndNotify(summary.Inbox);
-        this.handleFreshNotificationsAndNotify(summary.Notifications);
-      } catch (err) {
-        console.error(MethodNames.RecapOf + ' returned an Error...', err);
-      }
-    }
-  }
-
-  private onclose = (err: Error): void => {
-    if (!!err) {
-      // console.error('SignalR connection closed unexpectedly...');
-
-      // // Set offline
-      // this.workspace.offline = true;
-
-      // Mark all states as stale
-      for (const tenantId of Object.keys(this.state)) {
-        this.state[tenantId].isFresh = false;
-      }
-
-      // Try again
-      this.start();
-    } else {
-      // this.workspace.offline = false; // Offline is no longer tracked
+          // Mark the state of this tenant as fresh
+          const inbox = summary.Inbox;
+          const notifications = summary.Notifications;
+          if (!!inbox && !!notifications && inbox.TenantId === notifications.TenantId) {
+            const tenantState = this.state[summary.Inbox.TenantId];
+            if (!!tenantState) {
+              tenantState.isFresh = true;
+            }
+          }
+        }),
+        catchError((err: FriendlyError) => {
+          // console.error('Recap returned an Error...', err);
+          return of();
+        })
+      ).subscribe();
     }
   }
 
@@ -206,27 +237,15 @@ export class ServerNotificationsService {
   }
 
   /**
-   * Sets the current tenant Id and if the state of that tenant is stale recaps from the server
-   */
-  public connect(tenantId: number): Observable<void> {
-    if (this._tenantId !== tenantId) {
-      this._tenantId = tenantId;
-      const tenantState = this.state[tenantId];
-      if (!!tenantState && tenantState.isFresh) {
-        return of();
-      } else {
-        return from(this.recap());
-      }
-    } else {
-      return of();
-    }
-  }
-
-  /**
    * Returns the state of the last tenantId set with connect(tenantId)
    */
   public get tenantState(): TenantState {
-    return !!this._tenantId ? this.state[this._tenantId] : undefined;
+    if (this.ws.isApp) {
+      const tenantId = this.ws.ws.tenantId;
+      return this.state[tenantId];
+    }
+
+    return undefined;
   }
 
   /**
@@ -253,46 +272,10 @@ export class ServerNotificationsService {
 
 /////////////// DTOs
 
-interface ServerNotificationSummary {
-  Inbox: InboxNotification;
-  Notifications: NotificationsNotification;
-}
-
-interface InboxNotification extends TenantNotification {
-  Count?: number;
-  UnknownCount?: number;
-  UpdateInboxList?: boolean;
-}
-
-interface NotificationsNotification extends TenantNotification {
-  Count?: number;
-  UnknownCount?: number;
-}
-
-interface CacheNotification extends TenantNotification {
-  Type: CacheType;
-}
-
-export type CacheType = 'Definitions' | 'Settings' | 'Permissions' | 'UserSettings';
-
 enum MethodNames {
-  RecapOf = 'RecapOf',
   UpdateInbox = 'UpdateInbox',
   UpdateNotifications = 'UpdateNotifications',
   InvalidateCache = 'InvalidateCache',
-}
-
-interface TenantNotification {
-
-  /**
-   * The server time when the notification occurred
-   */
-  ServerTime: string;
-
-  /**
-   * The tenant Id that this event is associated with
-   */
-  TenantId: number;
 }
 
 export interface TenantState {

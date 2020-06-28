@@ -22,6 +22,7 @@ using Microsoft.Extensions.Primitives;
 using Tellma.Controllers.Templating;
 using System.Text;
 using Tellma.Entities.Descriptors;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -690,7 +691,7 @@ namespace Tellma.Controllers
             var permissions = (await _repo.UserPermissions(action, View, cancellation)).ToList();
 
             // Add a special permission that lets you see the documents that were assigned to you
-            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions());
+            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions(action));
 
             return permissions;
         }
@@ -1790,7 +1791,7 @@ namespace Tellma.Controllers
             }
 
             // Add a special permission that lets you see the documents that were assigned to you
-            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions());
+            permissions.AddRange(DocumentServiceUtil.HardCodedPermissions(action));
 
             // Return the massaged permissions
             return permissions;
@@ -1874,20 +1875,21 @@ namespace Tellma.Controllers
             return query;
         }
 
-        internal static IEnumerable<AbstractPermission> HardCodedPermissions()
+        internal static IEnumerable<AbstractPermission> HardCodedPermissions(string action)
         {
-            // If someone assigns the document to you, you can read it
-            // and forward it to someone else, until it either gets modified
-            // or forwarded again (the second condition so that you can 
-            // refresh the document immediately after forwarding)
-            //yield return new AbstractPermission
-            //{
-            //    View = "documents", // Not important
-            //    Action = "Read",
-            //    Criteria = "AssigneeId eq me OR (AssignedById eq me AND ModifiedAt lt AssignedAt)"
-            //};
-
-            return new List<AbstractPermission>();
+            if (action == Constants.Read)
+            {
+                // If someone assigns the document to you, you can read it
+                // and forward it to someone else, until it either gets
+                // forwarded again (the second condition so that you can 
+                // refresh the document immediately after forwarding)
+                yield return new AbstractPermission
+                {
+                    View = "documents", // Not important
+                    Action = Constants.Read,
+                    Criteria = "AssigneeId eq me OR AssignedById eq me"
+                };
+            }
         }
     }
 }

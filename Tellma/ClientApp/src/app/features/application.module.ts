@@ -592,7 +592,7 @@ const DEFAULT_ACE_CONFIG: AceConfigInterface = {
     RouterModule.forChild(routes),
     AceModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyDYbuDK2rxW4IVe4AsGdjvGnt2fJ83U4RU'
+      apiKey: '<Google Maps API Key Here>'
     })
   ],
   providers: [

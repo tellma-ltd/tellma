@@ -375,7 +375,7 @@ namespace Tellma.Data.Queries
             {
                 var navProps = descriptor.NavigationProperties.Where(p => allIdEntities.ContainsKey(p.Type));
 
-                var entitiesOfType = allEntities[descriptor.Type];
+                var entitiesOfType = allEntities.GetValueOrDefault(descriptor.Type) ?? new List<Entity>();
                 foreach (var entity in entitiesOfType)
                 {
                     foreach (var navProp in navProps)

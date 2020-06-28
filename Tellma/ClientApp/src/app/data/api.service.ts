@@ -62,6 +62,7 @@ import { Agent } from './entities/agent';
 import { StatementArguments } from './dto/statement-arguments';
 import { StatementResponse } from './dto/statement-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
+import { ServerNotificationSummary } from './dto/server-notification-summary';
 
 
 @Injectable({
@@ -73,6 +74,21 @@ export class ApiService {
 
   // Will abstract away standard API calls for CRUD operations
   constructor(public http: HttpClient, public trx: TranslateService) { }
+
+  // Notifications
+
+  public notificationsRecap() {
+    // This call occurs automatically when the computer becomes online again,
+    // So it should be unobtrusive, ie. doesn't update user activity
+    const url = appsettings.apiAddress + 'api/notifications/recap?unobtrusive=true';
+    const obs$ = this.http.get<ServerNotificationSummary>(url).pipe(
+      catchError(error => {
+        const friendlyError = friendlify(error, this.trx);
+        return throwError(friendlyError);
+      }));
+
+    return obs$;
+  }
 
   // Admin
 

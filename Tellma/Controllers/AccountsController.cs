@@ -64,14 +64,12 @@ namespace Tellma.Controllers
         private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.AccountPaths());
 
         private readonly ApplicationRepository _repo;
-        private readonly ISettingsCache _settingsCache;
 
         private string View => AccountsController.BASE_ADDRESS;
 
-        public AccountsService(ApplicationRepository repo, ISettingsCache settingsCache, IServiceProvider sp) : base(sp)
+        public AccountsService(ApplicationRepository repo, IServiceProvider sp) : base(sp)
         {
             _repo = repo;
-            _settingsCache = settingsCache;
         }
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action, CancellationToken cancellation)

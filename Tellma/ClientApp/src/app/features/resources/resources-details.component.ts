@@ -627,4 +627,14 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public isView(view: 'map' | 'json'): boolean {
     return this.locationView === view;
   }
+
+  public savePreprocessing = (entity: ResourceForSave) => {
+    // Server validation on hidden properties will be confusing to the user
+    const def = this.definition;
+    if (def.ResidualValueVisibility === 'Required') {
+      if (!this.ResidualValue_isVisible(entity) && !!entity.ResidualMonetaryValue) {
+        entity.ResidualValue = entity.ResidualMonetaryValue;
+      }
+    }
+  }
 }

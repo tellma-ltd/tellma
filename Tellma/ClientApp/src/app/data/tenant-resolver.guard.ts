@@ -134,9 +134,6 @@ export class TenantResolverGuard implements CanActivate {
         // set the Tenant ID
         this.workspace.setTenantId(tenantId);
 
-        // connect to this tenant Id
-        this.notificationsService.connect(tenantId);
-
         // take a concrete reference just in case it changes
         const current = this.workspace.currentTenant;
 
