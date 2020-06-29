@@ -1850,4 +1850,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountTypeCenterTypes]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="990f7924-f169-401e-8d28-087b406df703" ChangeDateTime="06/28/2020 06:54:22">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[IsVisibleInTemplate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[VisibleState]" />
+  </Operation>
 </Operations>

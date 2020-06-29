@@ -7,13 +7,13 @@ Entry Type - Account Type - Center - Currency - Contract Definition - Agent
 	INSERT INTO @Accounts([Index],
 		[Code], [AccountTypeId],				[ClassificationId],		[ContractDefinitionId],	[ResourceDefinitionId],	[Name],							[CurrencyId],	[CenterId],		[EntryTypeId],		[ContractId]) VALUES
 	-- Assets Accounts
---	(10,N'12001',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittings,	N'Fixtures and fittings',		@USD,			NULL,			@@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
-	(11,N'12002',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,	N'Office equipment',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
-	(12,N'12003',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,	N'Comp. equip. & acc.',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
+--	(10,N'12001',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittingsMemberRD,	N'Fixtures and fittings',		@USD,			NULL,			@@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
+	(11,N'12002',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentMemberRD,	N'Office equipment',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
+	(12,N'12003',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentMemberRD,	N'Comp. equip. & acc.',			@USD,			NULL,			@AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment,		NULL),
 
---	(310,N'12011',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittings,	N'Acc. Dep.- Fixtures and fittings',@USD,		NULL,			@PPEDepreciations,	NULL),
-	(311,N'12012',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,	N'Acc. Dep.- Office equipment',	@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
-	(312,N'12013',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentRD,	N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
+--	(310,N'12011',@FixturesAndFittings,			@NonCurrentAssets_AC,	NULL,					@FixturesAndFittingsMemberRD,	N'Acc. Dep.- Fixtures and fittings',@USD,		NULL,			@PPEDepreciations,	NULL),
+	(311,N'12012',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentMemberRD,	N'Acc. Dep.- Office equipment',	@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
+	(312,N'12013',@OfficeEquipment,				@NonCurrentAssets_AC,	NULL,					@OfficeEquipmentMemberRD,	N'Acc. Dep.- Comp. equip. & acc.',@USD,			NULL,			@DepreciationPropertyPlantAndEquipment,	NULL),
 
 	(15,N'11201',@CurrentTradeReceivables,		@Debtors_AC,			@CustomerCD,			NULL,					N'Trade Receivables',			NULL,			@C101_INV,		NULL,				NULL),
 --	(18,N'11208',@employeeADef,					@Debtors_AC,			@CurrentTradeReceivables,NULL,					N'Employees Expenditures',		NULL,			@C101_INV,		NULL,				NULL),

@@ -20,15 +20,12 @@
 (1142, 114, N'1142', N'Sundry Debtors', @SundryDebtorsExtension),
 (116, 11, N'116', N'Current tax assets, current', @CurrentTaxAssetsCurrent),
 (117, 11, N'117', N'Current inventories', @Inventories),
-(1171, 117, N'1171', N'Current raw materials and current production supplies', @CurrentRawMaterialsAndCurrentProductionSupplies),
-(1172, 117, N'1172', N'Current merchandise', @Merchandise),
-(1173, 117, N'1173', N'Current work in progress', @WorkInProgress),
-(1174, 117, N'1174', N'Current finished goods', @FinishedGoods),
-(1175, 117, N'1175', N'Current packaging and storage materials', @CurrentPackagingAndStorageMaterials),
-(1176, 117, N'1176', N'Current spare parts', @SpareParts),
-(1177, 117, N'1177', N'Current inventories in transit', @CurrentInventoriesInTransit),
+(1171, 117, N'1171', N'Current inventories held for sale', @CurrentInventoriesHeldForSale),
+(1172, 117, N'1172', N'Current work in progress', @WorkInProgress),
+(1173, 117, N'1173', N'Current materials and supplies', @CurrentMaterialsAndSuppliesToBeConsumedInProductionProcessOrRenderingServices),
+(1178, 117, N'1178', N'Current inventories in transit', @CurrentInventoriesInTransit),
 (1179, 117, N'1179', N'Other current inventories', @OtherInventories),
-(119, 11, N'119', N'Non-current assets or disposal groups classified as held for sale or as held for distribution to owners', @NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners),
+(119, 11, N'119', N'Non-current assets held for sale or distribution', @NoncurrentAssetsOrDisposalGroupsClassifiedAsHeldForSaleOrAsHeldForDistributionToOwners),
 (12, 1, N'12', N'Non-current assets', @NoncurrentAssets),
 (121, 12, N'121', N'Property, plant and equipment', @PropertyPlantAndEquipment),
 (1211, 121, N'1211', N'Land and buildings', @LandAndBuildings),
@@ -37,7 +34,7 @@
 (1214, 121, N'1214', N'Fixtures and fittings', @FixturesAndFittings),
 (1215, 121, N'1215', N'Office equipment', @OfficeEquipment),
 (1217, 121, N'1217', N'Construction in progress', @ConstructionInProgress),
-(1218, 121, N'1218', N'Owner-occupied property measured using investment property fair value model', @OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel),
+(1218, 121, N'1218', N'Owner-occupied property', @OwneroccupiedPropertyMeasuredUsingInvestmentPropertyFairValueModel),
 (1219, 121, N'1219', N'Other property, plant and equipment', @OtherPropertyPlantAndEquipment),
 (122, 12, N'122', N'Investment property', @InvestmentProperty),
 (123, 12, N'123', N'Investments accounted for using equity method', @InvestmentAccountedForUsingEquityMethod),
@@ -116,6 +113,7 @@
 (52, 5, N'52', N'Other gains (losses)', @OtherGainsLosses),
 (521, 52, N'521', N'Gain (loss) on disposal of property, plant and equipment', @GainLossOnDisposalOfPropertyPlantAndEquipmentExtension),
 (522, 52, N'522', N'Gain (loss) on foreign exchange', @GainLossOnForeignExchangeExtension),
+(53, 5, N'53', N'Expenses from other than operating activites', NULL),
 (7, NULL, N'7', N'Control Accounts', @ControlAccountsExtension),
 (7100, 7, N'7100', N'Document Control', @DocumentControlExtension),
 (7200, 7, N'7200', N'Final account control', @FinalAccountsControlExtension)
@@ -157,10 +155,7 @@ DECLARE @AC117 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] =
 DECLARE @AC1171 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1171');
 DECLARE @AC1172 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1172');
 DECLARE @AC1173 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1173');
-DECLARE @AC1174 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1174');
-DECLARE @AC1175 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1175');
-DECLARE @AC1176 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1176');
-DECLARE @AC1177 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1177');
+DECLARE @AC1178 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1178');
 DECLARE @AC1179 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'1179');
 DECLARE @AC119 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'119');
 DECLARE @AC12 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'12');
@@ -250,6 +245,7 @@ DECLARE @AC519 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] =
 DECLARE @AC52 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'52');
 DECLARE @AC521 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'521');
 DECLARE @AC522 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'522');
+DECLARE @AC53 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'53');
 DECLARE @AC7 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7');
 DECLARE @AC7100 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7100');
 DECLARE @AC7200 INT = (SELECT [Id] FROM dbo.AccountClassifications WHERE [Code] = N'7200');

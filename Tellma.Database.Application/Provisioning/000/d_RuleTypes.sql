@@ -1,10 +1,9 @@
-﻿IF NOT EXISTS (SELECT * FROM dbo.RuleTypes)
+﻿-- Rules for signing
 INSERT INTO dbo.RuleTypes([RuleType]) VALUES
 (N'ByContract'),
 (N'ByRole'),
 (N'ByUser'),
 (N'Public'); 
 
-IF NOT EXISTS (SELECT * FROM dbo.PredicateTypes)
 INSERT INTO dbo.PredicateTypes([PredicateType]) VALUES
 (N'ValueGreaterOrEqual');

@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryAccountTypes LineDefinitionEntryAccountTypeList READONLY,
 	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
@@ -175,7 +174,7 @@ SET NOCOUNT ON;
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.[ResourceDefinitionId]	= s.[ResourceDefinitionId]) THEN
 		UPDATE SET
-			t.[ResourceDefinitionId]			= s.[ResourceDefinitionId],
+			t.[ResourceDefinitionId]	= s.[ResourceDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
@@ -198,7 +197,7 @@ SET NOCOUNT ON;
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.[ContractDefinitionId]	= s.[ContractDefinitionId]) THEN
 		UPDATE SET
-			t.[ContractDefinitionId]			= s.[ContractDefinitionId],
+			t.[ContractDefinitionId]	= s.[ContractDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
@@ -221,7 +220,7 @@ SET NOCOUNT ON;
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.[NotedContractDefinitionId]	= s.[NotedContractDefinitionId]) THEN
 		UPDATE SET
-			t.[NotedContractDefinitionId]			= s.[NotedContractDefinitionId],
+			t.[NotedContractDefinitionId]= s.[NotedContractDefinitionId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
@@ -242,10 +241,10 @@ SET NOCOUNT ON;
 			LDC.[Label],
 			LDC.[Label2],
 			LDC.[Label3],
+			LDC.[VisibleState],
 			LDC.[RequiredState],
 			LDC.[ReadOnlyState],
-			LDC.[InheritsFromHeader],
-			LDC.[IsVisibleInTemplate]
+			LDC.[InheritsFromHeader]
 		FROM @LineDefinitionColumns LDC
 		JOIN @Entities LD ON LDC.HeaderIndex = LD.[Index]
 		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
@@ -259,16 +258,16 @@ SET NOCOUNT ON;
 			t.[Label]			= s.[Label],
 			t.[Label2]			= s.[Label2],
 			t.[Label3]			= s.[Label3],
+			t.[VisibleState]	= s.[VisibleState],
 			t.[RequiredState]	= s.[RequiredState],
 			t.[ReadOnlyState]	= s.[ReadOnlyState],
 			t.[InheritsFromHeader]=s.[InheritsFromHeader],
-			t.[IsVisibleInTemplate]=s.[IsVisibleInTemplate],
 			t.[SavedById]		= @UserId
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3],	[RequiredState], [ReadOnlyState], [InheritsFromHeader], [IsVisibleInTemplate])
-		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader],s.[IsVisibleInTemplate]);
+		INSERT ([LineDefinitionId],		[Index],	[ColumnName],	[EntryIndex], [Label],	[Label2],	[Label3], [VisibleState],	[RequiredState], [ReadOnlyState], [InheritsFromHeader])
+		VALUES (s.[LineDefinitionId], s.[Index], s.[ColumnName], s.[EntryIndex], s.[Label], s.[Label2], s.[Label3],s.[VisibleState], s.[RequiredState], s.[ReadOnlyState], s.[InheritsFromHeader]);
 
 	MERGE [dbo].[LineDefinitionStateReasons] AS t
 	USING (
@@ -283,7 +282,7 @@ SET NOCOUNT ON;
 		FROM @LineDefinitionStateReasons LDSR
 		JOIN @Entities LD ON LDSR.HeaderIndex = LD.[Index]
 		JOIN @LineDefinitionsIndexedIds II ON LD.[Index] = II.[Index]
-	)AS s
+	) AS s
 	ON s.Id = t.Id
 	WHEN MATCHED THEN
 		UPDATE SET

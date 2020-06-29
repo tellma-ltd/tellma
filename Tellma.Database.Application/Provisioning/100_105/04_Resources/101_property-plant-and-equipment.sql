@@ -22,7 +22,7 @@ BEGIN
 	(0, 2, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 3, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
-		@DefinitionId = @ComputerEquipmentRD,
+		@DefinitionId = @ComputerEquipmentMemberRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -84,7 +84,7 @@ INSERT INTO @Resources ([Index],
 	(0, 12, dbo.fn_UnitName__Id(N'yr'),	1),
 	(0, 13, dbo.fn_UnitName__Id(N'yr'),	1);
 	EXEC [api].[Resources__Save]
-		@DefinitionId = @PropertyPlantAndEquipmentRD,
+		@DefinitionId = @OtherPropertyPlantAndEquipmentMemberRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

@@ -191,6 +191,7 @@ export function mainMenuIconPropDescriptor(trx: TranslateService): ChoicePropDes
           'save',
           'scroll',
           'search',
+          'search-dollar',
           'seedling',
           'share-square',
           'share',

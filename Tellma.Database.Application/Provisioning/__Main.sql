@@ -1,6 +1,9 @@
 ﻿:r .\000\a_Declarations.sql
 :r .\000\b_AdminUser.sql
-:r .\000\c_Roles.sql
+IF @OverwriteDb = 0 RETURN
+
+
+
 :r .\000\d_RuleTypes.sql
 :r .\000\e_EntryTypes.sql
 
@@ -19,13 +22,9 @@
 :r .\000\q_ReportDefinitions.sql
 :r .\000\r_AccountClassifications.sql
 
+:r .\000\y_Roles.sql
 :r .\000\z_Translations.sql
 
-IF @DB = N'ZZZ'
-BEGIN
-	:r .\03_Basic\b_Units.sql
-
-END
 IF @DB IN (N'100', N'101', N'102', N'103', N'104', N'105')
 BEGIN
 	:r .\100_105\00_Setup\Script.sql
@@ -34,6 +33,7 @@ BEGIN
 
 	:r .\100_105\02_Basic\a_Lookups.sql
 	:r .\100_105\02_Basic\b_Centers.sql
+	:r .\100_105\02_Basic\c_Units.sql
 
 	:r .\100_105\04_Resources\101_property-plant-and-equipment.sql
 	:r .\100_105\04_Resources\101_employee-benefits.sql
@@ -75,6 +75,7 @@ END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
 	:r .\106\00_Setup\Script.sql
+	RETURN
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
 
@@ -113,7 +114,7 @@ BEGIN
 	:r .\107\05_Contracts\06_Suppliers.sql
 	:r .\107\05_Contracts\07_Creditors.sql
 	:r .\107\05_Contracts\08_Employees.sql
-	:r .\107\06_Accounts\b_Accounts.sql
+	--:r .\107\06_Accounts\b_Accounts.sql
 END
 IF @DB = N'108' -- SSIA - HG, SDG, en/ar
 BEGIN

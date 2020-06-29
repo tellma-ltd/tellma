@@ -124,14 +124,6 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
-	-- Must have at least one unit
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
-		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_AtLeastOneUnitIsRequired'
-	FROM @Entities FE 
-	WHERE ([Index] NOT IN (SELECT HeaderIndex FROM @ResourceUnits));
-
 	-- TODO: if units have standard conversion rates, reject any attempt to change them
 	-- TODO: Add bll.Resources__Preprocess, to update the units with 
 

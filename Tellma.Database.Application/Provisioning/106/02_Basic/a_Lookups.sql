@@ -7,7 +7,7 @@ INSERT INTO @Lookups([Index],[Name],[Name2]) VALUES
 (3, N'Others', N'ሌሎች');
 
 EXEC [api].Lookups__Save
-@DefinitionId = @GrainGroupLKD,
+@DefinitionId = @GrainClassificationLKD,
 @Entities = @Lookups,
 @ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

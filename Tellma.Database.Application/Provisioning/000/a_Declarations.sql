@@ -7,7 +7,7 @@
 	DECLARE @SecondaryLanguageId NVARCHAR(5)		= N'$(SecondaryLanguageId)'; --N'en';
 	DECLARE @TernaryLanguageId NVARCHAR(5)			= N'$(TernaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
-	DECLARE @ProvisionData BIT						= CAST('$(ProvisionData)' AS BIT); -- 1 or 0
+	DECLARE @OverwriteDb BIT						=CAST(N'$(OverwriteDB)' AS BIT);
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 -- Because there is no way to pass the NULL value to 
@@ -43,7 +43,6 @@
 	DECLARE @LineDefinitions dbo.LineDefinitionList;
 	DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
 	DECLARE @LineDefinitionEntries dbo.LineDefinitionEntryList;
-	DECLARE @LineDefinitionEntryAccountTypes LineDefinitionEntryAccountTypeList;
 	DECLARE @LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList;
 	DECLARE @LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList;
 	DECLARE @LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList;
