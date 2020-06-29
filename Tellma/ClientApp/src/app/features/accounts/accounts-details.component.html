@@ -72,7 +72,8 @@
             <t-auto-cell collection="Account" path="Classification" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId">
+        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId"
+            additionalSelect="AccountTypeParentId">
         </t-account-classifications-picker>
     </t-form-group>
 
@@ -84,7 +85,7 @@
             </t-auto-cell>
         </t-view-link>
         <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
-            [additionalSelect]="accountTypeAdditionalSelect">
+            [additionalSelect]="accountTypeAdditionalSelect" [filter]="filterAccountType(model)">
         </t-account-types-picker>
     </t-form-group>
 
@@ -103,8 +104,8 @@
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
         [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
         <div *ngIf="!isEdit">{{ formatResourceDefinitionId(model.ResourceDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId" [choices]="choicesResourceDefinitionId(model)"
-            (ngModelChange)="onResourceDefinitionChange($event, model)">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ResourceDefinitionId"
+            [choices]="choicesResourceDefinitionId(model)" (ngModelChange)="onResourceDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
@@ -144,8 +145,8 @@
     <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
         [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
         <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId" [choices]="choicesContractDefinitionId(model)"
-            (ngModelChange)="onContractDefinitionChange($event, model)">
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId"
+            [choices]="choicesContractDefinitionId(model)" (ngModelChange)="onContractDefinitionChange($event, model)">
         </t-selector>
     </t-form-group>
 
