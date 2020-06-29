@@ -103,8 +103,21 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
     }
   }
 
+  public onEditDefinition = (_: Lookup) => {
+    const ws = this.workspace;
+    ws.isEdit = true;
+    this.router.navigate(['../../../lookup-definitions', this.definitionId], { relativeTo: this.route })
+      .then(success => {
+        if (!success) {
+          delete ws.isEdit;
+        }
+      })
+      .catch(() => delete ws.isEdit);
+  }
+
   public showActivate = (model: Lookup) => !!model && !model.IsActive;
   public showDeactivate = (model: Lookup) => !!model && model.IsActive;
+  public showEditDefinition = (_: Lookup) => this.ws.canDo('lookup-definitions', 'Update', null);
 
   public canActivateDeactivateItem = (model: Lookup) => this.ws.canDo(this.view, 'IsActive', model.Id);
 

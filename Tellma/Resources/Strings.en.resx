@@ -898,6 +898,9 @@
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>The definition is already used and cannot be hidden</value>
   </data>
+  <data name="Error_DefinitionIsArchived" xml:space="preserve">
+    <value>This screen definition is archived.</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>Deleting {0} is not supported from this API.</value>
   </data>
@@ -1689,9 +1692,6 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>Update</value>
-  </data>
-  <data name="Permission_UpdateState" xml:space="preserve">
-    <value>Update State</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>View</value>

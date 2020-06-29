@@ -22,7 +22,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 })
 export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  // private contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
@@ -87,23 +87,8 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    // this.contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
+    this.contractDefinitionsApi = this.api.contractDefinitionsApi(this.notifyDestruct$);
   }
-
-  // get centerTypeChoices(): SelectorChoice[] {
-
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return getChoices(descriptor);
-  // }
-
-  // public centerTypeLookup(value: string): string {
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return descriptor.format(value);
-  // }
 
   public get ws() {
     return this.workspace.currentTenant;
@@ -372,4 +357,38 @@ export class ContractDefinitionsDetailsComponent extends DetailsBaseComponent {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }
+
+  // State Management
+  public onMakeHidden = (model: ContractDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Hidden') {
+      this.contractDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeVisible = (model: ContractDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Visible') {
+      this.contractDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeArchived = (model: ContractDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Archived') {
+      this.contractDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public showMakeHidden = (model: ContractDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeVisible = (model: ContractDefinition) => !!model && model.State !== 'Visible';
+  public showMakeArchived = (model: ContractDefinition) => !!model && model.State !== 'Archived';
+
+  public hasStatePermission = (model: ContractDefinition) => this.ws.canDo('contract-definitions', 'State', model.Id);
+
+  public stateTooltip = (model: ContractDefinition) => this.hasStatePermission(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

@@ -898,6 +898,9 @@
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>هذا التعريف مستخدم حاليا ولا يمكن إخفاءه</value>
   </data>
+  <data name="Error_DefinitionIsArchived" xml:space="preserve">
+    <value>تعريف هذه الشاشة مؤرشف.</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>حذف {0} ليس مدعوما من هذه الواجهة</value>
   </data>
@@ -1689,9 +1692,6 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>تعديل</value>
-  </data>
-  <data name="Permission_UpdateState" xml:space="preserve">
-    <value>تعديل الحالة</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>الواجهة</value>

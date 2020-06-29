@@ -21,7 +21,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 // Those are incremented when the structure of the definition changes
 export const SETTINGS_METAVERSION = '1.3';
-export const DEFINITIONS_METAVERSION = '2.7';
+export const DEFINITIONS_METAVERSION = '2.8';
 export const PERMISSIONS_METAVERSION = '1.0';
 export const USER_SETTINGS_METAVERSION = '1.0';
 
@@ -133,9 +133,6 @@ export class TenantResolverGuard implements CanActivate {
       if (!!tenantId) {
         // set the Tenant ID
         this.workspace.setTenantId(tenantId);
-
-        // connect to this tenant Id
-        this.notificationsService.connect(tenantId);
 
         // take a concrete reference just in case it changes
         const current = this.workspace.currentTenant;

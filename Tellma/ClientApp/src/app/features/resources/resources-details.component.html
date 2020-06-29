@@ -1,7 +1,7 @@
 <t-details *ngIf="found;else pageNotFound" collection="Resource" [definitionId]="definitionId" [createFunc]="create"
     [cloneFunc]="clone" [expand]="expand" [mode]="mode" [additionalSelect]="additionalSelect"
     [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
-    [actions]="[
+    [savePreprocessing]="savePreprocessing" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: editDefinition, action: onEditDefinition, showAction: showEditDefinition }
@@ -93,6 +93,20 @@
         <t-units-picker *ngIf="isEdit" [ngModel]="getUnitId(model)" (ngModelChange)="setUnitId(model, $event)"
             [required]="true">
         </t-units-picker>
+    </t-form-group>
+
+    <!-- MonetaryValue -->
+    <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
+        [serverErrors]="model?.serverErrors?.MonetaryValue">
+        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
+            <div>
+                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
+            </div>
+        </t-restricted>
+        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
+            [maxDecimalPlaces]="MonetaryValue_decimals(model)">
+        </t-decimal-editor>
     </t-form-group>
 
     <!-- Currency -->
@@ -345,20 +359,6 @@
         <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.ResidualValue" [ngModelOptions]="{ updateOn: 'blur' }"
             [required]="ResidualValue_isRequired" [minDecimalPlaces]="functionalDecimals"
             [maxDecimalPlaces]="functionalDecimals">
-        </t-decimal-editor>
-    </t-form-group>
-
-    <!-- MonetaryValue -->
-    <t-form-group *ngIf="MonetaryValue_isVisible" class="t-form-group" [label]="MonetaryValue_label"
-        [serverErrors]="model?.serverErrors?.MonetaryValue">
-        <t-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
-            <div>
-                {{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}
-            </div>
-        </t-restricted>
-        <t-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
-            [maxDecimalPlaces]="MonetaryValue_decimals(model)">
         </t-decimal-editor>
     </t-form-group>
 

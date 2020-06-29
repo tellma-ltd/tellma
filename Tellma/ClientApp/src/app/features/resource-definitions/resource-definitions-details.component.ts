@@ -22,7 +22,7 @@ import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 })
 export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  // private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
@@ -87,23 +87,8 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    // this.resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$);
+    this.resourceDefinitionsApi = this.api.resourceDefinitionsApi(this.notifyDestruct$);
   }
-
-  // get centerTypeChoices(): SelectorChoice[] {
-
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return getChoices(descriptor);
-  // }
-
-  // public centerTypeLookup(value: string): string {
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return descriptor.format(value);
-  // }
 
   public get ws() {
     return this.workspace.currentTenant;
@@ -383,4 +368,38 @@ export class ResourceDefinitionsDetailsComponent extends DetailsBaseComponent {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }
+
+  // State Management
+  public onMakeHidden = (model: ResourceDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Hidden') {
+      this.resourceDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeVisible = (model: ResourceDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Visible') {
+      this.resourceDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeArchived = (model: ResourceDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Archived') {
+      this.resourceDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public showMakeHidden = (model: ResourceDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeVisible = (model: ResourceDefinition) => !!model && model.State !== 'Visible';
+  public showMakeArchived = (model: ResourceDefinition) => !!model && model.State !== 'Archived';
+
+  public hasStatePermission = (model: ResourceDefinition) => this.ws.canDo('resource-definitions', 'State', model.Id);
+
+  public stateTooltip = (model: ResourceDefinition) => this.hasStatePermission(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

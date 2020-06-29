@@ -8,7 +8,7 @@ namespace Tellma.Entities
     // Note: The permissions is a semi-weak entity, meaning it does not have its own screen or API
     // Permissions are always retrieved and saved as a child collection of some other strong entity
     // We call it "semi"- weak because it comes associated with more than one strong entity
-    [EntityDisplay(Singular = "Permission", Plural = "Permissions")]
+    [EntityDisplay(Singular = "Permission", Plural = "Permissions")] 
     public class AdminPermissionForSave : EntityWithKey<int>
     {
         [Display(Name = "Permission_View")]

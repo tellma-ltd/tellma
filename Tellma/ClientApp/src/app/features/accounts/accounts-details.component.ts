@@ -12,6 +12,7 @@ import { Resource } from '~/app/data/entities/resource';
 import { AccountType } from '~/app/data/entities/account-type';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Contract } from '~/app/data/entities/contract';
+import { AccountClassification } from '~/app/data/entities/account-classification';
 
 @Component({
   selector: 't-accounts-details',
@@ -82,17 +83,6 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   public activateDeprecateTooltip = (model: Account) => this.canActivateDeprecateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
-
-
-  private accountType(model: AccountForSave): AccountType {
-    if (!model) {
-      return null;
-    }
-
-    return this.ws.get('AccountType', model.AccountTypeId) as AccountType;
-  }
-
-  /////////////// New stuff
 
   // CenterId
 
@@ -308,7 +298,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return !!accountType && !!accountType.EntryTypeParentId;
   }
 
-  public filterEntryType(model: AccountForSave) {
+  public filterEntryType(model: AccountForSave): string {
     let result = 'IsAssignable eq true';
     const accountType = this.accountType(model);
     if (!!accountType && !!accountType.EntryTypeParentId) {
@@ -316,6 +306,16 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     }
 
     return result;
+  }
+
+  // Account Type
+
+  private accountType(model: AccountForSave): AccountType {
+    if (!model) {
+      return null;
+    }
+
+    return this.ws.get('AccountType', model.AccountTypeId) as AccountType;
   }
 
   public get accountTypeAdditionalSelect(): string {
@@ -330,6 +330,16 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       // Just the account screen, get what the account screen needs
       return defaultSelect;
     }
+  }
+
+  public filterAccountType(model: AccountForSave): string {
+    // Add account type parent Id from classification
+    const classification = this.ws.get('AccountClassification', model.ClassificationId) as AccountClassification;
+    if (!!classification && !!classification.AccountTypeParentId) {
+      return `Node descof ${classification.AccountTypeParentId}`;
+    }
+
+    return '';
   }
 
   public get resourceAdditionalSelect(): string {

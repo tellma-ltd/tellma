@@ -82,7 +82,6 @@ namespace Tellma
 
                 // More custom services
                 services.AddBlobService(_config);
-                // services.AddDefinitionsModelMetadata();
                 services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
@@ -179,7 +178,7 @@ namespace Tellma
                 });
 
                 // Adds and configures SignalR
-                services.AddSignalRImplementation(_env);
+                services.AddSignalRImplementation(_config, _env);
 
                 // Add service for generating markup from templates
                 services.AddMarkupTemplates();

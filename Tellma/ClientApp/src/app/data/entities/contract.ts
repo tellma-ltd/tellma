@@ -162,6 +162,11 @@ export function metadata_Contract(wss: WorkspaceService, trx: TranslateService, 
       }
     } else {
 
+      // Definition specific adjustments
+      if (definition.State === 'Archived') {
+          entityDesc.isArchived = true;
+      }
+
       delete entityDesc.properties.DefinitionId;
       delete entityDesc.properties.Definition;
 

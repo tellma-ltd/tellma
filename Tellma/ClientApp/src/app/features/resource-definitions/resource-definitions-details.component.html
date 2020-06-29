@@ -1,8 +1,17 @@
 <t-details collection="ResourceDefinition" [createFunc]="create" [cloneFunc]="clone" [expand]="expand" [mode]="mode"
     [additionalSelect]="additionalSelect" [masterCrumb]="'ResourceDefinitions' | translate"
     [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document" layout="full-screen"
-    [actions]="[]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
+    [actions]="[
+        { template: makeHidden, action: onMakeHidden, showAction: showMakeHidden, canAction: hasStatePermission, actionTooltip: stateTooltip },
+        { template: makeVisible, action: onMakeVisible, showAction: showMakeVisible, canAction: hasStatePermission, actionTooltip: stateTooltip },
+        { template: makeArchived, action: onMakeArchived, showAction: showMakeArchived, canAction: hasStatePermission, actionTooltip: stateTooltip }
+    ]" [isInactive]="isInactive" theme="dark" [savePreprocessing]="savePreprocessing">
 </t-details>
+
+<!-- Actions -->
+<ng-template #makeHidden> {{ 'Definition_Hide' | translate }} </ng-template>
+<ng-template #makeVisible> {{ 'Definition_Show' | translate }} </ng-template>
+<ng-template #makeArchived> {{ 'Definition_Archive' | translate }} </ng-template>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
@@ -414,9 +423,28 @@
         <!-- Preview Pane -->
         <div class="d-flex flex-column flex-grow-1">
             <!-- Header -->
-            <div class="t-dark t-text-whitish d-flex justify-content-between" *ngIf="isEdit">
+            <div class="t-dark t-text-whitish d-flex justify-content-between">
                 <div class="p-2 px-3">
                     <span>{{ 'Preview' | translate }}</span>
+                </div>
+                <div class="d-flex small" *ngIf="!isEdit">
+                    <!-- Hidden -->
+                    <div class="p-2 px-3" [class.t-pointer]="model.State !== 'Hidden'"
+                        [class.t-less-dark]="model.State === 'Hidden'" (click)="onMakeHidden(model)">
+                        <span class="t-vertical-align-middle">{{ 'Definition_State_Hidden' | translate }}</span>
+                    </div>
+
+                    <!-- Visible -->
+                    <div class="p-2 px-3" [class.t-pointer]="model.State !== 'Visible'"
+                        [class.t-less-dark]="model.State === 'Visible'" (click)="onMakeVisible(model)">
+                        <span class="t-vertical-align-middle">{{ 'Definition_State_Visible' | translate }}</span>
+                    </div>
+
+                    <!-- Archived -->
+                    <div class="p-2 px-3" [class.t-pointer]="model.State !== 'Archived'"
+                        [class.t-less-dark]="model.State === 'Archived'" (click)="onMakeArchived(model)">
+                        <span class="t-vertical-align-middle">{{ 'Definition_State_Archived' | translate }}</span>
+                    </div>
                 </div>
             </div>
 

@@ -1,7 +1,7 @@
 import { ReportOrderDirection, Aggregation, ReportType, ChartType, Modifier } from '../entities/report-definition';
 import { LineState } from '../entities/line';
 import { MarkupTemplateUsage } from '../entities/markup-template';
-import { DefinitionVisibility as Visibility, DefinitionCardinality } from '../entities/base/definition-common';
+import { DefinitionVisibility as Visibility, DefinitionCardinality, DefinitionState } from '../entities/base/definition-common';
 
 // tslint:disable:variable-name
 export interface DefinitionsForClient {
@@ -30,6 +30,7 @@ export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
     TitlePlural: string;
     TitlePlural2: string;
     TitlePlural3: string;
+    State: DefinitionState;
 }
 
 export interface ReportDefinitionForClient extends DefinitionForClient {

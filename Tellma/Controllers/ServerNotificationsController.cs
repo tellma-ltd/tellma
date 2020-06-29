@@ -1,22 +1,31 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tellma.Controllers.Dto;
 using Tellma.Data;
 using Tellma.Services.ApiAuthentication;
+using Tellma.Services.MultiTenancy;
 
 namespace Tellma.Controllers
 {
+    [Route("api/notifications")]
     [AuthorizeAccess]
-    public class ServerNotificationsHub : Hub<INotifiedClient>
+    [ApplicationController(allowUnobtrusive: true)]
+    [ApiController]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public class ServerNotificationsController : ControllerBase
     {
         private readonly ApplicationRepository _repo;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
 
-        public ServerNotificationsHub(ApplicationRepository repo)
+        public ServerNotificationsController(ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor)
         {
             _repo = repo;
+            _tenantIdAccessor = tenantIdAccessor;
         }
 
         /// <summary>
@@ -24,27 +33,16 @@ namespace Tellma.Controllers
         /// it invokes this method to catch up on what it has missed
         /// </summary>
         /// <returns>A summary of what the client has missed</returns>
-        public async Task<ServerNotificationSummary> RecapOf(RecapArguments args)
+        [HttpGet("recap")]
+        public async Task<ServerNotificationSummary> Recap(CancellationToken cancellation)
         {
             var serverTime = DateTimeOffset.UtcNow;
-            var tenantId = args.TenantId;
-            if (tenantId == 0)
-            {
-                throw new BadRequestException("TenantId is required");
-            }
+            var userInfo = await _repo.GetUserInfoAsync(cancellation);
 
-            await _repo.InitConnectionAsync(tenantId, setLastActive: false, cancellation: default);
+            var userIdSingleton = new List<int> { userInfo.UserId.Value };
+            var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation)).FirstOrDefault();
 
-            var userInfo = await _repo.GetUserInfoAsync(cancellation: default);
-            var userId = userInfo?.UserId;
-            if (userId == null)
-            {
-                throw new BadRequestException($"User is not a member of company {tenantId}");
-            }
-
-            var userIdSingleton = new List<int> { userId.Value };
-            var info = (await _repo.InboxCounts__Load(userIdSingleton, cancellation: default)).FirstOrDefault();
-
+            var tenantId = _tenantIdAccessor.GetTenantId();
             return new ServerNotificationSummary
             {
                 Inbox = new InboxNotification
@@ -66,7 +64,12 @@ namespace Tellma.Controllers
             };
         }
     }
-    
+
+    [AuthorizeAccess]
+    public class ServerNotificationsHub : Hub<INotifiedClient>
+    {
+    }
+
     public static class ServerNotificationsHubExtensions
     {
         public static async Task NotifyInboxAsync(this IHubContext<ServerNotificationsHub, INotifiedClient> hub, int tenantId, IEnumerable<InboxNotificationInfo> infos, bool updateInboxList = true)

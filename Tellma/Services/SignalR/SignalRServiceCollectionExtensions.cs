@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using System;
@@ -10,8 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SignalRServiceCollectionExtensions
     {
-
-        public static IServiceCollection AddSignalRImplementation(this IServiceCollection services, IWebHostEnvironment env)
+        public static IServiceCollection AddSignalRImplementation(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
         {
             if (services == null)
             {
@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             // For real-time notifications
-            services.AddSignalR(opt =>
+            var bldr = services.AddSignalR(opt =>
             {
                 // Configures SignalR to return the full error to the client in a development environment
                 opt.EnableDetailedErrors = env.IsDevelopment();
@@ -29,6 +29,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Keep property names unchanged when sending payloads
                 opt.PayloadSerializerOptions.PropertyNamingPolicy = null;
             });
+
+            // Add azure service if a connection string is supplied
+            var azureSignalRConnectionString = config?.GetSection("Azure")?.GetSection("SignalR")?.GetValue<string>("ConnectionString");
+            if (!string.IsNullOrWhiteSpace(azureSignalRConnectionString))
+            {
+                bldr.AddAzureSignalR(azureSignalRConnectionString);
+            }
+
 
             // Retrieve the UserId from the JWT Subject claim, rather than the default
             services.AddSingleton<IUserIdProvider, SubjectBasedUserIdProvider>();
@@ -47,9 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return app.Use(async (context, next) =>
             {
-
-                if (context.Request.Path.StartsWithSegments("/api/hubs") &&
-                    context.Request.Headers["Authorization"].Count == 0 &&
+                if (context.Request.Headers["Authorization"].Count == 0 &&
                     context.Request.Query.TryGetValue("access_token", out StringValues accessToken) &&
                     !string.IsNullOrWhiteSpace(accessToken))
                 {

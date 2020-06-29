@@ -206,7 +206,7 @@
     <value>从账户</value>
   </data>
   <data name="Assignment_Document" xml:space="preserve">
-    <value>文件</value>
+    <value>文献</value>
   </data>
   <data name="Assignment_E" xml:space="preserve">
     <value>从入门</value>
@@ -897,6 +897,9 @@
   </data>
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>该定义已被使用，并且不能被隐藏</value>
+  </data>
+  <data name="Error_DefinitionIsArchived" xml:space="preserve">
+    <value>此屏幕定义归档。</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>删除{0}不是从这个API的支持。</value>
@@ -1689,9 +1692,6 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>更新</value>
-  </data>
-  <data name="Permission_UpdateState" xml:space="preserve">
-    <value>更新状态</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>视图</value>
