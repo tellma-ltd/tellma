@@ -75,7 +75,6 @@ END
 IF @DB = N'106' -- Soreti, ETB, en/am
 BEGIN
 	:r .\106\00_Setup\Script.sql
-	RETURN
 	:r .\106\01_Security\a_Users.sql
 	:r .\106\01_Security\b_Permissions.sql
 
