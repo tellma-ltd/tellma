@@ -9,9 +9,9 @@
 	[Label]					NVARCHAR (50),
 	[Label2]				NVARCHAR (50),
 	[Label3]				NVARCHAR (50),
+	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0,
+	[VisibleState]			SMALLINT		NOT NULL DEFAULT 0,
 	[RequiredState]			SMALLINT		NOT NULL DEFAULT 4,
 	[ReadOnlyState]			SMALLINT		NOT NULL DEFAULT 4,
-	[InheritsFromHeader]	BIT				NOT NULL DEFAULT 0,
-	[IsVisibleInTemplate]	BIT				NOT NULL DEFAULT 1,
-	CHECK ([IsVisibleInTemplate] = 1 OR [RequiredState] > 2)
+	CHECK ([VisibleState] <= [RequiredState] AND [RequiredState] <= [ReadOnlyState])
 );

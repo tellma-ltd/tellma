@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ResourceDefinitions]
 (
 	[Id]								INT				CONSTRAINT [PK_ResourceDefinitions] PRIMARY KEY IDENTITY,
-	[Code]								NVARCHAR (50)	NOT NULL CONSTRAINT [UX_ResourceDefinitions] UNIQUE,
+	[Code]								NVARCHAR (255)	NOT NULL CONSTRAINT [UX_ResourceDefinitions] UNIQUE,
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),
 	[TitleSingular3]					NVARCHAR (255),

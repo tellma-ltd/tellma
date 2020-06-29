@@ -42,6 +42,12 @@ BEGIN
 	INSERT INTO @D SELECT * FROM @Documents;
 	INSERT INTO @L SELECT * FROM @Lines;
 	INSERT INTO @E SELECT * FROM @Entries;
+
+	IF (SELECT COUNT(*) FROM dbo.Centers WHERE CenterType = N'Segment' AND IsActive = 1) = 1
+	BEGIN
+		DECLARE @SegmentId INT = (SELECT [Id] FROM dbo.Centers WHERE CenterType = N'Segment' AND IsActive = 1);
+		UPDATE @D SET [SegmentId] = @SegmentId
+	END
 BEGIN
 --	Overwrite input with data specified in the template (or clause)
 	UPDATE E

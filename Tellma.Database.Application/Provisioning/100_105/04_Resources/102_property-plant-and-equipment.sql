@@ -12,7 +12,7 @@ BEGIN
 	(0, 1, dbo.fn_UnitName__Id(N'yr'),	1);
 
 	EXEC [api].[Resources__Save]
-		@DefinitionId = @PropertyPlantAndEquipmentRD,
+		@DefinitionId = @OtherPropertyPlantAndEquipmentMemberRD,
 		@Entities = @Resources,
 		@ResourceUnits = @ResourceUnits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

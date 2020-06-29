@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [dbo].[ResourceDefinitionList] AS TABLE (
 	[Index]								INT				PRIMARY KEY,
 	[Id]								INT				NOT NULL DEFAULT 0,
-	[Code]								NVARCHAR (50)	NOT NULL UNIQUE,
+	[Code]								NVARCHAR (255)	NOT NULL UNIQUE,
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),
 	[TitleSingular3]					NVARCHAR (255),

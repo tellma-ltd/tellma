@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [api].[LineDefinitions__Save]
 	@Entities [LineDefinitionList] READONLY,
 	@LineDefinitionEntries [LineDefinitionEntryList] READONLY,
-	@LineDefinitionEntryAccountTypes LineDefinitionEntryAccountTypeList READONLY,
 	@LineDefinitionEntryContractDefinitions LineDefinitionEntryContractDefinitionList READONLY,
 	@LineDefinitionEntryResourceDefinitions LineDefinitionEntryResourceDefinitionList READONLY,
 	@LineDefinitionEntryNotedContractDefinitions LineDefinitionEntryNotedContractDefinitionList READONLY,
@@ -19,7 +18,6 @@ SET NOCOUNT ON;
 	EXEC [bll].[LineDefinitions_Validate__Save]
 		@Entities = @Entities,
 		@LineDefinitionEntries = @LineDefinitionEntries,
-		@LineDefinitionEntryAccountTypes = @LineDefinitionEntryAccountTypes,
 		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
@@ -41,7 +39,6 @@ SET NOCOUNT ON;
 
 	EXEC [dal].[LineDefinitions__Save]
 		@Entities = @Entities,
-		@LineDefinitionEntryAccountTypes = @LineDefinitionEntryAccountTypes,
 		@LineDefinitionEntryContractDefinitions = @LineDefinitionEntryContractDefinitions,
 		@LineDefinitionEntryResourceDefinitions = @LineDefinitionEntryResourceDefinitions,
 		@LineDefinitionEntryNotedContractDefinitions = @LineDefinitionEntryNotedContractDefinitions,
