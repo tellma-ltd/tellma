@@ -80,6 +80,7 @@ namespace Tellma.Controllers
         {
             return new LookupDefinitionForClient
             {
+                State = def.State,
                 Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
@@ -97,6 +98,7 @@ namespace Tellma.Controllers
         {
             return new ContractDefinitionForClient
             {
+                State = def.State,
                 Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
@@ -191,6 +193,7 @@ namespace Tellma.Controllers
         {
             return new ResourceDefinitionForClient
             {
+                State = def.State,
                 Code = def.Code,
                 MainMenuIcon = def.MainMenuIcon,
                 MainMenuSortKey = def.MainMenuSortKey ?? 0m,
@@ -439,6 +442,7 @@ namespace Tellma.Controllers
         {
             var result = new DocumentDefinitionForClient
             {
+                State = def.State,
                 Code = def.Code,
                 IsOriginalDocument = def.IsOriginalDocument ?? false,
                 DocumentType = def.DocumentType.Value,

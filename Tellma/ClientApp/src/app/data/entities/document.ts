@@ -182,6 +182,12 @@ export function metadata_Document(wss: WorkspaceService, trx: TranslateService, 
                 console.error(`defintionId '${definitionId}' doesn't exist`);
             }
         } else {
+
+            // Definition specific adjustments
+            if (definition.State === 'Archived') {
+                entityDesc.isArchived = true;
+            }
+
             const props = entityDesc.properties;
             delete props.DefinitionId;
             delete props.Definition;

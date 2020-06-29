@@ -178,6 +178,11 @@ export interface EntityDescriptor {
      * True for entities that belong to the admin workspace
      */
     isAdmin?: boolean;
+
+    /**
+     * True for definitioned screens that are archived
+     */
+    isArchived?: boolean;
 }
 
 export interface ParameterDescriptor {

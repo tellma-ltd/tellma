@@ -21,7 +21,7 @@ import { NgControl } from '@angular/forms';
 })
 export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
 
-  // private lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$); // for intellisense
+  private lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
 
@@ -78,23 +78,8 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
-    // this.lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$);
+    this.lookupDefinitionsApi = this.api.lookupDefinitionsApi(this.notifyDestruct$);
   }
-
-  // get centerTypeChoices(): SelectorChoice[] {
-
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return getChoices(descriptor);
-  // }
-
-  // public centerTypeLookup(value: string): string {
-  //   const descriptor = metadata_Center(this.workspace, this.translate)
-  //     .properties.CenterType as ChoicePropDescriptor;
-
-  //   return descriptor.format(value);
-  // }
 
   public get ws() {
     return this.workspace.currentTenant;
@@ -215,4 +200,38 @@ export class LookupDefinitionsDetailsComponent extends DetailsBaseComponent {
     model.MainMenuIcon = icon.value;
     this.onDefinitionChange(model, 'MainMenuSortKey');
   }
+
+  // State Management
+  public onMakeHidden = (model: LookupDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Hidden') {
+      this.lookupDefinitionsApi.updateState([model.Id], { state: 'Hidden', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeVisible = (model: LookupDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Visible') {
+      this.lookupDefinitionsApi.updateState([model.Id], { state: 'Visible', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public onMakeArchived = (model: LookupDefinition): void => {
+    if (!!model && !!model.Id && model.State !== 'Archived') {
+      this.lookupDefinitionsApi.updateState([model.Id], { state: 'Archived', returnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+    }
+  }
+
+  public showMakeHidden = (model: LookupDefinition) => !!model && model.State !== 'Hidden';
+  public showMakeVisible = (model: LookupDefinition) => !!model && model.State !== 'Visible';
+  public showMakeArchived = (model: LookupDefinition) => !!model && model.State !== 'Archived';
+
+  public hasStatePermission = (model: LookupDefinition) => this.ws.canDo('lookup-definitions', 'State', model.Id);
+
+  public stateTooltip = (model: LookupDefinition) => this.hasStatePermission(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

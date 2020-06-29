@@ -14,6 +14,7 @@ using Tellma.Data.Queries;
 using Tellma.Entities;
 using Tellma.Services.BlobStorage;
 using Tellma.Services.MultiTenancy;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -178,6 +179,13 @@ namespace Tellma.Controllers
         protected override Task<List<ContractForSave>> SavePreprocessAsync(List<ContractForSave> entities)
         {
             var def = Definition();
+
+            // Creating new entities forbidden if the definition is archived
+            if (entities.Any(e => e?.Id == 0) && def.State == DefStates.Archived) // Insert
+            {
+                var msg = _localizer["Error_DefinitionIsArchived"];
+                throw new BadRequestException(msg);
+            }
 
             // ... Any definition defaults will go here
 

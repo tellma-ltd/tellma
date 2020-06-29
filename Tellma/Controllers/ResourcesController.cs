@@ -199,6 +199,13 @@ namespace Tellma.Controllers
         {
             var def = Definition();
 
+            // Creating new entities forbidden if the definition is archived
+            if (entities.Any(e => e?.Id == 0) && def.State == DefStates.Archived) // Insert
+            {
+                var msg = _localizer["Error_DefinitionIsArchived"];
+                throw new BadRequestException(msg);
+            }
+
             // Set default values
             //SetDefaultValue(entities, e => e.Identifier, def.IdentifierDefaultValue);
             //SetDefaultValue(entities, e => e.CurrencyId, def.CurrencyDefaultValue);

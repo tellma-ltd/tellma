@@ -898,6 +898,9 @@
   <data name="Error_DefinitionInUse" xml:space="preserve">
     <value>ትርጓሜ ቀደም ሲል ጥቅም ላይ ውሏል እናም ሊደበቅ አይችልም</value>
   </data>
+  <data name="Error_DefinitionIsArchived" xml:space="preserve">
+    <value>ይህ ማያ ገጽ ትርጉም በማህደር ነው.</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>{0} መሰረዝ ይሂ ኤፒአይ አይደገፍም።</value>
   </data>
@@ -1689,9 +1692,6 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>አዘምን</value>
-  </data>
-  <data name="Permission_UpdateState" xml:space="preserve">
-    <value>አዘምን ግዛት</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>ዕይታ</value>

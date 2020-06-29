@@ -67,6 +67,7 @@ namespace Tellma.Controllers.Dto
         public string TitlePlural { get; set; }
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
+        public string State { get; set; }
     }
 
     ///////////////////// Report Definitions

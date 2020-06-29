@@ -771,12 +771,17 @@ export class DetailsComponent implements OnInit, OnDestroy, DoCheck, ICanDeactiv
     return this.workspace.current.canCreate(this.view);
   }
 
+  private get notArchived(): boolean {
+    return !this.entityDescriptor.isArchived;
+  }
+
   get canCreate(): boolean {
-    return this.canCreatePermissions;
+    return this.canCreatePermissions && this.notArchived;
   }
 
   get createTooltip(): string {
-    return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    return !this.canCreatePermissions ? this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions') :
+      !this.notArchived ? this.translate.instant('Error_DefinitionIsArchived') : '';
   }
 
   onClone(): void {

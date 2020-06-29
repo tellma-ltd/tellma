@@ -86,8 +86,8 @@ namespace Tellma.Controllers.ImportExport
                             var keyStringValue = fkProp.KeyPropertyMetadata.Format(keyValue);
                             if (string.IsNullOrWhiteSpace(keyStringValue))
                             {
-                                var stringId = navEntity.GetId()?.ToString() ?? throw new InvalidOperationException($"Bug: Entity with key of type {navEntity.GetType().Name} was loaded without its Id");
-                                keyStringValue = $"_____{stringId}"; // Ensures that if entity is not null, the key value is also not null, otherwise the import might be different
+                                // var stringId = navEntity.GetId()?.ToString() ?? throw new InvalidOperationException($"Bug: Entity with key of type {navEntity.GetType().Name} was loaded without its Id");
+                                keyStringValue = $"(undefined)"; // Ensures that if entity is not null, the key value is also not null, otherwise the import might be different
                             }
                             dataRow[fkProp.Index] = keyStringValue;
                         }

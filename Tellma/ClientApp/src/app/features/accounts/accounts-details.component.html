@@ -65,6 +65,17 @@
         </t-text-editor>
     </t-form-group>
 
+    <!-- Classification -->
+    <t-form-group class="t-form-group" [label]="'Account_Classification' | translate"
+        [serverErrors]="model?.serverErrors?.ClassificationId">
+        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.ClassificationId">
+            <t-auto-cell collection="Account" path="Classification" [entity]="model">
+            </t-auto-cell>
+        </t-view-link>
+        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId">
+        </t-account-classifications-picker>
+    </t-form-group>
+
     <!-- Type -->
     <t-form-group class="t-form-group" [label]="'Account_Type' | translate"
         [serverErrors]="model?.serverErrors?.AccountTypeId">
@@ -75,17 +86,6 @@
         <t-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" required
             [additionalSelect]="accountTypeAdditionalSelect">
         </t-account-types-picker>
-    </t-form-group>
-
-    <!-- Classification -->
-    <t-form-group class="t-form-group" [label]="'Account_Classification' | translate"
-        [serverErrors]="model?.serverErrors?.ClassificationId">
-        <t-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.ClassificationId">
-            <t-auto-cell collection="Account" path="Classification" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ClassificationId">
-        </t-account-classifications-picker>
     </t-form-group>
 
     <!-- Center -->

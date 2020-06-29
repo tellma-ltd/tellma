@@ -370,20 +370,41 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return !!this.entityDescriptor().definitionIds;
   }
 
+  /**
+   * If the api is definitioned, and definitionIds was not supplied, this method returns the
+   * full list of definitionIds form the definitions, otherwise returns the supplied list
+   */
   private get allDefinitionIds(): number[] {
     // If the api is definitioned, and definitionIds was not supplied, this method
     // Returns the full list of definitionIds form the definitions, otherwise returns the supplied list
     if (this.isDefinitioned) { // Definitioned API
       if (!this.definitionIds || this.definitionIds.filter(e => !!e).length === 0) { // The definitionId were not specified
-        return this.entityDescriptor().definitionIds;
+        return this.entityDescriptor().definitionIds || [];
+      } else {
+        return this.definitionIds.filter(e => !!e);
       }
+    } else {
+      return [];
     }
-
-    return this.definitionIds.filter(e => !!e);
   }
 
   private get definitionIdsSingleOrDefault(): number {
     const defIds = this.allDefinitionIds;
+    return !!defIds && defIds.length === 1 ? defIds[0] : null;
+  }
+
+  /**
+   * Returns all definition Ids (restricted by any input) that are not archived
+   */
+  private get createDefinitionIds(): number[] {
+    return this.allDefinitionIds.filter(defId => {
+      const desc = this.entityDescriptor(defId);
+      return !!desc && !desc.isArchived;
+    });
+  }
+
+  private get createDefinitionIdsSingleOrDefault(): number {
+    const defIds = this.createDefinitionIds;
     return !!defIds && defIds.length === 1 ? defIds[0] : null;
   }
 
@@ -442,7 +463,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       }
     }
 
-    // Add definition filter, if any
+    // If all definitions are there, this isn't needed
+    // If only a single definition is there, this also isn't needed
+    // This is only needed if the allowed definitions are more than 1 but less than total
     if (this.isDefinitioned &&
       !this.definitionIdsSingleOrDefault &&
       !!this.definitionIds &&
@@ -623,7 +646,9 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public get showCreateNew(): boolean {
-    return !!this.detailsTemplate && (this.showNoItemsFound || this.showResults);
+    return !!this.detailsTemplate &&
+      (this.showNoItemsFound || this.showResults) &&
+      (!this.isDefinitioned || this.createOptions.length > 0); // If the entity is definitioned, we need at least one definition
   }
 
   public get highlightCreateNew(): boolean {
@@ -644,7 +669,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   private get canCreateNewInner(): boolean {
     if (this.isDefinitioned) {
-      const defId = this.definitionIdsSingleOrDefault;
+      const defId = this.createDefinitionIdsSingleOrDefault;
       if (!!defId) {
         return this.hasCreatePermissions(defId);
       } else {
@@ -775,12 +800,15 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   // Create Modal
 
+  /**
+   * Strictly the options that appear in the create modal
+   */
   public get createOptions(): number[] {
-    return this.allDefinitionIds;
+    return this.createDefinitionIds || []; // Ones that you can't create will appear but will be disabled
   }
 
   private openCreateModal = () => {
-    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault) {
+    if (this.createOptions.length > 1) {
       // Without the setTimeout it misbehaves when createFromFocus,
       // applying the Enter press on the modal itself
       setTimeout(() => {
@@ -799,7 +827,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     } else {
       // get the first one or null
-      this.openCreateModalInner(this.definitionIdsSingleOrDefault);
+      this.openCreateModalInner(this.createOptions[0]);
     }
   }
 

@@ -96,6 +96,9 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
             }
         } else {
             // Definition specific adjustments
+            if (definition.State === 'Archived') {
+                entityDesc.isArchived = true;
+            }
         }
 
         _cache[key] = entityDesc;

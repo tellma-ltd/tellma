@@ -12,6 +12,7 @@ using Tellma.Controllers.Utilities;
 using Tellma.Data;
 using Tellma.Data.Queries;
 using Tellma.Entities;
+using Tellma.Services.Utilities;
 
 namespace Tellma.Controllers
 {
@@ -152,6 +153,21 @@ namespace Tellma.Controllers
         {
             return LookupServiceUtil.SearchImpl(query, args, filteredPermissions);
 
+        }
+
+
+        protected override Task<List<LookupForSave>> SavePreprocessAsync(List<LookupForSave> entities)
+        {
+            var def = Definition();
+
+            // Creating new entities forbidden if the definition is archived
+            if (entities.Any(e => e?.Id == 0) && def.State == DefStates.Archived) // Insert
+            {
+                var msg = _localizer["Error_DefinitionIsArchived"];
+                throw new BadRequestException(msg);
+            }
+
+            return Task.FromResult(entities);
         }
 
         protected override async Task SaveValidateAsync(List<LookupForSave> entities)

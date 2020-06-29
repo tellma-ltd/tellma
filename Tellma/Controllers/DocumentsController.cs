@@ -760,6 +760,14 @@ namespace Tellma.Controllers
         protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> docs)
         {
             var docDef = Definition();
+
+            // Creating new entities forbidden if the definition is archived
+            if (docs.Any(e => e?.Id == 0) && docDef.State == DefStates.Archived) // Insert
+            {
+                var msg = _localizer["Error_DefinitionIsArchived"];
+                throw new BadRequestException(msg);
+            }
+
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
             var functionalId = settings.FunctionalCurrencyId;
 
