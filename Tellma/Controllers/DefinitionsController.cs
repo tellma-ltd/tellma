@@ -414,7 +414,6 @@ namespace Tellma.Controllers
                     ReadOnlyState = c.ReadOnlyState,
                     RequiredState = c.RequiredState,
                     InheritsFromHeader = c.InheritsFromHeader == false ? null : c.InheritsFromHeader,
-                    IsVisibleInTemplate = c.IsVisibleInTemplate == false ? null : c.IsVisibleInTemplate
                 })?.ToList() ?? new List<LineDefinitionColumnForClient>(),
 
                 StateReasons = def.StateReasons?.Select(r => new LineDefinitionStateReasonForClient

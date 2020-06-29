@@ -299,7 +299,6 @@ namespace Tellma.Controllers.Dto
         public short? RequiredState { get; set; }
         public short? ReadOnlyState { get; set; }
         public bool? InheritsFromHeader { get; set; }
-        public bool? IsVisibleInTemplate { get; set; }
     }
 
     public class LineDefinitionStateReasonForClient

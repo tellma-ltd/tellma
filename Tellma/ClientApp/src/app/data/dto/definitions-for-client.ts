@@ -243,7 +243,6 @@ export interface LineDefinitionColumnForClient {
     RequiredState?: number;
     ReadOnlyState?: LineState;
     InheritsFromHeader?: boolean;
-    IsVisibleInTemplate?: boolean;
 }
 
 export interface LineDefinitionStateReasonForClient {

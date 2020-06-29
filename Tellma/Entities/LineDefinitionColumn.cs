@@ -30,8 +30,6 @@ namespace Tellma.Entities
         public short? ReadOnlyState { get; set; }
 
         public bool? InheritsFromHeader { get; set; }
-
-        public bool? IsVisibleInTemplate { get; set; }
     }
 
     public class LineDefinitionColumn : LineDefinitionColumnForSave
