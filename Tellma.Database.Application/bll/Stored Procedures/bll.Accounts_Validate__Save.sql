@@ -132,6 +132,14 @@ SET NOCOUNT ON;
 	JOIN dbo.[Currencies] C ON C.[Id] = FE.[CurrencyId]
 	JOIN dbo.[Currencies] RC ON RC.[Id]= R.[CurrencyId]
 	WHERE (FE.[CurrencyId] <> R.[CurrencyId])
+
+	-- TODO repeat the above for account and resource CenterId
+	-- TODO repeat the above for account and contract CurrencyId
+	-- TODO repeat the above for account and contract CenterId
+
+	-- TODO if both contract and resource are specified, make sure they have consistent CurrencyId
+	-- TODO if both contract and resource are specified, make sure they have consistent CenterId
+
 	-- Trying to change the account type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)

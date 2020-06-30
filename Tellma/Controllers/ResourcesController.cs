@@ -192,7 +192,7 @@ namespace Tellma.Controllers
 
         protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
+            return ResourceServiceUtil.SearchImpl(query, args, filteredPermissions);
         }
 
         protected override async Task<List<ResourceForSave>> SavePreprocessAsync(List<ResourceForSave> entities)
@@ -434,7 +434,7 @@ namespace Tellma.Controllers
             }
         }
 
-        protected override SelectExpression ParseSelect(string select) => ResourceControllerUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override SelectExpression ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
 
         public Task<(List<Resource>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
@@ -536,13 +536,13 @@ namespace Tellma.Controllers
 
         protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
+            return ResourceServiceUtil.SearchImpl(query, args, filteredPermissions);
         }
 
-        protected override SelectExpression ParseSelect(string select) => ResourceControllerUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+        protected override SelectExpression ParseSelect(string select) => ResourceServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
-    internal class ResourceControllerUtil
+    internal class ResourceServiceUtil
     {
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here

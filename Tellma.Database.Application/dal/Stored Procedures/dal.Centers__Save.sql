@@ -3,7 +3,6 @@
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
-	DECLARE @BeforeCenterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsLeaf] = 1 AND [IsActive] = 1);
 	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
@@ -74,13 +73,11 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[Centers] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
-
-	-- Whether there are multiple centers/segments is an important cached value of the settings
-	DECLARE @AfterCenterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [IsLeaf] = 1 AND [IsActive] = 1);
+	
+	-- Whether there are multiple active segments is an important cached value of the settings
 	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
 
-	IF (@BeforeCenterCount <= 1 AND @AfterCenterCount > 1) OR (@BeforeCenterCount > 1 AND @AfterCenterCount <= 1) OR 
-		(@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
+	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
 
 	IF @ReturnIds = 1

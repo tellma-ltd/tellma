@@ -11,15 +11,25 @@ SET NOCOUNT ON;
 DECLARE @ProcessedEntities [dbo].[AccountList];
 INSERT INTO @ProcessedEntities SELECT * FROM @Entities;
 
+-- If Contract has a CurrencyId, copy it to Account
+UPDATE A
+SET A.[CurrencyId] = COALESCE(C.[CurrencyId], A.[CurrencyId])
+FROM @ProcessedEntities A JOIN dbo.[Contracts] C ON A.[ContractId] = C.Id;
+
 -- If Resource has a CurrencyId, copy it to Account
 UPDATE A
 SET A.[CurrencyId] = COALESCE(R.[CurrencyId], A.[CurrencyId])
 FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id;
 
--- If Contract has a CurrencyId, copy it to Account
+-- If Contract has a CenterId, copy it to Account
 UPDATE A
-SET A.[CurrencyId] = COALESCE(C.[CurrencyId], A.[CurrencyId])
+SET A.[CenterId] = COALESCE(C.[CenterId], A.[CenterId])
 FROM @ProcessedEntities A JOIN dbo.[Contracts] C ON A.[ContractId] = C.Id;
+
+-- If Resource has a CenterId, copy it to Account
+UPDATE A
+SET A.[CenterId] = COALESCE(R.[CenterId], A.[CenterId])
+FROM @ProcessedEntities A JOIN dbo.[Resources] R ON A.[ResourceId] = R.Id;
 
 --=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 -- Below we set things to the only value that matches the Definition

@@ -2,7 +2,7 @@
 	@Ids [dbo].[IdList] READONLY,
 	@IsActive bit
 AS
-	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
+	DECLARE @BeforeSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -19,7 +19,8 @@ AS
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
 
-	-- Whether there are multiple centers is an important settings value
-	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE IsLeaf = 1 AND IsActive = 1);
-	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
+	-- Whether there are multiple active segments is an important cached value of the settings
+	DECLARE @AfterSegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
+
+	IF (@BeforeSegmentCount <= 1 AND @AfterSegmentCount > 1) OR (@BeforeSegmentCount > 1 AND @AfterSegmentCount <= 1)
 		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

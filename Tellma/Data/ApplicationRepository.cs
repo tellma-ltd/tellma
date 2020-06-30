@@ -491,13 +491,12 @@ namespace Tellma.Data
             return (version, user, customSettings);
         }
 
-        public async Task<(bool isMultiCenter, bool isMultiSegment, Settings settings)> Settings__Load(CancellationToken cancellation)
+        public async Task<(bool isMultiSegment, Settings settings)> Settings__Load(CancellationToken cancellation)
         {
             // Returns 
             // (1) whether active leaf centers are multiple or single
             // (2) the settings with the functional currency expanded
 
-            bool isMultiCenter = false;
             bool isMultiSegment = false;
             Settings settings = new Settings();
 
@@ -513,8 +512,7 @@ namespace Tellma.Data
                 // Load the version
                 if (await reader.ReadAsync(cancellation))
                 {
-                    isMultiCenter = reader.GetBoolean(0);
-                    isMultiSegment = reader.GetBoolean(1);
+                    isMultiSegment = reader.GetBoolean(0);
                 }
                 else
                 {
@@ -566,7 +564,7 @@ namespace Tellma.Data
                 }
             }
 
-            return (isMultiCenter, isMultiSegment, settings);
+            return (isMultiSegment, settings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load(CancellationToken cancellation)
@@ -3719,7 +3717,7 @@ namespace Tellma.Data
                     prop.SetValue(entry, propValue);
                 }
             }
-        }
+         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(int definitionId, List<DocumentForSave> documents, int top)
         {

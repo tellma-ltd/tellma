@@ -24,7 +24,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `AccountType/ContractDefinitions,AccountType/NotedContractDefinitions,AccountType/ResourceDefinitions
-,Classification,Currency,Center,Contract,Resource/Currency,EntryType`;
+,Classification,Currency,Center,Contract,Resource/Currency,Contract/Currency,Resource/Center,Contract/Center,EntryType`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -87,7 +87,41 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   // CenterId
 
   public showCenter(_: AccountForSave): boolean {
-    return this.ws.settings.IsMultiCenter;
+    return true;
+  }
+
+
+  public readonlyCenterId(model: AccountForSave): boolean {
+    if (!model) {
+      return true;
+    }
+
+    // The center becomes readonly if either the resource or the contract have a center selected
+    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+    const contract = this.ws.get('Contract', model.ContractId) as Contract;
+    return (!!model.ResourceId && !!resource.CenterId) || (!!model.ContractId && !!contract.CenterId);
+  }
+
+  public readonlyValueCenterId(model: Account): number {
+    if (!model) {
+      return null;
+    }
+
+    if (!!model.ResourceId) {
+      const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+      if (!!resource.CenterId) {
+        return resource.CenterId;
+      }
+    }
+
+    if (!!model.ContractId) {
+      const contract = this.ws.get('Contract', model.ContractId) as Contract;
+      if (!!contract.CenterId) {
+        return contract.CenterId;
+      }
+    }
+
+    return null;
   }
 
   // CurrencyId
@@ -100,8 +134,10 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       return true;
     }
 
+    // The currency becomes readonly if either the resource or the contract have a currency selected
     const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    return !!model.ResourceId && !!resource.CurrencyId;
+    const contract = this.ws.get('Contract', model.ContractId) as Contract;
+    return (!!model.ResourceId && !!resource.CurrencyId) || (!!model.ContractId && !!contract.CurrencyId);
   }
 
   public readonlyValueCurrencyId(model: Account): string {
@@ -109,8 +145,21 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       return null;
     }
 
-    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
-    return !!model.ResourceId ? resource.CurrencyId : null;
+    if (!!model.ResourceId) {
+      const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+      if (!!resource.CurrencyId) {
+        return resource.CurrencyId;
+      }
+    }
+
+    if (!!model.ContractId) {
+      const contract = this.ws.get('Contract', model.ContractId) as Contract;
+      if (!!contract.CurrencyId) {
+        return contract.CurrencyId;
+      }
+    }
+
+    return null;
   }
 
   // Noted Contract Definition
@@ -343,7 +392,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   }
 
   public get resourceAdditionalSelect(): string {
-    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3`;
+    const defaultSelect = `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Center/Name,Center/Name2,Center/Name3`;
     if (this.additionalSelect === '$DocumentDetails') {
       // Popup from document screen, get everything the document screen needs
       return '$DocumentDetails,' + defaultSelect;
@@ -352,4 +401,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
       return defaultSelect;
     }
   }
+
+  public contractAdditionalSelect =
+    `DefinitionId,Currency/Name,Currency/Name2,Currency/Name3,Currency/E,Center/Name,Center/Name2,Center/Name3`;
 }

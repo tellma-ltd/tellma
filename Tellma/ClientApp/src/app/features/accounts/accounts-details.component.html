@@ -89,17 +89,6 @@
         </t-account-types-picker>
     </t-form-group>
 
-    <!-- Center -->
-    <t-form-group class="t-form-group" *ngIf="showCenter(model)" [label]="'Account_Center' | translate"
-        [serverErrors]="model?.serverErrors?.CenterId">
-        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="model?.CenterId">
-            <t-auto-cell collection="Account" path="Center" [entity]="model">
-            </t-auto-cell>
-        </t-view-link>
-        <t-centers-picker *ngIf="isEdit" [(ngModel)]="model.CenterId" filter="IsLeaf eq true">
-        </t-centers-picker>
-    </t-form-group>
-
     <!-- Resource Definition -->
     <t-form-group class="t-form-group" *ngIf="showResourceDefinitionId(model)"
         [label]="'Account_ResourceDefinition' | translate" [serverErrors]="model?.serverErrors?.ResourceDefinitionId">
@@ -122,6 +111,28 @@
         </t-resources-picker>
     </t-form-group>
 
+    <!-- Contract Definition -->
+    <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
+        [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
+        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
+        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId"
+            [choices]="choicesContractDefinitionId(model)" (ngModelChange)="onContractDefinitionChange($event, model)">
+        </t-selector>
+    </t-form-group>
+
+    <!-- Contract -->
+    <t-form-group class="t-form-group" *ngIf="showContract(model)" [label]="labelContract(model)"
+        [serverErrors]="model?.serverErrors?.ContractId">
+        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.ContractId)?.DefinitionId"
+            [itemId]="model?.ContractId">
+            <t-auto-cell collection="Account" path="Contract" [entity]="model">
+            </t-auto-cell>
+        </t-view-link>
+        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ContractId" [definitionIds]="definitionIdsContract(model)"
+            [additionalSelect]="contractAdditionalSelect">
+        </t-contracts-picker>
+    </t-form-group>
+
     <!-- Currency -->
     <t-form-group class="t-form-group" *ngIf="showCurrency(model)" [label]="'Account_Currency' | translate"
         [serverErrors]="model?.serverErrors?.CurrencyId">
@@ -141,26 +152,22 @@
         </ng-container>
     </t-form-group>
 
-    <!-- Contract Definition -->
-    <t-form-group class="t-form-group" *ngIf="showContractDefinitionId(model)"
-        [label]="'Account_ContractDefinition' | translate" [serverErrors]="model?.serverErrors?.ContractDefinitionId">
-        <div *ngIf="!isEdit">{{ formatContractDefinitionId(model.ContractDefinitionId) }}</div>
-        <t-selector *ngIf="isEdit" [(ngModel)]="model.ContractDefinitionId"
-            [choices]="choicesContractDefinitionId(model)" (ngModelChange)="onContractDefinitionChange($event, model)">
-        </t-selector>
-    </t-form-group>
-
-    <!-- Contract -->
-    <t-form-group class="t-form-group" *ngIf="showContract(model)" [label]="labelContract(model)"
-        [serverErrors]="model?.serverErrors?.ContractId">
-        <t-view-link *ngIf="!isEdit" [link]="'../../contracts/' + ws.get('Contract', model?.ContractId)?.DefinitionId"
-            [itemId]="model?.ContractId">
-            <t-auto-cell collection="Account" path="Contract" [entity]="model">
+    <!-- Center -->
+    <t-form-group class="t-form-group" *ngIf="showCenter(model)" [label]="'Account_Center' | translate"
+        [serverErrors]="model?.serverErrors?.CenterId">
+        <!-- View mode -->
+        <t-view-link *ngIf="!isEdit" link="../../centers" [itemId]="model?.CenterId">
+            <t-auto-cell collection="Account" path="Center" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-contracts-picker *ngIf="isEdit" [(ngModel)]="model.ContractId" [definitionIds]="definitionIdsContract(model)"
-            additionalSelect="DefinitionId">
-        </t-contracts-picker>
+
+        <!-- Edit mode -->
+        <ng-container *ngIf="isEdit">
+            <span
+                *ngIf="readonlyCenterId(model)">{{ ws.getMultilingualValue('Center', readonlyValueCenterId(model), 'Name') }}</span>
+            <t-centers-picker *ngIf="!readonlyCenterId(model)" [(ngModel)]="model.CenterId">
+            </t-centers-picker>
+        </ng-container>
     </t-form-group>
 
     <!-- Entry Type -->
@@ -170,7 +177,7 @@
             <t-auto-cell collection="Account" path="EntryType" [entity]="model">
             </t-auto-cell>
         </t-view-link>
-        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId" [filter]="filterEntryType(model)" required>
+        <t-entry-types-picker *ngIf="isEdit" [(ngModel)]="model.EntryTypeId" [filter]="filterEntryType(model)">
         </t-entry-types-picker>
     </t-form-group>
 
