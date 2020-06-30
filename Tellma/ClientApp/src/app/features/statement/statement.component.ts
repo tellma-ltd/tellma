@@ -8,7 +8,7 @@ import { WorkspaceService, ReportStore, ReportStatus } from '~/app/data/workspac
 import { tap, catchError, switchMap } from 'rxjs/operators';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Account } from '~/app/data/entities/account';
-import { metadata_Contract } from '~/app/data/entities/contract';
+import { metadata_Contract, Contract } from '~/app/data/entities/contract';
 import { AccountType } from '~/app/data/entities/account-type';
 import { CustomUserSettingsService } from '~/app/data/custom-user-settings.service';
 import { Entity } from '~/app/data/entities/base/entity';
@@ -339,6 +339,10 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.showResourceParameter && !this.readonlyResource_Manual && !!this.resourceId && !this.ws.get('Resource', this.resourceId)) {
+      return true;
+    }
+
+    if (this.showContractParameter && !this.readonlyContract_Manual && !!this.contractId && !this.ws.get('Contract', this.contractId)) {
       return true;
     }
 
@@ -692,14 +696,16 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Returns the currency Id from the selected account or from the selected resource if any
    */
-  private getAccountResourceCurrencyId(): string {
+  private getAccountResourceContractCurrencyId(): string {
     const account = this.account();
     const resource = this.ws.get('Resource', this.resourceId) as Resource;
+    const contract = this.ws.get('Contract', this.contractId) as Contract;
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
+    const contractCurrencyId = !!contract ? contract.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || contractCurrencyId;
   }
 
   /**
@@ -708,14 +714,14 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   public get showCurrencyParameter(): boolean {
     // Show the editable currency parameter
     const account = this.account();
-    return !!account && !this.getAccountResourceCurrencyId();
+    return !!account && !this.getAccountResourceContractCurrencyId();
   }
 
   /**
    * Returns the Id of the currency to show as a postfix to the monetary value column header
    */
   public get readonlyValueCurrencyId(): string {
-    const accountResourceCurrencyId = this.getAccountResourceCurrencyId();
+    const accountResourceCurrencyId = this.getAccountResourceContractCurrencyId();
     return accountResourceCurrencyId || this.currencyId;
   }
 
@@ -727,6 +733,8 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // Contract
+  public contractAdditionalSelect = '$DocumentDetails';
+
   public get contractId(): number {
     return this.state.arguments.contract_id;
   }
@@ -896,14 +904,28 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get readonlyCenter_Manual(): boolean {
-    const account = this.account();
-    return !!account && !!account.CenterId;
+    return !!this.getAccountResourceContractCenterId();
   }
 
   public get readonlyValueCenterId_Manual(): number {
-    const account = this.account();
-    return !!account ? account.CenterId : null;
+    return this.getAccountResourceContractCenterId();
   }
+
+  /**
+   * Returns the center Id from the selected account or from the selected resource if any
+   */
+  private getAccountResourceContractCenterId(): number {
+    const account = this.account();
+    const resource = this.ws.get('Resource', this.resourceId) as Resource;
+    const contract = this.ws.get('Contract', this.contractId) as Contract;
+
+    const accountCenterId = !!account ? account.CenterId : null;
+    const resourceCenterId = !!resource ? resource.CenterId : null;
+    const contractCenterId = !!contract ? contract.CenterId : null;
+
+    return accountCenterId || resourceCenterId || contractCenterId;
+  }
+
   // Error Message
   public get showErrorMessage(): boolean {
     return this.state.reportStatus === ReportStatus.error;
@@ -969,7 +991,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const opening = s.extras.openingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceContractCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(opening, digitsInfo);
     }
@@ -1001,7 +1023,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     if (s.extras) {
       const closing = s.extras.closingMonetaryValue || 0;
-      const currencyId = this.getAccountResourceCurrencyId() || this.currencyId || this.functionalId;
+      const currencyId = this.getAccountResourceContractCurrencyId() || this.currencyId || this.functionalId;
       const digitsInfo = this.digitsInfo(currencyId);
       return formatAccounting(closing, digitsInfo);
     }
@@ -1303,7 +1325,7 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
 
-      const definedCurrencyId = this.getAccountResourceCurrencyId() || this.currencyId;
+      const definedCurrencyId = this.getAccountResourceContractCurrencyId() || this.currencyId;
       if (!!this.account() && definedCurrencyId !== this.functionalId) {
 
         // Monetary Value

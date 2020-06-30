@@ -140,6 +140,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public select = '$Details'; // The server understands this keyword, no need to list all hundreds of select paths
   public additionalSelectAccount = '$DocumentDetails';
   public additionalSelectResource = '$DocumentDetails';
+  public additionalSelectContract = '$DocumentDetails';
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -1204,8 +1205,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public readonlyValueCenterId_Manual(entry: Entry): number {
-    const accountResourceContractCenterId = this.getAccountResourceContractCenterId(entry);
-    return accountResourceContractCenterId || entry.CenterId;
+    return this.getAccountResourceContractCenterId(entry);
   }
 
   private getAccountResourceContractCenterId(entry: Entry): number {
