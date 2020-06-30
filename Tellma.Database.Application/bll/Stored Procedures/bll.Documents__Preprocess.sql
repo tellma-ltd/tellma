@@ -354,14 +354,14 @@ END
 		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
 		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
-		WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
-			SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
-			WHERE [LineDefinitionEntryId] = LDE.[Id]
-		))
-		AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] IN (
-			SELECT [ContractDefinitionId] FROM [LineDefinitionEntryContractDefinitions]
-			WHERE [LineDefinitionEntryId] = LDE.[Id]		
-		))
+		--WHERE (R.[DefinitionId] IS NULL OR R.[DefinitionId] IN (
+		--	SELECT [ResourceDefinitionId] FROM [LineDefinitionEntryResourceDefinitions]
+		--	WHERE [LineDefinitionEntryId] = LDE.[Id]
+		--))
+		--AND (C.[DefinitionId] IS NULL OR C.[DefinitionId] IN (
+		--	SELECT [ContractDefinitionId] FROM [LineDefinitionEntryContractDefinitions]
+		--	WHERE [LineDefinitionEntryId] = LDE.[Id]		
+		--))
 	),
 	ConformantAccounts AS (
 		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], MIN(A.Id) AS MINAccountId, MAX(A.[Id]) AS MAXAccountId
@@ -380,7 +380,37 @@ END
 	SET E.AccountId = CA.MINAccountId
 	FROM @PreprocessedEntries E
 	JOIN ConformantAccounts CA ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex]
-	WHERE CA.MINAccountId = CA.MAXAccountId
+	WHERE CA.MINAccountId = CA.MAXAccountId;
+
+	With LineEntries2 AS (
+		SELECT E.[Index], E.[LineIndex], E.[DocumentIndex], ATC.[Id] AS [AccountTypeId], R.[DefinitionId] AS ResourceDefinitionId, E.[ResourceId],
+				C.[DefinitionId] AS ContractDefinitionId, E.[ContractId], E.[CenterId], E.[CurrencyId]
+		FROM @PreprocessedEntries E
+		JOIN @PreprocessedLines L ON E.[LineIndex] = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+		JOIN dbo.[LineDefinitionEntries] LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[Index] = LDE.[Index]
+		JOIN dbo.AccountTypes ATP ON LDE.[AccountTypeId] = ATP.[Id]
+		JOIN dbo.AccountTypes ATC ON ATC.[Node].IsDescendantOf(ATP.[Node]) = 1
+		LEFT JOIN dbo.Resources R ON E.[ResourceId] = R.[Id]
+		LEFT JOIN dbo.Contracts C ON E.[ContractId] = C.[Id]
+	),
+	ConformantAccounts2 AS (
+		SELECT LE.[Index], LE.[LineIndex], LE.[DocumentIndex], A.[Id] AS AccountId
+		FROM dbo.Accounts A
+		JOIN LineEntries2 LE ON LE.[AccountTypeId] = A.[AccountTypeId]
+		WHERE
+			(A.[CenterId] IS NULL OR A.[CenterId] = LE.[CenterId])
+		AND (A.[CurrencyId] IS NULL OR A.[CurrencyId] = LE.[CurrencyId])
+		AND (A.[ResourceDefinitionId] IS NULL AND LE.[ResourceDefinitionId] IS NULL OR A.[ResourceDefinitionId] = LE.[ResourceDefinitionId])
+		AND (A.[ResourceId] IS NULL OR A.[ResourceId] = LE.[ResourceId])
+		AND (A.[ContractDefinitionId] IS NULL AND LE.[ContractDefinitionId] IS NULL OR A.[ContractDefinitionId] = LE.[ContractDefinitionId])
+		AND (A.[ContractId] IS NULL OR A.[ContractId] = LE.[ContractId])
+	)
+	UPDATE E -- Set account to null, if non conformant
+	SET E.AccountId = NULL
+	FROM @PreprocessedEntries E
+	LEFT JOIN ConformantAccounts2 CA
+	ON E.[Index] = CA.[Index] AND E.[LineIndex] = CA.[LineIndex] AND E.[DocumentIndex] = CA.[DocumentIndex] AND E.AccountId = CA.AccountId
+	WHERE E.AccountId IS NOT NULL AND  CA.AccountId IS NULL;
 
 	-- Return the populated entries.
 	-- (Later we may need to return the populated lines and documents as well)
