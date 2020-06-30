@@ -206,7 +206,7 @@
     <value>从账户</value>
   </data>
   <data name="Assignment_Document" xml:space="preserve">
-    <value>文献</value>
+    <value>文件</value>
   </data>
   <data name="Assignment_E" xml:space="preserve">
     <value>从入门</value>
@@ -2286,9 +2286,6 @@
   </data>
   <data name="TreePath" xml:space="preserve">
     <value>亲</value>
-  </data>
-  <data name="TreeSelfParent" xml:space="preserve">
-    <value>自父</value>
   </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>（表截断）</value>

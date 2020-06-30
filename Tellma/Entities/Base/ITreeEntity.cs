@@ -21,7 +21,5 @@
         HierarchyId Node { get; set; }
 
         HierarchyId ParentNode { get; set; }
-
-        public TKey? SelfParentId { get; set; }
     }
 }

@@ -27,9 +27,6 @@ export interface Center extends CenterForSave {
     CreatedById?: number | string;
     ModifiedAt?: string;
     ModifiedById?: number | string;
-
-    // Temp
-    SelfParentId?: number;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -102,9 +99,6 @@ export function metadata_Center(wss: WorkspaceService, trx: TranslateService): E
                     control: 'navigation', label: () => trx.instant('TreeParent'), type: 'Center',
                     foreignKeyName: 'ParentId'
                 },
-                // Temp
-                SelfParentId: { control: 'number', label: () => `${trx.instant('TreeSelfParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                SelfParent: { control: 'navigation', label: () => trx.instant('TreeSelfParent'), type: 'Center', foreignKeyName: 'SelfParentId' },
                 IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
                 // IsActive & Audit info

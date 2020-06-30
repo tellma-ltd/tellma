@@ -2287,9 +2287,6 @@
   <data name="TreePath" xml:space="preserve">
     <value>Path</value>
   </data>
-  <data name="TreeSelfParent" xml:space="preserve">
-    <value>Self Parent</value>
-  </data>
   <data name="TruncatedList" xml:space="preserve">
     <value>(List Truncated)</value>
   </data>
