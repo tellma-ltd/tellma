@@ -199,7 +199,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public get Center_isVisible(): boolean {
-    return !!this.definition.CenterVisibility && this.ws.settings.IsMultiCenter;
+    return !!this.definition.CenterVisibility;
   }
 
   public get Center_isRequired(): boolean {

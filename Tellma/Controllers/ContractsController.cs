@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -104,7 +103,7 @@ namespace Tellma.Controllers
                     }
                 }
 
-                throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ResourcesService)}");
+                throw new BadRequestException($"Bug: DefinitoinId could not be determined in {nameof(ContractsService)}");
             }
         }
 
@@ -338,6 +337,8 @@ namespace Tellma.Controllers
             }
         }
 
+        protected override SelectExpression ParseSelect(string select) => ContractServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
+
         public Task<(List<Contract>, Extras)> Activate(List<int> ids, ActionArguments args)
         {
             return SetIsActive(ids, args, isActive: true);
@@ -435,6 +436,8 @@ namespace Tellma.Controllers
         {
             return ContractServiceUtil.SearchImpl(query, args);
         }
+
+        protected override SelectExpression ParseSelect(string select) => ContractServiceUtil.ParseSelect(select, baseFunc: base.ParseSelect);
     }
 
     internal class ContractServiceUtil
@@ -460,5 +463,21 @@ namespace Tellma.Controllers
 
             return query;
         }
+
+        public static SelectExpression ParseSelect(string select, Func<string, SelectExpression> baseFunc)
+        {
+            string shorthand = "$DocumentDetails";
+            if (select == null)
+            {
+                return null;
+            }
+            else
+            {
+                select = select.Replace(shorthand, _documentDetailsSelect);
+                return baseFunc(select);
+            }
+        }
+
+        private static readonly string _documentDetailsSelect = string.Join(',', DocumentsService.EntryContractPaths());
     }
 }

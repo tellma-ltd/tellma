@@ -1617,7 +1617,7 @@ namespace Tellma.Controllers
             .Concat(AccountPaths(nameof(Entry.Account)))
             .Concat(CurrencyPaths(nameof(Entry.Currency)))
             .Concat(EntryResourcePaths(nameof(Entry.Resource)))
-            .Concat(ContractPaths(nameof(Entry.Contract)))
+            .Concat(EntryContractPaths(nameof(Entry.Contract)))
             .Concat(EntryTypePaths(nameof(Entry.EntryType)))
             .Concat(ContractPaths(nameof(Entry.NotedContract)))
             .Concat(CenterPaths(nameof(Entry.Center)))
@@ -1634,13 +1634,22 @@ namespace Tellma.Controllers
             .Concat(UserPaths(nameof(DocumentAssignment.CreatedBy)))
             .Concat(UserPaths(nameof(DocumentAssignment.Assignee)))
             .Select(p => path == null ? p : $"{path}/{p}");
+        public static IEnumerable<string> EntryContractPaths(string path = null) => ContractPaths(path)
+            .Concat( // Entry Contract also adds the Currency and Center
+                CurrencyPaths(nameof(Contract.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            ).Concat(
+                CenterPaths(nameof(Contract.Center)).Select(p => path == null ? p : $"{path}/{p}")
+            );
         public static IEnumerable<string> ContractPaths(string path = null) => ContractProps
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> EntryResourcePaths(string path = null) => ResourcePaths(path)
-            .Concat( // Entry Resource also adds the Currency
+            .Concat( // Entry Resource also adds the Currency and Center
                 CurrencyPaths(nameof(Resource.Currency)).Select(p => path == null ? p : $"{path}/{p}")
+            ).Concat(
+                CenterPaths(nameof(Resource.Center)).Select(p => path == null ? p : $"{path}/{p}")
             );
         public static IEnumerable<string> ResourcePaths(string path = null) => ResourceProps
+            // This is used in account, it does not need currency or center, since they already come with the account
             .Concat(ResourceUnitPaths(nameof(Resource.Units)))
             .Select(p => path == null ? p : $"{path}/{p}");
         public static IEnumerable<string> ResourceUnitPaths(string path = null) => ResourceUnitsProps

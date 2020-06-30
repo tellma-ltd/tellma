@@ -1200,13 +1200,29 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // Center
 
   public readonlyCenter_Manual(entry: Entry): boolean {
-    const at = this.account(entry);
-    return !!at && !!at.CenterId;
+    return !!this.getAccountResourceContractCenterId(entry);
   }
 
   public readonlyValueCenterId_Manual(entry: Entry): number {
+    const accountResourceContractCenterId = this.getAccountResourceContractCenterId(entry);
+    return accountResourceContractCenterId || entry.CenterId;
+  }
+
+  private getAccountResourceContractCenterId(entry: Entry): number {
+    // returns the center Id (if any) that will eventually be copied to the Entry in the bll
+    if (!entry) {
+      return null;
+    }
+
     const account = this.account(entry);
-    return !!account ? account.CenterId : null;
+    const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
+    const contract = this.ws.get('Contract', entry.ContractId) as Contract;
+
+    const accountCenterId = !!account ? account.CenterId : null;
+    const resourceCenterId = !!resource ? resource.CenterId : null;
+    const contractCenterId = !!contract ? contract.CenterId : null;
+
+    return accountCenterId || resourceCenterId || contractCenterId;
   }
 
   // ContractId
@@ -1371,10 +1387,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showCurrency(entry: Entry): boolean {
     const account = this.account(entry);
-    return !!account && !this.getAccountResourceCurrencyId(entry);
+    return !!account && !this.getAccountResourceContractCurrencyId(entry);
   }
 
-  private getAccountResourceCurrencyId(entry: Entry): string {
+  private getAccountResourceContractCurrencyId(entry: Entry): string {
     // returns the currency Id (if any) that will eventually be copied to the Entry in the bll
     if (!entry) {
       return null;
@@ -1382,11 +1398,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
     const account = this.account(entry);
     const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
+    const contract = this.ws.get('Contract', entry.ContractId) as Contract;
 
     const accountCurrencyId = !!account ? account.CurrencyId : null;
     const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
+    const contractCurrencyId = !!contract ? contract.CurrencyId : null;
 
-    return accountCurrencyId || resourceCurrencyId;
+    return accountCurrencyId || resourceCurrencyId || contractCurrencyId;
   }
 
   public readonlyValueCurrencyId(entry: Entry): string {
@@ -1395,10 +1413,10 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return null;
     }
 
-    const accountResourceCurrencyId = this.getAccountResourceCurrencyId(entry);
+    const accountResourceContractCurrencyId = this.getAccountResourceContractCurrencyId(entry);
     const entryCurrencyId = entry.CurrencyId;
 
-    return accountResourceCurrencyId || entryCurrencyId;
+    return accountResourceContractCurrencyId || entryCurrencyId;
   }
 
   public get functionalId(): string {
@@ -2441,20 +2459,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       model.Attachments.some(att => !!att.serverErrors);
   }
 
-  public manualColumnPaths(model: DocumentForSave, smart = false): string[] {
-    const paths = ['AccountId', 'Debit', 'Credit'];
+  public manualColumnPaths(model: DocumentForSave, bookkeeping = false): string[] {
+    const paths = ['AccountId', 'Center', 'Debit', 'Credit'];
 
-    if (this.ws.settings.IsMultiCenter) {
-      paths.splice(1, 0, 'Center');
-    }
 
     // if (!model.MemoIsCommon) {
-    if (smart) {
+    if (bookkeeping) {
       // This only appears in the smart bookkeeping grid
       paths.push('Memo');
     }
 
-    if (smart) {
+    if (bookkeeping) {
       paths.push('ModifiedWarning');
     }
 
@@ -2466,15 +2481,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public smartColumnPaths(lineDefId: number, doc: Document, isForm: boolean): string[] {
     // All line definitions other than 'ManualLine'
     const lineDef = this.lineDefinition(lineDefId);
-    const isMultiRS = this.ws.settings.IsMultiCenter;
     const result = !!lineDef && !!lineDef.Columns ? lineDef.Columns
       .map((column, index) => ({ column, index })) // Capture the index first thing
       .filter(e => {
         const col = e.column;
-        // Below are the conditions that make the column visible
-        return !(!isMultiRS && col.ColumnName === 'CenterId') // It's not a CenterId in a single center db
-          // AND it doesn't inherit from a document property marked IsCommon = true
-          && (!col.InheritsFromHeader ||
+        // Only show columns that don't inherit from a document property marked IsCommon = true
+        return !col.InheritsFromHeader ||
             !(
               (doc.MemoIsCommon && col.ColumnName === 'Memo') ||
               (doc.PostingDateIsCommon && col.ColumnName === 'PostingDate') ||
@@ -2486,8 +2498,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
               (doc.QuantityIsCommon && col.ColumnName === 'Quantity') ||
               (doc.UnitIsCommon && col.ColumnName === 'UnitId') ||
               (doc.CurrencyIsCommon && col.ColumnName === 'CurrencyId')
-            )
-          );
+            );
       })
       .map(e => e.index + '') : [];
 

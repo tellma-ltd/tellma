@@ -323,7 +323,7 @@ namespace Tellma.Controllers
                         #region getCollectionTypeMetadata
 
                         Type collectionType = propInfo.PropertyType.GetGenericArguments().SingleOrDefault();
-                        Func<TypeMetadata> getCollectionTypeMetadata = () => GetMetadata(tenantId, collectionType, defOverride?.DefinitionId);
+                        TypeMetadata getCollectionTypeMetadata() => GetMetadata(tenantId, collectionType, defOverride?.DefinitionId);
 
                         #endregion
 
@@ -351,7 +351,7 @@ namespace Tellma.Controllers
 
                         #region getTypeMetadata
 
-                        Func<TypeMetadata> getTypeMetadata = () => GetMetadata(tenantId, propInfo.PropertyType, defOverride?.DefinitionId);
+                        TypeMetadata getTypeMetadata() => GetMetadata(tenantId, propInfo.PropertyType, defOverride?.DefinitionId);
 
                         #endregion
 
@@ -829,7 +829,7 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Resource.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required && settings.IsMultiCenter;
+                    isRequired = def.CenterVisibility == Visibility.Required;
                     break;
                 case nameof(Resource.Lookup1):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
@@ -997,7 +997,7 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Contract.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required && settings.IsMultiCenter;
+                    isRequired = def.CenterVisibility == Visibility.Required;
                     break;
                 case nameof(Contract.Lookup1):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);

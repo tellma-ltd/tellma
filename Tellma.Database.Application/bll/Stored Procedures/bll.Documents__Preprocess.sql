@@ -216,14 +216,6 @@ BEGIN
 	WHERE (LDC.ReadOnlyState <= BL.[State] OR BL.[State] < 0)
 	AND LDC.ColumnName = N'NotedDate';
 END
-	-- for all lines, Get currency and center from Contracts if available.
-	UPDATE E 
-	SET
-		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
-		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
-	FROM @E E
-	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Contracts C ON E.ContractId = C.Id;
 	-- for all lines, Get currency and center from Resources if available.
 	UPDATE E 
 	SET
@@ -233,6 +225,14 @@ END
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
 	JOIN dbo.Resources R ON E.ResourceId = R.Id;
+	-- for all lines, Get currency and center from Contracts if available.
+	UPDATE E 
+	SET
+		E.[CenterId]		= COALESCE(C.[CenterId], E.[CenterId]),
+		E.[CurrencyId]		= COALESCE(C.[CurrencyId], E.[CurrencyId])
+	FROM @E E
+	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
+	JOIN dbo.Contracts C ON E.ContractId = C.Id;
 	-- When the resource has exactly one non-null unit Id, set it as the Entry's UnitId
 	WITH RU AS (
 		SELECT [ResourceId], MIN(UnitId) AS UnitId

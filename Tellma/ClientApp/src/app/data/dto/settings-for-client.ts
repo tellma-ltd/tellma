@@ -22,6 +22,5 @@ export interface SettingsForClient {
     TernaryLanguageSymbol: string;
     BrandColor: string;
     CreatedAt: string;
-    IsMultiCenter: boolean;
     IsMultiSegment: boolean;
 }

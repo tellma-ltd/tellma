@@ -892,12 +892,12 @@ export class StatementComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showCenterParameter(): boolean {
     const account = this.account();
-    return !!account && this.ws.settings.IsMultiCenter;
+    return !!account;
   }
 
   public get readonlyCenter_Manual(): boolean {
-    const at = this.account();
-    return !!at && !!at.CenterId;
+    const account = this.account();
+    return !!account && !!account.CenterId;
   }
 
   public get readonlyValueCenterId_Manual(): number {
