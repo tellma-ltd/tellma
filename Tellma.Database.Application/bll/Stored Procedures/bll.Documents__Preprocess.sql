@@ -254,7 +254,8 @@ END
 		E.[EntryTypeId]		= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 	FROM @E E
 	JOIN @L L ON E.LineIndex = L.[Index] AND E.[DocumentIndex] = L.[DocumentIndex]
-	JOIN dbo.Accounts A ON E.AccountId = A.Id;
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	WHERE L.DefinitionId = (SELECT [Id] FROM dbo.LineDefinitions WHERE [Code] = 'ManualLine');
 
 	-- Get line definition which have script to run
 	INSERT INTO @ScriptLineDefinitions

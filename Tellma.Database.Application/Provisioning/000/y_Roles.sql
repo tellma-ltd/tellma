@@ -100,26 +100,30 @@ INSERT INTO @Permissions([Index], [HeaderIndex],
 (9905,99,	N'Read',	NULL,				N'exchange-rates'),
 (9907,99,	N'Read',	NULL,				N'roles'),
 (9909,99,	N'Read',	NULL,				N'units'),
-(9911,99,	N'Read',	NULL,				N'users'),
+(9911,99,	N'Read',	NULL,				N'users');
 
-(9921,99,	N'Read',	NULL,				N'lookups/@ITEquipmentManufacturerLKD'),
-(9922,99,	N'Read',	NULL,				N'lookups/@OperatingSystemLKD'),
-(9923,99,	N'Read',	NULL,				N'lookups/@BodyColorLKD'),
-(9924,99,	N'Read',	NULL,				N'lookups/@VehicleMakeLKD'),
-(9925,99,	N'Read',	NULL,				N'lookups/@SteelThicknessLKD'),
-(9926,99,	N'Read',	NULL,				N'lookups/@PapreOriginLKD'),
-(9927,99,	N'Read',	NULL,				N'lookups/@PaperGroupLKD'),
-(9928,99,	N'Read',	NULL,				N'lookups/@PaperTypeLKD'),
-(9929,99,	N'Read',	NULL,				N'lookups/@GrainClassificationLKD'),
-(9930,99,	N'Read',	NULL,				N'lookups/@GrainTypeLKD'),
-(9931,99,	N'Read',	NULL,				N'lookups/@BankAccountTypeLKD'),
+INSERT INTO @Permissions([Index], [HeaderIndex],
+--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'State', N'All'))
+			[Action],	[Criteria],			[View])
 
-(9951,99,	N'Read',	NULL,				N'resources/@RevenueServiceRD'),
-(9961,99,	N'Read',	NULL,				N'resources/@EmployeeBenefitRD'),
+SELECT 9921,99,	N'Read',	NULL,				N'lookups/' + CAST(@ITEquipmentManufacturerLKD AS NVARCHAR(100)) UNION
+SELECT 9922,99,	N'Read',	NULL,				N'lookups/' + CAST(@OperatingSystemLKD AS NVARCHAR(100)) UNION
+SELECT 9923,99,	N'Read',	NULL,				N'lookups/' + CAST(@BodyColorLKD AS NVARCHAR(100)) UNION
+SELECT 9924,99,	N'Read',	NULL,				N'lookups/' + CAST(@VehicleMakeLKD AS NVARCHAR(100)) UNION
+SELECT 9925,99,	N'Read',	NULL,				N'lookups/' + CAST(@SteelThicknessLKD AS NVARCHAR(100)) UNION
+SELECT 9926,99,	N'Read',	NULL,				N'lookups/' + CAST(@PapreOriginLKD AS NVARCHAR(100)) UNION
+SELECT 9927,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperGroupLKD AS NVARCHAR(100)) UNION
+SELECT 9928,99,	N'Read',	NULL,				N'lookups/' + CAST(@PaperTypeLKD AS NVARCHAR(100)) UNION
+SELECT 9929,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainClassificationLKD AS NVARCHAR(100)) UNION
+SELECT 9930,99,	N'Read',	NULL,				N'lookups/' + CAST(@GrainTypeLKD AS NVARCHAR(100)) UNION
+SELECT 9931,99,	N'Read',	NULL,				N'lookups/' + CAST(@BankAccountTypeLKD AS NVARCHAR(100)) UNION
 
-(9971,99,	N'Read',	NULL,				N'contracts/@WarehouseCD'),
+SELECT 9951,99,	N'Read',	NULL,				N'resources/' + CAST(@RevenueServiceRD AS NVARCHAR(100)) UNION
+SELECT 9961,99,	N'Read',	NULL,				N'resources/' + CAST(@EmployeeBenefitRD AS NVARCHAR(100)) UNION
 
-(9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath)
+SELECT 9971,99,	N'Read',	NULL,				N'contracts/' + CAST(@WarehouseCD AS NVARCHAR(100)) UNION
+
+SELECT 9981,99,	N'Update',	N'CreatedById = Me',@PaymentIssueToNonTradingAgentsDDPath
 --(9991,99,	N'Read',	NULL,				N'account-statement'), permission is based on detailentries
 ;
 
