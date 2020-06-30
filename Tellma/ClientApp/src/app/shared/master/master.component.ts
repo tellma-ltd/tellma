@@ -142,13 +142,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   exportFileName: string;
 
-  /**
-   * Some screens handle clicking on a master row (choosing) in a customized way,
-   * when this input is set to a function, this function becomes the handler
-   */
-  @Input()
-  public customChoiceHandler: (id: number | string, router: Router, route: ActivatedRoute, stateKey: string) => void;
-
   @Output()
   choose = new EventEmitter<number | string>(); // Fired in popup mode to indicate choosing an item
 
@@ -669,7 +662,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       this.additionalSelect.split(',').forEach(e => resultPaths[e] = true);
     }
 
-    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (4) Append select required for nav to details
+    if (!!baseEntityDescriptor.navigateToDetailsSelect) {
+      baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
+    }
+
+    // (5) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
     select.split(',').forEach(path => {
 
       const steps = path.split('/').map(e => e.trim());
@@ -685,7 +683,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
 
-    // (4) in tree mode we add tree stuff and ensure that Parent has the same selects as the children
+    // (6) in tree mode we add tree stuff and ensure that Parent has the same selects as the children
     if (this.isTreeMode) {
       // tree stuff
       ['Level', 'ChildCount', 'ActiveChildCount', 'IsActive'].forEach(e => resultPaths[e] = true);
@@ -1202,9 +1200,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     if (this.isPopupMode) {
       this.choose.emit(id);
     } else {
-      if (!!this.customChoiceHandler) {
+      const customNav = this.entityDescriptor.navigateToDetails;
+      if (!!customNav) {
         // If a custom choice handler is provided use that
-        this.customChoiceHandler(id, this.router, this.route, this.mdStateKey);
+        const entity = this.workspace.current[this.collection][id] as Entity;
+        customNav(entity, this.router, this.mdStateKey);
       } else if (this.missingDefinitionId) {
         // If this screen is a generic master screen of definitioned entities do two things:
         // (1) Make sure the definition Id is in the target route

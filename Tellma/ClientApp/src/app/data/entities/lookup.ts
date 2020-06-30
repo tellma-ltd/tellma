@@ -57,7 +57,7 @@ export function metadata_Lookup(wss: WorkspaceService, trx: TranslateService, de
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
             apiEndpoint: !!definitionId ? `lookups/${definitionId}` : 'lookups',
-            screenUrl: !!definitionId ? `lookups/${definitionId}` : 'lookups',
+            masterScreenUrl: !!definitionId ? `lookups/${definitionId}` : 'lookups',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] :
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: 'IsActive eq true',

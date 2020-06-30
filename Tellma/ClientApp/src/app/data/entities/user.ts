@@ -50,7 +50,7 @@ export function metadata_User(wss: WorkspaceService, trx: TranslateService): Ent
       titlePlural: () => trx.instant('Users'),
       select: _select,
       apiEndpoint: 'users',
-      screenUrl: 'users',
+      masterScreenUrl: 'users',
       orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       inactiveFilter: 'IsActive eq true',
       format: (item: UserForSave) => ws.getMultilingualValueImmediate(item, _select[0]),

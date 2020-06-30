@@ -143,7 +143,7 @@ export function metadata_ReportDefinition(wss: WorkspaceService, trx: TranslateS
             titleSingular: () => trx.instant('ReportDefinition'),
             titlePlural: () => trx.instant('ReportDefinitions'),
             apiEndpoint: 'report-definitions',
-            screenUrl: 'report-definitions',
+            masterScreenUrl: 'report-definitions',
             select: _select,
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null, // TODO

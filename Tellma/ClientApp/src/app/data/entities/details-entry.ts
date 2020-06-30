@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityWithKey } from './base/entity-with-key';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export interface DetailsEntry extends EntityWithKey {
     LineId?: number;
@@ -65,7 +66,16 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
             //     { key: 'MassUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
             //     { key: 'VolumeUnitId', isRequired: false, desc: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'Unit', foreignKeyName: 'CountUnitId' } },
             // ],
-            screenUrl: 'details-entries', // TODO
+            masterScreenUrl: 'details-entries',
+            navigateToDetailsSelect: ['Line/Document/DefinitionId'],
+            navigateToDetails: (detailsEntry: DetailsEntry, router: Router, _: string) => {
+                const line = ws.get('LineForQuery', detailsEntry.LineId);
+                const docId = line.DocumentId;
+
+                const definitionId = ws.Document[docId].DefinitionId;
+                const extras = { state_key: 'from_entries' }; // fake state key to hide forward and backward navigation in details screen
+                router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, docId, extras]);
+            },
             orderby: () => ['Id'],
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',
@@ -112,8 +122,20 @@ export function metadata_DetailsEntry(wss: WorkspaceService, trx: TranslateServi
                 AlgebraicVolume: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicVolume'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 Time: { control: 'number', label: () => trx.instant('DetailsEntry_Time'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
                 AlgebraicTime: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicTime'), minDecimalPlaces: 0, maxDecimalPlaces: 4, alignment: 'right' },
-                Value: { control: 'number', label: () => trx.instant('Entry_Value'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
-                AlgebraicValue: { control: 'number', label: () => trx.instant('DetailsEntry_AlgebraicValue'), minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals, alignment: 'right' },
+                Value: {
+                    control: 'number',
+                    label: () => `${trx.instant('Entry_Value')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
+                AlgebraicValue: {
+                    control: 'number',
+                    label: () => `${trx.instant('DetailsEntry_AlgebraicValue')} (${ws.getMultilingualValueImmediate(ws.settings, 'FunctionalCurrencyName')})`,
+                    minDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    maxDecimalPlaces: ws.settings.FunctionalCurrencyDecimals,
+                    alignment: 'right'
+                },
                 Time1: { control: 'datetime', label: () => trx.instant('Entry_Time1') },
                 Time2: { control: 'datetime', label: () => trx.instant('Entry_Time2') },
                 ExternalReference: { control: 'text', label: () => trx.instant('Entry_ExternalReference') },

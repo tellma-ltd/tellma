@@ -34,12 +34,4 @@ export class OutboxComponent extends MasterBaseComponent {
 
     return propDesc.format(doc.SerialNumber);
   }
-
-  public customChoiceHandler = (id: number | string, router: Router, route: ActivatedRoute, _: string) => {
-    const outboxRecord = this.c[id];
-    const docId = outboxRecord.DocumentId;
-    const definitionId = this.workspace.currentTenant.Document[docId].DefinitionId;
-    const extras = { state_key: 'from_outbox' }; // fake state key to hide forward and backward navigation in details screen
-    router.navigate(['../documents', definitionId, docId, extras], { relativeTo: route });
-  }
 }

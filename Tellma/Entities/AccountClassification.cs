@@ -73,9 +73,6 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public HierarchyId Node { get; set; }
 
-        [AlwaysAccessible]
-        public HierarchyId ParentNode { get; set; }
-
         [Display(Name = "AccountClassification_AccountTypeParent")]
         [ForeignKey(nameof(AccountTypeParentId))]
         public AccountType AccountTypeParent { get; set; }

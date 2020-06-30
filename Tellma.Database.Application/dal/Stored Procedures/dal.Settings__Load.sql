@@ -3,7 +3,7 @@ CREATE PROCEDURE [dal].[Settings__Load]
 AS
 	-- Whether centers are multiple or singleton 
 	DECLARE @SegmentCount INT = (SELECT COUNT(*) FROM [dbo].[Centers] WHERE [CenterType] = N'Segment' AND [IsActive] = 1);
-	SELECT CAST(IIF(@SegmentCount > 1, 1, 0) AS BIT) As [IsMultiSegment];
+	SELECT CAST(IIF(@SegmentCount <> 1, 1, 0) AS BIT) As [IsMultiSegment];
 
 	-- The settings
 	SELECT [S].* FROM [dbo].[Settings] AS [S]

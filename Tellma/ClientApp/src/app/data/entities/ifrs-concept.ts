@@ -31,7 +31,7 @@ export function metadata_IfrsConcept(wss: WorkspaceService, trx: TranslateServic
             titlePlural: () => trx.instant('IfrsConcepts'),
             select: _label,
             apiEndpoint: 'ifrs-concepts',
-            screenUrl: 'ifrs-concepts',
+            masterScreenUrl: 'ifrs-concepts',
             orderby: () => ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
             inactiveFilter: null, // No inactive filter
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),

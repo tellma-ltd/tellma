@@ -5,6 +5,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { WorkspaceService } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export interface InboxRecord extends EntityWithKey {
     DocumentId?: number;
@@ -36,7 +37,14 @@ export function metadata_InboxRecord(wss: WorkspaceService, trx: TranslateServic
             titlePlural: () => trx.instant('Inbox'),
             select: _select,
             apiEndpoint: 'inbox',
-            screenUrl: 'inbox',
+            masterScreenUrl: 'inbox',
+            navigateToDetailsSelect: ['Document/DefinitionId'],
+            navigateToDetails: (entity: InboxRecord, router: Router, stateKey: string) => {
+                const id = entity.Id;
+                const definitionId = ws.Document[id].DefinitionId;
+                const extras = { state_key: stateKey };
+                router.navigate(['app', wss.ws.tenantId + '', 'documents', definitionId, id, extras]);
+            },
             orderby: () => ['CreatedAt desc'],
             inactiveFilter: null,
             format: (__: EntityWithKey) => '',

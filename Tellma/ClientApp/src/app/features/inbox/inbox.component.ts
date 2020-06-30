@@ -33,10 +33,4 @@ export class InboxComponent extends MasterBaseComponent {
 
     return propDesc.format(doc.SerialNumber);
   }
-
-  public customChoiceHandler = (id: number | string, router: Router, route: ActivatedRoute, stateKey: string) => {
-    const definitionId = this.workspace.currentTenant.Document[id].DefinitionId;
-    const extras = { state_key: stateKey };
-    router.navigate(['../documents', definitionId, id, extras], { relativeTo: route });
-  }
 }

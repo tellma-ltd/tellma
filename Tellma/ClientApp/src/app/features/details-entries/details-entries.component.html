@@ -1,3 +1,41 @@
-<div class="p-5">
-    <p>This screen will be implemented soon, stay tuned!</p>
-</div>
+<t-master collection="DetailsEntry" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+    [additionalSelect]="additionalSelect" [masterCrumb]="'DetailsEntries' | translate" [showImportButton]="false"
+    [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+    [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Line/PostingDate,Account,Line/State,AlgebraicValue"
+    selectForTiles="Line/PostingDate,Line/State,Account/Name,Account/Name2,Account/Name3,AlgebraicValue,Line/Memo" [multiselectActions]="[]"
+    [filterDefinition]="{
+        'OpenedAt' : [
+          { template: debit, expression: 'Direction eq 1'},
+          { template: credit, expression: 'Direction eq -1'}
+        ]
+      }">
+</t-master>
+
+<ng-template #debit> {{ 'Entry_Direction_Debit' | translate }} </ng-template>
+<ng-template #credit> {{ 'Entry_Direction_Credit' | translate }} </ng-template>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="flex-grow-1" style="min-width: 0;">
+        <div class="d-flex justify-content-between">
+            <!-- <t-auto-cell collection="DetailsEntry" path="Account" [entity]="c[id]"></t-auto-cell> -->
+            <t-auto-cell collection="DetailsEntry" path="AlgebraicValue" [entity]="c[id]"></t-auto-cell>
+        </div>
+        <div class="d-flex justify-content-between mt-1 small">
+            <div class="text-truncate flex-grow-1">
+              <t-auto-cell collection="DetailsEntry" path="Line/PostingDate" [entity]="c[id]"></t-auto-cell>
+            </div>
+            <t-auto-cell collection="DetailsEntry" path="Line/State" [entity]="c[id]"></t-auto-cell>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Memo' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">{{ ws.get('LineForQuery', c[id].LineId).Memo }}</span>
+</ng-template>

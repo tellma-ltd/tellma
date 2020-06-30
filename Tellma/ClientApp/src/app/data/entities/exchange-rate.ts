@@ -35,7 +35,7 @@ export function metadata_ExchangeRate(wss: WorkspaceService, trx: TranslateServi
             titlePlural: () => trx.instant('ExchangeRates'),
             select: ['ValidAsOf', 'CurrencyId'],
             apiEndpoint: 'exchange-rates',
-            screenUrl: 'exchange-rates',
+            masterScreenUrl: 'exchange-rates',
             orderby: () => ['ValidAsOf desc', 'CurrencyId'],
             inactiveFilter: null,
             format: (item: ExchangeRate) => `${!!item.ValidAsOf} ${ws.getMultilingualValue('Currency', item.CurrencyId, 'Name')}`,

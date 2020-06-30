@@ -134,7 +134,7 @@ export function metadata_ResourceDefinition(wss: WorkspaceService, trx: Translat
             titlePlural: () => trx.instant('ResourceDefinitions'),
             select: _select,
             apiEndpoint: 'resource-definitions',
-            screenUrl: 'resource-definitions',
+            masterScreenUrl: 'resource-definitions',
             orderby: () => ws.isSecondaryLanguage ? [_select[1], _select[0]] :
                 ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             inactiveFilter: null, // TODO

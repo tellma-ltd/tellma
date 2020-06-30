@@ -87,7 +87,6 @@ namespace Tellma.Controllers
 
             // Load the data
             var data = await GetEntitiesByIds(new List<TKey> { id }, expand, select, cancellation);
-            var extras = await GetExtras(data, cancellation);
 
             // Check that the entity exists, else return NotFound
             var entity = data.SingleOrDefault();
@@ -95,6 +94,9 @@ namespace Tellma.Controllers
             {
                 throw new NotFoundException<TKey>(id);
             }
+
+            // Load the extras
+            var extras = await GetExtras(data, cancellation);
 
             // Return
             return (entity, extras);

@@ -10,7 +10,7 @@
                         <th *ngFor="let col of select">
                             <t-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
                                 [definitionId]="definitionId" [useAlignment]="true">
-                            </t-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
+                            </t-auto-label><span *ngIf="!!col.Label" [style.float]="alignment(col.Path)">{{ selectLabel(col) }}</span>
                         </th>
                         <th style="width:10px"></th>
                     </tr>

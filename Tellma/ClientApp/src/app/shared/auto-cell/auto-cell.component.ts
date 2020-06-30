@@ -265,5 +265,5 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
  * @param entityDesc The entity descriptor used to format the entity as a string
  */
 export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
-  return !!entityDesc.format ? entityDesc.format(entity) : '(Format function missing)';
+  return !!entityDesc.format ? (!!entity ? entityDesc.format(entity) : '') : '(Format function missing)';
 }

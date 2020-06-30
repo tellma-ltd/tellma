@@ -500,6 +500,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       resultPaths.DefinitionId = true;
     }
 
+    if (!!baseEntityDescriptor.navigateToDetailsSelect) {
+      baseEntityDescriptor.navigateToDetailsSelect.forEach(e => resultPaths[e] = true);
+    }
+
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
     select.map(col => col.Path).forEach(path => {
 
@@ -1489,7 +1493,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private drilldown(cellFilter: string) {
-    const screenUrl = this.entityDescriptor.screenUrl;
+    const screenUrl = this.entityDescriptor.masterScreenUrl;
     if (!!screenUrl) {
       const tenantId = this.workspace.ws.tenantId;
       const screenUrlSegments = screenUrl.split('/');
@@ -1749,6 +1753,32 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return !!this.definition ? this.definition.Select : null;
   }
 
+  // tslint:disable:member-ordering
+  private _alignment: { [path: string]: 'left' | 'right' | 'center' } = {};
+  private _alignmentIsSet: { [path: string]: true } = {};
+  public alignment(path: string): 'left' | 'right' | 'center' {
+    if (!this._alignmentIsSet[path]) {
+      if (!!path) {
+        const steps = path.split(',');
+        const prop = steps.pop();
+
+        try {
+          const entityDesc = entityDescriptorImpl(steps, this.collection, this.definitionId, this.workspace, this.translate);
+          const propDesc = entityDesc.properties[prop];
+          if (!!propDesc) {
+            this._alignment[path] = propDesc.alignment;
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      this._alignmentIsSet[path] = true;
+    }
+
+    return this._alignment[path];
+  }
+
   public get entities(): Entity[] {
     return this.state.result;
   }
@@ -1758,13 +1788,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public onFlatSelect(entity: Entity): void {
-    // tslint:disable-next-line:no-string-literal
-    const id = entity['Id'];
-    if (isSpecified(id)) {
-      const screenUrl = this.entityDescriptor.screenUrl;
-      if (!!screenUrl) {
+    const desc = this.entityDescriptor;
+    if (!!desc.navigateToDetails) {
+      desc.navigateToDetails(entity, this.router);
+
+    } else if (!!desc.masterScreenUrl) {
+      // tslint:disable-next-line:no-string-literal
+      const id = entity['Id'];
+      if (isSpecified(id)) {
         const tenantId = this.workspace.ws.tenantId;
-        const screenUrlSegments = screenUrl.split('/');
+        const screenUrlSegments = desc.masterScreenUrl.split('/');
 
         // Should we add the master parameters here?
 
