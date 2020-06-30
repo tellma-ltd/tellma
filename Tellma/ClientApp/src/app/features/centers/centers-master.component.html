@@ -9,7 +9,6 @@
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'CenterType' : [
-                { template: segment, expression: 'CenterType eq \'Segment\''},
                 { template: abstract, expression: 'CenterType eq \'Abstract\''},
                 { template: parent, expression: 'CenterType eq \'Parent\''},
                 { template: cos, expression: 'CenterType eq \'CostOfSales\''},
@@ -49,7 +48,6 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #segment> {{ 'Center_CenterType_Segment' | translate }} </ng-template>
 <ng-template #abstract> {{ 'Center_CenterType_Abstract' | translate }} </ng-template>
 <ng-template #parent> {{ 'Center_CenterType_Parent' | translate }} </ng-template>
 <ng-template #cos> {{ 'Center_CenterType_CostOfSales' | translate }} </ng-template>

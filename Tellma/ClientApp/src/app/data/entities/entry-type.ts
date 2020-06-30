@@ -15,6 +15,7 @@ export interface EntryTypeForSave extends EntityForSave {
   Description2?: string;
   Description3?: string;
   Code?: string;
+  Concept?: string;
   EntryDefinitionId?: string;
   IsAssignable?: boolean;
 }
@@ -67,6 +68,7 @@ export function metadata_EntryType(wss: WorkspaceService, trx: TranslateService)
         Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
+        Concept: { control: 'text', label: () => trx.instant('EntryType_Concept') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
 
         // tree stuff

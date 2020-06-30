@@ -57,7 +57,16 @@
   <!-- Code -->
   <t-form-group class="t-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
     <span *ngIf="!isEdit">{{model?.Code}}</span>
-    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    <t-text-editor *ngIf="isEdit" [disabled]="model.IsSystem" [(ngModel)]="model.Code"
+      [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </t-text-editor>
+  </t-form-group>
+
+  <!-- Concept -->
+  <t-form-group class="t-form-group" [label]="'AccountType_Concept' | translate"
+    [serverErrors]="model?.serverErrors?.Concept">
+    <span *ngIf="!isEdit">{{model?.Concept}}</span>
+    <t-text-editor *ngIf="isEdit" [(ngModel)]="model.Concept" [ngModelOptions]="{ updateOn: 'blur' }" required>
     </t-text-editor>
   </t-form-group>
 

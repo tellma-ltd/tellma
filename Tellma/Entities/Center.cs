@@ -19,7 +19,6 @@ namespace Tellma.Entities
         [Required]
         [StringLength(255)]
         [ChoiceList(new object[] {
-            "Segment", 
             "Abstract", 
             "Parent", 
             "CostOfSales",
@@ -30,7 +29,6 @@ namespace Tellma.Entities
             "ProductionExpenseControl"
         },
             new string[] {
-                "Center_CenterType_Segment",
                 "Center_CenterType_Abstract",
                 "Center_CenterType_Parent",
                 "Center_CenterType_CostOfSales",
@@ -70,6 +68,9 @@ namespace Tellma.Entities
 
     public class Center : CenterForSave, ITreeEntity<int>
     {
+        [Display(Name = "Center_IsSegment")]
+        public bool? IsSegment { get; set; }
+
         [AlwaysAccessible]
         public short? Level { get; set; }
 

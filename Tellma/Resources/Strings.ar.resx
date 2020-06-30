@@ -121,6 +121,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>اسم المرجع الإضافي</value>
   </data>
+  <data name="AccountType_Concept" xml:space="preserve">
+    <value>المفهوم</value>
+  </data>
   <data name="AccountType_ContractDefinitions" xml:space="preserve">
     <value>تعريفات العقود</value>
   </data>
@@ -274,9 +277,6 @@
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>تكاليف تصنيع</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>قطاع</value>
-  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>تسويقي وإداري</value>
   </data>
@@ -285,6 +285,9 @@
   </data>
   <data name="Center_CenterType_TransitExpenseControl" xml:space="preserve">
     <value>تكاليف نقل</value>
+  </data>
+  <data name="Center_IsSegment" xml:space="preserve">
+    <value>قطاع؟</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>المدير</value>
@@ -828,6 +831,9 @@
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>نوع السطر</value>
+  </data>
+  <data name="EntryType_Concept" xml:space="preserve">
+    <value>المفهوم</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>أنواع الأسطر</value>

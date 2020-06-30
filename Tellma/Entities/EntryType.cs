@@ -15,6 +15,19 @@ namespace Tellma.Entities
         [AlwaysAccessible]
         public int? ParentId { get; set; }
 
+        [Display(Name = "Code")]
+        [Required]
+        [StringLength(50)]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
+
+        [Display(Name = "EntryType_Concept")]
+        [Required]
+        [StringLength(255)]
+        [AlwaysAccessible]
+        public string Concept { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required]
         [StringLength(255)]
@@ -45,12 +58,6 @@ namespace Tellma.Entities
         [StringLength(1024)]
         [AlwaysAccessible]
         public string Description3 { get; set; }
-
-        [Display(Name = "Code")]
-        [Required]
-        [StringLength(255)]
-        [AlwaysAccessible]
-        public string Code { get; set; }
 
         [Display(Name = "IsAssignable")]
         [Required]

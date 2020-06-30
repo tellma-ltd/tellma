@@ -121,6 +121,9 @@
   <data name="AccountType_AdditionalReferenceLabel" xml:space="preserve">
     <value>其他参考标签</value>
   </data>
+  <data name="AccountType_Concept" xml:space="preserve">
+    <value>概念</value>
+  </data>
   <data name="AccountType_ContractDefinitions" xml:space="preserve">
     <value>合同定义</value>
   </data>
@@ -274,9 +277,6 @@
   <data name="Center_CenterType_ProductionExpenseControl" xml:space="preserve">
     <value>生产费用</value>
   </data>
-  <data name="Center_CenterType_Segment" xml:space="preserve">
-    <value>分割</value>
-  </data>
   <data name="Center_CenterType_SellingGeneralAndAdministration" xml:space="preserve">
     <value>销售一般及行政</value>
   </data>
@@ -285,6 +285,9 @@
   </data>
   <data name="Center_CenterType_TransitExpenseControl" xml:space="preserve">
     <value>运输费用</value>
+  </data>
+  <data name="Center_IsSegment" xml:space="preserve">
+    <value>IS分段</value>
   </data>
   <data name="Center_Manager" xml:space="preserve">
     <value>经理</value>
@@ -828,6 +831,9 @@
   </data>
   <data name="EntryType" xml:space="preserve">
     <value>进入分类</value>
+  </data>
+  <data name="EntryType_Concept" xml:space="preserve">
+    <value>概念</value>
   </data>
   <data name="EntryTypes" xml:space="preserve">
     <value>进入分类</value>

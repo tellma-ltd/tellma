@@ -28,7 +28,7 @@
                 <!-- Segment -->
                 <t-form-group class="t-form-group" [label]="('Document_Segment' | translate) + ' *'"
                     *ngIf="showSegmentParameter">
-                    <t-centers-picker [(ngModel)]="segmentId" filter="CenterType eq 'Segment'" [showCreate]="false">
+                    <t-centers-picker [(ngModel)]="segmentId" filter="IsSegment eq true" [showCreate]="false">
                     </t-centers-picker>
                 </t-form-group>
 

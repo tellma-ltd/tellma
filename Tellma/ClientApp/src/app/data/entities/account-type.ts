@@ -26,6 +26,7 @@ export interface AccountTypeForSave<TContractDef = AccountTypeContractDefinition
   Description2?: string;
   Description3?: string;
   Code?: string;
+  Concept?: string;
   IsAssignable?: boolean;
   EntryTypeParentId?: number;
   DueDateLabel?: string;
@@ -107,6 +108,7 @@ export function metadata_AccountType(wss: WorkspaceService, trx: TranslateServic
         Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
         Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
+        Concept: { control: 'text', label: () => trx.instant('AccountType_Concept') },
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
         EntryTypeParentId: { control: 'number', label: () => `${trx.instant('AccountType_EntryTypeParent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         EntryTypeParent: { control: 'navigation', label: () => trx.instant('AccountType_EntryTypeParent'), type: 'EntryType', foreignKeyName: 'EntryTypeParentId' },
