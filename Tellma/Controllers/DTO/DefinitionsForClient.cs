@@ -280,6 +280,7 @@ namespace Tellma.Controllers.Dto
     public class LineDefinitionEntryForClient
     {
         public short Direction { get; set; } // Is it needed??
+        public int? AccountTypeId { get; set; }
         public int? EntryTypeId { get; set; }
 
         // Computed from AccountTypeParent

@@ -1695,7 +1695,8 @@ namespace Tellma.Controllers
             nameof(Account.Name), 
             nameof(Account.Name2), 
             nameof(Account.Name3), 
-            
+            nameof(Account.Code),
+
             // Definitions
             nameof(Account.ContractDefinitionId),
             nameof(Account.NotedContractDefinitionId),

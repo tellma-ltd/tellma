@@ -21,10 +21,10 @@ import {
 import { tap, catchError, finalize, takeUntil, skip } from 'rxjs/operators';
 import { NgbModal, Placement } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError, Observable, Subscription } from 'rxjs';
-import { AccountForSave } from '~/app/data/entities/account';
+import { AccountForSave, metadata_Account } from '~/app/data/entities/account';
 import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
-import { metadata_Contract } from '~/app/data/entities/contract';
+import { metadata_Contract, Contract } from '~/app/data/entities/contract';
 import { AccountType } from '~/app/data/entities/account-type';
 import { Attachment } from '~/app/data/entities/attachment';
 import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
@@ -39,6 +39,7 @@ import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 
 type DocumentDetailsView = 'Managerial' | 'Accounting';
 interface LineEntryPair {
+  entryIndex: number;
   entry: EntryForSave;
   line: LineForSave;
   subscription?: Subscription; // cancels API calls specific to this line
@@ -1113,6 +1114,89 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   //   return resourceDefinition;
   // }
 
+  public accountDisplay(accountId: number) {
+    const account = this.ws.get('Account', accountId);
+    if (!!account) {
+      const desc = metadata_Account(this.workspace, this.translate);
+      return desc.format(account);
+    }
+
+    return '';
+  }
+
+  public filterAccount(pair: LineEntryPair, bookkeeping: boolean): string {
+    if (!bookkeeping) {
+      return null;
+    }
+
+    // Deconstruct the pair object
+    const line = pair.line;
+    const entry = pair.entry;
+    const entryIndex = pair.entryIndex;
+
+    const lineDefId = line.DefinitionId;
+    const lineDef = this.lineDefinition(lineDefId);
+    if (!!lineDef && !!lineDef.Entries) {
+      const entryDef = lineDef.Entries[entryIndex];
+      if (!!entryDef && !!entryDef.AccountTypeId) {
+        // Account Type Id
+        let filter = `AccountType/Node descof ${entryDef.AccountTypeId}`;
+
+        // CurrencyId
+        const currencyId = entry.CurrencyId; // this.readonlyValueCurrencyId(entry) || entry.CurrencyId;
+        if (!!currencyId) {
+          filter = filter + ` and (CurrencyId eq null or CurrencyId eq '${currencyId.replace(`'`, `''`)}')`;
+        }
+
+        // CenterId
+        const centerId = entry.CenterId; // this.readonlyValueCenterId_Manual(entry) || entry.centerId;
+        if (!!centerId) {
+          filter = filter + ` and (CenterId eq null or CenterId eq ${centerId})`;
+        }
+
+        // ResourceDefinitionId
+        const resource = this.ws.get('Resource', entry.ResourceId) as Resource;
+        const resourceDefId = !!resource ? resource.DefinitionId : null;
+        if (!!resourceDefId) {
+          filter = filter + ` and ResourceDefinitionId eq ${resourceDefId}`;
+        } else {
+          filter = filter + ` and ResourceDefinitionId eq null`;
+        }
+
+        // ContractDefinitionId
+        const contract = this.ws.get('Contract', entry.ContractId) as Contract;
+        const contractDefId = !!contract ? contract.DefinitionId : null;
+        if (!!contractDefId) {
+          filter = filter + ` and ContractDefinitionId eq ${contractDefId}`;
+        } else {
+          filter = filter + ` and ContractDefinitionId eq null`;
+        }
+
+        // ResourceId
+        const resourceId = entry.ResourceId;
+        if (!!resourceId) {
+          filter = filter + ` and (ResourceId eq null or ResourceId eq ${resourceId})`;
+        }
+
+        // ContractId
+        const contractId = entry.ContractId;
+        if (!!contractId) {
+          filter = filter + ` and (ContractId eq null or ContractId eq ${contractId})`;
+        }
+
+        // EntryTypeId
+        const entryTypeId = entry.EntryTypeId;
+        if (!!entryTypeId) {
+          filter = filter + ` and (EntryTypeId eq null or EntryTypeId eq ${entryTypeId})`;
+        }
+
+        return filter;
+      }
+    }
+
+    return null;
+  }
+
   // Center
 
   public readonlyCenter_Manual(entry: Entry): boolean {
@@ -1153,6 +1237,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     const account = this.account(entry);
     return [account.ContractDefinitionId];
     // return !!account && !!account.ContractDefinitions ? account.ContractDefinitions.map(e => e.ContractDefinitionId) : [];
+  }
+
+  public contract(entry: Entry): Contract {
+    const account = this.account(entry);
+    const accountContractId = !!account ? account.ContractId : null;
+    const contractId = accountContractId || entry.ContractId;
+    return this.ws.get('Contract', contractId) as Contract;
   }
 
   // Noted Contract Id
@@ -2316,11 +2407,11 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       if (!!model.Lines) {
         model.Lines.forEach(line => {
           if (!!line.Entries) {
-            line.Entries.forEach(entry => {
+            line.Entries.forEach((entry, entryIndex) => {
               if (this.isManualLine(line.DefinitionId)) {
-                this._manualEntries.push({ entry, line });
+                this._manualEntries.push({ entry, line, entryIndex });
               } else if ((line.State || 0) >= 0) {
-                this._smartEntries.push({ entry, line });
+                this._smartEntries.push({ entry, line, entryIndex });
               }
             });
           }

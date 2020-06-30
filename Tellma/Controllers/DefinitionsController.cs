@@ -397,6 +397,7 @@ namespace Tellma.Controllers
                 Entries = def.Entries?.Select(e => new LineDefinitionEntryForClient
                 {
                     Direction = e.Direction.Value,
+                    AccountTypeId = e.AccountTypeId,
                     EntryTypeId = e.EntryTypeId,
                     EntryTypeParentId = e.AccountType?.EntryTypeParentId, // There is supposed to validation to make sure all selected account types have the same entry type parent Id
                     ContractDefinitionIds = e.ContractDefinitions.Select(e => e.ContractDefinitionId.Value).ToList(),

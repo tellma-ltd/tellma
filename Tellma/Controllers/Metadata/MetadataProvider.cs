@@ -829,7 +829,7 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Resource.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
+                    isRequired = def.CenterVisibility == Visibility.Required && settings.IsMultiCenter;
                     break;
                 case nameof(Resource.Lookup1):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);
@@ -997,7 +997,7 @@ namespace Tellma.Controllers
                     break;
                 case nameof(Contract.CenterId):
                     display = PropertyDisplay(def.CenterVisibility, display);
-                    isRequired = def.CenterVisibility == Visibility.Required;
+                    isRequired = def.CenterVisibility == Visibility.Required && settings.IsMultiCenter;
                     break;
                 case nameof(Contract.Lookup1):
                     display = PropertyDisplay(settings, def.Lookup1Visibility, def.Lookup1Label, def.Lookup1Label2, def.Lookup1Label3, display);

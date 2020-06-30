@@ -462,7 +462,7 @@
                         <ng-container *ngIf="!isEdit" [ngSwitch]="columnName(lineDefId, columnIndex)">
                             <t-view-link *ngSwitchCase="'AccountId'" link="../../../accounts"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
-                                {{ ws.getMultilingualValue('Account', getFieldValue(lineDefId, columnIndex, line), 'Name') }}
+                                {{ accountDisplay(getFieldValue(lineDefId, columnIndex, line)) }}
                             </t-view-link>
                             <t-view-link *ngSwitchCase="'CurrencyId'" link="../../../currencies"
                                 [itemId]="getFieldValue(lineDefId, columnIndex, line)">
@@ -1058,15 +1058,14 @@
         <div>
             <t-form-group-dynamic class="t-form-group" [serverErrors]="entry.serverErrors?.AccountId">
                 <!-- <span *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> -->
-                <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit || bookkeeping">
-                    <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">{{
-                        ws.getMultilingualValue('Account', entry.AccountId, 'Name') }}</t-view-link>
+                <t-restricted [metadata]="entry.EntityMetadata?.AccountId" *ngIf="!isEdit">
+                    <t-view-link link="../../../accounts" [itemId]="entry?.AccountId">{{ accountDisplay(entry?.AccountId) }}</t-view-link>
                     <span class="text-muted font-italic"
                         *ngIf="bookkeeping && !entry?.AccountId">{{ 'Undefined' | translate }}</span>
                 </t-restricted>
-                <t-accounts-picker *ngIf="isEdit && !bookkeeping" style="min-width: 150px;"
+                <t-accounts-picker *ngIf="isEdit" style="min-width: 150px;"
                     [(ngModel)]="entry.AccountId" (ngModelChange)="update.call(null, pair);"
-                    [additionalSelect]="additionalSelectAccount">
+                    [additionalSelect]="additionalSelectAccount" [filter]="filterAccount(pair, bookkeeping)">
                 </t-accounts-picker>
             </t-form-group-dynamic>
         </div>
